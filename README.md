@@ -1,2 +1,2 @@
-# Qwen_And_David_Fitness_OS
-Qwen_And_David_Fitness_OS
+# david-king-gym
+Fitness CRM for personal trainers
