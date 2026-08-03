@@ -1,0 +1,113 @@
+name: Update SW and Manifest
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Write updated manifest.json
+        run: |
+          cat > manifest.json <<'EOF'
+          {
+            "name": "David King Gym",
+            "short_name": "DK Gym",
+            "description": "Fitness CRM — clients, training programs, nutrition, Private Gym printing",
+            "start_url": "./fitness-crm.html",
+            "scope": "./",
+            "display": "standalone",
+            "orientation": "any",
+            "background_color": "#0f172a",
+            "theme_color": "#10b981",
+            "lang": "ru",
+            "dir": "ltr",
+            "categories": ["health", "fitness", "productivity"],
+            "icons": [
+              { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+              { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+              { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+              { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" }
+            ]
+          }
+          EOF
+
+      - name: Write updated sw.js (v6)
+        run: |
+          cat > sw.js <<'EOF'
+          // Service Worker v6 - David King Gym PWA
+          const CACHE_NAME = 'dk-gym-v6';
+          const APP_SHELL = [
+            './',
+            './fitness-crm.html',
+            './exercise-db.json',
+            './food-db.json',
+            './manifest.json',
+            './icon-192.png',
+            './icon-512.png'
+          ];
+
+          self.addEventListener('install', (event) => {
+            event.waitUntil(
+              caches.open(CACHE_NAME)
+                .then((cache) => cache.addAll(APP_SHELL))
+                .then(() => self.skipWaiting())
+            );
+          });
+
+          self.addEventListener('activate', (event) => {
+            event.waitUntil(
+              caches.keys().then((keys) =>
+                Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+              ).then(() => self.clients.claim())
+            );
+          });
+
+          self.addEventListener('fetch', (event) => {
+            const req = event.request;
+            if (req.method !== 'GET') return;
+            
+            const url = new URL(req.url);
+            if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
+
+            if (url.origin === self.location.origin) {
+              event.respondWith(
+                caches.match(req).then((cached) => {
+                  if (cached) return cached;
+                  return fetch(req).then((res) => {
+                    if (res.ok && res.type === 'basic') {
+                      const clone = res.clone();
+                      caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
+                    }
+                    return res;
+                  }).catch(() => cached || new Response('Offline', { status: 503 }));
+                })
+              );
+            } else {
+              event.respondWith(
+                fetch(req).catch(() =>
+                  caches.match(req).then((cached) =>
+                    cached || new Response('', { status: 503 })
+                  )
+                )
+              );
+            }
+          });
+
+          self.addEventListener('message', (event) => {
+            if (event.data === 'SKIP_WAITING') self.skipWaiting();
+          });
+          EOF
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add manifest.json sw.js
+          git commit -m "Update SW to v6 with icon caching" || echo "No changes"
+          git push
