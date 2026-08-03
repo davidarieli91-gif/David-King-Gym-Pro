@@ -1,0 +1,412 @@
+name: Phase 2 — Data Audit & Normalization
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Create directories
+        run: |
+          mkdir -p reports data scripts docs
+
+      - name: Write normalize.js script
+        run: |
+          cat > scripts/normalize.js <<'EOF'
+          const fs = require('fs');
+          const path = require('path');
+
+          const EXERCISE_MAP = {
+            src: 'source',
+            g: 'group',
+            gE: 'group_en', gR: 'group_ru', gH: 'group_he',
+            sE: 'subgroup_en', sR: 'subgroup_ru', sH: 'subgroup_he',
+            e: 'equipment',
+            eE: 'equipment_en', eR: 'equipment_ru', eH: 'equipment_he',
+            nE: 'name_en', nR: 'name_ru', nH: 'name_he',
+            t: 'technique_en', tRu: 'technique_ru', tHe: 'technique_he',
+            i: 'images',
+            mt: 'movement_type',
+            f: 'force',
+            lv: 'level',
+            mc: 'mechanic',
+            cat: 'category'
+          };
+
+          function normalizeExercise(x) {
+            const out = { id: x.id };
+            for (const [short, long] of Object.entries(EXERCISE_MAP)) {
+              if (x[short] !== undefined) {
+                out[long] = x[short];
+              } else if (x[long] !== undefined) {
+                out[long] = x[long];
+              }
+            }
+            out.synergists = x.synergists || x.syn || [];
+            out.is_archived = x.is_archived || false;
+            return out;
+          }
+
+          function normalizeFood(x) {
+            return {
+              id: x.id,
+              name_en: x.name_en || '',
+              name_he: x.name_he || '',
+              name_ru: x.name_ru || '',
+              source: x.source || '',
+              category: x.category || '',
+              image_url: x.image_url || '',
+              barcode: x.barcode || '',
+              brand: x.brand || '',
+              nutrition: x.nutrition || {},
+              is_archived: x.is_archived || false
+            };
+          }
+
+          // ============ EXERCISES ============
+          const exRaw = JSON.parse(fs.readFileSync('exercise-db.json', 'utf8'));
+          const exercises = exRaw.map(normalizeExercise);
+
+          // ============ FOODS ============
+          const foodRaw = JSON.parse(fs.readFileSync('food-db.json', 'utf8'));
+          const foods = foodRaw.map(normalizeFood);
+
+          // ============ AUDIT: EXERCISES ============
+          const exSources = {};
+          const exGroups = {};
+          const exEquip = {};
+          const exNoName = [];
+          const exNoTechnique = [];
+          const exNoImage = [];
+          const exNoGroup = [];
+          const exDuplicatesId = {};
+          const exDuplicatesName = {};
+
+          for (const x of exercises) {
+            exSources[x.source || 'unknown'] = (exSources[x.source || 'unknown'] || 0) + 1;
+            exGroups[x.group || 'unknown'] = (exGroups[x.group || 'unknown'] || 0) + 1;
+            exEquip[x.equipment || 'unknown'] = (exEquip[x.equipment || 'unknown'] || 0) + 1;
+
+            if (!x.name_en && !x.name_ru && !x.name_he) exNoName.push(x.id);
+            if (!x.technique_en && !x.technique_ru && !x.technique_he) exNoTechnique.push(x.id);
+            if (!x.images || x.images.length === 0) exNoImage.push(x.id);
+            if (!x.group) exNoGroup.push(x.id);
+
+            exDuplicatesId[x.id] = (exDuplicatesId[x.id] || 0) + 1;
+            const nameKey = (x.name_en || '').toLowerCase();
+            if (nameKey) exDuplicatesName[nameKey] = (exDuplicatesName[nameKey] || 0) + 1;
+          }
+
+          const dupExId = Object.entries(exDuplicatesId).filter(([_,c]) => c > 1);
+          const dupExName = Object.entries(exDuplicatesName).filter(([_,c]) => c > 1);
+
+          // ============ AUDIT: FOODS ============
+          const foodSources = {};
+          const foodCats = {};
+          const foodNoName = [];
+          const foodNoMacros = [];
+          const foodNoImage = [];
+          const foodDupId = {};
+          const foodDupName = {};
+
+          for (const f of foods) {
+            foodSources[f.source || 'unknown'] = (foodSources[f.source || 'unknown'] || 0) + 1;
+            foodCats[f.category || 'unknown'] = (foodCats[f.category || 'unknown'] || 0) + 1;
+
+            if (!f.name_en && !f.name_ru && !f.name_he) foodNoName.push(f.id);
+            if (!f.nutrition.calories && f.nutrition.calories !== 0) foodNoMacros.push(f.id);
+            if (!f.image_url) foodNoImage.push(f.id);
+
+            foodDupId[f.id] = (foodDupId[f.id] || 0) + 1;
+            const nk = (f.name_en || '').toLowerCase();
+            if (nk) foodDupName[nk] = (foodDupName[nk] || 0) + 1;
+          }
+
+          const dupFoodId = Object.entries(foodDupId).filter(([_,c]) => c > 1);
+          const dupFoodName = Object.entries(foodDupName).filter(([_,c]) => c > 1);
+
+          // ============ REPORTS ============
+          const sortDesc = (obj) => Object.entries(obj).sort((a,b) => b[1] - a[1]);
+
+          const exReport = `# Exercise Database Audit
+
+**Generated:** ${new Date().toISOString()}
+**Total exercises:** ${exercises.length}
+
+## By Source
+| Source | Count |
+|---|---|
+${sortDesc(exSources).map(([k,v]) => `| ${k} | ${v} |`).join('\n')}
+
+## By Muscle Group
+| Group | Count |
+|---|---|
+${sortDesc(exGroups).map(([k,v]) => `| ${k} | ${v} |`).join('\n')}
+
+## By Equipment
+| Equipment | Count |
+|---|---|
+${sortDesc(exEquip).map(([k,v]) => `| ${k} | ${v} |`).join('\n')}
+
+## Data Quality
+- Without any name: **${exNoName.length}**
+- Without technique/instructions: **${exNoTechnique.length}**
+- Without image: **${exNoImage.length}**
+- Without group: **${exNoGroup.length}**
+- Duplicate IDs: **${dupExId.length}**
+- Duplicate names: **${dupExName.length}**
+`;
+
+          const foodReport = `# Food Database Audit
+
+**Generated:** ${new Date().toISOString()}
+**Total foods:** ${foods.length}
+
+## By Source
+| Source | Count |
+|---|---|
+${sortDesc(foodSources).map(([k,v]) => `| ${k} | ${v} |`).join('\n')}
+
+## By Category
+| Category | Count |
+|---|---|
+${sortDesc(foodCats).map(([k,v]) => `| ${k} | ${v} |`).join('\n')}
+
+## Data Quality
+- Without any name: **${foodNoName.length}**
+- Without macros (no calories): **${foodNoMacros.length}**
+- Without image: **${foodNoImage.length}**
+- Duplicate IDs: **${dupFoodId.length}**
+- Duplicate names: **${dupFoodName.length}**
+`;
+
+          const dupReport = `# Duplicates Report
+
+**Generated:** ${new Date().toISOString()}
+
+## Exercise Duplicates by ID (${dupExId.length})
+${dupExId.length === 0 ? 'None' : dupExId.map(([k,v]) => `- \`${k}\` (x${v})`).join('\n')}
+
+## Exercise Duplicates by Name (${dupExName.length})
+${dupExName.length === 0 ? 'None' : dupExName.slice(0, 50).map(([k,v]) => `- "${k}" (x${v})`).join('\n')}
+
+## Food Duplicates by ID (${dupFoodId.length})
+${dupFoodId.length === 0 ? 'None' : dupFoodId.map(([k,v]) => `- \`${k}\` (x${v})`).join('\n')}
+
+## Food Duplicates by Name (${dupFoodName.length})
+${dupFoodName.length === 0 ? 'None' : dupFoodName.slice(0, 50).map(([k,v]) => `- "${k}" (x${v})`).join('\n')}
+`;
+
+          const missingReport = `# Missing Data Report
+
+**Generated:** ${new Date().toISOString()}
+
+## Exercises without name (first 20)
+${exNoName.slice(0,20).map(id => `- \`${id}\``).join('\n') || 'None'}
+
+## Exercises without technique (first 20)
+${exNoTechnique.slice(0,20).map(id => `- \`${id}\``).join('\n') || 'None'}
+
+## Exercises without image (first 20)
+${exNoImage.slice(0,20).map(id => `- \`${id}\``).join('\n') || 'None'}
+
+## Foods without name (first 20)
+${foodNoName.slice(0,20).map(id => `- \`${id}\``).join('\n') || 'None'}
+
+## Foods without macros (first 20)
+${foodNoMacros.slice(0,20).map(id => `- \`${id}\``).join('\n') || 'None'}
+
+## Foods without image (first 20)
+${foodNoImage.slice(0,20).map(id => `- \`${id}\``).join('\n') || 'None'}
+`;
+
+          fs.writeFileSync('reports/exercise-audit.md', exReport);
+          fs.writeFileSync('reports/food-audit.md', foodReport);
+          fs.writeFileSync('reports/duplicates.md', dupReport);
+          fs.writeFileSync('reports/missing-data.md', missingReport);
+
+          // ============ CSV EXPORT ============
+          const csvEscape = (v) => {
+            if (v === null || v === undefined) return '';
+            const s = String(v).replace(/"/g, '""');
+            return /[,"\n]/.test(s) ? `"${s}"` : s;
+          };
+
+          const exHeaders = ['id','source','group','group_en','group_ru','group_he','subgroup_en','equipment','equipment_en','name_en','name_ru','name_he','movement_type','force','level','category','has_image','has_technique','is_archived'];
+          const exRows = exercises.map(x => [
+            x.id, x.source, x.group, x.group_en, x.group_ru, x.group_he, x.subgroup_en,
+            x.equipment, x.equipment_en, x.name_en, x.name_ru, x.name_he,
+            x.movement_type, x.force, x.level, x.category,
+            (x.images && x.images.length > 0) ? 'yes' : 'no',
+            (x.technique_en || x.technique_ru || x.technique_he) ? 'yes' : 'no',
+            x.is_archived ? 'yes' : 'no'
+          ].map(csvEscape).join(','));
+
+          fs.writeFileSync('data/exercises.csv', [exHeaders.join(','), ...exRows].join('\n'));
+
+          const foodHeaders = ['id','name_en','name_he','name_ru','source','category','brand','barcode','calories','protein','carbs','fat','fiber','sugars','sodium','has_image','is_archived'];
+          const foodRows = foods.map(f => [
+            f.id, f.name_en, f.name_he, f.name_ru, f.source, f.category, f.brand, f.barcode,
+            f.nutrition.calories || '', f.nutrition.protein || '', f.nutrition.carbs || '',
+            f.nutrition.fat || '', f.nutrition.fiber || '', f.nutrition.sugars || '',
+            f.nutrition.sodium || '',
+            f.image_url ? 'yes' : 'no',
+            f.is_archived ? 'yes' : 'no'
+          ].map(csvEscape).join(','));
+
+          fs.writeFileSync('data/foods.csv', [foodHeaders.join(','), ...foodRows].join('\n'));
+
+          // ============ NORMALIZED JSON ============
+          fs.writeFileSync('data/exercises.normalized.json', JSON.stringify(exercises, null, 2));
+          fs.writeFileSync('data/foods.normalized.json', JSON.stringify(foods, null, 2));
+
+          // ============ SUMMARY ============
+          console.log('=== AUDIT COMPLETE ===');
+          console.log(`Exercises: ${exercises.length}`);
+          console.log(`Foods: ${foods.length}`);
+          console.log(`Duplicate exercise IDs: ${dupExId.length}`);
+          console.log(`Duplicate food IDs: ${dupFoodId.length}`);
+          console.log(`Exercises missing name: ${exNoName.length}`);
+          console.log(`Foods missing macros: ${foodNoMacros.length}`);
+          EOF
+
+      - name: Write DATA_GUIDE.md
+        run: |
+          cat > docs/DATA_GUIDE.md <<'EOF'
+          # Data Guide — DK Gym CRM
+
+          ## Структура данных
+
+          ### Упражнения (`exercise-db.json`)
+          Исходник использует короткие ключи для компактности.
+          Нормализованная версия в `data/exercises.normalized.json` использует читаемые ключи.
+
+          Ключевые поля:
+          - `id` — уникальный (формат: `bf_<slug>`, `mm_<slug>_<n>`, `pg_<slug>`)
+          - `source` — `bf` (Burnfit) / `mm` (Muscle Motion) / `pg` (Private Gym)
+          - `group` / `group_en` / `group_ru` / `group_he` — мышечная группа
+          - `equipment` — оборудование
+          - `name_*` — название на 3 языках
+          - `technique_*` — инструкции (через `|` для шагов)
+          - `images` — массив путей к GIF/JPG
+          - `synergists` — мышцы-синергисты
+          - `movement_type` — compound / isolation / stretching
+          - `force` — push / pull / static (только для MM)
+          - `level` — beginner / intermediate / expert (только для MM)
+
+          ### Продукты (`food-db.json`)
+          - `id` — формат: `off_<barcode>`, `usda_<id>`, `fd_<slug>`, `custom_<slug>`
+          - `source` — USDA_SR_Legacy / OpenFoodFacts_IL / OpenFoodFacts_Global / FoodsDictionary_IL
+          - `category` — 21 категория (bakery, dairy, meat, fish, fruit, vegetable, ...)
+          - `nutrition` — все макронутриенты + витамины + минералы на 100г
+
+          ## Как редактировать
+
+          ### Вариант 1: Через CSV (для массовых правок)
+          1. Открой `data/exercises.csv` или `data/foods.csv` в Excel / Google Sheets
+          2. Внеси правки
+          3. Запусти скрипт конвертации CSV → JSON (будет добавлен в Phase 3)
+
+          ### Вариант 2: Через нормализованный JSON
+          1. Редактируй `data/exercises.normalized.json`
+          2. Запусти `scripts/denormalize.js` (в разработке)
+          3. Получишь обновлённый `exercise-db.json`
+
+          ### Вариант 3: Добавить новые записи
+          См. шаблоны в `docs/EXERCISE_TEMPLATE.json` и `docs/FOOD_TEMPLATE.json`
+          EOF
+
+      - name: Write exercise template
+        run: |
+          cat > docs/EXERCISE_TEMPLATE.json <<'EOF'
+          {
+            "id": "custom_my-exercise_001",
+            "source": "custom",
+            "group": "chest",
+            "group_en": "Chest",
+            "group_ru": "Грудь",
+            "group_he": "חזה",
+            "subgroup_en": "Middle",
+            "subgroup_ru": "Средний",
+            "subgroup_he": "אמצעי",
+            "equipment": "barbell",
+            "equipment_en": "Barbell",
+            "equipment_ru": "Штанга",
+            "equipment_he": "מוט",
+            "name_en": "My Exercise",
+            "name_ru": "Моё упражнение",
+            "name_he": "התרגיל שלי",
+            "technique_en": "Step 1| Step 2| Step 3",
+            "technique_ru": "Шаг 1| Шаг 2| Шаг 3",
+            "technique_he": "שלב 1| שלב 2| שלב 3",
+            "images": [],
+            "synergists": ["triceps", "shoulders"],
+            "movement_type": "compound",
+            "force": "push",
+            "level": "intermediate",
+            "category": "strength"
+          }
+          EOF
+
+      - name: Write food template
+        run: |
+          cat > docs/FOOD_TEMPLATE.json <<'EOF'
+          {
+            "id": "custom_my-food_001",
+            "name_en": "My Food",
+            "name_he": "האוכל שלי",
+            "name_ru": "Моя еда",
+            "source": "custom",
+            "category": "protein",
+            "image_url": "",
+            "barcode": "",
+            "brand": "",
+            "nutrition": {
+              "calories": 100,
+              "protein": 20,
+              "carbs": 5,
+              "fat": 2,
+              "fiber": 0,
+              "sugars": 1,
+              "saturated_fat": 0.5,
+              "sodium": 50,
+              "cholesterol": 0,
+              "potassium": 100,
+              "calcium": 10,
+              "iron": 1,
+              "vitamin_a": 0,
+              "vitamin_c": 0,
+              "vitamin_d": 0
+            }
+          }
+          EOF
+
+      - name: Run audit
+        run: node scripts/normalize.js
+
+      - name: Show report summary
+        run: |
+          echo "===== EXERCISE AUDIT ====="
+          head -20 reports/exercise-audit.md
+          echo ""
+          echo "===== FOOD AUDIT ====="
+          head -20 reports/food-audit.md
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "Phase 2: data audit, CSV exports, normalized JSON, templates"
+          git push
