@@ -1,7 +1,7 @@
 {
   "name": "David King Gym",
   "short_name": "DK Gym",
-  "description": "Fitness CRM — клиенты, программы тренировок, питание, печать на бланк Private Gym",
+  "description": "Fitness CRM — clients, training programs, nutrition, Private Gym printing",
   "start_url": "./fitness-crm.html",
   "scope": "./",
   "display": "standalone",
@@ -12,29 +12,9 @@
   "dir": "ltr",
   "categories": ["health", "fitness", "productivity"],
   "icons": [
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" }
   ]
 }
