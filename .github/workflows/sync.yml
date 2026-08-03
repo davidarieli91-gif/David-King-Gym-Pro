@@ -1,0 +1,32 @@
+name: Sync from old repo
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout new repo
+        uses: actions/checkout@v4
+
+      - name: Download old repo (public, token not needed)
+        run: |
+          curl -L -o old.zip https://github.com/davidarieli91-gif/david-king-gym/archive/refs/heads/main.zip
+          unzip -q old.zip
+
+      - name: Copy ALL files (including images/)
+        run: |
+          cp -a david-king-gym-main/. .
+          rm -rf old.zip david-king-gym-main
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "Sync: full copy of david-king-gym (dev sandbox)"
+          git push
