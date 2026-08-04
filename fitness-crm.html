@@ -2107,14 +2107,6 @@
                     <span id="pb-freq-hint" class="text-[10px] text-muted"></span>
                   </div>
                 </div>
-                <button id="pb-autogen" class="bg-primary/15 hover:bg-primary/25 text-primary-2 border border-primary/30 text-xs font-semibold px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1.5 shrink-0" title="Auto-generate program">
-                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                  <span data-i18n="programs.autoGenerate">Auto</span>
-                </button>
-                <button id="pb-llm-gen" class="bg-accent/15 hover:bg-accent/25 text-accent border border-accent/30 text-xs font-semibold px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1.5 shrink-0" title="AI Pro generate">
-                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 2a8 8 0 1 1-8 8 8 8 0 0 1 8-8z"/><path d="M12 6v6l4 2"/></svg>
-                  <span data-i18n="programs.aiPro">AI Pro</span>
-                </button>
                 <button id="pb-close" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-surface-2 text-muted shrink-0">
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
                 </button>
@@ -3406,10 +3398,6 @@
         <div id="micro-amino-list" class="hidden flex-1 overflow-y-auto p-3 space-y-2"></div>
         <!-- Footer -->
         <div class="p-3 border-t border-border flex gap-2 shrink-0">
-          <button id="micro-suggest" class="flex-1 bg-accent/15 hover:bg-accent/25 text-accent border border-accent/30 text-sm font-semibold py-2.5 rounded-xl transition inline-flex items-center justify-center gap-2" data-i18n="nutrition.suggestFoods">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-            Suggest foods to fill gaps
-          </button>
           <button id="micro-done" class="flex-1 bg-primary hover:bg-primary-2 text-white text-sm font-semibold py-2.5 rounded-xl transition shadow-card" data-i18n="common.done">Done</button>
         </div>
       </div>
@@ -3859,9 +3847,15 @@
                 </div>
               </div>
               <input type="file" id="client-photo-input" accept="image/*" class="hidden" />
-              <div class="flex-1">
-                <label class="block text-xs font-semibold mb-1" data-i18n="client.fullName">Full name</label>
-                <input name="full_name" required class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
+              <div class="flex-1 grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-xs font-semibold mb-1" data-i18n="client.firstName">First name</label>
+                  <input name="first_name" required class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold mb-1" data-i18n="client.lastName">Last name</label>
+                  <input name="last_name" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
+                </div>
               </div>
             </div>
             <div class="grid grid-cols-3 gap-2">
@@ -3891,212 +3885,10 @@
           </fieldset>
 
           <!-- Section: Training -->
-          <fieldset class="space-y-3">
-            <legend class="text-[11px] uppercase tracking-wider text-muted font-semibold mb-1" data-i18n="workouts.title">Training</legend>
-            <div>
-              <label class="block text-xs font-semibold mb-1" data-i18n="client.goal">Primary goal</label>
-              <select name="goal" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60 cursor-pointer">
-                <option value="hypertrophy" data-i18n="client.goalHypertrophy">Hypertrophy</option>
-                <option value="strength" data-i18n="client.goalStrength">Strength</option>
-                <option value="fat_loss" data-i18n="client.goalFatLoss">Fat loss</option>
-                <option value="endurance" data-i18n="client.goalEndurance">Endurance</option>
-                <option value="rehab" data-i18n="client.goalRehab">Rehabilitation</option>
-              </select>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-xs font-semibold mb-1" data-i18n="client.fitnessLevel">Fitness level</label>
-                <select name="fitness_level" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60 cursor-pointer">
-                  <option value="beginner" data-i18n="client.levelBeginner">Beginner</option>
-                  <option value="intermediate" data-i18n="client.levelIntermediate">Intermediate</option>
-                  <option value="advanced" data-i18n="client.levelAdvanced">Advanced</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold mb-1" data-i18n="client.trainingExperience">Experience (months)</label>
-                <input name="training_experience" type="number" min="0" max="600" placeholder="0" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
-              </div>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold mb-1" data-i18n="client.equipment">Available equipment</label>
-              <div class="grid grid-cols-2 gap-1.5">
-                <label class="flex items-center gap-2 bg-surface-2 border border-border rounded-lg px-3 py-2 text-xs cursor-pointer hover:bg-border/30 transition">
-                  <input type="checkbox" name="equipment" value="gym" class="accent-primary w-3.5 h-3.5" />
-                  <span data-i18n="client.equipmentGym">Full gym</span>
-                </label>
-                <label class="flex items-center gap-2 bg-surface-2 border border-border rounded-lg px-3 py-2 text-xs cursor-pointer hover:bg-border/30 transition">
-                  <input type="checkbox" name="equipment" value="home" class="accent-primary w-3.5 h-3.5" />
-                  <span data-i18n="client.equipmentHome">Home (dumbbells only)</span>
-                </label>
-                <label class="flex items-center gap-2 bg-surface-2 border border-border rounded-lg px-3 py-2 text-xs cursor-pointer hover:bg-border/30 transition">
-                  <input type="checkbox" name="equipment" value="bodyweight" class="accent-primary w-3.5 h-3.5" />
-                  <span data-i18n="client.equipmentBodyweight">Bodyweight only</span>
-                </label>
-                <label class="flex items-center gap-2 bg-surface-2 border border-border rounded-lg px-3 py-2 text-xs cursor-pointer hover:bg-border/30 transition">
-                  <input type="checkbox" name="equipment" value="bands" class="accent-primary w-3.5 h-3.5" />
-                  <span data-i18n="client.equipmentBands">Resistance bands</span>
-                </label>
-              </div>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold mb-1">
-                <span data-i18n="client.frequency">Training frequency (days/week)</span>
-                <span id="freq-display" class="float-end text-primary-2 font-mono font-bold">3</span>
-              </label>
-              <input name="frequency" type="range" min="1" max="7" value="3" class="w-full" />
-            </div>
-            <div>
-              <label class="block text-xs font-semibold mb-1" data-i18n="client.split">Split preference</label>
-              <select name="split" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60 cursor-pointer">
-                <option value="ppl" data-i18n="client.splitPushPullLegs">Push / Pull / Legs</option>
-                <option value="upper_lower" data-i18n="client.splitUpperLower">Upper / Lower</option>
-                <option value="full_body" data-i18n="client.splitFullBody">Full body</option>
-                <option value="bro" data-i18n="client.splitBro">Bro split (1 muscle/day)</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold mb-1" data-i18n="client.trainingDays">Training days</label>
-              <div class="grid grid-cols-7 gap-1">
-                <label class="flex flex-col items-center gap-0.5 bg-surface-2 border border-border rounded-lg py-1.5 text-[10px] cursor-pointer hover:bg-border/30 transition">
-                  <input type="checkbox" name="training_days" value="1" class="accent-primary w-3 h-3" />
-                  <span data-i18n="client.dayMon">Mon</span>
-                </label>
-                <label class="flex flex-col items-center gap-0.5 bg-surface-2 border border-border rounded-lg py-1.5 text-[10px] cursor-pointer hover:bg-border/30 transition">
-                  <input type="checkbox" name="training_days" value="2" class="accent-primary w-3 h-3" />
-                  <span data-i18n="client.dayTue">Tue</span>
-                </label>
-                <label class="flex flex-col items-center gap-0.5 bg-surface-2 border border-border rounded-lg py-1.5 text-[10px] cursor-pointer hover:bg-border/30 transition">
-                  <input type="checkbox" name="training_days" value="3" class="accent-primary w-3 h-3" />
-                  <span data-i18n="client.dayWed">Wed</span>
-                </label>
-                <label class="flex flex-col items-center gap-0.5 bg-surface-2 border border-border rounded-lg py-1.5 text-[10px] cursor-pointer hover:bg-border/30 transition">
-                  <input type="checkbox" name="training_days" value="4" class="accent-primary w-3 h-3" />
-                  <span data-i18n="client.dayThu">Thu</span>
-                </label>
-                <label class="flex flex-col items-center gap-0.5 bg-surface-2 border border-border rounded-lg py-1.5 text-[10px] cursor-pointer hover:bg-border/30 transition">
-                  <input type="checkbox" name="training_days" value="5" class="accent-primary w-3 h-3" />
-                  <span data-i18n="client.dayFri">Fri</span>
-                </label>
-                <label class="flex flex-col items-center gap-0.5 bg-surface-2 border border-border rounded-lg py-1.5 text-[10px] cursor-pointer hover:bg-border/30 transition">
-                  <input type="checkbox" name="training_days" value="6" class="accent-primary w-3 h-3" />
-                  <span data-i18n="client.daySat">Sat</span>
-                </label>
-                <label class="flex flex-col items-center gap-0.5 bg-surface-2 border border-border rounded-lg py-1.5 text-[10px] cursor-pointer hover:bg-border/30 transition">
-                  <input type="checkbox" name="training_days" value="0" class="accent-primary w-3 h-3" />
-                  <span data-i18n="client.daySun">Sun</span>
-                </label>
-              </div>
-            </div>
-          </fieldset>
+          
 
           <!-- Section: Nutrition Profile -->
-          <fieldset class="space-y-3">
-            <legend class="text-[11px] uppercase tracking-wider text-muted font-semibold mb-1" data-i18n="client.nutritionProfile">Nutrition Profile</legend>
-            <div>
-              <label class="block text-xs font-semibold mb-1" data-i18n="client.foodAllergies">Food allergies / intolerances</label>
-              <div class="grid grid-cols-3 gap-1.5">
-                <label class="flex items-center gap-1.5 bg-surface-2 border border-border rounded-lg px-2 py-1.5 text-[11px] cursor-pointer hover:bg-border/30 transition">
-                  <input type="checkbox" name="allergies" value="gluten" class="accent-danger w-3 h-3" />
-                  <span data-i18n="client.allergyGluten">Gluten</span>
-                </label>
-                <label class="flex items-center gap-1.5 bg-surface-2 border border-border rounded-lg px-2 py-1.5 text-[11px] cursor-pointer hover:bg-border/30 transition">
-                  <input type="checkbox" name="allergies" value="lactose" class="accent-danger w-3 h-3" />
-                  <span data-i18n="client.allergyLactose">Lactose</span>
-                </label>
-                <label class="flex items-center gap-1.5 bg-surface-2 border border-border rounded-lg px-2 py-1.5 text-[11px] cursor-pointer hover:bg-border/30 transition">
-                  <input type="checkbox" name="allergies" value="nuts" class="accent-danger w-3 h-3" />
-                  <span data-i18n="client.allergyNuts">Nuts</span>
-                </label>
-                <label class="flex items-center gap-1.5 bg-surface-2 border border-border rounded-lg px-2 py-1.5 text-[11px] cursor-pointer hover:bg-border/30 transition">
-                  <input type="checkbox" name="allergies" value="seafood" class="accent-danger w-3 h-3" />
-                  <span data-i18n="client.allergySeafood">Seafood</span>
-                </label>
-                <label class="flex items-center gap-1.5 bg-surface-2 border border-border rounded-lg px-2 py-1.5 text-[11px] cursor-pointer hover:bg-border/30 transition">
-                  <input type="checkbox" name="allergies" value="eggs" class="accent-danger w-3 h-3" />
-                  <span data-i18n="client.allergyEggs">Eggs</span>
-                </label>
-                <label class="flex items-center gap-1.5 bg-surface-2 border border-border rounded-lg px-2 py-1.5 text-[11px] cursor-pointer hover:bg-border/30 transition">
-                  <input type="checkbox" name="allergies" value="soy" class="accent-danger w-3 h-3" />
-                  <span data-i18n="client.allergySoy">Soy</span>
-                </label>
-              </div>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-xs font-semibold mb-1" data-i18n="client.cuisinePref">Preferred cuisine</label>
-                <select name="cuisine_pref" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60 cursor-pointer">
-                  <option value="" data-i18n="client.cuisineAny">Any</option>
-                  <option value="israeli" data-i18n="client.cuisineIsraeli">Israeli</option>
-                  <option value="mediterranean" data-i18n="client.cuisineMediterranean">Mediterranean</option>
-                  <option value="asian" data-i18n="client.cuisineAsian">Asian</option>
-                  <option value="european" data-i18n="client.cuisineEuropean">European</option>
-                  <option value="american" data-i18n="client.cuisineAmerican">American</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold mb-1" data-i18n="client.budget">Food budget</label>
-                <select name="budget" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60 cursor-pointer">
-                  <option value="" data-i18n="client.budgetAny">Any</option>
-                  <option value="economy" data-i18n="client.budgetEconomy">Economy</option>
-                  <option value="medium" data-i18n="client.budgetMedium">Medium</option>
-                  <option value="premium" data-i18n="client.budgetPremium">Premium</option>
-                </select>
-              </div>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-xs font-semibold mb-1" data-i18n="client.cookTime">Cooking time</label>
-                <select name="cook_time" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60 cursor-pointer">
-                  <option value="" data-i18n="client.cookAny">Any</option>
-                  <option value="15" data-i18n="client.cook15">Up to 15 min</option>
-                  <option value="30" data-i18n="client.cook30">Up to 30 min</option>
-                  <option value="60" data-i18n="client.cook60">Up to 60 min</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold mb-1" data-i18n="client.targetWeight">Target weight (kg)</label>
-                <input name="target_weight" type="number" min="30" max="250" step="0.1" placeholder="—" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
-              </div>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-xs font-semibold mb-1" data-i18n="client.goalWeeks">Goal timeframe (weeks)</label>
-                <input name="goal_weeks" type="number" min="1" max="104" placeholder="12" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
-              </div>
-              <div>
-                <label class="block text-xs font-semibold mb-1" data-i18n="client.stressLevel">Stress level</label>
-                <select name="stress_level" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60 cursor-pointer">
-                  <option value="" data-i18n="client.stressAny">—</option>
-                  <option value="low" data-i18n="client.stressLow">Low</option>
-                  <option value="medium" data-i18n="client.stressMedium">Medium</option>
-                  <option value="high" data-i18n="client.stressHigh">High</option>
-                </select>
-              </div>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-xs font-semibold mb-1" data-i18n="client.sleepQuality">Sleep quality</label>
-                <select name="sleep_quality" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60 cursor-pointer">
-                  <option value="" data-i18n="client.sleepAny">—</option>
-                  <option value="poor" data-i18n="client.sleepPoor">Poor</option>
-                  <option value="average" data-i18n="client.sleepAverage">Average</option>
-                  <option value="good" data-i18n="client.sleepGood">Good</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold mb-1" data-i18n="client.workHours">Work hours (e.g. 9-18)</label>
-                <input name="work_hours" type="text" placeholder="9-18" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
-              </div>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold mb-1" data-i18n="client.likedFoods">Liked foods (comma-separated)</label>
-              <input name="liked_foods" type="text" data-i18n-ph="client.likedFoodsPh" placeholder="chicken, rice, bananas..." class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
-            </div>
-            <div>
-              <label class="block text-xs font-semibold mb-1" data-i18n="client.dislikedFoods">Disliked foods (comma-separated)</label>
-              <input name="disliked_foods" type="text" data-i18n-ph="client.dislikedFoodsPh" placeholder="fish, broccoli..." class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
-            </div>
-          </fieldset>
+          
 
           <!-- Section: Body composition (smart scale data) -->
           <fieldset class="space-y-3">
@@ -6743,7 +6535,17 @@
       const modal = document.getElementById('client-modal');
       const form  = document.getElementById('client-form');
       form.elements.id.value     = c.id || '';
-      form.elements.full_name.value = c.full_name || c.name || '';
+      // Split full_name into first_name + last_name (backwards compatible)
+      const fn = (c.first_name || '').trim();
+      const ln = (c.last_name || '').trim();
+      if (fn || ln) {
+        if (form.elements.first_name) form.elements.first_name.value = fn;
+        if (form.elements.last_name) form.elements.last_name.value = ln;
+      } else {
+        const parts = String(c.full_name || c.name || '').split(' ');
+        if (form.elements.first_name) form.elements.first_name.value = parts.shift() || '';
+        if (form.elements.last_name) form.elements.last_name.value = parts.join(' ') || '';
+      }
       form.elements.age.value    = c.age || '';
       form.elements.weight.value = c.weight || '';
       form.elements.height.value = c.height || '';
@@ -8252,9 +8054,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           toast(msg, 'warning', 6000);
           // Auto-fall back to Auto generator after a short delay
           setTimeout(() => {
-            if (confirm(t('programs.aiFallbackToAuto') || 'Fall back to Auto rule-based generation?')) {
-              autoGenerateProgram(clientId);
-            }
+            // Auto-fallback disabled (Auto generator removed)
           }, 800);
         } else {
           toast(t('programs.aiError') || 'AI generation failed. Try Auto instead.', 'danger', 4000);
@@ -23611,6 +23411,8 @@ async function boot() {
         expandProgram: 'Show days',
         collapseProgram: 'Hide days',
         fullName: 'Full name',
+        firstName: 'First name',
+        lastName: 'Last name',
         age: 'Age',
         weight: 'Weight (kg)',
         height: 'Height (cm)',
