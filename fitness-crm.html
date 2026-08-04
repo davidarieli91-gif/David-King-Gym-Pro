@@ -27221,5 +27221,34 @@ document.addEventListener('input', function (e) {
   } catch (e) {}
 })();
 </script>
+<script>
+// Phase 5 runtime utilities
+(function () {
+  try {
+    if (typeof backup !== "undefined" && backup && typeof backup.exportData === "function") {
+      var oe = backup.exportData;
+      backup.exportData = function () {
+        var r = oe.apply(this, arguments);
+        Promise.resolve(r).then(function () { try { localStorage.setItem("dk_last_backup", String(Date.now())); } catch (e) {} });
+        return r;
+      };
+    }
+  } catch (e) {}
+  setTimeout(function () {
+    try {
+      var els = document.querySelectorAll("div,p,span,footer");
+      for (var i = 0; i < els.length; i++) {
+        var t = (els[i].textContent || "").trim();
+        if (t.indexOf("v1.0.0-phase1") === 0) els[i].textContent = t.replace("v1.0.0-phase1", "v2.0-phase5");
+      }
+    } catch (e) {}
+    try {
+      var last = parseInt(localStorage.getItem("dk_last_backup") || "0", 10);
+      var days = (Date.now() - last) / 86400000;
+      if (!last || days > 7 && typeof toast === "function") toast("⚠️ Сделайте резервную копию: Настройки → Export full backup", "warning", 8000);
+    } catch (e) {}
+  }, 2500);
+})();
+</script>
 </body>
 </html>

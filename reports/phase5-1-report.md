@@ -1,0 +1,63 @@
+# Phase 5.1 Report
+
+**Generated:** 2026-08-04T18:22:15.093Z
+
+- Exercises archived as duplicates: 53
+- Translated bf machines: 4
+- Still untranslated: 25 — mm_exercise_ball_crunch_260, mm_exercise_ball_pull_in_261, mm_extended_range_one_arm_kettlebell_floor_press_262, mm_external_rotation_263, bf_snatch, bf_snatch-balance, bf_snatch-high-pull, bf_spoto-bench-press, bf_stand-to-stand-bridge, bf_standing-cable-fly, bf_standing-calf-raise, bf_step-up, bf_stiff-leg-deadlift, bf_sumo-air-squat, bf_sumo-deadlift-high-pull, bf_thruster, bf_toes-to-bar, bf_torso-rotation-machine, bf_trap-bar-deadlift, bf_tricep-extension-machine
+- INJECTED runtime utilities
+
+## Archived duplicates
+- arnold dumbbell press | kept bf_arnold-dumbbell-press | archived mm_arnold_dumbbell_press_25
+- barbell hack squat | kept bf_barbell-hack-squat | archived mm_barbell_hack_squat_50
+- barbell hip thrust | kept bf_barbell-hip-thrust | archived mm_barbell_hip_thrust_51
+- barbell lunge | kept bf_barbell-lunge | archived mm_barbell_lunge_54
+- barbell shrug | kept bf_barbell-shrug | archived mm_barbell_shrug_59
+- battling ropes | kept bf_battling-ropes | archived mm_battling_ropes_67
+- bench dips | kept bf_bench-dips | archived mm_bench_dips_70
+- cable crunch | kept bf_cable-crunch | archived mm_cable_crunch_111
+- cable internal rotation | kept bf_cable-internal-rotation | archived mm_cable_internal_rotation_117
+- clean | kept bf_clean | archived mm_clean_162
+- dead bug | kept bf_dead-bug | archived mm_dead_bug_191
+- decline crunch | kept bf_decline-crunch | archived mm_decline_crunch_196
+- decline reverse crunch | kept bf_decline-reverse-crunch | archived mm_decline_reverse_crunch_203
+- deficit deadlift | kept bf_deficit-deadlift | archived mm_deficit_deadlift_205
+- dumbbell bench press | kept bf_dumbbell-bench-press | archived mm_dumbbell_bench_press_221
+- dumbbell bicep curl | kept bf_dumbbell-bicep-curl | archived mm_dumbbell_bicep_curl_223
+- dumbbell incline row | kept bf_dumbbell-incline-row | archived mm_dumbbell_incline_row_227
+- dumbbell shoulder press | kept bf_dumbbell-shoulder-press | archived mm_dumbbell_shoulder_press_243
+- dumbbell shrug | kept bf_dumbbell-shrug | archived mm_dumbbell_shrug_244
+- dumbbell side bend | kept bf_dumbbell-side-bend | archived mm_dumbbell_side_bend_245
+- dumbbell squat | kept bf_dumbbell-squat | archived mm_dumbbell_squat_246
+- face pull | kept bf_face-pull | archived mm_face_pull_266
+- hang clean | kept bf_hang-clean | archived mm_hang_clean_313
+- hang snatch | kept bf_hang-snatch | archived mm_hang_snatch_315
+- hanging leg raise | kept bf_hanging-leg-raise | archived mm_hanging_leg_raise_318
+- inchworm | kept bf_inchworm | archived mm_inchworm_334
+- incline dumbbell curl | kept bf_incline-dumbbell-curl | archived mm_incline_dumbbell_curl_340
+- inverted row | kept bf_inverted-row | archived mm_inverted_row_355
+- kettlebell sumo high pull | kept bf_kettlebell-sumo-high-pull | archived mm_kettlebell_sumo_high_pull_381
+- leg press | kept bf_leg-press | archived mm_leg_press_411
+- plank | kept bf_plank | archived mm_plank_538
+- push press | kept bf_push-press | archived mm_push_press_564
+- reverse barbell curl | kept bf_reverse-barbell-curl | archived mm_reverse_barbell_curl_584
+- reverse crunch | kept bf_reverse-crunch | archived mm_reverse_crunch_587
+- romanian deadlift | kept bf_romanian-deadlift | archived mm_romanian_deadlift_603
+- russian twist | kept bf_russian-twist | archived mm_russian_twist_613
+- seated calf raise | kept bf_seated-calf-raise | archived mm_seated_calf_raise_627
+- seated leg curl | kept bf_seated-leg-curl | archived mm_seated_leg_curl_643
+- single leg glute bridge | kept bf_single-leg-glute-bridge | archived mm_single_leg_glute_bridge_684
+- smith machine bench press | kept bf_smith-machine-bench-press | archived mm_smith_machine_bench_press_698
+- smith machine incline bench press | kept bf_smith-machine-incline-bench-press | archived mm_smith_machine_incline_bench_press_705
+- smith machine squat | kept bf_smith-machine-squat | archived mm_smith_machine_squat_711
+- snatch | kept bf_snatch | archived mm_snatch_715
+- snatch balance | kept bf_snatch-balance | archived mm_snatch_balance_716
+- wrist roller | kept bf_wrist-roller | archived mm_wrist_roller_867
+- barbell bench press | kept bf_barbell-bench-press | archived pg_לחיצת_חזה_בשכיבה_כנגד_משקולות_0
+- incline dumbbell bench press | kept bf_incline-dumbbell-bench-press | archived pg_פרפר_בשכיבה_שיפוע_חיובי_כנגד_משקולות_7
+- dips | kept bf_dips | archived pg_שכיבות_סמיכה_38
+- barbell bicep curl | kept bf_barbell-bicep-curl | archived pg_סומו_דד_ליפת_כנגד_מוט_304
+- box jump | kept bf_box-jump | archived pg_קפיצה_על_מדרגה_box_318
+- neck | kept pg_צוואר_333 | archived pg_neck_צוואר_373
+- burpee | kept bf_burpee | archived pg_בורפי_338
+- mountain climber | kept bf_mountain-climber | archived pg_מדרגות_391
