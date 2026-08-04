@@ -1,0 +1,22 @@
+name: Run Cleanup 3 UI Surgery
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup3:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run UI surgery
+        run: node scripts/cleanup3.js
+      - name: Bump SW cache to v8
+        run: sed -i "s/dk-gym-v7/dk-gym-v8/" sw.js || sed -i "s/dk-gym-v6/dk-gym-v8/" sw.js || sed -i "s/dk-gym-v5/dk-gym-v8/" sw.js
+      - name: Commit and push
+        run: git config user.name "github-actions[bot]" && git config user.email "41898282+github-actions[bot]@users.noreply.github.com" && git add -A && (git diff --cached --quiet || git commit -m "Phase 4 step 2: remove Auto/AI Pro/AI Config/Generator/Suggest/Training/Nutrition blocks, split full_name") && git push
