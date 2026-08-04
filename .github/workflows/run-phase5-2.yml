@@ -1,0 +1,41 @@
+name: Run Phase 5.2 Image Restore
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  phase52:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Download production images (read-only copy)
+        run: |
+          curl -L -o /tmp/prod.zip https://github.com/davidarieli91-gif/david-king-gym/archive/refs/heads/main.zip
+          unzip -q -o /tmp/prod.zip -d /tmp/prod
+          mkdir -p images
+          cp -n /tmp/prod/david-king-gym-main/images/mm_* images/ || true
+          ls images | wc -l
+      - name: Build 2-frame GIFs from MM frames
+        run: |
+          mkdir -p images/gif
+          cd images
+          for f in mm_*_0.jpg; do
+            [ -e "$f" ] || continue
+            base="${f%_0.jpg}"
+            if [ -f "${base}_1.jpg" ]; then
+              convert "${base}_0.jpg" "${base}_1.jpg" -loop 0 -delay 80 "gif/${base}.gif" || true
+            fi
+          done
+          ls gif | wc -l
+      - name: Remap images in exercise-db
+        run: node scripts/phase5-2.js
+      - name: Bump SW cache
+        run: sed -i "s/dk-gym-v13/dk-gym-v14/" sw.js || sed -i "s/dk-gym-v12/dk-gym-v14/" sw.js
+      - name: Commit and push
+        run: git config user.name "github-actions[bot]" && git config user.email "41898282+github-actions[bot]@users.noreply.github.com" && git add -A && (git diff --cached --quiet || git commit -m "Phase 5.2 restore MM frames build GIFs remap PG images") && git push
