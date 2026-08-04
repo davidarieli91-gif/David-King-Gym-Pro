@@ -27171,5 +27171,55 @@ document.addEventListener('input', function (e) {
   new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true });
 })();
 </script>
+<script>
+// Phase 4 runtime cleanup v2
+(function () {
+  var GEN_TEXTS = ["Сгенерировать программу", "Generate program", "Generate a program", "Smart generate", "Auto-generate program"];
+  var CARD_TEXTS = ["ПАРАМЕТРЫ ТРЕНИРОВОК", "TRAINING PARAMETERS", "TRAINING PARAMS"];
+  function norm(s) { return (s || "").replace(/\s+/g, " ").trim(); }
+  function kill() {
+    try {
+      var btns = document.querySelectorAll("button");
+      for (var i = 0; i < btns.length; i++) {
+        if (GEN_TEXTS.indexOf(norm(btns[i].textContent)) !== -1 && btns[i].parentNode) btns[i].parentNode.removeChild(btns[i]);
+      }
+      var els = document.querySelectorAll("[data-i18n]");
+      for (var j = 0; j < els.length; j++) {
+        if (CARD_TEXTS.indexOf(norm(els[j].textContent).toUpperCase()) !== -1) {
+          var card = els[j].closest(".rounded-2xl") || els[j].closest(".bg-surface");
+          if (card && card.parentNode) card.parentNode.removeChild(card);
+        }
+      }
+    } catch (e) {}
+  }
+  var pending = false;
+  function schedule() { if (pending) return; pending = true; setTimeout(function () { pending = false; kill(); }, 60); }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", schedule); else schedule();
+  new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true });
+  try {
+    if (typeof nutritionPlans !== "undefined" && nutritionPlans && typeof nutritionPlans.openQuestionnaire === "function") {
+      var orig = nutritionPlans.openQuestionnaire;
+      nutritionPlans.openQuestionnaire = function () {
+        var args = arguments, self = this;
+        function fb(e) {
+          console.warn("[cleanup7] questionnaire unavailable -> manual creator", e);
+          try { if (nutritionPlans.openCreator) nutritionPlans.openCreator(args[0]); } catch (e2) {}
+          return Promise.resolve();
+        }
+        try {
+          var r = orig.apply(self, args);
+          if (r && typeof r.catch === "function") return r.catch(fb);
+          return r;
+        } catch (e) { return fb(e); }
+      };
+    }
+  } catch (e) {}
+  try {
+    I18N.ru.client.firstName = "Имя"; I18N.ru.client.lastName = "Фамилия";
+    I18N.he.client.firstName = "שם פרטי"; I18N.he.client.lastName = "שם משפחה";
+    if (typeof applyI18n === "function") applyI18n();
+  } catch (e) {}
+})();
+</script>
 </body>
 </html>
