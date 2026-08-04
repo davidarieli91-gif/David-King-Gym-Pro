@@ -1,5 +1,5 @@
 // Service Worker v6 - David King Gym PWA
-const CACHE_NAME = 'dk-gym-v8';
+const CACHE_NAME = 'dk-gym-v9';
 const APP_SHELL = [
   './',
   './fitness-crm.html',
