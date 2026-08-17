@@ -3727,6 +3727,46 @@
       </div>
     </div>
 
+    <!-- ============= CLIENT PORTAL QR & SHARE MODAL ============= -->
+    <div id="client-portal-modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
+      <div class="bg-surface w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl border border-border shadow-float p-5 space-y-4">
+        <div class="flex items-center justify-between border-b border-border pb-3">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-accent grid place-items-center text-white font-bold text-sm">📱</div>
+            <div>
+              <h3 class="font-display font-bold text-base text-white" id="portal-modal-client-name">Клиентский Портал</h3>
+              <p class="text-xs text-muted">Ссылка и QR-код для подопечного</p>
+            </div>
+          </div>
+          <button id="client-portal-close" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-surface-2 text-muted">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl flex flex-col items-center justify-center shadow-inner mx-auto w-48 h-48 border border-slate-200">
+          <img id="portal-qr-img" class="w-40 h-40 object-contain" alt="QR Code" />
+        </div>
+        <p class="text-[11px] text-center text-muted">Попросите клиента навести камеру смартфона на этот QR-код</p>
+
+        <div class="space-y-2 pt-1">
+          <button id="btn-copy-portal-link" class="w-full bg-surface-2 hover:bg-border/60 border border-border text-xs font-semibold py-2.5 rounded-xl transition flex items-center justify-center gap-2">
+            <svg class="w-4 h-4 text-primary-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span>Скопировать персональную ссылку</span>
+          </button>
+
+          <button id="btn-whatsapp-portal" class="w-full bg-success hover:bg-success/90 text-white text-xs font-bold py-2.5 rounded-xl transition shadow-card flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.693.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+            <span>Отправить подопечному в WhatsApp</span>
+          </button>
+
+          <a id="btn-open-portal-tab" href="#" target="_blank" class="w-full bg-primary hover:bg-primary-2 text-white text-xs font-bold py-2.5 rounded-xl transition shadow-card flex items-center justify-center gap-2 text-center block">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            <span>Открыть портал в новой вкладке</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
     <!-- ============= CLIENT FORM MODAL (Steps 8-9) ============= -->
     <div id="client-modal" class="hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
       <div class="bg-surface w-full sm:max-w-lg max-h-[92vh] overflow-y-auto rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
@@ -6983,6 +7023,10 @@
 
         <!-- Action buttons row -->
         <div class="flex flex-wrap gap-2 mb-4">
+          <button id="profile-open-client-portal" class="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white text-xs font-semibold px-3 py-2 rounded-lg transition inline-flex items-center gap-1.5 shadow-card" title="Поделиться с клиентом">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+            <span>📱 Портал подопечного</span>
+          </button>
           <button id="profile-create-program" class="bg-success hover:bg-success/90 text-white text-xs font-semibold px-3 py-2 rounded-lg transition inline-flex items-center gap-1.5 shadow-card">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
             <span>${t('programs.new')}</span>
@@ -20524,6 +20568,13 @@ async function boot() {
           }
           return;
         }
+        // Client Portal bridge — opens QR & Share Modal
+        if (e.target.closest('#profile-open-client-portal')) {
+          if (screens.profile && screens.profile.clientId) {
+            openClientPortalModal(screens.profile.clientId);
+          }
+          return;
+        }
         // Recovery Map button — opens Fitbod-style recovery heat-map modal
         if (e.target.closest('#profile-recovery-map')) {
           if (screens.profile && screens.profile.clientId && typeof recoveryMap !== 'undefined') {
@@ -20537,6 +20588,61 @@ async function boot() {
         console.error('[click delegation] error:', err);
       }
     });
+
+    async function openClientPortalModal(clientId) {
+      try {
+        const client = await db.get('clients', clientId);
+        if (!client) { toast('Клиент не найден', 'danger'); return; }
+        
+        const programs = await db.find('client_programs', 'by_clientId', clientId);
+        const activeProg = (programs || []).find(p => p.status === 'active') || (programs && programs[0]) || null;
+        
+        const plans = await db.find('nutrition_plans', 'by_clientId', clientId);
+        const activePlan = (plans || []).find(p => p.status === 'active') || (plans && plans[0]) || null;
+
+        const payload = {
+          client: { full_name: client.full_name, goal: client.goal, weight: client.weight, target_weight: client.target_weight },
+          program: activeProg,
+          plan: activePlan
+        };
+
+        const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+        const origin = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
+        const clientUrl = `${origin}client.html#data=${encoded}`;
+
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(clientUrl)}`;
+
+        document.getElementById('portal-modal-client-name').textContent = client.full_name;
+        document.getElementById('portal-qr-img').src = qrUrl;
+        document.getElementById('btn-open-portal-tab').href = clientUrl;
+
+        document.getElementById('btn-copy-portal-link').onclick = () => {
+          navigator.clipboard.writeText(clientUrl).then(() => {
+            toast('Персональная ссылка скопирована в буфер!', 'success', 2000);
+          }).catch(() => {
+            prompt('Скопируйте ссылку вручную:', clientUrl);
+          });
+        };
+
+        document.getElementById('btn-whatsapp-portal').onclick = () => {
+          const phone = (client.phone || '').replace(/[^0-9]/g, '');
+          const msg = encodeURIComponent(
+            `👋 Привет, ${client.full_name}!\n\nТвой персональный план тренировок и питания в David King Gym готов:\n👉 ${clientUrl}\n\nОткрывай прямо на телефоне и сохраняй на главный экран!`
+          );
+          const waUrl = phone ? `https://wa.me/${phone}?text=${msg}` : `https://wa.me/?text=${msg}`;
+          window.open(waUrl, '_blank');
+        };
+
+        document.getElementById('client-portal-close').onclick = () => {
+          document.getElementById('client-portal-modal').classList.add('hidden');
+        };
+
+        document.getElementById('client-portal-modal').classList.remove('hidden');
+      } catch (err) {
+        console.error('[openClientPortalModal] error:', err);
+        toast('Ошибка генерации клиентского портала', 'danger');
+      }
+    }
     // Wire recovery map modal events (mode/view tabs, close buttons)
     if (typeof recoveryMap !== 'undefined' && typeof recoveryMap.wire === 'function') {
       recoveryMap.wire();
