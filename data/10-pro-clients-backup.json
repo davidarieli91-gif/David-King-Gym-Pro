@@ -1,0 +1,3594 @@
+{
+  "meta": {
+    "format_version": 1,
+    "app_version": "1.0.0",
+    "db_name": "fitness_crm_db",
+    "db_version": 9,
+    "created_at": 1786971981257,
+    "created_at_iso": "2026-08-17T13:06:21.257Z",
+    "lang": "ru",
+    "theme": "dark",
+    "store_counts": {
+      "clients": 10,
+      "client_programs": 10,
+      "nutrition_plans": 10,
+      "workout_templates": 0,
+      "workout_history": 0,
+      "nutrition_history": 0,
+      "nutrition_templates": 0,
+      "settings": 0,
+      "exercise_base": 0,
+      "food_base": 0,
+      "food_database": 0
+    },
+    "total_records": 30
+  },
+  "data": {
+    "clients": [
+      {
+        "id": "819e7993-4af0-44ab-8579-78123ba5aac7",
+        "full_name": "Александр Смирнов",
+        "name_lower": "александр смирнов",
+        "phone": "+972-50-2858163",
+        "email": "client1@dk-gym.pro",
+        "gender": "male",
+        "birth_date": "1994-05-12",
+        "height": 182,
+        "weight": 78,
+        "target_weight": 84,
+        "goal": "hypertrophy",
+        "activity_level": "very_active",
+        "diet_preference": "balanced",
+        "body_fat_pct": 13.5,
+        "visceral_fat": 3,
+        "muscle_mass": 41.2,
+        "bone_mass": 3.4,
+        "water_pct": 62,
+        "metabolic_age": 26,
+        "waist_cm": 79,
+        "chest_cm": 104,
+        "hip_cm": null,
+        "arm_cm": 38,
+        "thigh_cm": 58,
+        "equipment": [
+          "barbell",
+          "dumbbell",
+          "cable",
+          "machine"
+        ],
+        "training_days": [
+          1,
+          2,
+          3,
+          5,
+          6,
+          7
+        ],
+        "allergies": [],
+        "medical_conditions": "Нет травм. Здоров.",
+        "notes": "Опыт тренировок 4 года. Цель — качественная гипертрофия без лишнего жира. Медленный контролируемый эксцентрик.",
+        "created_at": 1786971981256,
+        "last_active": 1786971981256
+      },
+      {
+        "id": "e80c8527-db39-45b2-bb28-0c0e1f9e472e",
+        "full_name": "Елена Васильева",
+        "name_lower": "елена васильева",
+        "phone": "+972-51-9602733",
+        "email": "client2@dk-gym.pro",
+        "gender": "female",
+        "birth_date": "1998-09-23",
+        "height": 168,
+        "weight": 65,
+        "target_weight": 59,
+        "goal": "fat_loss",
+        "activity_level": "moderate",
+        "diet_preference": "low_carb",
+        "body_fat_pct": 26.5,
+        "visceral_fat": 4,
+        "muscle_mass": 25.1,
+        "bone_mass": 2.3,
+        "water_pct": 53.5,
+        "metabolic_age": 27,
+        "waist_cm": 70,
+        "chest_cm": null,
+        "hip_cm": 102,
+        "arm_cm": null,
+        "thigh_cm": 59,
+        "equipment": [
+          "barbell",
+          "dumbbell",
+          "cable",
+          "machine",
+          "bands"
+        ],
+        "training_days": [
+          1,
+          3,
+          4,
+          6
+        ],
+        "allergies": [
+          "lactose"
+        ],
+        "medical_conditions": "Хруст в правом колене при глубоком седе (пателлофеморальный синдром). Избегать выпадов с острым углом.",
+        "notes": "Акцент на форму ягодиц и бицепса бедра при одновременном снижении жировой прослойки.",
+        "created_at": 1786885581256,
+        "last_active": 1786885581256
+      },
+      {
+        "id": "58198fc1-fe66-48a3-a780-8c85bf62109a",
+        "full_name": "Давид Коэн (David Cohen)",
+        "name_lower": "давид коэн (david cohen)",
+        "phone": "+972-52-2377807",
+        "email": "client3@dk-gym.pro",
+        "gender": "male",
+        "birth_date": "1981-11-04",
+        "height": 176,
+        "weight": 92,
+        "target_weight": 90,
+        "goal": "strength",
+        "activity_level": "moderate",
+        "diet_preference": "kosher",
+        "body_fat_pct": 21,
+        "visceral_fat": 7,
+        "muscle_mass": 45,
+        "bone_mass": 3.7,
+        "water_pct": 56.8,
+        "metabolic_age": 42,
+        "waist_cm": 91,
+        "chest_cm": 112,
+        "hip_cm": null,
+        "arm_cm": 42,
+        "thigh_cm": 64,
+        "equipment": [
+          "barbell",
+          "dumbbell",
+          "cable",
+          "machine"
+        ],
+        "training_days": [
+          1,
+          2,
+          4,
+          6
+        ],
+        "allergies": [
+          "shellfish"
+        ],
+        "medical_conditions": "Старая травма левого плеча (импинджмент). Жим лежа только с паузой и узким хватом.",
+        "notes": "Силовое троеборье. Подготовка к любительским соревнованиям. Кошерное питание.",
+        "created_at": 1786799181257,
+        "last_active": 1786799181257
+      },
+      {
+        "id": "e4eaaef2-c7c7-4df0-9d87-ac55b9b88cf5",
+        "full_name": "Анна Морозова",
+        "name_lower": "анна морозова",
+        "phone": "+972-53-2064990",
+        "email": "client4@dk-gym.pro",
+        "gender": "female",
+        "birth_date": "1988-03-15",
+        "height": 164,
+        "weight": 68,
+        "target_weight": 57,
+        "goal": "fat_loss",
+        "activity_level": "very_active",
+        "diet_preference": "keto",
+        "body_fat_pct": 29,
+        "visceral_fat": 5,
+        "muscle_mass": 23.8,
+        "bone_mass": 2.2,
+        "water_pct": 51.2,
+        "metabolic_age": 40,
+        "waist_cm": 75,
+        "chest_cm": null,
+        "hip_cm": 104,
+        "arm_cm": null,
+        "thigh_cm": null,
+        "equipment": [
+          "dumbbell",
+          "cable",
+          "machine",
+          "kettlebell"
+        ],
+        "training_days": [
+          1,
+          2,
+          4,
+          5
+        ],
+        "allergies": [
+          "gluten"
+        ],
+        "medical_conditions": "Легкий сколиоз 1 ст. Исключить осевую компрессию выше 30 кг.",
+        "notes": "Подготовка к пляжному сезону. Высокая мотивация, любит интенсивные плотные сеты.",
+        "created_at": 1786712781257,
+        "last_active": 1786712781257
+      },
+      {
+        "id": "0a834152-a578-4967-9a2f-ffb408d617e5",
+        "full_name": "Михаил Громов",
+        "name_lower": "михаил громов",
+        "phone": "+972-54-6880620",
+        "email": "client5@dk-gym.pro",
+        "gender": "male",
+        "birth_date": "2002-07-19",
+        "height": 188,
+        "weight": 85,
+        "target_weight": 85,
+        "goal": "endurance",
+        "activity_level": "extra_active",
+        "diet_preference": "balanced",
+        "body_fat_pct": 11,
+        "visceral_fat": 2,
+        "muscle_mass": 46.5,
+        "bone_mass": 3.8,
+        "water_pct": 65.2,
+        "metabolic_age": 20,
+        "waist_cm": 80,
+        "chest_cm": 108,
+        "hip_cm": null,
+        "arm_cm": null,
+        "thigh_cm": 61,
+        "equipment": [
+          "barbell",
+          "dumbbell",
+          "kettlebell",
+          "bodyweight",
+          "trx"
+        ],
+        "training_days": [
+          1,
+          2,
+          3,
+          5,
+          6
+        ],
+        "allergies": [],
+        "medical_conditions": "Здоров.",
+        "notes": "Атлет игровых видов спорта (баскетбол/кроссфит). Развитие прыжка, скорости и анаэробной выносливости.",
+        "created_at": 1786626381257,
+        "last_active": 1786626381257
+      },
+      {
+        "id": "667e5dc1-c4b4-4562-86c8-c5c97aea562f",
+        "full_name": "Сара Леви (Sarah Levy)",
+        "name_lower": "сара леви (sarah levy)",
+        "phone": "+972-55-7958149",
+        "email": "client6@dk-gym.pro",
+        "gender": "female",
+        "birth_date": "1974-12-08",
+        "height": 162,
+        "weight": 63,
+        "target_weight": 59,
+        "goal": "health",
+        "activity_level": "light",
+        "diet_preference": "mediterranean",
+        "body_fat_pct": 31.5,
+        "visceral_fat": 6,
+        "muscle_mass": 20.9,
+        "bone_mass": 2.1,
+        "water_pct": 49.5,
+        "metabolic_age": 55,
+        "waist_cm": 78,
+        "chest_cm": null,
+        "hip_cm": 99,
+        "arm_cm": null,
+        "thigh_cm": null,
+        "equipment": [
+          "machine",
+          "cable",
+          "dumbbell",
+          "bands"
+        ],
+        "training_days": [
+          1,
+          3,
+          5
+        ],
+        "allergies": [],
+        "medical_conditions": "Остеопения (начальная стадия). Артроз коленных суставов 1 ст. Запрещены прыжки и ударная нагрузка.",
+        "notes": "Укрепление мышечного корсета, плотности костей и мобильности суставов.",
+        "created_at": 1786539981257,
+        "last_active": 1786539981257
+      },
+      {
+        "id": "7ccbe450-9839-47f0-9fb4-240b3c99a4ef",
+        "full_name": "Игорь Новиков (Веган)",
+        "name_lower": "игорь новиков (веган)",
+        "phone": "+972-56-2091539",
+        "email": "client7@dk-gym.pro",
+        "gender": "male",
+        "birth_date": "1996-01-30",
+        "height": 179,
+        "weight": 71,
+        "target_weight": 77,
+        "goal": "hypertrophy",
+        "activity_level": "moderate",
+        "diet_preference": "vegan",
+        "body_fat_pct": 14,
+        "visceral_fat": 3,
+        "muscle_mass": 37.1,
+        "bone_mass": 3.2,
+        "water_pct": 61,
+        "metabolic_age": 25,
+        "waist_cm": 77,
+        "chest_cm": 99,
+        "hip_cm": null,
+        "arm_cm": 36,
+        "thigh_cm": null,
+        "equipment": [
+          "barbell",
+          "dumbbell",
+          "cable",
+          "machine"
+        ],
+        "training_days": [
+          1,
+          2,
+          4,
+          5
+        ],
+        "allergies": [
+          "dairy",
+          "eggs"
+        ],
+        "medical_conditions": "Нет.",
+        "notes": "Веган 6 лет. Нужен четкий контроль аминокислотного профиля и растительного протеина.",
+        "created_at": 1786453581257,
+        "last_active": 1786453581257
+      },
+      {
+        "id": "bd05768c-93f9-43ba-8634-471dfef6eea2",
+        "full_name": "Ольга Кузнецова",
+        "name_lower": "ольга кузнецова",
+        "phone": "+972-57-8133346",
+        "email": "client8@dk-gym.pro",
+        "gender": "female",
+        "birth_date": "1991-08-14",
+        "height": 170,
+        "weight": 64,
+        "target_weight": 60,
+        "goal": "rehab",
+        "activity_level": "sedentary",
+        "diet_preference": "balanced",
+        "body_fat_pct": 25,
+        "visceral_fat": 4,
+        "muscle_mass": 24.5,
+        "bone_mass": 2.4,
+        "water_pct": 54,
+        "metabolic_age": 33,
+        "waist_cm": 71,
+        "chest_cm": null,
+        "hip_cm": 98,
+        "arm_cm": null,
+        "thigh_cm": null,
+        "equipment": [
+          "cable",
+          "machine",
+          "dumbbell",
+          "bands",
+          "bodyweight"
+        ],
+        "training_days": [
+          2,
+          4,
+          6
+        ],
+        "allergies": [
+          "nuts"
+        ],
+        "medical_conditions": "Грыжа диска L4-L5 (4 мм). Гиперлордоз поясничного отдела. Запрещены становые тяги и осевые приседания со штангой.",
+        "notes": "Реабилитационный протокол: стабилизация кора, снятие спазма квадратной мышцы поясницы, включение ягодиц.",
+        "created_at": 1786367181257,
+        "last_active": 1786367181257
+      },
+      {
+        "id": "dca3a52d-6842-46d5-a60d-83dc7abac8e1",
+        "full_name": "Артем Соколов (Командировки)",
+        "name_lower": "артем соколов (командировки)",
+        "phone": "+972-58-2062988",
+        "email": "client9@dk-gym.pro",
+        "gender": "male",
+        "birth_date": "1985-04-18",
+        "height": 180,
+        "weight": 86,
+        "target_weight": 79,
+        "goal": "fat_loss",
+        "activity_level": "moderate",
+        "diet_preference": "intermittent",
+        "body_fat_pct": 23.5,
+        "visceral_fat": 6,
+        "muscle_mass": 39.8,
+        "bone_mass": 3.3,
+        "water_pct": 55.4,
+        "metabolic_age": 44,
+        "waist_cm": 88,
+        "chest_cm": 106,
+        "hip_cm": null,
+        "arm_cm": null,
+        "thigh_cm": null,
+        "equipment": [
+          "bodyweight",
+          "bands",
+          "dumbbell"
+        ],
+        "training_days": [
+          1,
+          3,
+          5
+        ],
+        "allergies": [],
+        "medical_conditions": "Периодический дискомфорт в локтях (эпикондилит).",
+        "notes": "Частые перелеты, отели без тренажерных залов. Тренировки 35-40 минут с резиной и собственным весом.",
+        "created_at": 1786280781257,
+        "last_active": 1786280781257
+      },
+      {
+        "id": "6486587e-82fa-441e-a137-9257defb89be",
+        "full_name": "Максим Демьянов (Хардгейнер)",
+        "name_lower": "максим демьянов (хардгейнер)",
+        "phone": "+972-59-5600884",
+        "email": "client10@dk-gym.pro",
+        "gender": "male",
+        "birth_date": "2005-02-11",
+        "height": 185,
+        "weight": 64,
+        "target_weight": 75,
+        "goal": "hypertrophy",
+        "activity_level": "very_active",
+        "diet_preference": "balanced",
+        "body_fat_pct": 9.5,
+        "visceral_fat": 1,
+        "muscle_mass": 34.2,
+        "bone_mass": 3.1,
+        "water_pct": 67,
+        "metabolic_age": 18,
+        "waist_cm": 72,
+        "chest_cm": 93,
+        "hip_cm": null,
+        "arm_cm": 31,
+        "thigh_cm": 51,
+        "equipment": [
+          "barbell",
+          "dumbbell",
+          "cable",
+          "machine"
+        ],
+        "training_days": [
+          1,
+          3,
+          5
+        ],
+        "allergies": [],
+        "medical_conditions": "Здоров. Быстрый метаболизм.",
+        "notes": "Типичный эктоморф. Сложно набирать вес. Нужен акцент на тяжелую базу 5x5 и профицит калорий с жидкими калориями.",
+        "created_at": 1786194381257,
+        "last_active": 1786194381257
+      }
+    ],
+    "client_programs": [
+      {
+        "id": "028b6f4f-e0d0-4324-b889-2ea1c6801397",
+        "client_id": "819e7993-4af0-44ab-8579-78123ba5aac7",
+        "name": "PPL Hypertrophy Protocol (6 Days)",
+        "split_type": "ppl",
+        "status": "active",
+        "duration_months": 3,
+        "created_at": 1786971981256,
+        "archived_at": null,
+        "notes": "Методический протокол для Александр Смирнов. Цель: hypertrophy. Соблюдать интервалы отдыха и RPE.",
+        "workout_days": [
+          {
+            "day_letter": "A",
+            "name": "Day A - Основной силовой блок",
+            "isRest": false,
+            "exercises": [
+              {
+                "id": "848f7f0a-794b-4af4-b242-c58dc3804616",
+                "exercise_id": "ex_1",
+                "name": "Barbell Bench Press (Жим лежа)",
+                "group": "chest",
+                "equipment": "barbell",
+                "rest_sec": 120,
+                "notes": "RPE 8, 3 сек опускание",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 10,
+                    "weight": 50,
+                    "rpe": 7,
+                    "type": "warmup"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 8,
+                    "weight": 70,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 75,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 4,
+                    "reps": 6,
+                    "weight": 80,
+                    "rpe": 9,
+                    "type": "normal"
+                  }
+                ]
+              },
+              {
+                "id": "a5a64b48-cdf2-4fdb-9412-9f9b6af51aa8",
+                "exercise_id": "ex_2",
+                "name": "Incline Dumbbell Press (Жим гантелей под углом)",
+                "group": "chest",
+                "equipment": "dumbbell",
+                "rest_sec": 90,
+                "notes": "Угол 30 градусов, максимальная растяжка внизу",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 10,
+                    "weight": 22,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 24,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 26,
+                    "rpe": 9,
+                    "type": "dropset"
+                  }
+                ]
+              },
+              {
+                "id": "204a1311-3282-40e1-9406-55cb2441217f",
+                "exercise_id": "ex_3",
+                "name": "Plank / Core Stabilization (Планка)",
+                "group": "abdominals",
+                "equipment": "bodyweight",
+                "rest_sec": 60,
+                "notes": "Статическое напряжение мышц живота",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 45,
+                    "weight": 0,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 45,
+                    "weight": 0,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 40,
+                    "weight": 0,
+                    "rpe": 9,
+                    "type": "failure"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day_letter": "B",
+            "name": "Day B - Тяговый / Вспомогательный блок",
+            "isRest": false,
+            "exercises": [
+              {
+                "id": "57a63f16-d5b0-4cee-9638-aa34970b3485",
+                "exercise_id": "ex_4",
+                "name": "Lat Pulldown (Тяга верхнего блока к груди)",
+                "group": "back",
+                "equipment": "cable",
+                "rest_sec": 90,
+                "notes": "Сведение лопаток в нижней точке на 1 сек",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 12,
+                    "weight": 45,
+                    "rpe": 7.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 55,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 65,
+                    "rpe": 9,
+                    "type": "normal"
+                  }
+                ]
+              },
+              {
+                "id": "d47e83ff-3798-4f8c-ac0b-e8ea1568ff4f",
+                "exercise_id": "ex_5",
+                "name": "Dumbbell Romanian Deadlift (Румынская тяга с гантелями)",
+                "group": "legs",
+                "equipment": "dumbbell",
+                "rest_sec": 90,
+                "notes": "Движение за счет отведения таза назад",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 12,
+                    "weight": 16,
+                    "rpe": 7.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 20,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 10,
+                    "weight": 22,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "f005f7c1-2e8f-4c02-93c8-0f7f679227b8",
+        "client_id": "e80c8527-db39-45b2-bb28-0c0e1f9e472e",
+        "name": "Glute Specialization & Upper/Lower Split",
+        "split_type": "upper_lower",
+        "status": "active",
+        "duration_months": 2,
+        "created_at": 1786885581256,
+        "archived_at": null,
+        "notes": "Методический протокол для Елена Васильева. Цель: fat_loss. Соблюдать интервалы отдыха и RPE.",
+        "workout_days": [
+          {
+            "day_letter": "A",
+            "name": "Day A - Основной силовой блок",
+            "isRest": false,
+            "exercises": [
+              {
+                "id": "638f7275-7de2-4902-a3b8-c344d2b50874",
+                "exercise_id": "ex_1",
+                "name": "Goblet Squat (Приседания с гантелью)",
+                "group": "legs",
+                "equipment": "barbell",
+                "rest_sec": 120,
+                "notes": "RPE 8, 3 сек опускание",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 10,
+                    "weight": 50,
+                    "rpe": 7,
+                    "type": "warmup"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 8,
+                    "weight": 70,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 75,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 4,
+                    "reps": 6,
+                    "weight": 80,
+                    "rpe": 9,
+                    "type": "normal"
+                  }
+                ]
+              },
+              {
+                "id": "7343f5ca-129d-47ea-9034-8737ba797d04",
+                "exercise_id": "ex_2",
+                "name": "Incline Dumbbell Press (Жим гантелей под углом)",
+                "group": "chest",
+                "equipment": "dumbbell",
+                "rest_sec": 90,
+                "notes": "Угол 30 градусов, максимальная растяжка внизу",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 10,
+                    "weight": 22,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 24,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 26,
+                    "rpe": 9,
+                    "type": "dropset"
+                  }
+                ]
+              },
+              {
+                "id": "7a4b9cff-a7ad-4a35-982a-5de4be08eb46",
+                "exercise_id": "ex_3",
+                "name": "Plank / Core Stabilization (Планка)",
+                "group": "abdominals",
+                "equipment": "bodyweight",
+                "rest_sec": 60,
+                "notes": "Статическое напряжение мышц живота",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 45,
+                    "weight": 0,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 45,
+                    "weight": 0,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 40,
+                    "weight": 0,
+                    "rpe": 9,
+                    "type": "failure"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day_letter": "B",
+            "name": "Day B - Тяговый / Вспомогательный блок",
+            "isRest": false,
+            "exercises": [
+              {
+                "id": "bb11bba1-fc23-4b67-b0eb-c3924ab0738c",
+                "exercise_id": "ex_4",
+                "name": "Lat Pulldown (Тяга верхнего блока к груди)",
+                "group": "back",
+                "equipment": "cable",
+                "rest_sec": 90,
+                "notes": "Сведение лопаток в нижней точке на 1 сек",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 12,
+                    "weight": 45,
+                    "rpe": 7.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 55,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 65,
+                    "rpe": 9,
+                    "type": "normal"
+                  }
+                ]
+              },
+              {
+                "id": "f6b60707-f172-4256-918d-9cd940d194ac",
+                "exercise_id": "ex_5",
+                "name": "Dumbbell Romanian Deadlift (Румынская тяга с гантелями)",
+                "group": "legs",
+                "equipment": "dumbbell",
+                "rest_sec": 90,
+                "notes": "Движение за счет отведения таза назад",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 12,
+                    "weight": 16,
+                    "rpe": 7.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 20,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 10,
+                    "weight": 22,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "989f0263-d263-46c8-a32e-160044654f81",
+        "client_id": "58198fc1-fe66-48a3-a780-8c85bf62109a",
+        "name": "Westside Conjugate Strength System",
+        "split_type": "abcd",
+        "status": "active",
+        "duration_months": 3,
+        "created_at": 1786799181257,
+        "archived_at": null,
+        "notes": "Методический протокол для Давид Коэн (David Cohen). Цель: strength. Соблюдать интервалы отдыха и RPE.",
+        "workout_days": [
+          {
+            "day_letter": "A",
+            "name": "Day A - Основной силовой блок",
+            "isRest": false,
+            "exercises": [
+              {
+                "id": "6a71f6bc-eed8-47cd-897f-eb55c39c1633",
+                "exercise_id": "ex_1",
+                "name": "Goblet Squat (Приседания с гантелью)",
+                "group": "legs",
+                "equipment": "barbell",
+                "rest_sec": 120,
+                "notes": "RPE 8, 3 сек опускание",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 10,
+                    "weight": 50,
+                    "rpe": 7,
+                    "type": "warmup"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 8,
+                    "weight": 70,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 75,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 4,
+                    "reps": 6,
+                    "weight": 80,
+                    "rpe": 9,
+                    "type": "normal"
+                  }
+                ]
+              },
+              {
+                "id": "e2f47a8f-c7af-4859-9e34-6a440e9450c2",
+                "exercise_id": "ex_2",
+                "name": "Incline Dumbbell Press (Жим гантелей под углом)",
+                "group": "chest",
+                "equipment": "dumbbell",
+                "rest_sec": 90,
+                "notes": "Угол 30 градусов, максимальная растяжка внизу",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 10,
+                    "weight": 22,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 24,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 26,
+                    "rpe": 9,
+                    "type": "dropset"
+                  }
+                ]
+              },
+              {
+                "id": "b0b309e2-f99e-4d1c-935c-3d9fb6cb3fdb",
+                "exercise_id": "ex_3",
+                "name": "Plank / Core Stabilization (Планка)",
+                "group": "abdominals",
+                "equipment": "bodyweight",
+                "rest_sec": 60,
+                "notes": "Статическое напряжение мышц живота",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 45,
+                    "weight": 0,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 45,
+                    "weight": 0,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 40,
+                    "weight": 0,
+                    "rpe": 9,
+                    "type": "failure"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day_letter": "B",
+            "name": "Day B - Тяговый / Вспомогательный блок",
+            "isRest": false,
+            "exercises": [
+              {
+                "id": "6b5c1b8c-2155-422c-940c-35f41643729f",
+                "exercise_id": "ex_4",
+                "name": "Lat Pulldown (Тяга верхнего блока к груди)",
+                "group": "back",
+                "equipment": "cable",
+                "rest_sec": 90,
+                "notes": "Сведение лопаток в нижней точке на 1 сек",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 12,
+                    "weight": 45,
+                    "rpe": 7.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 55,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 65,
+                    "rpe": 9,
+                    "type": "normal"
+                  }
+                ]
+              },
+              {
+                "id": "f293f6f0-3bae-4d5c-b1bd-4c4f995821c9",
+                "exercise_id": "ex_5",
+                "name": "Dumbbell Romanian Deadlift (Румынская тяга с гантелями)",
+                "group": "legs",
+                "equipment": "dumbbell",
+                "rest_sec": 90,
+                "notes": "Движение за счет отведения таза назад",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 12,
+                    "weight": 16,
+                    "rpe": 7.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 20,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 10,
+                    "weight": 22,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "2eac6129-0cb0-4f58-8a7d-4966ed29ff71",
+        "client_id": "e4eaaef2-c7c7-4df0-9d87-ac55b9b88cf5",
+        "name": "German Body Comp (GBC) Tri-Sets",
+        "split_type": "ab",
+        "status": "active",
+        "duration_months": 2,
+        "created_at": 1786712781257,
+        "archived_at": null,
+        "notes": "Методический протокол для Анна Морозова. Цель: fat_loss. Соблюдать интервалы отдыха и RPE.",
+        "workout_days": [
+          {
+            "day_letter": "A",
+            "name": "Day A - Основной силовой блок",
+            "isRest": false,
+            "exercises": [
+              {
+                "id": "ba5be1f3-cec2-4642-86a4-7b595ea60371",
+                "exercise_id": "ex_1",
+                "name": "Goblet Squat (Приседания с гантелью)",
+                "group": "legs",
+                "equipment": "barbell",
+                "rest_sec": 120,
+                "notes": "RPE 8, 3 сек опускание",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 10,
+                    "weight": 50,
+                    "rpe": 7,
+                    "type": "warmup"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 8,
+                    "weight": 70,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 75,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 4,
+                    "reps": 6,
+                    "weight": 80,
+                    "rpe": 9,
+                    "type": "normal"
+                  }
+                ]
+              },
+              {
+                "id": "050dc808-a1a2-43cf-b06e-6307ba7acdf5",
+                "exercise_id": "ex_2",
+                "name": "Incline Dumbbell Press (Жим гантелей под углом)",
+                "group": "chest",
+                "equipment": "dumbbell",
+                "rest_sec": 90,
+                "notes": "Угол 30 градусов, максимальная растяжка внизу",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 10,
+                    "weight": 22,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 24,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 26,
+                    "rpe": 9,
+                    "type": "dropset"
+                  }
+                ]
+              },
+              {
+                "id": "742111d2-d6b6-43b6-81c3-37636a271c2d",
+                "exercise_id": "ex_3",
+                "name": "Plank / Core Stabilization (Планка)",
+                "group": "abdominals",
+                "equipment": "bodyweight",
+                "rest_sec": 60,
+                "notes": "Статическое напряжение мышц живота",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 45,
+                    "weight": 0,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 45,
+                    "weight": 0,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 40,
+                    "weight": 0,
+                    "rpe": 9,
+                    "type": "failure"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day_letter": "B",
+            "name": "Day B - Тяговый / Вспомогательный блок",
+            "isRest": false,
+            "exercises": [
+              {
+                "id": "42ef0938-f350-46e4-9edf-4b1c92367a4b",
+                "exercise_id": "ex_4",
+                "name": "Lat Pulldown (Тяга верхнего блока к груди)",
+                "group": "back",
+                "equipment": "cable",
+                "rest_sec": 90,
+                "notes": "Сведение лопаток в нижней точке на 1 сек",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 12,
+                    "weight": 45,
+                    "rpe": 7.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 55,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 65,
+                    "rpe": 9,
+                    "type": "normal"
+                  }
+                ]
+              },
+              {
+                "id": "e395bf6a-1edf-4297-b5bb-22f34c65b218",
+                "exercise_id": "ex_5",
+                "name": "Dumbbell Romanian Deadlift (Румынская тяга с гантелями)",
+                "group": "legs",
+                "equipment": "dumbbell",
+                "rest_sec": 90,
+                "notes": "Движение за счет отведения таза назад",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 12,
+                    "weight": 16,
+                    "rpe": 7.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 20,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 10,
+                    "weight": 22,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "03e52950-a342-4455-93eb-47a85610ae07",
+        "client_id": "0a834152-a578-4967-9a2f-ffb408d617e5",
+        "name": "Athletic Conditioning & Plyo Power",
+        "split_type": "upper_lower",
+        "status": "active",
+        "duration_months": 3,
+        "created_at": 1786626381257,
+        "archived_at": null,
+        "notes": "Методический протокол для Михаил Громов. Цель: endurance. Соблюдать интервалы отдыха и RPE.",
+        "workout_days": [
+          {
+            "day_letter": "A",
+            "name": "Day A - Основной силовой блок",
+            "isRest": false,
+            "exercises": [
+              {
+                "id": "9d17778b-188a-4b36-953c-ff0179870cc5",
+                "exercise_id": "ex_1",
+                "name": "Goblet Squat (Приседания с гантелью)",
+                "group": "legs",
+                "equipment": "barbell",
+                "rest_sec": 120,
+                "notes": "RPE 8, 3 сек опускание",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 10,
+                    "weight": 50,
+                    "rpe": 7,
+                    "type": "warmup"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 8,
+                    "weight": 70,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 75,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 4,
+                    "reps": 6,
+                    "weight": 80,
+                    "rpe": 9,
+                    "type": "normal"
+                  }
+                ]
+              },
+              {
+                "id": "f9dfae8b-ce42-4dd2-914a-503c714d51ff",
+                "exercise_id": "ex_2",
+                "name": "Incline Dumbbell Press (Жим гантелей под углом)",
+                "group": "chest",
+                "equipment": "dumbbell",
+                "rest_sec": 90,
+                "notes": "Угол 30 градусов, максимальная растяжка внизу",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 10,
+                    "weight": 22,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 24,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 26,
+                    "rpe": 9,
+                    "type": "dropset"
+                  }
+                ]
+              },
+              {
+                "id": "3ce77012-654b-4ac0-adae-40cc6c2f5752",
+                "exercise_id": "ex_3",
+                "name": "Plank / Core Stabilization (Планка)",
+                "group": "abdominals",
+                "equipment": "bodyweight",
+                "rest_sec": 60,
+                "notes": "Статическое напряжение мышц живота",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 45,
+                    "weight": 0,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 45,
+                    "weight": 0,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 40,
+                    "weight": 0,
+                    "rpe": 9,
+                    "type": "failure"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day_letter": "B",
+            "name": "Day B - Тяговый / Вспомогательный блок",
+            "isRest": false,
+            "exercises": [
+              {
+                "id": "097a0583-ebfe-492f-94d3-fb2e0a92b0c5",
+                "exercise_id": "ex_4",
+                "name": "Lat Pulldown (Тяга верхнего блока к груди)",
+                "group": "back",
+                "equipment": "cable",
+                "rest_sec": 90,
+                "notes": "Сведение лопаток в нижней точке на 1 сек",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 12,
+                    "weight": 45,
+                    "rpe": 7.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 55,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 65,
+                    "rpe": 9,
+                    "type": "normal"
+                  }
+                ]
+              },
+              {
+                "id": "296c91fb-3f03-48d4-baf2-cc2aa2e45ad5",
+                "exercise_id": "ex_5",
+                "name": "Dumbbell Romanian Deadlift (Румынская тяга с гантелями)",
+                "group": "legs",
+                "equipment": "dumbbell",
+                "rest_sec": 90,
+                "notes": "Движение за счет отведения таза назад",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 12,
+                    "weight": 16,
+                    "rpe": 7.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 20,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 10,
+                    "weight": 22,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "cb834e59-722d-49cd-a28c-0530c9555653",
+        "client_id": "667e5dc1-c4b4-4562-86c8-c5c97aea562f",
+        "name": "Longevity & Joint-Friendly Full Body",
+        "split_type": "full_body",
+        "status": "active",
+        "duration_months": 6,
+        "created_at": 1786539981257,
+        "archived_at": null,
+        "notes": "Методический протокол для Сара Леви (Sarah Levy). Цель: health. Соблюдать интервалы отдыха и RPE.",
+        "workout_days": [
+          {
+            "day_letter": "A",
+            "name": "Day A - Основной силовой блок",
+            "isRest": false,
+            "exercises": [
+              {
+                "id": "48c3193d-c686-4642-88f6-6108964c5e01",
+                "exercise_id": "ex_1",
+                "name": "Goblet Squat (Приседания с гантелью)",
+                "group": "legs",
+                "equipment": "barbell",
+                "rest_sec": 120,
+                "notes": "RPE 8, 3 сек опускание",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 10,
+                    "weight": 50,
+                    "rpe": 7,
+                    "type": "warmup"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 8,
+                    "weight": 70,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 75,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 4,
+                    "reps": 6,
+                    "weight": 80,
+                    "rpe": 9,
+                    "type": "normal"
+                  }
+                ]
+              },
+              {
+                "id": "fb4a2d0a-4fa0-4766-a924-87d7efd44ef4",
+                "exercise_id": "ex_2",
+                "name": "Incline Dumbbell Press (Жим гантелей под углом)",
+                "group": "chest",
+                "equipment": "dumbbell",
+                "rest_sec": 90,
+                "notes": "Угол 30 градусов, максимальная растяжка внизу",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 10,
+                    "weight": 22,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 24,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 26,
+                    "rpe": 9,
+                    "type": "dropset"
+                  }
+                ]
+              },
+              {
+                "id": "58b8538e-3bf7-4942-abfc-09f34d34dca7",
+                "exercise_id": "ex_3",
+                "name": "Plank / Core Stabilization (Планка)",
+                "group": "abdominals",
+                "equipment": "bodyweight",
+                "rest_sec": 60,
+                "notes": "Статическое напряжение мышц живота",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 45,
+                    "weight": 0,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 45,
+                    "weight": 0,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 40,
+                    "weight": 0,
+                    "rpe": 9,
+                    "type": "failure"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day_letter": "B",
+            "name": "Day B - Тяговый / Вспомогательный блок",
+            "isRest": false,
+            "exercises": [
+              {
+                "id": "1f7adbe2-c35f-4b7a-aafd-17bedd25fd3d",
+                "exercise_id": "ex_4",
+                "name": "Lat Pulldown (Тяга верхнего блока к груди)",
+                "group": "back",
+                "equipment": "cable",
+                "rest_sec": 90,
+                "notes": "Сведение лопаток в нижней точке на 1 сек",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 12,
+                    "weight": 45,
+                    "rpe": 7.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 55,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 65,
+                    "rpe": 9,
+                    "type": "normal"
+                  }
+                ]
+              },
+              {
+                "id": "a45b9e97-ddce-4638-a2b3-987b998e07f3",
+                "exercise_id": "ex_5",
+                "name": "Dumbbell Romanian Deadlift (Румынская тяга с гантелями)",
+                "group": "legs",
+                "equipment": "dumbbell",
+                "rest_sec": 90,
+                "notes": "Движение за счет отведения таза назад",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 12,
+                    "weight": 16,
+                    "rpe": 7.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 20,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 10,
+                    "weight": 22,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "59bf6594-f53c-4af9-87ef-1b0865598cda",
+        "client_id": "7ccbe450-9839-47f0-9fb4-240b3c99a4ef",
+        "name": "Hypertrophy 4-Day Progressive Overload",
+        "split_type": "upper_lower",
+        "status": "active",
+        "duration_months": 3,
+        "created_at": 1786453581257,
+        "archived_at": null,
+        "notes": "Методический протокол для Игорь Новиков (Веган). Цель: hypertrophy. Соблюдать интервалы отдыха и RPE.",
+        "workout_days": [
+          {
+            "day_letter": "A",
+            "name": "Day A - Основной силовой блок",
+            "isRest": false,
+            "exercises": [
+              {
+                "id": "d4b08e21-27ad-439f-9514-80facf3e2b5b",
+                "exercise_id": "ex_1",
+                "name": "Goblet Squat (Приседания с гантелью)",
+                "group": "legs",
+                "equipment": "barbell",
+                "rest_sec": 120,
+                "notes": "RPE 8, 3 сек опускание",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 10,
+                    "weight": 50,
+                    "rpe": 7,
+                    "type": "warmup"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 8,
+                    "weight": 70,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 75,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 4,
+                    "reps": 6,
+                    "weight": 80,
+                    "rpe": 9,
+                    "type": "normal"
+                  }
+                ]
+              },
+              {
+                "id": "2a489c85-ccb6-446d-ae33-b9a25eeee7e2",
+                "exercise_id": "ex_2",
+                "name": "Incline Dumbbell Press (Жим гантелей под углом)",
+                "group": "chest",
+                "equipment": "dumbbell",
+                "rest_sec": 90,
+                "notes": "Угол 30 градусов, максимальная растяжка внизу",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 10,
+                    "weight": 22,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 24,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 26,
+                    "rpe": 9,
+                    "type": "dropset"
+                  }
+                ]
+              },
+              {
+                "id": "5d89b5f6-ea8c-43c5-8ffe-db23886c6524",
+                "exercise_id": "ex_3",
+                "name": "Plank / Core Stabilization (Планка)",
+                "group": "abdominals",
+                "equipment": "bodyweight",
+                "rest_sec": 60,
+                "notes": "Статическое напряжение мышц живота",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 45,
+                    "weight": 0,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 45,
+                    "weight": 0,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 40,
+                    "weight": 0,
+                    "rpe": 9,
+                    "type": "failure"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day_letter": "B",
+            "name": "Day B - Тяговый / Вспомогательный блок",
+            "isRest": false,
+            "exercises": [
+              {
+                "id": "43b47f15-e37c-420e-93c7-c1da0a78f439",
+                "exercise_id": "ex_4",
+                "name": "Lat Pulldown (Тяга верхнего блока к груди)",
+                "group": "back",
+                "equipment": "cable",
+                "rest_sec": 90,
+                "notes": "Сведение лопаток в нижней точке на 1 сек",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 12,
+                    "weight": 45,
+                    "rpe": 7.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 55,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 65,
+                    "rpe": 9,
+                    "type": "normal"
+                  }
+                ]
+              },
+              {
+                "id": "cb041611-ab04-4901-b223-0db70ad15a59",
+                "exercise_id": "ex_5",
+                "name": "Dumbbell Romanian Deadlift (Румынская тяга с гантелями)",
+                "group": "legs",
+                "equipment": "dumbbell",
+                "rest_sec": 90,
+                "notes": "Движение за счет отведения таза назад",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 12,
+                    "weight": 16,
+                    "rpe": 7.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 20,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 10,
+                    "weight": 22,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "12e88382-4d41-46a6-a56b-8f0fe2c7eb4c",
+        "client_id": "bd05768c-93f9-43ba-8634-471dfef6eea2",
+        "name": "Spine Rehab & Core Stabilization",
+        "split_type": "ab",
+        "status": "active",
+        "duration_months": 3,
+        "created_at": 1786367181257,
+        "archived_at": null,
+        "notes": "Методический протокол для Ольга Кузнецова. Цель: rehab. Соблюдать интервалы отдыха и RPE.",
+        "workout_days": [
+          {
+            "day_letter": "A",
+            "name": "Day A - Основной силовой блок",
+            "isRest": false,
+            "exercises": [
+              {
+                "id": "b5faffdf-834b-4a1a-847a-f3ee25ae7297",
+                "exercise_id": "ex_1",
+                "name": "Goblet Squat (Приседания с гантелью)",
+                "group": "legs",
+                "equipment": "barbell",
+                "rest_sec": 120,
+                "notes": "RPE 8, 3 сек опускание",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 10,
+                    "weight": 50,
+                    "rpe": 7,
+                    "type": "warmup"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 8,
+                    "weight": 70,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 75,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 4,
+                    "reps": 6,
+                    "weight": 80,
+                    "rpe": 9,
+                    "type": "normal"
+                  }
+                ]
+              },
+              {
+                "id": "29d07926-e3e0-4f2c-953a-342a7410cff8",
+                "exercise_id": "ex_2",
+                "name": "Incline Dumbbell Press (Жим гантелей под углом)",
+                "group": "chest",
+                "equipment": "dumbbell",
+                "rest_sec": 90,
+                "notes": "Угол 30 градусов, максимальная растяжка внизу",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 10,
+                    "weight": 22,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 24,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 26,
+                    "rpe": 9,
+                    "type": "dropset"
+                  }
+                ]
+              },
+              {
+                "id": "e7c762c0-a325-4074-93a2-7ffd0917479e",
+                "exercise_id": "ex_3",
+                "name": "Plank / Core Stabilization (Планка)",
+                "group": "abdominals",
+                "equipment": "bodyweight",
+                "rest_sec": 60,
+                "notes": "Статическое напряжение мышц живота",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 45,
+                    "weight": 0,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 45,
+                    "weight": 0,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 40,
+                    "weight": 0,
+                    "rpe": 9,
+                    "type": "failure"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day_letter": "B",
+            "name": "Day B - Тяговый / Вспомогательный блок",
+            "isRest": false,
+            "exercises": [
+              {
+                "id": "4cbcfb5b-400a-49a8-8cdf-2a0f7140a090",
+                "exercise_id": "ex_4",
+                "name": "Lat Pulldown (Тяга верхнего блока к груди)",
+                "group": "back",
+                "equipment": "cable",
+                "rest_sec": 90,
+                "notes": "Сведение лопаток в нижней точке на 1 сек",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 12,
+                    "weight": 45,
+                    "rpe": 7.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 55,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 65,
+                    "rpe": 9,
+                    "type": "normal"
+                  }
+                ]
+              },
+              {
+                "id": "0061cf68-ebbe-4631-a8dd-3ce2b861b4e1",
+                "exercise_id": "ex_5",
+                "name": "Dumbbell Romanian Deadlift (Румынская тяга с гантелями)",
+                "group": "legs",
+                "equipment": "dumbbell",
+                "rest_sec": 90,
+                "notes": "Движение за счет отведения таза назад",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 12,
+                    "weight": 16,
+                    "rpe": 7.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 20,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 10,
+                    "weight": 22,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "387324b8-1a3e-4cfb-8089-03a9d8b0ed78",
+        "client_id": "dca3a52d-6842-46d5-a60d-83dc7abac8e1",
+        "name": "Travel Minimalist Band & Bodyweight EDT",
+        "split_type": "full_body",
+        "status": "active",
+        "duration_months": 2,
+        "created_at": 1786280781257,
+        "archived_at": null,
+        "notes": "Методический протокол для Артем Соколов (Командировки). Цель: fat_loss. Соблюдать интервалы отдыха и RPE.",
+        "workout_days": [
+          {
+            "day_letter": "A",
+            "name": "Day A - Основной силовой блок",
+            "isRest": false,
+            "exercises": [
+              {
+                "id": "dec5a310-b43f-4d36-92d6-e57acb519d84",
+                "exercise_id": "ex_1",
+                "name": "Goblet Squat (Приседания с гантелью)",
+                "group": "legs",
+                "equipment": "barbell",
+                "rest_sec": 120,
+                "notes": "RPE 8, 3 сек опускание",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 10,
+                    "weight": 50,
+                    "rpe": 7,
+                    "type": "warmup"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 8,
+                    "weight": 70,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 75,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 4,
+                    "reps": 6,
+                    "weight": 80,
+                    "rpe": 9,
+                    "type": "normal"
+                  }
+                ]
+              },
+              {
+                "id": "a9b4e475-c270-49af-b2cc-b69ea3dc507a",
+                "exercise_id": "ex_2",
+                "name": "Incline Dumbbell Press (Жим гантелей под углом)",
+                "group": "chest",
+                "equipment": "dumbbell",
+                "rest_sec": 90,
+                "notes": "Угол 30 градусов, максимальная растяжка внизу",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 10,
+                    "weight": 22,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 24,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 26,
+                    "rpe": 9,
+                    "type": "dropset"
+                  }
+                ]
+              },
+              {
+                "id": "96093841-33da-4e54-89e5-086301d2e4b6",
+                "exercise_id": "ex_3",
+                "name": "Plank / Core Stabilization (Планка)",
+                "group": "abdominals",
+                "equipment": "bodyweight",
+                "rest_sec": 60,
+                "notes": "Статическое напряжение мышц живота",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 45,
+                    "weight": 0,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 45,
+                    "weight": 0,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 40,
+                    "weight": 0,
+                    "rpe": 9,
+                    "type": "failure"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day_letter": "B",
+            "name": "Day B - Тяговый / Вспомогательный блок",
+            "isRest": false,
+            "exercises": [
+              {
+                "id": "a60c131c-df4a-4c01-abf6-79c0f1ae22f9",
+                "exercise_id": "ex_4",
+                "name": "Lat Pulldown (Тяга верхнего блока к груди)",
+                "group": "back",
+                "equipment": "cable",
+                "rest_sec": 90,
+                "notes": "Сведение лопаток в нижней точке на 1 сек",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 12,
+                    "weight": 45,
+                    "rpe": 7.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 55,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 65,
+                    "rpe": 9,
+                    "type": "normal"
+                  }
+                ]
+              },
+              {
+                "id": "bb689c3d-ac1b-42c4-acab-ebb55b015b00",
+                "exercise_id": "ex_5",
+                "name": "Dumbbell Romanian Deadlift (Румынская тяга с гантелями)",
+                "group": "legs",
+                "equipment": "dumbbell",
+                "rest_sec": 90,
+                "notes": "Движение за счет отведения таза назад",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 12,
+                    "weight": 16,
+                    "rpe": 7.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 20,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 10,
+                    "weight": 22,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "9209e6c4-b92a-4e44-972d-cb187818e13c",
+        "client_id": "6486587e-82fa-441e-a137-9257defb89be",
+        "name": "Old-School Heavy 5x5 Mass Builder",
+        "split_type": "full_body",
+        "status": "active",
+        "duration_months": 4,
+        "created_at": 1786194381257,
+        "archived_at": null,
+        "notes": "Методический протокол для Максим Демьянов (Хардгейнер). Цель: hypertrophy. Соблюдать интервалы отдыха и RPE.",
+        "workout_days": [
+          {
+            "day_letter": "A",
+            "name": "Day A - Основной силовой блок",
+            "isRest": false,
+            "exercises": [
+              {
+                "id": "4f4b151f-6fb0-4c3d-acce-5d6ef089e787",
+                "exercise_id": "ex_1",
+                "name": "Goblet Squat (Приседания с гантелью)",
+                "group": "legs",
+                "equipment": "barbell",
+                "rest_sec": 120,
+                "notes": "RPE 8, 3 сек опускание",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 10,
+                    "weight": 50,
+                    "rpe": 7,
+                    "type": "warmup"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 8,
+                    "weight": 70,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 75,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 4,
+                    "reps": 6,
+                    "weight": 80,
+                    "rpe": 9,
+                    "type": "normal"
+                  }
+                ]
+              },
+              {
+                "id": "21ab771b-79c6-45df-897f-673940cca936",
+                "exercise_id": "ex_2",
+                "name": "Incline Dumbbell Press (Жим гантелей под углом)",
+                "group": "chest",
+                "equipment": "dumbbell",
+                "rest_sec": 90,
+                "notes": "Угол 30 градусов, максимальная растяжка внизу",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 10,
+                    "weight": 22,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 24,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 26,
+                    "rpe": 9,
+                    "type": "dropset"
+                  }
+                ]
+              },
+              {
+                "id": "30d9b9e6-3a30-4dc0-af26-a7810e6e040a",
+                "exercise_id": "ex_3",
+                "name": "Plank / Core Stabilization (Планка)",
+                "group": "abdominals",
+                "equipment": "bodyweight",
+                "rest_sec": 60,
+                "notes": "Статическое напряжение мышц живота",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 45,
+                    "weight": 0,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 45,
+                    "weight": 0,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 40,
+                    "weight": 0,
+                    "rpe": 9,
+                    "type": "failure"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day_letter": "B",
+            "name": "Day B - Тяговый / Вспомогательный блок",
+            "isRest": false,
+            "exercises": [
+              {
+                "id": "4282ca41-1267-4a4b-805c-e221349afe4f",
+                "exercise_id": "ex_4",
+                "name": "Lat Pulldown (Тяга верхнего блока к груди)",
+                "group": "back",
+                "equipment": "cable",
+                "rest_sec": 90,
+                "notes": "Сведение лопаток в нижней точке на 1 сек",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 12,
+                    "weight": 45,
+                    "rpe": 7.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 55,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 8,
+                    "weight": 65,
+                    "rpe": 9,
+                    "type": "normal"
+                  }
+                ]
+              },
+              {
+                "id": "b8281f41-fb38-48cd-97b2-d1d419409e4c",
+                "exercise_id": "ex_5",
+                "name": "Dumbbell Romanian Deadlift (Румынская тяга с гантелями)",
+                "group": "legs",
+                "equipment": "dumbbell",
+                "rest_sec": 90,
+                "notes": "Движение за счет отведения таза назад",
+                "sets": [
+                  {
+                    "set_num": 1,
+                    "reps": 12,
+                    "weight": 16,
+                    "rpe": 7.5,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 2,
+                    "reps": 10,
+                    "weight": 20,
+                    "rpe": 8,
+                    "type": "normal"
+                  },
+                  {
+                    "set_num": 3,
+                    "reps": 10,
+                    "weight": 22,
+                    "rpe": 8.5,
+                    "type": "normal"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "nutrition_plans": [
+      {
+        "id": "a0753031-b4c9-4814-a67a-87133d538b32",
+        "client_id": "819e7993-4af0-44ab-8579-78123ba5aac7",
+        "name": "Clean Bulking High-Protein (+350 kcal)",
+        "status": "active",
+        "created_at": 1786971981256,
+        "updated_at": 1786971981256,
+        "archived_at": null,
+        "target_calories": 3150,
+        "target_protein": 185,
+        "target_carbs": 420,
+        "target_fat": 80,
+        "meals": [
+          {
+            "id": "5f65d22a-0521-4950-8a1c-ac6820cc0796",
+            "name": "Завтрак (Breakfast)",
+            "time": "08:30",
+            "items": [
+              {
+                "id": "4d9e58dd-003f-4705-8b85-78c24b39cc1f",
+                "name": "Овсяная каша на воде с ягодами",
+                "amount_g": 220,
+                "calories": 195,
+                "protein": 6,
+                "carbs": 36,
+                "fat": 3
+              },
+              {
+                "id": "11fa3cbe-471e-415b-bb8a-acb22e74e22f",
+                "name": "Яйца куриные вареные (2 шт)",
+                "amount_g": 110,
+                "calories": 155,
+                "protein": 13,
+                "carbs": 1,
+                "fat": 11
+              },
+              {
+                "id": "96ffc6e3-389c-4b7b-9002-feaec7a5b4fa",
+                "name": "Греческий йогурт 2% (Pro/Go)",
+                "amount_g": 150,
+                "calories": 98,
+                "protein": 15,
+                "carbs": 5,
+                "fat": 2
+              }
+            ]
+          },
+          {
+            "id": "373681a3-bd9c-477f-a051-67bed515d001",
+            "name": "Обед (Lunch)",
+            "time": "13:30",
+            "items": [
+              {
+                "id": "eb90456a-104c-49af-9b7a-9d96242b9055",
+                "name": "Филе куриной грудки на гриле",
+                "amount_g": 180,
+                "calories": 240,
+                "protein": 42,
+                "carbs": 0,
+                "fat": 5
+              },
+              {
+                "id": "cbb7dd82-f735-4054-adcb-0e66ba853dad",
+                "name": "Рис басмати или киноа вареная",
+                "amount_g": 200,
+                "calories": 260,
+                "protein": 6,
+                "carbs": 56,
+                "fat": 1
+              },
+              {
+                "id": "4ed025ca-3ba8-466e-8d3e-42a52e7f3340",
+                "name": "Салат из свежих овощей с оливковым маслом",
+                "amount_g": 200,
+                "calories": 120,
+                "protein": 2,
+                "carbs": 8,
+                "fat": 9
+              }
+            ]
+          },
+          {
+            "id": "6936666d-db4c-4d80-b4a7-f6175d9d6276",
+            "name": "Ужин (Dinner)",
+            "time": "19:30",
+            "items": [
+              {
+                "id": "b8bcca4a-a6fa-4e16-b283-9a49f3ee659b",
+                "name": "Филе лосося или тунец запеченный",
+                "amount_g": 160,
+                "calories": 280,
+                "protein": 32,
+                "carbs": 0,
+                "fat": 15
+              },
+              {
+                "id": "e40f9743-bf1e-4723-a983-6a36a950b220",
+                "name": "Запеченный батат или гречка",
+                "amount_g": 150,
+                "calories": 165,
+                "protein": 4,
+                "carbs": 35,
+                "fat": 1
+              },
+              {
+                "id": "40270629-bc5e-4f1f-b32a-7ba632d3261c",
+                "name": "Брокколи на пару с лимонным соком",
+                "amount_g": 150,
+                "calories": 50,
+                "protein": 4,
+                "carbs": 7,
+                "fat": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "3f6111da-a6b6-49d8-bddf-086fb0daf057",
+        "client_id": "e80c8527-db39-45b2-bb28-0c0e1f9e472e",
+        "name": "Carb Cycling Lean Tone (High/Low Days)",
+        "status": "active",
+        "created_at": 1786885581256,
+        "updated_at": 1786885581256,
+        "archived_at": null,
+        "target_calories": 1750,
+        "target_protein": 135,
+        "target_carbs": 160,
+        "target_fat": 60,
+        "meals": [
+          {
+            "id": "5d296ff1-4619-4607-8e9e-8de9914e7fe5",
+            "name": "Завтрак (Breakfast)",
+            "time": "08:30",
+            "items": [
+              {
+                "id": "f938ef71-384e-4478-901e-171737110841",
+                "name": "Овсяная каша на воде с ягодами",
+                "amount_g": 220,
+                "calories": 195,
+                "protein": 6,
+                "carbs": 36,
+                "fat": 3
+              },
+              {
+                "id": "e5c1dea4-49b2-4548-92ee-eeea8524145a",
+                "name": "Яйца куриные вареные (2 шт)",
+                "amount_g": 110,
+                "calories": 155,
+                "protein": 13,
+                "carbs": 1,
+                "fat": 11
+              },
+              {
+                "id": "8dfa639d-7553-46e1-8aba-437582ade51a",
+                "name": "Греческий йогурт 2% (Pro/Go)",
+                "amount_g": 150,
+                "calories": 98,
+                "protein": 15,
+                "carbs": 5,
+                "fat": 2
+              }
+            ]
+          },
+          {
+            "id": "25d33cda-e45b-45f5-ac4d-2875690b9723",
+            "name": "Обед (Lunch)",
+            "time": "13:30",
+            "items": [
+              {
+                "id": "941a8dbf-ac5a-4f0d-a3fb-fa63ef7e57b2",
+                "name": "Филе куриной грудки на гриле",
+                "amount_g": 180,
+                "calories": 240,
+                "protein": 42,
+                "carbs": 0,
+                "fat": 5
+              },
+              {
+                "id": "10ee96c0-d736-4c94-8da3-d9f78074a7d6",
+                "name": "Рис басмати или киноа вареная",
+                "amount_g": 200,
+                "calories": 260,
+                "protein": 6,
+                "carbs": 56,
+                "fat": 1
+              },
+              {
+                "id": "ca32640f-4b4c-438c-8527-4314a3f462b0",
+                "name": "Салат из свежих овощей с оливковым маслом",
+                "amount_g": 200,
+                "calories": 120,
+                "protein": 2,
+                "carbs": 8,
+                "fat": 9
+              }
+            ]
+          },
+          {
+            "id": "046d8c8d-8027-452c-a08f-b2bdb123e509",
+            "name": "Ужин (Dinner)",
+            "time": "19:30",
+            "items": [
+              {
+                "id": "cd3248aa-0576-424e-9e7e-fdadc97aa6fa",
+                "name": "Филе лосося или тунец запеченный",
+                "amount_g": 160,
+                "calories": 280,
+                "protein": 32,
+                "carbs": 0,
+                "fat": 15
+              },
+              {
+                "id": "23df93a9-dab0-4cf2-b2c2-385d1e86e8c6",
+                "name": "Запеченный батат или гречка",
+                "amount_g": 150,
+                "calories": 165,
+                "protein": 4,
+                "carbs": 35,
+                "fat": 1
+              },
+              {
+                "id": "66372553-919c-4ce8-a8c2-93b3130e1608",
+                "name": "Брокколи на пару с лимонным соком",
+                "amount_g": 150,
+                "calories": 50,
+                "protein": 4,
+                "carbs": 7,
+                "fat": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "52dfb83f-2741-43fa-beeb-9a77d0a69b08",
+        "client_id": "58198fc1-fe66-48a3-a780-8c85bf62109a",
+        "name": "Kosher High-Performance Strength Fuel",
+        "status": "active",
+        "created_at": 1786799181257,
+        "updated_at": 1786799181257,
+        "archived_at": null,
+        "target_calories": 2900,
+        "target_protein": 190,
+        "target_carbs": 350,
+        "target_fat": 85,
+        "meals": [
+          {
+            "id": "0b0ba030-0972-46d7-9659-c6877dd39524",
+            "name": "Завтрак (Breakfast)",
+            "time": "08:30",
+            "items": [
+              {
+                "id": "b94cd030-12a0-433a-8408-269237424048",
+                "name": "Овсяная каша на воде с ягодами",
+                "amount_g": 220,
+                "calories": 195,
+                "protein": 6,
+                "carbs": 36,
+                "fat": 3
+              },
+              {
+                "id": "81a9ab2f-b3b5-4876-9d3e-267c14f49086",
+                "name": "Яйца куриные вареные (2 шт)",
+                "amount_g": 110,
+                "calories": 155,
+                "protein": 13,
+                "carbs": 1,
+                "fat": 11
+              },
+              {
+                "id": "f5070fb0-ab77-4bf6-8ee3-8e0149bab5f7",
+                "name": "Греческий йогурт 2% (Pro/Go)",
+                "amount_g": 150,
+                "calories": 98,
+                "protein": 15,
+                "carbs": 5,
+                "fat": 2
+              }
+            ]
+          },
+          {
+            "id": "3bd22d7c-b52d-4f5a-8eb1-dad95b2adc15",
+            "name": "Обед (Lunch)",
+            "time": "13:30",
+            "items": [
+              {
+                "id": "8b911e38-075d-4042-be28-d48735edd02f",
+                "name": "Филе куриной грудки на гриле",
+                "amount_g": 180,
+                "calories": 240,
+                "protein": 42,
+                "carbs": 0,
+                "fat": 5
+              },
+              {
+                "id": "1489503c-ba06-4902-b3a0-5f7abb4a1db9",
+                "name": "Рис басмати или киноа вареная",
+                "amount_g": 200,
+                "calories": 260,
+                "protein": 6,
+                "carbs": 56,
+                "fat": 1
+              },
+              {
+                "id": "0bda4be6-548b-4e61-a804-26f4820e09ce",
+                "name": "Салат из свежих овощей с оливковым маслом",
+                "amount_g": 200,
+                "calories": 120,
+                "protein": 2,
+                "carbs": 8,
+                "fat": 9
+              }
+            ]
+          },
+          {
+            "id": "129e7e26-d471-4ea6-91a0-b9a63bdbc121",
+            "name": "Ужин (Dinner)",
+            "time": "19:30",
+            "items": [
+              {
+                "id": "a3d2314e-4502-4586-8eaa-1e1a158db23d",
+                "name": "Филе лосося или тунец запеченный",
+                "amount_g": 160,
+                "calories": 280,
+                "protein": 32,
+                "carbs": 0,
+                "fat": 15
+              },
+              {
+                "id": "0b6fb55c-3e47-4667-878f-fa8345de2f58",
+                "name": "Запеченный батат или гречка",
+                "amount_g": 150,
+                "calories": 165,
+                "protein": 4,
+                "carbs": 35,
+                "fat": 1
+              },
+              {
+                "id": "f1d6adb3-e965-4669-8a36-646437b8cfa6",
+                "name": "Брокколи на пару с лимонным соком",
+                "amount_g": 150,
+                "calories": 50,
+                "protein": 4,
+                "carbs": 7,
+                "fat": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "28612db0-affc-4146-a4fe-1e2655a55776",
+        "client_id": "e4eaaef2-c7c7-4df0-9d87-ac55b9b88cf5",
+        "name": "Targeted Ketogenic Fat-Burn Plan",
+        "status": "active",
+        "created_at": 1786712781257,
+        "updated_at": 1786712781257,
+        "archived_at": null,
+        "target_calories": 1550,
+        "target_protein": 120,
+        "target_carbs": 35,
+        "target_fat": 105,
+        "meals": [
+          {
+            "id": "193e34cf-02ac-4c58-9ec1-46f33766193c",
+            "name": "Завтрак (Breakfast)",
+            "time": "08:30",
+            "items": [
+              {
+                "id": "8201a4dd-cdb3-4854-8228-dd66f5292124",
+                "name": "Овсяная каша на воде с ягодами",
+                "amount_g": 220,
+                "calories": 195,
+                "protein": 6,
+                "carbs": 36,
+                "fat": 3
+              },
+              {
+                "id": "5a5fde44-0239-4011-a078-fd999114ee46",
+                "name": "Яйца куриные вареные (2 шт)",
+                "amount_g": 110,
+                "calories": 155,
+                "protein": 13,
+                "carbs": 1,
+                "fat": 11
+              },
+              {
+                "id": "0104c4ef-cf2d-4740-8af8-ee8bd3fa34c9",
+                "name": "Греческий йогурт 2% (Pro/Go)",
+                "amount_g": 150,
+                "calories": 98,
+                "protein": 15,
+                "carbs": 5,
+                "fat": 2
+              }
+            ]
+          },
+          {
+            "id": "0c7e1af7-0bc2-4422-b47e-04339871578f",
+            "name": "Обед (Lunch)",
+            "time": "13:30",
+            "items": [
+              {
+                "id": "50d20820-7d46-49ec-be72-b936dcf29441",
+                "name": "Филе куриной грудки на гриле",
+                "amount_g": 180,
+                "calories": 240,
+                "protein": 42,
+                "carbs": 0,
+                "fat": 5
+              },
+              {
+                "id": "bf4c94dc-d89b-48f3-94a4-400424dbd92c",
+                "name": "Рис басмати или киноа вареная",
+                "amount_g": 200,
+                "calories": 260,
+                "protein": 6,
+                "carbs": 56,
+                "fat": 1
+              },
+              {
+                "id": "e40dbdef-1cd9-460b-8429-15a0ca196760",
+                "name": "Салат из свежих овощей с оливковым маслом",
+                "amount_g": 200,
+                "calories": 120,
+                "protein": 2,
+                "carbs": 8,
+                "fat": 9
+              }
+            ]
+          },
+          {
+            "id": "2b5f5116-2f42-4a1b-9821-00ba1ce49de9",
+            "name": "Ужин (Dinner)",
+            "time": "19:30",
+            "items": [
+              {
+                "id": "b81106aa-8ba0-4296-a99b-38b3a7a50bdd",
+                "name": "Филе лосося или тунец запеченный",
+                "amount_g": 160,
+                "calories": 280,
+                "protein": 32,
+                "carbs": 0,
+                "fat": 15
+              },
+              {
+                "id": "682d9728-9eef-494d-b015-625be3e8f966",
+                "name": "Запеченный батат или гречка",
+                "amount_g": 150,
+                "calories": 165,
+                "protein": 4,
+                "carbs": 35,
+                "fat": 1
+              },
+              {
+                "id": "48e989fb-29c2-47a5-9dec-db9dc0aa72c8",
+                "name": "Брокколи на пару с лимонным соком",
+                "amount_g": 150,
+                "calories": 50,
+                "protein": 4,
+                "carbs": 7,
+                "fat": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "583a13c4-3a2e-4380-9086-bbf22e56c915",
+        "client_id": "0a834152-a578-4967-9a2f-ffb408d617e5",
+        "name": "High-Carb Iso-Caloric Fueling (4000 kcal)",
+        "status": "active",
+        "created_at": 1786626381257,
+        "updated_at": 1786626381257,
+        "archived_at": null,
+        "target_calories": 3900,
+        "target_protein": 180,
+        "target_carbs": 580,
+        "target_fat": 95,
+        "meals": [
+          {
+            "id": "a0641c5e-04f2-4921-b246-8c9c5d03b462",
+            "name": "Завтрак (Breakfast)",
+            "time": "08:30",
+            "items": [
+              {
+                "id": "59e74d4e-12be-4050-803a-85ec8a7da6b6",
+                "name": "Овсяная каша на воде с ягодами",
+                "amount_g": 220,
+                "calories": 195,
+                "protein": 6,
+                "carbs": 36,
+                "fat": 3
+              },
+              {
+                "id": "d6fe2998-d114-4957-a2ba-da55f5dd5546",
+                "name": "Яйца куриные вареные (2 шт)",
+                "amount_g": 110,
+                "calories": 155,
+                "protein": 13,
+                "carbs": 1,
+                "fat": 11
+              },
+              {
+                "id": "4f6d66a3-d006-447f-888d-072a6f400e3d",
+                "name": "Греческий йогурт 2% (Pro/Go)",
+                "amount_g": 150,
+                "calories": 98,
+                "protein": 15,
+                "carbs": 5,
+                "fat": 2
+              }
+            ]
+          },
+          {
+            "id": "74c6b8b3-1bc9-47b5-8ce4-b8210dd364fd",
+            "name": "Обед (Lunch)",
+            "time": "13:30",
+            "items": [
+              {
+                "id": "41db6fc2-0fd5-4e3e-9df6-81ff03ab05d0",
+                "name": "Филе куриной грудки на гриле",
+                "amount_g": 180,
+                "calories": 240,
+                "protein": 42,
+                "carbs": 0,
+                "fat": 5
+              },
+              {
+                "id": "953ea603-833f-408d-95a0-03e8f347a54e",
+                "name": "Рис басмати или киноа вареная",
+                "amount_g": 200,
+                "calories": 260,
+                "protein": 6,
+                "carbs": 56,
+                "fat": 1
+              },
+              {
+                "id": "6281dfce-76b9-400b-a9af-630818120548",
+                "name": "Салат из свежих овощей с оливковым маслом",
+                "amount_g": 200,
+                "calories": 120,
+                "protein": 2,
+                "carbs": 8,
+                "fat": 9
+              }
+            ]
+          },
+          {
+            "id": "2c5ff9d2-26ba-4834-afd6-9626b206647a",
+            "name": "Ужин (Dinner)",
+            "time": "19:30",
+            "items": [
+              {
+                "id": "94bc4124-0781-4cab-b6d5-f1909c56d8ef",
+                "name": "Филе лосося или тунец запеченный",
+                "amount_g": 160,
+                "calories": 280,
+                "protein": 32,
+                "carbs": 0,
+                "fat": 15
+              },
+              {
+                "id": "f5230610-0d7b-4bc2-aec8-b00fcc67406a",
+                "name": "Запеченный батат или гречка",
+                "amount_g": 150,
+                "calories": 165,
+                "protein": 4,
+                "carbs": 35,
+                "fat": 1
+              },
+              {
+                "id": "e48ef8cc-e564-4e27-8601-e156043abf1a",
+                "name": "Брокколи на пару с лимонным соком",
+                "amount_g": 150,
+                "calories": 50,
+                "protein": 4,
+                "carbs": 7,
+                "fat": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "7ec15927-a686-4e37-895d-39c87c09b74a",
+        "client_id": "667e5dc1-c4b4-4562-86c8-c5c97aea562f",
+        "name": "Mediterranean Anti-Aging & Heart Health",
+        "status": "active",
+        "created_at": 1786539981257,
+        "updated_at": 1786539981257,
+        "archived_at": null,
+        "target_calories": 1650,
+        "target_protein": 110,
+        "target_carbs": 180,
+        "target_fat": 55,
+        "meals": [
+          {
+            "id": "afa4f9df-b6e7-4117-939b-00494cc5b419",
+            "name": "Завтрак (Breakfast)",
+            "time": "08:30",
+            "items": [
+              {
+                "id": "0ea6b688-2fea-4e62-b1b7-81433a8835e3",
+                "name": "Овсяная каша на воде с ягодами",
+                "amount_g": 220,
+                "calories": 195,
+                "protein": 6,
+                "carbs": 36,
+                "fat": 3
+              },
+              {
+                "id": "e4f96f89-66b2-4a13-89fd-852c0a2154d1",
+                "name": "Яйца куриные вареные (2 шт)",
+                "amount_g": 110,
+                "calories": 155,
+                "protein": 13,
+                "carbs": 1,
+                "fat": 11
+              },
+              {
+                "id": "dea1e411-bbbb-479a-984c-e4ccac489764",
+                "name": "Греческий йогурт 2% (Pro/Go)",
+                "amount_g": 150,
+                "calories": 98,
+                "protein": 15,
+                "carbs": 5,
+                "fat": 2
+              }
+            ]
+          },
+          {
+            "id": "6dc88387-9ead-4d19-8a2b-fee199e48391",
+            "name": "Обед (Lunch)",
+            "time": "13:30",
+            "items": [
+              {
+                "id": "b6068341-797f-4bd0-8aa0-f97876c7fffb",
+                "name": "Филе куриной грудки на гриле",
+                "amount_g": 180,
+                "calories": 240,
+                "protein": 42,
+                "carbs": 0,
+                "fat": 5
+              },
+              {
+                "id": "1181b595-6c31-4c8b-8bd3-53bfebe6e470",
+                "name": "Рис басмати или киноа вареная",
+                "amount_g": 200,
+                "calories": 260,
+                "protein": 6,
+                "carbs": 56,
+                "fat": 1
+              },
+              {
+                "id": "7773b469-a0cb-4990-ad05-2e6989b1790c",
+                "name": "Салат из свежих овощей с оливковым маслом",
+                "amount_g": 200,
+                "calories": 120,
+                "protein": 2,
+                "carbs": 8,
+                "fat": 9
+              }
+            ]
+          },
+          {
+            "id": "26857b4e-2b75-4f5c-a169-a72eb58a0e3d",
+            "name": "Ужин (Dinner)",
+            "time": "19:30",
+            "items": [
+              {
+                "id": "97f6fc3d-0efd-46f4-985c-16bae059fc8d",
+                "name": "Филе лосося или тунец запеченный",
+                "amount_g": 160,
+                "calories": 280,
+                "protein": 32,
+                "carbs": 0,
+                "fat": 15
+              },
+              {
+                "id": "52fed7d2-9a8e-44b2-8b3a-916d65bd05b1",
+                "name": "Запеченный батат или гречка",
+                "amount_g": 150,
+                "calories": 165,
+                "protein": 4,
+                "carbs": 35,
+                "fat": 1
+              },
+              {
+                "id": "111aa220-e0c9-49ce-a6f2-81348f423093",
+                "name": "Брокколи на пару с лимонным соком",
+                "amount_g": 150,
+                "calories": 50,
+                "protein": 4,
+                "carbs": 7,
+                "fat": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "97422544-4624-419a-8010-a99a05ac5cd4",
+        "client_id": "7ccbe450-9839-47f0-9fb4-240b3c99a4ef",
+        "name": "Plant-Based Muscle Fuel (Complete Amino)",
+        "status": "active",
+        "created_at": 1786453581257,
+        "updated_at": 1786453581257,
+        "archived_at": null,
+        "target_calories": 2850,
+        "target_protein": 160,
+        "target_carbs": 390,
+        "target_fat": 70,
+        "meals": [
+          {
+            "id": "78d24e3d-025b-4a64-aa76-11f3da1e555e",
+            "name": "Завтрак (Breakfast)",
+            "time": "08:30",
+            "items": [
+              {
+                "id": "c5ccd0e0-3ad2-4ee8-ba46-82a1e78c16f8",
+                "name": "Овсяная каша на воде с ягодами",
+                "amount_g": 220,
+                "calories": 195,
+                "protein": 6,
+                "carbs": 36,
+                "fat": 3
+              },
+              {
+                "id": "c050bb06-e041-457e-a3c1-1ab1919a7cc5",
+                "name": "Яйца куриные вареные (2 шт)",
+                "amount_g": 110,
+                "calories": 155,
+                "protein": 13,
+                "carbs": 1,
+                "fat": 11
+              },
+              {
+                "id": "a7461755-dad6-45e6-9199-6664729ee59e",
+                "name": "Греческий йогурт 2% (Pro/Go)",
+                "amount_g": 150,
+                "calories": 98,
+                "protein": 15,
+                "carbs": 5,
+                "fat": 2
+              }
+            ]
+          },
+          {
+            "id": "a417f9ad-d962-4937-a303-0bce4e061f5e",
+            "name": "Обед (Lunch)",
+            "time": "13:30",
+            "items": [
+              {
+                "id": "8b1d71a6-54d4-4632-b827-a83d3f4be18e",
+                "name": "Филе куриной грудки на гриле",
+                "amount_g": 180,
+                "calories": 240,
+                "protein": 42,
+                "carbs": 0,
+                "fat": 5
+              },
+              {
+                "id": "24de5f92-a4e1-489d-9c08-75a55044a109",
+                "name": "Рис басмати или киноа вареная",
+                "amount_g": 200,
+                "calories": 260,
+                "protein": 6,
+                "carbs": 56,
+                "fat": 1
+              },
+              {
+                "id": "36e032ea-9837-46ab-9003-587376ae44e7",
+                "name": "Салат из свежих овощей с оливковым маслом",
+                "amount_g": 200,
+                "calories": 120,
+                "protein": 2,
+                "carbs": 8,
+                "fat": 9
+              }
+            ]
+          },
+          {
+            "id": "912ae8bf-6147-4b79-80b9-457bf5c493ee",
+            "name": "Ужин (Dinner)",
+            "time": "19:30",
+            "items": [
+              {
+                "id": "773abd71-37fc-459b-8413-6f3a4425176e",
+                "name": "Филе лосося или тунец запеченный",
+                "amount_g": 160,
+                "calories": 280,
+                "protein": 32,
+                "carbs": 0,
+                "fat": 15
+              },
+              {
+                "id": "b1c100c1-6d54-47a4-8b2a-e598f1e1df8f",
+                "name": "Запеченный батат или гречка",
+                "amount_g": 150,
+                "calories": 165,
+                "protein": 4,
+                "carbs": 35,
+                "fat": 1
+              },
+              {
+                "id": "a767d861-3dc9-47e5-a337-e2a6a0ab6a6e",
+                "name": "Брокколи на пару с лимонным соком",
+                "amount_g": 150,
+                "calories": 50,
+                "protein": 4,
+                "carbs": 7,
+                "fat": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "3762a254-d3cc-45fe-9e72-b94fd1623bc8",
+        "client_id": "bd05768c-93f9-43ba-8634-471dfef6eea2",
+        "name": "Anti-Inflammatory Gut Health Protocol",
+        "status": "active",
+        "created_at": 1786367181257,
+        "updated_at": 1786367181257,
+        "archived_at": null,
+        "target_calories": 1700,
+        "target_protein": 125,
+        "target_carbs": 185,
+        "target_fat": 50,
+        "meals": [
+          {
+            "id": "37e6882b-77e6-4e41-92e8-7b60934741a6",
+            "name": "Завтрак (Breakfast)",
+            "time": "08:30",
+            "items": [
+              {
+                "id": "6d07660a-bfab-4bc2-a3dc-2aa168d200ea",
+                "name": "Овсяная каша на воде с ягодами",
+                "amount_g": 220,
+                "calories": 195,
+                "protein": 6,
+                "carbs": 36,
+                "fat": 3
+              },
+              {
+                "id": "7347fafe-2da5-461c-8041-4bb79f4ed5ec",
+                "name": "Яйца куриные вареные (2 шт)",
+                "amount_g": 110,
+                "calories": 155,
+                "protein": 13,
+                "carbs": 1,
+                "fat": 11
+              },
+              {
+                "id": "d59e4520-c3ed-4b3b-a30f-186070bfe59e",
+                "name": "Греческий йогурт 2% (Pro/Go)",
+                "amount_g": 150,
+                "calories": 98,
+                "protein": 15,
+                "carbs": 5,
+                "fat": 2
+              }
+            ]
+          },
+          {
+            "id": "7dc05422-c1d5-44da-a817-8f2ae5447ef2",
+            "name": "Обед (Lunch)",
+            "time": "13:30",
+            "items": [
+              {
+                "id": "58ea82c3-5093-4147-986c-6a35fd05e13d",
+                "name": "Филе куриной грудки на гриле",
+                "amount_g": 180,
+                "calories": 240,
+                "protein": 42,
+                "carbs": 0,
+                "fat": 5
+              },
+              {
+                "id": "5982d814-8fc7-44e5-ba37-184cc78cf428",
+                "name": "Рис басмати или киноа вареная",
+                "amount_g": 200,
+                "calories": 260,
+                "protein": 6,
+                "carbs": 56,
+                "fat": 1
+              },
+              {
+                "id": "25c4e2c3-e8f9-4af5-b078-af93381b984d",
+                "name": "Салат из свежих овощей с оливковым маслом",
+                "amount_g": 200,
+                "calories": 120,
+                "protein": 2,
+                "carbs": 8,
+                "fat": 9
+              }
+            ]
+          },
+          {
+            "id": "4e4cb972-f950-436a-a622-5e23bc44c415",
+            "name": "Ужин (Dinner)",
+            "time": "19:30",
+            "items": [
+              {
+                "id": "bcec6990-9a3f-413a-afa5-04f2014b670b",
+                "name": "Филе лосося или тунец запеченный",
+                "amount_g": 160,
+                "calories": 280,
+                "protein": 32,
+                "carbs": 0,
+                "fat": 15
+              },
+              {
+                "id": "7d4acdeb-46d2-420c-a062-4bed785e66d4",
+                "name": "Запеченный батат или гречка",
+                "amount_g": 150,
+                "calories": 165,
+                "protein": 4,
+                "carbs": 35,
+                "fat": 1
+              },
+              {
+                "id": "f807b729-2f77-4940-9a02-ea54f93161a0",
+                "name": "Брокколи на пару с лимонным соком",
+                "amount_g": 150,
+                "calories": 50,
+                "protein": 4,
+                "carbs": 7,
+                "fat": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "19d60cc8-b259-473b-906d-865c207688f1",
+        "client_id": "dca3a52d-6842-46d5-a60d-83dc7abac8e1",
+        "name": "Intermittent Fasting 16/8 Travel Cut",
+        "status": "active",
+        "created_at": 1786280781257,
+        "updated_at": 1786280781257,
+        "archived_at": null,
+        "target_calories": 2100,
+        "target_protein": 165,
+        "target_carbs": 200,
+        "target_fat": 70,
+        "meals": [
+          {
+            "id": "e307053a-6bf1-46da-9ff3-857564dae556",
+            "name": "Завтрак (Breakfast)",
+            "time": "08:30",
+            "items": [
+              {
+                "id": "b9ce9036-9158-4439-9d18-0aed97c8c22e",
+                "name": "Овсяная каша на воде с ягодами",
+                "amount_g": 220,
+                "calories": 195,
+                "protein": 6,
+                "carbs": 36,
+                "fat": 3
+              },
+              {
+                "id": "8958e36d-1477-4378-a4ea-6c3c1bc982e8",
+                "name": "Яйца куриные вареные (2 шт)",
+                "amount_g": 110,
+                "calories": 155,
+                "protein": 13,
+                "carbs": 1,
+                "fat": 11
+              },
+              {
+                "id": "0e1c42a2-828f-4df2-b41c-e63cf27c126a",
+                "name": "Греческий йогурт 2% (Pro/Go)",
+                "amount_g": 150,
+                "calories": 98,
+                "protein": 15,
+                "carbs": 5,
+                "fat": 2
+              }
+            ]
+          },
+          {
+            "id": "91bb09ed-9f22-449f-8605-31b606b156d6",
+            "name": "Обед (Lunch)",
+            "time": "13:30",
+            "items": [
+              {
+                "id": "db982ae3-00ca-47a7-b9db-7f69396dccf8",
+                "name": "Филе куриной грудки на гриле",
+                "amount_g": 180,
+                "calories": 240,
+                "protein": 42,
+                "carbs": 0,
+                "fat": 5
+              },
+              {
+                "id": "950e488b-d494-43be-8f0c-730c88cd4a35",
+                "name": "Рис басмати или киноа вареная",
+                "amount_g": 200,
+                "calories": 260,
+                "protein": 6,
+                "carbs": 56,
+                "fat": 1
+              },
+              {
+                "id": "99c22c5a-1e86-42e0-b5a7-e543c87d5d04",
+                "name": "Салат из свежих овощей с оливковым маслом",
+                "amount_g": 200,
+                "calories": 120,
+                "protein": 2,
+                "carbs": 8,
+                "fat": 9
+              }
+            ]
+          },
+          {
+            "id": "ba9b2bf6-a373-4a37-a6d2-2fc7c194010f",
+            "name": "Ужин (Dinner)",
+            "time": "19:30",
+            "items": [
+              {
+                "id": "67fac9c6-4405-45e5-8cb3-afa438f3e011",
+                "name": "Филе лосося или тунец запеченный",
+                "amount_g": 160,
+                "calories": 280,
+                "protein": 32,
+                "carbs": 0,
+                "fat": 15
+              },
+              {
+                "id": "1248281d-2f9b-4153-95a6-6f9f648f2a24",
+                "name": "Запеченный батат или гречка",
+                "amount_g": 150,
+                "calories": 165,
+                "protein": 4,
+                "carbs": 35,
+                "fat": 1
+              },
+              {
+                "id": "e243d83f-4b65-483f-b25a-e760fa0365c1",
+                "name": "Брокколи на пару с лимонным соком",
+                "amount_g": 150,
+                "calories": 50,
+                "protein": 4,
+                "carbs": 7,
+                "fat": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ec6275ad-f476-468b-86c9-b19f27be204b",
+        "client_id": "6486587e-82fa-441e-a137-9257defb89be",
+        "name": "Hyper-Caloric Mass Gainer (+700 kcal)",
+        "status": "active",
+        "created_at": 1786194381257,
+        "updated_at": 1786194381257,
+        "archived_at": null,
+        "target_calories": 3600,
+        "target_protein": 170,
+        "target_carbs": 520,
+        "target_fat": 95,
+        "meals": [
+          {
+            "id": "db7cb2f6-c47b-4c6d-a65d-53473cfc0396",
+            "name": "Завтрак (Breakfast)",
+            "time": "08:30",
+            "items": [
+              {
+                "id": "4859d00a-817f-4b22-b687-874891d37656",
+                "name": "Овсяная каша на воде с ягодами",
+                "amount_g": 220,
+                "calories": 195,
+                "protein": 6,
+                "carbs": 36,
+                "fat": 3
+              },
+              {
+                "id": "b6acb37f-3cc3-4fc2-92ca-074686772c0c",
+                "name": "Яйца куриные вареные (2 шт)",
+                "amount_g": 110,
+                "calories": 155,
+                "protein": 13,
+                "carbs": 1,
+                "fat": 11
+              },
+              {
+                "id": "66aeb8f3-86b8-4295-a079-d9858240eac4",
+                "name": "Греческий йогурт 2% (Pro/Go)",
+                "amount_g": 150,
+                "calories": 98,
+                "protein": 15,
+                "carbs": 5,
+                "fat": 2
+              }
+            ]
+          },
+          {
+            "id": "8d2680b5-e8d8-4a7d-923c-e3a2bdfc2fbc",
+            "name": "Обед (Lunch)",
+            "time": "13:30",
+            "items": [
+              {
+                "id": "b5e87453-79bd-472a-8d59-491e9df43d79",
+                "name": "Филе куриной грудки на гриле",
+                "amount_g": 180,
+                "calories": 240,
+                "protein": 42,
+                "carbs": 0,
+                "fat": 5
+              },
+              {
+                "id": "940eb424-0ac0-4d57-9812-39b62eeea7de",
+                "name": "Рис басмати или киноа вареная",
+                "amount_g": 200,
+                "calories": 260,
+                "protein": 6,
+                "carbs": 56,
+                "fat": 1
+              },
+              {
+                "id": "ba93d08d-8802-44b0-a79d-f56b764ac367",
+                "name": "Салат из свежих овощей с оливковым маслом",
+                "amount_g": 200,
+                "calories": 120,
+                "protein": 2,
+                "carbs": 8,
+                "fat": 9
+              }
+            ]
+          },
+          {
+            "id": "5ff0362c-c557-4910-a3d3-221fafc6d0c9",
+            "name": "Ужин (Dinner)",
+            "time": "19:30",
+            "items": [
+              {
+                "id": "5711b728-2bb7-44bc-8cce-fd312f32c7b4",
+                "name": "Филе лосося или тунец запеченный",
+                "amount_g": 160,
+                "calories": 280,
+                "protein": 32,
+                "carbs": 0,
+                "fat": 15
+              },
+              {
+                "id": "c7c2bb87-7320-4550-9f15-f5ec401a63a2",
+                "name": "Запеченный батат или гречка",
+                "amount_g": 150,
+                "calories": 165,
+                "protein": 4,
+                "carbs": 35,
+                "fat": 1
+              },
+              {
+                "id": "ccf4e83f-1ab4-4c26-b802-2d84e35b3929",
+                "name": "Брокколи на пару с лимонным соком",
+                "amount_g": 150,
+                "calories": 50,
+                "protein": 4,
+                "carbs": 7,
+                "fat": 0
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "workout_templates": [],
+    "workout_history": [],
+    "nutrition_history": [],
+    "nutrition_templates": [],
+    "settings": [],
+    "exercise_base": [],
+    "food_base": [],
+    "food_database": []
+  }
+}
