@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="ru" dir="ltr" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0a0f" />
+  <meta name="description" content="David King Gym — Персональный кабинет подопечного: тренировки, рацион, чек-ины и таймер отдыха." />
+  <title>David King Gym — Мой Портал</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="icon-512.png" />
+  <link rel="apple-touch-icon" href="icon-512.png" />
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script>
+    tailwind.config = {
+      darkMode: ['class', '[data-theme="dark"]'],
+      theme: {
+        extend: {
+          colors: {
+            bg: '#0a0a0f',
+            surface: '#14141e',
+            'surface-2': '#20202e',
+            border: '#2f2f42',
+            primary: '#6366f1',
+            'primary-2': '#818cf8',
+            accent: '#06b6d4',
+            success: '#10b981',
+            warning: '#f59e0b',
+            danger: '#ef4444'
+          }
+        }
+      }
+    };
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --font-sans: 'Inter', system-ui, sans-serif;
+      --font-display: 'Plus Jakarta Sans', Inter, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    body {
+      font-family: var(--font-sans);
+      background-color: #0a0a0f;
+      color: #f3f4f6;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .glass-card {
+      background: rgba(20, 20, 30, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .flip-rtl { transform: scaleX(1); }
+    [dir="rtl"] .flip-rtl { transform: scaleX(-1); }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(0.98); }
+    }
+    .pulse-timer { animation: pulse-subtle 1s infinite; }
+  </style>
+</head>
+<body class="min-h-screen pb-24 text-slate-100 flex flex-col">
+
+  <!-- ================= TOP HEADER ================= -->
+  <header class="sticky top-0 z-40 glass-card border-b border-border/60 px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-accent flex items-center justify-center font-display font-extrabold text-white text-lg shadow-lg">
+        DK
+      </div>
+      <div>
+        <h1 id="client-header-name" class="font-display font-bold text-base leading-tight">Мой Портал</h1>
+        <p id="client-header-goal" class="text-xs text-slate-400">David King Gym</p>
+      </div>
+    </div>
+
+    <!-- Language & Sync -->
+    <div class="flex items-center gap-1.5">
+      <select id="lang-select" class="bg-surface-2 border border-border text-xs rounded-lg px-2 py-1.5 text-slate-200 focus:outline-none cursor-pointer">
+        <option value="ru">RU 🇷🇺</option>
+        <option value="en">EN 🇺🇸</option>
+        <option value="he">HE 🇮🇱</option>
+      </select>
+      <button id="btn-share-report" class="bg-primary/20 hover:bg-primary/30 text-primary-2 border border-primary/40 rounded-lg p-2 transition" title="Отправить отчет тренеру">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTAINER ================= -->
+  <main class="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
+
+    <!-- Active Client Profile Banner -->
+    <div id="client-card" class="glass-card rounded-2xl p-4 border border-border/80 relative overflow-hidden">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-[11px] font-semibold uppercase tracking-wider text-accent flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
+          <span id="txt-active-program">План тренировок активен</span>
+        </span>
+        <span id="txt-coach-badge" class="text-[11px] bg-primary/15 text-primary-2 px-2 py-0.5 rounded-md font-medium border border-primary/30">Coach: David King</span>
+      </div>
+      <div class="flex items-end justify-between">
+        <div>
+          <div id="banner-prog-name" class="font-display font-extrabold text-lg text-white">Загрузка программы...</div>
+          <div id="banner-prog-split" class="text-xs text-slate-400 mt-0.5">Сплит: —</div>
+        </div>
+        <button id="btn-quick-start" class="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-lg transition active:scale-95 flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <span id="txt-start-btn">В зал</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ================= SCREEN 1: WORKOUTS ================= -->
+    <section id="tab-workouts" class="space-y-4">
+      <!-- Day Switcher -->
+      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1" id="days-tabs-container"></div>
+
+      <!-- Exercise list -->
+      <div id="workout-exercises-list" class="space-y-3"></div>
+
+      <!-- Workout Finish Action -->
+      <div id="workout-finish-box" class="pt-2">
+        <button id="btn-finish-workout" class="w-full bg-success hover:bg-success/90 text-white font-bold text-sm py-3.5 rounded-2xl shadow-xl transition active:scale-95 flex items-center justify-center gap-2">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          <span id="txt-finish-workout">Завершить тренировку</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ================= SCREEN 2: NUTRITION ================= -->
+    <section id="tab-nutrition" class="hidden space-y-4">
+      <!-- Macro Overview Card -->
+      <div class="glass-card rounded-2xl p-4 border border-border">
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="font-display font-bold text-sm text-slate-200" id="txt-daily-targets">Суточная норма КБЖУ</h3>
+          <span id="target-cal-badge" class="font-mono font-bold text-accent text-sm">2200 ккал</span>
+        </div>
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div class="bg-surface-2/80 rounded-xl p-2.5 border border-border/60">
+            <div class="text-[10px] text-slate-400 font-semibold uppercase">Белки</div>
+            <div id="macro-p" class="font-mono font-extrabold text-sm text-indigo-400 mt-0.5">160 г</div>
+          </div>
+          <div class="bg-surface-2/80 rounded-xl p-2.5 border border-border/60">
+            <div class="text-[10px] text-slate-400 font-semibold uppercase">Жиры</div>
+            <div id="macro-f" class="font-mono font-extrabold text-sm text-amber-400 mt-0.5">70 г</div>
+          </div>
+          <div class="bg-surface-2/80 rounded-xl p-2.5 border border-border/60">
+            <div class="text-[10px] text-slate-400 font-semibold uppercase">Углеводы</div>
+            <div id="macro-c" class="font-mono font-extrabold text-sm text-emerald-400 mt-0.5">230 г</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Water Tracker -->
+      <div class="glass-card rounded-2xl p-4 border border-border flex items-center justify-between">
+        <div>
+          <div class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+            <span id="txt-water-title">Водный баланс</span>
+          </div>
+          <div id="water-count-text" class="text-[11px] text-slate-400 mt-0.5">Выпито: 1.5 л из 3.0 л</div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="btn-water-minus" class="w-8 h-8 rounded-lg bg-surface-2 hover:bg-border text-slate-300 font-bold grid place-items-center">-</button>
+          <span id="water-glasses" class="font-mono font-bold text-cyan-400 text-sm">6 💧</span>
+          <button id="btn-water-plus" class="w-8 h-8 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 font-bold grid place-items-center">+</button>
+        </div>
+      </div>
+
+      <!-- Meals Checklist -->
+      <div id="meals-container" class="space-y-3"></div>
+    </section>
+
+    <!-- ================= SCREEN 3: CHECK-IN & PROGRESS ================= -->
+    <section id="tab-checkin" class="hidden space-y-4">
+      <div class="glass-card rounded-2xl p-4 border border-border space-y-4">
+        <h3 class="font-display font-bold text-sm text-slate-200" id="txt-daily-checkin">Утренний Чек-ин</h3>
+        
+        <div>
+          <label class="block text-xs text-slate-400 mb-1" id="lbl-morning-weight">Вес утром натощак (кг)</label>
+          <input type="number" step="0.1" id="input-checkin-weight" placeholder="Например: 78.4" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:ring-2 focus:ring-primary focus:outline-none" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Талия (см)</label>
+            <input type="number" step="0.5" id="input-checkin-waist" placeholder="78" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2 text-sm font-mono text-white focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Бедра (см)</label>
+            <input type="number" step="0.5" id="input-checkin-hip" placeholder="98" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2 text-sm font-mono text-white focus:outline-none" />
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="text-xs text-slate-400">Самочувствие и энергия</label>
+            <span id="slider-energy-val" class="font-mono font-bold text-accent text-xs">8 / 10</span>
+          </div>
+          <input type="range" min="1" max="10" value="8" id="slider-energy" class="w-full accent-accent cursor-pointer" />
+        </div>
+
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Заметка для тренера</label>
+          <textarea id="input-checkin-note" rows="2" placeholder="Как сон, восстановление, аппетит..." class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none"></textarea>
+        </div>
+
+        <button id="btn-save-checkin" class="w-full bg-primary hover:bg-primary-2 text-white font-bold text-xs py-3 rounded-xl shadow-lg transition active:scale-95">
+          Сохранить чек-ин
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= REST TIMER FLOATING MODAL ================= -->
+  <div id="rest-timer-modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-card rounded-3xl p-6 max-w-xs w-full text-center border border-border shadow-2xl space-y-4">
+      <div class="text-xs font-semibold uppercase tracking-wider text-slate-400" id="txt-timer-label">Отдых между подходами</div>
+      <div id="timer-countdown" class="font-mono font-extrabold text-5xl text-accent pulse-timer">01:30</div>
+      <div class="flex items-center justify-center gap-2">
+        <button id="btn-timer-minus15" class="bg-surface-2 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300">-15с</button>
+        <button id="btn-timer-plus30" class="bg-surface-2 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300">+30с</button>
+      </div>
+      <button id="btn-timer-skip" class="w-full bg-surface-2 hover:bg-border text-slate-300 text-xs font-semibold py-2.5 rounded-xl">
+        Пропустить таймер
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= BOTTOM NAVIGATION BAR ================= -->
+  <nav class="fixed bottom-0 inset-x-0 z-40 glass-card border-t border-border/70 px-4 py-2 flex items-center justify-around max-w-lg mx-auto">
+    <button data-tab="workouts" class="nav-tab active flex flex-col items-center gap-1 text-primary py-1 px-3">
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 4v16M18 4v16M6 12h12"/></svg>
+      <span class="text-[10px] font-semibold" id="nav-lbl-workouts">Тренировки</span>
+    </button>
+    <button data-tab="nutrition" class="nav-tab flex flex-col items-center gap-1 text-slate-400 py-1 px-3">
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+      <span class="text-[10px] font-semibold" id="nav-lbl-nutrition">Питание</span>
+    </button>
+    <button data-tab="checkin" class="nav-tab flex flex-col items-center gap-1 text-slate-400 py-1 px-3">
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      <span class="text-[10px] font-semibold" id="nav-lbl-checkin">Прогресс</span>
+    </button>
+  </nav>
+
+  <!-- ================= CLIENT LOGIC SCRIPT ================= -->
+  <script>
+    'use strict';
+
+    // State
+    let currentClient = null;
+    let currentProgram = null;
+    let currentPlan = null;
+    let activeDayIndex = 0;
+    let waterGlasses = 6;
+    let timerInterval = null;
+    let timerSecondsLeft = 0;
+    let currentLang = 'ru';
+
+    // i18n
+    const I18N = {
+      ru: {
+        portalTitle: 'Мой Портал',
+        coachBadge: 'Тренер: David King',
+        startBtn: 'В зал',
+        finishWorkout: 'Завершить тренировку',
+        dailyTargets: 'Суточная норма КБЖУ',
+        waterTitle: 'Водный баланс',
+        dailyCheckin: 'Утренний Чек-ин',
+        morningWeight: 'Вес утром натощак (кг)',
+        savedToast: 'Сохранено ✓',
+        workoutDoneTitle: 'Тренировка завершена! 🎉',
+        setsCompleted: 'Выполнено сетов',
+        restLabel: 'Отдых между подходами'
+      },
+      en: {
+        portalTitle: 'My Portal',
+        coachBadge: 'Coach: David King',
+        startBtn: 'Start Workout',
+        finishWorkout: 'Finish Workout',
+        dailyTargets: 'Daily Macro Targets',
+        waterTitle: 'Water Balance',
+        dailyCheckin: 'Morning Check-In',
+        morningWeight: 'Morning Weight (kg)',
+        savedToast: 'Saved ✓',
+        workoutDoneTitle: 'Workout Complete! 🎉',
+        setsCompleted: 'Sets Completed',
+        restLabel: 'Rest between sets'
+      },
+      he: {
+        portalTitle: 'הפורטל שלי',
+        coachBadge: 'מאמן: David King',
+        startBtn: 'התחל אימון',
+        finishWorkout: 'סיים אימון',
+        dailyTargets: 'יעדי תזונה יומיים',
+        waterTitle: 'מאזן נוזלים',
+        dailyCheckin: 'צ׳ק-אין בוקר',
+        morningWeight: 'משקל בוקר בצום (ק״ג)',
+        savedToast: 'נשמר בהצלחה ✓',
+        workoutDoneTitle: 'האימון הושלם! 🎉',
+        setsCompleted: 'סטים שבוצעו',
+        restLabel: 'מנוחה בין סטים'
+      }
+    };
+
+    function t(key) {
+      return (I18N[currentLang] && I18N[currentLang][key]) || I18N.ru[key] || key;
+    }
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang;
+      document.documentElement.dir = (lang === 'he') ? 'rtl' : 'ltr';
+      document.getElementById('lang-select').value = lang;
+      localStorage.setItem('dk_client_lang', lang);
+      updateStaticLabels();
+      renderAll();
+    }
+
+    function updateStaticLabels() {
+      document.getElementById('client-header-name').textContent = t('portalTitle');
+      document.getElementById('txt-coach-badge').textContent = t('coachBadge');
+      document.getElementById('txt-start-btn').textContent = t('startBtn');
+      document.getElementById('txt-finish-workout').textContent = t('finishWorkout');
+      document.getElementById('txt-daily-targets').textContent = t('dailyTargets');
+      document.getElementById('txt-water-title').textContent = t('waterTitle');
+      document.getElementById('txt-daily-checkin').textContent = t('dailyCheckin');
+      document.getElementById('lbl-morning-weight').textContent = t('morningWeight');
+      document.getElementById('txt-timer-label').textContent = t('restLabel');
+    }
+
+    // Audio cue
+    function playBeep() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = 880;
+        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.5);
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+      } catch (e) {}
+    }
+
+    // Rest Timer
+    function startRestTimer(seconds) {
+      clearInterval(timerInterval);
+      timerSecondsLeft = seconds;
+      const modal = document.getElementById('rest-timer-modal');
+      const el = document.getElementById('timer-countdown');
+      modal.classList.remove('hidden');
+
+      const update = () => {
+        const m = Math.floor(timerSecondsLeft / 60);
+        const s = timerSecondsLeft % 60;
+        el.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        if (timerSecondsLeft <= 0) {
+          clearInterval(timerInterval);
+          playBeep();
+          modal.classList.add('hidden');
+        }
+        timerSecondsLeft--;
+      };
+      update();
+      timerInterval = setInterval(update, 1000);
+    }
+
+    // Load Data from URL hash or localStorage
+    function loadInitialData() {
+      try {
+        const hash = window.location.hash;
+        if (hash && hash.startsWith('#data=')) {
+          const raw = decodeURIComponent(hash.substring(6));
+          const parsed = JSON.parse(atob(raw));
+          currentClient = parsed.client;
+          currentProgram = parsed.program;
+          currentPlan = parsed.plan;
+          localStorage.setItem('dk_client_data', JSON.stringify(parsed));
+        } else {
+          const cached = localStorage.getItem('dk_client_data');
+          if (cached) {
+            const parsed = JSON.parse(cached);
+            currentClient = parsed.client;
+            currentProgram = parsed.program;
+            currentPlan = parsed.plan;
+          }
+        }
+      } catch (e) {
+        console.error('Data load error:', e);
+      }
+
+      // Default demo if empty
+      if (!currentClient) {
+        currentClient = { full_name: 'Александр Смирнов', goal: 'hypertrophy', weight: 78.4, target_weight: 84 };
+        currentProgram = {
+          name: 'PPL Hypertrophy 6-Day',
+          split_type: 'ppl',
+          workout_days: [
+            {
+              day_letter: 'A',
+              name: 'Push (Грудь, Плечи, Трицепс)',
+              exercises: [
+                { id: '1', name: 'Barbell Bench Press', group: 'chest', rest_sec: 90, notes: 'RPE 8, пауза 1 сек', sets: [{ set_num: 1, weight: 70, reps: 10, type: 'warmup' }, { set_num: 2, weight: 85, reps: 8, type: 'normal' }, { set_num: 3, weight: 85, reps: 8, type: 'normal' }] },
+                { id: '2', name: 'Incline Dumbbell Press', group: 'chest', rest_sec: 75, notes: 'Угол 30°', sets: [{ set_num: 1, weight: 24, reps: 10, type: 'normal' }, { set_num: 2, weight: 26, reps: 8, type: 'normal' }] },
+                { id: '3', name: 'Triceps Cable Pushdown', group: 'triceps', rest_sec: 60, notes: 'Пиковое сокращение', sets: [{ set_num: 1, weight: 30, reps: 12, type: 'normal' }, { set_num: 2, weight: 35, reps: 10, type: 'dropset' }] }
+              ]
+            },
+            {
+              day_letter: 'B',
+              name: 'Pull (Спина, Бицепс)',
+              exercises: [
+                { id: '4', name: 'Lat Pulldown', group: 'back', rest_sec: 90, notes: 'Тяга к ключицам', sets: [{ set_num: 1, weight: 55, reps: 10, type: 'normal' }, { set_num: 2, weight: 65, reps: 8, type: 'normal' }] }
+              ]
+            }
+          ]
+        };
+        currentPlan = {
+          name: 'Clean Bulking High-Protein',
+          target_calories: 3150,
+          target_protein: 185,
+          target_fat: 80,
+          target_carbs: 420,
+          meals: [
+            { id: 'm1', name: 'Завтрак', time: '08:30', items: [{ name: 'Овсяная каша с ягодами', amount_g: 220, calories: 195, protein: 6, carbs: 36, fat: 3 }, { name: 'Яйца вареные (2 шт)', amount_g: 110, calories: 155, protein: 13, carbs: 1, fat: 11 }] },
+            { id: 'm2', name: 'Обед', time: '13:30', items: [{ name: 'Куриное филе на гриле', amount_g: 180, calories: 240, protein: 42, carbs: 0, fat: 5 }, { name: 'Рис басмати', amount_g: 200, calories: 260, protein: 6, carbs: 56, fat: 1 }] }
+          ]
+        };
+      }
+    }
+
+    // Render
+    function renderAll() {
+      if (!currentClient) return;
+
+      // Header & Banner
+      document.getElementById('client-header-goal').textContent = currentClient.full_name + ' • ' + (currentClient.goal || 'Fitness');
+      if (currentProgram) {
+        document.getElementById('banner-prog-name').textContent = currentProgram.name;
+        document.getElementById('banner-prog-split').textContent = 'Сплит: ' + (currentProgram.split_type || 'Custom').toUpperCase();
+      }
+
+      // Nutrition Targets
+      if (currentPlan) {
+        document.getElementById('target-cal-badge').textContent = currentPlan.target_calories + ' ккал';
+        document.getElementById('macro-p').textContent = currentPlan.target_protein + ' г';
+        document.getElementById('macro-f').textContent = currentPlan.target_fat + ' г';
+        document.getElementById('macro-c').textContent = currentPlan.target_carbs + ' г';
+      }
+
+      renderDaysTabs();
+      renderExercises();
+      renderMeals();
+    }
+
+    function renderDaysTabs() {
+      const container = document.getElementById('days-tabs-container');
+      if (!currentProgram || !currentProgram.workout_days) {
+        container.innerHTML = '';
+        return;
+      }
+      container.innerHTML = currentProgram.workout_days.map((d, i) => {
+        const active = i === activeDayIndex;
+        return `
+          <button data-day="${i}" class="day-tab px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${
+            active ? 'bg-primary text-white shadow-md' : 'bg-surface-2 text-slate-400 hover:text-white'
+          }">
+            ${d.name || ('День ' + (d.day_letter || (i + 1)))}
+          </button>
+        `;
+      }).join('');
+
+      container.querySelectorAll('.day-tab').forEach(b => {
+        b.addEventListener('click', (e) => {
+          activeDayIndex = parseInt(e.currentTarget.dataset.day, 10);
+          renderDaysTabs();
+          renderExercises();
+        });
+      });
+    }
+
+    function renderExercises() {
+      const list = document.getElementById('workout-exercises-list');
+      if (!currentProgram || !currentProgram.workout_days || !currentProgram.workout_days[activeDayIndex]) {
+        list.innerHTML = '<div class="text-xs text-slate-500 text-center py-6">Нет упражнений на этот день</div>';
+        return;
+      }
+
+      const day = currentProgram.workout_days[activeDayIndex];
+      list.innerHTML = (day.exercises || []).map((ex, exIdx) => {
+        return `
+          <div class="glass-card rounded-2xl p-4 border border-border space-y-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="font-display font-bold text-sm text-white">${ex.name}</h4>
+                <div class="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5">
+                  <span class="text-accent">${ex.group || 'Основное'}</span>
+                  <span>•</span>
+                  <span>Отдых: ${ex.rest_sec || 90}с</span>
+                </div>
+              </div>
+              <span class="text-[10px] font-mono bg-surface-2 px-2 py-1 rounded text-slate-300">${ex.sets ? ex.sets.length : 3} сета</span>
+            </div>
+
+            ${ex.notes ? `<div class="text-[11px] text-amber-300/80 bg-amber-500/10 border border-amber-500/20 rounded-lg p-2 leading-relaxed">💡 ${ex.notes}</div>` : ''}
+
+            <!-- Sets list -->
+            <div class="space-y-1.5">
+              ${(ex.sets || []).map((s, sIdx) => `
+                <div class="flex items-center justify-between bg-surface-2/60 px-3 py-2 rounded-xl text-xs">
+                  <span class="font-mono text-slate-400 w-8">#${s.set_num || (sIdx + 1)}</span>
+                  <div class="flex items-center gap-2 font-mono">
+                    <input type="number" value="${s.weight || 0}" class="w-14 bg-surface text-center rounded border border-border py-1 text-white text-xs font-bold" />
+                    <span class="text-[10px] text-slate-400">кг ×</span>
+                    <input type="number" value="${s.reps || 10}" class="w-12 bg-surface text-center rounded border border-border py-1 text-white text-xs font-bold" />
+                    <span class="text-[10px] text-slate-400">повт</span>
+                  </div>
+                  <button data-rest="${ex.rest_sec || 90}" class="btn-check-set w-8 h-8 rounded-lg bg-surface border border-border hover:border-success hover:bg-success/20 text-slate-400 hover:text-success grid place-items-center transition">
+                    ✓
+                  </button>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      list.querySelectorAll('.btn-check-set').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const rest = parseInt(e.currentTarget.dataset.rest, 10) || 90;
+          e.currentTarget.classList.add('bg-success', 'text-white', 'border-success');
+          startRestTimer(rest);
+        });
+      });
+    }
+
+    function renderMeals() {
+      const container = document.getElementById('meals-container');
+      if (!currentPlan || !currentPlan.meals) {
+        container.innerHTML = '<div class="text-xs text-slate-500 text-center py-6">План питания не назначен</div>';
+        return;
+      }
+
+      container.innerHTML = currentPlan.meals.map(m => `
+        <div class="glass-card rounded-2xl p-4 border border-border space-y-2">
+          <div class="flex justify-between items-center">
+            <h4 class="font-display font-bold text-sm text-white">${m.name}</h4>
+            <span class="font-mono text-xs text-slate-400">${m.time || ''}</span>
+          </div>
+          <div class="space-y-1.5 pt-1">
+            ${(m.items || []).map(item => `
+              <label class="flex items-center justify-between bg-surface-2/60 px-3 py-2 rounded-xl text-xs cursor-pointer hover:bg-surface-2 transition">
+                <div class="flex items-center gap-2.5">
+                  <input type="checkbox" class="rounded bg-surface border-border text-primary focus:ring-0 w-4 h-4 cursor-pointer" />
+                  <span class="text-slate-200">${item.name}</span>
+                </div>
+                <span class="font-mono text-slate-400">${item.amount_g}г</span>
+              </label>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Share report via WhatsApp
+    function shareReport() {
+      const name = (currentClient && currentClient.full_name) || 'Клиент';
+      const prog = (currentProgram && currentProgram.name) || 'Тренировка';
+      const text = encodeURIComponent(
+        `👋 Привет, тренер David King!\n\n` +
+        `✅ ${name} выполнил(а) тренировку: ${prog}\n` +
+        `💧 Вода: ${waterGlasses * 250} мл\n` +
+        `📊 Самочувствие: ${document.getElementById('slider-energy').value}/10\n\n` +
+        `Отправлено из David King Gym Client Portal`
+      );
+      window.open(`https://wa.me/?text=${text}`, '_blank');
+    }
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedLang = localStorage.getItem('dk_client_lang') || 'ru';
+      setLanguage(savedLang);
+      loadInitialData();
+      renderAll();
+
+      // Tab navigation
+      document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+          const target = e.currentTarget.dataset.tab;
+          document.querySelectorAll('.nav-tab').forEach(t => {
+            t.classList.remove('text-primary');
+            t.classList.add('text-slate-400');
+          });
+          e.currentTarget.classList.add('text-primary');
+          e.currentTarget.classList.remove('text-slate-400');
+
+          ['workouts', 'nutrition', 'checkin'].forEach(id => {
+            const sec = document.getElementById('tab-' + id);
+            if (sec) sec.classList.toggle('hidden', id !== target);
+          });
+        });
+      });
+
+      // Quick start button
+      document.getElementById('btn-quick-start').addEventListener('click', () => {
+        document.querySelector('[data-tab="workouts"]').click();
+        const firstSet = document.querySelector('.btn-check-set');
+        if (firstSet) firstSet.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+
+      // Water controls
+      document.getElementById('btn-water-plus').addEventListener('click', () => {
+        waterGlasses++;
+        document.getElementById('water-glasses').textContent = `${waterGlasses} 💧`;
+        document.getElementById('water-count-text').textContent = `Выпито: ${(waterGlasses * 0.25).toFixed(1)} л из 3.0 л`;
+      });
+      document.getElementById('btn-water-minus').addEventListener('click', () => {
+        if (waterGlasses > 0) waterGlasses--;
+        document.getElementById('water-glasses').textContent = `${waterGlasses} 💧`;
+        document.getElementById('water-count-text').textContent = `Выпито: ${(waterGlasses * 0.25).toFixed(1)} л из 3.0 л`;
+      });
+
+      // Slider
+      document.getElementById('slider-energy').addEventListener('input', (e) => {
+        document.getElementById('slider-energy-val').textContent = e.target.value + ' / 10';
+      });
+
+      // Timer controls
+      document.getElementById('btn-timer-skip').addEventListener('click', () => {
+        clearInterval(timerInterval);
+        document.getElementById('rest-timer-modal').classList.add('hidden');
+      });
+      document.getElementById('btn-timer-plus30').addEventListener('click', () => {
+        timerSecondsLeft += 30;
+      });
+      document.getElementById('btn-timer-minus15').addEventListener('click', () => {
+        timerSecondsLeft = Math.max(0, timerSecondsLeft - 15);
+      });
+
+      // Share button
+      document.getElementById('btn-share-report').addEventListener('click', shareReport);
+
+      // Finish workout
+      document.getElementById('btn-finish-workout').addEventListener('click', () => {
+        alert(t('workoutDoneTitle'));
+        shareReport();
+      });
+
+      // Checkin save
+      document.getElementById('btn-save-checkin').addEventListener('click', () => {
+        alert(t('savedToast'));
+      });
+
+      // Lang select
+      document.getElementById('lang-select').addEventListener('change', (e) => {
+        setLanguage(e.target.value);
+      });
+    });
+  </script>
+</body>
+</html>
