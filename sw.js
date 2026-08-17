@@ -2,6 +2,7 @@
 const CACHE_NAME = 'dk-gym-v16';
 const APP_SHELL = [
   './',
+  './index.html',
   './fitness-crm.html',
   './exercise-db.json',
   './food-db.json',
