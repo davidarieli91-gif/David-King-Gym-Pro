@@ -28,7 +28,7 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <title>David King Gym — Trainer Studio</title>
 
-  <link rel="stylesheet" href="/src/input.css" />
+  <link rel="stylesheet" href="src/input.css" />
   <!-- Local QR generation (privacy: no third-party QR services) -->
   <script src="vendor/qrcode.min.js"></script>
 
@@ -4807,16 +4807,17 @@
       if (typeof _exerciseDbLoaded !== 'undefined' && !_exerciseDbLoaded) {
         await loadExerciseDbExternal();
       }
-    // Check if v17 seed flag is set — if not, force re-seed.
+    // Check if v18 seed flag is set — if not, force re-seed.
+    // v18 = WebP image migration (jpg/gif->webp) — 2026-08
     // v17 = added force/level/mechanic/category classification fields (2026-08)
     // v16 = anatomical subgroup split (biceps/brachialis/brachioradialis, etc.)
     //      + PG "General" subgroups removed + technique fields added
     // v4 = new folder_path structure (no "General" subgroup, no equipment level)
     // v3 = original 1265-exercise seed
-    const v5Flag = await db.get('settings', 'seeded_exercise_base_v17');
+    const v5Flag = await db.get('settings', 'seeded_exercise_base_v18');
     if (!v5Flag) {
       force = true;
-      console.info('[seed] v17 flag missing — forcing re-seed of exercise_base (classification fields)');
+      console.info('[seed] v18 flag missing — forcing re-seed of exercise_base (WebP migration)');
     }
     const current = await db.count('exercise_base');
     if (current > 0 && !force) {
@@ -4830,7 +4831,7 @@
       return 0;
     }
     await db.bulkPut('exercise_base', exercises);
-    await db.put('settings', { key: 'seeded_exercise_base_v17', value: true });
+    await db.put('settings', { key: 'seeded_exercise_base_v18', value: true });
     console.info(`[seed] injected ${exercises.length} exercises into exercise_base`);
     return exercises.length;
   }
@@ -11304,7 +11305,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           // Single image — no animation
           gifSlot.innerHTML = `<img src="${escAttr(images[0])}" alt="" class="w-full h-full object-contain bg-surface-2" loading="lazy" />`;
         } else {
-          gifSlot.innerHTML = `<div class="text-center text-muted">
+          const vector = (typeof exerciseVectorIllustration === 'function') ? exerciseVectorIllustration(e, { both: true }) : '';
+          gifSlot.innerHTML = vector || `<div class="text-center text-muted">
             <svg class="w-12 h-12 mx-auto mb-2 opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
             <p class="text-xs">${t('exercise.noPhoto')}</p>
           </div>`;
@@ -13802,6 +13804,135 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       abdominals: '#a855f7', stretching: '#d946ef', warmup: '#fbbf24',
       calisthenics: '#64748b', other: '#64748b'
     };
+    const AUX_HIGHLIGHT_COLOR = '#22d3ee'; // cyan for auxiliary muscles
+    const AUX_OPACITY = 0.42;
+
+    // 74 raw synergist aliases → 11 canonical groups (case-insensitive)
+    const SYNERGIST_CANONICAL = {
+      // chest
+      'chest': 'chest', 'upper chest': 'chest', 'upper_chest': 'chest', 'upper_chest ': 'chest',
+      // back
+      'back': 'back', 'lats': 'back', 'lat': 'back', 'middle back': 'back', 'middle_back': 'back',
+      'lower back': 'back', 'lower_back': 'back', 'upper back': 'back', 'upper_back': 'back',
+      'trapezius': 'back', 'traps': 'back', 'rhomboids': 'back', 'teres minor': 'back',
+      'infraspinatus': 'back', 'levator scapulae': 'back', 'levator_scapulae': 'back',
+      'spinal erectors': 'back', 'spinal_erectors': 'back', 'spine': 'back',
+      'rotator cuff': 'back', 'rotator_cuff': 'back', 'rear deltoids': 'back', 'rear_deltoids': 'back',
+      // shoulders
+      'shoulders': 'shoulders', 'deltoids': 'shoulders', 'front deltoids': 'shoulders',
+      'front_deltoids': 'shoulders', 'front delts': 'shoulders', 'front_delts': 'shoulders',
+      'front shoulders': 'shoulders', 'rear deltoids': 'shoulders', 'rear_delts': 'shoulders',
+      'rear shoulders': 'shoulders', 'rear_delt': 'shoulders', 'rear_delts': 'shoulders',
+      // elbow flexors (biceps)
+      'biceps': 'elbow_flexors', 'brachialis': 'elbow_flexors', 'brachioradialis': 'elbow_flexors',
+      'elbow flexors': 'elbow_flexors', 'elbow_flexors': 'elbow_flexors', 'arms': 'elbow_flexors',
+      // triceps
+      'triceps': 'triceps', 'anconeus': 'triceps',
+      // forearms / grip
+      'forearms': 'forearms', 'forearm': 'forearms', 'grip': 'forearms', 'wrists': 'forearms',
+      // abdominals / core
+      'abdominals': 'abdominals', 'abdominals ': 'abdominals', 'abs': 'abdominals',
+      'core': 'abdominals', 'obliques': 'abdominals', 'rectus abdominis': 'abdominals',
+      'rectus_abdominis': 'abdominals', 'upper_abs': 'abdominals', 'upper abs': 'abdominals',
+      // legs
+      'legs': 'legs', 'quadriceps': 'legs', 'hamstrings': 'legs', 'glutes': 'legs',
+      'calves': 'legs', 'calf': 'legs', 'adductors': 'legs', 'abductors': 'legs',
+      'gastrocnemius': 'legs', 'soleus': 'legs', 'hip flexors': 'legs', 'hip_flexors': 'legs',
+      'hip abductors': 'legs', 'hips': 'legs', 'shins': 'legs', 'tibialis anterior': 'legs',
+      'quadriceps ': 'legs',
+      // other
+      'stretching': 'stretching', 'warmup': 'warmup', 'calisthenics': 'calisthenics',
+      'cardiovascular': 'other', 'stabilizers': 'other', 'ankles': 'other', 'elbows': 'other'
+    };
+    function canonicalGroup(name) {
+      if (!name) return null;
+      const key = String(name).trim().toLowerCase();
+      if (SYNERGIST_CANONICAL[key]) return SYNERGIST_CANONICAL[key];
+      if (GROUP_COLORS[key]) return key;
+      // direct canonical check
+      const direct = key.replace(/\s+/g, '_');
+      if (GROUP_COLORS[direct]) return direct;
+      return null;
+    }
+    function getExerciseMuscleGroups(ex) {
+      const primary = canonicalGroup(ex.g || ex.group_canonical || ex.group || ex.group_en || ex.gE) || 'other';
+      const rawSyn = ex.synergists || ex.synergist_muscles || ex.synergist || [];
+      const auxSet = new Set();
+      (Array.isArray(rawSyn) ? rawSyn : []).forEach(s => {
+        const c = canonicalGroup(s);
+        if (c && c !== primary) auxSet.add(c);
+      });
+      return { primary, aux: Array.from(auxSet) };
+    }
+    function buildVectorSvg(ex, view) {
+      const { primary, aux } = getExerciseMuscleGroups(ex);
+      const primaryColor = GROUP_COLORS[primary] || '#ef4444';
+      const auxColor = AUX_HIGHLIGHT_COLOR;
+      // pick template
+      let tpl = view === 'back' ? SVG_BACK : view === 'side' ? SVG_SIDE : SVG_FRONT;
+      // inject highlight colors by replacing fills
+      // primary: solid 0.88, aux: 0.42 dashed
+      let out = tpl;
+      // We will post-process via DOM-like string replace: for each muscle path, check data-group
+      // Simple string-based highlight: add inline style for primary/aux groups
+      // Primary groups get bright fill, aux get cyan with lower opacity
+      // Use regex to find class="bm-muscle" with data-group="X"
+      out = out.replace(/class="bm-muscle"([^>]*?)data-group="([^"]+)"([^>]*?)fill="[^"]*"/g, (m, pre, grp, post) => {
+        const cg = canonicalGroup(grp) || grp;
+        const isPrimary = cg === primary;
+        const isAux = aux.includes(cg);
+        let fill, opacity, extra = '';
+        if (isPrimary) { fill = primaryColor; opacity = '0.88'; extra = ' style="filter:drop-shadow(0 0 6px ' + primaryColor + ');stroke-width:1.2"'; }
+        else if (isAux) { fill = auxColor; opacity = String(AUX_OPACITY); extra = ' stroke-dasharray="4 2" stroke-width="1"'; }
+        else { fill = 'rgba(120,120,120,0.18)'; opacity = '0.18'; }
+        // keep original attributes but override fill
+        return `class="bm-muscle${isPrimary ? ' primary' : isAux ? ' aux' : ''}"${pre}data-group="${grp}"${post}fill="${fill}" fill-opacity="${opacity}"${extra}`;
+      });
+      // also handle ellipses with same pattern (already covered)
+      return out;
+    }
+    function exerciseVectorIllustration(ex, opts) {
+      opts = opts || {};
+      const size = opts.size || 120;
+      const showBoth = opts.both !== false;
+      const primaryLabel = (ex.gR || ex.group_ru || ex.gE || ex.group_en || ex.g || ex.group || ex.group_canonical || '—');
+      const { primary, aux } = getExerciseMuscleGroups(ex);
+      const auxLabels = aux.map(g => {
+        const map = {chest:'Грудь', back:'Спина', shoulders:'Плечи', elbow_flexors:'Бицепс', triceps:'Трицепс', forearms:'Предплечья', abdominals:'Пресс', legs:'Ноги'};
+        return map[g] || g;
+      }).join(', ');
+      const frontSvg = buildVectorSvg(ex, 'front');
+      const backSvg = buildVectorSvg(ex, 'back');
+      const equip = ex.eR || ex.equipment_ru || ex.eE || ex.equipment_en || ex.e || ex.equipment || ex.equipment_type || '';
+      const equipIcon = { 'Штанга':'🏋️', 'Гантели':'💪', 'Трос':'🔗', 'Тренажер':'🏟️', 'Вес тела':'🤸', 'Гири':'🔔', 'Резина':'➰', 'Блины':'⭕' }[equip] || '•';
+      if (!showBoth) {
+        return `<div class="ex-vector-single" style="width:${size}px;height:${size}px;position:relative;background:radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.06), transparent 60%), linear-gradient(180deg, rgba(20,20,30,0.9), rgba(10,10,15,0.95));border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);">
+          <div style="position:absolute;inset:0;display:grid;place-items:center;padding:4px;">${frontSvg}</div>
+          <div style="position:absolute;bottom:2px;left:2px;right:2px;display:flex;justify-content:space-between;align-items:center;font-size:7px;line-height:1;">
+            <span style="background:${GROUP_COLORS[primary]||'#ef4444'};color:white;padding:1px 4px;border-radius:4px;font-weight:700;">${esc(primaryLabel)}</span>
+            ${auxLabels ? `<span style="background:${AUX_HIGHLIGHT_COLOR};color:#0a0a0f;padding:1px 4px;border-radius:4px;font-weight:600;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">+ ${esc(auxLabels)}</span>` : ''}
+          </div>
+          ${equip ? `<div style="position:absolute;top:3px;right:3px;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:1px 4px;font-size:8px;">${esc(equipIcon)} ${esc(equip)}</div>` : ''}
+        </div>`;
+      }
+      return `<div class="ex-vector-dual" style="display:flex;gap:4px;align-items:stretch;background:linear-gradient(180deg, rgba(20,20,30,0.9), rgba(10,10,15,0.95));border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:6px;">
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+          <div style="flex:1;width:100%;display:grid;place-items:center;min-height:90px;">${frontSvg}</div>
+          <span style="font-size:7px;color:rgba(255,255,255,0.4);letter-spacing:0.08em;">ФРОНТ</span>
+        </div>
+        <div style="width:1px;background:rgba(255,255,255,0.08);"></div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
+          <div style="flex:1;width:100%;display:grid;place-items:center;min-height:90px;">${backSvg}</div>
+          <span style="font-size:7px;color:rgba(255,255,255,0.4);letter-spacing:0.08em;">ТЫЛ</span>
+        </div>
+        <div style="position:absolute;bottom:6px;left:50%;transform:translateX(-50%);display:flex;gap:4px;font-size:7px;">
+          <span style="background:${GROUP_COLORS[primary]||'#ef4444'};color:white;padding:2px 6px;border-radius:999px;font-weight:700;display:flex;align-items:center;gap:3px;"><span style="width:6px;height:6px;background:white;border-radius:50%;display:inline-block;"></span>${esc(primaryLabel)}</span>
+          ${auxLabels ? `<span style="background:${AUX_HIGHLIGHT_COLOR};color:#0a0a0f;padding:2px 6px;border-radius:999px;font-weight:600;">+ ${esc(auxLabels)}</span>` : ''}
+        </div>
+      </div>`;
+    }
+    window.exerciseVectorIllustration = exerciseVectorIllustration;
+    window.getExerciseMuscleGroups = getExerciseMuscleGroups;
 
     // 3D-like SVG body — detailed anatomical figure with gradient shading,
     // depth highlights, and clickable muscle zones. Each muscle has:
@@ -14603,6 +14734,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         const isFav = _favorites.includes(id);
         const src = e.source === 'muscle_motion' || e.src === 'mm' ? 'MM' : (e.source === 'burnfit' || e.src === 'bf' ? 'BF' : 'PG');
         const srcClass = src === 'MM' ? 'bg-accent/15 text-accent' : (src === 'BF' ? 'bg-success/15 text-success' : 'bg-primary/15 text-primary-2');
+        const hasVector = typeof exerciseVectorIllustration === 'function';
+        const vectorHtml = hasVector ? exerciseVectorIllustration(e, { both: false, size: 140 }) : '';
         const imgHtml = img1 && img2
           ? `<div class="ex-anim-container" style="border-radius:0">
               <img src="${esc(img1)}" alt="" class="ex-anim-frame-1" loading="lazy" style="object-fit:contain" />
@@ -14610,7 +14743,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             </div>`
           : img1
           ? `<img src="${esc(img1)}" alt="" class="w-full h-full object-cover" loading="lazy"/>`
-          : `<div class="w-full h-full grid place-items-center"><svg class="w-8 h-8 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>`;
+          : (vectorHtml || `<div class="w-full h-full grid place-items-center"><svg class="w-8 h-8 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>`);
         return `<div class="bm-ex-card bg-surface-2 border border-border rounded-xl overflow-hidden hover:border-primary/30 transition cursor-pointer" data-bm-add="${esc(id)}">
           <div class="aspect-square bg-surface relative overflow-hidden">
             ${imgHtml}
@@ -17513,7 +17646,10 @@ Select foods for each meal. Output as JSON only.`;
       // Previous version concatenated raw imgs[0] which could inject attributes via " onerror="alert(1)".
       if (imgs.length >= 2) gifSlot.innerHTML = '<div class="ex-anim-container"><img src="' + escapeAttr(imgs[0]) + '" alt="" class="ex-anim-frame-1" loading="lazy" /><img src="' + escapeAttr(imgs[1]) + '" alt="" class="ex-anim-frame-2" loading="lazy" /><div class="ex-anim-badge">ANIM</div></div>';
       else if (imgs.length === 1) gifSlot.innerHTML = '<img src="' + escapeAttr(imgs[0]) + '" alt="" class="w-full h-full object-contain bg-surface-2" loading="lazy" />';
-      else gifSlot.innerHTML = '<div class="text-center text-muted"><p class="text-xs">' + escapeHTML(t('exercise.noImage') || 'No image') + '</p></div>';
+      else {
+        const vector = (typeof exerciseVectorIllustration === 'function') ? exerciseVectorIllustration(ex, { both: true }) : '';
+        gifSlot.innerHTML = vector || '<div class="text-center text-muted"><p class="text-xs">' + escapeHTML(t('exercise.noImage') || 'No image') + '</p></div>';
+      }
     }
     const techEl = document.getElementById('exercise-technique');
     if (techEl) {
