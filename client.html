@@ -236,6 +236,23 @@
     </div>
   </div>
 
+  <!-- ================= UNLOCK SCREEN (encrypted portal) ================= -->
+  <div id="unlock-screen" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="glass-card rounded-3xl p-6 max-w-xs w-full text-center border border-border shadow-2xl space-y-4">
+      <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-primary to-accent grid place-items-center text-2xl shadow-lg">🔒</div>
+      <div>
+        <h2 class="font-display font-bold text-base text-white" id="txt-unlock-title">Введите код доступа</h2>
+        <p class="text-xs text-slate-400 mt-1" id="txt-unlock-subtitle">Код прислал тренер вместе со ссылкой</p>
+      </div>
+      <input type="tel" inputmode="numeric" maxlength="6" id="unlock-code-input" placeholder="••••••" autocomplete="off"
+             class="w-full bg-surface-2 border border-border rounded-xl px-3 py-3 text-center font-mono text-xl tracking-[0.4em] text-white focus:ring-2 focus:ring-primary focus:outline-none" />
+      <p id="unlock-error" class="text-xs text-red-400 min-h-[1rem]"></p>
+      <button id="btn-unlock" class="w-full bg-gradient-to-r from-primary to-accent text-white font-bold text-sm py-3 rounded-xl shadow-lg transition active:scale-95">
+        Открыть портал
+      </button>
+    </div>
+  </div>
+
   <!-- ================= BOTTOM NAVIGATION BAR ================= -->
   <nav class="fixed bottom-0 inset-x-0 z-40 glass-card border-t border-border/70 px-4 py-2 flex items-center justify-around max-w-lg mx-auto">
     <button data-tab="workouts" class="nav-tab active flex flex-col items-center gap-1 text-primary py-1 px-3">
@@ -280,7 +297,15 @@
         savedToast: 'Сохранено ✓',
         workoutDoneTitle: 'Тренировка завершена! 🎉',
         setsCompleted: 'Выполнено сетов',
-        restLabel: 'Отдых между подходами'
+        restLabel: 'Отдых между подходами',
+        unlockTitle: 'Введите код доступа',
+        unlockSubtitle: 'Код прислал тренер вместе со ссылкой',
+        unlockBtn: 'Открыть портал',
+        unlockWrongCode: 'Неверный код. Попробуйте ещё раз.',
+        unlockExpired: 'Срок действия ссылки истёк. Попросите тренера прислать новую.',
+        unlockNoCrypto: 'Откройте ссылку в браузере по https.',
+        unlockBadFormat: 'Неизвестный формат ссылки. Попросите тренера прислать новую.',
+        legacyWarning: '⚠️ Это ссылка устаревшего формата без шифрования. Попросите тренера прислать новую защищённую ссылку.'
       },
       en: {
         portalTitle: 'My Portal',
@@ -294,7 +319,15 @@
         savedToast: 'Saved ✓',
         workoutDoneTitle: 'Workout Complete! 🎉',
         setsCompleted: 'Sets Completed',
-        restLabel: 'Rest between sets'
+        restLabel: 'Rest between sets',
+        unlockTitle: 'Enter access code',
+        unlockSubtitle: 'Your coach sent the code together with the link',
+        unlockBtn: 'Open Portal',
+        unlockWrongCode: 'Wrong code. Please try again.',
+        unlockExpired: 'This link has expired. Ask your coach for a new one.',
+        unlockNoCrypto: 'Please open the link over https.',
+        unlockBadFormat: 'Unknown link format. Ask your coach for a new one.',
+        legacyWarning: '⚠️ This legacy link is not encrypted. Ask your coach to send a new secure link.'
       },
       he: {
         portalTitle: 'הפורטל שלי',
@@ -308,7 +341,15 @@
         savedToast: 'נשמר בהצלחה ✓',
         workoutDoneTitle: 'האימון הושלם! 🎉',
         setsCompleted: 'סטים שבוצעו',
-        restLabel: 'מנוחה בין סטים'
+        restLabel: 'מנוחה בין סטים',
+        unlockTitle: 'הזן קוד גישה',
+        unlockSubtitle: 'הקוד נשלח על ידי המאמן יחד עם הקישור',
+        unlockBtn: 'פתח פורטל',
+        unlockWrongCode: 'קוד שגוי. נסה שוב.',
+        unlockExpired: 'תוקף הקישור פג. בקש מהמאמן קישור חדש.',
+        unlockNoCrypto: 'פתח את הקישור ב-https.',
+        unlockBadFormat: 'פורמט קישור לא מוכר. בקש מהמאמן קישור חדש.',
+        legacyWarning: '⚠️ קישור זה בפורמט ישן ללא הצפנה. בקש מהמאמן קישור מאובטח חדש.'
       }
     };
 
@@ -378,33 +419,134 @@
       timerInterval = setInterval(update, 1000);
     }
 
-    // Load Data from URL hash or localStorage
-    function loadInitialData() {
+    // ===== Encrypted portal payload (AES-256-GCM + PBKDF2) =====
+    let portalBlob = null; // Uint8Array: salt(16) || iv(12) || ciphertext
+
+    function b64uDecode(str) {
+      const b64 = str.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - (str.length % 4)) % 4);
+      const bin = atob(b64);
+      const out = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+      return out;
+    }
+
+    function b64uEncode(bytes) {
+      let bin = '';
+      for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+      return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+
+    async function derivePortalKey(code, salt) {
+      const keyMaterial = await crypto.subtle.importKey('raw', new TextEncoder().encode(code), 'PBKDF2', false, ['deriveKey']);
+      return crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt: salt, iterations: 150000, hash: 'SHA-256' },
+        keyMaterial,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['decrypt']
+      );
+    }
+
+    async function decryptPortal(code) {
+      const salt = portalBlob.slice(0, 16);
+      const iv = portalBlob.slice(16, 28);
+      const ct = portalBlob.slice(28);
+      const key = await derivePortalKey(code, salt);
+      const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, key, ct);
+      const parsed = JSON.parse(new TextDecoder().decode(pt));
+      if (parsed && parsed.exp && Date.now() > parsed.exp) {
+        throw { code: 'expired' };
+      }
+      return parsed;
+    }
+
+    function applyPortalData(parsed) {
+      currentClient = parsed.client || null;
+      currentProgram = parsed.program || null;
+      currentPlan = parsed.plan || null;
+      renderAll();
+    }
+
+    function showUnlockScreen() {
+      document.getElementById('txt-unlock-title').textContent = t('unlockTitle');
+      document.getElementById('txt-unlock-subtitle').textContent = t('unlockSubtitle');
+      document.getElementById('btn-unlock').textContent = t('unlockBtn');
+      const input = document.getElementById('unlock-code-input');
+      input.value = '';
+      document.getElementById('unlock-error').textContent = '';
+      document.getElementById('unlock-screen').classList.remove('hidden');
+      setTimeout(() => input.focus(), 100);
+    }
+
+    async function attemptUnlock() {
+      const errEl = document.getElementById('unlock-error');
+      const code = document.getElementById('unlock-code-input').value.replace(/\D/g, '');
+      if (code.length !== 6) { errEl.textContent = t('unlockWrongCode'); return; }
+      if (!window.crypto || !crypto.subtle) { errEl.textContent = t('unlockNoCrypto'); return; }
       try {
-        const hash = window.location.hash;
-        if (hash && hash.startsWith('#data=')) {
+        const parsed = await decryptPortal(code);
+        document.getElementById('unlock-screen').classList.add('hidden');
+        applyPortalData(parsed);
+      } catch (e) {
+        if (e && e.code === 'expired') errEl.textContent = t('unlockExpired');
+        else errEl.textContent = t('unlockWrongCode');
+      }
+    }
+
+    function showLegacyWarning() {
+      const banner = document.createElement('div');
+      banner.className = 'glass-card rounded-2xl p-3 border border-amber-500/40 bg-amber-500/10 text-amber-300 text-[11px] leading-relaxed';
+      banner.textContent = t('legacyWarning');
+      const main = document.querySelector('main');
+      if (main) main.prepend(banner);
+    }
+
+    // Load Data: encrypted link (#e=1.…), legacy link (#data=…) or cached blob
+    function loadInitialData() {
+      const hash = window.location.hash || '';
+      try {
+        if (hash.startsWith('#e=')) {
+          const versioned = hash.substring(3);
+          if (!versioned.startsWith('1.')) { alert(t('unlockBadFormat')); return; }
+          portalBlob = b64uDecode(versioned.substring(2));
+          // Cache ciphertext only (never the plaintext); strip payload from the address bar
+          localStorage.setItem('dk_client_data', JSON.stringify({ v: 1, blob: b64uEncode(portalBlob) }));
+          history.replaceState(null, '', window.location.pathname);
+          showUnlockScreen();
+          return;
+        }
+        if (hash.startsWith('#data=')) {
           const raw = decodeURIComponent(hash.substring(6));
           const parsed = JSON.parse(atob(raw));
-          currentClient = parsed.client;
-          currentProgram = parsed.program;
-          currentPlan = parsed.plan;
-          localStorage.setItem('dk_client_data', JSON.stringify(parsed));
-        } else {
-          const cached = localStorage.getItem('dk_client_data');
-          if (cached) {
-            const parsed = JSON.parse(cached);
-            currentClient = parsed.client;
-            currentProgram = parsed.program;
-            currentPlan = parsed.plan;
+          history.replaceState(null, '', window.location.pathname);
+          showLegacyWarning();
+          applyPortalData(parsed);
+          return;
+        }
+        const cached = localStorage.getItem('dk_client_data');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed && parsed.v === 1 && parsed.blob) {
+            portalBlob = b64uDecode(parsed.blob);
+            showUnlockScreen();
+            return;
+          }
+          if (parsed && parsed.client) {
+            showLegacyWarning();
+            applyPortalData(parsed);
+            return;
           }
         }
       } catch (e) {
         console.error('Data load error:', e);
       }
 
-      // Default demo if empty
-      if (!currentClient) {
-        currentClient = { full_name: 'Александр Смирнов', goal: 'hypertrophy', weight: 78.4, target_weight: 84 };
+      applyDemoData();
+    }
+
+    // Default demo data when no portal link is present
+    function applyDemoData() {
+      currentClient = { full_name: 'Александр Смирнов', goal: 'hypertrophy', weight: 78.4, target_weight: 84 };
         currentProgram = {
           name: 'PPL Hypertrophy 6-Day',
           split_type: 'ppl',
@@ -438,7 +580,7 @@
             { id: 'm2', name: 'Обед', time: '13:30', items: [{ name: 'Куриное филе на гриле', amount_g: 180, calories: 240, protein: 42, carbs: 0, fat: 5 }, { name: 'Рис басмати', amount_g: 200, calories: 260, protein: 6, carbs: 56, fat: 1 }] }
           ]
         };
-      }
+      renderAll();
     }
 
     // Render
@@ -593,7 +735,16 @@
       const savedLang = localStorage.getItem('dk_client_lang') || 'ru';
       setLanguage(savedLang);
       loadInitialData();
-      renderAll();
+
+      // Unlock screen
+      document.getElementById('btn-unlock').addEventListener('click', attemptUnlock);
+      document.getElementById('unlock-code-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') attemptUnlock();
+      });
+      document.getElementById('unlock-code-input').addEventListener('input', (e) => {
+        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6);
+        document.getElementById('unlock-error').textContent = '';
+      });
 
       // Tab navigation
       document.querySelectorAll('.nav-tab').forEach(tab => {
