@@ -8,6 +8,7 @@ const APP_SHELL = [
   './exercise-db.json',
   './food-db.json',
   './manifest.json',
+  './vendor/qrcode.min.js',
   './icon-192.png',
   './icon-512.png'
 ];
