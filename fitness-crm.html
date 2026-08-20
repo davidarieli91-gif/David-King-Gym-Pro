@@ -1991,6 +1991,14 @@
                 </div>
               </div>
               <div id="exercise-picker-list" class="flex-1 overflow-y-auto p-3 space-y-2"></div>
+              <!-- Sticky Footer for Continuous Bulk Add -->
+              <div class="p-3 border-t border-border flex items-center justify-between bg-surface-2/80 shrink-0">
+                <span id="picker-multi-hint" class="text-xs text-muted" data-i18n="exercise.bulkHint">Нажимайте для добавления</span>
+                <button id="exercise-picker-done" class="bg-primary hover:bg-primary-2 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow-card flex items-center gap-1.5 active:scale-95">
+                  <span data-i18n="common.done">Готово</span>
+                  <span id="picker-done-count" class="bg-white/20 px-1.5 py-0.5 rounded-md font-mono text-[10px] hidden">0</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -8463,8 +8471,22 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         });
         list.querySelectorAll('[data-pb-pick]').forEach(el => {
           el.addEventListener('click', () => {
-            pbAddExercise(el.getAttribute('data-pb-pick'));
-            document.getElementById('exercise-picker-modal').classList.add('hidden');
+            const exId = el.getAttribute('data-pb-pick');
+            pbAddExercise(exId);
+            el.classList.add('border-success/60', 'bg-success/15');
+            let badge = el.querySelector('.picker-added-check');
+            if (!badge) {
+              badge = document.createElement('span');
+              badge.className = 'picker-added-check text-[10px] font-bold text-success bg-success/20 px-2 py-0.5 rounded-md shrink-0';
+              badge.textContent = '✓ Добавлено';
+              el.appendChild(badge);
+            }
+            const doneBadge = document.getElementById('picker-done-count');
+            if (doneBadge) {
+              const current = parseInt(doneBadge.textContent || '0', 10) + 1;
+              doneBadge.textContent = current;
+              doneBadge.classList.remove('hidden');
+            }
           });
         });
       } else {
@@ -8485,8 +8507,22 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         }).join('');
         list.querySelectorAll('[data-pb-pick]').forEach(el => {
           el.addEventListener('click', () => {
-            pbAddExercise(el.getAttribute('data-pb-pick'));
-            document.getElementById('exercise-picker-modal').classList.add('hidden');
+            const exId = el.getAttribute('data-pb-pick');
+            pbAddExercise(exId);
+            el.classList.add('border-success/60', 'bg-success/15');
+            let badge = el.querySelector('.picker-added-check');
+            if (!badge) {
+              badge = document.createElement('span');
+              badge.className = 'picker-added-check text-[10px] font-bold text-success bg-success/20 px-2 py-0.5 rounded-md shrink-0';
+              badge.textContent = '✓ Добавлено';
+              el.appendChild(badge);
+            }
+            const doneBadge = document.getElementById('picker-done-count');
+            if (doneBadge) {
+              const current = parseInt(doneBadge.textContent || '0', 10) + 1;
+              doneBadge.textContent = current;
+              doneBadge.classList.remove('hidden');
+            }
           });
         });
       }
@@ -12835,7 +12871,20 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         el.addEventListener('click', () => {
           const id = el.getAttribute('data-pick-exercise');
           addExerciseById(id);
-          document.getElementById('exercise-picker-modal').classList.add('hidden');
+          el.classList.add('border-success/60', 'bg-success/15');
+          let badge = el.querySelector('.picker-added-check');
+          if (!badge) {
+            badge = document.createElement('span');
+            badge.className = 'picker-added-check text-[10px] font-bold text-success bg-success/20 px-2 py-0.5 rounded-md shrink-0';
+            badge.textContent = '✓ Добавлено';
+            el.appendChild(badge);
+          }
+          const doneBadge = document.getElementById('picker-done-count');
+          if (doneBadge) {
+            const current = parseInt(doneBadge.textContent || '0', 10) + 1;
+            doneBadge.textContent = current;
+            doneBadge.classList.remove('hidden');
+          }
         });
       });
     }
@@ -14607,7 +14656,32 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             if (e.target.closest('[data-bm-view]')) return;
             const id = el.getAttribute('data-bm-add');
             const ex = _cache.find(x => x.id === id);
-            if (ex && _callback) { _callback(ex); close(); }
+            if (ex && _callback) {
+              _callback(ex);
+              // Visual feedback instead of close()
+              el.style.borderColor = 'var(--c-success, #22c55e)';
+              el.style.opacity = '0.7';
+              let badge = el.querySelector('.bm-added-check');
+              if (!badge) {
+                badge = document.createElement('div');
+                badge.className = 'bm-added-check';
+                badge.style.cssText = 'position:absolute;top:4px;right:4px;background:rgba(34,197,94,0.9);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;z-index:5;';
+                badge.textContent = '✓';
+                const imgWrap = el.querySelector('.aspect-square') || el;
+                imgWrap.style.position = 'relative';
+                imgWrap.appendChild(badge);
+              }
+              // Update picker-done-count
+              const doneBadge = document.getElementById('picker-done-count');
+              if (doneBadge) {
+                const current = parseInt(doneBadge.textContent || '0', 10) + 1;
+                doneBadge.textContent = current;
+                doneBadge.classList.remove('hidden');
+              }
+              // Track recent
+              if (!_recent.includes(id)) { _recent.unshift(id); if (_recent.length > 30) _recent.pop(); }
+              try { localStorage.setItem('dk_recent_exercises', JSON.stringify(_recent)); } catch(e2){}
+            }
           });
         });
         grid.querySelectorAll('[data-bm-view]').forEach(btn => {
@@ -14749,7 +14823,27 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         el.addEventListener('click', () => {
           const id = el.getAttribute('data-bm-add');
           const ex = _cache.find(x => x.id === id);
-          if (ex && _callback) { _callback(ex); close(); }
+          if (ex && _callback) {
+            _callback(ex);
+            el.style.borderColor = 'var(--c-success, #22c55e)';
+            el.style.opacity = '0.7';
+            let badge = el.querySelector('.bm-added-check');
+            if (!badge) {
+              badge = document.createElement('div');
+              badge.className = 'bm-added-check';
+              badge.style.cssText = 'position:absolute;top:4px;right:4px;background:rgba(34,197,94,0.9);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;z-index:5;';
+              badge.textContent = '✓';
+              const imgWrap = el.querySelector('.aspect-square') || el;
+              imgWrap.style.position = 'relative';
+              imgWrap.appendChild(badge);
+            }
+            const doneBadge = document.getElementById('picker-done-count');
+            if (doneBadge) {
+              const current = parseInt(doneBadge.textContent || '0', 10) + 1;
+              doneBadge.textContent = current;
+              doneBadge.classList.remove('hidden');
+            }
+          }
         });
       });
     }
@@ -14785,7 +14879,27 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         el.addEventListener('click', () => {
           const id = el.getAttribute('data-bm-add');
           const ex = _cache.find(x => x.id === id);
-          if (ex && _callback) { _callback(ex); close(); }
+          if (ex && _callback) {
+            _callback(ex);
+            el.style.borderColor = 'var(--c-success, #22c55e)';
+            el.style.opacity = '0.7';
+            let badge = el.querySelector('.bm-added-check');
+            if (!badge) {
+              badge = document.createElement('div');
+              badge.className = 'bm-added-check';
+              badge.style.cssText = 'position:absolute;top:4px;right:4px;background:rgba(34,197,94,0.9);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;z-index:5;';
+              badge.textContent = '✓';
+              const imgWrap = el.querySelector('.aspect-square') || el;
+              imgWrap.style.position = 'relative';
+              imgWrap.appendChild(badge);
+            }
+            const doneBadge = document.getElementById('picker-done-count');
+            if (doneBadge) {
+              const current = parseInt(doneBadge.textContent || '0', 10) + 1;
+              doneBadge.textContent = current;
+              doneBadge.classList.remove('hidden');
+            }
+          }
         });
       });
     }
@@ -22877,6 +22991,10 @@ async function boot() {
     // Exercise picker modal
     const pickerClose = document.getElementById('exercise-picker-close');
     if (pickerClose) pickerClose.addEventListener('click', () => {
+      document.getElementById('exercise-picker-modal').classList.add('hidden');
+    });
+    const pickerDone = document.getElementById('exercise-picker-done');
+    if (pickerDone) pickerDone.addEventListener('click', () => {
       document.getElementById('exercise-picker-modal').classList.add('hidden');
     });
     const pickerModal = document.getElementById('exercise-picker-modal');
