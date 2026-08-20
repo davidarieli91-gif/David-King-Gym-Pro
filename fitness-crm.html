@@ -4127,6 +4127,22 @@
   'use strict';
 
   /* =====================================================================
+     XSS-safe HTML escaping helper.
+     Every innerHTML template that interpolates user- or data-controlled
+     strings (names, notes, AI output, imported records) MUST wrap them
+     in esc(). Cheap constant-time call; safe to apply everywhere.
+     ===================================================================== */
+  function esc(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+  window.esc = esc;
+
+  /* =====================================================================
      SEED_EXERCISE_BASE — foundational 3-language exercise dataset.
      Injected verbatim from the architectural spec into exercise_base on
      first boot (only if the store is empty).
@@ -4989,9 +5005,23 @@
       return `fitness-crm-backup-${stamp}.json`;
     }
 
+    /** Strip plaintext secrets (AI API key) from an exported payload.
+     *  The key stays in the local IndexedDB — only backups are sanitized. */
+    function _maskSecrets(payload) {
+      const settings = payload && payload.data && payload.data.settings;
+      if (!Array.isArray(settings)) return payload;
+      payload.data.settings = settings.map(rec => {
+        if (rec && rec.key === 'ai_config' && rec.value && typeof rec.value === 'object') {
+          return Object.assign({}, rec, { value: Object.assign({}, rec.value, { apiKey: '' }) });
+        }
+        return rec;
+      });
+      return payload;
+    }
+
     /** Export the whole DB and trigger a download. Returns the meta. */
     async function exportData() {
-      const payload = await serialize();
+      const payload = _maskSecrets(await serialize());
       const json = JSON.stringify(payload, null, 2);
       _triggerDownload(json, _filename());
       return payload.meta;
@@ -8944,8 +8974,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         <div class="info">
           ${client && client.goal ? `<span>🎯 ${escapeHTML(client.goal)}</span>` : ''}
           ${prog.split_type ? `<span>📋 ${escapeHTML(prog.split_type.toUpperCase())}</span>` : ''}
-          ${client && client.weight ? `<span>⚖️ ${client.weight}kg</span>` : ''}
-          ${client && client.body_fat_pct ? `<span>📊 BF: ${client.body_fat_pct}%</span>` : ''}
+          ${client && client.weight ? `<span>⚖️ ${escapeHTML(String(client.weight))}kg</span>` : ''}
+          ${client && client.body_fat_pct ? `<span>📊 BF: ${escapeHTML(String(client.body_fat_pct))}%</span>` : ''}
         </div>
         ${daysHtml}
         <div style="margin-top:24px;padding-top:12px;border-top:1px solid #eee;font-size:11px;color:#999;text-align:center">
@@ -9059,9 +9089,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           <div><div class="val">${plan.target_fat || 0}g</div><div class="lbl">${L.fat}</div></div>
         </div>
         ${client && (client.body_fat_pct || client.muscle_mass) ? `<div class="body-comp">
-          ${client.body_fat_pct ? `${L.bodyFat}: ${client.body_fat_pct}%` : ''}
-          ${client.muscle_mass ? ` · ${L.muscle}: ${client.muscle_mass}kg` : ''}
-          ${client.weight ? ` · ${L.weight}: ${client.weight}kg` : ''}
+          ${client.body_fat_pct ? `${L.bodyFat}: ${escapeHTML(String(client.body_fat_pct))}%` : ''}
+          ${client.muscle_mass ? ` · ${L.muscle}: ${escapeHTML(String(client.muscle_mass))}kg` : ''}
+          ${client.weight ? ` · ${L.weight}: ${escapeHTML(String(client.weight))}kg` : ''}
         </div>` : ''}
         ${mealsHtml}
         <div style="margin-top:16px;padding-top:8px;border-top:1px solid #eee;font-size:10px;color:#999;text-align:center">
@@ -15999,8 +16029,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           <div class="grid grid-cols-2 gap-2 text-xs">
             <div><span class="text-muted">${t('generator.goalLabel')}:</span> <span class="font-semibold">${escapeHTML(client.goal || '—')}</span></div>
             <div><span class="text-muted">${t('generator.freqLabel')}:</span> <span class="font-semibold">${t('generator.perWeek', {n: client.frequency || '—'})}</span></div>
-            <div><span class="text-muted">${t('generator.ageLabel')}:</span> <span class="font-semibold">${client.age || '—'}</span></div>
-            <div><span class="text-muted">${t('generator.weightLabel')}:</span> <span class="font-semibold">${client.weight || '—'} kg</span></div>
+            <div><span class="text-muted">${t('generator.ageLabel')}:</span> <span class="font-semibold">${escapeHTML(String(client.age || '—'))}</span></div>
+            <div><span class="text-muted">${t('generator.weightLabel')}:</span> <span class="font-semibold">${escapeHTML(String(client.weight || '—'))} kg</span></div>
             <div class="col-span-2"><span class="text-muted">${t('generator.equipmentLabel')}:</span> ${equipBadges || '<span class="text-muted">—</span>'}</div>
             ${client.injuries ? `<div class="col-span-2 text-warning"><span class="text-muted">${t('generator.injuriesLabel')}:</span> <span class="font-semibold">${escapeHTML(client.injuries)}</span></div>` : ''}
           </div>
@@ -16981,9 +17011,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         <div class="bg-surface-2 border border-border rounded-xl p-3">
           <div class="text-[10px] uppercase tracking-wider text-muted mb-2">${t('nutrition.basedOnClient') || 'Based on client profile'}</div>
           <div class="grid grid-cols-2 gap-2 text-xs">
-            <div><span class="text-muted">${t('generator.ageLabel')}:</span> <span class="font-semibold">${client.age || '—'}</span></div>
-            <div><span class="text-muted">${t('generator.weightLabel')}:</span> <span class="font-semibold">${client.weight || '—'} kg</span></div>
-            <div><span class="text-muted">${t('nutrition.heightLabel') || 'Height'}:</span> <span class="font-semibold">${client.height || '—'} cm</span></div>
+          <div><span class="text-muted">${t('generator.ageLabel')}:</span> <span class="font-semibold">${escapeHTML(String(client.age || '—'))}</span></div>
+          <div><span class="text-muted">${t('generator.weightLabel')}:</span> <span class="font-semibold">${escapeHTML(String(client.weight || '—'))} kg</span></div>
+          <div><span class="text-muted">${t('nutrition.heightLabel') || 'Height'}:</span> <span class="font-semibold">${escapeHTML(String(client.height || '—'))} cm</span></div>
             <div><span class="text-muted">${t('generator.sexLabel')}:</span> <span class="font-semibold">${client.sex === 'f' ? (t('client.sexFemale') || 'F') : (t('client.sexMale') || 'M')}</span></div>
             <div><span class="text-muted">${t('generator.goalLabel')}:</span> <span class="font-semibold">${escapeHTML(client.goal || '—')}</span></div>
             <div><span class="text-muted">${t('nutrition.bmrLabel')}:</span> <span class="font-semibold">${bmr} ${t('nutrition.kcalUnit')}</span></div>
@@ -19235,7 +19265,7 @@ Select foods for each meal. Output as JSON only.`;
             const editControls = _editMode ? `
               <select class="text-[10px] bg-surface-2 border border-border rounded px-1 py-0.5 shrink-0" data-change-cat="${esc(f.id)}">
                 ${['bakery','dairy','meat','fish','fruit','vegetable','legumes','grains','nuts','greens','vegan','sauces','sweets','drinks','israeli','international','oils','eggs','protein','baby','other'].map(c =>
-                  `<option value="${c}" ${c === cat ? 'selected' : ''}>${categoryIcon(c)} ${categoryLabel(c)}</option>`
+                  `<option value="${c}" ${c === cat ? 'selected' : ''}>${categoryIcon(c)} ${escapeHTML(categoryLabel(c))}</option>`
                 ).join('')}
               </select>
               <button class="text-muted hover:text-danger transition w-5 h-5 grid place-items-center shrink-0" data-delete-food="${esc(f.id)}" title="${t('common.delete') || 'Delete'}">
@@ -19611,7 +19641,7 @@ Select foods for each meal. Output as JSON only.`;
       const dl = document.getElementById('food-category-list-edit');
       if (dl) {
         const catKeys = ['bakery','dairy','meat','fish','fruit','vegetable','legumes','grains','nuts','greens','vegan','sauces','sweets','drinks','israeli','international','oils','eggs','protein','baby','other'];
-        dl.innerHTML = catKeys.map(c => `<option value="${c}">${categoryLabel(c)}</option>`).join('');
+        dl.innerHTML = catKeys.map(c => `<option value="${c}">${escapeHTML(categoryLabel(c))}</option>`).join('');
       }
     }
 
@@ -27269,8 +27299,8 @@ async function boot() {
     // Export all IndexedDB stores to a single JSON object
     async function exportAllData() {
       const stores = ['clients', 'client_programs', 'workout_history', 'nutrition_plans',
-                      'nutrition_history', 'exercise_base', 'settings', 'workout_templates',
-                      'client_photos', 'client_documents'];
+                      'nutrition_history', 'exercise_base', 'food_database', 'nutrition_templates',
+                      'settings', 'workout_templates', 'client_photos', 'client_documents'];
       const backup = { _version: 1, _exportedAt: new Date().toISOString(), stores: {} };
       for (const store of stores) {
         try {
@@ -27375,6 +27405,15 @@ async function boot() {
         try {
           const token = await authenticateGoogle();
           const backup = await exportAllData();
+          // Strip plaintext secrets (AI API key) before leaving the device
+          const settings = backup.stores && backup.stores.settings;
+          if (Array.isArray(settings)) {
+            backup.stores.settings = settings.map(r =>
+              (r && r.key === 'ai_config' && r.value && typeof r.value === 'object')
+                ? Object.assign({}, r, { value: Object.assign({}, r.value, { apiKey: '' }) })
+                : r
+            );
+          }
           const json = JSON.stringify(backup);
           await uploadBackup(token, json);
           return { ok: true, size: json.length, records: Object.values(backup.stores).reduce((s, a) => s + a.length, 0) };

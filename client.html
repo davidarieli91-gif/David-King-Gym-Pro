@@ -357,6 +357,16 @@
       return (I18N[currentLang] && I18N[currentLang][key]) || I18N.ru[key] || key;
     }
 
+    // XSS-safe escaping for all portal payload interpolations
+    function esc(value) {
+      return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     function setLanguage(lang) {
       currentLang = lang;
       document.documentElement.lang = lang;
@@ -619,7 +629,7 @@
           <button data-day="${i}" class="day-tab px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${
             active ? 'bg-primary text-white shadow-md' : 'bg-surface-2 text-slate-400 hover:text-white'
           }">
-            ${d.name || ('День ' + (d.day_letter || (i + 1)))}
+            ${esc(d.name || ('День ' + (d.day_letter || (i + 1))))}
           </button>
         `;
       }).join('');
@@ -646,30 +656,30 @@
           <div class="glass-card rounded-2xl p-4 border border-border space-y-3">
             <div class="flex items-center justify-between">
               <div>
-                <h4 class="font-display font-bold text-sm text-white">${ex.name}</h4>
+                <h4 class="font-display font-bold text-sm text-white">${esc(ex.name)}</h4>
                 <div class="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5">
-                  <span class="text-accent">${ex.group || 'Основное'}</span>
+                  <span class="text-accent">${esc(ex.group || 'Основное')}</span>
                   <span>•</span>
-                  <span>Отдых: ${ex.rest_sec || 90}с</span>
+                  <span>Отдых: ${parseInt(ex.rest_sec, 10) || 90}с</span>
                 </div>
               </div>
               <span class="text-[10px] font-mono bg-surface-2 px-2 py-1 rounded text-slate-300">${ex.sets ? ex.sets.length : 3} сета</span>
             </div>
 
-            ${ex.notes ? `<div class="text-[11px] text-amber-300/80 bg-amber-500/10 border border-amber-500/20 rounded-lg p-2 leading-relaxed">💡 ${ex.notes}</div>` : ''}
+            ${ex.notes ? `<div class="text-[11px] text-amber-300/80 bg-amber-500/10 border border-amber-500/20 rounded-lg p-2 leading-relaxed">💡 ${esc(ex.notes)}</div>` : ''}
 
             <!-- Sets list -->
             <div class="space-y-1.5">
               ${(ex.sets || []).map((s, sIdx) => `
                 <div class="flex items-center justify-between bg-surface-2/60 px-3 py-2 rounded-xl text-xs">
-                  <span class="font-mono text-slate-400 w-8">#${s.set_num || (sIdx + 1)}</span>
+                  <span class="font-mono text-slate-400 w-8">#${parseInt(s.set_num, 10) || (sIdx + 1)}</span>
                   <div class="flex items-center gap-2 font-mono">
-                    <input type="number" value="${s.weight || 0}" class="w-14 bg-surface text-center rounded border border-border py-1 text-white text-xs font-bold" />
+                    <input type="number" value="${Number(s.weight) || 0}" class="w-14 bg-surface text-center rounded border border-border py-1 text-white text-xs font-bold" />
                     <span class="text-[10px] text-slate-400">кг ×</span>
-                    <input type="number" value="${s.reps || 10}" class="w-12 bg-surface text-center rounded border border-border py-1 text-white text-xs font-bold" />
+                    <input type="number" value="${Number(s.reps) || 10}" class="w-12 bg-surface text-center rounded border border-border py-1 text-white text-xs font-bold" />
                     <span class="text-[10px] text-slate-400">повт</span>
                   </div>
-                  <button data-rest="${ex.rest_sec || 90}" class="btn-check-set w-8 h-8 rounded-lg bg-surface border border-border hover:border-success hover:bg-success/20 text-slate-400 hover:text-success grid place-items-center transition">
+                  <button data-rest="${parseInt(ex.rest_sec, 10) || 90}" class="btn-check-set w-8 h-8 rounded-lg bg-surface border border-border hover:border-success hover:bg-success/20 text-slate-400 hover:text-success grid place-items-center transition">
                     ✓
                   </button>
                 </div>
@@ -698,17 +708,17 @@
       container.innerHTML = currentPlan.meals.map(m => `
         <div class="glass-card rounded-2xl p-4 border border-border space-y-2">
           <div class="flex justify-between items-center">
-            <h4 class="font-display font-bold text-sm text-white">${m.name}</h4>
-            <span class="font-mono text-xs text-slate-400">${m.time || ''}</span>
+            <h4 class="font-display font-bold text-sm text-white">${esc(m.name)}</h4>
+            <span class="font-mono text-xs text-slate-400">${esc(m.time || '')}</span>
           </div>
           <div class="space-y-1.5 pt-1">
             ${(m.items || []).map(item => `
               <label class="flex items-center justify-between bg-surface-2/60 px-3 py-2 rounded-xl text-xs cursor-pointer hover:bg-surface-2 transition">
                 <div class="flex items-center gap-2.5">
                   <input type="checkbox" class="rounded bg-surface border-border text-primary focus:ring-0 w-4 h-4 cursor-pointer" />
-                  <span class="text-slate-200">${item.name}</span>
+                  <span class="text-slate-200">${esc(item.name)}</span>
                 </div>
-                <span class="font-mono text-slate-400">${item.amount_g}г</span>
+                <span class="font-mono text-slate-400">${Number(item.amount_g) || 0}г</span>
               </label>
             `).join('')}
           </div>
