@@ -28,60 +28,9 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <title>David King Gym — Trainer Studio</title>
 
-  <!-- Suppress Tailwind CDN production warning FIRST (before Tailwind loads).
-       We intentionally use the CDN for single-file portability. -->
-  <script>
-    (function() {
-      const origWarn = console.warn;
-      console.warn = function(...args) {
-        if (args.length && typeof args[0] === 'string' && args[0].indexOf('cdn.tailwindcss.com should not be used in production') !== -1) return;
-        return origWarn.apply(console, args);
-      };
-    })();
-  </script>
-  <!-- Tailwind CDN (Play CDN) — used for utility classes; custom theme tokens
-       are layered via CSS variables below. -->
-  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+  <link rel="stylesheet" href="/src/input.css" />
   <!-- Local QR generation (privacy: no third-party QR services) -->
   <script src="vendor/qrcode.min.js"></script>
-<script>
-    // Tailwind theme extension so utility classes pick up our design tokens.
-    tailwind.config = {
-      darkMode: ['[data-mode="dark"]', '[data-theme="dark"]'],
-      theme: {
-        extend: {
-          colors: {
-            // Reference CSS variables so Tailwind utilities and raw CSS share
-            // the same source of truth for theming.
-            bg:          'rgb(var(--c-bg) / <alpha-value>)',
-            surface:     'rgb(var(--c-surface) / <alpha-value>)',
-            'surface-2': 'rgb(var(--c-surface-2) / <alpha-value>)',
-            border:      'rgb(var(--c-border) / <alpha-value>)',
-            text:      'rgb(var(--c-text) / <alpha-value>)',
-            muted:     'rgb(var(--c-muted) / <alpha-value>)',
-            primary:   'rgb(var(--c-primary) / <alpha-value>)',
-            primary2:  'rgb(var(--c-primary-2) / <alpha-value>)',
-            accent:    'rgb(var(--c-accent) / <alpha-value>)',
-            success:   'rgb(var(--c-success) / <alpha-value>)',
-            warning:   'rgb(var(--c-warning) / <alpha-value>)',
-            danger:    'rgb(var(--c-danger) / <alpha-value>)'
-          },
-          fontFamily: {
-            sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
-            display: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
-            mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace']
-          },
-          borderRadius: {
-            xl: '14px', '2xl': '20px', '3xl': '28px'
-          },
-          boxShadow: {
-            card: '0 1px 2px rgba(0,0,0,.06), 0 8px 24px -12px rgba(0,0,0,.35)',
-            float: '0 8px 32px rgba(0,0,0,.45)'
-          }
-        }
-      }
-    };
-  </script>
 
   <!-- Google Fonts: Inter (UI), Plus Jakarta Sans (display), JetBrains Mono (numeric) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
