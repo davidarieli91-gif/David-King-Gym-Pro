@@ -1,5 +1,5 @@
 // Service Worker - David King Gym PWA
-const CACHE_NAME = 'dk-gym-v19';
+const CACHE_NAME = 'dk-gym-v21';
 const APP_SHELL = [
   './',
   './index.html',
@@ -8,9 +8,11 @@ const APP_SHELL = [
   './exercise-db.json',
   './food-db.json',
   './manifest.json',
+  './assets/manifest.json',
   './vendor/qrcode.min.js',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './assets/icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
