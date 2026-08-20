@@ -3758,6 +3758,17 @@
         </div>
         <p class="text-[11px] text-center text-muted">Попросите клиента навести камеру смартфона на этот QR-код</p>
 
+        <div class="bg-primary/10 border border-primary/30 rounded-2xl p-3 text-center space-y-1">
+          <p class="text-[10px] uppercase tracking-widest text-primary-2 font-bold">Код доступа клиента</p>
+          <div class="flex items-center justify-center gap-2">
+            <span id="portal-access-code" class="font-mono text-2xl font-bold tracking-[0.35em] text-white select-all">••••••</span>
+            <button id="btn-copy-portal-code" class="w-7 h-7 grid place-items-center rounded-lg bg-surface-2 hover:bg-border/60 text-muted" title="Скопировать код">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+          <p id="portal-expiry-note" class="text-[10px] text-muted">Ссылка зашифрована (AES-256) и действует 30 дней</p>
+        </div>
+
         <div class="space-y-2 pt-1">
           <button id="btn-copy-portal-link" class="w-full bg-surface-2 hover:bg-border/60 border border-border text-xs font-semibold py-2.5 rounded-xl transition flex items-center justify-center gap-2">
             <svg class="w-4 h-4 text-primary-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -20705,6 +20716,33 @@ async function boot() {
       }
     });
 
+    const PORTAL_LINK_TTL_DAYS = 30;
+    const PORTAL_PBKDF2_ITERATIONS = 150000;
+
+    function b64uEncode(bytes) {
+      let bin = '';
+      for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+      return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+    function b64uDecode(str) {
+      const b64 = str.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - (str.length % 4)) % 4);
+      const bin = atob(b64);
+      const out = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+      return out;
+    }
+
+    async function derivePortalKey(code, salt, usages) {
+      const keyMaterial = await crypto.subtle.importKey('raw', new TextEncoder().encode(code), 'PBKDF2', false, ['deriveKey']);
+      return crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt: salt, iterations: PORTAL_PBKDF2_ITERATIONS, hash: 'SHA-256' },
+        keyMaterial,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        usages
+      );
+    }
+
     async function openClientPortalModal(clientId) {
       try {
         const client = await db.get('clients', clientId);
@@ -20716,25 +20754,55 @@ async function boot() {
         const plans = await db.find('nutrition_plans', 'by_clientId', clientId);
         const activePlan = (plans || []).find(p => p.status === 'active') || (plans && plans[0]) || null;
 
+        if (!window.crypto || !crypto.subtle || !crypto.subtle.encrypt) {
+          toast('Шифрование доступно только по https — откройте приложение по защищённой ссылке', 'danger', 4000);
+          return;
+        }
+
         const payload = {
           client: { full_name: client.full_name, goal: client.goal, weight: client.weight, target_weight: client.target_weight },
           program: activeProg,
-          plan: activePlan
+          plan: activePlan,
+          exp: Date.now() + PORTAL_LINK_TTL_DAYS * 86400000
         };
 
-        const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+        // AES-256-GCM encryption with a one-time 6-digit access code (PBKDF2-derived key)
+        const accessCode = String(Math.floor(100000 + Math.random() * 900000));
+        const salt = crypto.getRandomValues(new Uint8Array(16));
+        const iv = crypto.getRandomValues(new Uint8Array(12));
+        const key = await derivePortalKey(accessCode, salt, ['encrypt']);
+        const plaintext = new TextEncoder().encode(JSON.stringify(payload));
+        const ciphertext = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, plaintext));
+
+        const blob = new Uint8Array(salt.length + iv.length + ciphertext.length);
+        blob.set(salt, 0);
+        blob.set(iv, salt.length);
+        blob.set(ciphertext, salt.length + iv.length);
+
         const origin = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
-        const clientUrl = `${origin}client.html#data=${encoded}`;
+        const clientUrl = `${origin}client.html#e=1.${b64uEncode(blob)}`;
 
         document.getElementById('portal-modal-client-name').textContent = client.full_name;
         document.getElementById('btn-open-portal-tab').href = clientUrl;
+        document.getElementById('portal-access-code').textContent = accessCode;
 
         // Local QR generation — client data never leaves the browser
         try {
           const qrImg = document.getElementById('portal-qr-img');
+          const qrBox = qrImg ? qrImg.parentElement : null;
           if (typeof QRCode !== 'undefined' && qrImg) {
-            const qrDataUrl = await QRCode.toDataURL(clientUrl, { width: 250, margin: 2, errorCorrectionLevel: 'M' });
-            qrImg.src = qrDataUrl;
+            if (clientUrl.length <= 2900) {
+              const qrDataUrl = await QRCode.toDataURL(clientUrl, { width: 250, margin: 2, errorCorrectionLevel: 'L' });
+              qrImg.src = qrDataUrl;
+              qrImg.classList.remove('hidden');
+              if (qrBox) qrBox.title = '';
+            } else {
+              // Payload too large for a QR code — link sharing still works
+              qrImg.classList.add('hidden');
+              if (qrBox) qrBox.title = 'Payload too large for QR';
+              const hint = document.getElementById('portal-qr-img') && document.querySelector('#client-portal-modal .text-\\[11px\\]');
+              if (hint) hint.textContent = 'QR недоступен (план слишком большой) — отправьте ссылку через WhatsApp';
+            }
           }
         } catch (qrErr) {
           console.error('[openClientPortalModal] QR generation failed:', qrErr);
@@ -20748,10 +20816,18 @@ async function boot() {
           });
         };
 
+        document.getElementById('btn-copy-portal-code').onclick = () => {
+          navigator.clipboard.writeText(accessCode).then(() => {
+            toast('Код доступа скопирован!', 'success', 2000);
+          }).catch(() => {
+            prompt('Скопируйте код вручную:', accessCode);
+          });
+        };
+
         document.getElementById('btn-whatsapp-portal').onclick = () => {
           const phone = (client.phone || '').replace(/[^0-9]/g, '');
           const msg = encodeURIComponent(
-            `👋 Привет, ${client.full_name}!\n\nТвой персональный план тренировок и питания в David King Gym готов:\n👉 ${clientUrl}\n\nОткрывай прямо на телефоне и сохраняй на главный экран!`
+            `👋 Привет, ${client.full_name}!\n\nТвой персональный план тренировок и питания в David King Gym готов:\n👉 ${clientUrl}\n\n🔑 Код доступа: ${accessCode} — введи его при открытии ссылки\n\nОткрывай прямо на телефоне и сохраняй на главный экран!`
           );
           const waUrl = phone ? `https://wa.me/${phone}?text=${msg}` : `https://wa.me/?text=${msg}`;
           window.open(waUrl, '_blank');
