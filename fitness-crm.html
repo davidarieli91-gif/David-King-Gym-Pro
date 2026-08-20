@@ -42,6 +42,8 @@
   <!-- Tailwind CDN (Play CDN) — used for utility classes; custom theme tokens
        are layered via CSS variables below. -->
   <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+  <!-- Local QR generation (privacy: no third-party QR services) -->
+  <script src="vendor/qrcode.min.js"></script>
 <script>
     // Tailwind theme extension so utility classes pick up our design tokens.
     tailwind.config = {
@@ -20724,11 +20726,19 @@ async function boot() {
         const origin = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
         const clientUrl = `${origin}client.html#data=${encoded}`;
 
-        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(clientUrl)}`;
-
         document.getElementById('portal-modal-client-name').textContent = client.full_name;
-        document.getElementById('portal-qr-img').src = qrUrl;
         document.getElementById('btn-open-portal-tab').href = clientUrl;
+
+        // Local QR generation — client data never leaves the browser
+        try {
+          const qrImg = document.getElementById('portal-qr-img');
+          if (typeof QRCode !== 'undefined' && qrImg) {
+            const qrDataUrl = await QRCode.toDataURL(clientUrl, { width: 250, margin: 2, errorCorrectionLevel: 'M' });
+            qrImg.src = qrDataUrl;
+          }
+        } catch (qrErr) {
+          console.error('[openClientPortalModal] QR generation failed:', qrErr);
+        }
 
         document.getElementById('btn-copy-portal-link').onclick = () => {
           navigator.clipboard.writeText(clientUrl).then(() => {
