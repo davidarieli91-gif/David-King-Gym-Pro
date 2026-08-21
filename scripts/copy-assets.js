@@ -30,14 +30,13 @@ for (const asset of assets) {
   console.log(`copied ${asset}`);
 }
 
-// Clean Vite's hashed HTML duplicates (Vite emits hashed copies for multi-page entries)
-// Keep hashed manifest/icon — HTML references the hashed versions, while sw.js uses root copies
+// Clean Vite's emitted HTML duplicates in assets/ (entries are already at dist root)
 try {
   const assetDir = resolve(dist, 'assets');
   if (existsSync(assetDir)) {
     const files = await readdir(assetDir);
     for (const f of files) {
-      if (/^(fitness-crm|client|index)-.*\.html$/.test(f)) {
+      if (/\.html$/i.test(f)) {
         await rm(resolve(assetDir, f));
         console.log(`removed duplicate ${f}`);
       }

@@ -1,5 +1,7 @@
 // Service Worker - David King Gym PWA
-const CACHE_NAME = 'dk-gym-v21';
+// v22: NETWORK-FIRST for pages/HTML (updates reach users immediately),
+//      cache-first only for static assets. Fixes stale-HTML lock-in.
+const CACHE_NAME = 'dk-gym-v22';
 const APP_SHELL = [
   './',
   './index.html',
@@ -34,24 +36,10 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
-  
+
   const url = new URL(req.url);
   if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
-
-  if (url.origin === self.location.origin) {
-    event.respondWith(
-      caches.match(req).then((cached) => {
-        if (cached) return cached;
-        return fetch(req).then((res) => {
-          if (res.ok && res.type === 'basic') {
-            const clone = res.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
-          }
-          return res;
-        }).catch(() => cached || new Response('Offline', { status: 503 }));
-      })
-    );
-  } else {
+  if (url.origin !== self.location.origin) {
     event.respondWith(
       fetch(req).catch(() =>
         caches.match(req).then((cached) =>
@@ -59,7 +47,42 @@ self.addEventListener('fetch', (event) => {
         )
       )
     );
+    return;
   }
+
+  // HTML / navigations: NETWORK-FIRST with cache fallback (offline support).
+  const isHtml = req.mode === 'navigate'
+    || (req.headers.get('accept') || '').includes('text/html')
+    || /\.html?$/.test(url.pathname);
+
+  if (isHtml) {
+    event.respondWith(
+      fetch(req).then((res) => {
+        if (res.ok) {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
+        }
+        return res;
+      }).catch(() =>
+        caches.match(req).then((cached) => cached || caches.match('./index.html'))
+      )
+    );
+    return;
+  }
+
+  // Static assets: cache-first, refresh in background (stale-while-revalidate)
+  event.respondWith(
+    caches.match(req).then((cached) => {
+      const network = fetch(req).then((res) => {
+        if (res.ok && res.type === 'basic') {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
+        }
+        return res;
+      }).catch(() => cached);
+      return cached || network;
+    })
+  );
 });
 
 self.addEventListener('message', (event) => {
