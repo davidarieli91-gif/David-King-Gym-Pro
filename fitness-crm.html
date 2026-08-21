@@ -13849,7 +13849,6 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const key = String(name).trim().toLowerCase();
       if (SYNERGIST_CANONICAL[key]) return SYNERGIST_CANONICAL[key];
       if (GROUP_COLORS[key]) return key;
-      // direct canonical check
       const direct = key.replace(/\s+/g, '_');
       if (GROUP_COLORS[direct]) return direct;
       return null;
@@ -13864,75 +13863,523 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       });
       return { primary, aux: Array.from(auxSet) };
     }
-    function buildVectorSvg(ex, view) {
-      const { primary, aux } = getExerciseMuscleGroups(ex);
-      const primaryColor = GROUP_COLORS[primary] || '#ef4444';
-      const auxColor = AUX_HIGHLIGHT_COLOR;
-      // pick template
-      let tpl = view === 'back' ? SVG_BACK : view === 'side' ? SVG_SIDE : SVG_FRONT;
-      // inject highlight colors by replacing fills
-      // primary: solid 0.88, aux: 0.42 dashed
-      let out = tpl;
-      // We will post-process via DOM-like string replace: for each muscle path, check data-group
-      // Simple string-based highlight: add inline style for primary/aux groups
-      // Primary groups get bright fill, aux get cyan with lower opacity
-      // Use regex to find class="bm-muscle" with data-group="X"
-      out = out.replace(/class="bm-muscle"([^>]*?)data-group="([^"]+)"([^>]*?)fill="[^"]*"/g, (m, pre, grp, post) => {
-        const cg = canonicalGroup(grp) || grp;
-        const isPrimary = cg === primary;
-        const isAux = aux.includes(cg);
-        let fill, opacity, extra = '';
-        if (isPrimary) { fill = primaryColor; opacity = '0.88'; extra = ' style="filter:drop-shadow(0 0 6px ' + primaryColor + ');stroke-width:1.2"'; }
-        else if (isAux) { fill = auxColor; opacity = String(AUX_OPACITY); extra = ' stroke-dasharray="4 2" stroke-width="1"'; }
-        else { fill = 'rgba(120,120,120,0.18)'; opacity = '0.18'; }
-        // keep original attributes but override fill
-        return `class="bm-muscle${isPrimary ? ' primary' : isAux ? ' aux' : ''}"${pre}data-group="${grp}"${post}fill="${fill}" fill-opacity="${opacity}"${extra}`;
-      });
-      // also handle ellipses with same pattern (already covered)
-      return out;
-    }
-    function exerciseVectorIllustration(ex, opts) {
-      opts = opts || {};
-      const size = opts.size || 120;
-      const showBoth = opts.both !== false;
-      const primaryLabel = (ex.gR || ex.group_ru || ex.gE || ex.group_en || ex.g || ex.group || ex.group_canonical || '—');
-      const { primary, aux } = getExerciseMuscleGroups(ex);
-      const auxLabels = aux.map(g => {
-        const map = {chest:'Грудь', back:'Спина', shoulders:'Плечи', elbow_flexors:'Бицепс', triceps:'Трицепс', forearms:'Предплечья', abdominals:'Пресс', legs:'Ноги'};
-        return map[g] || g;
-      }).join(', ');
-      const frontSvg = buildVectorSvg(ex, 'front');
-      const backSvg = buildVectorSvg(ex, 'back');
-      const equip = ex.eR || ex.equipment_ru || ex.eE || ex.equipment_en || ex.e || ex.equipment || ex.equipment_type || '';
-      const equipIcon = { 'Штанга':'🏋️', 'Гантели':'💪', 'Трос':'🔗', 'Тренажер':'🏟️', 'Вес тела':'🤸', 'Гири':'🔔', 'Резина':'➰', 'Блины':'⭕' }[equip] || '•';
-      if (!showBoth) {
-        return `<div class="ex-vector-single" style="width:${size}px;height:${size}px;position:relative;background:radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.06), transparent 60%), linear-gradient(180deg, rgba(20,20,30,0.9), rgba(10,10,15,0.95));border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);">
-          <div style="position:absolute;inset:0;display:grid;place-items:center;padding:4px;">${frontSvg}</div>
-          <div style="position:absolute;bottom:2px;left:2px;right:2px;display:flex;justify-content:space-between;align-items:center;font-size:7px;line-height:1;">
-            <span style="background:${GROUP_COLORS[primary]||'#ef4444'};color:white;padding:1px 4px;border-radius:4px;font-weight:700;">${esc(primaryLabel)}</span>
-            ${auxLabels ? `<span style="background:${AUX_HIGHLIGHT_COLOR};color:#0a0a0f;padding:1px 4px;border-radius:4px;font-weight:600;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">+ ${esc(auxLabels)}</span>` : ''}
-          </div>
-          ${equip ? `<div style="position:absolute;top:3px;right:3px;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:1px 4px;font-size:8px;">${esc(equipIcon)} ${esc(equip)}</div>` : ''}
+
+    /* =====================================================================
+       PG VECTOR ILLUSTRATIONS — pose-based technique drawings.
+       For every exercise without a photo we render a schematic athlete in
+       the CORRECT working vector (lying bench / seated machine / standing
+       cable / hanging bar ...) with the equipment drawn in-hands and the
+       working muscles glowing: PRIMARY = group color, AUXILIARY = cyan.
+       ===================================================================== */
+    const PGI = (function () {
+      const SKIN = '#8b9bb0', SKIN_FAR = '#66788e', OUTLINE = 'rgba(10,12,18,.55)';
+      const FLOOR = 'rgba(255,255,255,.07)';
+      const STEEL = '#aab4c4', STEEL_DARK = '#5d6a7d';
+
+      /* ---------- geometry helpers ---------- */
+      const V = (x, y) => ({ x, y });
+      const add = (a, b) => V(a.x + b.x, a.y + b.y);
+      const mul = (a, k) => V(a.x * k, a.y * k);
+      // direction: angle deg from straight-DOWN; side=1 right/+x, -1 left
+      const dir = (deg, side) => { const r = deg * Math.PI / 180; return V(Math.sin(r) * side, Math.cos(r)); };
+      const lerp = (a, b, t) => V(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t);
+
+      function seg(a, b, w, color, extra) {
+        return `<line x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}" stroke="${color}" stroke-width="${w}" stroke-linecap="round"${extra || ''}/>`;
+      }
+      function circle(c, r, fill, extra) { return `<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="${r}" fill="${fill}"${extra || ''}/>`; }
+
+      /* ---------- glow layers ---------- */
+      let GLOW_DEFS = `<defs><filter id="pgGlow" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>`;
+      function glowSeg(a, b, color, primary) {
+        return seg(a, b, primary ? 9 : 6.5, color,
+          ` opacity="${primary ? .92 : .5}" filter="url(#pgGlow)"${primary ? '' : ' stroke-dasharray="5 3"'}`);
+      }
+      function glowShape(svg, color, primary) {
+        return svg.replace('@GLOW@', `fill="${color}" opacity="${primary ? .9 : .48}" filter="url(#pgGlow)"${primary ? '' : ' stroke-dasharray="4 3"'} stroke="${color}" stroke-width="1"`);
+      }
+      const ell = (c, rx, ry, rot) => `<ellipse cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" rx="${rx}" ry="${ry}" transform="rotate(${rot || 0} ${c.x.toFixed(1)} ${c.y.toFixed(1)})" @GLOW@/>`;
+      const rrect = (c, w, h) => `<rect x="${(c.x - w / 2).toFixed(1)}" y="${(c.y - h / 2).toFixed(1)}" width="${w}" height="${h}" rx="4" @GLOW@/>`;
+
+      /* ---------- equipment ---------- */
+      function barbell(hL, hR, plateR) {
+        const axis = V(hR.x - hL.x, hR.y - hL.y); const len = Math.hypot(axis.x, axis.y);
+        const u = V(axis.x / len, axis.y / len); const p = V(-u.y, u.x); const R = plateR || 11;
+        const e1 = add(hL, mul(u, -14)), e2 = add(hR, mul(u, 14));
+        let s = seg(e1, e2, 3.4, STEEL);
+        [e1, e2].forEach(e => {
+          s += seg(add(e, mul(p, -R)), add(e, mul(p, R)), R * 1.7, STEEL_DARK, ` opacity=".95"`);
+          s += circle(add(e, mul(p, -R)), 1.6, STEEL) + circle(add(e, mul(p, R)), 1.6, STEEL);
+        });
+        return s;
+      }
+      function dumbbell(hand, foreDir) {
+        const p = V(-foreDir.y, foreDir.x);
+        const a = add(hand, mul(p, -9)), b = add(hand, mul(p, 9));
+        return seg(a, b, 3, STEEL)
+          + seg(add(a, mul(p, -2)), add(a, mul(p, 2)), 7, STEEL_DARK)
+          + seg(add(b, mul(p, -2)), add(b, mul(p, 2)), 7, STEEL_DARK);
+      }
+      function kettlebell(hand) {
+        return circle(V(hand.x, hand.y + 8), 7.5, STEEL_DARK, ` stroke="${STEEL}" stroke-width="2"`)
+          + `<path d="M ${hand.x - 4} ${hand.y + 2} q 4 -7 8 0" fill="none" stroke="${STEEL}" stroke-width="2.4"/>`;
+      }
+      function cable(anchor, hand) {
+        return seg(anchor, hand, 1.8, STEEL, ` opacity=".9"`)
+          + circle(anchor, 3.4, STEEL_DARK, ` stroke="${STEEL}" stroke-width="1.2"`)
+          + seg(add(hand, V(-4, 0)), add(hand, V(4, 0)), 3, STEEL);
+      }
+      function bandBetween(a, b) {
+        const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2 + 10;
+        return `<path d="M ${a.x} ${a.y} Q ${mx} ${my} ${b.x} ${b.y}" fill="none" stroke="#f59e0b" stroke-width="3" opacity=".85" stroke-linecap="round"/>`;
+      }
+      function bench(cx, cy, w, ang) {
+        const r = ang || 0;
+        return `<g transform="rotate(${r} ${cx} ${cy})">
+          <rect x="${cx - w / 2}" y="${cy - 4}" width="${w}" height="9" rx="4" fill="${STEEL_DARK}" stroke="${STEEL}" stroke-width="1"/>
+          <rect x="${cx - w / 2 + 6}" y="${cy + 5}" width="4" height="16" fill="${STEEL_DARK}"/>
+          <rect x="${cx + w / 2 - 10}" y="${cy + 5}" width="4" height="16" fill="${STEEL_DARK}"/></g>`;
+      }
+      function seat(cx, cy) {
+        return `<rect x="${cx - 16}" y="${cy - 4}" width="32" height="8" rx="3" fill="${STEEL_DARK}" stroke="${STEEL}" stroke-width="1"/>
+          <rect x="${cx - 2}" y="${cy + 4}" width="4" height="20" fill="${STEEL_DARK}"/>
+          <rect x="${cx - 19}" y="${cy - 30}" width="6" height="28" rx="3" fill="${STEEL_DARK}" stroke="${STEEL}" stroke-width="1"/>`;
+      }
+      const floorLine = (y, x1, x2) => `<line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="${FLOOR}" stroke-width="3" stroke-linecap="round"/>`;
+      const pullupBar = (y) => `<line x1="30" y1="${y}" x2="150" y2="${y}" stroke="${STEEL}" stroke-width="4" stroke-linecap="round"/><rect x="42" y="${y - 8}" width="5" height="8" fill="${STEEL_DARK}"/><rect x="133" y="${y - 8}" width="5" height="8" fill="${STEEL_DARK}"/>`;
+      const dipBars = (y, xl, xr) => seg(V(xl, y - 14), V(xl, y), 4, STEEL) + seg(V(xl - 8, y), V(xl + 8, y), 4, STEEL)
+        + seg(V(xr, y - 14), V(xr, y), 4, STEEL) + seg(V(xr - 8, y), V(xr + 8, y), 4, STEEL);
+
+      /* ---------- body parts ---------- */
+      function head(c, far) { return circle(c, 9.5, far ? SKIN_FAR : SKIN, ` stroke="${OUTLINE}" stroke-width="1"`); }
+      function torsoPath(top, bot, hwTop, hwBot) {
+        return `<path d="M ${top.x - hwTop} ${top.y} Q ${top.x} ${top.y - 7} ${top.x + hwTop} ${top.y}
+          L ${bot.x + hwBot} ${bot.y} Q ${bot.x} ${bot.y + 6} ${bot.x - hwBot} ${bot.y} Z"
+          fill="${SKIN}" stroke="${OUTLINE}" stroke-width="1"/>`;
+      }
+
+      /* Build an athlete. cfg joints are absolute points. */
+      function athlete(o) {
+        let s = '';
+        const limbW = 7.5;
+        // far limbs first (side view depth)
+        if (o.farArm) s += seg(o.farArm.s, o.farArm.e, limbW, SKIN_FAR) + seg(o.farArm.e, o.farArm.h, limbW - 1, SKIN_FAR);
+        if (o.farLeg) s += seg(o.farLeg.h, o.farLeg.k, limbW, SKIN_FAR) + seg(o.farLeg.k, o.farLeg.a, limbW - 1, SKIN_FAR);
+        // legs (near)
+        if (o.legN) s += seg(o.legN.h, o.legN.k, limbW, SKIN) + seg(o.legN.k, o.legN.a, limbW - 1, SKIN);
+        // torso
+        s += o.torso;
+        // near arm over torso
+        if (o.armN) s += seg(o.armN.s, o.armN.e, limbW, SKIN) + seg(o.armN.e, o.armN.h, limbW - 1, SKIN);
+        // neck+head last
+        if (o.neck) s += seg(o.neck.a, o.neck.b, 6, SKIN);
+        if (o.headC) s += head(o.headC);
+        return s;
+      }
+
+      /* glow placement derived from joints */
+      function glowsFor(g, J) {
+        const out = [];
+        const P = g.primary, A = new Set(g.aux);
+        const col = (grp) => grp === P ? (GROUP_COLORS[grp] || '#ef4444') : AUX_HIGHLIGHT_COLOR;
+        const put = (grp, placeholderSvg) => { if (grp === P || A.has(grp)) out.push(glowShape(placeholderSvg, col(grp), grp === P)); };
+        const capOn = (a, b, grp) => { if (grp === P || A.has(grp)) out.push(glowSeg(a, b, col(grp), grp === P)); };
+        // torso-attached
+        if (J.chestC && (P === 'chest' || A.has('chest'))) {
+          const c = GROUP_COLORS.chest;
+          put('chest', ell(V(J.chestC.x - 6, J.chestC.y), 6.5, 8, 8));
+          put('chest', ell(V(J.chestC.x + 6, J.chestC.y), 6.5, 8, 8));
+        }
+        if (J.absC) put('abdominals', rrect(J.absC, 15, 22));
+        if (J.shoulderL) {
+          put('shoulders', ell(J.shoulderL, 5.5, 5.5, 0));
+          if (J.shoulderR) put('shoulders', ell(J.shoulderR, 5.5, 5.5, 0));
+        }
+        // limb-attached
+        if (J.armN) { capOn(J.armN.s, J.armN.e, 'elbow_flexors'); capOn(J.armN.s, J.armN.e, 'triceps'); capOn(J.armN.e, J.armN.h, 'forearms'); }
+        if (J.farArm) { capOn(J.farArm.s, J.farArm.e, 'elbow_flexors'); capOn(J.farArm.e, J.farArm.h, 'forearms'); }
+        if (J.legN) {
+          capOn(J.legN.h, J.legN.k, 'legs');
+          capOn(J.legN.k, J.legN.a, 'calves');
+        }
+        if (J.farLeg) { capOn(J.farLeg.h, J.farLeg.k, 'legs'); capOn(J.farLeg.k, J.farLeg.a, 'calves'); }
+        if (J.gluteC) put('legs', ell(J.gluteC, 8, 6, 0));
+        if (J.trapC) put('back', rrect(J.trapC, 26, 7));
+        if (J.latC) { put('back', ell(V(J.latC.x - 11, J.latC.y), 4.5, 10, 12)); put('back', ell(V(J.latC.x + 11, J.latC.y), 4.5, 10, -12)); }
+        return out.join('');
+      }
+
+      /* ---------- POSES ---------- */
+      // Each pose fn(ex, g) -> {svg, facing}
+      function standBase() {
+        const S = V(90, 56), P = V(90, 100);
+        const arm = (side) => { const s = V(S.x + 15 * side, S.y + 2); const e = add(s, mul(dir(14, side), 26)); const h = add(e, mul(dir(8, side), 24)); return { s, e, h }; };
+        const leg = (side) => { const h = V(P.x + 7 * side, P.y + 2); const k = add(h, mul(dir(3, side), 36)); const a = add(k, mul(dir(1, side), 32)); return { h, k, a }; };
+        return { S, P, armL: arm(-1), armR: arm(1), legL: leg(-1), legR: leg(1) };
+      }
+
+      const POSES = {
+        stand(ex, g) {
+          const b = standBase();
+          return { facing: 'front', J: { shoulderL: b.armL.s, shoulderR: b.armR.s, chestC: V(90, 68), absC: V(90, 86), trapC: V(90, 55), latC: V(90, 64), gluteC: V(90, 100), armN: b.armR, farArm: b.armL, legN: b.legR, farLeg: b.legL }, art: '' };
+        },
+        overheadPress(ex, g) {
+          const b = standBase();
+          const arm = (side) => { const s = V(b.S.x + 15 * side, b.S.y + 2); const e = add(s, mul(dir(150, side), 26)); const h = add(e, mul(dir(168, side), 24)); return { s, e, h }; };
+          const aL = arm(-1), aR = arm(1);
+          return { facing: 'front', J: { shoulderL: aL.s, shoulderR: aR.s, chestC: V(90, 68), absC: V(90, 86), trapC: V(90, 55), latC: V(90, 64), gluteC: V(90, 100), armN: aR, farArm: aL, legN: b.legR, farLeg: b.legL }, art: barbell(aL.h, aR.h, 10) };
+        },
+        lateralRaise(ex, g) {
+          const b = standBase();
+          const arm = (side) => { const s = V(b.S.x + 15 * side, b.S.y + 2); const e = add(s, mul(dir(82, side), 26)); const h = add(e, mul(dir(84, side), 22)); return { s, e, h }; };
+          const aL = arm(-1), aR = arm(1);
+          return { facing: 'front', J: { shoulderL: aL.s, shoulderR: aR.s, chestC: V(90, 68), absC: V(90, 86), trapC: V(90, 55), latC: V(90, 64), gluteC: V(90, 100), armN: aR, farArm: aL, legN: b.legR, farLeg: b.legL }, art: dumbbell(aL.h, V(-1, .1)) + dumbbell(aR.h, V(1, .1)) };
+        },
+        frontRaise(ex, g) {
+          const b = standBase();
+          const arm = (side) => { const s = V(b.S.x + 13 * side, b.S.y + 2); const e = add(s, mul(dir(70, side), 26)); const h = add(e, mul(dir(72, side), 22)); return { s, e, h }; };
+          const aL = arm(-1), aR = arm(1);
+          return { facing: 'front', J: { shoulderL: aL.s, shoulderR: aR.s, chestC: V(90, 68), absC: V(90, 86), trapC: V(90, 55), latC: V(90, 64), gluteC: V(90, 100), armN: aR, farArm: aL, legN: b.legR, farLeg: b.legL }, art: barbell(aL.h, aR.h, 9) };
+        },
+        uprightRow(ex, g) {
+          const b = standBase();
+          const arm = (side) => { const s = V(b.S.x + 14 * side, b.S.y + 2); const e = add(s, mul(dir(40, side), 26)); const h = add(e, mul(dir(30, side), 22)); return { s, e, h }; };
+          const aL = arm(-1), aR = arm(1);
+          return { facing: 'front', J: { shoulderL: aL.s, shoulderR: aR.s, chestC: V(90, 68), absC: V(90, 86), trapC: V(90, 55), latC: V(90, 64), gluteC: V(90, 100), armN: aR, farArm: aL, legN: b.legR, farLeg: b.legL }, art: barbell(aL.h, aR.h, 9) };
+        },
+        shrug(ex, g) {
+          const b = standBase();
+          return { facing: 'front', J: { shoulderL: b.armL.s, shoulderR: b.armR.s, chestC: V(90, 68), absC: V(90, 86), trapC: V(90, 53), latC: V(90, 64), gluteC: V(90, 100), armN: b.armR, farArm: b.armL, legN: b.legR, farLeg: b.legL }, art: barbell(b.armL.h, b.armR.h, 11) };
+        },
+        curl(ex, g) {
+          const b = standBase();
+          const arm = (side) => { const s = V(b.S.x + 15 * side, b.S.y + 2); const e = add(s, mul(dir(18, side), 26)); const h = add(e, mul(dir(125, side), 22)); return { s, e, h }; };
+          const aL = arm(-1), aR = arm(1);
+          const eq = /ez/.test(ex.e || '') ? barbell(aL.h, aR.h, 8) : (/dumbbell|гантел/.test(ex.e || '') ? dumbbell(aL.h, V(0, -1)) + dumbbell(aR.h, V(0, -1)) : barbell(aL.h, aR.h, 9));
+          return { facing: 'front', J: { shoulderL: aL.s, shoulderR: aR.s, chestC: V(90, 68), absC: V(90, 86), trapC: V(90, 55), latC: V(90, 64), gluteC: V(90, 100), armN: aR, farArm: aL, legN: b.legR, farLeg: b.legL }, art: eq };
+        },
+        pushdown(ex, g) {
+          const b = standBase();
+          const arm = (side) => { const s = V(b.S.x + 13 * side, b.S.y + 2); const e = add(s, mul(dir(30, side), 26)); const h = add(e, mul(dir(-25, side), 22)); return { s, e, h }; };
+          const aL = arm(-1), aR = arm(1);
+          const anchorL = V(60, 8), anchorR = V(120, 8);
+          return { facing: 'front', J: { shoulderL: aL.s, shoulderR: aR.s, chestC: V(90, 68), absC: V(90, 86), trapC: V(90, 55), latC: V(90, 64), gluteC: V(90, 100), armN: aR, farArm: aL, legN: b.legR, farLeg: b.legL }, art: cable(anchorL, aL.h) + cable(anchorR, aR.h) };
+        },
+        cableCross(ex, g) {
+          const b = standBase();
+          const arm = (side) => { const s = V(b.S.x + 14 * side, b.S.y + 2); const e = add(s, mul(dir(55, side), 26)); const h = V(90 + 4 * side, 78); return { s, e, h }; };
+          const aL = arm(-1), aR = arm(1);
+          return { facing: 'front', J: { shoulderL: aL.s, shoulderR: aR.s, chestC: V(90, 68), absC: V(90, 86), trapC: V(90, 55), latC: V(90, 64), gluteC: V(90, 100), armN: aR, farArm: aL, legN: b.legR, farLeg: b.legL }, art: cable(V(28, 14), aL.h) + cable(V(152, 14), aR.h) };
+        },
+        squat(ex, g) {
+          const S = V(90, 74), P = V(90, 112);
+          const arm = (side) => { const s = V(S.x + 15 * side, S.y + 2); const e = add(s, mul(dir(95, side), 20)); const h = add(e, mul(dir(120, side), 18)); return { s, e, h }; };
+          const leg = (side) => { const h = V(P.x + 8 * side, P.y + 2); const k = add(h, mul(dir(38, side), 30)); const a = add(k, mul(dir(-15, side), 30)); return { h, k, a }; };
+          const aL = arm(-1), aR = arm(1), lL = leg(-1), lR = leg(1);
+          const rack = seg(V(52, 40), V(52, 140), 4, STEEL_DARK) + seg(V(128, 40), V(128, 140), 4, STEEL_DARK);
+          return { facing: 'front', J: { shoulderL: aL.s, shoulderR: aR.s, chestC: V(90, 86), absC: V(90, 100), trapC: V(90, 73), latC: V(90, 80), gluteC: V(90, 112), armN: aR, farArm: aL, legN: lR, farLeg: lL, torso: torsoPath(V(90, 74), V(90, 112), 15, 12) }, art: rack + barbell(aL.h, aR.h, 10) + floorLine(142, 30, 150) };
+        },
+        deadlift(ex, g) {
+          // side view, torso leaned ~60° forward (to +x)
+          const hip = V(74, 108), sh = V(112, 132);
+          const armS = V(sh.x, sh.y + 2), el = V(116, 118), hand = V(114, 142);
+          const legH = V(hip.x, hip.y + 2), knee = V(92, 134), ank = V(90, 152);
+          const farKnee = V(86, 136), farAnk = V(84, 153);
+          const torso = torsoPath(sh, hip, 9, 8);
+          return { facing: 'side', J: { shoulderL: armS, chestC: lerp(sh, hip, .3), absC: lerp(sh, hip, .62), trapC: lerp(sh, hip, .12), latC: lerp(sh, hip, .35), gluteC: V(hip.x - 4, hip.y), armN: { s: armS, e: el, h: hand }, legN: { h: legH, k: knee, a: ank }, farLeg: { h: legH, k: farKnee, a: farAnk }, torso }, art: barbell(V(96, 143), V(134, 143), 11) + floorLine(154, 30, 155) };
+        },
+        bentRow(ex, g) {
+          const hip = V(70, 106), sh = V(110, 126);
+          const armS = V(sh.x, sh.y + 2), el = V(122, 112), hand = V(124, 124);
+          const legH = V(hip.x, hip.y + 2), knee = V(88, 132), ank = V(86, 152);
+          const torso = torsoPath(sh, hip, 9, 8);
+          return { facing: 'side', J: { shoulderL: armS, chestC: lerp(sh, hip, .3), absC: lerp(sh, hip, .62), trapC: lerp(sh, hip, .12), latC: lerp(sh, hip, .35), gluteC: V(hip.x - 4, hip.y), armN: { s: armS, e: el, h: hand }, legN: { h: legH, k: knee, a: ank }, torso }, art: barbell(V(112, 125), V(140, 125), 10) + floorLine(154, 30, 155) };
+        },
+        benchFlat(ex, g, tilt) {
+          const ang = tilt || 0; // -18 incline (head up), +14 decline
+          const cx = 90, cy = 96;
+          const rot = (p) => { const r = ang * Math.PI / 180; const dx = p.x - cx, dy = p.y - cy; return V(cx + dx * Math.cos(r) - dy * Math.sin(r), cy + dx * Math.sin(r) + dy * Math.cos(r)); };
+          // unrotated supine layout: head LEFT, feet RIGHT, bench under torso
+          const headC = rot(V(46, 84)), neckA = rot(V(56, 88)), neckB = rot(V(64, 90));
+          const shL = rot(V(66, 92)), shR = rot(V(66, 100)); // near/far shoulders (y offsets)
+          const hip = rot(V(104, 96));
+          const chestC = rot(V(76, 96)), absC = rot(V(94, 96)), trapC = rot(V(64, 96)), latC = rot(V(72, 96)), gluteC = rot(V(104, 96));
+          const armN = (() => { const s = shL; const e = rot(V(78, 74)); const h = rot(V(84, 62)); return { s, e, h }; })();
+          const farArm = (() => { const s = shR; const e = rot(V(80, 118)); const h = rot(V(86, 130)); return { s, e, h }; })();
+          const legN = (() => { const h = hip; const k = rot(V(126, 96)); const a = rot(V(146, 96)); return { h, k, a }; })();
+          const farLeg = (() => { const h = hip; const k = rot(V(126, 102)); const a = rot(V(146, 103)); return { h, k, a }; })();
+          const torso = torsoPath(rot(V(66, 96)), rot(V(104, 96)), 8, 8);
+          const benchSvg = bench(cx, cy + 6, 86, ang);
+          const bar = barbell(rot(V(84, 58)), rot(V(88, 134)), 10);
+          return { facing: 'side', J: { shoulderL: shL, shoulderR: shR, chestC, absC, trapC, latC, gluteC, armN, farArm, legN, farLeg, torso, headC, neck: { a: neckA, b: neckB } }, art: benchSvg + bar };
+        },
+        floorPress(ex, g) {
+          const p = POSES.benchFlat(ex, g, 0);
+          return Object.assign(p, { art: p.art.replace(/<g transform="rotate[^"]*">[\s\S]*?<\/g>/, '') + floorLine(104, 26, 156) });
+        },
+        pushup(ex, g) {
+          const sh = V(52, 96), hip = V(104, 104);
+          const armN = { s: sh, e: V(48, 122), h: V(46, 140) };
+          const legN = { h: hip, k: V(132, 122), a: V(148, 140) };
+          const torso = torsoPath(sh, hip, 9, 8);
+          return { facing: 'side', J: { shoulderL: sh, chestC: lerp(sh, hip, .28), absC: lerp(sh, hip, .6), trapC: lerp(sh, hip, .1), latC: lerp(sh, hip, .34), gluteC: V(hip.x, hip.y - 4), armN, legN, torso, headC: V(40, 92), neck: { a: V(46, 94), b: V(50, 95) } }, art: floorLine(146, 24, 158) };
+        },
+        plank(ex, g) {
+          const p = POSES.pushup(ex, g);
+          const armN = { s: V(52, 96), e: V(58, 116), h: V(70, 118) }; // on forearm
+          return Object.assign(p, { J: Object.assign({}, p.J, { armN }), art: p.art });
+        },
+        crunch(ex, g) {
+          const sh = V(58, 92), hip = V(102, 98);
+          const armN = { s: sh, e: V(66, 78), h: V(52, 80) }; // hands behind head
+          const legN = { h: hip, k: V(126, 78), a: V(130, 104) };
+          const torso = torsoPath(sh, hip, 9, 8);
+          return { facing: 'side', J: { shoulderL: sh, chestC: lerp(sh, hip, .3), absC: lerp(sh, hip, .62), trapC: lerp(sh, hip, .12), latC: lerp(sh, hip, .36), gluteC: V(hip.x, hip.y - 3), armN, legN, torso, headC: V(48, 84), neck: { a: V(52, 88), b: V(56, 90) } }, art: floorLine(106, 26, 156) };
+        },
+        legCurl(ex, g) {
+          const sh = V(48, 96), hip = V(96, 98);
+          const armN = { s: sh, e: V(56, 112), h: V(62, 122) };
+          const legN = { h: hip, k: V(126, 98), a: V(140, 78) }; // prone: heel curls UP toward glutes
+          const torso = torsoPath(sh, hip, 9, 8);
+          const pad = seg(V(118, 106), V(132, 102), 6, STEEL_DARK) + seg(V(125, 109), V(125, 130), 4, STEEL_DARK);
+          return { facing: 'side', J: { shoulderL: sh, chestC: lerp(sh, hip, .3), absC: lerp(sh, hip, .62), trapC: lerp(sh, hip, .12), latC: lerp(sh, hip, .36), gluteC: V(hip.x, hip.y - 3), armN, legN, torso, headC: V(38, 94), neck: { a: V(43, 95), b: V(47, 96) } }, art: pad + floorLine(106, 24, 156) };
+        },
+        legExtension(ex, g) {
+          const hip = V(78, 92), sh = V(74, 52);
+          const armN = { s: sh, e: V(88, 66), h: V(96, 80) };
+          const legN = { h: hip, k: V(112, 94), a: V(140, 88) }; // extended forward
+          const torso = torsoPath(sh, hip, 9, 8);
+          const seatSvg = seat(hip.x - 2, hip.y + 6);
+          const pad = seg(V(116, 96), V(128, 92), 6, STEEL_DARK) + seg(V(122, 99), V(122, 124), 4, STEEL_DARK);
+          return { facing: 'side', J: { shoulderL: sh, chestC: lerp(sh, hip, .3), absC: lerp(sh, hip, .62), trapC: lerp(sh, hip, .12), latC: lerp(sh, hip, .36), gluteC: V(hip.x - 4, hip.y), armN, legN, torso, headC: V(76, 34), neck: { a: V(75, 42), b: V(75, 48) } }, art: seatSvg + pad + floorLine(126, 30, 156) };
+        },
+        seatedRow(ex, g) {
+          const hip = V(70, 96), sh = V(88, 58);
+          const armN = { s: sh, e: V(112, 70), h: V(126, 80) };
+          const legN = { h: hip, k: V(116, 108), a: V(142, 106) };
+          const torso = torsoPath(sh, hip, 9, 8);
+          const seatSvg = seat(hip.x - 4, hip.y + 8);
+          const anchor = V(160, 60);
+          return { facing: 'side', J: { shoulderL: sh, chestC: lerp(sh, hip, .3), absC: lerp(sh, hip, .62), trapC: lerp(sh, hip, .12), latC: lerp(sh, hip, .36), gluteC: V(hip.x - 4, hip.y), armN, legN, torso, headC: V(92, 40), neck: { a: V(89, 48), b: V(89, 54) } }, art: seatSvg + cable(anchor, armN.h) + floorLine(126, 30, 166) };
+        },
+        latPulldown(ex, g) {
+          const b = standBase(); const P = V(90, 100);
+          const seatY = 118;
+          const arm = (side) => { const s = V(b.S.x + 15 * side, b.S.y); const e = add(s, mul(dir(135, side), 24)); const h = add(e, mul(dir(115, side), 20)); return { s, e, h }; };
+          const leg = (side) => { const h = V(P.x + 7 * side, P.y + 4); const k = add(h, mul(dir(80, side), 30)); const a = add(k, mul(dir(-8, side), 28)); return { h, k, a }; };
+          const aL = arm(-1), aR = arm(1), lL = leg(-1), lR = leg(1);
+          const bar = barbell(V(74, 34), V(106, 34), 8);
+          const cables = seg(V(74, 30), V(74, 10), 2, STEEL) + seg(V(106, 30), V(106, 10), 2, STEEL);
+          return { facing: 'front', J: { shoulderL: aL.s, shoulderR: aR.s, chestC: V(90, 68), absC: V(90, 86), trapC: V(90, 55), latC: V(90, 64), gluteC: V(90, 104), armN: aR, farArm: aL, legN: lR, farLeg: lL }, art: cables + bar + seat(90, seatY) };
+        },
+        pullup(ex, g) {
+          const b = standBase();
+          const arm = (side) => { const s = V(b.S.x + 14 * side, b.S.y + 2); const e = add(s, mul(dir(160, side), 24)); const h = V(90 + 12 * side, 22); return { s, e, h }; };
+          const leg = (side) => { const h = V(b.P.x + 7 * side, b.P.y + 2); const k = add(h, mul(dir(20, side), 32)); const a = add(k, mul(dir(-14, side), 28)); return { h, k, a }; };
+          const aL = arm(-1), aR = arm(1), lL = leg(-1), lR = leg(1);
+          return { facing: 'front', J: { shoulderL: aL.s, shoulderR: aR.s, chestC: V(90, 68), absC: V(90, 86), trapC: V(90, 55), latC: V(90, 64), gluteC: V(90, 100), armN: aR, farArm: aL, legN: lR, farLeg: lL }, art: pullupBar(20) };
+        },
+        hangingLegRaise(ex, g) {
+          const p = POSES.pullup(ex, g);
+          const leg = (side) => { const h = V(90 + 7 * side, 102); const k = V(90 + 10 * side, 74); const a = V(90 + 8 * side, 52); return { h, k, a }; };
+          return Object.assign(p, { J: Object.assign({}, p.J, { legN: leg(1), farLeg: leg(-1), absC: V(90, 84) }) });
+        },
+        dip(ex, g) {
+          const S = V(90, 66), P = V(90, 108);
+          const arm = (side) => { const s = V(S.x + 14 * side, S.y); const e = add(s, mul(dir(30, side), 22)); const h = V(90 + 26 * side, 44); return { s, e, h }; };
+          const leg = (side) => { const h = V(P.x + 7 * side, P.y + 2); const k = add(h, mul(dir(25, side), 30)); const a = add(k, mul(dir(-20, side), 26)); return { h, k, a }; };
+          const aL = arm(-1), aR = arm(1), lL = leg(-1), lR = leg(1);
+          return { facing: 'front', J: { shoulderL: aL.s, shoulderR: aR.s, chestC: V(90, 80), absC: V(90, 96), trapC: V(90, 65), latC: V(90, 72), gluteC: V(90, 108), armN: aR, farArm: aL, legN: lR, farLeg: lL, torso: torsoPath(V(90, 66), V(90, 108), 14, 11) }, art: dipBars(44, 58, 122) };
+        },
+        lunge(ex, g) {
+          const S = V(90, 60), P = V(90, 102);
+          const arm = (side) => { const s = V(S.x + 15 * side, S.y + 2); const e = add(s, mul(dir(10, side), 26)); const h = add(e, mul(dir(6, side), 24)); return { s, e, h }; };
+          const legF = { h: V(P.x + 6, P.y + 2), k: V(104, 128), a: V(104, 152) };
+          const legB = { h: V(P.x - 6, P.y + 2), k: V(72, 124), a: V(58, 144) };
+          const aL = arm(-1), aR = arm(1);
+          const eq = /dumbbell|гантел/.test(ex.e || '') ? dumbbell(aL.h, V(0, 1)) + dumbbell(aR.h, V(0, 1)) : barbell(aL.h, aR.h, 9);
+          return { facing: 'front', J: { shoulderL: aL.s, shoulderR: aR.s, chestC: V(90, 72), absC: V(90, 88), trapC: V(90, 59), latC: V(90, 66), gluteC: V(90, 102), armN: aR, farArm: aL, legN: legF, farLeg: legB }, art: eq + floorLine(154, 30, 152) };
+        },
+        calfRaise(ex, g) {
+          const b = standBase();
+          const leg = (side) => { const h = V(b.P.x + 7 * side, b.P.y + 2); const k = add(h, mul(dir(2, side), 36)); const a = add(k, mul(dir(0, side), 26)); return { h, k, a }; };
+          return { facing: 'front', J: { shoulderL: b.armL.s, shoulderR: b.armR.s, chestC: V(90, 68), absC: V(90, 86), trapC: V(90, 55), latC: V(90, 64), gluteC: V(90, 100), armN: b.armR, farArm: b.armL, legN: leg(1), farLeg: leg(-1) }, art: seg(V(74, 156), V(106, 156), 5, STEEL_DARK) };
+        },
+        seated(ex, g) {
+          const S = V(88, 58), P = V(86, 98);
+          const arm = (side) => { const s = V(S.x + 14 * side, S.y + 2); const e = add(s, mul(dir(20, side), 24)); const h = add(e, mul(dir(12, side), 22)); return { s, e, h }; };
+          const leg = (side) => { const h = V(P.x + 6 * side, P.y + 4); const k = add(h, mul(dir(84, side), 30)); const a = add(k, mul(dir(-4, side), 28)); return { h, k, a }; };
+          const aL = arm(-1), aR = arm(1), lL = leg(-1), lR = leg(1);
+          return { facing: 'front', J: { shoulderL: aL.s, shoulderR: aR.s, chestC: V(88, 70), absC: V(87, 86), trapC: V(88, 57), latC: V(88, 64), gluteC: V(86, 98), armN: aR, farArm: aL, legN: lR, farLeg: lL }, art: seat(86, 102) + floorLine(132, 40, 150) };
+        },
+        stretch(ex, g) {
+          const b = standBase();
+          const arm = (side) => { const s = V(b.S.x + 15 * side, b.S.y + 2); const e = add(s, mul(dir(120, side), 26)); const h = add(e, mul(dir(140, side), 22)); return { s, e, h }; };
+          const aL = arm(-1), aR = arm(1);
+          return { facing: 'front', J: { shoulderL: aL.s, shoulderR: aR.s, chestC: V(90, 68), absC: V(90, 86), trapC: V(90, 55), latC: V(90, 64), gluteC: V(90, 100), armN: aR, farArm: aL, legN: b.legR, farLeg: b.legL }, art: '' };
+        }
+      };
+
+      /* ---------- pose detection ---------- */
+      function detectPose(ex) {
+        const n = ((ex.nE || ex.name_en || '') + ' ' + (ex.nR || ex.name_ru || '')).toLowerCase();
+        const eq = String(ex.e || ex.equipment_type || '').toLowerCase();
+        const sub = String(ex.sE || ex.subgroup_en || '').toLowerCase();
+        const g = getExerciseMuscleGroups(ex).primary;
+        const has = (...ws) => ws.some(w => n.includes(w));
+
+        if (has('plank', 'планк')) return 'plank';
+        if (has('push-up', 'pushup', 'отжимани', 'mountain climber', 'горизонтальн', 'burpee', 'берпи')) return 'pushup';
+        if (has('pull-up', 'pullup', 'подтягиван', 'chin-up', 'chinup', 'muscle-up', 'muscle up', 'planche')) return 'pullup';
+        if (has('hanging leg', 'подъем ног в висе', 'raise в висе', 'leg raise', 'подъём ног')) return 'hangingLegRaise';
+        if (has('dip', 'брусья')) return 'dip';
+        if (has('lunge', 'выпад')) return 'lunge';
+        if (has('crunch', 'sit-up', 'situp', 'скручив', 'пресс', 'подъем туловищ', 'подъём туловищ')) return 'crunch';
+        if (has('leg curl', 'сгибание ног', 'сгибани ног')) return 'legCurl';
+        if (has('leg extension', 'разгибание ног', 'разгибани ног')) return 'legExtension';
+        if (has('lat pulldown', 'pulldown', 'тяга верхнего блока', 'тяга к груди')) return 'latPulldown';
+        if (has('seated row', 'тяга нижнего блока', 'row сидя')) return 'seatedRow';
+        if (has('crossover', 'кроссовер')) return 'cableCross';
+        if (has('deadlift', 'станов', 'тяга румынск')) return 'deadlift';
+        if (has('bent-over row', 'bent over row', 'тяга в наклоне', 'наклоне')) return 'bentRow';
+        if (has('squat', 'присед')) return 'squat';
+        if (has('calf', 'голен', 'икр')) return 'calfRaise';
+        if (has('shrug', 'шраг')) return 'shrug';
+        if (has('upright row', 'к подбородку')) return 'uprightRow';
+        if (has('lateral raise', 'в стороны', 'side raise', 'махи в сторон')) return 'lateralRaise';
+        if (has('front raise', 'перед собой', 'forward raise')) return 'frontRaise';
+        if (has('curl', 'сгибание рук', 'бицепс')) return 'curl';
+        if (has('pushdown', 'triceps extension', 'разгибание', 'франц', 'kickback', 'overhead ext')) return 'pushdown';
+        if (has('incline')) return 'benchFlatIncline';
+        if (has('decline')) return 'benchFlatDecline';
+        if (has('bench', 'скамь', 'лёжа', 'лежа', 'lying', 'floor', 'полу')) {
+          if (has('fly', 'разводк', 'press', 'жим', 'pullover')) return has('floor', 'полу') ? 'floorPress' : 'benchFlat';
+        }
+        if (has('seated', 'сидя', 'сидя ', 'sit')) {
+          if (g === 'shoulders' || has('press', 'жим')) return 'seatedOverhead';
+          return 'seated';
+        }
+        if (has('stretch', 'растяжк', 'разминк', 'warmup', 'мобилит')) return 'stretch';
+        if (g === 'warmup' || g === 'stretching') return 'stretch';
+        // group defaults
+        if (g === 'abdominals') return 'crunch';
+        if (g === 'legs') return eq === 'barbell' || eq === 'smith' ? 'squat' : 'lunge';
+        if (g === 'chest') return (eq === 'barbell' || eq === 'dumbbell' || eq === 'smith') ? 'benchFlat' : 'cableCross';
+        if (g === 'back') return 'bentRow';
+        if (g === 'shoulders') return 'overheadPress';
+        if (g === 'elbow_flexors') return 'curl';
+        if (g === 'triceps') return 'pushdown';
+        if (g === 'forearms') return 'curl';
+        return 'stand';
+      }
+
+      function renderTechnique(ex, g) {
+        let key = detectPose(ex);
+        let tilt = 0;
+        if (key === 'benchFlatIncline') { key = 'benchFlat'; tilt = -18; }
+        if (key === 'benchFlatDecline') { key = 'benchFlat'; tilt = 14; }
+        const fn = POSES[key] || POSES.stand;
+        let b;
+        try { b = fn(ex, g, tilt); } catch (e) { b = POSES.stand(ex, g); }
+        if (key === 'seatedOverhead') {
+          const base = POSES.overheadPress(ex, g);
+          b = Object.assign({}, base, { art: base.art + seat(90, 104) });
+        }
+        // derive head/neck when a pose didn't specify them
+        if (!b.J.headC) {
+          const top = (b.J.shoulderL && b.J.shoulderR) ? lerp(b.J.shoulderL, b.J.shoulderR, .5) : (b.J.armN ? b.J.armN.s : V(90, 56));
+          if (b.J.torso && b.J.gluteC) {
+            const dx = top.x - b.J.gluteC.x, dy = top.y - b.J.gluteC.y;
+            const L = Math.hypot(dx, dy) || 1;
+            b.J.headC = V(top.x + dx / L * 17, top.y + dy / L * 17);
+            b.J.neck = { a: V(top.x + dx / L * 6, top.y + dy / L * 6), b: top };
+          } else {
+            b.J.headC = V(top.x, top.y - 16);
+            b.J.neck = { a: V(top.x, top.y - 8), b: top };
+          }
+        }
+        const fig = athlete({
+          farArm: b.J.farArm, farLeg: b.J.farLeg, armN: b.J.armN, legN: b.J.legN,
+          torso: b.J.torso || torsoPath(V(90, 56), V(90, 100), 15, 12),
+          headC: b.J.headC, neck: b.J.neck || null,
+          facing: b.facing
+        });
+        const glows = glowsFor(g, b.J);
+        return GLOW_DEFS + b.art + fig + glows;
+      }
+
+      /* muscle map panel (anatomical front/back with highlights) */
+      function buildMapSvg(ex, view) {
+        const { primary, aux } = getExerciseMuscleGroups(ex);
+        const tpl = view === 'back' ? SVG_BACK : view === 'side' ? SVG_SIDE : SVG_FRONT;
+        return tpl.replace(/class="bm-muscle"([^>]*?)data-group="([^"]+)"([^>]*?)fill="[^"]*"/g, (m, pre, grp, post) => {
+          const cg = canonicalGroup(grp) || grp;
+          const isP = cg === primary, isA = aux.includes(cg);
+          const fill = isP ? (GROUP_COLORS[primary] || '#ef4444') : isA ? AUX_HIGHLIGHT_COLOR : 'rgba(120,120,120,0.18)';
+          const op = isP ? '.9' : isA ? String(AUX_OPACITY) : '.18';
+          const extra = isP ? ` style="filter:drop-shadow(0 0 5px ${GROUP_COLORS[primary]})"` : isA ? ' stroke-dasharray="4 2"' : '';
+          return `class="bm-muscle"${pre}data-group="${grp}"${post}fill="${fill}" fill-opacity="${op}"${extra}`;
+        });
+      }
+
+      function mapViewFor(ex) {
+        const { primary } = getExerciseMuscleGroups(ex);
+        const sub = String(ex.sE || ex.subgroup_en || '').toLowerCase();
+        if (['back', 'triceps'].includes(primary)) return 'back';
+        if (primary === 'legs' && /hamstring|glute|calf| posterior/.test(sub)) return 'back';
+        return 'front';
+      }
+
+      const RU_GROUP = { chest: 'Грудь', back: 'Спина', shoulders: 'Плечи', elbow_flexors: 'Бицепс', triceps: 'Трицепс', forearms: 'Предплечья', abdominals: 'Пресс', legs: 'Ноги', stretching: 'Растяжка', warmup: 'Разминка', calisthenics: 'Калистеника', other: 'Другое' };
+
+      function chips(ex) {
+        const { primary, aux } = getExerciseMuscleGroups(ex);
+        const pc = GROUP_COLORS[primary] || '#ef4444';
+        const pl = RU_GROUP[primary] || primary;
+        const auxChips = aux.slice(0, 3).map(a => `<span style="background:${AUX_HIGHLIGHT_COLOR};color:#062a30;padding:1px 5px;border-radius:999px;font-weight:700;font-size:7px;white-space:nowrap;">+ ${esc(RU_GROUP[a] || a)}</span>`).join('');
+        return `<div style="position:absolute;left:4px;bottom:4px;right:4px;display:flex;gap:3px;align-items:center;flex-wrap:wrap;">
+          <span style="background:${pc};color:#fff;padding:1px 6px;border-radius:999px;font-weight:800;font-size:7.5px;box-shadow:0 0 6px ${pc};">${esc(pl)}</span>${auxChips}</div>`;
+      }
+      function equipChip(ex) {
+        const eq = ex.eR || ex.equipment_ru || ex.eE || ex.equipment_en || ex.e || '';
+        if (!eq) return '';
+        const icon = { 'Штанга': '🏋️', 'Гантели': '💪', 'Трос': '🔗', 'Тренажер': '🏟️', 'Вес тела': '🤸', 'Гири': '🔔', 'Резина': '➰', 'Блины': '⭕', 'EZ-штанга': '🏋️‍♂️', 'Смит': '🏟️' }[eq] || '•';
+        return `<div style="position:absolute;top:3px;right:3px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:1px 5px;font-size:8px;color:#dbe4ee;">${icon} ${esc(eq)}</div>`;
+      }
+
+      function frame(inner, label) {
+        return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;min-width:0;">
+          <div style="width:100%;display:grid;place-items:center;">${inner}</div>
+          <span style="font-size:7px;color:rgba(255,255,255,.45);letter-spacing:.12em;margin-top:2px;">${label}</span></div>`;
+      }
+
+      function render(ex, opts) {
+        opts = opts || {};
+        const g = getExerciseMuscleGroups(ex);
+        const tech = `<svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">${renderTechnique(ex, g)}</svg>`;
+        if (opts.both === false) {
+          return `<div style="position:relative;width:100%;height:100%;min-height:120px;background:radial-gradient(ellipse at 50% 12%, rgba(99,102,241,.10), transparent 55%), linear-gradient(180deg,#171a24,#0c0e14);border-radius:10px;overflow:hidden;">
+            ${tech}${chips(ex)}${equipChip(ex)}</div>`;
+        }
+        const mv = mapViewFor(ex);
+        const map = `<svg viewBox="0 0 160 360" xmlns="http://www.w3.org/2000/svg" style="height:100%;max-height:190px;">${buildMapSvg(ex, mv)}</svg>`;
+        return `<div style="position:relative;display:flex;gap:6px;background:linear-gradient(180deg,#171a24,#0c0e14);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px;">
+          ${frame(tech, 'ТЕХНИКА')}<div style="width:1px;background:rgba(255,255,255,.08);"></div>${frame(map, 'МЫШЦЫ (' + (mv === 'back' ? 'ТЫЛ' : 'ФРОНТ') + ')')}
+          <div style="position:absolute;left:10px;bottom:16px;display:flex;gap:4px;">${chips(ex).replace(/^<div[^>]*>|<\/div>$/g, '')}</div>
         </div>`;
       }
-      return `<div class="ex-vector-dual" style="display:flex;gap:4px;align-items:stretch;background:linear-gradient(180deg, rgba(20,20,30,0.9), rgba(10,10,15,0.95));border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:6px;">
-        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
-          <div style="flex:1;width:100%;display:grid;place-items:center;min-height:90px;">${frontSvg}</div>
-          <span style="font-size:7px;color:rgba(255,255,255,0.4);letter-spacing:0.08em;">ФРОНТ</span>
-        </div>
-        <div style="width:1px;background:rgba(255,255,255,0.08);"></div>
-        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;">
-          <div style="flex:1;width:100%;display:grid;place-items:center;min-height:90px;">${backSvg}</div>
-          <span style="font-size:7px;color:rgba(255,255,255,0.4);letter-spacing:0.08em;">ТЫЛ</span>
-        </div>
-        <div style="position:absolute;bottom:6px;left:50%;transform:translateX(-50%);display:flex;gap:4px;font-size:7px;">
-          <span style="background:${GROUP_COLORS[primary]||'#ef4444'};color:white;padding:2px 6px;border-radius:999px;font-weight:700;display:flex;align-items:center;gap:3px;"><span style="width:6px;height:6px;background:white;border-radius:50%;display:inline-block;"></span>${esc(primaryLabel)}</span>
-          ${auxLabels ? `<span style="background:${AUX_HIGHLIGHT_COLOR};color:#0a0a0f;padding:2px 6px;border-radius:999px;font-weight:600;">+ ${esc(auxLabels)}</span>` : ''}
-        </div>
-      </div>`;
+
+      return { render, detectPose, getExerciseMuscleGroups };
+    })();
+    window.PGIllustration = PGI;
+    window.getExerciseMuscleGroups = PGI.getExerciseMuscleGroups;
+
+    function exerciseVectorIllustration(ex, opts) {
+      if (window.PGIllustration) return window.PGIllustration.render(ex, opts);
+      return '';
     }
     window.exerciseVectorIllustration = exerciseVectorIllustration;
-    window.getExerciseMuscleGroups = getExerciseMuscleGroups;
 
     // 3D-like SVG body — detailed anatomical figure with gradient shading,
     // depth highlights, and clickable muscle zones. Each muscle has:
