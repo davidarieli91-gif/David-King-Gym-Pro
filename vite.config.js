@@ -15,12 +15,8 @@ export default defineConfig({
         portal: resolve(__dirname, 'client.html'),
       },
       output: {
-        // Keep manifest/icon without hash for stable PWA URLs; others hashed for cache-busting
-        assetFileNames: (assetInfo) => {
-          const name = assetInfo.name || '';
-          if (name === 'manifest.json' || name.startsWith('icon-')) return 'assets/[name][extname]';
-          return 'assets/[name]-[hash][extname]';
-        },
+        // STABLE asset names forever — old cached HTML never 404s on assets
+        assetFileNames: 'assets/[name][extname]',
       },
     },
     // Keep large chunks as-is; monolith is intentionally single-file
