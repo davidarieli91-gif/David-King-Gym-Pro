@@ -4814,10 +4814,10 @@
     //      + PG "General" subgroups removed + technique fields added
     // v4 = new folder_path structure (no "General" subgroup, no equipment level)
     // v3 = original 1265-exercise seed
-    const v5Flag = await db.get('settings', 'seeded_exercise_base_v18');
+    const v5Flag = await db.get('settings', 'seeded_exercise_base_v19');
     if (!v5Flag) {
       force = true;
-      console.info('[seed] v18 flag missing — forcing re-seed of exercise_base (WebP migration)');
+      console.info('[seed] v19 flag missing — forcing re-seed of exercise_base (WebP migration)');
     }
     const current = await db.count('exercise_base');
     if (current > 0 && !force) {
@@ -4831,7 +4831,7 @@
       return 0;
     }
     await db.bulkPut('exercise_base', exercises);
-    await db.put('settings', { key: 'seeded_exercise_base_v18', value: true });
+    await db.put('settings', { key: 'seeded_exercise_base_v19', value: true });
     console.info(`[seed] injected ${exercises.length} exercises into exercise_base`);
     return exercises.length;
   }
@@ -14218,11 +14218,82 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           const arm = (side) => { const s = V(b.S.x + 15 * side, b.S.y + 2); const e = add(s, mul(dir(120, side), 26)); const h = add(e, mul(dir(140, side), 22)); return { s, e, h }; };
           const aL = arm(-1), aR = arm(1);
           return { facing: 'front', J: { shoulderL: aL.s, shoulderR: aR.s, chestC: V(90, 68), absC: V(90, 86), trapC: V(90, 55), latC: V(90, 64), gluteC: V(90, 100), armN: aR, farArm: aL, legN: b.legR, farLeg: b.legL }, art: '' };
+        },
+        /* === poses driven by pg-tech-gen specs === */
+        legPress() { // side view: reclined in sled, feet on angled platform
+          const sh = V(46, 74), hip = V(80, 106);
+          const torso = torsoPath(sh, hip, 9, 8);
+          const armN = { s: sh, e: V(58, 90), h: V(66, 100) };
+          const legN = { h: hip, k: V(112, 98), a: V(128, 84) };
+          const farLeg = { h: hip, k: V(116, 104), a: V(132, 92) };
+          const art = seg(V(28, 56), V(94, 130), 9, STEEL_DARK)
+            + `<g transform="rotate(-38 134 78)"><rect x="126" y="52" width="13" height="54" rx="4" fill="${STEEL_DARK}" stroke="${STEEL}" stroke-width="1"/></g>`
+            + seg(V(118, 142), V(150, 114), 3, STEEL);
+          return { facing: 'side', J: { shoulderL: sh, chestC: lerp(sh, hip, .3), absC: lerp(sh, hip, .6), trapC: lerp(sh, hip, .12), latC: lerp(sh, hip, .34), gluteC: V(hip.x - 3, hip.y + 2), armN, legN, farLeg, torso, headC: V(37, 66), neck: { a: V(41, 70), b: V(44, 72) } }, art };
+        },
+        hipThrust() { // side view: shoulders on bench, hips up, bar on hips
+          const sh = V(58, 112), hip = V(100, 94);
+          const torso = torsoPath(sh, hip, 9, 8);
+          const armN = { s: sh, e: V(62, 124), h: V(64, 136) };
+          const legN = { h: hip, k: V(130, 116), a: V(140, 140) };
+          const art = bench(50, 122, 40)
+            + barbell(V(92, 86), V(108, 88), 8)
+            + floorLine(146, 26, 158);
+          return { facing: 'side', J: { shoulderL: sh, chestC: lerp(sh, hip, .3), absC: lerp(sh, hip, .6), trapC: lerp(sh, hip, .12), latC: lerp(sh, hip, .34), gluteC: V(hip.x, hip.y - 4), armN, legN, torso, headC: V(48, 120), neck: { a: V(52, 117), b: V(55, 115) } }, art };
+        },
+        backExt() { // side view: roman chair, torso hinged down
+          const hip = V(86, 102), top = V(52, 130);
+          const torso = torsoPath(top, hip, 9, 8);
+          const legN = { h: hip, k: V(116, 114), a: V(132, 126) };
+          const farLeg = { h: hip, k: V(118, 119), a: V(133, 130) };
+          const armN = { s: V(56, 122), e: V(48, 118), h: V(44, 126) }; // crossed on chest
+          const art = seg(V(84, 106), V(84, 148), 9, STEEL_DARK)
+            + `<ellipse cx="108" cy="118" rx="16" ry="5" fill="${STEEL_DARK}" transform="rotate(12 108 118)"/>`
+            + seg(V(126, 128), V(142, 122), 6, STEEL);
+          return { facing: 'side', J: { shoulderL: top, chestC: lerp(top, hip, .35), absC: lerp(top, hip, .65), trapC: lerp(top, hip, .14), latC: lerp(top, hip, .38), gluteC: V(hip.x, hip.y - 4), armN, legN, farLeg, torso, headC: V(42, 144), neck: { a: V(47, 137), b: V(50, 133) } }, art };
+        },
+        twist() { // front seated floor, rotation arc
+          const P = V(90, 114);
+          const legR = { h: V(97, 116), k: V(118, 100), a: V(112, 126) };
+          const legL = { h: V(83, 116), k: V(62, 100), a: V(68, 126) };
+          const armR = { s: V(105, 72), e: V(101, 82), h: V(94, 88) };
+          const armL = { s: V(75, 72), e: V(79, 82), h: V(94, 88) };
+          const art = `<path d="M 58 44 A 34 30 0 0 1 122 44" fill="none" stroke="${AUX_HIGHLIGHT_COLOR}" stroke-width="2.4" stroke-dasharray="6 4" opacity=".85"/>`
+            + `<path d="M 122 44 l -7 -2 m 7 2 l -2 7" stroke="${AUX_HIGHLIGHT_COLOR}" stroke-width="2.4" fill="none" opacity=".85"/>`
+            + floorLine(130, 40, 142);
+          return { facing: 'front', J: { shoulderL: armL.s, shoulderR: armR.s, chestC: V(90, 76), absC: V(90, 92), trapC: V(90, 60), latC: V(90, 67), gluteC: P, armN: armR, farArm: armL, legN: legR, farLeg: legL, torso: torsoPath(V(90, 68), P, 14, 11), headC: V(90, 52), neck: { a: V(90, 60), b: V(90, 66) } }, art };
+        },
+        facePull(ex, g) {
+          const b = standBase();
+          const armR = { s: b.S.x + 15, y: 0 }; // placeholder replaced below
+          const sr = V(b.S.x + 15, b.S.y + 2), sl = V(b.S.x - 15, b.S.y + 2);
+          const aR = { s: sr, e: V(124, 76), h: V(112, 66) };
+          const aL = { s: sl, e: V(56, 76), h: V(68, 66) };
+          return { facing: 'front', J: { shoulderL: sl, shoulderR: sr, chestC: V(90, 68), absC: V(90, 86), trapC: V(90, 55), latC: V(90, 64), gluteC: V(90, 100), armN: aR, farArm: aL, legN: b.legR, farLeg: b.legL }, art: cable(V(28, 16), aL.h) + cable(V(152, 16), aR.h) };
+        },
+        kickback() { // quadruped side: one leg extends back-up
+          const S = V(60, 116), H = V(90, 120);
+          const torso = torsoPath(S, H, 9, 8);
+          const armN = { s: S, e: V(61, 129), h: V(62, 141) };
+          const legN = { h: H, k: V(124, 110), a: V(146, 100) };
+          const farLeg = { h: H, k: V(96, 134), a: V(99, 142) };
+          return { facing: 'side', J: { shoulderL: S, chestC: lerp(S, H, .3), absC: lerp(S, H, .62), trapC: lerp(S, H, .12), latC: lerp(S, H, .35), gluteC: V(93, 117), armN, legN, farLeg, torso, headC: V(50, 110), neck: { a: V(53, 113), b: V(56, 115) } }, art: floorLine(146, 24, 158) };
+        },
+        hipAbd() { // standing side leg lift with band
+          const S = V(90, 56), P = V(90, 100);
+          const armDn = (side) => { const s = V(S.x + 15 * side, S.y + 2); const e = add(s, mul(dir(10, side), 26)); const h = add(e, mul(dir(6, side), 24)); return { s, e, h }; };
+          const aL = armDn(-1), aR = armDn(1);
+          const standLeg = { h: V(P.x + 7, P.y + 2), k: add(V(P.x + 7, P.y + 2), mul(dir(2, 1), 34)), a: add(add(V(P.x + 7, P.y + 2), mul(dir(2, 1), 34)), mul(dir(0, 1), 30)) };
+          const liftLeg = { h: V(P.x - 7, P.y + 2), k: V(64, 92), a: V(48, 86) };
+          const ankleStand = standLeg.a, ankleLift = liftLeg.a;
+          return { facing: 'front', J: { shoulderL: aL.s, shoulderR: aR.s, chestC: V(90, 68), absC: V(90, 86), trapC: V(90, 55), latC: V(90, 64), gluteC: V(P.x - 6, P.y + 1), armN: aR, farArm: aL, legN: standLeg, farLeg: null }, art: bandBetween(ankleLift, ankleStand) };
         }
       };
 
       /* ---------- pose detection ---------- */
       function detectPose(ex) {
+        // 1) кураторская спецификация из pg-tech-gen (приоритет)
+        if (ex && ex.pg && ex.pg.pose && POSES[ex.pg.pose]) return ex.pg.pose;
         const n = ((ex.nE || ex.name_en || '') + ' ' + (ex.nR || ex.name_ru || '')).toLowerCase();
         const eq = String(ex.e || ex.equipment_type || '').toLowerCase();
         const sub = String(ex.sE || ex.subgroup_en || '').toLowerCase();
