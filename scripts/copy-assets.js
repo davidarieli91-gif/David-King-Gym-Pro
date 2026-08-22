@@ -30,6 +30,17 @@ for (const asset of assets) {
   console.log(`copied ${asset}`);
 }
 
+// Дублируем PWA-файлы в dist/assets/ — манифест отдаётся оттуда же,
+// поэтому браузер резолвит иконки относительно /assets/
+for (const pwa of ['icon-192.png', 'icon-512.png', 'manifest.json']) {
+  const src = resolve(root, pwa);
+  const dst = resolve(dist, 'assets', pwa);
+  if (existsSync(src)) {
+    await cp(src, dst);
+    console.log(`copied assets/${pwa}`);
+  }
+}
+
 // Clean Vite's emitted HTML duplicates in assets/ (entries are already at dist root)
 try {
   const assetDir = resolve(dist, 'assets');
