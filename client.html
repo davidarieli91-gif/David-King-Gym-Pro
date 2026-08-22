@@ -195,6 +195,12 @@
         <button id="btn-save-checkin" class="w-full bg-primary hover:bg-primary-2 text-white font-bold text-xs py-3 rounded-xl shadow-lg transition active:scale-95">
           Сохранить чек-ин
         </button>
+        <p id="checkin-status" class="text-[11px] text-center text-emerald-400 min-h-[1rem]"></p>
+      </div>
+
+      <div class="glass-card rounded-2xl p-4 border border-border space-y-2">
+        <h3 class="font-display font-bold text-sm text-slate-200" id="txt-history-title">История замеров</h3>
+        <div id="checkin-history" class="space-y-1.5"></div>
       </div>
     </section>
 
@@ -284,7 +290,13 @@
         unlockExpired: 'Срок действия ссылки истёк. Попросите тренера прислать новую.',
         unlockNoCrypto: 'Откройте ссылку в браузере по https.',
         unlockBadFormat: 'Неизвестный формат ссылки. Попросите тренера прислать новую.',
-        legacyWarning: '⚠️ Это ссылка устаревшего формата без шифрования. Попросите тренера прислать новую защищённую ссылку.'
+        legacyWarning: '⚠️ Это ссылка устаревшего формата без шифрования. Попросите тренера прислать новую защищённую ссылку.',
+        historyTitle: 'История замеров',
+        noHistory: 'Пока нет сохранённых чек-инов',
+        checkinSaved: 'Чек-ин сохранён ✓',
+        checkinNeedWeight: 'Укажите вес',
+        doneToday: 'Тренировка сегодня выполнена ✓',
+        reportWeight: 'Вес', reportWaist: 'Талия', reportHip: 'Бёдра', reportEnergy: 'Самочувствие', reportWater: 'Вода'
       },
       en: {
         portalTitle: 'My Portal',
@@ -306,7 +318,13 @@
         unlockExpired: 'This link has expired. Ask your coach for a new one.',
         unlockNoCrypto: 'Please open the link over https.',
         unlockBadFormat: 'Unknown link format. Ask your coach for a new one.',
-        legacyWarning: '⚠️ This legacy link is not encrypted. Ask your coach to send a new secure link.'
+        legacyWarning: '⚠️ This legacy link is not encrypted. Ask your coach to send a new secure link.',
+        historyTitle: 'Measurement History',
+        noHistory: 'No saved check-ins yet',
+        checkinSaved: 'Check-in saved ✓',
+        checkinNeedWeight: 'Please enter your weight',
+        doneToday: 'Workout completed today ✓',
+        reportWeight: 'Weight', reportWaist: 'Waist', reportHip: 'Hips', reportEnergy: 'Energy', reportWater: 'Water'
       },
       he: {
         portalTitle: 'הפורטל שלי',
@@ -328,7 +346,13 @@
         unlockExpired: 'תוקף הקישור פג. בקש מהמאמן קישור חדש.',
         unlockNoCrypto: 'פתח את הקישור ב-https.',
         unlockBadFormat: 'פורמט קישור לא מוכר. בקש מהמאמן קישור חדש.',
-        legacyWarning: '⚠️ קישור זה בפורמט ישן ללא הצפנה. בקש מהמאמן קישור מאובטח חדש.'
+        legacyWarning: '⚠️ קישור זה בפורמט ישן ללא הצפנה. בקש מהמאמן קישור מאובטח חדש.',
+        historyTitle: 'היסטוריית מדידות',
+        noHistory: 'אין עדיין צ׳ק-אינים שמורים',
+        checkinSaved: 'הצ׳ק-אין נשמר ✓',
+        checkinNeedWeight: 'הזן משקל',
+        doneToday: 'האימון בוצע היום ✓',
+        reportWeight: 'משקל', reportWaist: 'מותן', reportHip: 'ירכיים', reportEnergy: 'אנרגיה', reportWater: 'מים'
       }
     };
 
@@ -366,6 +390,8 @@
       document.getElementById('txt-daily-checkin').textContent = t('dailyCheckin');
       document.getElementById('lbl-morning-weight').textContent = t('morningWeight');
       document.getElementById('txt-timer-label').textContent = t('restLabel');
+      const hist = document.getElementById('txt-history-title');
+      if (hist) hist.textContent = t('historyTitle');
     }
 
     // Audio cue
@@ -705,17 +731,145 @@
       `).join('');
     }
 
-    // Share report via WhatsApp
+    // ===== Локальное хранилище прогресса (zero-backend) =====
+    function todayKey() {
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+    function loadCheckins() {
+      try { return JSON.parse(localStorage.getItem('dk_checkins') || '[]'); } catch (e) { return []; }
+    }
+    function saveCheckins(list) {
+      localStorage.setItem('dk_checkins', JSON.stringify(list.slice(-365)));
+    }
+    function num(v) { const n = parseFloat(v); return isFinite(n) ? n : null; }
+
+    function saveCheckin() {
+      const status = document.getElementById('checkin-status');
+      const weight = num(document.getElementById('input-checkin-weight').value);
+      if (weight === null || weight <= 0) { status.textContent = '⚠️ ' + t('checkinNeedWeight'); status.className = 'text-[11px] text-center text-red-400 min-h-[1rem]'; return; }
+      const rec = {
+        date: todayKey(),
+        ts: Date.now(),
+        weight,
+        waist: num(document.getElementById('input-checkin-waist').value),
+        hip: num(document.getElementById('input-checkin-hip').value),
+        energy: parseInt(document.getElementById('slider-energy').value, 10) || 8,
+        note: document.getElementById('input-checkin-note').value.trim().slice(0, 500)
+      };
+      const list = loadCheckins().filter(r => r.date !== rec.date);
+      list.push(rec); saveCheckins(list);
+      status.textContent = t('checkinSaved');
+      status.className = 'text-[11px] text-center text-emerald-400 min-h-[1rem]';
+      renderHistory();
+    }
+
+    function prefillCheckin() {
+      const list = loadCheckins();
+      if (!list.length) return;
+      const tk = todayKey();
+      const rec = list.find(r => r.date === tk) || list[list.length - 1];
+      if (rec.weight != null) document.getElementById('input-checkin-weight').value = rec.weight;
+      if (rec.waist != null) document.getElementById('input-checkin-waist').value = rec.waist;
+      if (rec.hip != null) document.getElementById('input-checkin-hip').value = rec.hip;
+      if (rec.energy) { document.getElementById('slider-energy').value = rec.energy; document.getElementById('slider-energy-val').textContent = rec.energy + ' / 10'; }
+      if (rec.note) document.getElementById('input-checkin-note').value = rec.note;
+    }
+
+    function fmtDate(dstr) {
+      const [y, m, d] = dstr.split('-'); return d + '.' + m;
+    }
+    function renderHistory() {
+      const box = document.getElementById('checkin-history');
+      const list = loadCheckins().slice(-7).reverse();
+      if (!list.length) { box.innerHTML = '<p class="text-xs text-slate-500">' + esc(t('noHistory')) + '</p>'; return; }
+      let prev = null;
+      box.innerHTML = list.map(r => {
+        let delta = '';
+        if (prev != null && r.weight != null && prev.weight != null) {
+          const d = +(r.weight - prev.weight).toFixed(1);
+          if (d !== 0) delta = `<span class="${d > 0 ? 'text-amber-400' : 'text-emerald-400'} font-bold">${d > 0 ? '+' : ''}${d}</span>`;
+        }
+        prev = r;
+        const metrics = [
+          `<span class="font-mono text-white">${esc(r.weight)}</span> кг`,
+          r.waist ? `талия ${esc(r.waist)} см` : '',
+          r.hip ? `бёдра ${esc(r.hip)} см` : ''
+        ].filter(Boolean).join(' · ');
+        return `<div class="flex items-center justify-between bg-surface-2/60 px-3 py-2 rounded-xl text-xs">
+          <span class="font-mono text-slate-400 w-11">${esc(fmtDate(r.date))}</span>
+          <span class="text-slate-300 flex-1 mx-2 truncate">${metrics}${r.note ? ' · <span class="italic">' + esc(r.note) + '</span>' : ''}</span>
+          <span class="font-mono text-accent">${esc(String(r.energy))}/10</span>
+          ${delta ? `<span class="w-10 text-end">${delta}</span>` : '<span class="w-10"></span>'}
+        </div>`;
+      }).join('');
+    }
+
+    // Вода — сохраняется за текущий день
+    function waterStorageKey() { return 'dk_water_' + todayKey(); }
+    function initWater() {
+      waterGlasses = parseInt(localStorage.getItem(waterStorageKey()), 10);
+      if (!isFinite(waterGlasses) || waterGlasses < 0) waterGlasses = 0;
+      updateWaterUI();
+    }
+    function updateWaterUI() {
+      document.getElementById('water-glasses').textContent = `${waterGlasses} 💧`;
+      document.getElementById('water-count-text').textContent = `Выпито: ${(waterGlasses * 0.25).toFixed(1)} л из 3.0 л`;
+    }
+    function setWater(n) {
+      waterGlasses = Math.max(0, n);
+      localStorage.setItem(waterStorageKey(), String(waterGlasses));
+      updateWaterUI();
+    }
+
+    // Отметка «тренировка выполнена»
+    function markWorkoutDone() {
+      const done = JSON.parse(localStorage.getItem('dk_done_days') || '{}');
+      done[todayKey()] = (currentProgram && currentProgram.name) || '';
+      localStorage.setItem('dk_done_days', JSON.stringify(done));
+      refreshDoneState();
+    }
+    function isDoneToday() {
+      const done = JSON.parse(localStorage.getItem('dk_done_days') || '{}');
+      return !!done[todayKey()];
+    }
+    function refreshDoneState() {
+      const btn = document.getElementById('btn-finish-workout');
+      if (!btn) return;
+      if (isDoneToday()) {
+        btn.classList.add('opacity-60', 'pointer-events-none');
+        btn.querySelector('span').textContent = t('doneToday');
+      } else {
+        btn.classList.remove('opacity-60', 'pointer-events-none');
+        btn.querySelector('span').textContent = t('finishWorkout');
+      }
+    }
+
+    // Отчёт тренеру: чек-ин + вода + самочувствие + динамика веса
     function shareReport() {
       const name = (currentClient && currentClient.full_name) || 'Клиент';
-      const prog = (currentProgram && currentProgram.name) || 'Тренировка';
-      const text = encodeURIComponent(
-        `👋 Привет, тренер David King!\n\n` +
-        `✅ ${name} выполнил(а) тренировку: ${prog}\n` +
-        `💧 Вода: ${waterGlasses * 250} мл\n` +
-        `📊 Самочувствие: ${document.getElementById('slider-energy').value}/10\n\n` +
-        `Отправлено из David King Gym Client Portal`
-      );
+      const prog = (currentProgram && currentProgram.name) || '—';
+      const list = loadCheckins();
+      const today = list.find(r => r.date === todayKey()) || null;
+      const first = list[0] || null;
+      const lines = [];
+      lines.push(`👋 Привет, тренер David King!`);
+      lines.push(`✅ ${name} — программа: ${prog}`);
+      if (isDoneToday()) lines.push(`🏋️ Тренировка сегодня выполнена`);
+      lines.push(`💧 ${t('reportWater')}: ${(waterGlasses * 0.25).toFixed(1)} л`);
+      if (today) {
+        lines.push(`📋 Чек-ин ${fmtDate(today.date)}:`);
+        lines.push(`⚖️ ${t('reportWeight')}: ${today.weight} кг` +
+          (today.waist ? `, ${t('reportWaist')}: ${today.waist} см` : '') +
+          (today.hip ? `, ${t('reportHip')}: ${today.hip} см` : ''));
+        lines.push(`📊 ${t('reportEnergy')}: ${today.energy}/10${today.note ? `\n📝 ${today.note}` : ''}`);
+        if (first && first !== today && first.weight) {
+          const total = +(today.weight - first.weight).toFixed(1);
+          if (total !== 0) lines.push(`📈 С начала наблюдений: ${total > 0 ? '+' : ''}${total} кг (${fmtDate(first.date)} → ${fmtDate(today.date)})`);
+        }
+      }
+      lines.push(`\nОтправлено из David King Gym Client Portal`);
+      const text = encodeURIComponent(lines.join('\n'));
       window.open(`https://wa.me/?text=${text}`, '_blank');
     }
 
@@ -760,17 +914,10 @@
         if (firstSet) firstSet.scrollIntoView({ behavior: 'smooth', block: 'center' });
       });
 
-      // Water controls
-      document.getElementById('btn-water-plus').addEventListener('click', () => {
-        waterGlasses++;
-        document.getElementById('water-glasses').textContent = `${waterGlasses} 💧`;
-        document.getElementById('water-count-text').textContent = `Выпито: ${(waterGlasses * 0.25).toFixed(1)} л из 3.0 л`;
-      });
-      document.getElementById('btn-water-minus').addEventListener('click', () => {
-        if (waterGlasses > 0) waterGlasses--;
-        document.getElementById('water-glasses').textContent = `${waterGlasses} 💧`;
-        document.getElementById('water-count-text').textContent = `Выпито: ${(waterGlasses * 0.25).toFixed(1)} л из 3.0 л`;
-      });
+      // Water controls (persisted per day)
+      document.getElementById('btn-water-plus').addEventListener('click', () => setWater(waterGlasses + 1));
+      document.getElementById('btn-water-minus').addEventListener('click', () => setWater(waterGlasses - 1));
+      initWater();
 
       // Slider
       document.getElementById('slider-energy').addEventListener('input', (e) => {
@@ -792,16 +939,17 @@
       // Share button
       document.getElementById('btn-share-report').addEventListener('click', shareReport);
 
-      // Finish workout
+      // Finish workout: mark done + share
       document.getElementById('btn-finish-workout').addEventListener('click', () => {
-        alert(t('workoutDoneTitle'));
+        markWorkoutDone();
         shareReport();
       });
 
-      // Checkin save
-      document.getElementById('btn-save-checkin').addEventListener('click', () => {
-        alert(t('savedToast'));
-      });
+      // Checkin save: real persistence
+      document.getElementById('btn-save-checkin').addEventListener('click', saveCheckin);
+      prefillCheckin();
+      renderHistory();
+      refreshDoneState();
 
       // Lang select
       document.getElementById('lang-select').addEventListener('change', (e) => {
