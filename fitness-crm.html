@@ -23098,7 +23098,13 @@ async function boot() {
   const RTL_LANGS = new Set(['he']);
 
   /** Master dictionary. Missing keys fall back to EN, then to the key itself. */
-  const I18N = (window.__I18N__ || { en: {}, ru: {}, he: {} });;
+  var I18N = window.__I18N__ || { en: {}, ru: {}, he: {} };
+// ES-модуль словарей исполнится до DOMContentLoaded — наполняем до boot:
+document.addEventListener('DOMContentLoaded', function () {
+  if (window.__I18N__ && !Object.keys(I18N.ru || {}).length) {
+    I18N.en = window.__I18N__.en; I18N.ru = window.__I18N__.ru; I18N.he = window.__I18N__.he;
+  }
+}, true);;
 
   /** Current active language (defaults to 'en' until applyLang is called). */
   let _lang = 'en';
@@ -23353,7 +23359,7 @@ async function boot() {
 
   
 
-  </script>
+  
 
   <!-- ============================================================
        PWA: Service Worker Registration + Install Button
@@ -23677,9 +23683,7 @@ document.addEventListener('input', function (e) {
     }
   }
 });
-</script>
-</script>
-</script>
+</script>
 <script>
 // Phase 5 runtime utilities
 (function () {
