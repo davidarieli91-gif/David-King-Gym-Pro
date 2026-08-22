@@ -1,7 +1,7 @@
 // Service Worker - David King Gym PWA
 // v22: NETWORK-FIRST for pages/HTML (updates reach users immediately),
 //      cache-first only for static assets. Fixes stale-HTML lock-in.
-const CACHE_NAME = 'dk-gym-v23';
+const CACHE_NAME = 'dk-gym-v24';
 const APP_SHELL = [
   './',
   './index.html',
@@ -14,6 +14,7 @@ const APP_SHELL = [
   './vendor/qrcode.min.js',
   './icon-192.png',
   './icon-512.png',
+  './assets/icon-192.png',
   './assets/icon-512.png'
 ];
 
