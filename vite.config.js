@@ -17,6 +17,8 @@ export default defineConfig({
       output: {
         // STABLE asset names forever — old cached HTML never 404s on assets
         assetFileNames: 'assets/[name][extname]',
+        entryFileNames: 'assets/[name].js',
+        chunkFileNames: 'assets/[name].js',
       },
     },
     // Keep large chunks as-is; monolith is intentionally single-file
