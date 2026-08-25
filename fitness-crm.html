@@ -16637,6 +16637,16 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       if (!client) { toast(t('clients.notFoundToast'), 'danger'); return; }
 
       const modal = document.getElementById('generator-modal');
+      // Модалка опросника удалена из UI — открываем ручной конструктор плана
+      if (!modal) {
+        console.warn('[nutrition] generator-modal отсутствует — fallback на openCreator');
+        if (typeof nutritionPlans !== 'undefined' && typeof nutritionPlans.openCreator === 'function') {
+          nutritionPlans.openCreator(clientId);
+        } else {
+          toast('Создание плана: используйте вкладку «Питание» → «Новый план»', 'warning', 3500);
+        }
+        return;
+      }
       const subtitle = document.getElementById('generator-subtitle');
       const clientName = client.full_name || client.name || '?';
       if (subtitle) subtitle.textContent = (t('nutrition.questionnaireTitle') || 'Nutrition plan questionnaire') + ' — ' + clientName;
