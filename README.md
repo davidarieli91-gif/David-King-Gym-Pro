@@ -72,16 +72,29 @@ npx serve .
 
 ```
 ├── index.html                 # Redirect на fitness-crm.html
-├── fitness-crm.html           # Полный исходный монолит приложения
-├── client.html                # Клиентский портал (PWA, QR-доступ)
-├── exercise-db.json           # База из 1660+ упражнений (EN/RU/HE, анимации)
-├── food-db.json               # База продуктов с нутриентами и штрихкодами
-├── sw.js                      # Service Worker для работы офлайн
-├── manifest.json              # PWA манифест для установки на телефон/ПК
-├── data/                      # Исходные CSV и демо-бэкап клиентов
-├── scripts/                   # Скрипты нормализации данных
-├── reports/                   # Аудит базы данных
-└── images/                    # Иллюстрации упражнений
+├── fitness-crm.html           # Приложение (UI + экраны; i18n/core/иллюстрации — в модулях)
+├── client.html                # Клиентский портал (PWA, шифрованный QR-доступ AES-GCM)
+├── src/
+│   ├── i18n.js                # Точка входа модулей (deferred, до DOMContentLoaded)
+│   ├── i18n/{en,ru,he}.json   # Словари интерфейса (3 языка + RTL)
+│   ├── muscle-map.js          # SVG-карты мышц + векторные иллюстрации упражнений
+│   └── input.css              # Tailwind 3 (компилируется в assets/input.css)
+├── vendor/qrcode.min.js       # Локальная генерация QR (без сторонних сервисов)
+├── exercise-db.json           # 1660 упражнений (EN/RU/HE, WebP-анимации)
+├── food-db.json               # 2172 продукта (нутриенты, штрихкоды)
+├── images/                    # Иллюстрации упражнений (WebP, 301 МБ)
+├── scripts/                   # Инструменты данных (нормализация, генератор техник PG)
+├── data/                      # CSV-экспорты, демо-бэкап, бэкапы правок
+├── sw.js                      # Service Worker v24 (network-first для страниц)
+├── manifest.json              # PWA манифест
+└── dist/                      # Сборка Vite (деплой на GitHub Pages)
+```
+
+### Сборка и запуск
+```bash
+npm install        # зависимости (vite, tailwind)
+npm run build      # сборка dist/ (+ копирование ассетов)
+npm run preview    # локальный просмотр сборки
 ```
 
 ---
