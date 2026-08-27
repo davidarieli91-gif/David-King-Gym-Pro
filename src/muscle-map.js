@@ -613,13 +613,23 @@ const esc = (v) => String(v == null ? '' : v)
 
       const RU_GROUP = { chest: 'Грудь', back: 'Спина', shoulders: 'Плечи', elbow_flexors: 'Бицепс', triceps: 'Трицепс', forearms: 'Предплечья', abdominals: 'Пресс', legs: 'Ноги', stretching: 'Растяжка', warmup: 'Разминка', calisthenics: 'Калистеника', other: 'Другое' };
 
-      function chips(ex) {
+      function chipsInner(ex) {
         const { primary, aux } = getExerciseMuscleGroups(ex);
         const pc = GROUP_COLORS[primary] || '#ef4444';
         const pl = RU_GROUP[primary] || primary;
         const auxChips = aux.slice(0, 3).map(a => `<span style="background:${AUX_HIGHLIGHT_COLOR};color:#062a30;padding:1px 5px;border-radius:999px;font-weight:700;font-size:7px;white-space:nowrap;">+ ${esc(RU_GROUP[a] || a)}</span>`).join('');
+        return `<span style="background:${pc};color:#fff;padding:1px 6px;border-radius:999px;font-weight:800;font-size:7.5px;box-shadow:0 0 6px ${pc};">${esc(pl)}</span>${auxChips}`;
+      }
+      function chips(ex) {
         return `<div style="position:absolute;left:4px;bottom:4px;right:4px;display:flex;gap:3px;align-items:center;flex-wrap:wrap;">
-          <span style="background:${pc};color:#fff;padding:1px 6px;border-radius:999px;font-weight:800;font-size:7.5px;box-shadow:0 0 6px ${pc};">${esc(pl)}</span>${auxChips}</div>`;
+          ${chipsInner(ex)}</div>`;
+      }
+      // Легенда «целевая / вспомогательные» — для развёрнутого вида
+      function legend(primaryColor) {
+        return `<div style="display:flex;gap:8px;align-items:center;justify-content:center;font-size:7px;color:rgba(255,255,255,.55);margin-top:3px;">
+          <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:7px;height:7px;border-radius:50%;background:${primaryColor};"></span>целевая</span>
+          <span style="display:inline-flex;align-items:center;gap:3px;"><span style="width:7px;height:7px;border-radius:50%;background:${AUX_HIGHLIGHT_COLOR};"></span>вспомогательные</span>
+        </div>`;
       }
       function equipChip(ex) {
         const eq = ex.eR || ex.equipment_ru || ex.eE || ex.equipment_en || ex.e || '';
@@ -634,26 +644,45 @@ const esc = (v) => String(v == null ? '' : v)
           <span style="font-size:7px;color:rgba(255,255,255,.45);letter-spacing:.12em;margin-top:2px;">${label}</span></div>`;
       }
 
+      /* Рендер: анатомическая карта мышц (целевые — цвет группы,
+         вспомогательные — голубой пунктир). Без поз-человечков. */
       function render(ex, opts) {
         opts = opts || {};
         const g = getExerciseMuscleGroups(ex);
-        const tech = `<svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">${renderTechnique(ex, g)}</svg>`;
+        const mkMap = (view, maxH) => `<svg viewBox="0 0 160 360" xmlns="http://www.w3.org/2000/svg" style="height:100%;width:auto;max-width:100%;max-height:${maxH};">${buildMapSvg(ex, view)}</svg>`;
         if (opts.both === false) {
+          // Карточка: одна карта (фронт/тыл авто) + чипсы мышц + снаряд
+          const mv = mapViewFor(ex);
           return `<div style="position:relative;width:100%;height:100%;min-height:120px;background:radial-gradient(ellipse at 50% 12%, rgba(99,102,241,.10), transparent 55%), linear-gradient(180deg,#171a24,#0c0e14);border-radius:10px;overflow:hidden;">
-            ${tech}${chips(ex)}${equipChip(ex)}</div>`;
+            <div style="position:absolute;inset:0;display:grid;place-items:center;padding:4px;">${mkMap(mv, '100%')}</div>
+            ${chips(ex)}${equipChip(ex)}</div>`;
         }
-        const mv = mapViewFor(ex);
-        const map = `<svg viewBox="0 0 160 360" xmlns="http://www.w3.org/2000/svg" style="height:100%;max-height:190px;">${buildMapSvg(ex, mv)}</svg>`;
-        return `<div style="position:relative;display:flex;gap:6px;background:linear-gradient(180deg,#171a24,#0c0e14);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px;">
-          ${frame(tech, 'ТЕХНИКА')}<div style="width:1px;background:rgba(255,255,255,.08);"></div>${frame(map, 'МЫШЦЫ (' + (mv === 'back' ? 'ТЫЛ' : 'ФРОНТ') + ')')}
-          <div style="position:absolute;left:10px;bottom:16px;display:flex;gap:4px;">${chips(ex).replace(/^<div[^>]*>|<\/div>$/g, '')}</div>
+        // Модалка: фронт + тыл + легенда
+        const chipsRow = `<div style="position:absolute;left:10px;top:10px;right:10px;display:flex;gap:4px;flex-wrap:wrap;">${chipsInner(ex)}</div>`;
+        const legendRow = `<div style="width:100%;">${legend(GROUP_COLORS[g.primary] || '#ef4444')}</div>`;
+        return `<div style="position:relative;display:flex;gap:6px;background:linear-gradient(180deg,#171a24,#0c0e14);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px 8px 4px;">
+          ${frame(`<div style="position:relative;width:100%;">${chipsRow}<div style="height:190px;display:grid;place-items:center;">${mkMap('front', '190px')}</div></div>`, 'ФРОНТ · целевые и вспомогательные')}
+          <div style="width:1px;background:rgba(255,255,255,.08);"></div>
+          ${frame(`<div style="height:190px;display:grid;place-items:center;">${mkMap('back', '190px')}</div>`, 'ТЫЛ')}
+          ${legendRow}
         </div>`;
       }
 
-      return { render, detectPose, getExerciseMuscleGroups };
+      /* Компактные чипсы мышц для карточек любого источника (MM/BF/PG) */
+      function muscleChips(ex) {
+        const { primary, aux } = getExerciseMuscleGroups(ex);
+        const pc = GROUP_COLORS[primary] || '#ef4444';
+        const pl = RU_GROUP[primary] || primary;
+        const auxChips = aux.slice(0, 2).map(a => `<span style="background:${AUX_HIGHLIGHT_COLOR};color:#062a30;padding:0 4px;border-radius:999px;font-weight:700;font-size:7px;white-space:nowrap;">+ ${esc(RU_GROUP[a] || a)}</span>`).join('');
+        return `<div style="display:flex;gap:3px;align-items:center;flex-wrap:wrap;margin-top:2px;overflow:hidden;">
+          <span style="background:${pc};color:#fff;padding:0 5px;border-radius:999px;font-weight:800;font-size:7px;white-space:nowrap;">${esc(pl)}</span>${auxChips}</div>`;
+      }
+
+      return { render, detectPose, getExerciseMuscleGroups, muscleChips };
     })();
     window.PGIllustration = PGI;
     window.getExerciseMuscleGroups = PGI.getExerciseMuscleGroups;
+    window.exerciseMuscleChips = (ex) => PGI.muscleChips(ex);
 
     function exerciseVectorIllustration(ex, opts) {
       if (window.PGIllustration) return window.PGIllustration.render(ex, opts);
