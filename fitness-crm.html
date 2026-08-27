@@ -2337,9 +2337,9 @@
                 <h3 class="font-display font-bold text-base flex-1" data-i18n="programs.quickPick">Quick Pick</h3>
                 <div class="flex gap-1 bg-surface-2 border border-border rounded-lg p-0.5">
                   <button id="bm-tab-all" class="px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted" data-i18n="common.all">All</button>
-                  <button id="bm-tab-pg" class="px-3 py-1.5 rounded-md text-xs font-semibold transition bg-primary text-white" data-i18n="exercise.sourcePrivateGym">Private Gym</button>
+                  <button id="bm-tab-pg" class="px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted" data-i18n="exercise.sourcePrivateGym">Private Gym</button>
                   <button id="bm-tab-mm" class="px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted" data-i18n="exercise.sourceMuscleMotion">Muscle Motion</button>
-                  <button id="bm-tab-bf" class="px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted" data-i18n="exercise.sourceBurnfit">Burnfit</button>
+                  <button id="bm-tab-bf" class="px-3 py-1.5 rounded-md text-xs font-semibold transition bg-primary text-white" data-i18n="exercise.sourceBurnfit">Burnfit</button>
                   <button id="bm-tab-favorites" class="px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted">⭐</button>
                   <button id="bm-tab-recent" class="px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted">🕐</button>
                 </div>
@@ -13813,7 +13813,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     let _expandedGroups = new Set();  // NEW: which groups have their subgroups expanded in the tree
     let _equipFilter = 'all';
     let _view = 'front';
-    let _sourceFilter = null;
+    let _sourceFilter = 'burnfit'; // по умолчанию — Burnfit (таб bf активен в HTML)
     let _tab = 'body';
     let _callback = null;
     let _favorites = [];
@@ -14457,6 +14457,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               <button class="w-6 h-6 grid place-items-center rounded bg-surface hover:bg-primary/20 text-primary-2 transition" data-bm-view="${esc(id)}" title="${t('aria.view')}"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
               <span class="text-primary-2 text-xs font-bold">+</span>
             </div>
+            ${hasVector && window.getExerciseMuscleChips ? window.getExerciseMuscleChips(e) : ''}
           </div>
         </div>`;
       }
