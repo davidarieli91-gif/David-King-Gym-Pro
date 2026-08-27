@@ -2212,10 +2212,23 @@
                   <span data-i18n="programs.printPG">${t('programs.printPG') || 'Private Gym'}</span>
                 </button>
               </div>
+                        <!-- Row 3: Primary actions -->
+                        <div class="flex gap-2">
+                        <button id="pb-add-exercise" class="flex-1 min-w-[120px] bg-surface-2 hover:bg-border/40 border border-border text-sm font-semibold py-2 rounded-xl transition inline-flex items-center justify-center gap-2">
+                          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                          <span data-i18n="workouts.addExercise">Add exercise</span>
+                        </button>
+                        <button id="pb-save" class="flex-1 min-w-[120px] bg-primary hover:bg-primary-2 text-white text-sm font-semibold py-2 rounded-xl transition shadow-card" data-i18n="programs.saveProgram">
+                          Save program
+                        </button>
+                        </div>
             </div>
           </div>
 
-          <!-- ============= RECOVERY MAP MODAL (Tier 3 #1 — Fitbod-style recovery heat-map) ============= -->
+              </div>
+    </div>
+
+<!-- ============= RECOVERY MAP MODAL (Tier 3 #1 — Fitbod-style recovery heat-map) ============= -->
           <div id="recovery-map-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
             <div class="bg-surface w-full  lg:max-w-[min(96vw,1100px)] max-h-[92vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
               <!-- Header -->
