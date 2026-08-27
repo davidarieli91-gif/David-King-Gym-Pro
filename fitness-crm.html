@@ -544,6 +544,20 @@
     @container (min-width: 700px) { .pb-footer { max-width: 900px; margin-inline: auto; width: 100%; } }
     .pb-footer .flex.gap-2 { display: contents; }
 
+    /* ============================================================
+       ПРОФИЛЬ КЛИЕНТА — 2 колонки на xl+ (Итерация 2)
+       Карточки в стеке на мобильных/планшете, сетка 1fr 1fr на xl+.
+       hero / программы / план питания — во всю ширину (рабочие зоны),
+       служебные карточки (личные данные, параметры, здоровье,
+       фото, документы) распределяются по двум колонкам.
+       ============================================================ */
+    .pf-grid { display: flex; flex-direction: column; gap: 1.25rem; }
+    .pf-grid > * { min-width: 0; }
+    @media (min-width: 1280px) {
+      #profile-body.pf-grid, .pf-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+      .pf-grid > .pf-span2 { grid-column: 1 / -1; }
+    }
+
     #bm-class-chips { container-type: inline-size; }
 
     .bm-section-header {
@@ -1733,7 +1747,7 @@
           </div>
 
           <!-- ============= CLIENT PROFILE SCREEN (Steps 10-12) ============= -->
-          <div data-screen="profile" class="hidden p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto w-full">
+          <div data-screen="profile" class="hidden p-4 sm:p-6 lg:p-8 max-w-5xl xl:max-w-[1400px] mx-auto w-full">
             <!-- Header (back button + name + edit) -->
             <div class="flex items-center gap-3 mb-5">
               <button id="profile-back" class="w-9 h-9 grid place-items-center rounded-lg bg-surface-2 hover:bg-border/40 border border-border transition shrink-0" aria-label="Back" data-i18n-attr="aria-label:aria.back">
@@ -1890,7 +1904,7 @@
             </div>
 
             <!-- Live workout content -->
-            <div class="p-4 sm:p-6 lg:p-8 max-w-3xl mx-auto">
+            <div class="p-4 sm:p-6 lg:p-8 max-w-3xl xl:max-w-5xl mx-auto">
               <!-- Header -->
               <div class="flex items-center gap-2 mb-4">
                 <button id="live-workout-back" class="w-9 h-9 grid place-items-center rounded-lg bg-surface-2 hover:bg-border/40 border border-border transition shrink-0" aria-label="Back" data-i18n-attr="aria-label:aria.back">
@@ -6843,14 +6857,16 @@
 
       const body = document.getElementById('profile-body');
       body.innerHTML = `
-        ${heroCard(c, name)}
-        ${personalInfoCard(c)}
-        ${trainingCard(c)}
-        ${programsCard(c)}
-        ${nutritionPlanCard(c)}
-        ${healthCard(c)}
-        ${photosCard(c)}
-        ${documentsCard(c)}
+        <div class="pf-grid">
+          <div class="pf-span2">${heroCard(c, name)}</div>
+          <div>${personalInfoCard(c)}</div>
+          <div>${trainingCard(c)}</div>
+          <div class="pf-span2">${programsCard(c)}</div>
+          <div class="pf-span2">${nutritionPlanCard(c)}</div>
+          <div>${healthCard(c)}</div>
+          <div>${photosCard(c)}</div>
+          <div>${documentsCard(c)}</div>
+        </div>
       `;
 
       // Wire interactions
