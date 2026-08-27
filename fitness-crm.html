@@ -1529,6 +1529,55 @@
     [class*="fixed inset-0"] video {
       max-width: none;
     }
+
+    /* ============================================================
+       ИТЕРАЦИЯ 4 — безопасные зоны, ориентации, мелкие экраны
+       ============================================================ */
+
+    /* --- Safe-area (iPhone notch / жестовая панель):
+          bottom-sheet модалки и футеры не залипают на(home indicator) --- */
+    @supports (padding: env(safe-area-inset-bottom)) {
+      [class*="fixed inset-0"] > [class*="bg-surface"] {
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+      .pb-footer {
+        padding-bottom: calc(0.75rem + env(safe-area-inset-bottom)) !important;
+      }
+      nav.fixed.bottom-0 {
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+    }
+
+    /* --- Landscape телефонов / низкие окна (<520px высоты):
+          компактный режим — модалка занимает всю высоту,
+          шапки/футеры сжимаются, паддинги уменьшены --- */
+    @media (max-height: 520px) and (orientation: landscape) {
+      [class*="fixed inset-0"] {
+        align-items: stretch !important;
+        padding: 0 !important;
+      }
+      [class*="fixed inset-0"] > [class*="bg-surface"] {
+        max-height: 100dvh !important;
+        height: 100dvh;
+        border-radius: 0 !important;
+        max-width: min(96vw, 1152px) !important;
+      }
+      [class*="fixed inset-0"] .p-4 { padding: 0.5rem !important; }
+      [class*="fixed inset-0"] .p-3 { padding: 0.5rem !important; }
+      #exercise-gif-slot { max-height: 34vh !important; }
+    }
+
+    /* --- Очень узкие экраны (<360px): уплотнение чипсов и сеток ---
+          (существующее правило food-detail расширяется глобально) */
+    @media (max-width: 359px) {
+      .bm-cq-grid, #bm-ex-grid.bm-grouped > .bm-section-grid {
+        grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+      }
+      #bm-class-chips { gap: 0.25rem; }
+      .bm-chip { font-size: 10px; padding: 2px 8px; }
+      .pf-grid { gap: 0.75rem; }
+    }
+
 </style>
 </head>
 
