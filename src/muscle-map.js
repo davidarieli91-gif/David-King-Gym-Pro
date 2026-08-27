@@ -645,31 +645,36 @@ const esc = (v) => String(v == null ? '' : v)
       }
 
       /* Рендер: анатомическая карта мышц (целевые — цвет группы,
-         вспомогательные — голубой пунктир). Без поз-человечков. */
+         вспомогательные — голубой пунктир). Одна карта: фронт/тыл авто. */
       function render(ex, opts) {
         opts = opts || {};
+        const big = opts.both !== false; // модалка — крупная карта
         const g = getExerciseMuscleGroups(ex);
-        const mkMap = (view, maxH) => `<svg viewBox="0 0 160 360" xmlns="http://www.w3.org/2000/svg" style="height:100%;width:auto;max-width:100%;max-height:${maxH};">${buildMapSvg(ex, view)}</svg>`;
-        if (opts.both === false) {
-          // Карточка: одна карта (фронт/тыл авто) + чипсы мышц + снаряд
-          const mv = mapViewFor(ex);
+        const mv = mapViewFor(ex);
+        const pc = GROUP_COLORS[g.primary] || '#ef4444';
+        // Одиночный svg, явная высота — без двойной вложенности
+        const svgStyle = big
+          ? 'height:min(52vh,420px);width:auto;max-width:100%;'
+          : 'height:100%;width:auto;max-width:100%;max-height:100%;';
+        const map = `<svg viewBox="0 0 160 360" xmlns="http://www.w3.org/2000/svg" style="${svgStyle}">${buildMapSvg(ex, mv)}</svg>`;
+        const chipsRow = `<div style="position:absolute;left:8px;top:8px;right:8px;display:flex;gap:4px;flex-wrap:wrap;">${chipsInner(ex)}</div>`;
+        const legend = `<div style="display:flex;gap:10px;align-items:center;justify-content:center;font-size:8px;color:rgba(255,255,255,.6);margin-top:6px;">
+          <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:50%;background:${pc};box-shadow:0 0 5px ${pc};"></span>${esc('целевая')}</span>
+          <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:50%;background:${AUX_HIGHLIGHT_COLOR};"></span>${esc('вспомогательные')}</span>
+        </div>`;
+        if (!big) {
           return `<div style="position:relative;width:100%;height:100%;min-height:120px;background:radial-gradient(ellipse at 50% 12%, rgba(99,102,241,.10), transparent 55%), linear-gradient(180deg,#171a24,#0c0e14);border-radius:10px;overflow:hidden;">
-            <div style="position:absolute;inset:0;display:grid;place-items:center;padding:4px;">${mkMap(mv, '100%')}</div>
+            <div style="position:absolute;inset:0;display:grid;place-items:center;padding:4px;">${map}</div>
             ${chips(ex)}${equipChip(ex)}</div>`;
         }
-        // Модалка: фронт + тыл + легенда
-        const chipsRow = `<div style="position:absolute;left:10px;top:10px;right:10px;display:flex;gap:4px;flex-wrap:wrap;">${chipsInner(ex)}</div>`;
-        const legendRow = `<div style="width:100%;">${legend(GROUP_COLORS[g.primary] || '#ef4444')}</div>`;
-        const mkMapPx = (view, h) => `<svg viewBox="0 0 160 360" xmlns="http://www.w3.org/2000/svg" style="height:${h}px;width:${Math.round(h * 160 / 360)}px;flex-shrink:0;">${buildMapSvg(ex, view).replace(/^<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '')}</svg>`;
-        return `<div style="position:relative;display:flex;gap:6px;background:linear-gradient(180deg,#171a24,#0c0e14);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px 8px 4px;">
-          ${frame(`<div style="position:relative;width:100%;">${chipsRow}<div style="height:260px;display:grid;place-items:center;">${mkMapPx('front', 260)}</div></div>`, 'ФРОНТ · целевые и вспомогательные')}
-          <div style="width:1px;background:rgba(255,255,255,.08);"></div>
-          ${frame(`<div style="height:260px;display:grid;place-items:center;">${mkMapPx('back', 260)}</div>`, 'ТЫЛ')}
-          ${legendRow}
+        return `<div style="position:relative;width:100%;background:linear-gradient(180deg,#171a24,#0c0e14);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px;">
+          ${chipsRow}
+          <div style="display:grid;place-items:center;margin-top:6px;">${map}</div>
+          ${legend}
         </div>`;
       }
 
-      /* Компактные чипсы мышц для карточек любого источника (MM/BF/PG) */
+            /* Компактные чипсы мышц для карточек любого источника (MM/BF/PG) */
       function muscleChips(ex) {
         const { primary, aux } = getExerciseMuscleGroups(ex);
         const pc = GROUP_COLORS[primary] || '#ef4444';
