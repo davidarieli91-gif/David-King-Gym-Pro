@@ -514,6 +514,38 @@
     #bm-ex-grid.bm-grouped > .bm-section-grid { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 0.5rem; }
     @media (min-width: 640px) { #bm-ex-grid.bm-grouped > .bm-section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (min-width: 1024px) { #bm-ex-grid.bm-grouped > .bm-section-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+    /* ============================================================
+       CONTAINER-QUERY GRIDS (Итерация 1 — адаптивная плотность)
+       Модалка = container; колонки считаются от ширины модалки,
+       а не окна. Плотность растёт плавно: телефон 2 кол ->
+       планшет 3-4 -> ноутбук 4-5 -> wide 6-7. Огромных карточек нет:
+       max-ширина колонки ограничена clamp().
+       ============================================================ */
+    #bodymap-picker-modal > div { container-type: inline-size; container-name: bmPicker; }
+    .bm-cq-grid,
+    #bm-ex-grid.bm-grouped > .bm-section-grid {
+      display: grid;
+      gap: 0.5rem;
+      grid-template-columns: repeat(auto-fill, minmax(clamp(120px, 15cqw, 200px), 1fr));
+    }
+    /* Карточка упражнения: картинка 1:1, компактная типографика на любой плотности */
+    .bm-cq-grid .bm-ex-card .aspect-square { aspect-ratio: 1 / 1; width: 100%; max-width: 200px; margin-inline: auto; }
+    @container bmPicker (min-width: 560px) {
+      .bm-cq-grid, #bm-ex-grid.bm-grouped > .bm-section-grid { gap: 0.625rem; }
+    }
+    @container bmPicker (min-width: 900px) {
+      .bm-cq-grid, #bm-ex-grid.bm-grouped > .bm-section-grid { gap: 0.75rem; }
+    }
+    /* Классификационные чипсы: на узких модалках — в 2 строки компактнее */
+    /* Конструктор программ: футер — auto-fit грид с ограничением ширины */
+    .pb-footer { container-type: inline-size; }
+    .pb-footer { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.5rem; align-items: stretch; }
+    @container (min-width: 700px) { .pb-footer { max-width: 900px; margin-inline: auto; width: 100%; } }
+    .pb-footer .flex.gap-2 { display: contents; }
+
+    #bm-class-chips { container-type: inline-size; }
+
     .bm-section-header {
       display: flex; align-items: center; gap: 0.5rem;
       padding: 0.25rem 0.5rem;
@@ -2039,7 +2071,7 @@
 
           <!-- ============= PROGRAM BUILDER MODAL ============= -->
           <div id="program-builder-modal" class="hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
-            <div class="bg-surface w-full sm:max-w-2xl max-h-[95vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
+            <div class="bg-surface w-full max-w-[min(96vw,1152px)] max-h-[calc(100dvh-1rem)] sm:max-h-[95vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
               <!-- Header -->
               <div class="p-4 border-b border-border flex items-center gap-3 shrink-0">
                 <div class="flex-1 min-w-0">
@@ -2071,9 +2103,9 @@
               <div id="pb-day-tabs" class="flex gap-1 p-2 border-b border-border overflow-x-auto no-scrollbar shrink-0"></div>
               <!-- Day content -->
               <div id="pb-day-content" class="flex-1 overflow-y-auto p-4 space-y-2"></div>
-              <!-- Footer (Sprint 3 #4: grouped into 3 rows for better mobile UX) -->
-              <div class="p-3 border-t border-border flex flex-col gap-2 shrink-0">
-                <!-- Row 1: Workout adjustments -->
+<!-- Footer (Итерация 1: auto-fit grid — на широких экранах кнопки в 1-2 ряда с ограничением ширины) -->
+          <div class="pb-footer p-3 border-t border-border flex flex-col gap-2 shrink-0">
+          <!-- Row 1: Workout adjustments -->
                 <div class="flex gap-2">
                 <button id="pb-easier" class="flex-1 min-w-[70px] bg-success/15 hover:bg-success/25 text-success border border-success/30 text-xs font-semibold px-2 py-2 rounded-xl transition inline-flex items-center justify-center gap-1.5" title="${t('programs.makeEasierHint') || 'Reduce intensity'}">
                   <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
@@ -2087,8 +2119,6 @@
                   <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M6 12h12M9 18h6"/></svg>
                   <span data-i18n="programs.autoArrange">${t('programs.autoArrange') || 'Auto-arrange'}</span>
                 </button>
-                </div>
-                <!-- Row 2: Export & print -->
                 <div class="flex gap-2 flex-wrap">
                 <button id="pb-share" class="flex-1 min-w-[70px] bg-accent/15 hover:bg-accent/25 text-accent border border-accent/30 text-xs font-semibold px-2 py-2 rounded-xl transition inline-flex items-center justify-center gap-1.5" title="${t('programs.shareHint') || 'Share as image via WhatsApp'}">
                   <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
@@ -2106,17 +2136,6 @@
                   <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
                   <span data-i18n="programs.printPG">${t('programs.printPG') || 'Private Gym'}</span>
                 </button>
-                </div>
-                <!-- Row 3: Primary actions -->
-                <div class="flex gap-2">
-                <button id="pb-add-exercise" class="flex-1 min-w-[120px] bg-surface-2 hover:bg-border/40 border border-border text-sm font-semibold py-2 rounded-xl transition inline-flex items-center justify-center gap-2">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-                  <span data-i18n="workouts.addExercise">Add exercise</span>
-                </button>
-                <button id="pb-save" class="flex-1 min-w-[120px] bg-primary hover:bg-primary-2 text-white text-sm font-semibold py-2 rounded-xl transition shadow-card" data-i18n="programs.saveProgram">
-                  Save program
-                </button>
-                </div>
               </div>
             </div>
           </div>
@@ -2224,7 +2243,7 @@
 
                     <!-- ============= BODY MAP PICKER MODAL (Quick Pick) ============= -->
           <div id="bodymap-picker-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4" role="dialog" aria-modal="true">
-            <div class="bg-surface w-full sm:max-w-3xl max-h-[90vh] flex flex-col rounded-2xl border border-border shadow-float">
+            <div class="bg-surface w-full max-w-[min(96vw,1152px)] max-h-[calc(100dvh-1rem)] sm:max-h-[92vh] flex flex-col rounded-2xl border border-border shadow-float" style="container-type:inline-size;container-name:bmPicker">
               <!-- Header -->
               <div class="p-3 border-b border-border flex items-center gap-2 shrink-0">
                 <h3 class="font-display font-bold text-base flex-1" data-i18n="programs.quickPick">Quick Pick</h3>
@@ -2255,7 +2274,7 @@
                 <div id="bm-body-view" class="flex-1 overflow-hidden flex flex-col">
                   <div class="flex flex-1 overflow-hidden">
                     <!-- Left: SVG body + muscle selector (expandable folders with subgroups) -->
-                    <div class="shrink-0 p-2 border-e border-border flex flex-col overflow-y-auto" style="width: 160px">
+                    <div class="shrink-0 p-2 border-e border-border flex flex-col overflow-y-auto" style="width: clamp(150px, 12cqw, 230px)">
                       <div class="flex justify-center gap-1 mb-1 flex-wrap">
                         <button id="bm-view-front" class="px-2 py-1 rounded text-[10px] font-semibold transition bg-primary text-white" data-bm-view="front">Front</button>
                         <button id="bm-view-back" class="px-2 py-1 rounded text-[10px] font-semibold transition text-muted" data-bm-view="back">Back</button>
@@ -2281,17 +2300,17 @@
                         </div>
                         <span id="bm-result-count" class="text-[10px] text-muted font-mono"></span>
                       </div>
-                      <div id="bm-ex-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2"></div>
+                      <div id="bm-ex-grid" class="bm-cq-grid gap-2"></div>
                     </div>
                   </div>
                 </div>
                 <!-- Favorites view -->
                 <div id="bm-fav-view" class="hidden flex-1 overflow-y-auto p-3">
-                  <div id="bm-fav-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2"></div>
+                  <div id="bm-fav-grid" class="bm-cq-grid gap-2"></div>
                 </div>
                 <!-- Recent view -->
                 <div id="bm-recent-view" class="hidden flex-1 overflow-y-auto p-3">
-                  <div id="bm-recent-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2"></div>
+                  <div id="bm-recent-grid" class="bm-cq-grid gap-2"></div>
                 </div>
               </div>
             </div>
