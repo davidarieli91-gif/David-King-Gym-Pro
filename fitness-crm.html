@@ -545,6 +545,18 @@
     .pb-footer .flex.gap-2 { display: contents; }
 
     /* ============================================================
+       КОНТЕНТНЫЕ МОДАЛКИ (exercise/food-detail) — 2 колонки на lg+
+       Медиа (фото/видео) слева со sticky, техника/нутриенты справа.
+       На мобильных — прежний вертикальный стек.
+       ============================================================ */
+    .em2col > .em-media, .em2col > .em-info { min-width: 0; }
+    @media (min-width: 1024px) {
+      .em2col { display: grid !important; grid-template-columns: minmax(0,1fr) minmax(0,1.15fr); gap: 1rem; align-items: start; }
+      .em2col > .em-media { position: sticky; top: 72px; display: flex; flex-direction: column; gap: 1rem; align-self: start; }
+      .em2col .em-media > *, .em2col .em-info > * { margin-top: 0 !important; }
+    }
+
+    /* ============================================================
        ПРОФИЛЬ КЛИЕНТА — 2 колонки на xl+ (Итерация 2)
        Карточки в стеке на мобильных/планшете, сетка 1fr 1fr на xl+.
        hero / программы / план питания — во всю ширину (рабочие зоны),
@@ -1976,7 +1988,7 @@
 
           <!-- ============= EXERCISE PICKER MODAL (for live workout) ============= -->
           <div id="exercise-picker-modal" class="hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
-            <div class="bg-surface w-full sm:max-w-lg max-h-[85vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
+            <div class="bg-surface w-full  md:max-w-[min(94vw,680px)] max-h-[85vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
               <div class="p-4 border-b border-border flex items-center gap-3">
                 <h3 class="font-display font-bold text-base flex-1" data-i18n="workouts.addExercise">Add exercise</h3>
                 <button id="exercise-picker-close" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-surface-2 text-muted" aria-label="Close" data-i18n-attr="aria-label:aria.close">
@@ -2156,7 +2168,7 @@
 
           <!-- ============= RECOVERY MAP MODAL (Tier 3 #1 — Fitbod-style recovery heat-map) ============= -->
           <div id="recovery-map-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
-            <div class="bg-surface w-full sm:max-w-3xl max-h-[92vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
+            <div class="bg-surface w-full  lg:max-w-[min(96vw,1100px)] max-h-[92vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
               <!-- Header -->
               <div class="p-4 border-b border-border flex items-center gap-3 shrink-0">
                 <div class="flex-1 min-w-0">
@@ -2481,7 +2493,7 @@
 
           <!-- ============= FOOD SEARCH MODAL (Steps 32-33) ============= -->
           <div id="food-search-modal" class="hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
-            <div class="bg-surface w-full sm:max-w-lg max-h-[90vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
+            <div class="bg-surface w-full  lg:max-w-[min(96vw,760px)] max-h-[90vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
               <div class="p-4 border-b border-border flex items-center gap-3">
                 <h3 class="font-display font-bold text-base flex-1" data-i18n="nutrition.log">Log food</h3>
                 <button id="food-search-close" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-surface-2 text-muted" aria-label="Close" data-i18n-attr="aria-label:aria.close">
@@ -3165,7 +3177,7 @@
     
     <!-- ============= NUTRITION PLAN BUILDER MODAL ============= -->
     <div id="nutrition-plan-modal" class="hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
-      <div class="bg-surface w-full sm:max-w-2xl max-h-[95vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
+      <div class="bg-surface w-full  lg:max-w-[min(96vw,1080px)] max-h-[95vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
         <!-- Header -->
         <div class="p-4 border-b border-border flex items-center gap-3 shrink-0">
           <div class="flex-1 min-w-0">
@@ -3260,7 +3272,7 @@
 
     <!-- ============= MICRONUTRIENT ANALYSIS MODAL ============= -->
     <div id="micronutrient-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
-      <div class="bg-surface w-full sm:max-w-2xl max-h-[92vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
+      <div class="bg-surface w-full  lg:max-w-[min(96vw,1024px)] max-h-[92vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
         <!-- Header -->
         <div class="p-4 border-b border-border flex items-center gap-3 shrink-0">
           <div class="flex-1 min-w-0">
@@ -3300,7 +3312,7 @@
 
     <!-- ============= EXERCISE CARD MODAL (Steps 17-18) ============= -->
     <div id="exercise-modal" class="hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
-      <div class="bg-surface w-full sm:max-w-lg max-h-[92vh] overflow-y-auto rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
+      <div class="bg-surface w-full sm:max-w-lg lg:max-w-[min(96vw,960px)] max-h-[92vh] overflow-y-auto rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
         <!-- Header -->
         <div class="sticky top-0 z-10 bg-surface border-b border-border p-4 flex items-center gap-3">
           <h3 id="exercise-modal-title" class="font-display font-bold text-base flex-1 min-w-0 truncate">Exercise</h3>
@@ -3313,7 +3325,8 @@
         </div>
 
         <!-- View mode (photos + video + technique) -->
-        <div id="exercise-view" class="p-4 space-y-4">
+        <div id="exercise-view" class="p-4 space-y-4 em2col">
+          <div class="em-media space-y-4">
           <!-- Photos slot (2 images + animate button) -->
           <div id="exercise-gif-slot" class="aspect-video rounded-xl bg-surface-2 border border-border grid place-items-center overflow-hidden relative">
           </div>
@@ -3331,7 +3344,8 @@
               <span data-i18n="exercise.searchOnYouTube">Search on YouTube</span>
             </a>
           </div>
-
+          </div>
+          <div class="em-info space-y-4">
           <!-- Metadata badges -->
           <div class="flex flex-wrap gap-1.5">
             <span id="badge-group" class="text-[11px] font-semibold px-2 py-1 rounded-md bg-primary/15 text-primary-2"></span>
@@ -3350,6 +3364,7 @@
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
             <span data-i18n="common.delete">Delete</span>
           </button>
+          </div>
         </div>
 
         <!-- Edit mode (form) -->
@@ -3443,7 +3458,7 @@
 
     <!-- ============= FOOD DETAIL MODAL (mirror of exercise-modal) ============= -->
     <div id="food-detail-modal" class="hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
-      <div class="bg-surface w-full sm:max-w-lg max-h-[92vh] overflow-y-auto rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
+      <div class="bg-surface w-full sm:max-w-lg lg:max-w-[min(96vw,960px)] max-h-[92vh] overflow-y-auto rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
         <!-- Header -->
         <div class="sticky top-0 z-10 bg-surface border-b border-border p-4 flex items-center gap-3">
           <h3 id="food-detail-title" class="font-display font-bold text-base flex-1 min-w-0 truncate">Food</h3>
@@ -3456,7 +3471,8 @@
         </div>
 
         <!-- View mode (image + macros + vitamins + minerals) -->
-        <div id="food-detail-view" class="p-4 space-y-4">
+        <div id="food-detail-view" class="p-4 space-y-4 em2col">
+          <div class="em-media space-y-4">
           <!-- Image slot -->
           <div id="food-detail-image-slot" class="aspect-video rounded-xl bg-surface-2 border border-border grid place-items-center overflow-hidden">
             <svg class="w-12 h-12 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
@@ -3469,7 +3485,8 @@
             <span id="food-badge-brand" class="text-[11px] font-semibold px-2 py-1 rounded-md bg-surface-2 text-muted border border-border"></span>
             <span id="food-badge-barcode" class="text-[11px] font-mono font-semibold px-2 py-1 rounded-md bg-surface-2 text-muted border border-border"></span>
           </div>
-
+          </div>
+          <div class="em-info space-y-4">
           <!-- Main macros (large cards) -->
           <div>
             <h4 class="text-[11px] uppercase tracking-wider text-muted font-semibold mb-2" data-i18n="nutrition.mainMacros">Main macros (per 100 g)</h4>
@@ -3515,6 +3532,7 @@
           <div id="fd-fats-section" class="hidden">
             <h4 class="text-[11px] uppercase tracking-wider text-muted font-semibold mb-2" data-i18n="nutrition.fattyAcids">Fatty acids</h4>
             <div class="grid grid-cols-2 gap-1.5 text-xs" id="fd-fats-grid"></div>
+          </div>
           </div>
         </div>
 
@@ -3668,7 +3686,7 @@
 
     <!-- ============= ENCYCLOPEDIA MODAL (replaces About) ============= -->
     <div id="encyclopedia-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
-      <div class="bg-surface w-full sm:max-w-4xl max-h-[92vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
+      <div class="bg-surface w-full  lg:max-w-[min(96vw,1152px)] max-h-[92vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
         <div class="p-4 border-b border-border flex items-center gap-3 shrink-0">
           <div class="flex-1 min-w-0">
             <h3 class="font-display font-bold text-base" data-i18n="settings.encyclopedia">Encyclopedia</h3>
