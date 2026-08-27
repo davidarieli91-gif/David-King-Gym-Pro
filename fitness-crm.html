@@ -538,13 +538,21 @@
       .bm-cq-grid, #bm-ex-grid.bm-grouped > .bm-section-grid { gap: 0.75rem; }
     }
     /* Классификационные чипсы: на узких модалках — в 2 строки компактнее */
-    /* Конструктор программ: футер — auto-fit грид с ограничением ширины */
-    .pb-footer { container-type: inline-size; }
-    .pb-footer { display: grid !important; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.5rem; align-items: stretch; }
-    @container (min-width: 700px) { .pb-footer { max-width: 900px; margin-inline: auto; width: 100%; } }
-    .pb-footer .flex.gap-2 { display: contents; }
+    /* Конструктор программ: футер — 3 семантические группы */
+    .pb-footer { display: flex; flex-direction: column; gap: 0.5rem; }
+    .pb-row { display: grid; gap: 0.5rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .pb-row-primary { grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); }
+    .pb-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.375rem;
+      padding: 0.5rem 0.5rem; border-radius: 0.75rem; font-size: 12px; font-weight: 600;
+      border-width: 1px; transition: all .12s; min-width: 0; text-align: center; }
+    .pb-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .pb-btn span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    @media (max-width: 480px) {
+      .pb-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .pb-btn { font-size: 11px; padding: 0.5rem 0.25rem; }
+    }
 
-    /* ============================================================
+        /* ============================================================
        КОНТЕНТНЫЕ МОДАЛКИ (exercise/food-detail) — 2 колонки на lg+
        Медиа (фото/видео) слева со sticky, техника/нутриенты справа.
        На мобильных — прежний вертикальный стек.
@@ -1506,10 +1514,9 @@
 
     /* ===== GLOBAL MODAL VIEWPORT BINDING (safe version) =====
        Only constrains the modal CONTAINER — never touches inner elements
-       like SVGs, images, or icons. Prevents horizontal overflow without
-       breaking visual elements. */
+       like SVGs, images, or icons. (max-width removed: it overrode all
+       width caps with 100vw — modals now cap via their own classes) */
     [class*="fixed inset-0"] > [class*="bg-surface"] {
-      max-width: 100vw !important;
       box-sizing: border-box !important;
     }
     /* Only the scrollable content area gets overflow-x hidden */
@@ -2146,7 +2153,7 @@
 
           <!-- ============= PROGRAM BUILDER MODAL ============= -->
           <div id="program-builder-modal" class="hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
-            <div class="bg-surface w-full max-w-[min(96vw,1152px)] max-h-[calc(100dvh-1rem)] sm:max-h-[95vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
+            <div class="bg-surface w-full max-w-[min(96vw,880px)] max-h-[calc(100dvh-1rem)] sm:max-h-[95vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
               <!-- Header -->
               <div class="p-4 border-b border-border flex items-center gap-3 shrink-0">
                 <div class="flex-1 min-w-0">
@@ -2178,54 +2185,48 @@
               <div id="pb-day-tabs" class="flex gap-1 p-2 border-b border-border overflow-x-auto no-scrollbar shrink-0"></div>
               <!-- Day content -->
               <div id="pb-day-content" class="flex-1 overflow-y-auto p-4 space-y-2"></div>
-<!-- Footer (Итерация 1: auto-fit grid — на широких экранах кнопки в 1-2 ряда с ограничением ширины) -->
-          <div class="pb-footer p-3 border-t border-border flex flex-col gap-2 shrink-0">
-          <!-- Row 1: Workout adjustments -->
-                <div class="flex gap-2">
-                <button id="pb-easier" class="flex-1 min-w-[70px] bg-success/15 hover:bg-success/25 text-success border border-success/30 text-xs font-semibold px-2 py-2 rounded-xl transition inline-flex items-center justify-center gap-1.5" title="${t('programs.makeEasierHint') || 'Reduce intensity'}">
-                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-                  <span data-i18n="programs.easier">${t('programs.easier') || 'Easier'}</span>
-                </button>
-                <button id="pb-harder" class="flex-1 min-w-[70px] bg-danger/15 hover:bg-danger/25 text-danger border border-danger/30 text-xs font-semibold px-2 py-2 rounded-xl transition inline-flex items-center justify-center gap-1.5" title="${t('programs.makeHarderHint') || 'Increase intensity'}">
-                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-                  <span data-i18n="programs.harder">${t('programs.harder') || 'Harder'}</span>
-                </button>
-                <button id="pb-auto-arrange" class="flex-1 min-w-[90px] bg-accent/15 hover:bg-accent/25 text-accent border border-accent/30 text-xs font-semibold px-2 py-2 rounded-xl transition inline-flex items-center justify-center gap-1.5" title="${t('programs.autoArrangeHint') || 'Reorder exercises automatically'}">
-                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M6 12h12M9 18h6"/></svg>
-                  <span data-i18n="programs.autoArrange">${t('programs.autoArrange') || 'Auto-arrange'}</span>
-                </button>
-                <div class="flex gap-2 flex-wrap">
-                <button id="pb-share" class="flex-1 min-w-[70px] bg-accent/15 hover:bg-accent/25 text-accent border border-accent/30 text-xs font-semibold px-2 py-2 rounded-xl transition inline-flex items-center justify-center gap-1.5" title="${t('programs.shareHint') || 'Share as image via WhatsApp'}">
-                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                  <span data-i18n="programs.share">${t('programs.share') || 'Share'}</span>
-                </button>
-                <button id="pb-print-text" class="flex-1 min-w-[70px] bg-surface-2 hover:bg-border/40 border border-border text-xs font-semibold px-2 py-2 rounded-xl transition inline-flex items-center justify-center gap-1.5" title="${t('programs.printTextHint') || 'Print as text on A4'}">
-                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-                  <span data-i18n="programs.print">${t('programs.print') || 'Print'}</span>
-                </button>
-                <button id="pb-print-form" class="flex-1 min-w-[70px] bg-warning/15 hover:bg-warning/25 text-warning border border-warning/30 text-xs font-semibold px-2 py-2 rounded-xl transition inline-flex items-center justify-center gap-1.5" title="${t('programs.printFormHint') || 'Print on pre-printed form'}">
-                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
-                  <span data-i18n="programs.printForm">${t('programs.printForm') || 'Form'}</span>
-                </button>
-                <button id="pb-print-pg" class="flex-1 min-w-[70px] bg-primary/15 hover:bg-primary/25 text-primary border border-primary/30 text-xs font-semibold px-2 py-2 rounded-xl transition inline-flex items-center justify-center gap-1.5" title="${t('programs.printPGHint') || 'Print on Private Gym branded A4 form with live calibration (best on desktop)'}">
-                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-                  <span data-i18n="programs.printPG">${t('programs.printPG') || 'Private Gym'}</span>
-                </button>
-              </div>
-                        <!-- Row 3: Primary actions -->
-                        <div class="flex gap-2">
-                        <button id="pb-add-exercise" class="flex-1 min-w-[120px] bg-surface-2 hover:bg-border/40 border border-border text-sm font-semibold py-2 rounded-xl transition inline-flex items-center justify-center gap-2">
-                          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-                          <span data-i18n="workouts.addExercise">Add exercise</span>
-                        </button>
-                        <button id="pb-save" class="flex-1 min-w-[120px] bg-primary hover:bg-primary-2 text-white text-sm font-semibold py-2 rounded-xl transition shadow-card" data-i18n="programs.saveProgram">
-                          Save program
-                        </button>
-                        </div>
+<!-- Footer: нагрузка → экспорт → главные действия -->
+          <div class="pb-footer p-3 border-t border-border shrink-0">
+            <div class="pb-row">
+              <button id="pb-easier" class="pb-btn bg-success/15 hover:bg-success/25 text-success border border-success/30">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                <span data-i18n="programs.easier">Проче</span>
+              </button>
+              <button id="pb-harder" class="pb-btn bg-danger/15 hover:bg-danger/25 text-danger border border-danger/30">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+                <span data-i18n="programs.harder">Сложнее</span>
+              </button>
+              <button id="pb-auto-arrange" class="pb-btn bg-accent/15 hover:bg-accent/25 text-accent border border-accent/30">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+                <span data-i18n="programs.autoArrange">Авто-сортировка</span>
+              </button>
+            </div>
+            <div class="pb-row">
+              <button id="pb-share" class="pb-btn bg-accent/15 hover:bg-accent/25 text-accent border border-accent/30">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                <span data-i18n="programs.share">Поделиться</span>
+              </button>
+              <button id="pb-print-text" class="pb-btn bg-surface-2 hover:bg-border/40 border border-border">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                <span data-i18n="programs.print">Печать</span>
+              </button>
+              <button id="pb-print-pg" class="pb-btn bg-primary/15 hover:bg-primary/25 text-primary border border-primary/30">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span data-i18n="programs.printPG">Private Gym</span>
+              </button>
+            </div>
+            <div class="pb-row pb-row-primary">
+              <button id="pb-add-exercise" class="pb-btn bg-surface-2 hover:bg-border/40 border border-border">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                <span data-i18n="workouts.addExercise">Добавить упражнение</span>
+              </button>
+              <button id="pb-save" class="pb-btn bg-primary hover:bg-primary-2 text-white text-sm font-semibold border border-primary shadow-card">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Сохранить программу</span>
+              </button>
             </div>
           </div>
-
-              </div>
+    </div>
     </div>
 
 <!-- ============= RECOVERY MAP MODAL (Tier 3 #1 — Fitbod-style recovery heat-map) ============= -->
@@ -2333,9 +2334,14 @@
           <div id="bodymap-picker-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4" role="dialog" aria-modal="true">
             <div class="bg-surface w-full max-w-[min(96vw,1152px)] max-h-[calc(100dvh-1rem)] sm:max-h-[92vh] flex flex-col rounded-2xl border border-border shadow-float" style="container-type:inline-size;container-name:bmPicker">
               <!-- Header -->
-              <div class="p-3 border-b border-border flex items-center gap-2 shrink-0">
-                <h3 class="font-display font-bold text-base flex-1" data-i18n="programs.quickPick">Quick Pick</h3>
-                <div class="flex gap-1 bg-surface-2 border border-border rounded-lg p-0.5">
+              <div class="p-3 border-b border-border shrink-0">
+                <div class="flex items-center gap-2">
+                  <h3 class="font-display font-bold text-base flex-1 min-w-0 truncate" data-i18n="programs.quickPick">Quick Pick</h3>
+                  <button id="bm-close" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-surface-2 text-muted shrink-0">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                  </button>
+                </div>
+                <div class="flex gap-1 bg-surface-2 border border-border rounded-lg p-0.5 mt-2 flex-wrap">
                   <button id="bm-tab-all" class="px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted" data-i18n="common.all">All</button>
                   <button id="bm-tab-pg" class="px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted" data-i18n="exercise.sourcePrivateGym">Private Gym</button>
                   <button id="bm-tab-mm" class="px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted" data-i18n="exercise.sourceMuscleMotion">Muscle Motion</button>
@@ -2343,9 +2349,6 @@
                   <button id="bm-tab-favorites" class="px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted">⭐</button>
                   <button id="bm-tab-recent" class="px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted">🕐</button>
                 </div>
-                <button id="bm-close" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-surface-2 text-muted shrink-0">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                </button>
               </div>
 
               <!-- Search bar -->
@@ -20814,28 +20817,7 @@ async function boot() {
       const choice = confirm(t('programs.printModeQuestion') || 'Compact print (all days on one page)?\nOK = Compact · Cancel = One day per page');
       screens.profile.printProgram(tempProgram.id, choice);
     });
-    // Print on form (overlay)
-    const pbPrintForm = document.getElementById('pb-print-form');
-    if (pbPrintForm) pbPrintForm.addEventListener('click', async () => {
-      if (!screens.profile || !screens.profile._pb) return;
-      const pb = screens.profile._pb;
-      if (!pb.days || pb.days.length === 0) {
-        toast(t('programs.addAtLeastOneExercise') || 'Add at least one exercise first', 'warning', 2500);
-        return;
-      }
-      const tempProgram = {
-        id: pb.editId || 'temp-' + Date.now(),
-        client_id: pb.clientId,
-        name: document.getElementById('pb-name').value || (t('programs.workoutProgram') || 'Workout Program'),
-        split_type: pb.splitType,
-        duration_months: parseInt(document.getElementById('pb-duration').value, 10) || 3,
-        workout_days: pb.days,
-        status: 'active',
-        created_at: Date.now()
-      };
-      try { await db.put('client_programs', tempProgram); } catch(e) {}
-      screens.profile.printOnForm(tempProgram.id);
-    });
+    
     // Print on Private Gym branded A4 form (full calibration UI — best on desktop)
     const pbPrintPG = document.getElementById('pb-print-pg');
     if (pbPrintPG) pbPrintPG.addEventListener('click', async () => {
