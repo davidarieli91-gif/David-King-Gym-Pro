@@ -579,9 +579,10 @@
        ============================================================ */
     .pf-grid { display: flex; flex-direction: column; gap: 1.25rem; }
     .pf-grid > * { min-width: 0; }
+    /* xl+: masonry-колонки — карточки одна за одной, без пустот и зигзагов */
     @media (min-width: 1280px) {
-      #profile-body.pf-grid, .pf-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
-      .pf-grid > .pf-span2 { grid-column: 1 / -1; }
+      .pf-grid { display: block; columns: 2; column-gap: 1.25rem; }
+      .pf-grid > * { break-inside: avoid; display: inline-block; width: 100%; margin: 0 0 1.25rem; }
     }
 
     #bm-class-chips { container-type: inline-size; }
@@ -6944,11 +6945,11 @@
       const body = document.getElementById('profile-body');
       body.innerHTML = `
         <div class="pf-grid">
-          <div class="pf-span2">${heroCard(c, name)}</div>
-          <div>${personalInfoCard(c)}</div>
+          <div>${heroCard(c, name)}</div>
           <div>${trainingCard(c)}</div>
           <div>${programsCard(c)}</div>
           <div>${nutritionPlanCard(c)}</div>
+          <div>${personalInfoCard(c)}</div>
           <div>${healthCard(c)}</div>
           <div>${photosCard(c)}</div>
           <div>${documentsCard(c)}</div>
