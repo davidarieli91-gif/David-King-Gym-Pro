@@ -660,10 +660,11 @@ const esc = (v) => String(v == null ? '' : v)
         // Модалка: фронт + тыл + легенда
         const chipsRow = `<div style="position:absolute;left:10px;top:10px;right:10px;display:flex;gap:4px;flex-wrap:wrap;">${chipsInner(ex)}</div>`;
         const legendRow = `<div style="width:100%;">${legend(GROUP_COLORS[g.primary] || '#ef4444')}</div>`;
+        const mkMapPx = (view, h) => `<svg viewBox="0 0 160 360" xmlns="http://www.w3.org/2000/svg" style="height:${h}px;width:${Math.round(h * 160 / 360)}px;flex-shrink:0;">${buildMapSvg(ex, view).replace(/^<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '')}</svg>`;
         return `<div style="position:relative;display:flex;gap:6px;background:linear-gradient(180deg,#171a24,#0c0e14);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px 8px 4px;">
-          ${frame(`<div style="position:relative;width:100%;">${chipsRow}<div style="height:190px;display:grid;place-items:center;">${mkMap('front', '190px')}</div></div>`, 'ФРОНТ · целевые и вспомогательные')}
+          ${frame(`<div style="position:relative;width:100%;">${chipsRow}<div style="height:260px;display:grid;place-items:center;">${mkMapPx('front', 260)}</div></div>`, 'ФРОНТ · целевые и вспомогательные')}
           <div style="width:1px;background:rgba(255,255,255,.08);"></div>
-          ${frame(`<div style="height:190px;display:grid;place-items:center;">${mkMap('back', '190px')}</div>`, 'ТЫЛ')}
+          ${frame(`<div style="height:260px;display:grid;place-items:center;">${mkMapPx('back', 260)}</div>`, 'ТЫЛ')}
           ${legendRow}
         </div>`;
       }

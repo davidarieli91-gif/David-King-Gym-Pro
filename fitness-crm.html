@@ -515,7 +515,13 @@
     @media (min-width: 640px) { #bm-ex-grid.bm-grouped > .bm-section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (min-width: 1024px) { #bm-ex-grid.bm-grouped > .bm-section-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
-    /* ============================================================
+        /* Левая панель пикера: на десктопе вдвое шире */
+    .picker-side-panel { width: clamp(150px, 12cqw, 230px); }
+    @media (min-width: 1024px) {
+      .picker-side-panel { width: clamp(280px, 34cqw, 460px); }
+    }
+
+/* ============================================================
        CONTAINER-QUERY GRIDS (Итерация 1 — адаптивная плотность)
        Модалка = container; колонки считаются от ширины модалки,
        а не окна. Плотность растёт плавно: телефон 2 кол ->
@@ -2365,7 +2371,7 @@
                 <div id="bm-body-view" class="flex-1 overflow-hidden flex flex-col">
                   <div class="flex flex-1 overflow-hidden">
                     <!-- Left: SVG body + muscle selector (expandable folders with subgroups) -->
-                    <div class="shrink-0 p-2 border-e border-border flex flex-col overflow-y-auto" style="width: clamp(150px, 12cqw, 230px)">
+                    <div class="shrink-0 p-2 border-e border-border flex flex-col overflow-y-auto" class="picker-side-panel">
                       <div class="flex justify-center gap-1 mb-1 flex-wrap">
                         <button id="bm-view-front" class="px-2 py-1 rounded text-[10px] font-semibold transition bg-primary text-white" data-bm-view="front">Front</button>
                         <button id="bm-view-back" class="px-2 py-1 rounded text-[10px] font-semibold transition text-muted" data-bm-view="back">Back</button>
@@ -6941,8 +6947,8 @@
           <div class="pf-span2">${heroCard(c, name)}</div>
           <div>${personalInfoCard(c)}</div>
           <div>${trainingCard(c)}</div>
-          <div class="pf-span2">${programsCard(c)}</div>
-          <div class="pf-span2">${nutritionPlanCard(c)}</div>
+          <div>${programsCard(c)}</div>
+          <div>${nutritionPlanCard(c)}</div>
           <div>${healthCard(c)}</div>
           <div>${photosCard(c)}</div>
           <div>${documentsCard(c)}</div>
@@ -7113,10 +7119,7 @@
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
             <span>${t('programs.new')}</span>
           </button>
-          <button id="profile-generate-program" class="bg-primary hover:bg-primary-2 text-white text-xs font-semibold px-3 py-2 rounded-lg transition inline-flex items-center gap-1.5 shadow-card">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-            <span>${t('programs.generate')}</span>
-          </button>
+          
           <button id="profile-new-workout" class="bg-surface-2 hover:bg-border/40 border border-border text-xs font-semibold px-3 py-2 rounded-lg transition inline-flex items-center gap-1.5">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
             <span>${t('programs.startEmpty')}</span>
@@ -7153,10 +7156,7 @@
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
             <span>${t('nutrition.newPlan') || 'New plan'}</span>
           </button>
-          <button id="profile-generate-nutrition" class="bg-accent/15 hover:bg-accent/25 text-accent border border-accent/30 text-xs font-semibold px-3 py-2 rounded-lg transition inline-flex items-center gap-1.5">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-            <span>${t('nutrition.generate') || 'Generate'}</span>
-          </button>
+          
         </div>
         <div id="nutrition-plans-section" class="space-y-2"></div>
       </div>`;
@@ -14454,7 +14454,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             </button>
           </div>
           <div class="p-1.5">
-            <div class="text-[10px] font-medium truncate">${esc(name)}</div>
+            <div class="text-[10px] font-medium leading-snug line-clamp-2 min-h-[2em]">${esc(name)}</div>
             <div class="flex items-center justify-between mt-0.5">
               <span class="text-[8px] font-bold px-1 py-0.5 rounded ${srcClass}">${src}</span>
               <button class="w-6 h-6 grid place-items-center rounded bg-surface hover:bg-primary/20 text-primary-2 transition" data-bm-view="${esc(id)}" title="${t('aria.view')}"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
@@ -22891,7 +22891,7 @@ document.addEventListener('input', function (e) {
     }
   }
 });
-</script>
+</script>
 <script>
 // Phase 5 runtime utilities
 (function () {
