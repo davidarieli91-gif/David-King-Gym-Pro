@@ -14,6 +14,7 @@ const APP_SHELL = [
   './vendor/qrcode.min.js',
   './icon-192.png',
   './icon-512.png',
+  './logo-web.webp',
   './assets/icon-192.png',
   './assets/icon-512.png'
 ];

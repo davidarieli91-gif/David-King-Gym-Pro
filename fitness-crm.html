@@ -1614,11 +1614,6 @@
     <!-- ============= TOP HEADER (always visible) ============= -->
     <header class="sticky top-0 z-30 glass" style="border-bottom: 1px solid var(--glass-border);">
       <div class="flex items-center gap-2 px-3 h-10">
-        <!-- Brand -->
-        <div class="flex items-center gap-2.5">
-          <img id="app-logo-header" alt="David King Gym" class="h-14 w-auto max-w-[240px] object-contain" />
-        </div>
-
         <div class="ms-auto flex items-center gap-1.5">
           <!-- Language selector — populated by i18n engine in Step 3 -->
           <div class="relative">
@@ -1653,7 +1648,7 @@
       <aside id="aside"
              class="hidden lg:flex flex-col w-[var(--space-aside-w)] shrink-0 glass" style="border-inline-end: 1px solid var(--glass-border);">
         <div class="p-4 border-b border-border">
-            <img id="app-logo-header" alt="David King Gym" class="h-10 w-auto max-w-[200px] object-contain mx-auto mb-3" />
+            <img src="logo-web.webp" alt="David King Gym" class="h-10 w-auto max-w-[200px] object-contain mx-auto mb-3" />
         <div class="relative">
             <svg class="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
             <input type="search" id="aside-search" placeholder="Search clients…"
@@ -2236,7 +2231,7 @@
               </button>
               <button id="pb-save" class="pb-btn bg-primary hover:bg-primary-2 text-white text-sm font-semibold border border-primary shadow-card">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                <span>${t('programs.save') || 'Сохранить программу'}</span>
+                <span data-i18n="programs.save">Сохранить программу</span>
               </button>
             </div>
           </div>

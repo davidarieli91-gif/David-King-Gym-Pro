@@ -11,6 +11,7 @@ const assets = [
   'manifest.json',
   'sw.js',
   'icon-192.png',
+  'logo-web.webp',
   'icon-512.png',
   'images',
   'vendor',
