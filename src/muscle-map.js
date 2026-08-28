@@ -617,8 +617,8 @@ const esc = (v) => String(v == null ? '' : v)
         const { primary, aux } = getExerciseMuscleGroups(ex);
         const pc = GROUP_COLORS[primary] || '#ef4444';
         const pl = RU_GROUP[primary] || primary;
-        const auxChips = aux.slice(0, 3).map(a => `<span style="background:${AUX_HIGHLIGHT_COLOR};color:#062a30;padding:1px 5px;border-radius:999px;font-weight:700;font-size:7px;white-space:nowrap;">+ ${esc(RU_GROUP[a] || a)}</span>`).join('');
-        return `<span style="background:${pc};color:#fff;padding:1px 6px;border-radius:999px;font-weight:800;font-size:7.5px;box-shadow:0 0 6px ${pc};">${esc(pl)}</span>${auxChips}`;
+        const auxChips = aux.slice(0, 3).map(a => `<span style="background:${AUX_HIGHLIGHT_COLOR};color:#062a30;padding:1px 5px;border-radius:999px;font-weight:700;font-size:9px;white-space:nowrap;">+ ${esc(RU_GROUP[a] || a)}</span>`).join('');
+        return `<span style="background:${pc};color:#fff;padding:1px 6px;border-radius:999px;font-weight:800;font-size:10px;box-shadow:0 0 6px ${pc};">${esc(pl)}</span>${auxChips}`;
       }
       function chips(ex) {
         return `<div style="position:absolute;left:4px;bottom:4px;right:4px;display:flex;gap:3px;align-items:center;flex-wrap:wrap;">
@@ -679,9 +679,9 @@ const esc = (v) => String(v == null ? '' : v)
         const { primary, aux } = getExerciseMuscleGroups(ex);
         const pc = GROUP_COLORS[primary] || '#ef4444';
         const pl = RU_GROUP[primary] || primary;
-        const auxChips = aux.slice(0, 2).map(a => `<span style="background:${AUX_HIGHLIGHT_COLOR};color:#062a30;padding:0 4px;border-radius:999px;font-weight:700;font-size:7px;white-space:nowrap;">+ ${esc(RU_GROUP[a] || a)}</span>`).join('');
+        const auxChips = aux.slice(0, 2).map(a => `<span style="background:${AUX_HIGHLIGHT_COLOR};color:#062a30;padding:0 4px;border-radius:999px;font-weight:700;font-size:9px;white-space:nowrap;">+ ${esc(RU_GROUP[a] || a)}</span>`).join('');
         return `<div style="display:flex;gap:3px;align-items:center;flex-wrap:wrap;margin-top:2px;overflow:hidden;">
-          <span style="background:${pc};color:#fff;padding:0 5px;border-radius:999px;font-weight:800;font-size:7px;white-space:nowrap;">${esc(pl)}</span>${auxChips}</div>`;
+          <span style="background:${pc};color:#fff;padding:0 5px;border-radius:999px;font-weight:800;font-size:10px;white-space:nowrap;">${esc(pl)}</span>${auxChips}</div>`;
       }
 
       return { render, detectPose, getExerciseMuscleGroups, muscleChips };

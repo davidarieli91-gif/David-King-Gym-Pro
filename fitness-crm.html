@@ -1588,7 +1588,7 @@
         grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
       }
       #bm-class-chips { gap: 0.25rem; }
-      .bm-chip { font-size: 10px; padding: 2px 8px; }
+      .bm-chip { font-size: 11px; padding: 3px 8px; }
       .pf-grid { gap: 0.75rem; }
     }
 
@@ -2349,10 +2349,10 @@
                   </button>
                 </div>
                 <div class="flex gap-1 bg-surface-2 border border-border rounded-lg p-0.5 mt-2 flex-wrap">
-                  <button id="bm-tab-all" class="px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted" data-i18n="common.all">All</button>
-                  <button id="bm-tab-pg" class="px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted" data-i18n="exercise.sourcePrivateGym">Private Gym</button>
-                  <button id="bm-tab-mm" class="px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted" data-i18n="exercise.sourceMuscleMotion">Muscle Motion</button>
-                  <button id="bm-tab-bf" class="px-3 py-1.5 rounded-md text-xs font-semibold transition bg-primary text-white" data-i18n="exercise.sourceBurnfit">Burnfit</button>
+                  <button id="bm-tab-all" class="px-3 py-1.5 rounded-md text-[14px] font-semibold transition text-muted" data-i18n="common.all">All</button>
+                  <button id="bm-tab-pg" class="px-3 py-1.5 rounded-md text-[14px] font-semibold transition text-muted" data-i18n="exercise.sourcePrivateGym">Private Gym</button>
+                  <button id="bm-tab-mm" class="px-3 py-1.5 rounded-md text-[14px] font-semibold transition text-muted" data-i18n="exercise.sourceMuscleMotion">Muscle Motion</button>
+                  <button id="bm-tab-bf" class="px-3 py-1.5 rounded-md text-[14px] font-semibold transition bg-primary text-white" data-i18n="exercise.sourceBurnfit">Burnfit</button>
                   <button id="bm-tab-favorites" class="px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted">⭐</button>
                   <button id="bm-tab-recent" class="px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted">🕐</button>
                 </div>
@@ -2362,7 +2362,7 @@
               <div class="p-2 border-b border-border shrink-0">
                 <div class="relative">
                   <svg class="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-                  <input type="search" id="bm-search" data-i18n-ph="exercise.searchPlaceholder" placeholder="Search..." class="w-full bg-surface-2 border border-border rounded-xl ps-9 pe-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
+                  <input type="search" id="bm-search" data-i18n-ph="exercise.searchPlaceholder" placeholder="Search..." class="w-full bg-surface-2 border border-border rounded-xl ps-9 pe-3 py-2.5 text-[15px] focus:outline-none focus:ring-2 focus:ring-primary/60" />
                 </div>
               </div>
 
@@ -14172,11 +14172,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         const caret = hasSubgroups ? (isExpanded ? '▾' : '▸') : '';
         const activeClass = isActive ? 'bg-primary text-white border-primary' : 'bg-surface-2 hover:bg-primary/20 border-border';
         html += `<div class="bm-group-folder">
-          <div class="bm-group-header flex items-center gap-1 text-[11px] font-semibold py-1.5 px-2 rounded-lg border ${activeClass} transition cursor-pointer" data-group="${esc(g)}">
+          <div class="bm-group-header flex items-center gap-1.5 text-[14px] font-semibold py-2 px-2.5 rounded-lg border ${activeClass} transition cursor-pointer" data-group="${esc(g)}">
             <span class="bm-caret text-[10px] w-3 shrink-0">${caret}</span>
             <span class="text-base leading-none shrink-0" style="width:1.1em;text-align:center">${typeof muscleGroupIcon === 'function' ? muscleGroupIcon(g) : ''}</span>
             <span class="flex-1 truncate">${esc(label)}</span>
-            <span class="text-[9px] opacity-60 shrink-0">${info.count}</span>
+            <span class="text-[12px] opacity-70 shrink-0 font-semibold">${info.count}</span>
           </div>`;
         if (hasSubgroups && isExpanded) {
           html += `<div class="bm-subgroups ps-3 mt-0.5 space-y-0.5">`;
@@ -14287,10 +14287,10 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       }
       const types = getEquipTypes(filtered);
       const allLabel = (typeof t === 'function' && t('common.all')) ? t('common.all') : 'All';
-      let html = `<button class="bm-chip text-[10px] font-semibold px-2.5 py-1 rounded-full border ${_equipFilter === 'all' ? 'active' : 'bg-surface-2 text-muted border-border'}" data-equip="all">${esc(allLabel)}</button>`;
+      let html = `<button class="bm-chip text-[13px] font-semibold px-3 py-1.5 rounded-full border ${_equipFilter === 'all' ? 'active' : 'bg-surface-2 text-muted border-border'}" data-equip="all">${esc(allLabel)}</button>`;
       html += types.map(t => {
         const isActive = _equipFilter === t;
-        return `<button class="bm-chip text-[10px] font-semibold px-2.5 py-1 rounded-full border ${isActive ? 'active' : 'bg-surface-2 text-muted border-border'}" data-equip="${esc(t)}">${esc(equipLabel(t))}</button>`;
+        return `<button class="bm-chip text-[13px] font-semibold px-3 py-1.5 rounded-full border ${isActive ? 'active' : 'bg-surface-2 text-muted border-border'}" data-equip="${esc(t)}">${esc(equipLabel(t))}</button>`;
       }).join('');
       container.innerHTML = html;
       container.querySelectorAll('[data-equip]').forEach(btn => {
@@ -14455,9 +14455,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             </button>
           </div>
           <div class="p-1.5">
-            <div class="text-[10px] font-medium leading-snug line-clamp-2 min-h-[2em]">${esc(name)}</div>
+            <div class="text-[13px] font-semibold leading-snug line-clamp-2 min-h-[2.4em]">${esc(name)}</div>
             <div class="flex items-center justify-between mt-0.5">
-              <span class="text-[8px] font-bold px-1 py-0.5 rounded ${srcClass}">${src}</span>
+              <span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${srcClass}">${src}</span>
               <button class="w-6 h-6 grid place-items-center rounded bg-surface hover:bg-primary/20 text-primary-2 transition" data-bm-view="${esc(id)}" title="${t('aria.view')}"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
               <span class="text-primary-2 text-xs font-bold">+</span>
             </div>
@@ -14642,7 +14642,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           <div class="p-1.5">
             <div class="text-[10px] font-medium truncate">${esc(name)}</div>
             <div class="flex items-center justify-between mt-0.5">
-              <span class="text-[8px] font-bold px-1 py-0.5 rounded ${srcClass}">${src}</span>
+              <span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${srcClass}">${src}</span>
               <span class="text-primary-2 text-xs font-bold">+</span>
             </div>
           </div>
@@ -14698,7 +14698,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           <div class="p-1.5">
             <div class="text-[10px] font-medium truncate">${esc(name)}</div>
             <div class="flex items-center justify-between mt-0.5">
-              <span class="text-[8px] font-bold px-1 py-0.5 rounded ${srcClass}">${src}</span>
+              <span class="text-[10px] font-bold px-1.5 py-0.5 rounded ${srcClass}">${src}</span>
               <span class="text-primary-2 text-xs font-bold">+</span>
             </div>
           </div>
