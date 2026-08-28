@@ -4,958 +4,760 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-  <meta name="description" content="David King Gym — Персональный кабинет подопечного: тренировки, рацион, чек-ины и таймер отдыха." />
+  <meta name="description" content="David King Gym — Персональный кабинет подопечного" />
   <title>David King Gym — Мой Портал</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" href="icon-512.png" />
   <link rel="apple-touch-icon" href="icon-512.png" />
-
   <link rel="stylesheet" href="src/input.css" />
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
-
   <style>
     :root {
       --font-sans: 'Inter', system-ui, sans-serif;
       --font-display: 'Plus Jakarta Sans', Inter, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
+      --sat: env(safe-area-inset-top, 0px);
+      --sab: env(safe-area-inset-bottom, 0px);
     }
+    * { box-sizing: border-box; }
     body {
       font-family: var(--font-sans);
-      background-color: #0a0a0f;
-      color: #f3f4f6;
+      background: #0a0a0f;
+      color: #f1f5f9;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
+      min-height: 100dvh;
+      padding-top: var(--sat);
+      padding-bottom: var(--sab);
     }
-    .glass-card {
-      background: rgba(20, 20, 30, 0.75);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .flip-rtl { transform: scaleX(1); }
+    .glass { background: rgba(20,20,30,.72); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(255,255,255,.07); }
+    .glass-strong { background: rgba(20,20,30,.9); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,.1); }
+    .font-display { font-family: var(--font-display); }
+    .font-mono { font-family: var(--font-mono); }
+    .no-sb::-webkit-scrollbar { display: none; }
+    .no-sb { -ms-overflow-style: none; scrollbar-width: none; }
     [dir="rtl"] .flip-rtl { transform: scaleX(-1); }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    @keyframes pulse-subtle {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.85; transform: scale(0.98); }
-    }
-    .pulse-timer { animation: pulse-subtle 1s infinite; }
+    .flip-rtl { transform: scaleX(1); }
+    @keyframes fade-slide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation: fade-slide .3s ease both; }
+    @keyframes pulse-ring { 0%,100% { box-shadow:0 0 0 0 rgba(99,102,241,.4); } 50% { box-shadow:0 0 0 8px rgba(99,102,241,0); } }
+    .pulse-ring { animation: pulse-ring 2s ease-in-out infinite; }
+    .prog-bar { height: 6px; border-radius: 999px; background: rgba(255,255,255,.06); overflow: hidden; }
+    .prog-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #6366f1, #06b6d4); transition: width .5s cubic-bezier(.4,0,.2,1); }
+    .ex-img { aspect-ratio: 4/3; object-fit: cover; border-radius: 12px; width: 100%; background: #14141e; }
+    .set-row-done { opacity: .45; }
+    .set-row-done .set-check { background: #10b981 !important; border-color: #10b981 !important; color: #fff !important; }
+    .tab-btn { transition: all .2s cubic-bezier(.4,0,.2,1); }
+    .tab-btn.active { color: #818cf8; }
+    .tab-btn.active .tab-icon { stroke: #818cf8; }
+    .tab-btn.active .tab-label { font-weight: 700; }
+    .nutri-check:checked + .meal-label { opacity: .45; text-decoration: line-through; }
+    .macro-ring { transition: stroke-dashoffset .8s cubic-bezier(.4,0,.2,1); }
+    #unlock-screen { z-index: 100; }
   </style>
 </head>
-<body class="min-h-screen pb-24 text-slate-100 flex flex-col">
+<body class="flex flex-col">
 
-  <!-- ================= TOP HEADER ================= -->
-  <header class="sticky top-0 z-40 glass-card border-b border-border/60 px-4 py-3 flex items-center justify-between">
+  <!-- ============= HEADER ============= -->
+  <header class="sticky top-0 z-40 glass-strong px-4 py-3 flex items-center justify-between">
     <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-accent flex items-center justify-center font-display font-extrabold text-white text-lg shadow-lg">
-        DK
-      </div>
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-cyan-400 grid place-items-center font-display font-extrabold text-white text-base shadow-lg shadow-indigo-500/20">DK</div>
       <div>
-        <h1 id="client-header-name" class="font-display font-bold text-base leading-tight">Мой Портал</h1>
-        <p id="client-header-goal" class="text-xs text-slate-400">David King Gym</p>
+        <h1 id="hdr-name" class="font-display font-bold text-sm leading-tight truncate max-w-[160px]">Мой Портал</h1>
+        <p id="hdr-goal" class="text-[11px] text-slate-400 truncate max-w-[160px]">David King Gym</p>
       </div>
     </div>
-
-    <!-- Language & Sync -->
     <div class="flex items-center gap-1.5">
-      <select id="lang-select" class="bg-surface-2 border border-border text-xs rounded-lg px-2 py-1.5 text-slate-200 focus:outline-none cursor-pointer">
-        <option value="ru">RU 🇷🇺</option>
-        <option value="en">EN 🇺🇸</option>
-        <option value="he">HE 🇮🇱</option>
+      <select id="lang-select" class="bg-slate-800/80 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-slate-200 outline-none cursor-pointer">
+        <option value="ru">RU</option><option value="en">EN</option><option value="he">HE</option>
       </select>
-      <button id="btn-share-report" class="bg-primary/20 hover:bg-primary/30 text-primary-2 border border-primary/40 rounded-lg p-2 transition" title="Отправить отчет тренеру">
+      <button id="btn-share-report" class="bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 border border-indigo-500/25 rounded-lg p-2 transition" title="Share">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
       </button>
     </div>
   </header>
 
-  <!-- ================= MAIN CONTAINER ================= -->
-  <main class="flex-1 max-w-lg mx-auto w-full p-4 space-y-4">
-
-    <!-- Active Client Profile Banner -->
-    <div id="client-card" class="glass-card rounded-2xl p-4 border border-border/80 relative overflow-hidden">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-[11px] font-semibold uppercase tracking-wider text-accent flex items-center gap-1.5">
-          <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
-          <span id="txt-active-program">План тренировок активен</span>
-        </span>
-        <span id="txt-coach-badge" class="text-[11px] bg-primary/15 text-primary-2 px-2 py-0.5 rounded-md font-medium border border-primary/30">Coach: David King</span>
+  <!-- ============= UNLOCK SCREEN ============= -->
+  <div id="unlock-screen" class="hidden fixed inset-0 z-[100] bg-black/90 backdrop-blur-lg flex items-center justify-center p-4">
+    <div class="glass-strong rounded-3xl p-6 max-w-xs w-full text-center space-y-4">
+      <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-indigo-500 to-cyan-400 grid place-items-center text-2xl shadow-lg shadow-indigo-500/30">🔒</div>
+      <div>
+        <h2 class="font-display font-bold text-base text-white" id="txt-unlock-title">Введите код доступа</h2>
+        <p class="text-xs text-slate-400 mt-1" id="txt-unlock-subtitle">Код прислал тренер вместе со ссылкой</p>
       </div>
-      <div class="flex items-end justify-between">
-        <div>
-          <div id="banner-prog-name" class="font-display font-extrabold text-lg text-white">Загрузка программы...</div>
-          <div id="banner-prog-split" class="text-xs text-slate-400 mt-0.5">Сплит: —</div>
+      <input type="tel" inputmode="numeric" maxlength="6" id="unlock-code-input" placeholder="••••••" autocomplete="off"
+        class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-3 text-center font-mono text-xl tracking-[0.4em] text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+      <p id="unlock-error" class="text-xs text-red-400 min-h-[1rem]"></p>
+      <button id="btn-unlock" class="w-full bg-gradient-to-r from-indigo-500 to-cyan-400 text-white font-bold text-sm py-3 rounded-xl shadow-lg shadow-indigo-500/25 transition active:scale-95">Открыть портал</button>
+    </div>
+  </div>
+
+  <!-- ============= MAIN ============= -->
+  <main class="flex-1 max-w-lg mx-auto w-full px-4 pt-4 pb-28 space-y-4">
+
+    <!-- Hero card -->
+    <div id="client-card" class="glass rounded-2xl p-4 relative overflow-hidden fade-in">
+      <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/8 via-transparent to-cyan-400/5 pointer-events-none"></div>
+      <div class="relative">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[10px] font-semibold uppercase tracking-wider text-cyan-300 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+            <span id="txt-active-program">План активен</span>
+          </span>
         </div>
-        <button id="btn-quick-start" class="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-lg transition active:scale-95 flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-          <span id="txt-start-btn">В зал</span>
-        </button>
+        <div class="flex items-end justify-between gap-3">
+          <div class="min-w-0 flex-1">
+            <div id="banner-prog-name" class="font-display font-extrabold text-lg text-white truncate">…</div>
+            <div id="banner-prog-split" class="text-xs text-slate-400 mt-0.5">—</div>
+          </div>
+          <button id="btn-quick-start" class="bg-gradient-to-r from-indigo-500 to-cyan-400 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-lg shadow-indigo-500/20 transition active:scale-95 flex items-center gap-1.5 shrink-0">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <span id="txt-start-btn">В зал</span>
+          </button>
+        </div>
+        <!-- Workout progress bar -->
+        <div class="mt-3">
+          <div class="flex justify-between text-[10px] text-slate-400 mb-1">
+            <span id="txt-progress-label">0 / 0</span>
+            <span id="txt-progress-pct">0%</span>
+          </div>
+          <div class="prog-bar"><div id="workout-progress" class="prog-bar-fill" style="width:0%"></div></div>
+        </div>
       </div>
     </div>
 
-    <!-- ================= SCREEN 1: WORKOUTS ================= -->
-    <section id="tab-workouts" class="space-y-4">
-      <!-- Day Switcher -->
-      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1" id="days-tabs-container"></div>
-
-      <!-- Exercise list -->
+    <!-- ===== TAB: WORKOUTS ===== -->
+    <section id="tab-workouts" class="space-y-3 fade-in">
+      <div id="days-tabs-container" class="flex items-center gap-1.5 overflow-x-auto no-sb pb-1"></div>
       <div id="workout-exercises-list" class="space-y-3"></div>
-
-      <!-- Workout Finish Action -->
-      <div id="workout-finish-box" class="pt-2">
-        <button id="btn-finish-workout" class="w-full bg-success hover:bg-success/90 text-white font-bold text-sm py-3.5 rounded-2xl shadow-xl transition active:scale-95 flex items-center justify-center gap-2">
+      <div id="workout-finish-box" class="pt-1">
+        <button id="btn-finish-workout" class="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-sm py-3.5 rounded-2xl shadow-xl shadow-emerald-500/20 transition active:scale-95 flex items-center justify-center gap-2">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
           <span id="txt-finish-workout">Завершить тренировку</span>
         </button>
       </div>
     </section>
 
-    <!-- ================= SCREEN 2: NUTRITION ================= -->
-    <section id="tab-nutrition" class="hidden space-y-4">
-      <!-- Macro Overview Card -->
-      <div class="glass-card rounded-2xl p-4 border border-border">
+    <!-- ===== TAB: NUTRITION ===== -->
+    <section id="tab-nutrition" class="hidden space-y-3 fade-in">
+      <div class="glass rounded-2xl p-4">
         <div class="flex justify-between items-center mb-3">
-          <h3 class="font-display font-bold text-sm text-slate-200" id="txt-daily-targets">Суточная норма КБЖУ</h3>
-          <span id="target-cal-badge" class="font-mono font-bold text-accent text-sm">2200 ккал</span>
+          <h3 class="font-display font-bold text-sm text-slate-200" id="txt-daily-targets">Суточная норма</h3>
+          <span id="target-cal-badge" class="font-mono font-bold text-cyan-300 text-sm">—</span>
         </div>
         <div class="grid grid-cols-3 gap-2 text-center">
-          <div class="bg-surface-2/80 rounded-xl p-2.5 border border-border/60">
-            <div class="text-[10px] text-slate-400 font-semibold uppercase">Белки</div>
-            <div id="macro-p" class="font-mono font-extrabold text-sm text-indigo-400 mt-0.5">160 г</div>
+          <div class="bg-slate-800/60 rounded-xl p-2.5 border border-slate-700/50">
+            <div class="text-[9px] text-slate-400 font-semibold uppercase">Белки</div>
+            <div id="macro-p" class="font-mono font-extrabold text-sm text-indigo-300 mt-0.5">—</div>
           </div>
-          <div class="bg-surface-2/80 rounded-xl p-2.5 border border-border/60">
-            <div class="text-[10px] text-slate-400 font-semibold uppercase">Жиры</div>
-            <div id="macro-f" class="font-mono font-extrabold text-sm text-amber-400 mt-0.5">70 г</div>
+          <div class="bg-slate-800/60 rounded-xl p-2.5 border border-slate-700/50">
+            <div class="text-[9px] text-slate-400 font-semibold uppercase">Жиры</div>
+            <div id="macro-f" class="font-mono font-extrabold text-sm text-amber-300 mt-0.5">—</div>
           </div>
-          <div class="bg-surface-2/80 rounded-xl p-2.5 border border-border/60">
-            <div class="text-[10px] text-slate-400 font-semibold uppercase">Углеводы</div>
-            <div id="macro-c" class="font-mono font-extrabold text-sm text-emerald-400 mt-0.5">230 г</div>
+          <div class="bg-slate-800/60 rounded-xl p-2.5 border border-slate-700/50">
+            <div class="text-[9px] text-slate-400 font-semibold uppercase">Углеводы</div>
+            <div id="macro-c" class="font-mono font-extrabold text-sm text-emerald-300 mt-0.5">—</div>
           </div>
         </div>
       </div>
-
-      <!-- Water Tracker -->
-      <div class="glass-card rounded-2xl p-4 border border-border flex items-center justify-between">
+      <div class="glass rounded-2xl p-4 flex items-center justify-between">
         <div>
           <div class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
             <svg class="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
             <span id="txt-water-title">Водный баланс</span>
           </div>
-          <div id="water-count-text" class="text-[11px] text-slate-400 mt-0.5">Выпито: 1.5 л из 3.0 л</div>
+          <div id="water-count-text" class="text-[11px] text-slate-400 mt-0.5">0.0 л</div>
         </div>
         <div class="flex items-center gap-2">
-          <button id="btn-water-minus" class="w-8 h-8 rounded-lg bg-surface-2 hover:bg-border text-slate-300 font-bold grid place-items-center">-</button>
-          <span id="water-glasses" class="font-mono font-bold text-cyan-400 text-sm">6 💧</span>
-          <button id="btn-water-plus" class="w-8 h-8 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 font-bold grid place-items-center">+</button>
+          <button id="btn-water-minus" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold grid place-items-center transition">−</button>
+          <span id="water-glasses" class="font-mono font-bold text-cyan-300 text-sm">0</span>
+          <button id="btn-water-plus" class="w-8 h-8 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 font-bold grid place-items-center transition">+</button>
         </div>
       </div>
-
-      <!-- Meals Checklist -->
       <div id="meals-container" class="space-y-3"></div>
     </section>
 
-    <!-- ================= SCREEN 3: CHECK-IN & PROGRESS ================= -->
-    <section id="tab-checkin" class="hidden space-y-4">
-      <div class="glass-card rounded-2xl p-4 border border-border space-y-4">
-        <h3 class="font-display font-bold text-sm text-slate-200" id="txt-daily-checkin">Утренний Чек-ин</h3>
-        
+    <!-- ===== TAB: CHECK-IN ===== -->
+    <section id="tab-checkin" class="hidden space-y-3 fade-in">
+      <div class="glass rounded-2xl p-4 space-y-4">
+        <h3 class="font-display font-bold text-sm text-slate-200" id="txt-daily-checkin">Утренний чек-ин</h3>
         <div>
-          <label class="block text-xs text-slate-400 mb-1" id="lbl-morning-weight">Вес утром натощак (кг)</label>
-          <input type="number" step="0.1" id="input-checkin-weight" placeholder="Например: 78.4" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:ring-2 focus:ring-primary focus:outline-none" />
+          <label class="block text-xs text-slate-400 mb-1" id="lbl-morning-weight">Вес утром (кг)</label>
+          <input type="number" step="0.1" id="input-checkin-weight" placeholder="78.4" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
         </div>
-
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs text-slate-400 mb-1">Талия (см)</label>
-            <input type="number" step="0.5" id="input-checkin-waist" placeholder="78" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2 text-sm font-mono text-white focus:outline-none" />
+            <input type="number" step="0.5" id="input-checkin-waist" placeholder="78" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:outline-none" />
           </div>
           <div>
-            <label class="block text-xs text-slate-400 mb-1">Бедра (см)</label>
-            <input type="number" step="0.5" id="input-checkin-hip" placeholder="98" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2 text-sm font-mono text-white focus:outline-none" />
+            <label class="block text-xs text-slate-400 mb-1">Бёдра (см)</label>
+            <input type="number" step="0.5" id="input-checkin-hip" placeholder="98" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:outline-none" />
           </div>
         </div>
-
         <div>
           <div class="flex justify-between items-center mb-1">
-            <label class="text-xs text-slate-400">Самочувствие и энергия</label>
-            <span id="slider-energy-val" class="font-mono font-bold text-accent text-xs">8 / 10</span>
+            <label class="text-xs text-slate-400">Энергия</label>
+            <span id="slider-energy-val" class="font-mono font-bold text-cyan-300 text-xs">8 / 10</span>
           </div>
-          <input type="range" min="1" max="10" value="8" id="slider-energy" class="w-full accent-accent cursor-pointer" />
+          <input type="range" min="1" max="10" value="8" id="slider-energy" class="w-full accent-cyan-400 cursor-pointer" />
         </div>
-
         <div>
-          <label class="block text-xs text-slate-400 mb-1">Заметка для тренера</label>
-          <textarea id="input-checkin-note" rows="2" placeholder="Как сон, восстановление, аппетит..." class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none"></textarea>
+          <label class="block text-xs text-slate-400 mb-1">Заметка тренеру</label>
+          <textarea id="input-checkin-note" rows="2" placeholder="Сон, восстановление, аппетит..." class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none resize-none"></textarea>
         </div>
-
-        <button id="btn-save-checkin" class="w-full bg-primary hover:bg-primary-2 text-white font-bold text-xs py-3 rounded-xl shadow-lg transition active:scale-95">
-          Сохранить чек-ин
-        </button>
+        <button id="btn-save-checkin" class="w-full bg-indigo-500 hover:bg-indigo-400 text-white font-bold text-xs py-3 rounded-xl shadow-lg shadow-indigo-500/20 transition active:scale-95">Сохранить чек-ин</button>
         <p id="checkin-status" class="text-[11px] text-center text-emerald-400 min-h-[1rem]"></p>
       </div>
-
-      <div class="glass-card rounded-2xl p-4 border border-border space-y-2">
+      <div class="glass rounded-2xl p-4 space-y-2">
         <h3 class="font-display font-bold text-sm text-slate-200" id="txt-history-title">История замеров</h3>
         <div id="checkin-history" class="space-y-1.5"></div>
       </div>
     </section>
-
   </main>
 
-  <!-- ================= REST TIMER FLOATING MODAL ================= -->
-  <div id="rest-timer-modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="glass-card rounded-3xl p-6 max-w-xs w-full text-center border border-border shadow-2xl space-y-4">
-      <div class="text-xs font-semibold uppercase tracking-wider text-slate-400" id="txt-timer-label">Отдых между подходами</div>
-      <div id="timer-countdown" class="font-mono font-extrabold text-5xl text-accent pulse-timer">01:30</div>
+  <!-- ============= REST TIMER ============= -->
+  <div id="rest-timer-modal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-strong rounded-3xl p-6 max-w-xs w-full text-center space-y-4">
+      <div class="text-xs font-semibold uppercase tracking-wider text-slate-400" id="txt-timer-label">Отдых</div>
+      <div id="timer-countdown" class="font-mono font-extrabold text-5xl text-cyan-300 pulse-ring">01:30</div>
       <div class="flex items-center justify-center gap-2">
-        <button id="btn-timer-minus15" class="bg-surface-2 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300">-15с</button>
-        <button id="btn-timer-plus30" class="bg-surface-2 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300">+30с</button>
+        <button id="btn-timer-minus15" class="bg-slate-800 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300">−15с</button>
+        <button id="btn-timer-plus30" class="bg-slate-800 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300">+30с</button>
       </div>
-      <button id="btn-timer-skip" class="w-full bg-surface-2 hover:bg-border text-slate-300 text-xs font-semibold py-2.5 rounded-xl">
-        Пропустить таймер
-      </button>
+      <button id="btn-timer-skip" class="w-full bg-slate-800/60 hover:bg-slate-700 text-slate-300 text-xs font-semibold py-2.5 rounded-xl">Пропустить</button>
     </div>
   </div>
 
-  <!-- ================= UNLOCK SCREEN (encrypted portal) ================= -->
-  <div id="unlock-screen" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="glass-card rounded-3xl p-6 max-w-xs w-full text-center border border-border shadow-2xl space-y-4">
-      <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-primary to-accent grid place-items-center text-2xl shadow-lg">🔒</div>
-      <div>
-        <h2 class="font-display font-bold text-base text-white" id="txt-unlock-title">Введите код доступа</h2>
-        <p class="text-xs text-slate-400 mt-1" id="txt-unlock-subtitle">Код прислал тренер вместе со ссылкой</p>
-      </div>
-      <input type="tel" inputmode="numeric" maxlength="6" id="unlock-code-input" placeholder="••••••" autocomplete="off"
-             class="w-full bg-surface-2 border border-border rounded-xl px-3 py-3 text-center font-mono text-xl tracking-[0.4em] text-white focus:ring-2 focus:ring-primary focus:outline-none" />
-      <p id="unlock-error" class="text-xs text-red-400 min-h-[1rem]"></p>
-      <button id="btn-unlock" class="w-full bg-gradient-to-r from-primary to-accent text-white font-bold text-sm py-3 rounded-xl shadow-lg transition active:scale-95">
-        Открыть портал
-      </button>
-    </div>
-  </div>
-
-  <!-- ================= BOTTOM NAVIGATION BAR ================= -->
-  <nav class="fixed bottom-0 inset-x-0 z-40 glass-card border-t border-border/70 px-4 py-2 flex items-center justify-around max-w-lg mx-auto">
-    <button data-tab="workouts" class="nav-tab active flex flex-col items-center gap-1 text-primary py-1 px-3">
-      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 4v16M18 4v16M6 12h12"/></svg>
-      <span class="text-[10px] font-semibold" id="nav-lbl-workouts">Тренировки</span>
+  <!-- ============= BOTTOM NAV ============= -->
+  <nav class="fixed bottom-0 inset-x-0 z-40 glass-strong border-t border-slate-800/60 px-4 pt-1.5 flex items-center justify-around max-w-lg mx-auto" style="padding-bottom: calc(0.375rem + var(--sab))">
+    <button data-tab="workouts" class="nav-tab tab-btn active flex flex-col items-center gap-0.5 text-slate-400 py-1 px-3">
+      <svg class="tab-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 4v16M18 4v16M6 12h12"/></svg>
+      <span class="tab-label text-[9px] font-semibold" id="nav-workouts">Тренировки</span>
     </button>
-    <button data-tab="nutrition" class="nav-tab flex flex-col items-center gap-1 text-slate-400 py-1 px-3">
-      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
-      <span class="text-[10px] font-semibold" id="nav-lbl-nutrition">Питание</span>
+    <button data-tab="nutrition" class="nav-tab tab-btn flex flex-col items-center gap-0.5 text-slate-400 py-1 px-3">
+      <svg class="tab-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+      <span class="tab-label text-[9px] font-semibold" id="nav-nutrition">Питание</span>
     </button>
-    <button data-tab="checkin" class="nav-tab flex flex-col items-center gap-1 text-slate-400 py-1 px-3">
-      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-      <span class="text-[10px] font-semibold" id="nav-lbl-checkin">Прогресс</span>
+    <button data-tab="checkin" class="nav-tab tab-btn flex flex-col items-center gap-0.5 text-slate-400 py-1 px-3">
+      <svg class="tab-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      <span class="tab-label text-[9px] font-semibold" id="nav-checkin">Прогресс</span>
     </button>
   </nav>
 
-  <!-- ================= CLIENT LOGIC SCRIPT ================= -->
+  <!-- ============= SCRIPTS ============= -->
   <script>
-    'use strict';
+  'use strict';
 
-    // State
-    let currentClient = null;
-    let currentProgram = null;
-    let currentPlan = null;
-    let activeDayIndex = 0;
-    let waterGlasses = 6;
-    let timerInterval = null;
-    let timerSecondsLeft = 0;
-    let currentLang = 'ru';
+  /* ============ STATE ============ */
+  let currentClient = null, currentProgram = null, currentPlan = null;
+  let exerciseDB = {};      // id -> exercise data (from enriched payload)
+  let activeDayIndex = 0, waterGlasses = 0;
+  let timerInterval = null, timerSecondsLeft = 0;
+  let currentLang = 'ru';
+  let portalBlob = null;
+  let setStates = {};       // day-idx/set-key -> done
 
-    // i18n
-    const I18N = {
-      ru: {
-        portalTitle: 'Мой Портал',
-        coachBadge: 'Тренер: David King',
-        startBtn: 'В зал',
-        finishWorkout: 'Завершить тренировку',
-        dailyTargets: 'Суточная норма КБЖУ',
-        waterTitle: 'Водный баланс',
-        dailyCheckin: 'Утренний Чек-ин',
-        morningWeight: 'Вес утром натощак (кг)',
-        savedToast: 'Сохранено ✓',
-        workoutDoneTitle: 'Тренировка завершена! 🎉',
-        setsCompleted: 'Выполнено сетов',
-        restLabel: 'Отдых между подходами',
-        unlockTitle: 'Введите код доступа',
-        unlockSubtitle: 'Код прислал тренер вместе со ссылкой',
-        unlockBtn: 'Открыть портал',
-        unlockWrongCode: 'Неверный код. Попробуйте ещё раз.',
-        unlockExpired: 'Срок действия ссылки истёк. Попросите тренера прислать новую.',
-        unlockNoCrypto: 'Откройте ссылку в браузере по https.',
-        unlockBadFormat: 'Неизвестный формат ссылки. Попросите тренера прислать новую.',
-        legacyWarning: '⚠️ Это ссылка устаревшего формата без шифрования. Попросите тренера прислать новую защищённую ссылку.',
-        historyTitle: 'История замеров',
-        noHistory: 'Пока нет сохранённых чек-инов',
-        checkinSaved: 'Чек-ин сохранён ✓',
-        checkinNeedWeight: 'Укажите вес',
-        doneToday: 'Тренировка сегодня выполнена ✓',
-        reportWeight: 'Вес', reportWaist: 'Талия', reportHip: 'Бёдра', reportEnergy: 'Самочувствие', reportWater: 'Вода'
-      },
-      en: {
-        portalTitle: 'My Portal',
-        coachBadge: 'Coach: David King',
-        startBtn: 'Start Workout',
-        finishWorkout: 'Finish Workout',
-        dailyTargets: 'Daily Macro Targets',
-        waterTitle: 'Water Balance',
-        dailyCheckin: 'Morning Check-In',
-        morningWeight: 'Morning Weight (kg)',
-        savedToast: 'Saved ✓',
-        workoutDoneTitle: 'Workout Complete! 🎉',
-        setsCompleted: 'Sets Completed',
-        restLabel: 'Rest between sets',
-        unlockTitle: 'Enter access code',
-        unlockSubtitle: 'Your coach sent the code together with the link',
-        unlockBtn: 'Open Portal',
-        unlockWrongCode: 'Wrong code. Please try again.',
-        unlockExpired: 'This link has expired. Ask your coach for a new one.',
-        unlockNoCrypto: 'Please open the link over https.',
-        unlockBadFormat: 'Unknown link format. Ask your coach for a new one.',
-        legacyWarning: '⚠️ This legacy link is not encrypted. Ask your coach to send a new secure link.',
-        historyTitle: 'Measurement History',
-        noHistory: 'No saved check-ins yet',
-        checkinSaved: 'Check-in saved ✓',
-        checkinNeedWeight: 'Please enter your weight',
-        doneToday: 'Workout completed today ✓',
-        reportWeight: 'Weight', reportWaist: 'Waist', reportHip: 'Hips', reportEnergy: 'Energy', reportWater: 'Water'
-      },
-      he: {
-        portalTitle: 'הפורטל שלי',
-        coachBadge: 'מאמן: David King',
-        startBtn: 'התחל אימון',
-        finishWorkout: 'סיים אימון',
-        dailyTargets: 'יעדי תזונה יומיים',
-        waterTitle: 'מאזן נוזלים',
-        dailyCheckin: 'צ׳ק-אין בוקר',
-        morningWeight: 'משקל בוקר בצום (ק״ג)',
-        savedToast: 'נשמר בהצלחה ✓',
-        workoutDoneTitle: 'האימון הושלם! 🎉',
-        setsCompleted: 'סטים שבוצעו',
-        restLabel: 'מנוחה בין סטים',
-        unlockTitle: 'הזן קוד גישה',
-        unlockSubtitle: 'הקוד נשלח על ידי המאמן יחד עם הקישור',
-        unlockBtn: 'פתח פורטל',
-        unlockWrongCode: 'קוד שגוי. נסה שוב.',
-        unlockExpired: 'תוקף הקישור פג. בקש מהמאמן קישור חדש.',
-        unlockNoCrypto: 'פתח את הקישור ב-https.',
-        unlockBadFormat: 'פורמט קישור לא מוכר. בקש מהמאמן קישור חדש.',
-        legacyWarning: '⚠️ קישור זה בפורמט ישן ללא הצפנה. בקש מהמאמן קישור מאובטח חדש.',
-        historyTitle: 'היסטוריית מדידות',
-        noHistory: 'אין עדיין צ׳ק-אינים שמורים',
-        checkinSaved: 'הצ׳ק-אין נשמר ✓',
-        checkinNeedWeight: 'הזן משקל',
-        doneToday: 'האימון בוצע היום ✓',
-        reportWeight: 'משקל', reportWaist: 'מותן', reportHip: 'ירכיים', reportEnergy: 'אנרגיה', reportWater: 'מים'
+  /* ============ I18N ============ */
+  const I18N = {
+    ru: {
+      portalTitle:'Мой Портал',coachBadge:'David King Gym',startBtn:'В зал',finishWorkout:'Завершить тренировку',
+      dailyTargets:'Суточная норма',waterTitle:'Водный баланс',dailyCheckin:'Утренний чек-ин',
+      morningWeight:'Вес утром (кг)',savedToast:'Сохранено ✓',checkinSaved:'Чек-ин сохранён ✓',checkinNeedWeight:'Укажите вес',
+      workoutDoneTitle:'Тренировка завершена! 🎉',restLabel:'Отдых',unlockTitle:'Введите код доступа',
+      unlockSubtitle:'Код прислал тренер вместе со ссылкой',unlockBtn:'Открыть портал',
+      unlockWrongCode:'Неверный код',unlockExpired:'Срок действия ссылки истёк',unlockNoCrypto:'Откройте по https',
+      unlockBadFormat:'Неизвестный формат ссылки',legacyWarning:'⚠️ Ссылка устаревшего формата',
+      historyTitle:'История замеров',noHistory:'Нет чек-инов',doneToday:'Выполнено ✓',
+      reportWeight:'Вес',reportWaist:'Талия',reportHip:'Бёдра',reportEnergy:'Энергия',reportWater:'Вода',
+      navWorkouts:'Тренировки',navNutrition:'Питание',navCheckin:'Прогресс',
+      noExercises:'Нет упражнений',noMeals:'План питания не назначен',technique:'Техника',
+      targetMuscle:'Целевые',auxMuscle:'Вспомогательные',rest:'Отдых'
+    },
+    en: {
+      portalTitle:'My Portal',coachBadge:'David King Gym',startBtn:'Start',finishWorkout:'Finish Workout',
+      dailyTargets:'Daily Targets',waterTitle:'Water',dailyCheckin:'Morning Check-In',
+      morningWeight:'Morning Weight (kg)',savedToast:'Saved ✓',checkinSaved:'Check-in saved ✓',checkinNeedWeight:'Enter weight',
+      workoutDoneTitle:'Workout Complete! 🎉',restLabel:'Rest',unlockTitle:'Enter access code',
+      unlockSubtitle:'Your coach sent the code',unlockBtn:'Open Portal',
+      unlockWrongCode:'Wrong code',unlockExpired:'Link expired',unlockNoCrypto:'Open over https',
+      unlockBadFormat:'Unknown link format',legacyWarning:'⚠️ Legacy link',
+      historyTitle:'History',noHistory:'No check-ins',doneToday:'Done ✓',
+      reportWeight:'Weight',reportWaist:'Waist',reportHip:'Hips',reportEnergy:'Energy',reportWater:'Water',
+      navWorkouts:'Workouts',navNutrition:'Nutrition',navCheckin:'Progress',
+      noExercises:'No exercises',noMeals:'No nutrition plan',technique:'Technique',
+      targetMuscle:'Target',auxMuscle:'Auxiliary',rest:'Rest'
+    },
+    he: {
+      portalTitle:'הפורטל שלי',coachBadge:'David King Gym',startBtn:'התחל',finishWorkout:'סיים אימון',
+      dailyTargets:'יעדים יומיים',waterTitle:'מאזן נוזלים',dailyCheckin:'צ׳ק-אין בוקר',
+      morningWeight:'משקל בוקר (ק״ג)',savedToast:'נשמר ✓',checkinSaved:'צ׳ק-אין נשמר ✓',checkinNeedWeight:'הזן משקל',
+      workoutDoneTitle:'האימון הושלם! 🎉',restLabel:'מנוחה',unlockTitle:'הזן קוד גישה',
+      unlockSubtitle:'הקוד נשלח על ידי המאמן',unlockBtn:'פתח פורטל',
+      unlockWrongCode:'קוד שגוי',unlockExpired:'תוקף הקישור פג',unlockNoCrypto:'פתח דרך https',
+      unlockBadFormat:'פורמט לא מוכר',legacyWarning:'⚠️ קישור ישן',
+      historyTitle:'היסטוריה',noHistory:'אין צ׳ק-אינים',doneToday:'בוצע ✓',
+      reportWeight:'משקל',reportWaist:'מותן',reportHip:'ירכיים',reportEnergy:'אנרגיה',reportWater:'מים',
+      navWorkouts:'אימונים',navNutrition:'תזונה',navCheckin:'התקדמות',
+      noExercises:'אין תרגילים',noMeals:'אין תפריט',technique:'טכניקה',
+      targetMuscle:'יעד',auxMuscle:'עזר',rest:'מנוחה'
+    }
+  };
+  const t = k => (I18N[currentLang] && I18N[currentLang][k]) || I18N.ru[k] || k;
+
+  function esc(v) { return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+  /* ============ CRYPTO / UNLOCK ============ */
+  function b64uDecode(str) {
+    const b64 = str.replace(/-/g,'+').replace(/_/g,'/') + '='.repeat((4-(str.length%4))%4);
+    const bin = atob(b64); const out = new Uint8Array(bin.length);
+    for (let i=0;i<bin.length;i++) out[i]=bin.charCodeAt(i); return out;
+  }
+  function b64uEncode(bytes) {
+    let bin=''; for(let i=0;i<bytes.length;i++) bin+=String.fromCharCode(bytes[i]);
+    return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  }
+  async function decryptPortal(code) {
+    const salt = portalBlob.slice(0,16), iv = portalBlob.slice(16,28), ct = portalBlob.slice(28);
+    const km = await crypto.subtle.importKey('raw', new TextEncoder().encode(code), 'PBKDF2', false, ['deriveKey']);
+    const key = await crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:150000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['decrypt']);
+    const pt = await crypto.subtle.decrypt({name:'AES-GCM',iv},key,ct);
+    const parsed = JSON.parse(new TextDecoder().decode(pt));
+    if (parsed.exp && Date.now() > parsed.exp) throw {code:'expired'};
+    return parsed;
+  }
+  function showUnlock() {
+    document.getElementById('txt-unlock-title').textContent = t('unlockTitle');
+    document.getElementById('txt-unlock-subtitle').textContent = t('unlockSubtitle');
+    document.getElementById('btn-unlock').textContent = t('unlockBtn');
+    document.getElementById('unlock-code-input').value = '';
+    document.getElementById('unlock-error').textContent = '';
+    document.getElementById('unlock-screen').classList.remove('hidden');
+    setTimeout(()=>document.getElementById('unlock-code-input').focus(),100);
+  }
+  async function attemptUnlock() {
+    const err = document.getElementById('unlock-error');
+    const code = document.getElementById('unlock-code-input').value.replace(/\D/g,'');
+    if (code.length !== 6) { err.textContent = t('unlockWrongCode'); return; }
+    if (!window.crypto || !crypto.subtle) { err.textContent = t('unlockNoCrypto'); return; }
+    try {
+      const parsed = await decryptPortal(code);
+      document.getElementById('unlock-screen').classList.add('hidden');
+      applyData(parsed);
+    } catch(e) {
+      err.textContent = (e && e.code === 'expired') ? t('unlockExpired') : t('unlockWrongCode');
+    }
+  }
+
+  /* ============ DATA LOADING ============ */
+  function applyData(d) {
+    currentClient = d.client || null;
+    currentProgram = d.program || null;
+    currentPlan = d.plan || null;
+    exerciseDB = d.exercises || {};
+    renderAll();
+  }
+  function applyDemo() {
+    currentClient = { full_name:'Демо Клиент', goal:'hypertrophy', weight:78.4, target_weight:84 };
+    currentProgram = { name:'PPL Demo', split_type:'ppl', workout_days:[
+      { day_letter:'A', name:'Push', exercises:[
+        { id:'1', name:'Bench Press', group:'chest', rest_sec:90, sets:[{set_num:1,weight:70,reps:10},{set_num:2,weight:75,reps:8},{set_num:3,weight:80,reps:6}] }
+      ]},
+      { day_letter:'B', name:'Pull', exercises:[
+        { id:'2', name:'Lat Pulldown', group:'back', rest_sec:90, sets:[{set_num:1,weight:50,reps:10},{set_num:2,weight:55,reps:8}] }
+      ]}
+    ]};
+    currentPlan = { name:'Clean Bulk', target_calories:3150, target_protein:185, target_fat:80, target_carbs:420, meals:[
+      { name:'Завтрак', items:[{name:'Овсянка',grams:80,calories:300},{name:'Яйца',grams:120,calories:180}] },
+      { name:'Обед', items:[{name:'Курица',grams:180,calories:320},{name:'Рис',grams:150,calories:200}] }
+    ]};
+    exerciseDB = {};
+    renderAll();
+  }
+  function loadInitialData() {
+    const hash = window.location.hash || '';
+    try {
+      if (hash.startsWith('#e=')) {
+        const ver = hash.substring(3);
+        if (!ver.startsWith('1.')) return;
+        portalBlob = b64uDecode(ver.substring(2));
+        localStorage.setItem('dk_client_data', JSON.stringify({v:1, blob:b64uEncode(portalBlob)}));
+        history.replaceState(null,'',window.location.pathname);
+        showUnlock(); return;
       }
+      if (hash.startsWith('#data=')) {
+        const parsed = JSON.parse(atob(decodeURIComponent(hash.substring(6))));
+        history.replaceState(null,'',window.location.pathname);
+        applyData(parsed); return;
+      }
+      const cached = localStorage.getItem('dk_client_data');
+      if (cached) {
+        const p = JSON.parse(cached);
+        if (p && p.v === 1 && p.blob) { portalBlob = b64uDecode(p.blob); showUnlock(); return; }
+        if (p && p.client) { applyData(p); return; }
+      }
+    } catch(e) { console.error('load error:',e); }
+    applyDemo();
+  }
+
+  /* ============ I18N / LANG ============ */
+  function updateLabels() {
+    document.getElementById('txt-finish-workout').textContent = t('finishWorkout');
+    document.getElementById('txt-daily-targets').textContent = t('dailyTargets');
+    document.getElementById('txt-water-title').textContent = t('waterTitle');
+    document.getElementById('txt-daily-checkin').textContent = t('dailyCheckin');
+    document.getElementById('lbl-morning-weight').textContent = t('morningWeight');
+    document.getElementById('txt-timer-label').textContent = t('restLabel');
+    document.getElementById('nav-workouts').textContent = t('navWorkouts');
+    document.getElementById('nav-nutrition').textContent = t('navNutrition');
+    document.getElementById('nav-checkin').textContent = t('navCheckin');
+    document.getElementById('txt-history-title').textContent = t('historyTitle');
+    const h = document.getElementById('hdr-name');
+    if (h && !currentClient) h.textContent = t('portalTitle');
+  }
+  function setLang(l) {
+    currentLang = l;
+    document.documentElement.lang = l;
+    document.documentElement.dir = l === 'he' ? 'rtl' : 'ltr';
+    document.getElementById('lang-select').value = l;
+    localStorage.setItem('dk_client_lang', l);
+    updateLabels(); renderAll();
+  }
+
+  /* ============ WATER ============ */
+  function waterKey() { return 'dk_water_' + new Date().toISOString().slice(0,10); }
+  function initWater() {
+    waterGlasses = parseInt(localStorage.getItem(waterKey()),10) || 0;
+    updateWaterUI();
+  }
+  function setWater(n) { waterGlasses = Math.max(0,n); localStorage.setItem(waterKey(),String(waterGlasses)); updateWaterUI(); }
+  function updateWaterUI() {
+    document.getElementById('water-glasses').textContent = waterGlasses;
+    document.getElementById('water-count-text').textContent = (waterGlasses * 0.25).toFixed(1) + ' л';
+  }
+
+  /* ============ CHECK-IN ============ */
+  function todayKey() { return new Date().toISOString().slice(0,10); }
+  function loadCheckins() { try { return JSON.parse(localStorage.getItem('dk_checkins')||'[]'); } catch(e){ return []; } }
+  function num(v){ const n=parseFloat(v); return isFinite(n)?n:null; }
+  function saveCheckin() {
+    const st = document.getElementById('checkin-status');
+    const w = num(document.getElementById('input-checkin-weight').value);
+    if (!w || w <= 0) { st.textContent = '⚠️ ' + t('checkinNeedWeight'); st.className = 'text-[11px] text-center text-red-400 min-h-[1rem]'; return; }
+    const rec = { date:todayKey(), ts:Date.now(), weight:w,
+      waist:num(document.getElementById('input-checkin-waist').value),
+      hip:num(document.getElementById('input-checkin-hip').value),
+      energy:parseInt(document.getElementById('slider-energy').value,10)||8,
+      note:document.getElementById('input-checkin-note').value.trim().slice(0,500) };
+    const list = loadCheckins().filter(r=>r.date!==rec.date); list.push(rec);
+    localStorage.setItem('dk_checkins', JSON.stringify(list.slice(-365)));
+    st.textContent = t('checkinSaved'); st.className = 'text-[11px] text-center text-emerald-400 min-h-[1rem]';
+    renderHistory();
+  }
+  function prefillCheckin() {
+    const list = loadCheckins(); if (!list.length) return;
+    const tk = todayKey(); const r = list.find(r=>r.date===tk) || list[list.length-1];
+    if (r.weight) document.getElementById('input-checkin-weight').value = r.weight;
+    if (r.waist) document.getElementById('input-checkin-waist').value = r.waist;
+    if (r.hip) document.getElementById('input-checkin-hip').value = r.hip;
+    if (r.energy) { document.getElementById('slider-energy').value = r.energy; document.getElementById('slider-energy-val').textContent = r.energy+' / 10'; }
+    if (r.note) document.getElementById('input-checkin-note').value = r.note;
+  }
+  function renderHistory() {
+    const box = document.getElementById('checkin-history');
+    const list = loadCheckins().slice(-7).reverse();
+    if (!list.length) { box.innerHTML = '<p class="text-xs text-slate-500">'+esc(t('noHistory'))+'</p>'; return; }
+    let prev = null;
+    box.innerHTML = list.map(r=>{
+      let delta = '';
+      if (prev != null && r.weight && prev.weight) {
+        const d = +(r.weight - prev.weight).toFixed(1);
+        if (d !== 0) delta = `<span class="${d>0?'text-amber-400':'text-emerald-400'} font-bold">${d>0?'+':''}${d}</span>`;
+      }
+      prev = r;
+      const m = [`<span class="font-mono text-white">${esc(r.weight)}</span> кг`, r.waist?`талия ${esc(r.waist)}`:'', r.hip?`бёдра ${esc(r.hip)}`:''].filter(Boolean).join(' · ');
+      return `<div class="flex items-center justify-between bg-slate-800/50 px-3 py-2 rounded-xl text-xs">
+        <span class="font-mono text-slate-400 w-11">${esc(r.date.slice(5))}</span>
+        <span class="text-slate-300 flex-1 mx-2 truncate">${m}${r.note?' · <em>'+esc(r.note)+'</em>':''}</span>
+        <span class="font-mono text-cyan-300">${r.energy}/10</span>
+        ${delta?`<span class="w-10 text-end">${delta}</span>`:'<span class="w-10"></span>'}
+      </div>`;
+    }).join('');
+  }
+
+  /* ============ WORKOUT DONE ============ */
+  function markDone() {
+    const done = JSON.parse(localStorage.getItem('dk_done_days')||'{}');
+    done[todayKey()] = (currentProgram&&currentProgram.name)||'';
+    localStorage.setItem('dk_done_days',JSON.stringify(done));
+    refreshDone();
+  }
+  function refreshDone() {
+    const btn = document.getElementById('btn-finish-workout');
+    if (!btn) return;
+    const isDone = JSON.parse(localStorage.getItem('dk_done_days')||'{}')[todayKey()];
+    btn.classList.toggle('opacity-60',!!isDone); btn.classList.toggle('pointer-events-none',!!isDone);
+    btn.querySelector('span').textContent = isDone ? t('doneToday') : t('finishWorkout');
+  }
+
+  /* ============ SET TRACKING ============ */
+  function setKey(dayIdx,exIdx,setNum) { return `dk_set_${dayIdx}_${exIdx}_${setNum}`; }
+  function isSetDone(dayIdx,exIdx,setNum) { return localStorage.getItem(setKey(dayIdx,exIdx,setNum))==='1'; }
+  function toggleSet(dayIdx,exIdx,setNum,btn) {
+    const k = setKey(dayIdx,exIdx,setNum);
+    const done = localStorage.getItem(k)==='1';
+    localStorage.setItem(k, done?'0':'1');
+    btn.closest('.set-row').classList.toggle('set-row-done',!done);
+    updateWorkoutProgress();
+  }
+  function updateWorkoutProgress() {
+    if (!currentProgram||!currentProgram.workout_days||!currentProgram.workout_days[activeDayIndex]) return;
+    const day = currentProgram.workout_days[activeDayIndex];
+    let total=0,done=0;
+    (day.exercises||[]).forEach((ex,ei)=>(ex.sets||[]).forEach(s=>{
+      total++; if (isSetDone(activeDayIndex,ei,s.set_num||s.setNum||(s.setNum===0?0:s.set_num))) done++;
+    }));
+    const pct = total ? Math.round(done/total*100) : 0;
+    const bar = document.getElementById('workout-progress');
+    if (bar) bar.style.width = pct+'%';
+    const lbl = document.getElementById('txt-progress-label');
+    if (lbl) lbl.textContent = done+' / '+total;
+    const pct2 = document.getElementById('txt-progress-pct');
+    if (pct2) pct2.textContent = pct+'%';
+  }
+
+  /* ============ SHARE ============ */
+  function shareReport() {
+    const name = (currentClient&&currentClient.full_name)||'Клиент';
+    const prog = (currentProgram&&currentProgram.name)||'—';
+    const list = loadCheckins();
+    const today = list.find(r=>r.date===todayKey())||null;
+    const first = list[0]||null;
+    const lines = ['👋 David King Gym'];
+    lines.push(`✅ ${name} — ${prog}`);
+    if (JSON.parse(localStorage.getItem('dk_done_days')||'{}')[todayKey()]) lines.push('🏋️ Тренировка выполнена');
+    lines.push(`💧 ${(waterGlasses*0.25).toFixed(1)} л`);
+    if (today) {
+      lines.push(`📋 ${today.date}: ⚖️ ${today.weight} кг${today.waist?`, 📏 ${today.waist} см`:''}`);
+      lines.push(`📊 ${today.energy}/10${today.note?`\n📝 ${today.note}`:''}`);
+      if (first && first!==today && first.weight) {
+        const tot = +(today.weight-first.weight).toFixed(1);
+        if (tot!==0) lines.push(`📈 ${tot>0?'+':''}${tot} кг`);
+      }
+    }
+    window.open(`https://wa.me/?text=${encodeURIComponent(lines.join('\n'))}`,'_blank');
+  }
+
+  /* ============ EXERCISE DATA LOOKUP ============ */
+  function getExData(ex) {
+    if (!ex) return null;
+    return exerciseDB[ex.exercise_id] || exerciseDB[ex.id] || null;
+  }
+
+  /* ============ REST TIMER ============ */
+  function startRest(sec) {
+    clearInterval(timerInterval); timerSecondsLeft = sec;
+    document.getElementById('rest-timer-modal').classList.remove('hidden');
+    const upd = () => {
+      const m = Math.floor(timerSecondsLeft/60), s = timerSecondsLeft%60;
+      document.getElementById('timer-countdown').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      if (timerSecondsLeft<=0) { clearInterval(timerInterval); document.getElementById('rest-timer-modal').classList.add('hidden'); }
+      timerSecondsLeft--;
     };
+    upd(); timerInterval = setInterval(upd,1000);
+  }
 
-    function t(key) {
-      return (I18N[currentLang] && I18N[currentLang][key]) || I18N.ru[key] || key;
+  /* ============ RENDER ============ */
+  function renderAll() {
+    if (!currentClient) return;
+    // Header
+    document.getElementById('hdr-name').textContent = currentClient.full_name || t('portalTitle');
+    document.getElementById('hdr-goal').textContent = (currentClient.goal||'') + ' • David King Gym';
+    // Banner
+    if (currentProgram) {
+      document.getElementById('banner-prog-name').textContent = currentProgram.name;
+      document.getElementById('banner-prog-split').textContent = 'Сплит: ' + (currentProgram.split_type||'').toUpperCase();
     }
-
-    // XSS-safe escaping for all portal payload interpolations
-    function esc(value) {
-      return String(value == null ? '' : value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+    // Nutrition targets
+    if (currentPlan) {
+      document.getElementById('target-cal-badge').textContent = (currentPlan.target_calories||'—') + ' ккал';
+      document.getElementById('macro-p').textContent = (currentPlan.target_protein||'—') + ' г';
+      document.getElementById('macro-f').textContent = (currentPlan.target_fat||'—') + ' г';
+      document.getElementById('macro-c').textContent = (currentPlan.target_carbs||'—') + ' г';
     }
+    renderDaysTabs(); renderExercises(); renderMeals();
+    updateLabels(); updateWaterUI(); prefillCheckin(); renderHistory(); refreshDone();
+    updateWorkoutProgress();
+  }
 
-    function setLanguage(lang) {
-      currentLang = lang;
-      document.documentElement.lang = lang;
-      document.documentElement.dir = (lang === 'he') ? 'rtl' : 'ltr';
-      document.getElementById('lang-select').value = lang;
-      localStorage.setItem('dk_client_lang', lang);
-      updateStaticLabels();
-      renderAll();
+  function renderDaysTabs() {
+    const c = document.getElementById('days-tabs-container');
+    if (!currentProgram || !currentProgram.workout_days) { c.innerHTML=''; return; }
+    c.innerHTML = currentProgram.workout_days.map((d,i)=>{
+      const active = i===activeDayIndex;
+      return `<button data-day="${i}" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${active?'bg-indigo-500 text-white shadow-md shadow-indigo-500/25':'bg-slate-800/60 text-slate-400 hover:text-white'}">${esc(d.name||('Day '+(d.day_letter||(i+1))))}</button>`;
+    }).join('');
+    c.querySelectorAll('[data-day]').forEach(b=>b.addEventListener('click',()=>{
+      activeDayIndex = +b.dataset.day; renderDaysTabs(); renderExercises();
+    }));
+  }
+
+  function renderExercises() {
+    const list = document.getElementById('workout-exercises-list');
+    if (!currentProgram || !currentProgram.workout_days || !currentProgram.workout_days[activeDayIndex]) {
+      list.innerHTML = '<div class="text-xs text-slate-500 text-center py-6">'+esc(t('noExercises'))+'</div>'; return;
     }
+    const day = currentProgram.workout_days[activeDayIndex];
+    const lang = currentLang;
+    const nameField = 'name_'+lang;
 
-    function updateStaticLabels() {
-      document.getElementById('client-header-name').textContent = t('portalTitle');
-      document.getElementById('txt-coach-badge').textContent = t('coachBadge');
-      document.getElementById('txt-start-btn').textContent = t('startBtn');
-      document.getElementById('txt-finish-workout').textContent = t('finishWorkout');
-      document.getElementById('txt-daily-targets').textContent = t('dailyTargets');
-      document.getElementById('txt-water-title').textContent = t('waterTitle');
-      document.getElementById('txt-daily-checkin').textContent = t('dailyCheckin');
-      document.getElementById('lbl-morning-weight').textContent = t('morningWeight');
-      document.getElementById('txt-timer-label').textContent = t('restLabel');
-      const hist = document.getElementById('txt-history-title');
-      if (hist) hist.textContent = t('historyTitle');
-    }
+    list.innerHTML = (day.exercises||[]).map((ex,ei)=>{
+      const exData = getExData(ex);
+      const exName = exData ? (exData['name_'+lang] || exData.name_en || ex.name) : (ex[nameField] || ex.name_en || ex.name || '?');
+      const img = exData && exData.images && exData.images[0] ? exData.images[0] : '';
+      const technique = exData ? (exData['technique_'+lang] || exData.technique_en || '') : '';
+      const equipment = exData ? (exData.equipment || '') : '';
+      const detailId = `ex-detail-${activeDayIndex}-${ei}`;
 
-    // Audio cue
-    function playBeep() {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.frequency.value = 880;
-        gain.gain.setValueAtTime(0.3, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.5);
-        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-      } catch (e) {}
-    }
-
-    // Rest Timer
-    function startRestTimer(seconds) {
-      clearInterval(timerInterval);
-      timerSecondsLeft = seconds;
-      const modal = document.getElementById('rest-timer-modal');
-      const el = document.getElementById('timer-countdown');
-      modal.classList.remove('hidden');
-
-      const update = () => {
-        const m = Math.floor(timerSecondsLeft / 60);
-        const s = timerSecondsLeft % 60;
-        el.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-        if (timerSecondsLeft <= 0) {
-          clearInterval(timerInterval);
-          playBeep();
-          modal.classList.add('hidden');
-        }
-        timerSecondsLeft--;
-      };
-      update();
-      timerInterval = setInterval(update, 1000);
-    }
-
-    // ===== Encrypted portal payload (AES-256-GCM + PBKDF2) =====
-    let portalBlob = null; // Uint8Array: salt(16) || iv(12) || ciphertext
-
-    function b64uDecode(str) {
-      const b64 = str.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - (str.length % 4)) % 4);
-      const bin = atob(b64);
-      const out = new Uint8Array(bin.length);
-      for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
-      return out;
-    }
-
-    function b64uEncode(bytes) {
-      let bin = '';
-      for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
-      return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-    }
-
-    async function derivePortalKey(code, salt) {
-      const keyMaterial = await crypto.subtle.importKey('raw', new TextEncoder().encode(code), 'PBKDF2', false, ['deriveKey']);
-      return crypto.subtle.deriveKey(
-        { name: 'PBKDF2', salt: salt, iterations: 150000, hash: 'SHA-256' },
-        keyMaterial,
-        { name: 'AES-GCM', length: 256 },
-        false,
-        ['decrypt']
-      );
-    }
-
-    async function decryptPortal(code) {
-      const salt = portalBlob.slice(0, 16);
-      const iv = portalBlob.slice(16, 28);
-      const ct = portalBlob.slice(28);
-      const key = await derivePortalKey(code, salt);
-      const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, key, ct);
-      const parsed = JSON.parse(new TextDecoder().decode(pt));
-      if (parsed && parsed.exp && Date.now() > parsed.exp) {
-        throw { code: 'expired' };
-      }
-      return parsed;
-    }
-
-    function applyPortalData(parsed) {
-      currentClient = parsed.client || null;
-      currentProgram = parsed.program || null;
-      currentPlan = parsed.plan || null;
-      renderAll();
-    }
-
-    function showUnlockScreen() {
-      document.getElementById('txt-unlock-title').textContent = t('unlockTitle');
-      document.getElementById('txt-unlock-subtitle').textContent = t('unlockSubtitle');
-      document.getElementById('btn-unlock').textContent = t('unlockBtn');
-      const input = document.getElementById('unlock-code-input');
-      input.value = '';
-      document.getElementById('unlock-error').textContent = '';
-      document.getElementById('unlock-screen').classList.remove('hidden');
-      setTimeout(() => input.focus(), 100);
-    }
-
-    async function attemptUnlock() {
-      const errEl = document.getElementById('unlock-error');
-      const code = document.getElementById('unlock-code-input').value.replace(/\D/g, '');
-      if (code.length !== 6) { errEl.textContent = t('unlockWrongCode'); return; }
-      if (!window.crypto || !crypto.subtle) { errEl.textContent = t('unlockNoCrypto'); return; }
-      try {
-        const parsed = await decryptPortal(code);
-        document.getElementById('unlock-screen').classList.add('hidden');
-        applyPortalData(parsed);
-      } catch (e) {
-        if (e && e.code === 'expired') errEl.textContent = t('unlockExpired');
-        else errEl.textContent = t('unlockWrongCode');
-      }
-    }
-
-    function showLegacyWarning() {
-      const banner = document.createElement('div');
-      banner.className = 'glass-card rounded-2xl p-3 border border-amber-500/40 bg-amber-500/10 text-amber-300 text-[11px] leading-relaxed';
-      banner.textContent = t('legacyWarning');
-      const main = document.querySelector('main');
-      if (main) main.prepend(banner);
-    }
-
-    // Load Data: encrypted link (#e=1.…), legacy link (#data=…) or cached blob
-    function loadInitialData() {
-      const hash = window.location.hash || '';
-      try {
-        if (hash.startsWith('#e=')) {
-          const versioned = hash.substring(3);
-          if (!versioned.startsWith('1.')) { alert(t('unlockBadFormat')); return; }
-          portalBlob = b64uDecode(versioned.substring(2));
-          // Cache ciphertext only (never the plaintext); strip payload from the address bar
-          localStorage.setItem('dk_client_data', JSON.stringify({ v: 1, blob: b64uEncode(portalBlob) }));
-          history.replaceState(null, '', window.location.pathname);
-          showUnlockScreen();
-          return;
-        }
-        if (hash.startsWith('#data=')) {
-          const raw = decodeURIComponent(hash.substring(6));
-          const parsed = JSON.parse(atob(raw));
-          history.replaceState(null, '', window.location.pathname);
-          showLegacyWarning();
-          applyPortalData(parsed);
-          return;
-        }
-        const cached = localStorage.getItem('dk_client_data');
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (parsed && parsed.v === 1 && parsed.blob) {
-            portalBlob = b64uDecode(parsed.blob);
-            showUnlockScreen();
-            return;
-          }
-          if (parsed && parsed.client) {
-            showLegacyWarning();
-            applyPortalData(parsed);
-            return;
-          }
-        }
-      } catch (e) {
-        console.error('Data load error:', e);
-      }
-
-      applyDemoData();
-    }
-
-    // Default demo data when no portal link is present
-    function applyDemoData() {
-      currentClient = { full_name: 'Александр Смирнов', goal: 'hypertrophy', weight: 78.4, target_weight: 84 };
-        currentProgram = {
-          name: 'PPL Hypertrophy 6-Day',
-          split_type: 'ppl',
-          workout_days: [
-            {
-              day_letter: 'A',
-              name: 'Push (Грудь, Плечи, Трицепс)',
-              exercises: [
-                { id: '1', name: 'Barbell Bench Press', group: 'chest', rest_sec: 90, notes: 'RPE 8, пауза 1 сек', sets: [{ set_num: 1, weight: 70, reps: 10, type: 'warmup' }, { set_num: 2, weight: 85, reps: 8, type: 'normal' }, { set_num: 3, weight: 85, reps: 8, type: 'normal' }] },
-                { id: '2', name: 'Incline Dumbbell Press', group: 'chest', rest_sec: 75, notes: 'Угол 30°', sets: [{ set_num: 1, weight: 24, reps: 10, type: 'normal' }, { set_num: 2, weight: 26, reps: 8, type: 'normal' }] },
-                { id: '3', name: 'Triceps Cable Pushdown', group: 'triceps', rest_sec: 60, notes: 'Пиковое сокращение', sets: [{ set_num: 1, weight: 30, reps: 12, type: 'normal' }, { set_num: 2, weight: 35, reps: 10, type: 'dropset' }] }
-              ]
-            },
-            {
-              day_letter: 'B',
-              name: 'Pull (Спина, Бицепс)',
-              exercises: [
-                { id: '4', name: 'Lat Pulldown', group: 'back', rest_sec: 90, notes: 'Тяга к ключицам', sets: [{ set_num: 1, weight: 55, reps: 10, type: 'normal' }, { set_num: 2, weight: 65, reps: 8, type: 'normal' }] }
-              ]
-            }
-          ]
-        };
-        currentPlan = {
-          name: 'Clean Bulking High-Protein',
-          target_calories: 3150,
-          target_protein: 185,
-          target_fat: 80,
-          target_carbs: 420,
-          meals: [
-            { id: 'm1', name: 'Завтрак', time: '08:30', items: [{ name: 'Овсяная каша с ягодами', amount_g: 220, calories: 195, protein: 6, carbs: 36, fat: 3 }, { name: 'Яйца вареные (2 шт)', amount_g: 110, calories: 155, protein: 13, carbs: 1, fat: 11 }] },
-            { id: 'm2', name: 'Обед', time: '13:30', items: [{ name: 'Куриное филе на гриле', amount_g: 180, calories: 240, protein: 42, carbs: 0, fat: 5 }, { name: 'Рис басмати', amount_g: 200, calories: 260, protein: 6, carbs: 56, fat: 1 }] }
-          ]
-        };
-      renderAll();
-    }
-
-    // Render
-    function renderAll() {
-      if (!currentClient) return;
-
-      // Header & Banner
-      document.getElementById('client-header-goal').textContent = currentClient.full_name + ' • ' + (currentClient.goal || 'Fitness');
-      if (currentProgram) {
-        document.getElementById('banner-prog-name').textContent = currentProgram.name;
-        document.getElementById('banner-prog-split').textContent = 'Сплит: ' + (currentProgram.split_type || 'Custom').toUpperCase();
-      }
-
-      // Nutrition Targets
-      if (currentPlan) {
-        document.getElementById('target-cal-badge').textContent = currentPlan.target_calories + ' ккал';
-        document.getElementById('macro-p').textContent = currentPlan.target_protein + ' г';
-        document.getElementById('macro-f').textContent = currentPlan.target_fat + ' г';
-        document.getElementById('macro-c').textContent = currentPlan.target_carbs + ' г';
-      }
-
-      renderDaysTabs();
-      renderExercises();
-      renderMeals();
-    }
-
-    function renderDaysTabs() {
-      const container = document.getElementById('days-tabs-container');
-      if (!currentProgram || !currentProgram.workout_days) {
-        container.innerHTML = '';
-        return;
-      }
-      container.innerHTML = currentProgram.workout_days.map((d, i) => {
-        const active = i === activeDayIndex;
-        return `
-          <button data-day="${i}" class="day-tab px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${
-            active ? 'bg-primary text-white shadow-md' : 'bg-surface-2 text-slate-400 hover:text-white'
-          }">
-            ${esc(d.name || ('День ' + (d.day_letter || (i + 1))))}
-          </button>
-        `;
-      }).join('');
-
-      container.querySelectorAll('.day-tab').forEach(b => {
-        b.addEventListener('click', (e) => {
-          activeDayIndex = parseInt(e.currentTarget.dataset.day, 10);
-          renderDaysTabs();
-          renderExercises();
-        });
-      });
-    }
-
-    function renderExercises() {
-      const list = document.getElementById('workout-exercises-list');
-      if (!currentProgram || !currentProgram.workout_days || !currentProgram.workout_days[activeDayIndex]) {
-        list.innerHTML = '<div class="text-xs text-slate-500 text-center py-6">Нет упражнений на этот день</div>';
-        return;
-      }
-
-      const day = currentProgram.workout_days[activeDayIndex];
-      list.innerHTML = (day.exercises || []).map((ex, exIdx) => {
-        return `
-          <div class="glass-card rounded-2xl p-4 border border-border space-y-3">
-            <div class="flex items-center justify-between">
-              <div>
-                <h4 class="font-display font-bold text-sm text-white">${esc(ex.name)}</h4>
-                <div class="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5">
-                  <span class="text-accent">${esc(ex.group || 'Основное')}</span>
-                  <span>•</span>
-                  <span>Отдых: ${parseInt(ex.rest_sec, 10) || 90}с</span>
-                </div>
-              </div>
-              <span class="text-[10px] font-mono bg-surface-2 px-2 py-1 rounded text-slate-300">${ex.sets ? ex.sets.length : 3} сета</span>
-            </div>
-
-            ${ex.notes ? `<div class="text-[11px] text-amber-300/80 bg-amber-500/10 border border-amber-500/20 rounded-lg p-2 leading-relaxed">💡 ${esc(ex.notes)}</div>` : ''}
-
-            <!-- Sets list -->
-            <div class="space-y-1.5">
-              ${(ex.sets || []).map((s, sIdx) => `
-                <div class="flex items-center justify-between bg-surface-2/60 px-3 py-2 rounded-xl text-xs">
-                  <span class="font-mono text-slate-400 w-8">#${parseInt(s.set_num, 10) || (sIdx + 1)}</span>
-                  <div class="flex items-center gap-2 font-mono">
-                    <input type="number" value="${Number(s.weight) || 0}" class="w-14 bg-surface text-center rounded border border-border py-1 text-white text-xs font-bold" />
-                    <span class="text-[10px] text-slate-400">кг ×</span>
-                    <input type="number" value="${Number(s.reps) || 10}" class="w-12 bg-surface text-center rounded border border-border py-1 text-white text-xs font-bold" />
-                    <span class="text-[10px] text-slate-400">повт</span>
-                  </div>
-                  <button data-rest="${parseInt(ex.rest_sec, 10) || 90}" class="btn-check-set w-8 h-8 rounded-lg bg-surface border border-border hover:border-success hover:bg-success/20 text-slate-400 hover:text-success grid place-items-center transition">
-                    ✓
-                  </button>
-                </div>
-              `).join('')}
-            </div>
+      const setsHtml = (ex.sets||[]).map((s,si)=>{
+        const sn = s.set_num || s.setNum || (si+1);
+        const done = isSetDone(activeDayIndex,ei,sn);
+        return `<div class="set-row flex items-center justify-between bg-slate-800/50 px-3 py-2 rounded-xl text-xs ${done?'set-row-done':''}">
+          <span class="font-mono text-slate-400 w-6 shrink-0">#${sn}</span>
+          <div class="flex items-center gap-2 font-mono flex-1 min-w-0">
+            <input type="number" value="${Number(s.weight)||0}" data-set-weight class="w-14 bg-slate-900/60 text-center rounded border border-slate-700 py-1 text-white text-xs font-bold" placeholder="кг" />
+            <span class="text-[9px] text-slate-500 shrink-0">×</span>
+            <input type="number" value="${Number(s.reps)||10}" data-set-reps class="w-12 bg-slate-900/60 text-center rounded border border-slate-700 py-1 text-white text-xs font-bold" placeholder="повт" />
           </div>
-        `;
-      }).join('');
-
-      list.querySelectorAll('.btn-check-set').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const rest = parseInt(e.currentTarget.dataset.rest, 10) || 90;
-          e.currentTarget.classList.add('bg-success', 'text-white', 'border-success');
-          startRestTimer(rest);
-        });
-      });
-    }
-
-    function renderMeals() {
-      const container = document.getElementById('meals-container');
-      if (!currentPlan || !currentPlan.meals) {
-        container.innerHTML = '<div class="text-xs text-slate-500 text-center py-6">План питания не назначен</div>';
-        return;
-      }
-
-      container.innerHTML = currentPlan.meals.map(m => `
-        <div class="glass-card rounded-2xl p-4 border border-border space-y-2">
-          <div class="flex justify-between items-center">
-            <h4 class="font-display font-bold text-sm text-white">${esc(m.name)}</h4>
-            <span class="font-mono text-xs text-slate-400">${esc(m.time || '')}</span>
-          </div>
-          <div class="space-y-1.5 pt-1">
-            ${(m.items || []).map(item => `
-              <label class="flex items-center justify-between bg-surface-2/60 px-3 py-2 rounded-xl text-xs cursor-pointer hover:bg-surface-2 transition">
-                <div class="flex items-center gap-2.5">
-                  <input type="checkbox" class="rounded bg-surface border-border text-primary focus:ring-0 w-4 h-4 cursor-pointer" />
-                  <span class="text-slate-200">${esc(item.name)}</span>
-                </div>
-                <span class="font-mono text-slate-400">${Number(item.amount_g) || 0}г</span>
-              </label>
-            `).join('')}
-          </div>
-        </div>
-      `).join('');
-    }
-
-    // ===== Локальное хранилище прогресса (zero-backend) =====
-    function todayKey() {
-      const d = new Date();
-      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-    }
-    function loadCheckins() {
-      try { return JSON.parse(localStorage.getItem('dk_checkins') || '[]'); } catch (e) { return []; }
-    }
-    function saveCheckins(list) {
-      localStorage.setItem('dk_checkins', JSON.stringify(list.slice(-365)));
-    }
-    function num(v) { const n = parseFloat(v); return isFinite(n) ? n : null; }
-
-    function saveCheckin() {
-      const status = document.getElementById('checkin-status');
-      const weight = num(document.getElementById('input-checkin-weight').value);
-      if (weight === null || weight <= 0) { status.textContent = '⚠️ ' + t('checkinNeedWeight'); status.className = 'text-[11px] text-center text-red-400 min-h-[1rem]'; return; }
-      const rec = {
-        date: todayKey(),
-        ts: Date.now(),
-        weight,
-        waist: num(document.getElementById('input-checkin-waist').value),
-        hip: num(document.getElementById('input-checkin-hip').value),
-        energy: parseInt(document.getElementById('slider-energy').value, 10) || 8,
-        note: document.getElementById('input-checkin-note').value.trim().slice(0, 500)
-      };
-      const list = loadCheckins().filter(r => r.date !== rec.date);
-      list.push(rec); saveCheckins(list);
-      status.textContent = t('checkinSaved');
-      status.className = 'text-[11px] text-center text-emerald-400 min-h-[1rem]';
-      renderHistory();
-    }
-
-    function prefillCheckin() {
-      const list = loadCheckins();
-      if (!list.length) return;
-      const tk = todayKey();
-      const rec = list.find(r => r.date === tk) || list[list.length - 1];
-      if (rec.weight != null) document.getElementById('input-checkin-weight').value = rec.weight;
-      if (rec.waist != null) document.getElementById('input-checkin-waist').value = rec.waist;
-      if (rec.hip != null) document.getElementById('input-checkin-hip').value = rec.hip;
-      if (rec.energy) { document.getElementById('slider-energy').value = rec.energy; document.getElementById('slider-energy-val').textContent = rec.energy + ' / 10'; }
-      if (rec.note) document.getElementById('input-checkin-note').value = rec.note;
-    }
-
-    function fmtDate(dstr) {
-      const [y, m, d] = dstr.split('-'); return d + '.' + m;
-    }
-    function renderHistory() {
-      const box = document.getElementById('checkin-history');
-      const list = loadCheckins().slice(-7).reverse();
-      if (!list.length) { box.innerHTML = '<p class="text-xs text-slate-500">' + esc(t('noHistory')) + '</p>'; return; }
-      let prev = null;
-      box.innerHTML = list.map(r => {
-        let delta = '';
-        if (prev != null && r.weight != null && prev.weight != null) {
-          const d = +(r.weight - prev.weight).toFixed(1);
-          if (d !== 0) delta = `<span class="${d > 0 ? 'text-amber-400' : 'text-emerald-400'} font-bold">${d > 0 ? '+' : ''}${d}</span>`;
-        }
-        prev = r;
-        const metrics = [
-          `<span class="font-mono text-white">${esc(r.weight)}</span> кг`,
-          r.waist ? `талия ${esc(r.waist)} см` : '',
-          r.hip ? `бёдра ${esc(r.hip)} см` : ''
-        ].filter(Boolean).join(' · ');
-        return `<div class="flex items-center justify-between bg-surface-2/60 px-3 py-2 rounded-xl text-xs">
-          <span class="font-mono text-slate-400 w-11">${esc(fmtDate(r.date))}</span>
-          <span class="text-slate-300 flex-1 mx-2 truncate">${metrics}${r.note ? ' · <span class="italic">' + esc(r.note) + '</span>' : ''}</span>
-          <span class="font-mono text-accent">${esc(String(r.energy))}/10</span>
-          ${delta ? `<span class="w-10 text-end">${delta}</span>` : '<span class="w-10"></span>'}
+          <button class="set-check w-7 h-7 rounded-lg bg-slate-800 border border-slate-600 hover:border-emerald-400 hover:bg-emerald-400/15 text-slate-400 hover:text-emerald-400 grid place-items-center transition shrink-0"
+            data-toggle-set data-day="${activeDayIndex}" data-ex="${ei}" data-set="${sn}">✓</button>
         </div>`;
       }).join('');
-    }
 
-    // Вода — сохраняется за текущий день
-    function waterStorageKey() { return 'dk_water_' + todayKey(); }
-    function initWater() {
-      waterGlasses = parseInt(localStorage.getItem(waterStorageKey()), 10);
-      if (!isFinite(waterGlasses) || waterGlasses < 0) waterGlasses = 0;
-      updateWaterUI();
-    }
-    function updateWaterUI() {
-      document.getElementById('water-glasses').textContent = `${waterGlasses} 💧`;
-      document.getElementById('water-count-text').textContent = `Выпито: ${(waterGlasses * 0.25).toFixed(1)} л из 3.0 л`;
-    }
-    function setWater(n) {
-      waterGlasses = Math.max(0, n);
-      localStorage.setItem(waterStorageKey(), String(waterGlasses));
-      updateWaterUI();
-    }
+      const techniqueHtml = technique ? `<div class="mt-2 space-y-1">
+        <p class="text-[9px] uppercase tracking-wider text-slate-500 font-semibold">${esc(t('technique'))}</p>
+        ${technique.split(' | ').map(st=>`<p class="text-[11px] text-slate-300 leading-relaxed">• ${esc(st.trim())}</p>`).join('')}
+      </div>` : '';
 
-    // Отметка «тренировка выполнена»
-    function markWorkoutDone() {
-      const done = JSON.parse(localStorage.getItem('dk_done_days') || '{}');
-      done[todayKey()] = (currentProgram && currentProgram.name) || '';
-      localStorage.setItem('dk_done_days', JSON.stringify(done));
-      refreshDoneState();
-    }
-    function isDoneToday() {
-      const done = JSON.parse(localStorage.getItem('dk_done_days') || '{}');
-      return !!done[todayKey()];
-    }
-    function refreshDoneState() {
-      const btn = document.getElementById('btn-finish-workout');
-      if (!btn) return;
-      if (isDoneToday()) {
-        btn.classList.add('opacity-60', 'pointer-events-none');
-        btn.querySelector('span').textContent = t('doneToday');
-      } else {
-        btn.classList.remove('opacity-60', 'pointer-events-none');
-        btn.querySelector('span').textContent = t('finishWorkout');
-      }
-    }
+      return `<div class="glass rounded-2xl p-4 space-y-3 fade-in" data-exercise-card="${ei}">
+        <div class="flex items-start justify-between gap-2">
+          ${img ? `<img src="${esc(img)}" alt="" class="ex-img w-20 h-20 shrink-0 object-cover" loading="lazy" />` : ''}
+          <div class="flex-1 min-w-0">
+            <h4 class="font-display font-bold text-sm text-white leading-snug">${esc(exName)}</h4>
+            <div class="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5">
+              ${ex.group?`<span class="text-cyan-300">${esc(ex.group)}</span><span>·</span>`:''}
+              <span>${parseInt(ex.rest_sec,10)||90}с ${esc(t('rest'))}</span>
+            </div>
+            ${equipment?`<span class="inline-block text-[9px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400 mt-1">${esc(equipment)}</span>`:''}
+          </div>
+        </div>
+        ${ex.notes?`<div class="text-[11px] text-amber-300/80 bg-amber-500/8 border border-amber-500/15 rounded-lg p-2 leading-relaxed">💡 ${esc(ex.notes)}</div>`:''}
+        <div class="space-y-1.5">${setsHtml}</div>
+        ${techniqueHtml?`<details class="group"><summary class="text-[11px] font-semibold text-indigo-300 cursor-pointer select-none flex items-center gap-1">
+          <svg class="w-3 h-3 transition-transform group-open:rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          ${esc(t('technique'))}</summary>
+          <div class="mt-1.5 space-y-1 pl-1">${techniqueHtml}</div></details>`:''}
+      </div>`;
+    }).join('');
 
-    // Отчёт тренеру: чек-ин + вода + самочувствие + динамика веса
-    function shareReport() {
-      const name = (currentClient && currentClient.full_name) || 'Клиент';
-      const prog = (currentProgram && currentProgram.name) || '—';
-      const list = loadCheckins();
-      const today = list.find(r => r.date === todayKey()) || null;
-      const first = list[0] || null;
-      const lines = [];
-      lines.push(`👋 Привет, тренер David King!`);
-      lines.push(`✅ ${name} — программа: ${prog}`);
-      if (isDoneToday()) lines.push(`🏋️ Тренировка сегодня выполнена`);
-      lines.push(`💧 ${t('reportWater')}: ${(waterGlasses * 0.25).toFixed(1)} л`);
-      if (today) {
-        lines.push(`📋 Чек-ин ${fmtDate(today.date)}:`);
-        lines.push(`⚖️ ${t('reportWeight')}: ${today.weight} кг` +
-          (today.waist ? `, ${t('reportWaist')}: ${today.waist} см` : '') +
-          (today.hip ? `, ${t('reportHip')}: ${today.hip} см` : ''));
-        lines.push(`📊 ${t('reportEnergy')}: ${today.energy}/10${today.note ? `\n📝 ${today.note}` : ''}`);
-        if (first && first !== today && first.weight) {
-          const total = +(today.weight - first.weight).toFixed(1);
-          if (total !== 0) lines.push(`📈 С начала наблюдений: ${total > 0 ? '+' : ''}${total} кг (${fmtDate(first.date)} → ${fmtDate(today.date)})`);
-        }
-      }
-      lines.push(`\nОтправлено из David King Gym Client Portal`);
-      const text = encodeURIComponent(lines.join('\n'));
-      window.open(`https://wa.me/?text=${text}`, '_blank');
-    }
-
-    // Init
-    document.addEventListener('DOMContentLoaded', () => {
-      const savedLang = localStorage.getItem('dk_client_lang') || 'ru';
-      setLanguage(savedLang);
-      loadInitialData();
-
-      // Unlock screen
-      document.getElementById('btn-unlock').addEventListener('click', attemptUnlock);
-      document.getElementById('unlock-code-input').addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') attemptUnlock();
-      });
-      document.getElementById('unlock-code-input').addEventListener('input', (e) => {
-        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6);
-        document.getElementById('unlock-error').textContent = '';
-      });
-
-      // Tab navigation
-      document.querySelectorAll('.nav-tab').forEach(tab => {
-        tab.addEventListener('click', (e) => {
-          const target = e.currentTarget.dataset.tab;
-          document.querySelectorAll('.nav-tab').forEach(t => {
-            t.classList.remove('text-primary');
-            t.classList.add('text-slate-400');
-          });
-          e.currentTarget.classList.add('text-primary');
-          e.currentTarget.classList.remove('text-slate-400');
-
-          ['workouts', 'nutrition', 'checkin'].forEach(id => {
-            const sec = document.getElementById('tab-' + id);
-            if (sec) sec.classList.toggle('hidden', id !== target);
-          });
-        });
-      });
-
-      // Quick start button
-      document.getElementById('btn-quick-start').addEventListener('click', () => {
-        document.querySelector('[data-tab="workouts"]').click();
-        const firstSet = document.querySelector('.btn-check-set');
-        if (firstSet) firstSet.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      });
-
-      // Water controls (persisted per day)
-      document.getElementById('btn-water-plus').addEventListener('click', () => setWater(waterGlasses + 1));
-      document.getElementById('btn-water-minus').addEventListener('click', () => setWater(waterGlasses - 1));
-      initWater();
-
-      // Slider
-      document.getElementById('slider-energy').addEventListener('input', (e) => {
-        document.getElementById('slider-energy-val').textContent = e.target.value + ' / 10';
-      });
-
-      // Timer controls
-      document.getElementById('btn-timer-skip').addEventListener('click', () => {
-        clearInterval(timerInterval);
-        document.getElementById('rest-timer-modal').classList.add('hidden');
-      });
-      document.getElementById('btn-timer-plus30').addEventListener('click', () => {
-        timerSecondsLeft += 30;
-      });
-      document.getElementById('btn-timer-minus15').addEventListener('click', () => {
-        timerSecondsLeft = Math.max(0, timerSecondsLeft - 15);
-      });
-
-      // Share button
-      document.getElementById('btn-share-report').addEventListener('click', shareReport);
-
-      // Finish workout: mark done + share
-      document.getElementById('btn-finish-workout').addEventListener('click', () => {
-        markWorkoutDone();
-        shareReport();
-      });
-
-      // Checkin save: real persistence
-      document.getElementById('btn-save-checkin').addEventListener('click', saveCheckin);
-      prefillCheckin();
-      renderHistory();
-      refreshDoneState();
-
-      // Lang select
-      document.getElementById('lang-select').addEventListener('change', (e) => {
-        setLanguage(e.target.value);
+    // Wire set toggles
+    list.querySelectorAll('[data-toggle-set]').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const d=+btn.dataset.day, e=+btn.dataset.ex, s=+btn.dataset.set;
+        toggleSet(d,e,s,btn);
       });
     });
+    updateWorkoutProgress();
+  }
+
+  function renderMeals() {
+    const c = document.getElementById('meals-container');
+    if (!currentPlan || !currentPlan.meals) { c.innerHTML = '<div class="text-xs text-slate-500 text-center py-6">'+esc(t('noMeals'))+'</div>'; return; }
+    c.innerHTML = currentPlan.meals.map((meal,mi)=>{
+      const items = (meal.foods||meal.items||[]).map(f=>{
+        const name = f.name || f.food_name || '?';
+        const g = f.grams || f.amount_g || 0;
+        const cal = f.calories || Math.round((f.nutrition?.calories||0) * g / 100);
+        return `<label class="flex items-center justify-between bg-slate-800/50 px-3 py-2 rounded-xl text-xs cursor-pointer hover:bg-slate-800/80 transition">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <input type="checkbox" class="nutri-check rounded bg-slate-900 border-slate-600 text-indigo-400 w-4 h-4 cursor-pointer shrink-0" />
+            <span class="text-slate-200 truncate">${esc(name)}</span>
+          </div>
+          <span class="font-mono text-slate-400 shrink-0">${g}г · ${cal} ккал</span>
+        </label>`;
+      }).join('');
+      const mealCal = (meal.foods||meal.items||[]).reduce((s2,f)=>s2+(f.calories||Math.round((f.nutrition?.calories||0)*(f.grams||f.amount_g||0)/100)),0);
+      return `<div class="glass rounded-2xl p-4 space-y-2 fade-in">
+        <div class="flex justify-between items-center">
+          <h4 class="font-display font-bold text-sm text-white">${esc(meal.name||'Приём')}</h4>
+          <span class="font-mono text-xs text-slate-400">${mealCal} ккал</span>
+        </div>
+        <div class="space-y-1.5 pt-1">${items}</div>
+      </div>`;
+    }).join('');
+  }
+
+  /* ============ INIT ============ */
+  document.addEventListener('DOMContentLoaded', () => {
+    const savedLang = localStorage.getItem('dk_client_lang')||'ru';
+    setLang(savedLang);
+    loadInitialData();
+
+    // Unlock
+    document.getElementById('btn-unlock').addEventListener('click', attemptUnlock);
+    document.getElementById('unlock-code-input').addEventListener('keydown', e=>{ if(e.key==='Enter') attemptUnlock(); });
+    document.getElementById('unlock-code-input').addEventListener('input', e=>{
+      e.target.value = e.target.value.replace(/\D/g,'').slice(0,6);
+      document.getElementById('unlock-error').textContent = '';
+    });
+
+    // Tabs
+    document.querySelectorAll('.nav-tab').forEach(tab=>{
+      tab.addEventListener('click',()=>{
+        document.querySelectorAll('.nav-tab').forEach(t=>{ t.classList.remove('active','text-indigo-300'); t.classList.add('text-slate-400'); });
+        tab.classList.add('active','text-indigo-300'); tab.classList.remove('text-slate-400');
+        ['workouts','nutrition','checkin'].forEach(id=>{
+          const sec = document.getElementById('tab-'+id);
+          if (sec) { sec.classList.toggle('hidden', id!==tab.dataset.tab); if(!sec.classList.contains('hidden')) sec.classList.add('fade-in'); }
+        });
+      });
+    });
+
+    // Quick start
+    document.getElementById('btn-quick-start').addEventListener('click',()=>{
+      document.querySelector('[data-tab="workouts"]').click();
+      const first = document.querySelector('.set-check');
+      if (first) first.scrollIntoView({behavior:'smooth',block:'center'});
+    });
+
+    // Water
+    document.getElementById('btn-water-plus').addEventListener('click',()=>setWater(waterGlasses+1));
+    document.getElementById('btn-water-minus').addEventListener('click',()=>setWater(waterGlasses-1));
+
+    // Slider
+    document.getElementById('slider-energy').addEventListener('input',e=>{
+      document.getElementById('slider-energy-val').textContent = e.target.value+' / 10';
+    });
+
+    // Timer
+    document.getElementById('btn-timer-skip').addEventListener('click',()=>{ clearInterval(timerInterval); document.getElementById('rest-timer-modal').classList.add('hidden'); });
+    document.getElementById('btn-timer-plus30').addEventListener('click',()=>{ timerSecondsLeft+=30; });
+    document.getElementById('btn-timer-minus15').addEventListener('click',()=>{ timerSecondsLeft=Math.max(0,timerSecondsLeft-15); });
+
+    // Share
+    document.getElementById('btn-share-report').addEventListener('click', shareReport);
+
+    // Finish workout
+    document.getElementById('btn-finish-workout').addEventListener('click',()=>{ markDone(); shareReport(); });
+
+    // Check-in
+    document.getElementById('btn-save-checkin').addEventListener('click', saveCheckin);
+
+    // Lang
+    document.getElementById('lang-select').addEventListener('change',e=>setLang(e.target.value));
+  });
   </script>
 </body>
 </html>

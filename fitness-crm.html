@@ -7121,7 +7121,7 @@
         <div class="flex flex-wrap gap-2 mb-4">
           <button id="profile-open-client-portal" class="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white text-xs font-semibold px-3 py-2 rounded-lg transition inline-flex items-center gap-1.5 shadow-card" title="Поделиться с клиентом">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-            <span>📱 Портал подопечного</span>
+            <span>📱 ${t('programs.clientPortal') || 'Портал подопечного'}</span>
           </button>
           <button id="profile-create-program" class="bg-success hover:bg-success/90 text-white text-xs font-semibold px-3 py-2 rounded-lg transition inline-flex items-center gap-1.5 shadow-card">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
@@ -20595,10 +20595,31 @@ async function boot() {
           return;
         }
 
+        // Обогащаем payload данными упражнений (фото, техника, мышцы)
+        let exerciseData = {};
+        if (activeProg && Array.isArray(activeProg.days)) {
+          const exIds = new Set();
+          activeProg.days.forEach(d => (d.exercises || []).forEach(e => { if (e.exercise_id) exIds.add(e.exercise_id); }));
+          for (const eid of exIds) {
+            try {
+              const ex = await db.get('exercise_base', eid);
+              if (ex) exerciseData[eid] = {
+                name_en: ex.name_en, name_ru: ex.name_ru, name_he: ex.name_he,
+                images: ex.images || [], technique_en: ex.technique_en || '',
+                technique_ru: ex.technique_ru || '', technique_he: ex.technique_he || '',
+                group: ex.group_canonical || ex.g || '', subgroup: ex.subgroup_en || ex.sE || '',
+                equipment: ex.equipment_ru || ex.eE || ex.e || '',
+                synergists: ex.synergist_muscles || ex.synergists || []
+              };
+            } catch (_) {}
+          }
+        }
+
         const payload = {
           client: { full_name: client.full_name, goal: client.goal, weight: client.weight, target_weight: client.target_weight },
           program: activeProg,
           plan: activePlan,
+          exercises: exerciseData,
           exp: Date.now() + PORTAL_LINK_TTL_DAYS * 86400000
         };
 
