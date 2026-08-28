@@ -515,10 +515,13 @@
     @media (min-width: 640px) { #bm-ex-grid.bm-grouped > .bm-section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (min-width: 1024px) { #bm-ex-grid.bm-grouped > .bm-section-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
-        /* Левая панель пикера: на десктопе вдвое шире */
-    .picker-side-panel { width: clamp(150px, 12cqw, 230px); }
-    @media (min-width: 1024px) {
-      .picker-side-panel { width: clamp(280px, 34cqw, 460px); }
+        /* Пикер: 3 колонки — человечек | группы | упражнения */
+    .picker-map-col { width: clamp(100px, 10cqw, 160px); }
+    .picker-tree-col { width: clamp(160px, 18cqw, 260px); }
+    @media (max-width: 767px) {
+      .picker-map-col { width: 90px; }
+      .picker-tree-col { width: 130px; }
+      .picker-map-col .bm-body-svg { max-width: 100% !important; }
     }
 
 /* ============================================================
@@ -1610,7 +1613,7 @@
 
     <!-- ============= TOP HEADER (always visible) ============= -->
     <header class="sticky top-0 z-30 glass" style="border-bottom: 1px solid var(--glass-border);">
-      <div class="flex items-center gap-3 px-4 h-16">
+      <div class="flex items-center gap-2 px-3 h-10">
         <!-- Brand -->
         <div class="flex items-center gap-2.5">
           <img id="app-logo-header" alt="David King Gym" class="h-14 w-auto max-w-[240px] object-contain" />
@@ -2341,7 +2344,7 @@
           
 
                     <!-- ============= BODY MAP PICKER MODAL (Quick Pick) ============= -->
-          <div id="bodymap-picker-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4" role="dialog" aria-modal="true">
+          <div id="bodymap-picker-modal" class="hidden fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4" role="dialog" aria-modal="true">
             <div class="bg-surface w-full max-w-[min(96vw,1152px)] max-h-[calc(100dvh-1rem)] sm:max-h-[92vh] flex flex-col rounded-2xl border border-border shadow-float" style="container-type:inline-size;container-name:bmPicker">
               <!-- Header -->
               <div class="p-3 border-b border-border shrink-0">
@@ -2375,14 +2378,17 @@
                 <div id="bm-body-view" class="flex-1 overflow-hidden flex flex-col">
                   <div class="flex flex-1 overflow-hidden">
                     <!-- Left: SVG body + muscle selector (expandable folders with subgroups) -->
-                    <div class="shrink-0 p-2 border-e border-border flex flex-col overflow-y-auto" class="picker-side-panel">
-                      <div class="flex justify-center gap-1 mb-1 flex-wrap">
-                        <button id="bm-view-front" class="px-2 py-1 rounded text-[10px] font-semibold transition bg-primary text-white" data-bm-view="front">Front</button>
-                        <button id="bm-view-back" class="px-2 py-1 rounded text-[10px] font-semibold transition text-muted" data-bm-view="back">Back</button>
-                        <button id="bm-view-side" class="px-2 py-1 rounded text-[10px] font-semibold transition text-muted" data-bm-view="side">Side</button>
+                    <!-- Col 1: Body map figure -->
+                    <div class="shrink-0 p-1.5 border-e border-border flex flex-col items-center overflow-y-auto picker-map-col">
+                      <div class="flex justify-center gap-0.5 mb-1 flex-wrap">
+                        <button id="bm-view-front" class="px-1.5 py-0.5 rounded text-[9px] font-semibold transition bg-primary text-white" data-bm-view="front">F</button>
+                        <button id="bm-view-back" class="px-1.5 py-0.5 rounded text-[9px] font-semibold transition text-muted" data-bm-view="back">B</button>
+                        <button id="bm-view-side" class="px-1.5 py-0.5 rounded text-[9px] font-semibold transition text-muted" data-bm-view="side">S</button>
                       </div>
-                      <div id="bm-svg-container" class="flex justify-center mb-2"></div>
-                      <!-- Expandable muscle group folders (rendered by JS) -->
+                      <div id="bm-svg-container" class="flex justify-center"></div>
+                    </div>
+                    <!-- Col 2: Muscle groups tree -->
+                    <div class="shrink-0 p-1.5 border-e border-border overflow-y-auto picker-tree-col">
                       <div id="bm-group-tree" class="space-y-0.5"></div>
                     </div>
                     <!-- Right: Exercise cards -->
@@ -22338,6 +22344,10 @@ async function boot() {
   var I18N = window.__I18N__ || { en: {}, ru: {}, he: {} };
 // ES-модуль словарей исполнится до DOMContentLoaded — наполняем до boot:
 document.addEventListener('DOMContentLoaded', function () {
+
+  /* Move full-screen modals to body to escape stacking contexts */
+  const bmModal = document.getElementById('bodymap-picker-modal');
+  if (bmModal) document.body.appendChild(bmModal);
   if (window.__I18N__ && !Object.keys(I18N.ru || {}).length) {
     I18N.en = window.__I18N__.en; I18N.ru = window.__I18N__.ru; I18N.he = window.__I18N__.he;
   }
