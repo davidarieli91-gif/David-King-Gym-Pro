@@ -1180,5 +1180,16 @@
   "dbReady": "Database ready",
   "langChanged": "Language → {lang}",
   "themeChanged": "Theme → {theme}"
+ },
+ "portal": {
+  "subtitle": "Link & QR code for your client",
+  "qrHint": "Ask your client to point their phone camera at this QR code",
+  "accessCodeLabel": "Client access code",
+  "copyCode": "Copy code",
+  "encryptionNote": "Link encrypted (AES-256), valid for 30 days",
+  "copyLink": "Copy personal link",
+  "sendWhatsApp": "Send to client via WhatsApp",
+  "openTab": "Open portal in new tab",
+  "modalTitle": "Client Portal"
  }
 }
