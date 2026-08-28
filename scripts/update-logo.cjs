@@ -9,6 +9,8 @@ const candidates = [
   path.join(root, 'logo-main.png'),
   path.join(root, 'logo-main.jpg'),
   path.join(root, 'logo.png'),
+  path.join(root, 'logo-main.webp'),
+  path.join(root, 'LOGO/logo-web.webp'),
 ].filter(Boolean);
 
 const file = candidates.find(p => fs.existsSync(p));
