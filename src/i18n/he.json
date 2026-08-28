@@ -1180,5 +1180,16 @@
   "dbReady": "המאגר מוכן",
   "langChanged": "שפה ← {lang}",
   "themeChanged": "ערכת נושא ← {theme}"
+ },
+ "portal": {
+  "subtitle": "קישור וקוד QR עבור החניך",
+  "qrHint": "בקשו מהחניך לכוון את מצלמת הטלפון לקוד ה-QR",
+  "accessCodeLabel": "קוד גישה לחניך",
+  "copyCode": "העתק קוד",
+  "encryptionNote": "הקישור מוצפן (AES-256) ותקף 30 יום",
+  "copyLink": "העתק קישור אישי",
+  "sendWhatsApp": "שלח לחניך ב-WhatsApp",
+  "openTab": "פתח פורטל בכרטיסייה חדשה",
+  "modalTitle": "פורטל החניך"
  }
 }
