@@ -2356,28 +2356,28 @@
           <div id="bodymap-picker-modal" class="hidden fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4" role="dialog" aria-modal="true">
             <div class="bg-surface w-full max-w-[min(96vw,1152px)] max-h-[calc(100dvh-1rem)] sm:max-h-[92vh] flex flex-col rounded-2xl border border-border shadow-float" style="container-type:inline-size;container-name:bmPicker">
               <!-- Header -->
-              <div class="px-3 pt-1.5 pb-1 sm:p-3 border-b border-border shrink-0">
+              <div class="px-3 pt-1.5 pb-1 min-[1440px]:p-3 border-b border-border shrink-0">
                 <div class="flex items-center gap-2">
-                  <h3 class="font-display font-bold text-sm sm:text-base flex-1 min-w-0 truncate" data-i18n="programs.quickPick">Quick Pick</h3>
-                  <button id="bm-close" class="w-7 h-7 sm:w-8 sm:h-8 grid place-items-center rounded-lg hover:bg-surface-2 text-muted shrink-0">
+                  <h3 class="font-display font-bold text-sm min-[1440px]:text-base flex-1 min-w-0 truncate" data-i18n="programs.quickPick">Quick Pick</h3>
+                  <button id="bm-close" class="w-7 h-7 min-[1440px]:w-8 min-[1440px]:h-8 grid place-items-center rounded-lg hover:bg-surface-2 text-muted shrink-0">
                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
                   </button>
                 </div>
-                <div class="flex gap-1 bg-surface-2 border border-border rounded-lg p-0.5 mt-1 sm:mt-2 flex-nowrap overflow-x-auto no-scrollbar sm:overflow-x-visible sm:flex-wrap">
-                  <button id="bm-tab-all" class="shrink-0 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md text-xs sm:text-[14px] font-semibold transition text-muted" data-i18n="common.all">All</button>
-                  <button id="bm-tab-pg" class="shrink-0 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md text-xs sm:text-[14px] font-semibold transition text-muted" data-i18n="exercise.sourcePrivateGym">Private Gym</button>
-                  <button id="bm-tab-mm" class="shrink-0 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md text-xs sm:text-[14px] font-semibold transition text-muted" data-i18n="exercise.sourceMuscleMotion">Muscle Motion</button>
-                  <button id="bm-tab-bf" class="shrink-0 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md text-xs sm:text-[14px] font-semibold transition bg-primary text-white" data-i18n="exercise.sourceBurnfit">Burnfit</button>
-                  <button id="bm-tab-favorites" class="shrink-0 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md text-xs font-semibold transition text-muted">⭐</button>
-                  <button id="bm-tab-recent" class="shrink-0 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-md text-xs font-semibold transition text-muted">🕐</button>
+                <div class="flex gap-1 bg-surface-2 border border-border rounded-lg p-0.5 mt-1 min-[1440px]:mt-2 flex-nowrap overflow-x-auto no-scrollbar min-[1440px]:overflow-x-visible min-[1440px]:flex-wrap">
+                  <button id="bm-tab-all" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs min-[1440px]:text-[14px] font-semibold transition text-muted" data-i18n="common.all">All</button>
+                  <button id="bm-tab-pg" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs min-[1440px]:text-[14px] font-semibold transition text-muted" data-i18n="exercise.sourcePrivateGym">Private Gym</button>
+                  <button id="bm-tab-mm" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs min-[1440px]:text-[14px] font-semibold transition text-muted" data-i18n="exercise.sourceMuscleMotion">Muscle Motion</button>
+                  <button id="bm-tab-bf" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs min-[1440px]:text-[14px] font-semibold transition bg-primary text-white" data-i18n="exercise.sourceBurnfit">Burnfit</button>
+                  <button id="bm-tab-favorites" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs font-semibold transition text-muted">⭐</button>
+                  <button id="bm-tab-recent" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs font-semibold transition text-muted">🕐</button>
                 </div>
               </div>
 
               <!-- Search bar -->
-              <div class="px-2 py-1 sm:p-2 border-b border-border shrink-0">
+              <div class="px-2 py-1 min-[1440px]:p-2 border-b border-border shrink-0">
                 <div class="relative">
                   <svg class="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-                  <input type="search" id="bm-search" data-i18n-ph="exercise.searchPlaceholder" placeholder="Search..." class="w-full bg-surface-2 border border-border rounded-xl ps-9 pe-3 py-1.5 sm:py-2.5 text-[13px] sm:text-[15px] focus:outline-none focus:ring-2 focus:ring-primary/60" />
+                  <input type="search" id="bm-search" data-i18n-ph="exercise.searchPlaceholder" placeholder="Search..." class="w-full bg-surface-2 border border-border rounded-xl ps-9 pe-3 py-1.5 min-[1440px]:py-2.5 text-[13px] min-[1440px]:text-[15px] focus:outline-none focus:ring-2 focus:ring-primary/60" />
                 </div>
               </div>
 
@@ -13856,7 +13856,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
     // Grid grouping mode (added 2026-08): 'mechanic' = split into Compound/Isolation sections,
     // 'none' = flat list. Default 'mechanic' because trainers want compound lifts at the top.
-    let _groupBy = 'mechanic';
+    let _groupBy = 'none';
 
     // Classification dimension metadata — order, labels (3-lang), emoji icon
     const CLASS_DIMENSIONS = [
@@ -13919,7 +13919,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       _expandedGroups = new Set();
       _equipFilter = 'all';
       _classFilter = { force: null, level: null, mechanic: null, category: null };
-      _groupBy = 'mechanic';  // default: group by compound/isolation
+      _groupBy = 'none';  // default: flat list (user preference 2026-08)
       _view = 'front';
       _tab = 'body';
       loadFavorites();
