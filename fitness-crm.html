@@ -20606,22 +20606,28 @@ async function boot() {
         const client = await db.get('clients', clientId);
         if (!client) { toast('Клиент не найден', 'danger'); return; }
         
-        const programs = await db.find('client_programs', 'by_clientId', clientId);
-        const activeProg = (programs || []).find(p => p.status === 'active') || (programs && programs[0]) || null;
+        const _allPrograms = await db.find('client_programs', 'by_clientId', clientId);
+        const programs = (_allPrograms || []).filter(p => p.status === 'active').sort((a,b)=>(b.created_at||0)-(a.created_at||0));
+        const activeProg = programs[0] || null;
         
-        const plans = await db.find('nutrition_plans', 'by_clientId', clientId);
-        const activePlan = (plans || []).find(p => p.status === 'active') || (plans && plans[0]) || null;
+        const _allPlans = await db.find('nutrition_plans', 'by_clientId', clientId);
+        const plans = (_allPlans || []).filter(p => p.status === 'active').sort((a,b)=>(b.created_at||0)-(a.created_at||0));
+        const activePlan = plans[0] || null;
 
         if (!window.crypto || !crypto.subtle || !crypto.subtle.encrypt) {
           toast('Шифрование доступно только по https — откройте приложение по защищённой ссылке', 'danger', 4000);
           return;
         }
 
-        // Обогащаем payload данными упражнений (фото, техника, мышцы)
+        // Обогащаем payload данными упражнений (фото, техника, мышцы) — для всех активных программ
         let exerciseData = {};
-        if (activeProg && Array.isArray(activeProg.days)) {
-          const exIds = new Set();
-          activeProg.days.forEach(d => (d.exercises || []).forEach(e => { if (e.exercise_id) exIds.add(e.exercise_id); }));
+        const _exIds = new Set();
+        (programs || []).forEach(prog => {
+          const wdays = prog.workout_days || prog.days || [];
+          wdays.forEach(d => (d.exercises || []).forEach(e => { if (e.exercise_id) _exIds.add(e.exercise_id); }));
+        });
+        if (_exIds.size > 0) {
+          const exIds = _exIds;
           for (const eid of exIds) {
             try {
               const ex = await db.get('exercise_base', eid);
@@ -20640,7 +20646,9 @@ async function boot() {
         const payload = {
           client: { full_name: client.full_name, goal: client.goal, weight: client.weight, target_weight: client.target_weight },
           program: activeProg,
+          programs: programs,
           plan: activePlan,
+          plans: plans,
           exercises: exerciseData,
           exp: Date.now() + PORTAL_LINK_TTL_DAYS * 86400000
         };

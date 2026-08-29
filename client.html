@@ -185,6 +185,7 @@
 
     <!-- ===== TAB: WORKOUTS ===== -->
     <section id="tab-workouts" class="space-y-3 fade-in">
+      <div id="program-selector" class="hidden flex gap-1.5 overflow-x-auto no-sb pb-1"></div>
       <div id="days-tabs-container" class="flex items-center gap-1.5 overflow-x-auto no-sb pb-1"></div>
       <div id="workout-exercises-list" class="space-y-3"></div>
       <div id="workout-finish-box" class="pt-1 space-y-2">
@@ -200,6 +201,7 @@
 
     <!-- ===== TAB: NUTRITION ===== -->
     <section id="tab-nutrition" class="hidden space-y-3 fade-in">
+      <div id="plan-selector" class="hidden flex gap-1.5 overflow-x-auto no-sb"></div>
       <div class="glass rounded-2xl p-4">
         <div class="flex justify-between items-center mb-3">
           <h3 class="font-display font-bold text-sm text-slate-200" id="txt-daily-targets">Суточная норма</h3>
@@ -300,12 +302,15 @@
   'use strict';
 
   /* ============ STATE ============ */
-  let currentClient = null, currentProgram = null, currentPlan = null;
-  let exerciseDB = {};      // id -> exercise data (from enriched payload)
+  let currentClient = null;
+  let programs = [], plans = [];
+  let activeProgramIdx = 0, activePlanIdx = 0;
+  let currentProgram = null, currentPlan = null;
+  let exerciseDB = {};
   let activeDayIndex = 0, waterGlasses = 0;
   let currentLang = 'ru';
   let portalBlob = null;
-  // Live workout sessions (per day index): { started_at, exercises:[{rest_sec, sets:[{weight,reps,rpe,type,done,prev_weight,prev_reps}]}] }
+  // Sessions for current program (per day index): { started_at, exercises:[{rest_sec, sets:[{weight,reps,rpe,type,done,prev_weight,prev_reps}]}] }
   let sessions = {};
 
   /* ============ I18N ============ */
@@ -330,7 +335,9 @@
       finishConfirm:'Завершить тренировку?',draftFound:'Найдена незавершённая тренировка. Продолжить?',
       draftRestored:'Тренировка восстановлена ✓',workoutSaved:'Тренировка сохранена ✓',
       startHint:'Нажмите «В зал», чтобы заполнять подходы',volumeKg:'кг',
-      sumDuration:'Длительность',sumVolume:'Объём',sumDone:'Подходы'
+      sumDuration:'Длительность',sumVolume:'Объём',sumDone:'Подходы',
+      chooseProgram:'Выберите программу',choosePlan:'Выберите план питания',
+      noProgram:'Нет активных программ',noPlan:'Нет активных планов питания'
     },
     en: {
       portalTitle:'My Portal',coachBadge:'David King Gym',startBtn:'Start',resumeBtn:'Resume',finishWorkout:'Finish Workout',
@@ -352,7 +359,9 @@
       finishConfirm:'Finish workout?',draftFound:'Unfinished workout found. Resume?',
       draftRestored:'Workout restored ✓',workoutSaved:'Workout saved ✓',
       startHint:'Tap "Start" to fill in your sets',volumeKg:'kg',
-      sumDuration:'Duration',sumVolume:'Volume',sumDone:'Sets'
+      sumDuration:'Duration',sumVolume:'Volume',sumDone:'Sets',
+      chooseProgram:'Choose program',choosePlan:'Choose nutrition plan',
+      noProgram:'No active programs',noPlan:'No active nutrition plans'
     },
     he: {
       portalTitle:'הפורטל שלי',coachBadge:'David King Gym',startBtn:'התחל',resumeBtn:'המשך',finishWorkout:'סיים אימון',
@@ -374,7 +383,9 @@
       finishConfirm:'לסיים את האימון?',draftFound:'נמצא אימון שלא הושלם. להמשיך?',
       draftRestored:'האימון שוחזר ✓',workoutSaved:'האימון נשמר ✓',
       startHint:'לחץ "התחל" כדי למלא את הסטים',volumeKg:'ק״ג',
-      sumDuration:'משך',sumVolume:'נפח',sumDone:'סטים'
+      sumDuration:'משך',sumVolume:'נפח',sumDone:'סטים',
+      chooseProgram:'בחר תוכנית',choosePlan:'בחר תוכנית תזונה',
+      noProgram:'אין תוכניות פעילות',noPlan:'אין תוכניות תזונה פעילות'
     }
   };
   const t = k => (I18N[currentLang] && I18N[currentLang][k]) || I18N.ru[k] || k;
@@ -434,29 +445,67 @@
   }
 
   /* ============ DATA LOADING ============ */
+  function progKeyFor(idx){
+    const p = programs[idx];
+    if (!p) return String(idx);
+    return String(p.id != null ? p.id : (p.name || idx));
+  }
+  function syncCurrentRefs(){
+    currentProgram = programs[activeProgramIdx] || null;
+    currentPlan = plans[activePlanIdx] || null;
+  }
   function applyData(d) {
     currentClient = d.client || null;
-    currentProgram = d.program || null;
-    currentPlan = d.plan || null;
+    if (Array.isArray(d.programs) && d.programs.length) programs = d.programs;
+    else if (d.program) programs = [d.program];
+    else programs = [];
+    if (Array.isArray(d.plans) && d.plans.length) plans = d.plans;
+    else if (d.plan) plans = [d.plan];
+    else plans = [];
+    activeProgramIdx = 0; activePlanIdx = 0; activeDayIndex = 0;
+    syncCurrentRefs();
     exerciseDB = d.exercises || {};
+    sessions = {};
     renderAll();
     checkDraft();
   }
   function applyDemo() {
     currentClient = { full_name:'Демо Клиент', goal:'hypertrophy', weight:78.4, target_weight:84 };
-    currentProgram = { name:'PPL Demo', split_type:'ppl', workout_days:[
-      { day_letter:'A', name:'Push', exercises:[
-        { id:'1', name:'Bench Press', group:'chest', rest_sec:90, sets:[{set_num:1,weight:70,reps:10},{set_num:2,weight:75,reps:8},{set_num:3,weight:80,reps:6}] }
+    programs = [
+      { id:'demo-p1', name:'PPL Demo', split_type:'ppl', workout_days:[
+        { day_letter:'A', name:'Push', exercises:[
+          { id:'1', name:'Bench Press', group:'chest', rest_sec:90, sets:[{set_num:1,weight:70,reps:10},{set_num:2,weight:75,reps:8},{set_num:3,weight:80,reps:6}] }
+        ]},
+        { day_letter:'B', name:'Pull', exercises:[
+          { id:'2', name:'Lat Pulldown', group:'back', rest_sec:90, sets:[{set_num:1,weight:50,reps:10},{set_num:2,weight:55,reps:8}] }
+        ]}
       ]},
-      { day_letter:'B', name:'Pull', exercises:[
-        { id:'2', name:'Lat Pulldown', group:'back', rest_sec:90, sets:[{set_num:1,weight:50,reps:10},{set_num:2,weight:55,reps:8}] }
+      { id:'demo-p2', name:'Fullbody x3', split_type:'full_body', duration_months:3, workout_days:[
+        { day_letter:'A', name:'День A', exercises:[
+          { id:'3', name:'Squat', group:'legs', rest_sec:90, sets:[{set_num:1,weight:60,reps:8},{set_num:2,weight:80,reps:5}] }
+        ]},
+        { day_letter:'B', name:'День B', exercises:[
+          { id:'4', name:'Deadlift', group:'back', rest_sec:120, sets:[{set_num:1,weight:100,reps:5}] }
+        ]},
+        { day_letter:'C', name:'День C', exercises:[
+          { id:'5', name:'Overhead Press', group:'shoulders', rest_sec:90, sets:[{set_num:1,weight:40,reps:10}] }
+        ]}
       ]}
-    ]};
-    currentPlan = { name:'Clean Bulk', target_calories:3150, target_protein:185, target_fat:80, target_carbs:420, meals:[
-      { name:'Завтрак', items:[{name:'Овсянка',grams:80,calories:300},{name:'Яйца',grams:120,calories:180}] },
-      { name:'Обед', items:[{name:'Курица',grams:180,calories:320},{name:'Рис',grams:150,calories:200}] }
-    ]};
+    ];
+    plans = [
+      { id:'demo-pl1', name:'Clean Bulk', status:'active', target_calories:3150, target_protein:185, target_fat:80, target_carbs:420, meals:[
+        { name:'Завтрак', foods:[{name:'Овсянка',grams:80,nutrition:{calories:350,protein:10,fat:5,carbs:60}},{name:'Яйца',grams:120,nutrition:{calories:150,protein:12,fat:10,carbs:1}}] },
+        { name:'Обед', foods:[{name:'Курица',grams:180,nutrition:{calories:165,protein:31,fat:3.6,carbs:0}},{name:'Рис',grams:150,nutrition:{calories:130,protein:2.5,fat:0.3,carbs:28}}] }
+      ]},
+      { id:'demo-pl2', name:'Cut 2200', status:'active', target_calories:2200, target_protein:180, target_fat:65, target_carbs:200, meals:[
+        { name:'Завтрак', foods:[{name:'Творог',grams:200,nutrition:{calories:100,protein:18,fat:1,carbs:3}}] },
+        { name:'Ужин', foods:[{name:'Рыба',grams:150,nutrition:{calories:110,protein:20,fat:3,carbs:0}}] }
+      ]}
+    ];
+    activeProgramIdx = 0; activePlanIdx = 0; activeDayIndex = 0;
+    syncCurrentRefs();
     exerciseDB = {};
+    sessions = {};
     renderAll();
   }
   function loadInitialData() {
@@ -580,8 +629,9 @@
   const TYPE_I18N = { warmup:'setWarmup', drop:'setDrop', failure:'setFailure', amrap:'setAmrap' };
 
   function dayInfo(idx) {
-    if (!currentProgram || !currentProgram.workout_days || !currentProgram.workout_days[idx]) return null;
-    return currentProgram.workout_days[idx];
+    if (!currentProgram) return null;
+    const wdays = currentProgram.workout_days || currentProgram.days || [];
+    return wdays[idx] || null;
   }
   function dayLabel(idx) {
     const d = dayInfo(idx); if (!d) return '';
@@ -605,30 +655,56 @@
     return null;
   }
 
-  /* --- draft autosave --- */
+  /* --- draft autosave (per program) --- */
   let saveTimer = null;
+  function progKeyForDraft(idx){
+    const p = programs[idx != null ? idx : activeProgramIdx];
+    if (!p) return 'default';
+    return String(p.id != null ? p.id : (p.name || idx));
+  }
+  function loadDraftRaw(){ try { return JSON.parse(localStorage.getItem('dk_live_draft')||'null'); } catch(e){ return null; } }
   function saveDraft(immediate) {
     const doSave = () => {
-      try { localStorage.setItem('dk_live_draft', JSON.stringify({ savedAt: Date.now(), sessions })); } catch(e){}
+      try {
+        const raw = loadDraftRaw() || {};
+        const byProgram = raw.byProgram || {};
+        // migrate legacy flat sessions if needed
+        if (raw.sessions && !raw.byProgram) {
+          const legacyKey = progKeyForDraft(activeProgramIdx);
+          if (!byProgram[legacyKey]) byProgram[legacyKey] = raw.sessions;
+        }
+        const key = progKeyForDraft(activeProgramIdx);
+        if (Object.keys(sessions).length) byProgram[key] = sessions;
+        else delete byProgram[key];
+        const out = { savedAt: Date.now(), byProgram };
+        // keep legacy sessions for old portal versions reading the draft
+        if (Object.keys(sessions).length) out.sessions = sessions;
+        localStorage.setItem('dk_live_draft', JSON.stringify(out));
+      } catch(e){}
     };
     if (immediate) { doSave(); return; }
     clearTimeout(saveTimer); saveTimer = setTimeout(doSave, 400);
   }
   function checkDraft() {
-    let d = null;
-    try { d = JSON.parse(localStorage.getItem('dk_live_draft')||'null'); } catch(e){}
-    if (!d || !d.sessions || !Object.keys(d.sessions).length) return;
+    const d = loadDraftRaw();
+    if (!d) return;
     if (Date.now() - (d.savedAt||0) > 24*3600*1000) { localStorage.removeItem('dk_live_draft'); return; }
-    // keep only sessions whose day still exists in the program
+    // new format: byProgram
+    let candidate = null;
+    if (d.byProgram) candidate = d.byProgram[progKeyForDraft(activeProgramIdx)] || null;
+    else if (d.sessions) candidate = d.sessions; // legacy single-program draft
+    if (!candidate || !Object.keys(candidate).length) return;
     const kept = {};
-    Object.keys(d.sessions).forEach(k => { if (dayInfo(+k)) kept[k] = d.sessions[k]; });
-    if (!Object.keys(kept).length) { localStorage.removeItem('dk_live_draft'); return; }
+    Object.keys(candidate).forEach(k => { if (dayInfo(+k)) kept[k] = candidate[k]; });
+    if (!Object.keys(kept).length) return;
     if (confirm(t('draftFound'))) {
       sessions = kept;
       toast(t('draftRestored'));
     } else {
       sessions = {};
-      localStorage.removeItem('dk_live_draft');
+      const raw = loadDraftRaw();
+      if (raw && raw.byProgram) { delete raw.byProgram[progKeyForDraft(activeProgramIdx)]; localStorage.setItem('dk_live_draft', JSON.stringify(raw)); }
+      else localStorage.removeItem('dk_live_draft');
     }
     renderAll();
   }
@@ -774,8 +850,9 @@
   /* --- render: day tabs --- */
   function renderDaysTabs() {
     const c = document.getElementById('days-tabs-container');
-    if (!currentProgram || !currentProgram.workout_days) { c.innerHTML=''; return; }
-    c.innerHTML = currentProgram.workout_days.map((d,i)=>{
+    const _wdays = currentProgram ? (currentProgram.workout_days || currentProgram.days || []) : [];
+    if (!_wdays.length) { c.innerHTML=''; return; }
+    c.innerHTML = _wdays.map((d,i)=>{
       const active = i===activeDayIndex;
       const live = !!sessions[i];
       const badge = live ? '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>' : '';
@@ -1047,7 +1124,7 @@
     };
     const hist = loadHistory(); hist.push(rec); saveHistory(hist);
     delete sessions[idx];
-    localStorage.removeItem('dk_live_draft');
+    saveDraft(true);
     stopRest();
     markDone();
     toast(t('workoutSaved'));
@@ -1110,9 +1187,64 @@
     return exerciseDB[ex.exercise_id] || exerciseDB[ex.id] || null;
   }
 
+  function renderProgramSelector(){
+    const c=document.getElementById('program-selector');
+    if (!c) return;
+    if (!programs.length){ c.classList.add('hidden'); c.innerHTML=''; return; }
+    if (programs.length===1){
+      const p=programs[0];
+      c.innerHTML=`<span class="text-[11px] text-slate-400">${esc(t('chooseProgram'))}:</span><span class="text-xs font-bold text-white bg-indigo-500/20 border border-indigo-500/30 px-2.5 py-1 rounded-xl">${esc(p.name||'Program')}</span>`;
+      c.classList.remove('hidden');
+      c.className='flex items-center gap-2 overflow-x-auto no-sb pb-1';
+      return;
+    }
+    c.classList.remove('hidden');
+    c.className='flex items-center gap-1.5 overflow-x-auto no-sb pb-1';
+    c.innerHTML=`<span class="text-[11px] text-slate-400 shrink-0">${esc(t('chooseProgram'))}:</span>`+programs.map((p,i)=>{
+      const active=i===activeProgramIdx;
+      const ds=(p.workout_days||p.days||[]).length;
+      return `<button data-prog-idx="${i}" class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition shrink-0 ${active?'bg-indigo-500 text-white shadow-md shadow-indigo-500/25':'bg-slate-800/60 text-slate-400 hover:text-white'}">${esc(p.name||('Program '+(i+1)))}${ds?` <span class="opacity-60 text-[10px]">${ds}d</span>`:''}</button>`;
+    }).join('');
+    c.querySelectorAll('[data-prog-idx]').forEach(b=>b.addEventListener('click',()=>switchProgram(+b.dataset.progIdx)));
+  }
+  function renderPlanSelector(){
+    const c=document.getElementById('plan-selector');
+    if (!c) return;
+    if (!plans.length){ c.classList.add('hidden'); c.innerHTML=''; return; }
+    if (plans.length===1){
+      const p=plans[0];
+      c.innerHTML=`<span class="text-[11px] text-slate-400">${esc(t('choosePlan'))}:</span><span class="text-xs font-bold text-white bg-emerald-500/20 border border-emerald-500/30 px-2.5 py-1 rounded-xl">${esc(p.name||'Plan')} · ${(p.target_calories||'—')} ккал</span>`;
+      c.classList.remove('hidden');
+      c.className='flex items-center gap-2 overflow-x-auto no-sb';
+      return;
+    }
+    c.classList.remove('hidden');
+    c.className='flex items-center gap-1.5 overflow-x-auto no-sb';
+    c.innerHTML=`<span class="text-[11px] text-slate-400 shrink-0">${esc(t('choosePlan'))}:</span>`+plans.map((p,i)=>{
+      const active=i===activePlanIdx;
+      return `<button data-plan-idx="${i}" class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition shrink-0 ${active?'bg-emerald-500 text-white shadow-md shadow-emerald-500/25':'bg-slate-800/60 text-slate-400 hover:text-white'}">${esc(p.name||('Plan '+(i+1)))} <span class="opacity-60 text-[10px]">${p.target_calories||'—'}ккал</span></button>`;
+    }).join('');
+    c.querySelectorAll('[data-plan-idx]').forEach(b=>b.addEventListener('click',()=>switchPlan(+b.dataset.planIdx)));
+  }
+  function switchProgram(idx){
+    if (idx===activeProgramIdx || !programs[idx]) return;
+    saveDraft(true);
+    activeProgramIdx=idx; syncCurrentRefs(); activeDayIndex=0;
+    const raw=loadDraftRaw();
+    const key=progKeyForDraft(idx);
+    const stored=raw && raw.byProgram ? raw.byProgram[key] : null;
+    sessions = stored && typeof stored==='object' ? stored : {};
+    renderAll();
+  }
+  function switchPlan(idx){
+    if (idx===activePlanIdx || !plans[idx]) return;
+    activePlanIdx=idx; syncCurrentRefs();
+    renderAll();
+  }
   /* ============ RENDER ============ */
   function renderAll() {
     if (!currentClient) return;
+    syncCurrentRefs();
     // Header
     document.getElementById('hdr-name').textContent = currentClient.full_name || t('portalTitle');
     document.getElementById('hdr-goal').textContent = (currentClient.goal||'') + ' • David King Gym';
@@ -1120,6 +1252,9 @@
     if (currentProgram) {
       document.getElementById('banner-prog-name').textContent = currentProgram.name;
       document.getElementById('banner-prog-split').textContent = 'Сплит: ' + (currentProgram.split_type||'').toUpperCase();
+    } else {
+      document.getElementById('banner-prog-name').textContent = t('noProgram');
+      document.getElementById('banner-prog-split').textContent = '—';
     }
     // Nutrition targets
     if (currentPlan) {
@@ -1127,7 +1262,13 @@
       document.getElementById('macro-p').textContent = (currentPlan.target_protein||'—') + ' г';
       document.getElementById('macro-f').textContent = (currentPlan.target_fat||'—') + ' г';
       document.getElementById('macro-c').textContent = (currentPlan.target_carbs||'—') + ' г';
+    } else {
+      document.getElementById('target-cal-badge').textContent = '—';
+      document.getElementById('macro-p').textContent = '—';
+      document.getElementById('macro-f').textContent = '—';
+      document.getElementById('macro-c').textContent = '—';
     }
+    renderProgramSelector(); renderPlanSelector();
     renderDaysTabs(); renderExercises(); renderMeals();
     updateLabels(); updateWaterUI(); prefillCheckin(); renderHistory(); refreshDone();
     updateLiveUI();
