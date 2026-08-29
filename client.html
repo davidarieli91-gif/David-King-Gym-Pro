@@ -47,7 +47,7 @@
     .prog-bar { height: 6px; border-radius: 999px; background: rgba(255,255,255,.06); overflow: hidden; }
     .prog-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #6366f1, #06b6d4); transition: width .5s cubic-bezier(.4,0,.2,1); }
     .ex-img { aspect-ratio: 4/3; object-fit: cover; border-radius: 12px; width: 100%; background: #14141e; }
-    .set-row-done { opacity: .45; }
+    .set-row-done { opacity: .5; }
     .set-row-done .set-check { background: #10b981 !important; border-color: #10b981 !important; color: #fff !important; }
     .tab-btn { transition: all .2s cubic-bezier(.4,0,.2,1); }
     .tab-btn.active { color: #818cf8; }
@@ -56,6 +56,26 @@
     .nutri-check:checked + .meal-label { opacity: .45; text-decoration: line-through; }
     .macro-ring { transition: stroke-dashoffset .8s cubic-bezier(.4,0,.2,1); }
     #unlock-screen { z-index: 100; }
+    /* ===== Professional workout engine ===== */
+    .set-grid { display: grid; grid-template-columns: 34px minmax(44px,1fr) 56px 14px 50px 44px 32px 26px 24px; gap: 4px; align-items: center; }
+    @media (max-width: 379px) { .set-grid { grid-template-columns: 28px minmax(38px,1fr) 50px 12px 44px 40px 30px 24px 20px; gap: 3px; } }
+    .set-input { width: 100%; background: rgba(10,10,18,.65); text-align: center; border-radius: 8px; border: 1px solid rgba(255,255,255,.12); padding: 5px 2px; font-family: var(--font-mono); font-weight: 700; font-size: 12px; color: #fff; outline: none; }
+    .set-input:focus { border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99,102,241,.25); }
+    .set-input[disabled] { opacity: .55; }
+    .set-input::placeholder { color: #475569; font-weight: 600; }
+    input[type=number].set-input::-webkit-outer-spin-button, input[type=number].set-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type=number].set-input { -moz-appearance: textfield; appearance: textfield; }
+    .type-badge { font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; border-radius: 4px; padding: 1px 4px; display: inline-block; margin-top: 2px; }
+    .tb-warmup { background: rgba(245,158,11,.15); color: #fbbf24; }
+    .tb-drop { background: rgba(6,182,212,.15); color: #22d3ee; }
+    .tb-failure { background: rgba(239,68,68,.15); color: #f87171; }
+    .tb-amrap { background: rgba(99,102,241,.18); color: #818cf8; }
+    .ex-flash { animation: ex-flash 1.2s ease; }
+    @keyframes ex-flash { 0%,100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } 30% { box-shadow: 0 0 0 3px rgba(16,185,129,.55); } }
+    .mini-prog { height: 4px; border-radius: 999px; background: rgba(255,255,255,.07); overflow: hidden; }
+    .mini-prog > div { height: 100%; background: #10b981; border-radius: 999px; transition: width .4s ease; }
+    #rest-banner { z-index: 60; }
+    #toast-box { z-index: 90; }
   </style>
 </head>
 <body class="flex flex-col">
@@ -78,6 +98,25 @@
       </button>
     </div>
   </header>
+
+  <!-- ============= REST TIMER BANNER (sticky, CRM-style) ============= -->
+  <div id="rest-banner" class="hidden fixed top-0 inset-x-0 glass-strong border-b border-indigo-500/30 px-4 flex items-center gap-3" style="padding-top: calc(0.5rem + var(--sat)); padding-bottom: 0.5rem;">
+    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-cyan-400 grid place-items-center shrink-0 pulse-ring">
+      <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg>
+    </div>
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center justify-between">
+        <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400" id="txt-rest-label">Отдых</span>
+        <span id="rest-banner-display" class="font-mono font-extrabold text-lg text-cyan-300 leading-none">01:30</span>
+      </div>
+      <div class="prog-bar mt-1"><div id="rest-banner-progress" class="prog-bar-fill" style="width:100%"></div></div>
+    </div>
+    <div class="flex items-center gap-1 shrink-0">
+      <button id="btn-timer-minus15" class="bg-slate-800/90 px-2 py-1.5 rounded-lg text-[10px] font-bold text-slate-300 border border-slate-700">−15</button>
+      <button id="btn-timer-plus30" class="bg-slate-800/90 px-2 py-1.5 rounded-lg text-[10px] font-bold text-slate-300 border border-slate-700">+30</button>
+      <button id="btn-timer-skip" class="bg-slate-800/90 px-2 py-1.5 rounded-lg text-[10px] font-bold text-slate-300 border border-slate-700">✕</button>
+    </div>
+  </div>
 
   <!-- ============= UNLOCK SCREEN ============= -->
   <div id="unlock-screen" class="hidden fixed inset-0 z-[100] bg-black/90 backdrop-blur-lg flex items-center justify-center p-4">
@@ -103,9 +142,10 @@
       <div class="relative">
         <div class="flex items-center justify-between mb-2">
           <span class="text-[10px] font-semibold uppercase tracking-wider text-cyan-300 flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+            <span id="live-dot" class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
             <span id="txt-active-program">План активен</span>
           </span>
+          <span id="live-duration" class="hidden font-mono font-bold text-sm text-cyan-300">0:00</span>
         </div>
         <div class="flex items-end justify-between gap-3">
           <div class="min-w-0 flex-1">
@@ -125,6 +165,21 @@
           </div>
           <div class="prog-bar"><div id="workout-progress" class="prog-bar-fill" style="width:0%"></div></div>
         </div>
+        <!-- Stat cards: exercises / sets / volume -->
+        <div class="grid grid-cols-3 gap-2 mt-3">
+          <div class="bg-slate-800/60 rounded-xl p-2 text-center border border-slate-700/50">
+            <div class="text-[8px] text-slate-400 font-bold uppercase tracking-wide" id="lbl-stat-ex">Упражнения</div>
+            <div id="stat-exercises" class="font-mono font-extrabold text-sm text-white mt-0.5">0</div>
+          </div>
+          <div class="bg-slate-800/60 rounded-xl p-2 text-center border border-slate-700/50">
+            <div class="text-[8px] text-slate-400 font-bold uppercase tracking-wide" id="lbl-stat-sets">Подходы</div>
+            <div id="stat-sets" class="font-mono font-extrabold text-sm text-white mt-0.5">0</div>
+          </div>
+          <div class="bg-slate-800/60 rounded-xl p-2 text-center border border-slate-700/50">
+            <div class="text-[8px] text-slate-400 font-bold uppercase tracking-wide" id="lbl-stat-vol">Объём</div>
+            <div id="stat-volume" class="font-mono font-extrabold text-sm text-amber-300 mt-0.5">0</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -132,7 +187,10 @@
     <section id="tab-workouts" class="space-y-3 fade-in">
       <div id="days-tabs-container" class="flex items-center gap-1.5 overflow-x-auto no-sb pb-1"></div>
       <div id="workout-exercises-list" class="space-y-3"></div>
-      <div id="workout-finish-box" class="pt-1">
+      <div id="workout-finish-box" class="pt-1 space-y-2">
+        <div id="finish-summary" class="hidden glass rounded-xl px-3 py-2 flex items-center justify-between text-[11px] text-slate-300">
+          <span id="finish-summary-text">—</span>
+        </div>
         <button id="btn-finish-workout" class="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-sm py-3.5 rounded-2xl shadow-xl shadow-emerald-500/20 transition active:scale-95 flex items-center justify-center gap-2">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
           <span id="txt-finish-workout">Завершить тренировку</span>
@@ -218,18 +276,8 @@
     </section>
   </main>
 
-  <!-- ============= REST TIMER ============= -->
-  <div id="rest-timer-modal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="glass-strong rounded-3xl p-6 max-w-xs w-full text-center space-y-4">
-      <div class="text-xs font-semibold uppercase tracking-wider text-slate-400" id="txt-timer-label">Отдых</div>
-      <div id="timer-countdown" class="font-mono font-extrabold text-5xl text-cyan-300 pulse-ring">01:30</div>
-      <div class="flex items-center justify-center gap-2">
-        <button id="btn-timer-minus15" class="bg-slate-800 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300">−15с</button>
-        <button id="btn-timer-plus30" class="bg-slate-800 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300">+30с</button>
-      </div>
-      <button id="btn-timer-skip" class="w-full bg-slate-800/60 hover:bg-slate-700 text-slate-300 text-xs font-semibold py-2.5 rounded-xl">Пропустить</button>
-    </div>
-  </div>
+  <!-- ============= TOASTS ============= -->
+  <div id="toast-box" class="fixed bottom-20 inset-x-0 flex flex-col items-center gap-1.5 pointer-events-none px-4"></div>
 
   <!-- ============= BOTTOM NAV ============= -->
   <nav class="fixed bottom-0 inset-x-0 z-40 glass-strong border-t border-slate-800/60 px-4 pt-1.5 flex items-center justify-around max-w-lg mx-auto" style="padding-bottom: calc(0.375rem + var(--sab))">
@@ -255,15 +303,15 @@
   let currentClient = null, currentProgram = null, currentPlan = null;
   let exerciseDB = {};      // id -> exercise data (from enriched payload)
   let activeDayIndex = 0, waterGlasses = 0;
-  let timerInterval = null, timerSecondsLeft = 0;
   let currentLang = 'ru';
   let portalBlob = null;
-  let setStates = {};       // day-idx/set-key -> done
+  // Live workout sessions (per day index): { started_at, exercises:[{rest_sec, sets:[{weight,reps,rpe,type,done,prev_weight,prev_reps}]}] }
+  let sessions = {};
 
   /* ============ I18N ============ */
   const I18N = {
     ru: {
-      portalTitle:'Мой Портал',coachBadge:'David King Gym',startBtn:'В зал',finishWorkout:'Завершить тренировку',
+      portalTitle:'Мой Портал',coachBadge:'David King Gym',startBtn:'В зал',resumeBtn:'Продолжить',finishWorkout:'Завершить тренировку',
       dailyTargets:'Суточная норма',waterTitle:'Водный баланс',dailyCheckin:'Утренний чек-ин',
       morningWeight:'Вес утром (кг)',savedToast:'Сохранено ✓',checkinSaved:'Чек-ин сохранён ✓',checkinNeedWeight:'Укажите вес',
       workoutDoneTitle:'Тренировка завершена! 🎉',restLabel:'Отдых',unlockTitle:'Введите код доступа',
@@ -274,10 +322,18 @@
       reportWeight:'Вес',reportWaist:'Талия',reportHip:'Бёдра',reportEnergy:'Энергия',reportWater:'Вода',
       navWorkouts:'Тренировки',navNutrition:'Питание',navCheckin:'Прогресс',
       noExercises:'Нет упражнений',noMeals:'План питания не назначен',technique:'Техника',
-      targetMuscle:'Целевые',auxMuscle:'Вспомогательные',rest:'Отдых'
+      targetMuscle:'Целевые',auxMuscle:'Вспомогательные',rest:'Отдых',
+      liveBadge:'Идёт тренировка',statEx:'Упражнения',statSets:'Подходы',statVol:'Объём',
+      prevLabel:'Пред.',weightLabel:'Вес',repsLabel:'Повт.',rpeLabel:'RPE',
+      addSet:'+ подход',setWarmup:'Разминка',setDrop:'Дроп',setFailure:'Отказ',setAmrap:'AMRAP',
+      restDone:'Отдых окончен!',skipRest:'Пропустить',restPerEx:'Отдых, с',
+      finishConfirm:'Завершить тренировку?',draftFound:'Найдена незавершённая тренировка. Продолжить?',
+      draftRestored:'Тренировка восстановлена ✓',workoutSaved:'Тренировка сохранена ✓',
+      startHint:'Нажмите «В зал», чтобы заполнять подходы',volumeKg:'кг',
+      sumDuration:'Длительность',sumVolume:'Объём',sumDone:'Подходы'
     },
     en: {
-      portalTitle:'My Portal',coachBadge:'David King Gym',startBtn:'Start',finishWorkout:'Finish Workout',
+      portalTitle:'My Portal',coachBadge:'David King Gym',startBtn:'Start',resumeBtn:'Resume',finishWorkout:'Finish Workout',
       dailyTargets:'Daily Targets',waterTitle:'Water',dailyCheckin:'Morning Check-In',
       morningWeight:'Morning Weight (kg)',savedToast:'Saved ✓',checkinSaved:'Check-in saved ✓',checkinNeedWeight:'Enter weight',
       workoutDoneTitle:'Workout Complete! 🎉',restLabel:'Rest',unlockTitle:'Enter access code',
@@ -288,10 +344,18 @@
       reportWeight:'Weight',reportWaist:'Waist',reportHip:'Hips',reportEnergy:'Energy',reportWater:'Water',
       navWorkouts:'Workouts',navNutrition:'Nutrition',navCheckin:'Progress',
       noExercises:'No exercises',noMeals:'No nutrition plan',technique:'Technique',
-      targetMuscle:'Target',auxMuscle:'Auxiliary',rest:'Rest'
+      targetMuscle:'Target',auxMuscle:'Auxiliary',rest:'Rest',
+      liveBadge:'Workout in progress',statEx:'Exercises',statSets:'Sets',statVol:'Volume',
+      prevLabel:'Prev.',weightLabel:'kg',repsLabel:'Reps',rpeLabel:'RPE',
+      addSet:'+ set',setWarmup:'Warmup',setDrop:'Drop',setFailure:'Failure',setAmrap:'AMRAP',
+      restDone:'Rest is over!',skipRest:'Skip',restPerEx:'Rest, s',
+      finishConfirm:'Finish workout?',draftFound:'Unfinished workout found. Resume?',
+      draftRestored:'Workout restored ✓',workoutSaved:'Workout saved ✓',
+      startHint:'Tap "Start" to fill in your sets',volumeKg:'kg',
+      sumDuration:'Duration',sumVolume:'Volume',sumDone:'Sets'
     },
     he: {
-      portalTitle:'הפורטל שלי',coachBadge:'David King Gym',startBtn:'התחל',finishWorkout:'סיים אימון',
+      portalTitle:'הפורטל שלי',coachBadge:'David King Gym',startBtn:'התחל',resumeBtn:'המשך',finishWorkout:'סיים אימון',
       dailyTargets:'יעדים יומיים',waterTitle:'מאזן נוזלים',dailyCheckin:'צ׳ק-אין בוקר',
       morningWeight:'משקל בוקר (ק״ג)',savedToast:'נשמר ✓',checkinSaved:'צ׳ק-אין נשמר ✓',checkinNeedWeight:'הזן משקל',
       workoutDoneTitle:'האימון הושלם! 🎉',restLabel:'מנוחה',unlockTitle:'הזן קוד גישה',
@@ -302,12 +366,30 @@
       reportWeight:'משקל',reportWaist:'מותן',reportHip:'ירכיים',reportEnergy:'אנרגיה',reportWater:'מים',
       navWorkouts:'אימונים',navNutrition:'תזונה',navCheckin:'התקדמות',
       noExercises:'אין תרגילים',noMeals:'אין תפריט',technique:'טכניקה',
-      targetMuscle:'יעד',auxMuscle:'עזר',rest:'מנוחה'
+      targetMuscle:'יעד',auxMuscle:'עזר',rest:'מנוחה',
+      liveBadge:'אימון מתבצע',statEx:'תרגילים',statSets:'סטים',statVol:'נפח',
+      prevLabel:'קודם',weightLabel:'ק״ג',repsLabel:'חזרות',rpeLabel:'RPE',
+      addSet:'+ סט',setWarmup:'חימום',setDrop:'דרופ',setFailure:'כשל',setAmrap:'AMRAP',
+      restDone:'המנוחה נגמרה!',skipRest:'דלג',restPerEx:'מנוחה, שנ׳',
+      finishConfirm:'לסיים את האימון?',draftFound:'נמצא אימון שלא הושלם. להמשיך?',
+      draftRestored:'האימון שוחזר ✓',workoutSaved:'האימון נשמר ✓',
+      startHint:'לחץ "התחל" כדי למלא את הסטים',volumeKg:'ק״ג',
+      sumDuration:'משך',sumVolume:'נפח',sumDone:'סטים'
     }
   };
   const t = k => (I18N[currentLang] && I18N[currentLang][k]) || I18N.ru[k] || k;
 
   function esc(v) { return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+  function toast(msg, kind) {
+    const box = document.getElementById('toast-box');
+    const el = document.createElement('div');
+    const color = kind === 'danger' ? 'bg-red-500/90' : (kind === 'warn' ? 'bg-amber-500/90' : 'bg-emerald-500/90');
+    el.className = color + ' text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-xl fade-in max-w-sm text-center';
+    el.textContent = msg;
+    box.appendChild(el);
+    setTimeout(()=>{ el.style.transition='opacity .4s'; el.style.opacity='0'; setTimeout(()=>el.remove(),400); }, 2600);
+  }
 
   /* ============ CRYPTO / UNLOCK ============ */
   function b64uDecode(str) {
@@ -358,6 +440,7 @@
     currentPlan = d.plan || null;
     exerciseDB = d.exercises || {};
     renderAll();
+    checkDraft();
   }
   function applyDemo() {
     currentClient = { full_name:'Демо Клиент', goal:'hypertrophy', weight:78.4, target_weight:84 };
@@ -409,11 +492,14 @@
     document.getElementById('txt-water-title').textContent = t('waterTitle');
     document.getElementById('txt-daily-checkin').textContent = t('dailyCheckin');
     document.getElementById('lbl-morning-weight').textContent = t('morningWeight');
-    document.getElementById('txt-timer-label').textContent = t('restLabel');
+    document.getElementById('txt-rest-label').textContent = t('restLabel');
     document.getElementById('nav-workouts').textContent = t('navWorkouts');
     document.getElementById('nav-nutrition').textContent = t('navNutrition');
     document.getElementById('nav-checkin').textContent = t('navCheckin');
     document.getElementById('txt-history-title').textContent = t('historyTitle');
+    document.getElementById('lbl-stat-ex').textContent = t('statEx');
+    document.getElementById('lbl-stat-sets').textContent = t('statSets');
+    document.getElementById('lbl-stat-vol').textContent = t('statVol');
     const h = document.getElementById('hdr-name');
     if (h && !currentClient) h.textContent = t('portalTitle');
   }
@@ -487,6 +573,488 @@
     }).join('');
   }
 
+  /* ================================================================
+     LIVE WORKOUT ENGINE (parity with CRM live workout, minus add-exercise)
+     ================================================================ */
+  const SET_TYPES = ['normal','warmup','drop','failure','amrap'];
+  const TYPE_I18N = { warmup:'setWarmup', drop:'setDrop', failure:'setFailure', amrap:'setAmrap' };
+
+  function dayInfo(idx) {
+    if (!currentProgram || !currentProgram.workout_days || !currentProgram.workout_days[idx]) return null;
+    return currentProgram.workout_days[idx];
+  }
+  function dayLabel(idx) {
+    const d = dayInfo(idx); if (!d) return '';
+    return d.name || ('Day ' + (d.day_letter || (idx+1)));
+  }
+  function exKey(ex) { return String(ex.exercise_id || ex.id || ex.name || '?'); }
+
+  /* --- history (prev values source) --- */
+  function loadHistory() { try { return JSON.parse(localStorage.getItem('dk_workout_history')||'[]'); } catch(e){ return []; } }
+  function saveHistory(list) { localStorage.setItem('dk_workout_history', JSON.stringify(list.slice(-60))); }
+  function findPrev(programName, dayLetter, key, setIndex) {
+    const list = loadHistory();
+    for (let i = list.length - 1; i >= 0; i--) {
+      const r = list[i];
+      if (r.program !== programName || r.day_letter !== dayLetter) continue;
+      const ex = (r.exercises||[]).find(e => e.key === key);
+      if (!ex || !ex.sets || !ex.sets.length) continue;
+      const s = ex.sets[Math.min(setIndex, ex.sets.length-1)];
+      return { weight: s.weight, reps: s.reps };
+    }
+    return null;
+  }
+
+  /* --- draft autosave --- */
+  let saveTimer = null;
+  function saveDraft(immediate) {
+    const doSave = () => {
+      try { localStorage.setItem('dk_live_draft', JSON.stringify({ savedAt: Date.now(), sessions })); } catch(e){}
+    };
+    if (immediate) { doSave(); return; }
+    clearTimeout(saveTimer); saveTimer = setTimeout(doSave, 400);
+  }
+  function checkDraft() {
+    let d = null;
+    try { d = JSON.parse(localStorage.getItem('dk_live_draft')||'null'); } catch(e){}
+    if (!d || !d.sessions || !Object.keys(d.sessions).length) return;
+    if (Date.now() - (d.savedAt||0) > 24*3600*1000) { localStorage.removeItem('dk_live_draft'); return; }
+    // keep only sessions whose day still exists in the program
+    const kept = {};
+    Object.keys(d.sessions).forEach(k => { if (dayInfo(+k)) kept[k] = d.sessions[k]; });
+    if (!Object.keys(kept).length) { localStorage.removeItem('dk_live_draft'); return; }
+    if (confirm(t('draftFound'))) {
+      sessions = kept;
+      toast(t('draftRestored'));
+    } else {
+      sessions = {};
+      localStorage.removeItem('dk_live_draft');
+    }
+    renderAll();
+  }
+  document.addEventListener('visibilitychange', () => { if (document.hidden) saveDraft(true); });
+  setInterval(() => { if (Object.keys(sessions).length) saveDraft(true); }, 30000);
+
+  /* --- session lifecycle --- */
+  function buildSession(dayIdx) {
+    const day = dayInfo(dayIdx); if (!day) return null;
+    const letter = day.day_letter || String(dayIdx+1);
+    const progName = (currentProgram && currentProgram.name) || '';
+    return {
+      started_at: Date.now(),
+      exercises: (day.exercises||[]).map(ex => ({
+        exercise_id: exKey(ex),
+        rest_sec: parseInt(ex.rest_sec,10) || 90,
+        sets: (ex.sets||[]).map((s, si) => {
+          const hist = findPrev(progName, letter, exKey(ex), si);
+          const pw = hist ? hist.weight : (Number(s.weight)||null);
+          const pr = hist ? hist.reps : (Number(s.reps)||null);
+          return { weight:null, reps:null, rpe:null, type:'normal', done:false, prev_weight:pw, prev_reps:pr };
+        })
+      }))
+    };
+  }
+  function getSession(idx) { return sessions[idx] || null; }
+
+  function startOrResumeDay() {
+    const idx = activeDayIndex;
+    if (!dayInfo(idx)) return;
+    if (!sessions[idx]) {
+      sessions[idx] = buildSession(idx);
+      saveDraft(true);
+    }
+    updateLiveUI();
+    renderExercises();
+    const firstUndone = document.querySelector('#workout-exercises-list .set-row:not(.set-row-done) .set-input');
+    if (firstUndone) firstUndone.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+
+  function fmtDuration(ms) {
+    const s = Math.max(0, Math.floor(ms/1000));
+    const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
+    return h > 0 ? `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}` : `${m}:${String(sec).padStart(2,'0')}`;
+  }
+  function sessionVolume(sess) {
+    let v = 0;
+    (sess.exercises||[]).forEach(ex => (ex.sets||[]).forEach(s => { v += (Number(s.weight)||0) * (Number(s.reps)||0); }));
+    return Math.round(v);
+  }
+  function sessionSetCount(sess, onlyDone) {
+    let total = 0, done = 0;
+    (sess.exercises||[]).forEach(ex => (ex.sets||[]).forEach(s => { total++; if (s.done) done++; }));
+    return onlyDone ? done : total;
+  }
+
+  /* duration ticker */
+  setInterval(() => {
+    if (getSession(activeDayIndex)) updateLiveUI();
+  }, 1000);
+
+  /* --- stats / hero --- */
+  function updateLiveUI() {
+    const sess = getSession(activeDayIndex);
+    const dot = document.getElementById('live-dot');
+    const badge = document.getElementById('txt-active-program');
+    const dur = document.getElementById('live-duration');
+    const startBtnSpan = document.getElementById('txt-start-btn');
+    const active = !!(sess && sess.started_at);
+    if (badge) badge.textContent = active ? t('liveBadge') : 'План активен';
+    if (dot) dot.className = active ? 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse' : 'w-2 h-2 rounded-full bg-cyan-400 animate-pulse';
+    if (dur) dur.classList.toggle('hidden', !active);
+    if (startBtnSpan) startBtnSpan.textContent = active ? t('resumeBtn') : t('startBtn');
+    // stats
+    const day = dayInfo(activeDayIndex);
+    const exCount = sess ? (sess.exercises||[]).length : ((day&&day.exercises||[]).length);
+    const setCount = sess ? sessionSetCount(sess,false) : ((day&&day.exercises||[]).reduce((s,ex)=>s+((ex.sets||[]).length),0));
+    const volume = sess ? sessionVolume(sess) : 0;
+    const se = document.getElementById('stat-exercises'), ss = document.getElementById('stat-sets'), sv = document.getElementById('stat-volume');
+    if (se) se.textContent = exCount;
+    if (ss) ss.textContent = setCount;
+    if (sv) sv.textContent = volume ? volume.toLocaleString('ru-RU') : '0';
+    // progress bar (done/total sets of the day)
+    let total = 0, done = 0;
+    if (sess) { total = sessionSetCount(sess,false); done = sessionSetCount(sess,true); }
+    else if (day) { (day.exercises||[]).forEach(ex => (ex.sets||[]).forEach(()=>total++)); }
+    const pct = total ? Math.round(done/total*100) : 0;
+    const bar = document.getElementById('workout-progress');
+    if (bar) bar.style.width = pct+'%';
+    const lbl = document.getElementById('txt-progress-label');
+    if (lbl) lbl.textContent = done+' / '+total;
+    const pct2 = document.getElementById('txt-progress-pct');
+    if (pct2) pct2.textContent = pct+'%';
+    // finish summary
+    const fs = document.getElementById('finish-summary');
+    const fst = document.getElementById('finish-summary-text');
+    if (fs && fst) {
+      if (sess && active) {
+        fs.classList.remove('hidden');
+        fst.textContent = `⏱ ${fmtDuration(Date.now()-sess.started_at)} · ${t('sumVolume')}: ${sessionVolume(sess).toLocaleString('ru-RU')} ${t('volumeKg')} · ${t('sumDone')}: ${sessionSetCount(sess,true)}/${sessionSetCount(sess,false)}`;
+      } else fs.classList.add('hidden');
+    }
+  }
+
+  /* --- rest timer (sticky banner, CRM parity) --- */
+  let timerInterval = null, timerSecondsLeft = 0, timerTotal = 0;
+  function beepRestDone() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.type = 'sine'; osc.frequency.value = 880;
+      gain.gain.setValueAtTime(0.18, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(); osc.stop(ctx.currentTime + 0.5);
+    } catch(e){}
+    try { if (navigator.vibrate) navigator.vibrate([200,100,200,100,400]); } catch(e){}
+  }
+  function startRest(sec) {
+    clearInterval(timerInterval);
+    timerTotal = Math.max(5, sec||90); timerSecondsLeft = timerTotal;
+    const banner = document.getElementById('rest-banner');
+    banner.classList.remove('hidden');
+    updateRestDisplay();
+    timerInterval = setInterval(() => {
+      timerSecondsLeft--;
+      updateRestDisplay();
+      if (timerSecondsLeft <= 0) {
+        clearInterval(timerInterval);
+        banner.classList.add('hidden');
+        toast(t('restDone'));
+        beepRestDone();
+      }
+    }, 1000);
+  }
+  function updateRestDisplay() {
+    const m = Math.floor(Math.max(0,timerSecondsLeft)/60), s = Math.max(0,timerSecondsLeft)%60;
+    document.getElementById('rest-banner-display').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    document.getElementById('rest-banner-progress').style.width = Math.max(0, timerSecondsLeft/timerTotal*100) + '%';
+  }
+  function stopRest() { clearInterval(timerInterval); document.getElementById('rest-banner').classList.add('hidden'); }
+
+  /* --- render: day tabs --- */
+  function renderDaysTabs() {
+    const c = document.getElementById('days-tabs-container');
+    if (!currentProgram || !currentProgram.workout_days) { c.innerHTML=''; return; }
+    c.innerHTML = currentProgram.workout_days.map((d,i)=>{
+      const active = i===activeDayIndex;
+      const live = !!sessions[i];
+      const badge = live ? '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>' : '';
+      return `<button data-day="${i}" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-1.5 ${active?'bg-indigo-500 text-white shadow-md shadow-indigo-500/25':'bg-slate-800/60 text-slate-400 hover:text-white'}">${badge}${esc(dayLabel(i))}</button>`;
+    }).join('');
+    c.querySelectorAll('[data-day]').forEach(b=>b.addEventListener('click',()=>{
+      activeDayIndex = +b.dataset.day; renderAll();
+    }));
+  }
+
+  /* --- render: exercises + sets --- */
+  function typeBadge(type) {
+    if (!type || type === 'normal') return '';
+    const cls = { warmup:'tb-warmup', drop:'tb-drop', failure:'tb-failure', amrap:'tb-amrap' }[type] || '';
+    return `<span class="type-badge ${cls}">${esc(t(TYPE_I18N[type]||''))}</span>`;
+  }
+
+  function renderExercises() {
+    const list = document.getElementById('workout-exercises-list');
+    const day = dayInfo(activeDayIndex);
+    const sess = getSession(activeDayIndex);
+    if (!day) { list.innerHTML = ''; return; }
+    if (!(day.exercises||[]).length) {
+      list.innerHTML = '<div class="text-xs text-slate-500 text-center py-6">'+esc(t('noExercises'))+'</div>'; return;
+    }
+    const lang = currentLang;
+    const editable = !!sess;
+
+    list.innerHTML = (day.exercises||[]).map((ex, ei)=>{
+      const exData = getExData(ex);
+      const exName = exData ? (exData['name_'+lang] || exData.name_en || ex.name) : (ex['name_'+lang] || ex.name_en || ex.name || '?');
+      const img = exData && exData.images && exData.images[0] ? exData.images[0] : '';
+      const technique = exData ? (exData['technique_'+lang] || exData.technique_en || '') : '';
+      const equipment = exData ? (exData.equipment || '') : '';
+      const groupLabel = exData ? (exData['group_'+lang] || exData.group_en || ex.group || '') : (ex.group || '');
+      const liveEx = sess ? (sess.exercises||[])[ei] : null;
+      const restSec = liveEx ? liveEx.rest_sec : (parseInt(ex.rest_sec,10) || 90);
+
+      // per-exercise mini progress
+      let mini = '';
+      if (liveEx) {
+        const tot = (liveEx.sets||[]).length;
+        const dn = (liveEx.sets||[]).filter(s=>s.done).length;
+        mini = `<div class="flex items-center gap-2 mt-1.5">
+          <div class="mini-prog flex-1"><div style="width:${tot?Math.round(dn/tot*100):0}%"></div></div>
+          <span class="font-mono text-[9px] text-slate-400 shrink-0">${dn}/${tot}</span>
+        </div>`;
+      }
+
+      const setsRows = (liveEx ? liveEx.sets : (ex.sets||[])).map((s, si)=>{
+        const sn = si + 1;
+        const done = !!(s.done);
+        const pw = (s.prev_weight != null || s.prev_reps != null)
+          ? `${s.prev_weight!=null?Number(s.prev_weight):'—'}×${s.prev_reps!=null?Number(s.prev_reps):'—'}`
+          : '—';
+        const dis = editable ? '' : 'disabled';
+        const repsPh = s.type === 'amrap' ? '∞' : (Number(s.reps)||'');
+        return `<div class="set-row set-grid bg-slate-800/50 px-2 py-1.5 rounded-xl ${done?'set-row-done':''}" data-si="${si}">
+          <div class="text-center leading-tight">
+            <div class="font-mono text-[11px] font-bold text-slate-300">#${sn}</div>
+            ${typeBadge(s.type)}
+          </div>
+          <div class="font-mono text-[10px] text-slate-500 text-center truncate" data-prev-cell>${esc(pw)}</div>
+          <input type="number" step="0.5" inputmode="decimal" value="${s.weight!=null?Number(s.weight):''}" ${dis} data-field="weight" data-ex="${ei}" data-si="${si}" class="set-input" placeholder="0" />
+          <span class="text-[9px] text-slate-500 text-center">×</span>
+          <input type="number" step="1" inputmode="numeric" value="${s.type==='amrap'?'':(s.reps!=null?Number(s.reps):'')}" ${dis} data-field="reps" data-ex="${ei}" data-si="${si}" class="set-input" placeholder="${s.type==='amrap'?'∞':'0'}" />
+          <input type="number" step="0.5" min="0" max="10" inputmode="decimal" value="${s.rpe!=null?Number(s.rpe):''}" ${dis} data-field="rpe" data-ex="${ei}" data-si="${si}" class="set-input" placeholder="10" />
+          <button class="set-check w-7 h-7 rounded-lg bg-slate-800 border border-slate-600 hover:border-emerald-400 hover:bg-emerald-400/15 text-slate-400 hover:text-emerald-400 grid place-items-center transition ${done?'':''}"
+            data-toggle-set data-ex="${ei}" data-si="${si}" ${editable?'':'disabled'}>✓</button>
+          <button class="w-6 h-7 grid place-items-center rounded-lg text-slate-400 hover:text-cyan-300 transition" data-cycle-type data-ex="${ei}" data-si="${si}" title="type" ${editable?'':'disabled'}>
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          </button>
+          <button class="w-5 h-7 grid place-items-center rounded-lg text-slate-500 hover:text-red-400 transition" data-remove-set data-ex="${ei}" data-si="${si}" ${si===0?'disabled style="opacity:.25"':''}>×</button>
+        </div>`;
+      }).join('');
+
+      const addSetBtn = editable ? `<button class="w-full mt-1.5 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/25 text-[11px] font-bold py-1.5 rounded-xl transition" data-add-set data-ex="${ei}">
+          <span class="inline-flex items-center gap-1"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 5v14M5 12h14"/></svg>${esc(t('addSet'))}</span>
+        </button>` : '';
+
+      const techniqueHtml = technique ? `<details class="group"><summary class="text-[11px] font-semibold text-indigo-300 cursor-pointer select-none flex items-center gap-1">
+          <svg class="w-3 h-3 transition-transform group-open:rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          ${esc(t('technique'))}</summary>
+          <div class="mt-1.5 space-y-1 pl-1">${technique.split(' | ').map(st=>`<p class="text-[11px] text-slate-300 leading-relaxed">• ${esc(st.trim())}</p>`).join('')}</div></details>` : '';
+
+      return `<div class="glass rounded-2xl p-4 space-y-3 fade-in" data-exercise-card="${ei}">
+        <div class="flex items-start justify-between gap-2">
+          ${img ? `<img src="${esc(img)}" alt="" class="ex-img w-16 h-16 sm:w-20 sm:h-20 shrink-0 object-cover" loading="lazy" />` : ''}
+          <div class="flex-1 min-w-0">
+            <h4 class="font-display font-bold text-sm text-white leading-snug">${esc(exName)}</h4>
+            <div class="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5 flex-wrap">
+              ${groupLabel?`<span class="text-cyan-300">${esc(groupLabel)}</span><span>·</span>`:''}
+              <label class="flex items-center gap-1">${esc(t('restPerEx'))}
+                <input type="number" min="10" step="5" value="${restSec}" data-rest-input data-ex="${ei}" ${editable?'':'disabled'} class="w-12 bg-slate-900/60 text-center rounded border border-slate-700 py-0.5 text-[10px] font-mono text-white focus:outline-none" />
+              </label>
+            </div>
+            ${equipment?`<span class="inline-block text-[9px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400 mt-1">${esc(equipment)}</span>`:''}
+            ${mini}
+          </div>
+        </div>
+        ${ex.notes?`<div class="text-[11px] text-amber-300/80 bg-amber-500/8 border border-amber-500/15 rounded-lg p-2 leading-relaxed">💡 ${esc(ex.notes)}</div>`:''}
+        <div class="set-grid px-2 text-[8px] uppercase tracking-wide text-slate-500 font-bold">
+          <span>#</span><span class="text-center">${esc(t('prevLabel'))}</span><span class="text-center">${esc(t('weightLabel'))}</span><span></span><span class="text-center">${esc(t('repsLabel'))}</span><span class="text-center">${esc(t('rpeLabel'))}</span><span class="text-center">✓</span><span></span><span></span>
+        </div>
+        <div class="space-y-1.5">${setsRows}</div>
+        ${addSetBtn}
+        ${techniqueHtml}
+      </div>`;
+    }).join('');
+
+    wireExerciseEvents();
+    updateLiveUI();
+  }
+
+  function wireExerciseEvents() {
+    const list = document.getElementById('workout-exercises-list');
+    const sess = getSession(activeDayIndex);
+    if (!sess) return; // read-only plan view
+
+    // weight / reps / rpe inputs
+    list.querySelectorAll('[data-field]').forEach(inp => {
+      inp.addEventListener('input', () => {
+        const ei = +inp.dataset.ex, si = +inp.dataset.si, f = inp.dataset.field;
+        const set = ((sess.exercises||[])[ei]||{}).sets?.[si];
+        if (!set) return;
+        const v = inp.value.trim();
+        if (f === 'weight') set.weight = v === '' ? null : parseFloat(v);
+        else if (f === 'reps') set.reps = v === '' ? null : parseInt(v,10);
+        else set.rpe = v === '' ? null : parseFloat(v);
+        saveDraft(); updateLiveUI();
+      });
+    });
+
+    // done toggle
+    list.querySelectorAll('[data-toggle-set]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const ei = +btn.dataset.ex, si = +btn.dataset.si;
+        const ex = (sess.exercises||[])[ei]; const set = ex && ex.sets[si];
+        if (!set) return;
+        set.done = !set.done;
+        if (set.done) {
+          // copy current values into next set's prev (CRM parity)
+          const next = ex.sets[si+1];
+          if (next) {
+            next.prev_weight = set.weight != null ? set.weight : next.prev_weight;
+            next.prev_reps = set.reps != null ? set.reps : next.prev_reps;
+            const row = btn.closest('[data-exercise-card]').querySelector(`.set-row[data-si="${si+1}"] [data-prev-cell]`);
+            if (row) row.textContent = `${set.weight!=null?set.weight:'—'}×${set.reps!=null?set.reps:'—'}`;
+          }
+          startRest(ex.rest_sec || 90);
+        }
+        const row = btn.closest('.set-row');
+        row.classList.toggle('set-row-done', set.done);
+        saveDraft(); updateLiveUI(); updateMiniProgress(ei);
+        // auto-scroll when all sets of the exercise are done
+        if (set.done && ex.sets.every(s=>s.done)) {
+          const card = btn.closest('[data-exercise-card]');
+          card.classList.add('ex-flash');
+          const nextCard = document.querySelector(`[data-exercise-card="${ei+1}"]`);
+          if (nextCard) setTimeout(()=>nextCard.scrollIntoView({behavior:'smooth',block:'center'}), 350);
+        }
+      });
+    });
+
+    // type cycle
+    list.querySelectorAll('[data-cycle-type]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const ei = +btn.dataset.ex, si = +btn.dataset.si;
+        const set = ((sess.exercises||[])[ei]||{}).sets?.[si];
+        if (!set) return;
+        const i = SET_TYPES.indexOf(set.type || 'normal');
+        set.type = SET_TYPES[(i+1) % SET_TYPES.length];
+        const row = btn.closest('.set-row');
+        const numCell = row.querySelector('div');
+        const old = numCell.querySelector('.type-badge');
+        if (old) old.remove();
+        if (set.type !== 'normal') numCell.insertAdjacentHTML('beforeend', typeBadge(set.type));
+        const repsInp = row.querySelector('[data-field="reps"]');
+        if (set.type === 'amrap') { repsInp.value = ''; repsInp.placeholder = '∞'; }
+        else if (repsInp.placeholder === '∞') repsInp.placeholder = '0';
+        saveDraft();
+      });
+    });
+
+    // add set
+    list.querySelectorAll('[data-add-set]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const ei = +btn.dataset.ex;
+        const ex = (sess.exercises||[])[ei]; if (!ex) return;
+        const last = (ex.sets||[])[ex.sets.length-1];
+        ex.sets.push({
+          weight: last ? last.weight : null,
+          reps: last ? last.reps : null,
+          rpe: null, type: last ? last.type : 'normal', done: false,
+          prev_weight: last ? last.weight : null,
+          prev_reps: last ? last.reps : null
+        });
+        saveDraft(); renderExercises();
+        const rows = document.querySelectorAll(`[data-exercise-card="${ei}"] .set-row`);
+        if (rows.length) {
+          rows[rows.length-1].scrollIntoView({behavior:'smooth',block:'center'});
+          rows[rows.length-1].querySelector('[data-field="weight"]')?.focus();
+        }
+      });
+    });
+
+    // remove set
+    list.querySelectorAll('[data-remove-set]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const ei = +btn.dataset.ex, si = +btn.dataset.si;
+        const ex = (sess.exercises||[])[ei];
+        if (!ex || si === 0 || ex.sets.length <= 1) return;
+        ex.sets.splice(si, 1);
+        saveDraft(); renderExercises();
+      });
+    });
+
+    // per-exercise rest input
+    list.querySelectorAll('[data-rest-input]').forEach(inp => {
+      inp.addEventListener('change', () => {
+        const ei = +inp.dataset.ex;
+        const ex = (sess.exercises||[])[ei]; if (!ex) return;
+        const v = parseInt(inp.value,10);
+        ex.rest_sec = (v && v >= 5) ? v : 90;
+        inp.value = ex.rest_sec;
+        saveDraft();
+      });
+    });
+  }
+
+  function updateMiniProgress(ei) {
+    const sess = getSession(activeDayIndex); if (!sess) return;
+    const ex = (sess.exercises||[])[ei]; if (!ex) return;
+    const card = document.querySelector(`[data-exercise-card="${ei}"]`); if (!card) return;
+    const tot = (ex.sets||[]).length, dn = (ex.sets||[]).filter(s=>s.done).length;
+    const bar = card.querySelector('.mini-prog > div');
+    const lbl = card.querySelector('.mini-prog + span, .mini-prog ~ span');
+    if (bar) bar.style.width = (tot?Math.round(dn/tot*100):0)+'%';
+    if (lbl) lbl.textContent = dn+'/'+tot;
+  }
+
+  /* --- finish workout --- */
+  function finishWorkout() {
+    const idx = activeDayIndex;
+    const sess = getSession(idx);
+    if (!sess) { toast(t('startHint'), 'warn'); return; }
+    const day = dayInfo(idx);
+    const total = sessionSetCount(sess,false), done = sessionSetCount(sess,true);
+    if (!total) return;
+    if (!confirm(t('finishConfirm'))) return;
+    const duration = Date.now() - sess.started_at;
+    const volume = sessionVolume(sess);
+    const letter = day.day_letter || String(idx+1);
+    const progName = (currentProgram && currentProgram.name) || '';
+    const rec = {
+      ts: Date.now(), date: todayKey(),
+      program: progName, day_letter: letter, day_index: idx,
+      duration_sec: Math.round(duration/1000), volume,
+      done_sets: done, total_sets: total,
+      exercises: (sess.exercises||[]).map((lex, ei) => {
+        const dayEx = (day.exercises||[])[ei] || {};
+        const exData = getExData(dayEx);
+        return {
+          key: lex.exercise_id,
+          name: exData ? (exData['name_'+currentLang] || exData.name_en || dayEx.name) : (dayEx['name_'+currentLang] || dayEx.name_en || dayEx.name || lex.exercise_id),
+          sets: (lex.sets||[]).map(s => ({ weight: s.weight, reps: s.reps, rpe: s.rpe, type: s.type, done: !!s.done }))
+        };
+      })
+    };
+    const hist = loadHistory(); hist.push(rec); saveHistory(hist);
+    delete sessions[idx];
+    localStorage.removeItem('dk_live_draft');
+    stopRest();
+    markDone();
+    toast(t('workoutSaved'));
+    shareReport({ workout: rec });
+    renderAll();
+  }
+
   /* ============ WORKOUT DONE ============ */
   function markDone() {
     const done = JSON.parse(localStorage.getItem('dk_done_days')||'{}');
@@ -502,42 +1070,28 @@
     btn.querySelector('span').textContent = isDone ? t('doneToday') : t('finishWorkout');
   }
 
-  /* ============ SET TRACKING ============ */
-  function setKey(dayIdx,exIdx,setNum) { return `dk_set_${dayIdx}_${exIdx}_${setNum}`; }
-  function isSetDone(dayIdx,exIdx,setNum) { return localStorage.getItem(setKey(dayIdx,exIdx,setNum))==='1'; }
-  function toggleSet(dayIdx,exIdx,setNum,btn) {
-    const k = setKey(dayIdx,exIdx,setNum);
-    const done = localStorage.getItem(k)==='1';
-    localStorage.setItem(k, done?'0':'1');
-    btn.closest('.set-row').classList.toggle('set-row-done',!done);
-    updateWorkoutProgress();
-  }
-  function updateWorkoutProgress() {
-    if (!currentProgram||!currentProgram.workout_days||!currentProgram.workout_days[activeDayIndex]) return;
-    const day = currentProgram.workout_days[activeDayIndex];
-    let total=0,done=0;
-    (day.exercises||[]).forEach((ex,ei)=>(ex.sets||[]).forEach(s=>{
-      total++; if (isSetDone(activeDayIndex,ei,s.set_num||s.setNum||(s.setNum===0?0:s.set_num))) done++;
-    }));
-    const pct = total ? Math.round(done/total*100) : 0;
-    const bar = document.getElementById('workout-progress');
-    if (bar) bar.style.width = pct+'%';
-    const lbl = document.getElementById('txt-progress-label');
-    if (lbl) lbl.textContent = done+' / '+total;
-    const pct2 = document.getElementById('txt-progress-pct');
-    if (pct2) pct2.textContent = pct+'%';
-  }
-
   /* ============ SHARE ============ */
-  function shareReport() {
+  function shareReport(opts) {
     const name = (currentClient&&currentClient.full_name)||'Клиент';
     const prog = (currentProgram&&currentProgram.name)||'—';
+    const day = dayLabel(activeDayIndex);
     const list = loadCheckins();
     const today = list.find(r=>r.date===todayKey())||null;
     const first = list[0]||null;
     const lines = ['👋 David King Gym'];
-    lines.push(`✅ ${name} — ${prog}`);
-    if (JSON.parse(localStorage.getItem('dk_done_days')||'{}')[todayKey()]) lines.push('🏋️ Тренировка выполнена');
+    lines.push(`✅ ${name} — ${prog} (${day})`);
+    const sess = getSession(activeDayIndex);
+    const wr = opts && opts.workout;
+    if (wr) {
+      const mm = Math.floor(wr.duration_sec/60), sec = wr.duration_sec%60;
+      lines.push(`⏱ ${mm}:${String(sec).padStart(2,'0')} · 🏋️ ${wr.volume.toLocaleString('ru-RU')} ${t('volumeKg')} · ✔ ${wr.done_sets}/${wr.total_sets}`);
+      (wr.exercises||[]).forEach(ex => {
+        const parts = (ex.sets||[]).map(s => `${s.weight!=null?s.weight:'—'}×${s.reps!=null?s.reps:'—'}${s.done?'✓':''}`);
+        if (parts.length) lines.push(`• ${ex.name}: ${parts.join(', ')}`);
+      });
+    } else if (sess) {
+      lines.push(`⏱ ${fmtDuration(Date.now()-sess.started_at)} · 🏋️ ${sessionVolume(sess).toLocaleString('ru-RU')} ${t('volumeKg')} · ✔ ${sessionSetCount(sess,true)}/${sessionSetCount(sess,false)}`);
+    }
     lines.push(`💧 ${(waterGlasses*0.25).toFixed(1)} л`);
     if (today) {
       lines.push(`📋 ${today.date}: ⚖️ ${today.weight} кг${today.waist?`, 📏 ${today.waist} см`:''}`);
@@ -554,19 +1108,6 @@
   function getExData(ex) {
     if (!ex) return null;
     return exerciseDB[ex.exercise_id] || exerciseDB[ex.id] || null;
-  }
-
-  /* ============ REST TIMER ============ */
-  function startRest(sec) {
-    clearInterval(timerInterval); timerSecondsLeft = sec;
-    document.getElementById('rest-timer-modal').classList.remove('hidden');
-    const upd = () => {
-      const m = Math.floor(timerSecondsLeft/60), s = timerSecondsLeft%60;
-      document.getElementById('timer-countdown').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-      if (timerSecondsLeft<=0) { clearInterval(timerInterval); document.getElementById('rest-timer-modal').classList.add('hidden'); }
-      timerSecondsLeft--;
-    };
-    upd(); timerInterval = setInterval(upd,1000);
   }
 
   /* ============ RENDER ============ */
@@ -589,87 +1130,7 @@
     }
     renderDaysTabs(); renderExercises(); renderMeals();
     updateLabels(); updateWaterUI(); prefillCheckin(); renderHistory(); refreshDone();
-    updateWorkoutProgress();
-  }
-
-  function renderDaysTabs() {
-    const c = document.getElementById('days-tabs-container');
-    if (!currentProgram || !currentProgram.workout_days) { c.innerHTML=''; return; }
-    c.innerHTML = currentProgram.workout_days.map((d,i)=>{
-      const active = i===activeDayIndex;
-      return `<button data-day="${i}" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${active?'bg-indigo-500 text-white shadow-md shadow-indigo-500/25':'bg-slate-800/60 text-slate-400 hover:text-white'}">${esc(d.name||('Day '+(d.day_letter||(i+1))))}</button>`;
-    }).join('');
-    c.querySelectorAll('[data-day]').forEach(b=>b.addEventListener('click',()=>{
-      activeDayIndex = +b.dataset.day; renderDaysTabs(); renderExercises();
-    }));
-  }
-
-  function renderExercises() {
-    const list = document.getElementById('workout-exercises-list');
-    if (!currentProgram || !currentProgram.workout_days || !currentProgram.workout_days[activeDayIndex]) {
-      list.innerHTML = '<div class="text-xs text-slate-500 text-center py-6">'+esc(t('noExercises'))+'</div>'; return;
-    }
-    const day = currentProgram.workout_days[activeDayIndex];
-    const lang = currentLang;
-    const nameField = 'name_'+lang;
-
-    list.innerHTML = (day.exercises||[]).map((ex,ei)=>{
-      const exData = getExData(ex);
-      const exName = exData ? (exData['name_'+lang] || exData.name_en || ex.name) : (ex[nameField] || ex.name_en || ex.name || '?');
-      const img = exData && exData.images && exData.images[0] ? exData.images[0] : '';
-      const technique = exData ? (exData['technique_'+lang] || exData.technique_en || '') : '';
-      const equipment = exData ? (exData.equipment || '') : '';
-      const detailId = `ex-detail-${activeDayIndex}-${ei}`;
-
-      const setsHtml = (ex.sets||[]).map((s,si)=>{
-        const sn = s.set_num || s.setNum || (si+1);
-        const done = isSetDone(activeDayIndex,ei,sn);
-        return `<div class="set-row flex items-center justify-between bg-slate-800/50 px-3 py-2 rounded-xl text-xs ${done?'set-row-done':''}">
-          <span class="font-mono text-slate-400 w-6 shrink-0">#${sn}</span>
-          <div class="flex items-center gap-2 font-mono flex-1 min-w-0">
-            <input type="number" value="${Number(s.weight)||0}" data-set-weight class="w-14 bg-slate-900/60 text-center rounded border border-slate-700 py-1 text-white text-xs font-bold" placeholder="кг" />
-            <span class="text-[9px] text-slate-500 shrink-0">×</span>
-            <input type="number" value="${Number(s.reps)||10}" data-set-reps class="w-12 bg-slate-900/60 text-center rounded border border-slate-700 py-1 text-white text-xs font-bold" placeholder="повт" />
-          </div>
-          <button class="set-check w-7 h-7 rounded-lg bg-slate-800 border border-slate-600 hover:border-emerald-400 hover:bg-emerald-400/15 text-slate-400 hover:text-emerald-400 grid place-items-center transition shrink-0"
-            data-toggle-set data-day="${activeDayIndex}" data-ex="${ei}" data-set="${sn}">✓</button>
-        </div>`;
-      }).join('');
-
-      const techniqueHtml = technique ? `<div class="mt-2 space-y-1">
-        <p class="text-[9px] uppercase tracking-wider text-slate-500 font-semibold">${esc(t('technique'))}</p>
-        ${technique.split(' | ').map(st=>`<p class="text-[11px] text-slate-300 leading-relaxed">• ${esc(st.trim())}</p>`).join('')}
-      </div>` : '';
-
-      return `<div class="glass rounded-2xl p-4 space-y-3 fade-in" data-exercise-card="${ei}">
-        <div class="flex items-start justify-between gap-2">
-          ${img ? `<img src="${esc(img)}" alt="" class="ex-img w-20 h-20 shrink-0 object-cover" loading="lazy" />` : ''}
-          <div class="flex-1 min-w-0">
-            <h4 class="font-display font-bold text-sm text-white leading-snug">${esc(exName)}</h4>
-            <div class="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5">
-              ${ex.group?`<span class="text-cyan-300">${esc(ex.group)}</span><span>·</span>`:''}
-              <span>${parseInt(ex.rest_sec,10)||90}с ${esc(t('rest'))}</span>
-            </div>
-            ${equipment?`<span class="inline-block text-[9px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400 mt-1">${esc(equipment)}</span>`:''}
-          </div>
-        </div>
-        ${ex.notes?`<div class="text-[11px] text-amber-300/80 bg-amber-500/8 border border-amber-500/15 rounded-lg p-2 leading-relaxed">💡 ${esc(ex.notes)}</div>`:''}
-        <div class="space-y-1.5">${setsHtml}</div>
-        ${techniqueHtml?`<details class="group"><summary class="text-[11px] font-semibold text-indigo-300 cursor-pointer select-none flex items-center gap-1">
-          <svg class="w-3 h-3 transition-transform group-open:rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-          ${esc(t('technique'))}</summary>
-          <div class="mt-1.5 space-y-1 pl-1">${techniqueHtml}</div></details>`:''}
-      </div>`;
-    }).join('');
-
-    // Wire set toggles
-    list.querySelectorAll('[data-toggle-set]').forEach(btn=>{
-      btn.addEventListener('click',()=>{
-        const d=+btn.dataset.day, e=+btn.dataset.ex, s=+btn.dataset.set;
-        toggleSet(d,e,s,btn);
-      });
-    });
-    updateWorkoutProgress();
+    updateLiveUI();
   }
 
   function renderMeals() {
@@ -704,6 +1165,7 @@
     const savedLang = localStorage.getItem('dk_client_lang')||'ru';
     setLang(savedLang);
     loadInitialData();
+    initWater();
 
     // Unlock
     document.getElementById('btn-unlock').addEventListener('click', attemptUnlock);
@@ -725,12 +1187,8 @@
       });
     });
 
-    // Quick start
-    document.getElementById('btn-quick-start').addEventListener('click',()=>{
-      document.querySelector('[data-tab="workouts"]').click();
-      const first = document.querySelector('.set-check');
-      if (first) first.scrollIntoView({behavior:'smooth',block:'center'});
-    });
+    // Quick start / resume
+    document.getElementById('btn-quick-start').addEventListener('click', startOrResumeDay);
 
     // Water
     document.getElementById('btn-water-plus').addEventListener('click',()=>setWater(waterGlasses+1));
@@ -741,16 +1199,16 @@
       document.getElementById('slider-energy-val').textContent = e.target.value+' / 10';
     });
 
-    // Timer
-    document.getElementById('btn-timer-skip').addEventListener('click',()=>{ clearInterval(timerInterval); document.getElementById('rest-timer-modal').classList.add('hidden'); });
-    document.getElementById('btn-timer-plus30').addEventListener('click',()=>{ timerSecondsLeft+=30; });
-    document.getElementById('btn-timer-minus15').addEventListener('click',()=>{ timerSecondsLeft=Math.max(0,timerSecondsLeft-15); });
+    // Rest timer banner buttons
+    document.getElementById('btn-timer-skip').addEventListener('click', stopRest);
+    document.getElementById('btn-timer-plus30').addEventListener('click',()=>{ timerSecondsLeft+=30; timerTotal+=30; updateRestDisplay(); });
+    document.getElementById('btn-timer-minus15').addEventListener('click',()=>{ timerSecondsLeft=Math.max(0,timerSecondsLeft-15); updateRestDisplay(); });
 
     // Share
-    document.getElementById('btn-share-report').addEventListener('click', shareReport);
+    document.getElementById('btn-share-report').addEventListener('click', ()=>shareReport());
 
     // Finish workout
-    document.getElementById('btn-finish-workout').addEventListener('click',()=>{ markDone(); shareReport(); });
+    document.getElementById('btn-finish-workout').addEventListener('click', finishWorkout);
 
     // Check-in
     document.getElementById('btn-save-checkin').addEventListener('click', saveCheckin);
