@@ -2,8 +2,8 @@
   "name": "David King Gym",
   "short_name": "DK Gym",
   "description": "Fitness CRM — clients, training programs, nutrition, Private Gym printing",
-  "start_url": "./fitness-crm.html",
-  "scope": "./",
+  "start_url": "/David-King-Gym-Pro/fitness-crm.html",
+  "scope": "/David-King-Gym-Pro/",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#0f172a",
@@ -12,9 +12,9 @@
   "dir": "ltr",
   "categories": ["health", "fitness", "productivity"],
   "icons": [
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" }
+    { "src": "/David-King-Gym-Pro/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/David-King-Gym-Pro/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/David-King-Gym-Pro/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/David-King-Gym-Pro/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" }
   ]
 }
