@@ -1,7 +1,6 @@
 // Service Worker - David King Gym PWA
-// v22: NETWORK-FIRST for pages/HTML (updates reach users immediately),
-//      cache-first only for static assets. Fixes stale-HTML lock-in.
-const CACHE_NAME = 'dk-gym-v24';
+// v25: added logo-web.webp (root + assets/) to precache shell
+const CACHE_NAME = 'dk-gym-v25';
 const APP_SHELL = [
   './',
   './index.html',
@@ -15,6 +14,7 @@ const APP_SHELL = [
   './icon-192.png',
   './icon-512.png',
   './logo-web.webp',
+  './assets/logo-web.webp',
   './assets/icon-192.png',
   './assets/icon-512.png'
 ];
