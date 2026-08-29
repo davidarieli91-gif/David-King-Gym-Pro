@@ -2,7 +2,7 @@
 // Загружается как ES-модуль (deferred): экспортирует window.BM_SVG_*, window.GROUP_COLORS,
 // window.PGIllustration, window.exerciseVectorIllustration, window.getExerciseMuscleGroups.
 // Используется ТОЛЬКО в рантайме (клики/рендеры), поэтому deferred-тайминг безопасен.
-const esc = (v) => String(v == null ? '' : v)
+const _mmEsc = (v) => String(v == null ? '' : v)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
@@ -617,8 +617,8 @@ const esc = (v) => String(v == null ? '' : v)
         const { primary, aux } = getExerciseMuscleGroups(ex);
         const pc = GROUP_COLORS[primary] || '#ef4444';
         const pl = RU_GROUP[primary] || primary;
-        const auxChips = aux.slice(0, 3).map(a => `<span style="background:${AUX_HIGHLIGHT_COLOR};color:#062a30;padding:1px 5px;border-radius:999px;font-weight:700;font-size:9px;white-space:nowrap;">+ ${esc(RU_GROUP[a] || a)}</span>`).join('');
-        return `<span style="background:${pc};color:#fff;padding:1px 6px;border-radius:999px;font-weight:800;font-size:10px;box-shadow:0 0 6px ${pc};">${esc(pl)}</span>${auxChips}`;
+        const auxChips = aux.slice(0, 3).map(a => `<span style="background:${AUX_HIGHLIGHT_COLOR};color:#062a30;padding:1px 5px;border-radius:999px;font-weight:700;font-size:9px;white-space:nowrap;">+ ${_mmEsc(RU_GROUP[a] || a)}</span>`).join('');
+        return `<span style="background:${pc};color:#fff;padding:1px 6px;border-radius:999px;font-weight:800;font-size:10px;box-shadow:0 0 6px ${pc};">${_mmEsc(pl)}</span>${auxChips}`;
       }
       function chips(ex) {
         return `<div style="position:absolute;left:4px;bottom:4px;right:4px;display:flex;gap:3px;align-items:center;flex-wrap:wrap;">
@@ -635,7 +635,7 @@ const esc = (v) => String(v == null ? '' : v)
         const eq = ex.eR || ex.equipment_ru || ex.eE || ex.equipment_en || ex.e || '';
         if (!eq) return '';
         const icon = { 'Штанга': '🏋️', 'Гантели': '💪', 'Трос': '🔗', 'Тренажер': '🏟️', 'Вес тела': '🤸', 'Гири': '🔔', 'Резина': '➰', 'Блины': '⭕', 'EZ-штанга': '🏋️‍♂️', 'Смит': '🏟️' }[eq] || '•';
-        return `<div style="position:absolute;top:3px;right:3px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:1px 5px;font-size:8px;color:#dbe4ee;">${icon} ${esc(eq)}</div>`;
+        return `<div style="position:absolute;top:3px;right:3px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:1px 5px;font-size:8px;color:#dbe4ee;">${icon} ${_mmEsc(eq)}</div>`;
       }
 
       function frame(inner, label) {
@@ -659,8 +659,8 @@ const esc = (v) => String(v == null ? '' : v)
         const map = `<svg viewBox="0 0 160 360" xmlns="http://www.w3.org/2000/svg" style="${svgStyle}">${buildMapSvg(ex, mv)}</svg>`;
         const chipsRow = `<div style="position:absolute;left:8px;top:8px;right:8px;display:flex;gap:4px;flex-wrap:wrap;">${chipsInner(ex)}</div>`;
         const legend = `<div style="display:flex;gap:10px;align-items:center;justify-content:center;font-size:8px;color:rgba(255,255,255,.6);margin-top:6px;">
-          <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:50%;background:${pc};box-shadow:0 0 5px ${pc};"></span>${esc('целевая')}</span>
-          <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:50%;background:${AUX_HIGHLIGHT_COLOR};"></span>${esc('вспомогательные')}</span>
+          <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:50%;background:${pc};box-shadow:0 0 5px ${pc};"></span>${_mmEsc('целевая')}</span>
+          <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:50%;background:${AUX_HIGHLIGHT_COLOR};"></span>${_mmEsc('вспомогательные')}</span>
         </div>`;
         if (!big) {
           return `<div style="position:relative;width:100%;height:100%;min-height:120px;background:radial-gradient(ellipse at 50% 12%, rgba(99,102,241,.10), transparent 55%), linear-gradient(180deg,#171a24,#0c0e14);border-radius:10px;overflow:hidden;">
@@ -679,9 +679,9 @@ const esc = (v) => String(v == null ? '' : v)
         const { primary, aux } = getExerciseMuscleGroups(ex);
         const pc = GROUP_COLORS[primary] || '#ef4444';
         const pl = RU_GROUP[primary] || primary;
-        const auxChips = aux.slice(0, 2).map(a => `<span style="background:${AUX_HIGHLIGHT_COLOR};color:#062a30;padding:0 4px;border-radius:999px;font-weight:700;font-size:9px;white-space:nowrap;">+ ${esc(RU_GROUP[a] || a)}</span>`).join('');
+        const auxChips = aux.slice(0, 2).map(a => `<span style="background:${AUX_HIGHLIGHT_COLOR};color:#062a30;padding:0 4px;border-radius:999px;font-weight:700;font-size:9px;white-space:nowrap;">+ ${_mmEsc(RU_GROUP[a] || a)}</span>`).join('');
         return `<div style="display:flex;gap:3px;align-items:center;flex-wrap:wrap;margin-top:2px;overflow:hidden;">
-          <span style="background:${pc};color:#fff;padding:0 5px;border-radius:999px;font-weight:800;font-size:10px;white-space:nowrap;">${esc(pl)}</span>${auxChips}</div>`;
+          <span style="background:${pc};color:#fff;padding:0 5px;border-radius:999px;font-weight:800;font-size:10px;white-space:nowrap;">${_mmEsc(pl)}</span>${auxChips}</div>`;
       }
 
       return { render, detectPose, getExerciseMuscleGroups, muscleChips };
