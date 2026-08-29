@@ -800,12 +800,12 @@
   setInterval(() => { if (Object.keys(sessions).length) saveDraft(true); }, 30000);
 
   /* --- session lifecycle --- */
-  function buildSession(dayIdx) {
+  function buildSession(dayIdx, withStart) {
     const day = dayInfo(dayIdx); if (!day) return null;
     const letter = day.day_letter || String(dayIdx+1);
     const progName = (currentProgram && currentProgram.name) || '';
     return {
-      started_at: Date.now(),
+      started_at: withStart ? Date.now() : null,
       exercises: (day.exercises||[]).map(ex => ({
         exercise_id: exKey(ex),
         rest_sec: parseInt(ex.rest_sec,10) || 90,
@@ -818,13 +818,29 @@
       }))
     };
   }
+  function ensureSession(dayIdx){
+    if (sessions[dayIdx]) return sessions[dayIdx];
+    const s = buildSession(dayIdx, false);
+    if (!s) return null;
+    s.exercises.forEach(ex=>{ if(!ex.sets.length) ex.sets.push({weight:null,reps:null,rpe:null,type:'normal',done:false,prev_weight:null,prev_reps:null}); });
+    sessions[dayIdx]=s;
+    saveDraft(true);
+    return s;
+  }
   function getSession(idx) { return sessions[idx] || null; }
+  function ensureStarted(sess){ if(sess && sess.started_at==null){ sess.started_at=Date.now(); updateLiveUI(); } }
 
   function startOrResumeDay() {
     const idx = activeDayIndex;
     if (!dayInfo(idx)) return;
-    if (!sessions[idx]) {
-      sessions[idx] = buildSession(idx);
+    let sess = sessions[idx];
+    if (!sess) {
+      sess = buildSession(idx, true);
+      if (!sess) return;
+      sessions[idx]=sess;
+      saveDraft(true);
+    } else if (!sess.started_at) {
+      sess.started_at = Date.now();
       saveDraft(true);
     }
     updateLiveUI();
@@ -961,13 +977,14 @@
   function renderExercises() {
     const list = document.getElementById('workout-exercises-list');
     const day = dayInfo(activeDayIndex);
-    const sess = getSession(activeDayIndex);
+    let sess = getSession(activeDayIndex);
+    if (day && !sess) sess = ensureSession(activeDayIndex);
     if (!day) { list.innerHTML = ''; return; }
     if (!(day.exercises||[]).length) {
       list.innerHTML = '<div class="text-xs text-muted text-center py-6">'+esc(t('noExercises'))+'</div>'; return;
     }
     const lang = currentLang;
-    const editable = !!sess;
+    const editable = true;
 
     list.innerHTML = (day.exercises||[]).map((ex, ei)=>{
       const exData = getExData(ex);
@@ -1064,28 +1081,29 @@
 
   function wireExerciseEvents() {
     const list = document.getElementById('workout-exercises-list');
-    const sess = getSession(activeDayIndex);
-    if (!sess) return; // read-only plan view
+    const getSess = () => getSession(activeDayIndex) || ensureSession(activeDayIndex);
 
     // weight / reps / rpe inputs
     list.querySelectorAll('[data-field]').forEach(inp => {
       inp.addEventListener('input', () => {
+        const sess0 = getSess(); if(!sess0) return;
         const ei = +inp.dataset.ex, si = +inp.dataset.si, f = inp.dataset.field;
-        const set = ((sess.exercises||[])[ei]||{}).sets?.[si];
+        const set = ((sess0.exercises||[])[ei]||{}).sets?.[si];
         if (!set) return;
         const v = inp.value.trim();
         if (f === 'weight') set.weight = v === '' ? null : parseFloat(v);
         else if (f === 'reps') set.reps = v === '' ? null : parseInt(v,10);
         else set.rpe = v === '' ? null : parseFloat(v);
-        saveDraft(); updateLiveUI();
+        ensureStarted(sess0); saveDraft(); updateLiveUI();
       });
     });
 
     // done toggle
     list.querySelectorAll('[data-toggle-set]').forEach(btn => {
       btn.addEventListener('click', () => {
+        const sess0 = getSess(); if(!sess0) return;
         const ei = +btn.dataset.ex, si = +btn.dataset.si;
-        const ex = (sess.exercises||[])[ei]; const set = ex && ex.sets[si];
+        const ex = (sess0.exercises||[])[ei]; const set = ex && ex.sets[si];
         if (!set) return;
         set.done = !set.done;
         if (set.done) {
@@ -1101,7 +1119,7 @@
         }
         const row = btn.closest('.set-row');
         row.classList.toggle('set-row-done', set.done);
-        saveDraft(); updateLiveUI(); updateMiniProgress(ei);
+        ensureStarted(sess0); saveDraft(); updateLiveUI(); updateMiniProgress(ei);
         // auto-scroll when all sets of the exercise are done
         if (set.done && ex.sets.every(s=>s.done)) {
           const card = btn.closest('[data-exercise-card]');
@@ -1115,8 +1133,9 @@
     // type cycle
     list.querySelectorAll('[data-cycle-type]').forEach(btn => {
       btn.addEventListener('click', () => {
+        const sess0 = getSess(); if(!sess0) return;
         const ei = +btn.dataset.ex, si = +btn.dataset.si;
-        const set = ((sess.exercises||[])[ei]||{}).sets?.[si];
+        const set = ((sess0.exercises||[])[ei]||{}).sets?.[si];
         if (!set) return;
         const i = SET_TYPES.indexOf(set.type || 'normal');
         set.type = SET_TYPES[(i+1) % SET_TYPES.length];
@@ -1128,15 +1147,16 @@
         const repsInp = row.querySelector('[data-field="reps"]');
         if (set.type === 'amrap') { repsInp.value = ''; repsInp.placeholder = '∞'; }
         else if (repsInp.placeholder === '∞') repsInp.placeholder = '0';
-        saveDraft();
+        ensureStarted(sess0); saveDraft();
       });
     });
 
     // add set
     list.querySelectorAll('[data-add-set]').forEach(btn => {
       btn.addEventListener('click', () => {
+        const sess0 = getSess(); if(!sess0) return;
         const ei = +btn.dataset.ex;
-        const ex = (sess.exercises||[])[ei]; if (!ex) return;
+        const ex = (sess0.exercises||[])[ei]; if (!ex) return;
         const last = (ex.sets||[])[ex.sets.length-1];
         ex.sets.push({
           weight: last ? last.weight : null,
@@ -1145,7 +1165,7 @@
           prev_weight: last ? last.weight : null,
           prev_reps: last ? last.reps : null
         });
-        saveDraft(); renderExercises();
+        ensureStarted(sess0); saveDraft(); renderExercises();
         const rows = document.querySelectorAll(`[data-exercise-card="${ei}"] .set-row`);
         if (rows.length) {
           rows[rows.length-1].scrollIntoView({behavior:'smooth',block:'center'});
@@ -1157,8 +1177,9 @@
     // remove set
     list.querySelectorAll('[data-remove-set]').forEach(btn => {
       btn.addEventListener('click', () => {
+        const sess0 = getSess(); if(!sess0) return;
         const ei = +btn.dataset.ex, si = +btn.dataset.si;
-        const ex = (sess.exercises||[])[ei];
+        const ex = (sess0.exercises||[])[ei];
         if (!ex || si === 0 || ex.sets.length <= 1) return;
         ex.sets.splice(si, 1);
         saveDraft(); renderExercises();
@@ -1168,12 +1189,13 @@
     // per-exercise rest input
     list.querySelectorAll('[data-rest-input]').forEach(inp => {
       inp.addEventListener('change', () => {
+        const sess0 = getSess(); if(!sess0) return;
         const ei = +inp.dataset.ex;
-        const ex = (sess.exercises||[])[ei]; if (!ex) return;
+        const ex = (sess0.exercises||[])[ei]; if (!ex) return;
         const v = parseInt(inp.value,10);
         ex.rest_sec = (v && v >= 5) ? v : 90;
         inp.value = ex.rest_sec;
-        saveDraft();
+        ensureStarted(sess0); saveDraft();
       });
     });
   }
