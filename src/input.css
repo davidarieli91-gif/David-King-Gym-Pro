@@ -1,3 +1,48 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ============ Portal Themes (shared) ============ */
+:root {
+  --font-scale: 1;
+  --modal-scale: 1;
+  --glass-bg:      rgb(var(--c-surface) / 0.72);
+  --glass-bg-2:    rgb(var(--c-surface-2) / 0.65);
+  --glass-border:  rgb(var(--c-border) / 0.55);
+  --glass-blur:    14px;
+  --glass-shine:   inset 0 1px 0 rgb(255 255 255 / 0.06);
+  --btn-gloss:     linear-gradient(180deg, rgb(255 255 255 / 0.10) 0%, rgb(255 255 255 / 0) 50%);
+  --c-bg:        10 10 15;
+  --c-surface:   20 20 28;
+  --c-surface-2: 32 32 42;
+  --c-border:    55 55 70;
+  --c-text:      240 240 245;
+  --c-muted:     150 150 165;
+  --c-primary:   99 102 241;
+  --c-primary-2: 129 140 248;
+  --c-accent:    34 211 238;
+  --c-success:   34 197 94;
+  --c-warning:   245 158 11;
+  --c-danger:    239 68 68;
+}
+[data-theme="light"] {
+  --c-bg:        248 249 252;
+  --c-surface:   255 255 255;
+  --c-surface-2: 243 244 248;
+  --c-border:    222 224 230;
+  --c-text:      17 22 35;
+  --c-muted:     100 110 125;
+  --c-primary:   79 70 229;
+  --c-primary-2: 99 102 241;
+  --c-accent:    6 182 212;
+  --c-success:   22 163 74;
+  --c-warning:   217 119 6;
+  --c-danger:    220 38 38;
+}
+[data-theme="midnight-obsidian"] { --c-bg:9 9 18; --c-surface:18 18 28; --c-surface-2:28 28 42; --c-border:45 45 70; --c-text:235 238 252; --c-muted:145 150 175; --c-primary:99 102 241; --c-primary-2:129 140 248; --c-accent:34 211 238; --c-success:34 197 94; --c-warning:245 158 11; --c-danger:239 68 68; }
+[data-theme="arctic-frost"] { --c-bg:242 248 255; --c-surface:255 255 255; --c-surface-2:228 238 250; --c-border:195 210 235; --c-text:18 28 48; --c-muted:90 115 145; --c-primary:59 130 246; --c-primary-2:96 165 250; --c-accent:6 182 212; --c-success:22 163 74; --c-warning:217 119 6; --c-danger:220 38 38; }
+[data-theme="warm-sand"] { --c-bg:252 245 232; --c-surface:255 250 240; --c-surface-2:248 235 215; --c-border:225 205 170; --c-text:58 42 20; --c-muted:130 110 80; --c-primary:217 119 6; --c-primary-2:245 158 11; --c-accent:234 88 12; --c-success:22 163 74; --c-warning:217 119 6; --c-danger:220 38 38; }
+[data-theme="forest-emerald"] { --c-bg:8 18 14; --c-surface:16 32 24; --c-surface-2:28 48 36; --c-border:45 75 55; --c-text:220 245 230; --c-muted:120 160 135; --c-primary:16 185 129; --c-primary-2:52 211 153; --c-accent:132 204 22; --c-success:16 185 129; --c-warning:245 158 11; --c-danger:239 68 68; }
+[data-theme="coral-sunset"] { --c-bg:255 242 235; --c-surface:255 255 255; --c-surface-2:255 232 220; --c-border:250 200 185; --c-text:60 25 20; --c-muted:150 90 80; --c-primary:244 63 94; --c-primary-2:251 113 133; --c-accent:249 115 22; --c-success:22 163 74; --c-warning:217 119 6; --c-danger:220 38 38; }
+[data-mode="dark"] { --glass-bg: rgb(var(--c-surface) / 0.68); --glass-bg-2: rgb(var(--c-surface-2) / 0.60); --glass-border: rgb(var(--c-border) / 0.45); }
+[data-mode="light"] { --glass-bg: rgb(var(--c-surface) / 0.78); --glass-bg-2: rgb(var(--c-surface-2) / 0.70); --glass-border: rgb(var(--c-border) / 0.65); --glass-shine: inset 0 1px 0 rgb(255 255 255 / 0.10); }

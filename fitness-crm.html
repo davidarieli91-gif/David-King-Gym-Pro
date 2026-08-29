@@ -135,6 +135,13 @@
     /* aurora-haze: deep navy with aurora-cyan/pink accents */
     [data-theme="aurora-haze"] { --c-bg:16 20 31; --c-surface:26 32 48; --c-surface-2:40 48 68; --c-border:68 78 102; --c-text:230 235 250; --c-muted:140 155 185; --c-primary:34 211 238; --c-primary-2:103 232 249; --c-accent:244 114 182; --c-success:74 222 128; --c-warning:251 191 36; --c-danger:248 113 113; }
 
+    /* ===== 5 PORTAL THEMES (midnight / arctic / warm-sand / forest-emerald / coral-sunset) ===== */
+    [data-theme="midnight-obsidian"] { --c-bg:9 9 18; --c-surface:18 18 28; --c-surface-2:28 28 42; --c-border:45 45 70; --c-text:235 238 252; --c-muted:145 150 175; --c-primary:99 102 241; --c-primary-2:129 140 248; --c-accent:34 211 238; --c-success:34 197 94; --c-warning:245 158 11; --c-danger:239 68 68; }
+    [data-theme="arctic-frost"] { --c-bg:242 248 255; --c-surface:255 255 255; --c-surface-2:228 238 250; --c-border:195 210 235; --c-text:18 28 48; --c-muted:90 115 145; --c-primary:59 130 246; --c-primary-2:96 165 250; --c-accent:6 182 212; --c-success:22 163 74; --c-warning:217 119 6; --c-danger:220 38 38; }
+    [data-theme="warm-sand"] { --c-bg:252 245 232; --c-surface:255 250 240; --c-surface-2:248 235 215; --c-border:225 205 170; --c-text:58 42 20; --c-muted:130 110 80; --c-primary:217 119 6; --c-primary-2:245 158 11; --c-accent:234 88 12; --c-success:22 163 74; --c-warning:217 119 6; --c-danger:220 38 38; }
+    [data-theme="forest-emerald"] { --c-bg:8 18 14; --c-surface:16 32 24; --c-surface-2:28 48 36; --c-border:45 75 55; --c-text:220 245 230; --c-muted:120 160 135; --c-primary:16 185 129; --c-primary-2:52 211 153; --c-accent:132 204 22; --c-success:16 185 129; --c-warning:245 158 11; --c-danger:239 68 68; }
+    [data-theme="coral-sunset"] { --c-bg:255 242 235; --c-surface:255 255 255; --c-surface-2:255 232 220; --c-border:250 200 185; --c-text:60 25 20; --c-muted:150 90 80; --c-primary:244 63 94; --c-primary-2:251 113 133; --c-accent:249 115 22; --c-success:22 163 74; --c-warning:217 119 6; --c-danger:220 38 38; }
+
     /* ===== PREMIUM ANIMATED THEMES ===== */
 
     /* Jungle theme — deep rainforest with emerald canopy */
@@ -20637,7 +20644,8 @@ async function boot() {
                 technique_ru: ex.technique_ru || '', technique_he: ex.technique_he || '',
                 group: ex.group_canonical || ex.g || '', subgroup: ex.subgroup_en || ex.sE || '',
                 equipment: ex.equipment_ru || ex.eE || ex.e || '',
-                synergists: ex.synergist_muscles || ex.synergists || []
+                synergists: ex.synergist_muscles || ex.synergists || [],
+                video_url: ex.video_url || ''
               };
             } catch (_) {}
           }
