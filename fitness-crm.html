@@ -515,13 +515,21 @@
     @media (min-width: 640px) { #bm-ex-grid.bm-grouped > .bm-section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (min-width: 1024px) { #bm-ex-grid.bm-grouped > .bm-section-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
-        /* Пикер: 3 колонки — человечек | группы | упражнения */
+    /* Пикер: 3 колонки - человечек | группы | упражнения (только десктоп >=1440px).
+       Телефон/планшет: человечек скрыт, шрифт групп уменьшен - влезает в кнопки. */
     .picker-map-col { width: clamp(200px, 20cqw, 320px); }
     .picker-tree-col { width: clamp(160px, 18cqw, 260px); }
+    @media (max-width: 1439px) {
+      .picker-map-col { display: none !important; }
+      .picker-tree-col { width: clamp(140px, 26vw, 210px); }
+      .bm-group-header { font-size: 12px !important; }
+      .bm-group-header > span:last-child { font-size: 10px !important; }
+      .bm-subgroup-btn { font-size: 10px !important; }
+    }
     @media (max-width: 767px) {
-      .picker-map-col { width: 90px; }
-      .picker-tree-col { width: 130px; }
-      .picker-map-col .bm-body-svg { max-width: 100% !important; }
+      .picker-tree-col { width: 150px; }
+      .bm-group-header { font-size: 11px !important; }
+      .bm-subgroup-btn { font-size: 9.5px !important; }
     }
 
 /* ============================================================
