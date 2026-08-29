@@ -13,6 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+  <script src="src/muscle-map.js" defer></script>
   <style>
     :root {
       --font-sans: 'Inter', system-ui, sans-serif;
@@ -20,20 +21,45 @@
       --font-mono: 'JetBrains Mono', monospace;
       --sat: env(safe-area-inset-top, 0px);
       --sab: env(safe-area-inset-bottom, 0px);
+      --glass-bg:      rgb(var(--c-surface) / 0.72);
+      --glass-bg-2:    rgb(var(--c-surface-2) / 0.65);
+      --glass-border:  rgb(var(--c-border) / 0.55);
+      --glass-blur:    14px;
+      --glass-shine:   inset 0 1px 0 rgb(255 255 255 / 0.06);
+      --c-bg:        10 10 15;
+      --c-surface:   20 20 28;
+      --c-surface-2: 32 32 42;
+      --c-border:    55 55 70;
+      --c-text:      240 240 245;
+      --c-muted:     150 150 165;
+      --c-primary:   99 102 241;
+      --c-primary-2: 129 140 248;
+      --c-accent:    34 211 238;
+      --c-success:   34 197 94;
+      --c-warning:   245 158 11;
+      --c-danger:    239 68 68;
     }
+    [data-theme="light"] { --c-bg:248 249 252; --c-surface:255 255 255; --c-surface-2:243 244 248; --c-border:222 224 230; --c-text:17 22 35; --c-muted:100 110 125; --c-primary:79 70 229; --c-primary-2:99 102 241; --c-accent:6 182 212; --c-success:22 163 74; --c-warning:217 119 6; --c-danger:220 38 38; }
+    [data-theme="midnight-obsidian"] { --c-bg:9 9 18; --c-surface:18 18 28; --c-surface-2:28 28 42; --c-border:45 45 70; --c-text:235 238 252; --c-muted:145 150 175; --c-primary:99 102 241; --c-primary-2:129 140 248; --c-accent:34 211 238; --c-success:34 197 94; --c-warning:245 158 11; --c-danger:239 68 68; }
+    [data-theme="arctic-frost"] { --c-bg:242 248 255; --c-surface:255 255 255; --c-surface-2:228 238 250; --c-border:195 210 235; --c-text:18 28 48; --c-muted:90 115 145; --c-primary:59 130 246; --c-primary-2:96 165 250; --c-accent:6 182 212; --c-success:22 163 74; --c-warning:217 119 6; --c-danger:220 38 38; }
+    [data-theme="warm-sand"] { --c-bg:252 245 232; --c-surface:255 250 240; --c-surface-2:248 235 215; --c-border:225 205 170; --c-text:58 42 20; --c-muted:130 110 80; --c-primary:217 119 6; --c-primary-2:245 158 11; --c-accent:234 88 12; --c-success:22 163 74; --c-warning:217 119 6; --c-danger:220 38 38; }
+    [data-theme="forest-emerald"] { --c-bg:8 18 14; --c-surface:16 32 24; --c-surface-2:28 48 36; --c-border:45 75 55; --c-text:220 245 230; --c-muted:120 160 135; --c-primary:16 185 129; --c-primary-2:52 211 153; --c-accent:132 204 22; --c-success:16 185 129; --c-warning:245 158 11; --c-danger:239 68 68; }
+    [data-theme="coral-sunset"] { --c-bg:255 242 235; --c-surface:255 255 255; --c-surface-2:255 232 220; --c-border:250 200 185; --c-text:60 25 20; --c-muted:150 90 80; --c-primary:244 63 94; --c-primary-2:251 113 133; --c-accent:249 115 22; --c-success:22 163 74; --c-warning:217 119 6; --c-danger:220 38 38; }
+    [data-mode="dark"] { --glass-bg: rgb(var(--c-surface) / 0.68); --glass-bg-2: rgb(var(--c-surface-2) / 0.60); --glass-border: rgb(var(--c-border) / 0.45); }
+    [data-mode="light"] { --glass-bg: rgb(var(--c-surface) / 0.78); --glass-bg-2: rgb(var(--c-surface-2) / 0.70); --glass-border: rgb(var(--c-border) / 0.65); --glass-shine: inset 0 1px 0 rgb(255 255 255 / 0.10); }
     * { box-sizing: border-box; }
     body {
       font-family: var(--font-sans);
-      background: #0a0a0f;
-      color: #f1f5f9;
+      background: rgb(var(--c-bg));
+      color: rgb(var(--c-text));
       -webkit-tap-highlight-color: transparent;
       user-select: none;
       min-height: 100dvh;
       padding-top: var(--sat);
       padding-bottom: var(--sab);
     }
-    .glass { background: rgba(20,20,30,.72); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(255,255,255,.07); }
-    .glass-strong { background: rgba(20,20,30,.9); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,.1); }
+    .glass { background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border); }
+    .glass-strong { background: rgb(var(--c-surface) / 0.90); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--glass-border); }
     .font-display { font-family: var(--font-display); }
     .font-mono { font-family: var(--font-mono); }
     .no-sb::-webkit-scrollbar { display: none; }
@@ -44,14 +70,14 @@
     .fade-in { animation: fade-slide .3s ease both; }
     @keyframes pulse-ring { 0%,100% { box-shadow:0 0 0 0 rgba(99,102,241,.4); } 50% { box-shadow:0 0 0 8px rgba(99,102,241,0); } }
     .pulse-ring { animation: pulse-ring 2s ease-in-out infinite; }
-    .prog-bar { height: 6px; border-radius: 999px; background: rgba(255,255,255,.06); overflow: hidden; }
-    .prog-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #6366f1, #06b6d4); transition: width .5s cubic-bezier(.4,0,.2,1); }
-    .ex-img { aspect-ratio: 4/3; object-fit: cover; border-radius: 12px; width: 100%; background: #14141e; }
+    .prog-bar { height: 6px; border-radius: 999px; background: rgb(var(--c-border) / 0.30); overflow: hidden; }
+    .prog-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, rgb(var(--c-primary)), rgb(var(--c-accent))); transition: width .5s cubic-bezier(.4,0,.2,1); }
+    .ex-img { aspect-ratio: 4/3; object-fit: cover; border-radius: 12px; width: 100%; background: rgb(var(--c-surface-2)); }
     .set-row-done { opacity: .5; }
-    .set-row-done .set-check { background: #10b981 !important; border-color: #10b981 !important; color: #fff !important; }
+    .set-row-done .set-check { background: rgb(var(--c-success)) !important; border-color: rgb(var(--c-success)) !important; color: #fff !important; }
     .tab-btn { transition: all .2s cubic-bezier(.4,0,.2,1); }
-    .tab-btn.active { color: #818cf8; }
-    .tab-btn.active .tab-icon { stroke: #818cf8; }
+    .tab-btn.active { color: rgb(var(--c-primary)); }
+    .tab-btn.active .tab-icon { stroke: rgb(var(--c-primary)); }
     .tab-btn.active .tab-label { font-weight: 700; }
     .nutri-check:checked + .meal-label { opacity: .45; text-decoration: line-through; }
     .macro-ring { transition: stroke-dashoffset .8s cubic-bezier(.4,0,.2,1); }
@@ -59,10 +85,10 @@
     /* ===== Professional workout engine ===== */
     .set-grid { display: grid; grid-template-columns: 34px minmax(44px,1fr) 56px 14px 50px 44px 32px 26px 24px; gap: 4px; align-items: center; }
     @media (max-width: 379px) { .set-grid { grid-template-columns: 28px minmax(38px,1fr) 50px 12px 44px 40px 30px 24px 20px; gap: 3px; } }
-    .set-input { width: 100%; background: rgba(10,10,18,.65); text-align: center; border-radius: 8px; border: 1px solid rgba(255,255,255,.12); padding: 5px 2px; font-family: var(--font-mono); font-weight: 700; font-size: 12px; color: #fff; outline: none; }
-    .set-input:focus { border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99,102,241,.25); }
+    .set-input { width: 100%; background: rgb(var(--c-surface-2)); text-align: center; border-radius: 8px; border: 1px solid rgb(var(--c-border)); padding: 5px 2px; font-family: var(--font-mono); font-weight: 700; font-size: 12px; color: rgb(var(--c-text)); outline: none; }
+    .set-input:focus { border-color: rgb(var(--c-primary)); box-shadow: 0 0 0 2px rgb(var(--c-primary) / 0.25); }
     .set-input[disabled] { opacity: .55; }
-    .set-input::placeholder { color: #475569; font-weight: 600; }
+    .set-input::placeholder { color: rgb(var(--c-muted) / 0.60); font-weight: 600; }
     input[type=number].set-input::-webkit-outer-spin-button, input[type=number].set-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     input[type=number].set-input { -moz-appearance: textfield; appearance: textfield; }
     .type-badge { font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; border-radius: 4px; padding: 1px 4px; display: inline-block; margin-top: 2px; }
@@ -72,10 +98,21 @@
     .tb-amrap { background: rgba(99,102,241,.18); color: #818cf8; }
     .ex-flash { animation: ex-flash 1.2s ease; }
     @keyframes ex-flash { 0%,100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } 30% { box-shadow: 0 0 0 3px rgba(16,185,129,.55); } }
-    .mini-prog { height: 4px; border-radius: 999px; background: rgba(255,255,255,.07); overflow: hidden; }
-    .mini-prog > div { height: 100%; background: #10b981; border-radius: 999px; transition: width .4s ease; }
+    .mini-prog { height: 4px; border-radius: 999px; background: rgb(var(--c-border) / 0.35); overflow: hidden; }
+    .mini-prog > div { height: 100%; background: rgb(var(--c-success)); border-radius: 999px; transition: width .4s ease; }
     #rest-banner { z-index: 60; }
     #toast-box { z-index: 90; }
+    /* Exercise animation + viewer */
+    .ex-anim-container { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 12px; background: rgb(var(--c-surface-2)); }
+    .ex-anim-container img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; transition: opacity 0.6s ease-in-out; }
+    .ex-anim-container img.ex-anim-frame-1 { opacity: 1; animation: ex-crossfade 2.5s ease-in-out infinite; }
+    .ex-anim-container img.ex-anim-frame-2 { opacity: 0; animation: ex-crossfade-2 2.5s ease-in-out infinite; }
+    @keyframes ex-crossfade { 0%,35%{opacity:1} 50%,85%{opacity:0} 100%{opacity:1} }
+    @keyframes ex-crossfade-2 { 0%,35%{opacity:0} 50%,85%{opacity:1} 100%{opacity:0} }
+    .ex-anim-container:hover img { animation-play-state: paused; }
+    .ex-anim-badge { position: absolute; top: 6px; right: 6px; background: rgba(16,185,129,0.90); color: #fff; font-size: 8px; font-weight: 800; padding: 2px 6px; border-radius: 6px; }
+    .yt-player { position: relative; width: 100%; aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; background: rgb(var(--c-surface-2)); }
+    .yt-player iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
   </style>
 </head>
 <body class="flex flex-col">
@@ -86,11 +123,18 @@
       <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-cyan-400 grid place-items-center font-display font-extrabold text-white text-base shadow-lg shadow-indigo-500/20">DK</div>
       <div>
         <h1 id="hdr-name" class="font-display font-bold text-sm leading-tight truncate max-w-[160px]">Мой Портал</h1>
-        <p id="hdr-goal" class="text-[11px] text-slate-400 truncate max-w-[160px]">David King Gym</p>
+        <p id="hdr-goal" class="text-[11px] text-muted truncate max-w-[160px]">David King Gym</p>
       </div>
     </div>
     <div class="flex items-center gap-1.5">
-      <select id="lang-select" class="bg-slate-800/80 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-slate-200 outline-none cursor-pointer">
+      <select id="theme-select" class="bg-surface-2 border border-border text-xs rounded-lg px-2 py-1.5 text-text outline-none cursor-pointer max-w-[110px]">
+        <option value="midnight-obsidian">🌙 Midnight</option>
+        <option value="arctic-frost">❄️ Arctic</option>
+        <option value="warm-sand">🏜️ Sand</option>
+        <option value="forest-emerald">🌲 Forest</option>
+        <option value="coral-sunset">🌅 Coral</option>
+      </select>
+      <select id="lang-select" class="bg-surface-2 border border-border text-xs rounded-lg px-2 py-1.5 text-text outline-none cursor-pointer">
         <option value="ru">RU</option><option value="en">EN</option><option value="he">HE</option>
       </select>
       <button id="btn-share-report" class="bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 border border-indigo-500/25 rounded-lg p-2 transition" title="Share">
@@ -106,15 +150,15 @@
     </div>
     <div class="flex-1 min-w-0">
       <div class="flex items-center justify-between">
-        <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400" id="txt-rest-label">Отдых</span>
+        <span class="text-[9px] font-bold uppercase tracking-wider text-muted" id="txt-rest-label">Отдых</span>
         <span id="rest-banner-display" class="font-mono font-extrabold text-lg text-cyan-300 leading-none">01:30</span>
       </div>
       <div class="prog-bar mt-1"><div id="rest-banner-progress" class="prog-bar-fill" style="width:100%"></div></div>
     </div>
     <div class="flex items-center gap-1 shrink-0">
-      <button id="btn-timer-minus15" class="bg-slate-800/90 px-2 py-1.5 rounded-lg text-[10px] font-bold text-slate-300 border border-slate-700">−15</button>
-      <button id="btn-timer-plus30" class="bg-slate-800/90 px-2 py-1.5 rounded-lg text-[10px] font-bold text-slate-300 border border-slate-700">+30</button>
-      <button id="btn-timer-skip" class="bg-slate-800/90 px-2 py-1.5 rounded-lg text-[10px] font-bold text-slate-300 border border-slate-700">✕</button>
+      <button id="btn-timer-minus15" class="bg-surface-2/90 px-2 py-1.5 rounded-lg text-[10px] font-bold text-muted border border-border">−15</button>
+      <button id="btn-timer-plus30" class="bg-surface-2/90 px-2 py-1.5 rounded-lg text-[10px] font-bold text-muted border border-border">+30</button>
+      <button id="btn-timer-skip" class="bg-surface-2/90 px-2 py-1.5 rounded-lg text-[10px] font-bold text-muted border border-border">✕</button>
     </div>
   </div>
 
@@ -124,10 +168,10 @@
       <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-indigo-500 to-cyan-400 grid place-items-center text-2xl shadow-lg shadow-indigo-500/30">🔒</div>
       <div>
         <h2 class="font-display font-bold text-base text-white" id="txt-unlock-title">Введите код доступа</h2>
-        <p class="text-xs text-slate-400 mt-1" id="txt-unlock-subtitle">Код прислал тренер вместе со ссылкой</p>
+        <p class="text-xs text-muted mt-1" id="txt-unlock-subtitle">Код прислал тренер вместе со ссылкой</p>
       </div>
       <input type="tel" inputmode="numeric" maxlength="6" id="unlock-code-input" placeholder="••••••" autocomplete="off"
-        class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-3 text-center font-mono text-xl tracking-[0.4em] text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+        class="w-full bg-surface-2 border border-border rounded-xl px-3 py-3 text-center font-mono text-xl tracking-[0.4em] text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
       <p id="unlock-error" class="text-xs text-red-400 min-h-[1rem]"></p>
       <button id="btn-unlock" class="w-full bg-gradient-to-r from-indigo-500 to-cyan-400 text-white font-bold text-sm py-3 rounded-xl shadow-lg shadow-indigo-500/25 transition active:scale-95">Открыть портал</button>
     </div>
@@ -150,7 +194,7 @@
         <div class="flex items-end justify-between gap-3">
           <div class="min-w-0 flex-1">
             <div id="banner-prog-name" class="font-display font-extrabold text-lg text-white truncate">…</div>
-            <div id="banner-prog-split" class="text-xs text-slate-400 mt-0.5">—</div>
+            <div id="banner-prog-split" class="text-xs text-muted mt-0.5">—</div>
           </div>
           <button id="btn-quick-start" class="bg-gradient-to-r from-indigo-500 to-cyan-400 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-lg shadow-indigo-500/20 transition active:scale-95 flex items-center gap-1.5 shrink-0">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
@@ -159,7 +203,7 @@
         </div>
         <!-- Workout progress bar -->
         <div class="mt-3">
-          <div class="flex justify-between text-[10px] text-slate-400 mb-1">
+          <div class="flex justify-between text-[10px] text-muted mb-1">
             <span id="txt-progress-label">0 / 0</span>
             <span id="txt-progress-pct">0%</span>
           </div>
@@ -167,16 +211,16 @@
         </div>
         <!-- Stat cards: exercises / sets / volume -->
         <div class="grid grid-cols-3 gap-2 mt-3">
-          <div class="bg-slate-800/60 rounded-xl p-2 text-center border border-slate-700/50">
-            <div class="text-[8px] text-slate-400 font-bold uppercase tracking-wide" id="lbl-stat-ex">Упражнения</div>
+          <div class="bg-surface-2 rounded-xl p-2 text-center border border-border/50">
+            <div class="text-[8px] text-muted font-bold uppercase tracking-wide" id="lbl-stat-ex">Упражнения</div>
             <div id="stat-exercises" class="font-mono font-extrabold text-sm text-white mt-0.5">0</div>
           </div>
-          <div class="bg-slate-800/60 rounded-xl p-2 text-center border border-slate-700/50">
-            <div class="text-[8px] text-slate-400 font-bold uppercase tracking-wide" id="lbl-stat-sets">Подходы</div>
+          <div class="bg-surface-2 rounded-xl p-2 text-center border border-border/50">
+            <div class="text-[8px] text-muted font-bold uppercase tracking-wide" id="lbl-stat-sets">Подходы</div>
             <div id="stat-sets" class="font-mono font-extrabold text-sm text-white mt-0.5">0</div>
           </div>
-          <div class="bg-slate-800/60 rounded-xl p-2 text-center border border-slate-700/50">
-            <div class="text-[8px] text-slate-400 font-bold uppercase tracking-wide" id="lbl-stat-vol">Объём</div>
+          <div class="bg-surface-2 rounded-xl p-2 text-center border border-border/50">
+            <div class="text-[8px] text-muted font-bold uppercase tracking-wide" id="lbl-stat-vol">Объём</div>
             <div id="stat-volume" class="font-mono font-extrabold text-sm text-amber-300 mt-0.5">0</div>
           </div>
         </div>
@@ -189,7 +233,7 @@
       <div id="days-tabs-container" class="flex items-center gap-1.5 overflow-x-auto no-sb pb-1"></div>
       <div id="workout-exercises-list" class="space-y-3"></div>
       <div id="workout-finish-box" class="pt-1 space-y-2">
-        <div id="finish-summary" class="hidden glass rounded-xl px-3 py-2 flex items-center justify-between text-[11px] text-slate-300">
+        <div id="finish-summary" class="hidden glass rounded-xl px-3 py-2 flex items-center justify-between text-[11px] text-muted">
           <span id="finish-summary-text">—</span>
         </div>
         <button id="btn-finish-workout" class="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold text-sm py-3.5 rounded-2xl shadow-xl shadow-emerald-500/20 transition active:scale-95 flex items-center justify-center gap-2">
@@ -204,34 +248,34 @@
       <div id="plan-selector" class="hidden flex gap-1.5 overflow-x-auto no-sb"></div>
       <div class="glass rounded-2xl p-4">
         <div class="flex justify-between items-center mb-3">
-          <h3 class="font-display font-bold text-sm text-slate-200" id="txt-daily-targets">Суточная норма</h3>
+          <h3 class="font-display font-bold text-sm text-text" id="txt-daily-targets">Суточная норма</h3>
           <span id="target-cal-badge" class="font-mono font-bold text-cyan-300 text-sm">—</span>
         </div>
         <div class="grid grid-cols-3 gap-2 text-center">
-          <div class="bg-slate-800/60 rounded-xl p-2.5 border border-slate-700/50">
-            <div class="text-[9px] text-slate-400 font-semibold uppercase">Белки</div>
+          <div class="bg-surface-2 rounded-xl p-2.5 border border-border/50">
+            <div class="text-[9px] text-muted font-semibold uppercase">Белки</div>
             <div id="macro-p" class="font-mono font-extrabold text-sm text-indigo-300 mt-0.5">—</div>
           </div>
-          <div class="bg-slate-800/60 rounded-xl p-2.5 border border-slate-700/50">
-            <div class="text-[9px] text-slate-400 font-semibold uppercase">Жиры</div>
+          <div class="bg-surface-2 rounded-xl p-2.5 border border-border/50">
+            <div class="text-[9px] text-muted font-semibold uppercase">Жиры</div>
             <div id="macro-f" class="font-mono font-extrabold text-sm text-amber-300 mt-0.5">—</div>
           </div>
-          <div class="bg-slate-800/60 rounded-xl p-2.5 border border-slate-700/50">
-            <div class="text-[9px] text-slate-400 font-semibold uppercase">Углеводы</div>
+          <div class="bg-surface-2 rounded-xl p-2.5 border border-border/50">
+            <div class="text-[9px] text-muted font-semibold uppercase">Углеводы</div>
             <div id="macro-c" class="font-mono font-extrabold text-sm text-emerald-300 mt-0.5">—</div>
           </div>
         </div>
       </div>
       <div class="glass rounded-2xl p-4 flex items-center justify-between">
         <div>
-          <div class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+          <div class="text-xs font-bold text-text flex items-center gap-1.5">
             <svg class="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
             <span id="txt-water-title">Водный баланс</span>
           </div>
-          <div id="water-count-text" class="text-[11px] text-slate-400 mt-0.5">0.0 л</div>
+          <div id="water-count-text" class="text-[11px] text-muted mt-0.5">0.0 л</div>
         </div>
         <div class="flex items-center gap-2">
-          <button id="btn-water-minus" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold grid place-items-center transition">−</button>
+          <button id="btn-water-minus" class="w-8 h-8 rounded-lg bg-surface-2 hover:bg-border text-muted font-bold grid place-items-center transition">−</button>
           <span id="water-glasses" class="font-mono font-bold text-cyan-300 text-sm">0</span>
           <button id="btn-water-plus" class="w-8 h-8 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 font-bold grid place-items-center transition">+</button>
         </div>
@@ -242,37 +286,37 @@
     <!-- ===== TAB: CHECK-IN ===== -->
     <section id="tab-checkin" class="hidden space-y-3 fade-in">
       <div class="glass rounded-2xl p-4 space-y-4">
-        <h3 class="font-display font-bold text-sm text-slate-200" id="txt-daily-checkin">Утренний чек-ин</h3>
+        <h3 class="font-display font-bold text-sm text-text" id="txt-daily-checkin">Утренний чек-ин</h3>
         <div>
-          <label class="block text-xs text-slate-400 mb-1" id="lbl-morning-weight">Вес утром (кг)</label>
-          <input type="number" step="0.1" id="input-checkin-weight" placeholder="78.4" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+          <label class="block text-xs text-muted mb-1" id="lbl-morning-weight">Вес утром (кг)</label>
+          <input type="number" step="0.1" id="input-checkin-weight" placeholder="78.4" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs text-slate-400 mb-1">Талия (см)</label>
-            <input type="number" step="0.5" id="input-checkin-waist" placeholder="78" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:outline-none" />
+            <label class="block text-xs text-muted mb-1">Талия (см)</label>
+            <input type="number" step="0.5" id="input-checkin-waist" placeholder="78" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:outline-none" />
           </div>
           <div>
-            <label class="block text-xs text-slate-400 mb-1">Бёдра (см)</label>
-            <input type="number" step="0.5" id="input-checkin-hip" placeholder="98" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:outline-none" />
+            <label class="block text-xs text-muted mb-1">Бёдра (см)</label>
+            <input type="number" step="0.5" id="input-checkin-hip" placeholder="98" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:outline-none" />
           </div>
         </div>
         <div>
           <div class="flex justify-between items-center mb-1">
-            <label class="text-xs text-slate-400">Энергия</label>
+            <label class="text-xs text-muted">Энергия</label>
             <span id="slider-energy-val" class="font-mono font-bold text-cyan-300 text-xs">8 / 10</span>
           </div>
           <input type="range" min="1" max="10" value="8" id="slider-energy" class="w-full accent-cyan-400 cursor-pointer" />
         </div>
         <div>
-          <label class="block text-xs text-slate-400 mb-1">Заметка тренеру</label>
-          <textarea id="input-checkin-note" rows="2" placeholder="Сон, восстановление, аппетит..." class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none resize-none"></textarea>
+          <label class="block text-xs text-muted mb-1">Заметка тренеру</label>
+          <textarea id="input-checkin-note" rows="2" placeholder="Сон, восстановление, аппетит..." class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none resize-none"></textarea>
         </div>
         <button id="btn-save-checkin" class="w-full bg-indigo-500 hover:bg-indigo-400 text-white font-bold text-xs py-3 rounded-xl shadow-lg shadow-indigo-500/20 transition active:scale-95">Сохранить чек-ин</button>
         <p id="checkin-status" class="text-[11px] text-center text-emerald-400 min-h-[1rem]"></p>
       </div>
       <div class="glass rounded-2xl p-4 space-y-2">
-        <h3 class="font-display font-bold text-sm text-slate-200" id="txt-history-title">История замеров</h3>
+        <h3 class="font-display font-bold text-sm text-text" id="txt-history-title">История замеров</h3>
         <div id="checkin-history" class="space-y-1.5"></div>
       </div>
     </section>
@@ -282,20 +326,39 @@
   <div id="toast-box" class="fixed bottom-20 inset-x-0 flex flex-col items-center gap-1.5 pointer-events-none px-4"></div>
 
   <!-- ============= BOTTOM NAV ============= -->
-  <nav class="fixed bottom-0 inset-x-0 z-40 glass-strong border-t border-slate-800/60 px-4 pt-1.5 flex items-center justify-around max-w-lg mx-auto" style="padding-bottom: calc(0.375rem + var(--sab))">
-    <button data-tab="workouts" class="nav-tab tab-btn active flex flex-col items-center gap-0.5 text-slate-400 py-1 px-3">
+  <nav class="fixed bottom-0 inset-x-0 z-40 glass-strong border-t border-border/60 px-4 pt-1.5 flex items-center justify-around max-w-lg mx-auto" style="padding-bottom: calc(0.375rem + var(--sab))">
+    <button data-tab="workouts" class="nav-tab tab-btn active flex flex-col items-center gap-0.5 text-muted py-1 px-3">
       <svg class="tab-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 4v16M18 4v16M6 12h12"/></svg>
       <span class="tab-label text-[9px] font-semibold" id="nav-workouts">Тренировки</span>
     </button>
-    <button data-tab="nutrition" class="nav-tab tab-btn flex flex-col items-center gap-0.5 text-slate-400 py-1 px-3">
+    <button data-tab="nutrition" class="nav-tab tab-btn flex flex-col items-center gap-0.5 text-muted py-1 px-3">
       <svg class="tab-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
       <span class="tab-label text-[9px] font-semibold" id="nav-nutrition">Питание</span>
     </button>
-    <button data-tab="checkin" class="nav-tab tab-btn flex flex-col items-center gap-0.5 text-slate-400 py-1 px-3">
+    <button data-tab="checkin" class="nav-tab tab-btn flex flex-col items-center gap-0.5 text-muted py-1 px-3">
       <svg class="tab-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
       <span class="tab-label text-[9px] font-semibold" id="nav-checkin">Прогресс</span>
     </button>
   </nav>
+
+  <!-- ============= EXERCISE CARD MODAL ============= -->
+  <div id="exercise-modal" class="hidden fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
+    <div class="bg-[rgb(var(--c-surface))] w-full sm:max-w-lg lg:max-w-[min(96vw,720px)] max-h-[92vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float overflow-hidden">
+      <div class="sticky top-0 z-10 bg-[rgb(var(--c-surface))] border-b border-border p-4 flex items-center gap-3">
+        <h3 id="exercise-modal-title" class="font-display font-bold text-base text-text flex-1 truncate"></h3>
+        <button id="exercise-modal-close" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-[rgb(var(--c-surface-2))] text-muted"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      </div>
+      <div id="exercise-view" class="p-4 space-y-4 overflow-y-auto">
+        <div id="exercise-gif-slot" class="aspect-video rounded-xl bg-[rgb(var(--c-surface-2))] border border-border grid place-items-center overflow-hidden"></div>
+        <div id="exercise-video-section" class="hidden"><div id="exercise-video-player" class="yt-player"></div></div>
+        <div id="exercise-youtube-search" class="hidden text-center"><a id="exercise-yt-link" href="#" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-sm font-semibold px-4 py-2 rounded-lg"><span data-i18n="exercise.searchOnYouTube">Search on YouTube</span></a></div>
+        <div class="flex flex-wrap gap-1.5"><span id="badge-group" class="text-[11px] font-semibold px-2 py-1 rounded-md bg-indigo-500/15 text-indigo-300"></span><span id="badge-subgroup" class="text-[11px] font-semibold px-2 py-1 rounded-md bg-cyan-400/15 text-cyan-300"></span><span id="badge-equipment" class="text-[11px] font-semibold px-2 py-1 rounded-md bg-[rgb(var(--c-surface-2))] text-muted border border-border"></span></div>
+        <div id="exercise-muscle-chips" class="flex flex-wrap gap-1.5"></div>
+        <div><h4 class="text-[11px] uppercase tracking-wider text-muted font-semibold mb-2" data-i18n="exercise.technique">Техника</h4><div id="exercise-technique" class="text-sm bg-[rgb(var(--c-surface-2))] border border-border rounded-xl p-3 leading-relaxed min-h-[60px] text-text"></div></div>
+      </div>
+    </div>
+  </div>
+  <div id="viewer-modal" class="hidden fixed inset-0 z-[120] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true"><button id="viewer-close" class="absolute top-4 end-4 w-10 h-10 grid place-items-center rounded-full bg-white/10 hover:bg-white/20 text-white"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button><img id="viewer-img" src="" alt="" class="max-w-full max-h-full object-contain rounded-lg" /></div>
 
   <!-- ============= SCRIPTS ============= -->
   <script>
@@ -337,7 +400,8 @@
       startHint:'Нажмите «В зал», чтобы заполнять подходы',volumeKg:'кг',
       sumDuration:'Длительность',sumVolume:'Объём',sumDone:'Подходы',
       chooseProgram:'Выберите программу',choosePlan:'Выберите план питания',
-      noProgram:'Нет активных программ',noPlan:'Нет активных планов питания'
+      noProgram:'Нет активных программ',noPlan:'Нет активных планов питания',
+      video:'Видео', searchOnYouTube:'Искать на YouTube', noImage:'Нет изображения', noTechnique:'Описание техники пока нет'
     },
     en: {
       portalTitle:'My Portal',coachBadge:'David King Gym',startBtn:'Start',resumeBtn:'Resume',finishWorkout:'Finish Workout',
@@ -361,7 +425,8 @@
       startHint:'Tap "Start" to fill in your sets',volumeKg:'kg',
       sumDuration:'Duration',sumVolume:'Volume',sumDone:'Sets',
       chooseProgram:'Choose program',choosePlan:'Choose nutrition plan',
-      noProgram:'No active programs',noPlan:'No active nutrition plans'
+      noProgram:'No active programs',noPlan:'No active nutrition plans',
+      video:'Video', searchOnYouTube:'Search on YouTube', noImage:'No image', noTechnique:'No technique description yet'
     },
     he: {
       portalTitle:'הפורטל שלי',coachBadge:'David King Gym',startBtn:'התחל',resumeBtn:'המשך',finishWorkout:'סיים אימון',
@@ -385,7 +450,8 @@
       startHint:'לחץ "התחל" כדי למלא את הסטים',volumeKg:'ק״ג',
       sumDuration:'משך',sumVolume:'נפח',sumDone:'סטים',
       chooseProgram:'בחר תוכנית',choosePlan:'בחר תוכנית תזונה',
-      noProgram:'אין תוכניות פעילות',noPlan:'אין תוכניות תזונה פעילות'
+      noProgram:'אין תוכניות פעילות',noPlan:'אין תוכניות תזונה פעילות',
+      video:'וידאו', searchOnYouTube:'חפש ביוטיוב', noImage:'אין תמונה', noTechnique:'אין תיאור טכניקה'
     }
   };
   const t = k => (I18N[currentLang] && I18N[currentLang][k]) || I18N.ru[k] || k;
@@ -560,6 +626,28 @@
     localStorage.setItem('dk_client_lang', l);
     updateLabels(); renderAll();
   }
+  /* ============ THEME ============ */
+  const THEME_META = {
+    'midnight-obsidian':{dark:true,bg:'#0a0a12'},
+    'arctic-frost':{dark:false,bg:'#f2f8ff'},
+    'warm-sand':{dark:false,bg:'#fcf5e8'},
+    'forest-emerald':{dark:true,bg:'#08120e'},
+    'coral-sunset':{dark:false,bg:'#fff2eb'}
+  };
+  function applyTheme(t){
+    if (!THEME_META[t]) t='midnight-obsidian';
+    document.documentElement.setAttribute('data-theme', t);
+    document.documentElement.setAttribute('data-mode', THEME_META[t].dark ? 'dark':'light');
+    const m=document.querySelector('meta[name="theme-color"]');
+    if(m) m.content=THEME_META[t].bg;
+    localStorage.setItem('dk_portal_theme', t);
+    const sel=document.getElementById('theme-select');
+    if(sel) sel.value=t;
+  }
+  function loadTheme(){
+    const saved=localStorage.getItem('dk_portal_theme');
+    applyTheme(THEME_META[saved]?saved:'midnight-obsidian');
+  }
 
   /* ============ WATER ============ */
   function waterKey() { return 'dk_water_' + new Date().toISOString().slice(0,10); }
@@ -603,7 +691,7 @@
   function renderHistory() {
     const box = document.getElementById('checkin-history');
     const list = loadCheckins().slice(-7).reverse();
-    if (!list.length) { box.innerHTML = '<p class="text-xs text-slate-500">'+esc(t('noHistory'))+'</p>'; return; }
+    if (!list.length) { box.innerHTML = '<p class="text-xs text-muted">'+esc(t('noHistory'))+'</p>'; return; }
     let prev = null;
     box.innerHTML = list.map(r=>{
       let delta = '';
@@ -613,9 +701,9 @@
       }
       prev = r;
       const m = [`<span class="font-mono text-white">${esc(r.weight)}</span> кг`, r.waist?`талия ${esc(r.waist)}`:'', r.hip?`бёдра ${esc(r.hip)}`:''].filter(Boolean).join(' · ');
-      return `<div class="flex items-center justify-between bg-slate-800/50 px-3 py-2 rounded-xl text-xs">
-        <span class="font-mono text-slate-400 w-11">${esc(r.date.slice(5))}</span>
-        <span class="text-slate-300 flex-1 mx-2 truncate">${m}${r.note?' · <em>'+esc(r.note)+'</em>':''}</span>
+      return `<div class="flex items-center justify-between bg-surface-2/60 px-3 py-2 rounded-xl text-xs">
+        <span class="font-mono text-muted w-11">${esc(r.date.slice(5))}</span>
+        <span class="text-muted flex-1 mx-2 truncate">${m}${r.note?' · <em>'+esc(r.note)+'</em>':''}</span>
         <span class="font-mono text-cyan-300">${r.energy}/10</span>
         ${delta?`<span class="w-10 text-end">${delta}</span>`:'<span class="w-10"></span>'}
       </div>`;
@@ -856,7 +944,7 @@
       const active = i===activeDayIndex;
       const live = !!sessions[i];
       const badge = live ? '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>' : '';
-      return `<button data-day="${i}" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-1.5 ${active?'bg-indigo-500 text-white shadow-md shadow-indigo-500/25':'bg-slate-800/60 text-slate-400 hover:text-white'}">${badge}${esc(dayLabel(i))}</button>`;
+      return `<button data-day="${i}" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-1.5 ${active?'bg-indigo-500 text-white shadow-md shadow-indigo-500/25':'bg-surface-2 text-muted hover:text-white'}">${badge}${esc(dayLabel(i))}</button>`;
     }).join('');
     c.querySelectorAll('[data-day]').forEach(b=>b.addEventListener('click',()=>{
       activeDayIndex = +b.dataset.day; renderAll();
@@ -876,7 +964,7 @@
     const sess = getSession(activeDayIndex);
     if (!day) { list.innerHTML = ''; return; }
     if (!(day.exercises||[]).length) {
-      list.innerHTML = '<div class="text-xs text-slate-500 text-center py-6">'+esc(t('noExercises'))+'</div>'; return;
+      list.innerHTML = '<div class="text-xs text-muted text-center py-6">'+esc(t('noExercises'))+'</div>'; return;
     }
     const lang = currentLang;
     const editable = !!sess;
@@ -884,12 +972,19 @@
     list.innerHTML = (day.exercises||[]).map((ex, ei)=>{
       const exData = getExData(ex);
       const exName = exData ? (exData['name_'+lang] || exData.name_en || ex.name) : (ex['name_'+lang] || ex.name_en || ex.name || '?');
-      const img = exData && exData.images && exData.images[0] ? exData.images[0] : '';
+      const imgs = exData && Array.isArray(exData.images) ? exData.images : [];
+      const img = imgs[0] || '';
       const technique = exData ? (exData['technique_'+lang] || exData.technique_en || '') : '';
       const equipment = exData ? (exData.equipment || '') : '';
       const groupLabel = exData ? (exData['group_'+lang] || exData.group_en || ex.group || '') : (ex.group || '');
       const liveEx = sess ? (sess.exercises||[])[ei] : null;
       const restSec = liveEx ? liveEx.rest_sec : (parseInt(ex.rest_sec,10) || 90);
+      const thumbHtml = (() => {
+        if (imgs.length >= 2) return `<div class="ex-anim-container w-16 h-16 sm:w-20 sm:h-20 shrink-0 cursor-pointer" data-open-exercise><img src="${escapeAttr(imgs[0])}" alt="" class="ex-anim-frame-1" loading="lazy" /><img src="${escapeAttr(imgs[1])}" alt="" class="ex-anim-frame-2" loading="lazy" /></div>`;
+        if (img) return `<img src="${escapeAttr(img)}" alt="" class="ex-img w-16 h-16 sm:w-20 sm:h-20 shrink-0 object-cover cursor-pointer" loading="lazy" data-open-exercise />`;
+        const v = (typeof window.exerciseVectorIllustration==='function') ? window.exerciseVectorIllustration(exData||ex,{both:false,size:80}) : '';
+        return v ? `<div class="w-16 h-16 sm:w-20 sm:h-20 shrink-0 grid place-items-center cursor-pointer" data-open-exercise>${v}</div>` : '';
+      })();
 
       // per-exercise mini progress
       let mini = '';
@@ -898,7 +993,7 @@
         const dn = (liveEx.sets||[]).filter(s=>s.done).length;
         mini = `<div class="flex items-center gap-2 mt-1.5">
           <div class="mini-prog flex-1"><div style="width:${tot?Math.round(dn/tot*100):0}%"></div></div>
-          <span class="font-mono text-[9px] text-slate-400 shrink-0">${dn}/${tot}</span>
+          <span class="font-mono text-[9px] text-muted shrink-0">${dn}/${tot}</span>
         </div>`;
       }
 
@@ -910,22 +1005,22 @@
           : '—';
         const dis = editable ? '' : 'disabled';
         const repsPh = s.type === 'amrap' ? '∞' : (Number(s.reps)||'');
-        return `<div class="set-row set-grid bg-slate-800/50 px-2 py-1.5 rounded-xl ${done?'set-row-done':''}" data-si="${si}">
+        return `<div class="set-row set-grid bg-surface-2/60 px-2 py-1.5 rounded-xl ${done?'set-row-done':''}" data-si="${si}">
           <div class="text-center leading-tight">
-            <div class="font-mono text-[11px] font-bold text-slate-300">#${sn}</div>
+            <div class="font-mono text-[11px] font-bold text-muted">#${sn}</div>
             ${typeBadge(s.type)}
           </div>
-          <div class="font-mono text-[10px] text-slate-500 text-center truncate" data-prev-cell>${esc(pw)}</div>
+          <div class="font-mono text-[10px] text-muted text-center truncate" data-prev-cell>${esc(pw)}</div>
           <input type="number" step="0.5" inputmode="decimal" value="${s.weight!=null?Number(s.weight):''}" ${dis} data-field="weight" data-ex="${ei}" data-si="${si}" class="set-input" placeholder="0" />
-          <span class="text-[9px] text-slate-500 text-center">×</span>
+          <span class="text-[9px] text-muted text-center">×</span>
           <input type="number" step="1" inputmode="numeric" value="${s.type==='amrap'?'':(s.reps!=null?Number(s.reps):'')}" ${dis} data-field="reps" data-ex="${ei}" data-si="${si}" class="set-input" placeholder="${s.type==='amrap'?'∞':'0'}" />
           <input type="number" step="0.5" min="0" max="10" inputmode="decimal" value="${s.rpe!=null?Number(s.rpe):''}" ${dis} data-field="rpe" data-ex="${ei}" data-si="${si}" class="set-input" placeholder="10" />
-          <button class="set-check w-7 h-7 rounded-lg bg-slate-800 border border-slate-600 hover:border-emerald-400 hover:bg-emerald-400/15 text-slate-400 hover:text-emerald-400 grid place-items-center transition ${done?'':''}"
+          <button class="set-check w-7 h-7 rounded-lg bg-surface-2 border border-border hover:border-emerald-400 hover:bg-emerald-400/15 text-muted hover:text-emerald-400 grid place-items-center transition ${done?'':''}"
             data-toggle-set data-ex="${ei}" data-si="${si}" ${editable?'':'disabled'}>✓</button>
-          <button class="w-6 h-7 grid place-items-center rounded-lg text-slate-400 hover:text-cyan-300 transition" data-cycle-type data-ex="${ei}" data-si="${si}" title="type" ${editable?'':'disabled'}>
+          <button class="w-6 h-7 grid place-items-center rounded-lg text-muted hover:text-cyan-300 transition" data-cycle-type data-ex="${ei}" data-si="${si}" title="type" ${editable?'':'disabled'}>
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
           </button>
-          <button class="w-5 h-7 grid place-items-center rounded-lg text-slate-500 hover:text-red-400 transition" data-remove-set data-ex="${ei}" data-si="${si}" ${si===0?'disabled style="opacity:.25"':''}>×</button>
+          <button class="w-5 h-7 grid place-items-center rounded-lg text-muted hover:text-red-400 transition" data-remove-set data-ex="${ei}" data-si="${si}" ${si===0?'disabled style="opacity:.25"':''}>×</button>
         </div>`;
       }).join('');
 
@@ -936,25 +1031,25 @@
       const techniqueHtml = technique ? `<details class="group"><summary class="text-[11px] font-semibold text-indigo-300 cursor-pointer select-none flex items-center gap-1">
           <svg class="w-3 h-3 transition-transform group-open:rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
           ${esc(t('technique'))}</summary>
-          <div class="mt-1.5 space-y-1 pl-1">${technique.split(' | ').map(st=>`<p class="text-[11px] text-slate-300 leading-relaxed">• ${esc(st.trim())}</p>`).join('')}</div></details>` : '';
+          <div class="mt-1.5 space-y-1 pl-1">${technique.split(' | ').map(st=>`<p class="text-[11px] text-muted leading-relaxed">• ${esc(st.trim())}</p>`).join('')}</div></details>` : '';
 
       return `<div class="glass rounded-2xl p-4 space-y-3 fade-in" data-exercise-card="${ei}">
         <div class="flex items-start justify-between gap-2">
-          ${img ? `<img src="${esc(img)}" alt="" class="ex-img w-16 h-16 sm:w-20 sm:h-20 shrink-0 object-cover" loading="lazy" />` : ''}
+          ${thumbHtml}
           <div class="flex-1 min-w-0">
-            <h4 class="font-display font-bold text-sm text-white leading-snug">${esc(exName)}</h4>
-            <div class="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5 flex-wrap">
+            <h4 class="font-display font-bold text-sm text-white leading-snug cursor-pointer hover:text-[rgb(var(--c-primary))] transition" data-open-exercise>${esc(exName)}</h4>
+            <div class="text-[11px] text-muted flex items-center gap-2 mt-0.5 flex-wrap">
               ${groupLabel?`<span class="text-cyan-300">${esc(groupLabel)}</span><span>·</span>`:''}
               <label class="flex items-center gap-1">${esc(t('restPerEx'))}
-                <input type="number" min="10" step="5" value="${restSec}" data-rest-input data-ex="${ei}" ${editable?'':'disabled'} class="w-12 bg-slate-900/60 text-center rounded border border-slate-700 py-0.5 text-[10px] font-mono text-white focus:outline-none" />
+                <input type="number" min="10" step="5" value="${restSec}" data-rest-input data-ex="${ei}" ${editable?'':'disabled'} class="w-12 bg-surface-2 text-center rounded border border-border py-0.5 text-[10px] font-mono text-white focus:outline-none" />
               </label>
             </div>
-            ${equipment?`<span class="inline-block text-[9px] bg-slate-800 px-1.5 py-0.5 rounded text-slate-400 mt-1">${esc(equipment)}</span>`:''}
+            ${equipment?`<span class="inline-block text-[9px] bg-surface-2 px-1.5 py-0.5 rounded text-muted mt-1">${esc(equipment)}</span>`:''}
             ${mini}
           </div>
         </div>
         ${ex.notes?`<div class="text-[11px] text-amber-300/80 bg-amber-500/8 border border-amber-500/15 rounded-lg p-2 leading-relaxed">💡 ${esc(ex.notes)}</div>`:''}
-        <div class="set-grid px-2 text-[8px] uppercase tracking-wide text-slate-500 font-bold">
+        <div class="set-grid px-2 text-[8px] uppercase tracking-wide text-muted font-bold">
           <span>#</span><span class="text-center">${esc(t('prevLabel'))}</span><span class="text-center">${esc(t('weightLabel'))}</span><span></span><span class="text-center">${esc(t('repsLabel'))}</span><span class="text-center">${esc(t('rpeLabel'))}</span><span class="text-center">✓</span><span></span><span></span>
         </div>
         <div class="space-y-1.5">${setsRows}</div>
@@ -1193,17 +1288,17 @@
     if (!programs.length){ c.classList.add('hidden'); c.innerHTML=''; return; }
     if (programs.length===1){
       const p=programs[0];
-      c.innerHTML=`<span class="text-[11px] text-slate-400">${esc(t('chooseProgram'))}:</span><span class="text-xs font-bold text-white bg-indigo-500/20 border border-indigo-500/30 px-2.5 py-1 rounded-xl">${esc(p.name||'Program')}</span>`;
+      c.innerHTML=`<span class="text-[11px] text-muted">${esc(t('chooseProgram'))}:</span><span class="text-xs font-bold text-white bg-indigo-500/20 border border-indigo-500/30 px-2.5 py-1 rounded-xl">${esc(p.name||'Program')}</span>`;
       c.classList.remove('hidden');
       c.className='flex items-center gap-2 overflow-x-auto no-sb pb-1';
       return;
     }
     c.classList.remove('hidden');
     c.className='flex items-center gap-1.5 overflow-x-auto no-sb pb-1';
-    c.innerHTML=`<span class="text-[11px] text-slate-400 shrink-0">${esc(t('chooseProgram'))}:</span>`+programs.map((p,i)=>{
+    c.innerHTML=`<span class="text-[11px] text-muted shrink-0">${esc(t('chooseProgram'))}:</span>`+programs.map((p,i)=>{
       const active=i===activeProgramIdx;
       const ds=(p.workout_days||p.days||[]).length;
-      return `<button data-prog-idx="${i}" class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition shrink-0 ${active?'bg-indigo-500 text-white shadow-md shadow-indigo-500/25':'bg-slate-800/60 text-slate-400 hover:text-white'}">${esc(p.name||('Program '+(i+1)))}${ds?` <span class="opacity-60 text-[10px]">${ds}d</span>`:''}</button>`;
+      return `<button data-prog-idx="${i}" class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition shrink-0 ${active?'bg-indigo-500 text-white shadow-md shadow-indigo-500/25':'bg-surface-2 text-muted hover:text-white'}">${esc(p.name||('Program '+(i+1)))}${ds?` <span class="opacity-60 text-[10px]">${ds}d</span>`:''}</button>`;
     }).join('');
     c.querySelectorAll('[data-prog-idx]').forEach(b=>b.addEventListener('click',()=>switchProgram(+b.dataset.progIdx)));
   }
@@ -1213,16 +1308,16 @@
     if (!plans.length){ c.classList.add('hidden'); c.innerHTML=''; return; }
     if (plans.length===1){
       const p=plans[0];
-      c.innerHTML=`<span class="text-[11px] text-slate-400">${esc(t('choosePlan'))}:</span><span class="text-xs font-bold text-white bg-emerald-500/20 border border-emerald-500/30 px-2.5 py-1 rounded-xl">${esc(p.name||'Plan')} · ${(p.target_calories||'—')} ккал</span>`;
+      c.innerHTML=`<span class="text-[11px] text-muted">${esc(t('choosePlan'))}:</span><span class="text-xs font-bold text-white bg-emerald-500/20 border border-emerald-500/30 px-2.5 py-1 rounded-xl">${esc(p.name||'Plan')} · ${(p.target_calories||'—')} ккал</span>`;
       c.classList.remove('hidden');
       c.className='flex items-center gap-2 overflow-x-auto no-sb';
       return;
     }
     c.classList.remove('hidden');
     c.className='flex items-center gap-1.5 overflow-x-auto no-sb';
-    c.innerHTML=`<span class="text-[11px] text-slate-400 shrink-0">${esc(t('choosePlan'))}:</span>`+plans.map((p,i)=>{
+    c.innerHTML=`<span class="text-[11px] text-muted shrink-0">${esc(t('choosePlan'))}:</span>`+plans.map((p,i)=>{
       const active=i===activePlanIdx;
-      return `<button data-plan-idx="${i}" class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition shrink-0 ${active?'bg-emerald-500 text-white shadow-md shadow-emerald-500/25':'bg-slate-800/60 text-slate-400 hover:text-white'}">${esc(p.name||('Plan '+(i+1)))} <span class="opacity-60 text-[10px]">${p.target_calories||'—'}ккал</span></button>`;
+      return `<button data-plan-idx="${i}" class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition shrink-0 ${active?'bg-emerald-500 text-white shadow-md shadow-emerald-500/25':'bg-surface-2 text-muted hover:text-white'}">${esc(p.name||('Plan '+(i+1)))} <span class="opacity-60 text-[10px]">${p.target_calories||'—'}ккал</span></button>`;
     }).join('');
     c.querySelectorAll('[data-plan-idx]').forEach(b=>b.addEventListener('click',()=>switchPlan(+b.dataset.planIdx)));
   }
@@ -1276,37 +1371,129 @@
 
   function renderMeals() {
     const c = document.getElementById('meals-container');
-    if (!currentPlan || !currentPlan.meals) { c.innerHTML = '<div class="text-xs text-slate-500 text-center py-6">'+esc(t('noMeals'))+'</div>'; return; }
+    if (!currentPlan || !currentPlan.meals) { c.innerHTML = '<div class="text-xs text-muted text-center py-6">'+esc(t('noMeals'))+'</div>'; return; }
     c.innerHTML = currentPlan.meals.map((meal,mi)=>{
       const items = (meal.foods||meal.items||[]).map(f=>{
         const name = f.name || f.food_name || '?';
         const g = f.grams || f.amount_g || 0;
         const cal = f.calories || Math.round((f.nutrition?.calories||0) * g / 100);
-        return `<label class="flex items-center justify-between bg-slate-800/50 px-3 py-2 rounded-xl text-xs cursor-pointer hover:bg-slate-800/80 transition">
+        return `<label class="flex items-center justify-between bg-surface-2/60 px-3 py-2 rounded-xl text-xs cursor-pointer hover:bg-surface-2 transition">
           <div class="flex items-center gap-2.5 min-w-0">
-            <input type="checkbox" class="nutri-check rounded bg-slate-900 border-slate-600 text-indigo-400 w-4 h-4 cursor-pointer shrink-0" />
-            <span class="text-slate-200 truncate">${esc(name)}</span>
+            <input type="checkbox" class="nutri-check rounded bg-surface-2 border-border text-indigo-400 w-4 h-4 cursor-pointer shrink-0" />
+            <span class="text-text truncate">${esc(name)}</span>
           </div>
-          <span class="font-mono text-slate-400 shrink-0">${g}г · ${cal} ккал</span>
+          <span class="font-mono text-muted shrink-0">${g}г · ${cal} ккал</span>
         </label>`;
       }).join('');
       const mealCal = (meal.foods||meal.items||[]).reduce((s2,f)=>s2+(f.calories||Math.round((f.nutrition?.calories||0)*(f.grams||f.amount_g||0)/100)),0);
       return `<div class="glass rounded-2xl p-4 space-y-2 fade-in">
         <div class="flex justify-between items-center">
           <h4 class="font-display font-bold text-sm text-white">${esc(meal.name||'Приём')}</h4>
-          <span class="font-mono text-xs text-slate-400">${mealCal} ккал</span>
+          <span class="font-mono text-xs text-muted">${mealCal} ккал</span>
         </div>
         <div class="space-y-1.5 pt-1">${items}</div>
       </div>`;
     }).join('');
   }
 
+  /* ============ EXERCISE CARD (tap image -> modal) ============ */
+  function escapeAttr(v){ return String(v==null?'':v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function extractYouTubeId(url){
+    if(!url) return '';
+    const m = String(url).match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{6,})/);
+    return m ? m[1] : '';
+  }
+  function openExerciseModal(exerciseId){
+    const ex = exerciseDB[exerciseId] || exerciseDB[String(exerciseId)] || null;
+    if(!ex){ toast(t('noExercises'), 'warn'); return; }
+    const lang = currentLang;
+    const name = ex['name_'+lang] || ex.name_en || ex.name_ru || '?';
+    const group = ex['group_'+lang] || ex.group_en || ex.group || '';
+    const subgroup = ex.subgroup || '';
+    const equipment = ex.equipment || '';
+    const technique = ex['technique_'+lang] || ex.technique_en || '';
+    const imgs = ex.images || [];
+    const videoUrl = ex.video_url || '';
+    const modal = document.getElementById('exercise-modal');
+    if(!modal) return;
+    const titleEl = document.getElementById('exercise-modal-title');
+    if(titleEl) titleEl.textContent = name;
+    // badges
+    const gB=document.getElementById('badge-group'); if(gB) gB.textContent=group||'—';
+    const sgB=document.getElementById('badge-subgroup'); if(sgB) sgB.textContent=subgroup||'—';
+    const eqB=document.getElementById('badge-equipment'); if(eqB) eqB.textContent=equipment||'—';
+    // muscle chips
+    const chipsEl=document.getElementById('exercise-muscle-chips');
+    if(chipsEl){
+      const chips = (typeof window.getExerciseMuscleChips==='function') ? window.getExerciseMuscleChips(ex) : '';
+      chipsEl.innerHTML = chips || '';
+      if(chips) chipsEl.classList.remove('hidden'); else chipsEl.classList.add('hidden');
+    }
+    // images / animation
+    const slot=document.getElementById('exercise-gif-slot');
+    if(slot){
+      if(imgs.length>=2){
+        slot.innerHTML=`<div class="ex-anim-container"><img src="${escapeAttr(imgs[0])}" alt="" class="ex-anim-frame-1" loading="lazy" /><img src="${escapeAttr(imgs[1])}" alt="" class="ex-anim-frame-2" loading="lazy" /><div class="ex-anim-badge">ANIM</div></div>`;
+      } else if(imgs.length===1){
+        slot.innerHTML=`<img src="${escapeAttr(imgs[0])}" alt="" class="w-full h-full object-contain bg-[rgb(var(--c-surface-2))]" loading="lazy" />`;
+      } else {
+        const vector = (typeof window.exerciseVectorIllustration==='function') ? window.exerciseVectorIllustration(ex,{both:true}) : '';
+        slot.innerHTML = vector || `<div class="text-center text-muted p-6"><p class="text-xs">${esc(t('noImage'))}</p></div>`;
+      }
+    }
+    // technique
+    const techEl=document.getElementById('exercise-technique');
+    if(techEl){
+      if(technique){
+        const steps = technique.indexOf(' | ')!==-1 ? technique.split(' | ') : technique.split('|');
+        techEl.innerHTML = steps.map(s=>`<p class="mb-1">• ${esc(s.trim())}</p>`).join('');
+      } else techEl.innerHTML = `<p class="text-muted italic">${esc(t('noTechnique'))}</p>`;
+    }
+    // video
+    const vs=document.getElementById('exercise-video-section');
+    const yts=document.getElementById('exercise-youtube-search');
+    const vp=document.getElementById('exercise-video-player');
+    const yl=document.getElementById('exercise-yt-link');
+    const ytid = extractYouTubeId(videoUrl);
+    if(ytid){
+      if(vs) vs.classList.remove('hidden');
+      if(yts) yts.classList.add('hidden');
+      if(vp) vp.innerHTML=`<iframe src="https://www.youtube.com/embed/${ytid}" allowfullscreen loading="lazy"></iframe>`;
+    } else {
+      if(vs){ vs.classList.add('hidden'); if(vp) vp.innerHTML=''; }
+      if(yts){ yts.classList.remove('hidden'); if(yl) yl.href='https://www.youtube.com/results?search_query='+encodeURIComponent(ex.name_en||name)+' exercise'; }
+    }
+    modal.classList.remove('hidden');
+  }
+  function closeExerciseModal(){
+    const m=document.getElementById('exercise-modal');
+    if(m) m.classList.add('hidden');
+    const vp=document.getElementById('exercise-video-player');
+    if(vp) vp.innerHTML='';
+  }
+  function openViewer(src){
+    const m=document.getElementById('viewer-modal');
+    const img=document.getElementById('viewer-img');
+    if(!m||!img) return;
+    img.src=src;
+    m.classList.remove('hidden');
+  }
+  function closeViewer(){
+    const m=document.getElementById('viewer-modal');
+    const img=document.getElementById('viewer-img');
+    if(m) m.classList.add('hidden');
+    if(img) img.src='';
+  }
+
   /* ============ INIT ============ */
   document.addEventListener('DOMContentLoaded', () => {
+    loadTheme();
     const savedLang = localStorage.getItem('dk_client_lang')||'ru';
     setLang(savedLang);
     loadInitialData();
     initWater();
+    // Move modals to body to escape stacking contexts (like CRM)
+    ['exercise-modal','viewer-modal'].forEach(id=>{ const m=document.getElementById(id); if(m) document.body.appendChild(m); });
 
     // Unlock
     document.getElementById('btn-unlock').addEventListener('click', attemptUnlock);
@@ -1319,8 +1506,8 @@
     // Tabs
     document.querySelectorAll('.nav-tab').forEach(tab=>{
       tab.addEventListener('click',()=>{
-        document.querySelectorAll('.nav-tab').forEach(t=>{ t.classList.remove('active','text-indigo-300'); t.classList.add('text-slate-400'); });
-        tab.classList.add('active','text-indigo-300'); tab.classList.remove('text-slate-400');
+        document.querySelectorAll('.nav-tab').forEach(t=>{ t.classList.remove('active','text-indigo-300'); t.classList.add('text-muted'); });
+        tab.classList.add('active','text-indigo-300'); tab.classList.remove('text-muted');
         ['workouts','nutrition','checkin'].forEach(id=>{
           const sec = document.getElementById('tab-'+id);
           if (sec) { sec.classList.toggle('hidden', id!==tab.dataset.tab); if(!sec.classList.contains('hidden')) sec.classList.add('fade-in'); }
@@ -1356,6 +1543,35 @@
 
     // Lang
     document.getElementById('lang-select').addEventListener('change',e=>setLang(e.target.value));
+    // Theme
+    const ts=document.getElementById('theme-select');
+    if(ts) ts.addEventListener('change',e=>applyTheme(e.target.value));
+    // Exercise modal
+    const em=document.getElementById('exercise-modal');
+    const vm=document.getElementById('viewer-modal');
+    document.getElementById('exercise-modal-close')?.addEventListener('click', closeExerciseModal);
+    document.getElementById('viewer-close')?.addEventListener('click', closeViewer);
+    em?.addEventListener('click', e=>{ if(e.target===em) closeExerciseModal(); });
+    vm?.addEventListener('click', e=>{ if(e.target===vm) closeViewer(); });
+    document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeViewer(); closeExerciseModal(); } });
+    // Tap on exercise image/title -> open card
+    const exList=document.getElementById('workout-exercises-list');
+    if(exList){
+      exList.addEventListener('click', e=>{
+        const card=e.target.closest('[data-exercise-card]');
+        if(!card) return;
+        if(e.target.closest('input,button')) return;
+        const idx=+card.dataset.exerciseCard;
+        const day=dayInfo(activeDayIndex);
+        const ex=(day&&day.exercises||[])[idx];
+        if(ex) openExerciseModal(exKey(ex));
+      });
+    }
+    // Tap on big image inside modal -> fullscreen viewer
+    document.getElementById('exercise-gif-slot')?.addEventListener('click', e=>{
+      const img=e.target.closest('img');
+      if(img && img.src) openViewer(img.src);
+    });
   });
   </script>
 </body>

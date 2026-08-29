@@ -17,6 +17,7 @@ const assets = [
   'vendor',
   'data',
   'reports',
+  'src/muscle-map.js',
 ];
 
 for (const asset of assets) {
