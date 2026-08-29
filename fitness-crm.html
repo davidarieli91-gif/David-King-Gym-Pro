@@ -1517,6 +1517,11 @@
     #app, header, main, .glass { position: relative; z-index: 1; }
     /* Modals stay above everything */
     [class*="fixed inset-0 z-"] { z-index: 40 !important; }
+    /* Explicit modal stack: these three are moved to <body> on DOMContentLoaded
+       (escaping #app stacking context). Order: viewer > exercise card > picker. */
+    #viewer-modal { z-index: 120 !important; }
+    #exercise-modal { z-index: 110 !important; }
+    #bodymap-picker-modal { z-index: 100 !important; }
 
     /* ===== FOOD DETAIL MODAL RESPONSIVE =====
        Prevent horizontal overflow on mobile for the macro grids. */
@@ -22353,9 +22358,12 @@ async function boot() {
 // ES-модуль словарей исполнится до DOMContentLoaded — наполняем до boot:
 document.addEventListener('DOMContentLoaded', function () {
 
-  /* Move full-screen modals to body to escape stacking contexts */
-  const bmModal = document.getElementById('bodymap-picker-modal');
-  if (bmModal) document.body.appendChild(bmModal);
+  /* Move full-screen modals to body to escape stacking contexts (#app has z-index:1).
+     Append order matters as a paint-order fallback: picker < exercise card < image viewer. */
+  ['bodymap-picker-modal', 'exercise-modal', 'viewer-modal'].forEach((mid) => {
+    const m = document.getElementById(mid);
+    if (m) document.body.appendChild(m);
+  });
   if (window.__I18N__ && !Object.keys(I18N.ru || {}).length) {
     I18N.en = window.__I18N__.en; I18N.ru = window.__I18N__.ru; I18N.he = window.__I18N__.he;
   }
