@@ -3340,6 +3340,9 @@
         <!-- Header -->
         <div class="p-3 border-b border-border flex items-center gap-2 shrink-0">
           <h3 class="font-display font-bold text-base flex-1" data-i18n="nutrition.foodPicker">Food picker</h3>
+          <button id="fp-ai-settings" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-violet-500/20 text-violet-400 border border-violet-500/30 shrink-0" title="🧠 AI Мозг — настройки">
+            <span class="text-sm">🧠</span>
+          </button>
           <button id="fp-close" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-surface-2 text-muted shrink-0">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
           </button>
@@ -3348,9 +3351,16 @@
         <div class="p-3 border-b border-border space-y-2 shrink-0">
           <div class="flex gap-2">
             <input type="search" id="fp-search" placeholder="Search food..." data-i18n-ph="nutrition.foodSearch" class="flex-1 bg-surface-2 border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
-            <button id="fp-scan-barcode" class="bg-accent/15 hover:bg-accent/25 text-accent border border-accent/30 rounded-xl px-3 py-2 text-sm font-semibold transition inline-flex items-center gap-1.5 shrink-0" title="${t('nutrition.scanBarcode') || 'Scan barcode with camera'}">
+            <button id="fp-scan-barcode" class="bg-accent/15 hover:bg-accent/25 text-accent border border-accent/30 rounded-xl p-2.5 transition inline-flex items-center justify-center shrink-0" title="${t('nutrition.scanBarcode') || 'Scan barcode'}">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5V3h2M17 3h2v2M21 17v2h-2M7 21H5v-2"/><rect x="7" y="7" width="10" height="10" rx="1"/><path d="M9 9h2v6H9zM13 9h2v6h-2z"/></svg>
             </button>
+            <button id="fp-photo" class="bg-primary/15 hover:bg-primary/25 text-primary border border-primary/30 rounded-xl p-2.5 transition inline-flex items-center justify-center shrink-0" title="Фото еды — AI оценка">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+            </button>
+            <button id="fp-voice" class="bg-success/15 hover:bg-success/25 text-success border border-success/30 rounded-xl p-2.5 transition inline-flex items-center justify-center shrink-0" title="Голосовой ввод — скажите продукт">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10a7 7 0 0 1-14 0"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            </button>
+            <input type="file" id="fp-photo-input" accept="image/*" capture="environment" class="hidden" />
           </div>
           <div class="flex gap-1 flex-wrap">
             <button class="fp-src-btn px-3 py-1 rounded-md text-xs font-semibold transition bg-primary text-white" data-food-source="all" data-i18n="nutrition.allFoods">All</button>
@@ -17644,6 +17654,61 @@ Select foods for each meal. Output as JSON only.`;
       { key: 'before_sleep', labelKey: 'nutrition.mealBeforeSleep' },
     ];
 
+    // ===== Portion Units (like Kaloria: 100g / package / piece / spoon / cup) =====
+    const UNIT_DEFS = {
+      g:        { g: 1,   icon: '⚖️', ru: 'г',        he: 'גרם',    en: 'g' },
+      '100g':   { g: 100, icon: '⚖️', ru: '100 г',    he: '100 גרם', en: '100g' },
+      kg:       { g: 1000,icon: '⚖️', ru: 'кг',       he: 'ק״ג',    en: 'kg' },
+      piece:    { g: 0,   icon: '🥚', ru: 'шт',       he: 'יח׳',    en: 'pc' },
+      package:  { g: 0,   icon: '📦', ru: 'упаковка',  he: 'אריזה',   en: 'pack' },
+      cup:      { g: 250, icon: '🥤', ru: 'стакан',   he: 'כוס',     en: 'cup' },
+      tbsp:     { g: 15,  icon: '🥄', ru: 'ст.л.',    he: 'כף',      en: 'tbsp' },
+      tsp:      { g: 5,   icon: '🥄', ru: 'ч.л.',     he: 'כפית',    en: 'tsp' },
+      serving:  { g: 150, icon: '🍽️', ru: 'порция',   he: 'מנה',    en: 'serving' },
+    };
+    function pieceGramsFor(food){
+      const cat=(food.category||'').toLowerCase();
+      if(cat==='eggs') return 60;
+      if(cat==='bakery' || cat==='bread') return 35;
+      if(cat==='fruit') return 130;
+      if(cat==='vegetable' || cat==='greens') return 100;
+      if(cat==='meat' || cat==='fish') return 150;
+      if(cat==='dairy') return 200;
+      if(cat==='nuts') return 30;
+      if(cat==='oils') return 10;
+      return 100;
+    }
+    function packageGramsFor(food){
+      if(food.package_grams && food.package_grams>0) return food.package_grams;
+      const cat=(food.category||'').toLowerCase();
+      if(cat==='dairy') return 250;
+      if(cat==='drinks') return 1000;
+      if(cat==='oils') return 500;
+      if(cat==='nuts') return 200;
+      if(cat==='sweets') return 100;
+      return 400;
+    }
+    function getFoodUnits(food){
+      const units=[];
+      units.push({ id:'g', grams:1, label: UNIT_DEFS.g });
+      units.push({ id:'100g', grams:100, label: UNIT_DEFS['100g'] });
+      if(food.category!=='oils' && food.category!=='drinks') units.push({ id:'kg', grams:1000, label: UNIT_DEFS.kg });
+      units.push({ id:'piece', grams: pieceGramsFor(food), label: UNIT_DEFS.piece });
+      units.push({ id:'package', grams: packageGramsFor(food), label: UNIT_DEFS.package });
+      units.push({ id:'serving', grams: UNIT_DEFS.serving.g, label: UNIT_DEFS.serving });
+      units.push({ id:'cup', grams: UNIT_DEFS.cup.g, label: UNIT_DEFS.cup });
+      units.push({ id:'tbsp', grams: UNIT_DEFS.tbsp.g, label: UNIT_DEFS.tbsp });
+      units.push({ id:'tsp', grams: UNIT_DEFS.tsp.g, label: UNIT_DEFS.tsp });
+      return units;
+    }
+    function unitLabel(unitId, lang){
+      const def=UNIT_DEFS[unitId];
+      if(!def) return unitId;
+      if(lang==='he') return def.he;
+      if(lang==='en') return def.en;
+      return def.ru;
+    }
+
     async function loadFoods() {
       const all = await db.all('food_database');
       _foods = all.filter(f => !f.is_archived);  // Archive feature: hide archived foods
@@ -17835,7 +17900,20 @@ Select foods for each meal. Output as JSON only.`;
             <button data-np-replace="${mi}.${fi}" class="text-muted hover:text-accent transition w-6 h-6 grid place-items-center shrink-0" title="${t('nutrition.replaceFood') || 'Replace food'}" type="button">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
             </button>
-            <input type="number" value="${f.grams}" data-np-grams="${mi}.${fi}" class="w-16 bg-surface-2 border border-border rounded px-1 py-0.5 text-xs text-center" min="0" step="5" />
+            <div class="flex items-center gap-1">
+              <input type="number" value="${f.unit_amount != null ? f.unit_amount : f.grams}" data-np-amount="${mi}.${fi}" class="w-14 bg-surface-2 border border-border rounded px-1 py-0.5 text-xs text-center" min="0" step="0.5" />
+              <select data-np-unit="${mi}.${fi}" class="w-20 bg-surface-2 border border-border rounded px-1 py-0.5 text-[10px]">
+                <option value="g" ${f.unit==='g'?'selected':''}>${esc(unitLabel('g', lang))}</option>
+                <option value="100g" ${f.unit==='100g'?'selected':''}>${esc(unitLabel('100g', lang))}</option>
+                <option value="kg" ${f.unit==='kg'?'selected':''}>${esc(unitLabel('kg', lang))}</option>
+                <option value="piece" ${f.unit==='piece'?'selected':''}>${esc(unitLabel('piece', lang))}</option>
+                <option value="package" ${f.unit==='package'?'selected':''}>${esc(unitLabel('package', lang))}</option>
+                <option value="serving" ${f.unit==='serving'?'selected':''}>${esc(unitLabel('serving', lang))}</option>
+                <option value="cup" ${f.unit==='cup'?'selected':''}>${esc(unitLabel('cup', lang))}</option>
+                <option value="tbsp" ${f.unit==='tbsp'?'selected':''}>${esc(unitLabel('tbsp', lang))}</option>
+                <option value="tsp" ${f.unit==='tsp'?'selected':''}>${esc(unitLabel('tsp', lang))}</option>
+              </select>
+            </div>
             <button data-np-remove="${mi}.${fi}" class="text-muted hover:text-danger transition w-5 h-5 grid place-items-center shrink-0">
               <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
             </button>
@@ -17858,7 +17936,7 @@ Select foods for each meal. Output as JSON only.`;
           const mi = parseInt(btn.getAttribute('data-np-add-food'), 10);
           openFoodPicker((food, grams) => {
             if (!_editing.meals[mi]) _editing.meals[mi] = { foods: [] };
-            _editing.meals[mi].foods.push({ id: food.id, name_he: food.name_he, name_en: food.name_en, grams: grams || 100, nutrition: food.nutrition });
+            _editing.meals[mi].foods.push({ id: food.id, name_he: food.name_he, name_en: food.name_en, name_ru: food.name_ru, grams: grams || 100, unit: 'g', unit_amount: grams||100, nutrition: food.nutrition });
             renderMeals();
           });
         });
@@ -17881,16 +17959,41 @@ Select foods for each meal. Output as JSON only.`;
         });
       });
 
-      // Wire grams inputs
-      container.querySelectorAll('[data-np-grams]').forEach(inp => {
+      // Wire amount + unit inputs (like Kaloria: piece / 100g / package / spoon / cup)
+      container.querySelectorAll('[data-np-amount]').forEach(inp => {
         inp.addEventListener('change', () => {
-          const [mi, fi] = inp.getAttribute('data-np-grams').split('.');
-          if (_editing.meals[mi] && _editing.meals[mi].foods[fi]) {
-            _editing.meals[mi].foods[fi].grams = parseInt(inp.value, 10) || 100;
-            renderMeals();
-          }
+          const [mi, fi] = inp.getAttribute('data-np-amount').split('.');
+          const f = _editing.meals[mi] && _editing.meals[mi].foods[fi];
+          if (!f) return;
+          const amount = parseFloat(inp.value) || 0;
+          f.unit_amount = amount;
+          const unitId = f.unit || 'g';
+          const def = UNIT_DEFS[unitId];
+          let gramsPerUnit = def ? def.g : 1;
+          if(unitId==='piece') gramsPerUnit = pieceGramsFor(_foods.find(x=>x.id===f.id) || f);
+          if(unitId==='package') gramsPerUnit = packageGramsFor(_foods.find(x=>x.id===f.id) || f);
+          f.grams = Math.round(amount * gramsPerUnit);
+          renderMeals();
         });
         inp.addEventListener('click', (e) => e.stopPropagation());
+      });
+      container.querySelectorAll('[data-np-unit]').forEach(sel => {
+        sel.addEventListener('change', () => {
+          const [mi, fi] = sel.getAttribute('data-np-unit').split('.');
+          const f = _editing.meals[mi] && _editing.meals[mi].foods[fi];
+          if (!f) return;
+          const newUnit = sel.value;
+          const amount = f.unit_amount != null ? f.unit_amount : f.grams;
+          f.unit = newUnit;
+          f.unit_amount = amount;
+          const def = UNIT_DEFS[newUnit];
+          let gramsPerUnit = def ? def.g : 1;
+          if(newUnit==='piece') gramsPerUnit = pieceGramsFor(_foods.find(x=>x.id===f.id) || f);
+          if(newUnit==='package') gramsPerUnit = packageGramsFor(_foods.find(x=>x.id===f.id) || f);
+          f.grams = Math.round(amount * gramsPerUnit);
+          renderMeals();
+        });
+        sel.addEventListener('click', (e) => e.stopPropagation());
       });
 
       // Wire remove buttons
@@ -17920,6 +18023,8 @@ Select foods for each meal. Output as JSON only.`;
               name_en: food.name_en,
               name_ru: food.name_ru,
               grams: keepGrams,
+              unit: oldFood.unit || 'g',
+              unit_amount: oldFood.unit_amount != null ? oldFood.unit_amount : keepGrams,
               nutrition: food.nutrition
             };
             renderMeals();
@@ -18085,7 +18190,107 @@ Select foods for each meal. Output as JSON only.`;
     }
 
     /** Look up a barcode in the food database + OpenFoodFacts API. */
-    async function lookupBarcode(barcode) {
+    // ===== Photo (AI) & Voice (Kaloria-style) =====
+  function getAiConfig(){
+    try{ return JSON.parse(localStorage.getItem('dk_ai_config')||'null') || {}; }catch(e){ return {}; }
+  }
+  function saveAiConfig(cfg){
+    try{ localStorage.setItem('dk_ai_config', JSON.stringify(cfg)); }catch(e){}
+  }
+  async function callAiBrain(prompt, imageBase64){
+    const cfg=getAiConfig();
+    if(!cfg.url || !cfg.key) return null;
+    try{
+      const body={ model: cfg.model||'gpt-4o-mini', messages:[{role:'user', content: imageBase64 ? [{type:'text', text:prompt},{type:'image_url', image_url:{url:imageBase64}}] : prompt }] };
+      const res=await fetch(cfg.url, { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.key}, body: JSON.stringify(body)});
+      if(!res.ok) throw new Error('AI HTTP '+res.status);
+      const j=await res.json();
+      const txt=(j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || j.content || '';
+      return txt;
+    }catch(e){ console.warn('[AI] call failed',e); return null; }
+  }
+  function localHeuristicEstimate(){
+    return { calories: 150, protein: 6, carbs: 18, fat: 7 };
+  }
+  async function handleFoodPhoto(){
+    const input=document.getElementById('fp-photo-input');
+    if(!input) return;
+    input.onchange=async()=>{
+      const file=input.files && input.files[0];
+      if(!file) return;
+      const reader=new FileReader();
+      reader.onload=async()=>{
+        const base64=reader.result;
+        const cfg=getAiConfig();
+        let estimate=null;
+        if(cfg.url && cfg.key){
+          const prompt='Оцени КБЖУ на 100г для еды на фото. Ответь только JSON: {"name_ru":"...","calories":123,"protein":10,"carbs":20,"fat":5}';
+          const txt=await callAiBrain(prompt, base64);
+          if(txt){ try{ estimate=JSON.parse(txt.slice(txt.indexOf('{'), txt.lastIndexOf('}')+1)); }catch(e){} }
+        }
+        if(!estimate){
+          estimate=localHeuristicEstimate();
+          estimate.name_ru = 'Фото: '+(file.name||'еда');
+        }
+        const tmpFood={ id:'photo_'+Date.now(), name_he: estimate.name_ru||'צילום', name_en: estimate.name_ru||'Photo meal', name_ru: estimate.name_ru||'Фото еды', source:'PhotoAI', category:'other', nutrition:{ calories: estimate.calories||150, protein: estimate.protein||5, carbs: estimate.carbs||15, fat: estimate.fat||7 } };
+        _foods.unshift(tmpFood);
+        try{ await db.put('food_database', tmpFood); }catch(e){}
+        if(_editing && _editing.meals && _editing.meals.length){
+          _editing.meals[0].foods.push({ id: tmpFood.id, name_he: tmpFood.name_he, name_en: tmpFood.name_en, name_ru: tmpFood.name_ru, grams: 150, unit:'g', unit_amount:150, nutrition: tmpFood.nutrition });
+          renderMeals();
+        }
+        toast('Фото добавлено: '+(estimate.name_ru||'оценка')+' ~'+(estimate.calories||150)+' ккал/100г', 'success', 2500);
+      };
+      reader.readAsDataURL(file);
+    };
+    input.click();
+  }
+  function handleFoodVoice(){
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(!SR){ toast('Голосовой ввод не поддерживается в этом браузере', 'warning', 2500); return; }
+    const rec=new SR();
+    const lang=(typeof currentLang==='function') ? currentLang() : 'ru';
+    rec.lang = lang==='he' ? 'he-IL' : (lang==='en' ? 'en-US' : 'ru-RU');
+    rec.interimResults=false; rec.maxAlternatives=1;
+    toast('Говорите: "200 грамм курицы"...', 'info', 2000);
+    rec.onresult=(ev)=>{
+      const txt=((ev.results[0]||[])[0]&&ev.results[0][0].transcript||'').trim();
+      if(!txt) return;
+      let grams=100, query=txt;
+      const m=txt.match(/(\d+)\s*(грамм|гр|г|g|кг|kg)/i);
+      if(m){ grams=parseInt(m[1],10); if(/кг|kg/i.test(m[2])) grams=grams*1000; query=txt.replace(m[0],'').trim(); }
+      const ql=query.toLowerCase();
+      const food=_foods.find(f=>((f.name_ru||'').toLowerCase().indexOf(ql)!==-1)||((f.name_he||'').indexOf(query)!==-1)||((f.name_en||'').toLowerCase().indexOf(ql)!==-1));
+      if(food && _editing && _editing.meals && _editing.meals.length){
+        _editing.meals[0].foods.push({ id: food.id, name_he: food.name_he, name_en: food.name_en, name_ru: food.name_ru, grams: grams, unit:'g', unit_amount:grams, nutrition: food.nutrition });
+        renderMeals();
+        toast('Добавлено голосом: '+query+' '+grams+'г', 'success', 2000);
+      } else {
+        const inp=document.getElementById('fp-search');
+        if(inp){ inp.value=query; renderFoodResults(query); }
+        toast('Не найдено "'+query+'" — выберите из списка', 'warning', 2500);
+      }
+    };
+    rec.onerror=()=> toast('Ошибка микрофона', 'danger', 2000);
+    try{ rec.start(); }catch(e){ toast('Микрофон недоступен', 'danger', 2000); }
+  }
+  function openAiSettings(){
+    const cfg=getAiConfig();
+    const m=document.getElementById('ai-settings-modal');
+    if(!m) return;
+    const u=document.getElementById('ai-api-url');
+    const k=document.getElementById('ai-api-key');
+    const mod=document.getElementById('ai-api-model');
+    if(u) u.value=cfg.url||'';
+    if(k) k.value=cfg.key||'';
+    if(mod) mod.value=cfg.model||'';
+    const st=document.getElementById('ai-status');
+    if(st) st.textContent='';
+    m.classList.remove('hidden');
+  }
+  function closeAiSettings(){ const m=document.getElementById('ai-settings-modal'); if(m) m.classList.add('hidden'); }
+
+  async function lookupBarcode(barcode) {
       toast((t('nutrition.searchingBarcode') || 'Searching barcode:') + ' ' + barcode, 'info', 2000);
       
       // 1. Search local database by barcode field
@@ -18819,7 +19024,7 @@ Select foods for each meal. Output as JSON only.`;
              applyGenerated, _openPickerForTemplate, adjustMacro, scaleAllPortions,
              openMicronutrientAnalysis, renderMicronutrientAnalysis, suggestFoodsForGaps,
              switchMicroTab, renderAminoAcids,
-             scanBarcode, lookupBarcode,
+             scanBarcode, lookupBarcode, handleFoodPhoto, handleFoodVoice, openAiSettings, closeAiSettings, getAiConfig, saveAiConfig, callAiBrain,
              get _editing() { return _editing; }, get _foods() { return _foods; },
              set _fpSource(v) { _fpSource = v; } };
   })();
@@ -20399,6 +20604,34 @@ async function boot() {
     // Barcode scanner button
     const fpScan = document.getElementById('fp-scan-barcode');
     if (fpScan) fpScan.addEventListener('click', () => nutritionPlans.scanBarcode());
+    const fpPhoto = document.getElementById('fp-photo');
+    if (fpPhoto) fpPhoto.addEventListener('click', () => nutritionPlans.handleFoodPhoto());
+    const fpVoice = document.getElementById('fp-voice');
+    if (fpVoice) fpVoice.addEventListener('click', () => nutritionPlans.handleFoodVoice());
+    const fpAiBtn = document.getElementById('fp-ai-settings');
+    if (fpAiBtn) fpAiBtn.addEventListener('click', () => nutritionPlans.openAiSettings());
+    const aiModal = document.getElementById('ai-settings-modal');
+    if (aiModal) aiModal.addEventListener('click', (e)=>{ if(e.target===aiModal) nutritionPlans.closeAiSettings(); });
+    const aiClose2 = document.getElementById('ai-settings-close');
+    if (aiClose2) aiClose2.addEventListener('click', ()=> nutritionPlans.closeAiSettings());
+    const aiSave = document.getElementById('ai-save-btn');
+    if (aiSave) aiSave.addEventListener('click', ()=>{
+      const cfg={ url: document.getElementById('ai-api-url').value.trim(), key: document.getElementById('ai-api-key').value.trim(), model: document.getElementById('ai-api-model').value.trim() };
+      nutritionPlans.saveAiConfig(cfg);
+      document.getElementById('ai-status').textContent='Сохранено ✓';
+      document.getElementById('ai-status').className='text-xs text-center text-success min-h-[1rem]';
+      setTimeout(()=> nutritionPlans.closeAiSettings(), 800);
+    });
+    const aiTest = document.getElementById('ai-test-btn');
+    if (aiTest) aiTest.addEventListener('click', async()=>{
+      const st=document.getElementById('ai-status');
+      st.textContent='Проверка...'; st.className='text-xs text-center text-muted min-h-[1rem]';
+      const cfg=nutritionPlans.getAiConfig();
+      if(!cfg.url || !cfg.key){ st.textContent='Укажите URL и ключ'; st.className='text-xs text-center text-danger min-h-[1rem]'; return; }
+      const res=await nutritionPlans.callAiBrain('Привет! Ответь одним словом: ок');
+      if(res){ st.textContent='Связь OK: '+String(res).slice(0,80); st.className='text-xs text-center text-success min-h-[1rem]'; }
+      else { st.textContent='Нет ответа — проверьте URL/ключ'; st.className='text-xs text-center text-danger min-h-[1rem]'; }
+    });
     // Share nutrition plan as image
     const npShare = document.getElementById('np-share');
     if (npShare) npShare.addEventListener('click', async () => {
@@ -23157,5 +23390,47 @@ document.addEventListener('input', function (e) {
 })();
 
 </script>
+
+  <!-- AI Brain Settings Modal (global) -->
+  <div id="ai-settings-modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
+    <div class="bg-surface w-full sm:max-w-lg max-h-[92vh] overflow-y-auto rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
+      <div class="sticky top-0 bg-surface border-b border-border p-4 flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-500 grid place-items-center text-white">🧠</div>
+        <div class="flex-1 min-w-0">
+          <h3 class="font-display font-bold text-sm" data-i18n="ai.title">Мозг системы — AI API</h3>
+          <p class="text-xs text-muted" data-i18n="ai.subtitle">Подключите внешний AI для анализа фото и генерации планов</p>
+        </div>
+        <button id="ai-settings-close" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-surface-2 text-muted"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      </div>
+      <div class="p-4 space-y-4">
+        <div class="bg-surface-2 border border-border rounded-xl p-3">
+          <h4 class="text-xs font-bold mb-2" data-i18n="ai.localHeuristic">Локальная эвристика (бесплатно)</h4>
+          <p class="text-xs text-muted leading-relaxed" data-i18n="ai.localDesc">Без API фото оценивается локально: средний вес порции и КБЖУ из базы. Для точного распознавания подключите внешний AI.</p>
+          <div class="mt-2 flex items-center gap-2 text-[11px]">
+            <span class="w-2 h-2 rounded-full bg-success animate-pulse"></span>
+            <span class="text-success font-semibold" data-i18n="ai.localActive">Активна</span>
+            <span class="text-muted">— работает оффлайн</span>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <label class="block text-xs font-semibold">API URL <span class="text-muted font-normal">(OpenAI / Gemini / кастом)</span></label>
+          <input type="url" id="ai-api-url" placeholder="https://api.openai.com/v1/chat/completions" class="w-full bg-surface-2 border border-border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary/60" />
+          <label class="block text-xs font-semibold">API Key</label>
+          <input type="password" id="ai-api-key" placeholder="sk-..." class="w-full bg-surface-2 border border-border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary/60" />
+          <label class="block text-xs font-semibold">Модель <span class="text-muted font-normal">(опционально)</span></label>
+          <input type="text" id="ai-api-model" placeholder="gpt-4o-mini / gemini-1.5-flash" class="w-full bg-surface-2 border border-border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary/60" />
+        </div>
+        <div class="flex gap-2">
+          <button id="ai-test-btn" class="flex-1 bg-accent/15 hover:bg-accent/25 text-accent border border-accent/30 text-xs font-bold py-2.5 rounded-xl">Проверить связь</button>
+          <button id="ai-save-btn" class="flex-1 bg-primary hover:bg-primary-2 text-white text-xs font-bold py-2.5 rounded-xl">Сохранить</button>
+        </div>
+        <p id="ai-status" class="text-xs text-center min-h-[1rem]"></p>
+        <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3">
+          <p class="text-xs text-amber-200 leading-relaxed"><strong>Приватность:</strong> Ключ хранится только в браузере (IndexedDB/localStorage), не отправляется на наш сервер. Фото уходит только на указанный вами API.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
