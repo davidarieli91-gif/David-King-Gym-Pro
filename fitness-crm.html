@@ -9336,38 +9336,39 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
        opacity/blur controls, grid overlay, persistent overrides).
        Loads program + client + exercise base from IndexedDB.
        ============================================================ */
-    const PG_LAYOUT = {
-      /* top anke fields — defaults calibrated from the user's Private Gym form scan */
+     const PG_LAYOUT = {
+      /* top anke fields — exact copy of Private Gym site (calibration sheet) */
       fields: {
-        lastName:  { x:115,  y:25,   w:36 },   // שם משפחה
-        firstName: { x:81.5, y:25,   w:38 },   // שם פרטי
-        age:       { x:142,  y:31,   w:12 },   // גיל
-        weight:    { x:122,  y:31,   w:20 },   // משקל
-        fromDate:  { x:118,  y:35,   w:28 },   // מתאריך
-        toDate:    { x:82,   y:38.5, w:34 },   // עד תאריך
-        goal:      { x:95,   y:44.5, w:72 },   // מטרה
-        perWeek:   { x:118,  y:49.5, w:24 },   // מס' פעמים בשבוע
-        trainer:   { x:66.5, y:48.5, w:44 }    // שם המדריך
+        lastName:  { x:118.3, y:29.71, w:22.8, x2:141.1 },   // שם משפחה
+        firstName: { x:75.2,  y:29.71, w:31.2, x2:106.4 },   // שם פרטי
+        age:       { x:143.8, y:34.46, w:7.7,  x2:151.5 },   // גיל
+        weight:    { x:118.3, y:34.46, w:15.6, x2:133.9 },   // משקל
+        fromDate:  { x:118.3, y:39.28, w:28.1, x2:146.4 },   // מתאריך
+        toDate:    { x:75.2,  y:39.28, w:31.2, x2:106.4 },   // עד תאריך
+        limits:    { x:75.2,  y:44.32, w:61.7, x2:136.9 },   // מגבלות רפואיות
+        goal:      { x:75.2,  y:48.85, w:72.6, x2:147.8 },   // מטרה
+        perWeek:   { x:117.5, y:53.25, w:16.2, x2:133.7 },   // מס' פעמים בשבוע
+        trainer:   { x:75.2,  y:53.25, w:27.3, x2:102.5 }    // שם המדריך
       },
-      genderMark: { zx:103.2, nx:98.2, y:30.8 }, // mark מין: ז / נ
-      /* main table columns (mm from left edge) */
+      genderMark: { zx:111.94, nx:108.59, y:33.4, w:2.3, h:2.9 },
+      /* main table columns — exact from site Oe.col */
       cols: {
-        name:   { x:53,   w:122 },
-        sets:   { x:41.8, w:10  },
-        reps:   { x:30.6, w:11  },
-        weight: { x:6,    w:23  }
+        station: { x:177.36, w:11.26 },
+        exercise:{ x:53.85, w:123.51 },
+        sets:    { x:43.44, w:10.41 },
+        reps:    { x:32.39, w:11.05 },
+        weight:  { x:6,     w:23   }
       },
-      /* table sections: top of first row, row count, row height
-         — calibrated against the user's scanned Private Gym form */
+      /* table sections: top/rows/rowH — exact from site Aa+Oe */
       sections: {
-        chest:     { top:66.8,  rows:6, rowH:4.3, label:'חזה' },
-        back:      { top:92.6,  rows:6, rowH:4.3, label:'גב' },
-        front_arm: { top:118,   rows:4, rowH:4.3, label:'יד קידמית' },
-        rear_arm:  { top:135,   rows:4, rowH:4.3, label:'יד אחורית' },
-        erectors:  { top:152,   rows:3, rowH:4.3, label:'זוקפי גב' },
-        abs:       { top:165,   rows:4, rowH:4.3, label:'בטן' },
-        shoulders: { top:182,   rows:6, rowH:4.3, label:'כתפיים' },
-        legs:      { top:208,   rows:5, rowH:4.3, label:'רגליים' }
+        chest:     { top:66.79, rows:6, rowH:4.331, label:'חזה' },
+        back:      { top:92.776,rows:6, rowH:4.331, label:'גב' },
+        front_arm: { top:118.762,rows:4, rowH:4.331, label:'יד קידמית' },
+        rear_arm:  { top:136.086,rows:4, rowH:4.331, label:'יד אחורית' },
+        erectors:  { top:153.41, rows:3, rowH:4.331, label:'זוקפי גב' },
+        abs:       { top:166.403,rows:4, rowH:4.331, label:'בטן' },
+        shoulders: { top:183.727,rows:6, rowH:4.331, label:'כתפיים' },
+        legs:      { top:209.713, rows:5, rowH:4.331, label:'רגליים' }
       },
       /* lower «פעילות אירובית» table: 3 rows */
       aero: {
@@ -9642,7 +9643,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           const multi = arr.length > 1;
           const nm = arr.map(a => a.name).join(' | ');
           const fs = multi ? 6.5 : (nm.length > 55 ? 7 : 8.5);
-          if (_pg2Active && L.cols.station) {
+          if (L.cols.station) {
             const st = arr[0].station || (arr[0].station_default || '');
             mainBody += cell(L.cols.station.x, y, L.cols.station.w, st, { center:1, fs: multi ? 6.5 : null, sec: secId, row: r, block:'main' });
             mainBody += cell(L.cols.exercise.x, y, L.cols.exercise.w, nm, { fs: fs, sec: secId, row: r, block:'main' });
@@ -9675,7 +9676,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       }
 
       // Grid overlay (hidden by default) — for alignment verification
-      let grid = '<div id="pgGrid" style="display:none;">';
+      let grid = '<div id="pgGrid" style="display:'+(_pg2Active?'block':'none')+';">';
       Object.keys(L.sections).forEach(secId => {
         const s = L.sections[secId];
         for (let r = 0; r < s.rows; r++) {
