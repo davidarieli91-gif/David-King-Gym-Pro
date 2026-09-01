@@ -1,0 +1,4842 @@
+[
+ {
+  "id": "bda45efd-a57d-5f54-a746-ece5f755cb0e",
+  "muscle_group": "chest",
+  "sub_category": "אמצעי:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "לחיצת חזה בשכיבה כנגד משקולות",
+  "station_default": null,
+  "source_ref": "חזה!B6"
+ },
+ {
+  "id": "8a628e4e-f02e-5e9c-b9eb-5b2e1bd6431f",
+  "muscle_group": "chest",
+  "sub_category": "אמצעי:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "לחיצת חזה בשכיבה על בוסו כנגד משקולות",
+  "station_default": null,
+  "source_ref": "חזה!B7"
+ },
+ {
+  "id": "f2cd0eed-904f-529b-a373-a41607e5c3f7",
+  "muscle_group": "chest",
+  "sub_category": "אמצעי:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "לחיצת חזה בשכיבה על פיטבול כנגד משקולות",
+  "station_default": null,
+  "source_ref": "חזה!B8"
+ },
+ {
+  "id": "9be6b2b7-b974-555b-95d8-5e264ab46c62",
+  "muscle_group": "chest",
+  "sub_category": "אמצעי:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "פרפר בשכיבה כנגד משקולות",
+  "station_default": null,
+  "source_ref": "חזה!B9"
+ },
+ {
+  "id": "dbf881da-3efa-51f3-9142-fc09f1c142ee",
+  "muscle_group": "chest",
+  "sub_category": "אמצעי:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "פרפר בשכיבה על בוסו כנגד משקולות",
+  "station_default": null,
+  "source_ref": "חזה!B10"
+ },
+ {
+  "id": "ebb23f68-79ea-5e02-a9c4-5db7ee116900",
+  "muscle_group": "chest",
+  "sub_category": "אמצעי:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "פרפר בשכיבה על פיטבול כנגד משקולות",
+  "station_default": null,
+  "source_ref": "חזה!B11"
+ },
+ {
+  "id": "4143c607-095c-539f-94ea-366e70412855",
+  "muscle_group": "chest",
+  "sub_category": "אמצעי:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "לחיצת חזה בעמידה, כנגד קרוסאובר צר, בגובה חזה (תנוע קדימה)",
+  "station_default": "16",
+  "source_ref": "חזה!B14"
+ },
+ {
+  "id": "770c3e51-bce0-5080-a5f2-182843f3a797",
+  "muscle_group": "chest",
+  "sub_category": "אמצעי:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "לחיצת חזה בעמידה כנגד פולי בגובה חזה (תנוע קדימה, כל יד בנפרד)",
+  "station_default": null,
+  "source_ref": "חזה!B15"
+ },
+ {
+  "id": "47dda0ef-22d1-5d21-96ef-160a2fdb8021",
+  "muscle_group": "chest",
+  "sub_category": "אמצעי:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "פרפר בעמידה כנגד קרוסאובר רחב, בגובה חזה",
+  "station_default": "27",
+  "source_ref": "חזה!B16"
+ },
+ {
+  "id": "916c1b06-8497-5257-b139-aa3dadffbcee",
+  "muscle_group": "chest",
+  "sub_category": "אמצעי:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "פרפר בשכיבה בשיפוע חיובי, כנגד קרוסאובר בגובה חזה, תנוע כדימה",
+  "station_default": null,
+  "source_ref": "חזה!B17"
+ },
+ {
+  "id": "abbd5dc7-6004-5ecf-8724-942cd0a1c3cf",
+  "muscle_group": "chest",
+  "sub_category": "אמצעי:",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "לחיצת חזה בשכיבה כנגד מוט",
+  "station_default": "18, 23",
+  "source_ref": "חזה!B20"
+ },
+ {
+  "id": "653ace89-eda8-58e0-81e2-4abb89d1420b",
+  "muscle_group": "chest",
+  "sub_category": "אמצעי:",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "לחיצת חזה, בשכיבה על ספה, כנגד סמית' משין",
+  "station_default": "26",
+  "source_ref": "חזה!B23"
+ },
+ {
+  "id": "cbd15136-313d-5331-ae0b-98f448c8a85a",
+  "muscle_group": "chest",
+  "sub_category": "אמצעי:",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "לחיצת חזה בישיבה כנגד מכונה, שיפוע תחתון, ידית עליונה",
+  "station_default": "13",
+  "source_ref": "חזה!B24"
+ },
+ {
+  "id": "ef4d4a04-e2ac-5a45-bde0-c896247e50b3",
+  "muscle_group": "chest",
+  "sub_category": "אמצעי:",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "פרפר בישיבה כנגד מכונה, ידיים בגובה חזה",
+  "station_default": "12",
+  "source_ref": "חזה!B25"
+ },
+ {
+  "id": "1fba6f44-f0e8-5297-8b47-d7431da8ee3d",
+  "muscle_group": "chest",
+  "sub_category": "אמצעי:",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "שכיבות סמיכה ידיים על הרצפה על מתקני ��ד",
+  "station_default": null,
+  "source_ref": "חזה!B28"
+ },
+ {
+  "id": "9869d3e5-7b04-5d2f-a9b0-4135277cfe50",
+  "muscle_group": "chest",
+  "sub_category": "אמצעי:",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "שכיבות סמיכה ידיים על ידיים על מתקני יד",
+  "station_default": null,
+  "source_ref": "חזה!B29"
+ },
+ {
+  "id": "6274ef3f-26f1-5836-9733-14d0cb9ea712",
+  "muscle_group": "chest",
+  "sub_category": "אמצעי:",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "שכיבות סמיכה ידיים על משקולות עגולות",
+  "station_default": null,
+  "source_ref": "חזה!B30"
+ },
+ {
+  "id": "34621054-d717-59d3-b617-973ca3c028b3",
+  "muscle_group": "chest",
+  "sub_category": "אמצעי:",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "שכיבות סמיכה ידיים על הפיטבול, רגליים על הספה",
+  "station_default": null,
+  "source_ref": "חזה!B31"
+ },
+ {
+  "id": "975ae42f-c631-5537-b9d7-ec5fa78236c6",
+  "muscle_group": "chest",
+  "sub_category": "אמצעי:",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "שכיבות סמיכה ידיים על בוסו",
+  "station_default": null,
+  "source_ref": "חזה!B32"
+ },
+ {
+  "id": "b58b9d4a-fe53-5be2-8086-82712b846921",
+  "muscle_group": "chest",
+  "sub_category": "אמצעי:",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "שכיבות סמיכה רגליים על הבוסו",
+  "station_default": null,
+  "source_ref": "חזה!B33"
+ },
+ {
+  "id": "4e95edc1-462f-5798-aa7f-60232f317e51",
+  "muscle_group": "chest",
+  "sub_category": "אמצעי:",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "שכיבות סמיכה יד 1 על בוסו 1 על הרצפה",
+  "station_default": null,
+  "source_ref": "חזה!B34"
+ },
+ {
+  "id": "7a69b659-9f78-5172-b4b4-d618136d4155",
+  "muscle_group": "chest",
+  "sub_category": "עליון:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "לחיצת חזה בשכיבה, שיפוע חיובי כנגד משקולות",
+  "station_default": null,
+  "source_ref": "חזה!D6"
+ },
+ {
+  "id": "36c57203-840e-5b5e-9175-4b6779c68174",
+  "muscle_group": "chest",
+  "sub_category": "עליון:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "לחיצת חזה בשכיבה על פיטבול שיפוע חיובי כנגד משקולות",
+  "station_default": null,
+  "source_ref": "חזה!D7"
+ },
+ {
+  "id": "ed63b230-1d90-58d7-976a-29888e46e812",
+  "muscle_group": "chest",
+  "sub_category": "עליון:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "פרפר בשכיבה שיפוע חיובי כנגד משקולות",
+  "station_default": null,
+  "source_ref": "חזה!D8"
+ },
+ {
+  "id": "0d831871-0724-53e6-9cca-a8b33783bace",
+  "muscle_group": "chest",
+  "sub_category": "עליון:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "פרפר בשכיבה על פיטבול שיפוע חיובי כנגד משקולות",
+  "station_default": null,
+  "source_ref": "חזה!D9"
+ },
+ {
+  "id": "33df8729-9abe-5006-bb61-dc0e0b9d83e6",
+  "muscle_group": "chest",
+  "sub_category": "עליון:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "לחיצת חזה בעמידה, כנגד קרוסאובר צר, בגובה ישבן (תנוע למעלה)",
+  "station_default": "16",
+  "source_ref": "חזה!D14"
+ },
+ {
+  "id": "0ddd4d71-8ff7-5b98-b0fe-fa3033c9e0b1",
+  "muscle_group": "chest",
+  "sub_category": "עליון:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "לחיצת חזה בעמידה כנגד פולי, בגובה ישבן (תנוע למעלה, כל יד בנפרד)",
+  "station_default": null,
+  "source_ref": "חזה!D15"
+ },
+ {
+  "id": "2bb53058-5cb5-53e3-81e6-fe3223806c1a",
+  "muscle_group": "chest",
+  "sub_category": "עליון:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "פרפר בעמידה כנגד קרוסאובר כבל תחתון",
+  "station_default": null,
+  "source_ref": "חזה!D16"
+ },
+ {
+  "id": "7c1860b9-7ca4-5c5a-bbcd-f3344377c086",
+  "muscle_group": "chest",
+  "sub_category": "עליון:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "פרפר בשכיבה בשיפוע חיובי, כנגד קרוסאובר בגובה ישבן, תנוע למעלה",
+  "station_default": null,
+  "source_ref": "חזה!D17"
+ },
+ {
+  "id": "f8fe1478-178f-564d-9bdc-14dbc858d440",
+  "muscle_group": "chest",
+  "sub_category": "עליון:",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "לחיצת חזה בשכיבה, שיפוע חיובי כנגד מוט",
+  "station_default": "23",
+  "source_ref": "חזה!D20"
+ },
+ {
+  "id": "8f3c9d08-34da-5c0b-8151-69eeb85724fb",
+  "muscle_group": "chest",
+  "sub_category": "עליון:",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "לחיצת חזה בשכיבה, שיפוע חיובי כנגד סמית' משין",
+  "station_default": "26",
+  "source_ref": "חזה!D23"
+ },
+ {
+  "id": "590377fd-b6fb-58cc-8a73-44b6f7635959",
+  "muscle_group": "chest",
+  "sub_category": "עליון:",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "לחיצת חזה בישיבה, שיפוע אמצעי כנגד מכונה, ידית עליונה",
+  "station_default": "13",
+  "source_ref": "חזה!D24"
+ },
+ {
+  "id": "d360696c-115b-50d2-b801-51db3e4967f9",
+  "muscle_group": "chest",
+  "sub_category": "עליון:",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "שכיבות סמיכה רגליים על הספה",
+  "station_default": null,
+  "source_ref": "חזה!D28"
+ },
+ {
+  "id": "f4d8aaa9-20fa-5357-b984-8d4c6f7aa4a9",
+  "muscle_group": "chest",
+  "sub_category": "עליון:",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "שכיבות סמיכה רגליים על הפיטבול",
+  "station_default": null,
+  "source_ref": "חזה!D29"
+ },
+ {
+  "id": "0d787180-e186-569e-b787-c668a0257724",
+  "muscle_group": "chest",
+  "sub_category": "עליון:",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "שכיבות סמיכה, רגליים על מדרגה, ישבן למעלה",
+  "station_default": null,
+  "source_ref": "חזה!D30"
+ },
+ {
+  "id": "bc46137f-8662-55bc-be3a-45a70889fddc",
+  "muscle_group": "chest",
+  "sub_category": "תחתון:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "לחיצת חזה בשכיבה, שיפוע שלילי כנגד משקולות",
+  "station_default": null,
+  "source_ref": "חזה!F6"
+ },
+ {
+  "id": "b628f1aa-5a4a-59d1-b309-193b17db1d5c",
+  "muscle_group": "chest",
+  "sub_category": "תחתון:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "פרפר בשכיבה, שיפוע שלילי כנגד משקולות",
+  "station_default": null,
+  "source_ref": "חזה!F7"
+ },
+ {
+  "id": "0d884c1e-8dd7-5bfa-9422-f603d5ec0052",
+  "muscle_group": "chest",
+  "sub_category": "תחתון:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "פרפר בשכיבה על פיטבול כנגד כייבל קרוס (גובה כתפיים)",
+  "station_default": null,
+  "source_ref": "חזה!F8"
+ },
+ {
+  "id": "79b0bb4d-da17-5562-9107-bfc5ea8b052b",
+  "muscle_group": "chest",
+  "sub_category": "תחתון:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "לחיצת חזה בעמידה כנגד קרוסאובר צר, בגובה צוואר, (תנועה למטה)",
+  "station_default": "16",
+  "source_ref": "חזה!F14"
+ },
+ {
+  "id": "b9fb67d4-2067-55a1-a5ba-667775c14381",
+  "muscle_group": "chest",
+  "sub_category": "תחתון:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "לחיצת חזה בעמידה כנגד פולי בגובה צוואר, (תנועה למטה, כל יד בנפרד)",
+  "station_default": null,
+  "source_ref": "חזה!F15"
+ },
+ {
+  "id": "2774c41d-9740-5c42-85e9-70bbd2d741d8",
+  "muscle_group": "chest",
+  "sub_category": "תחתון:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "פרפר בעמידה כנגד קרוסאובר כבל עליון",
+  "station_default": null,
+  "source_ref": "חזה!F16"
+ },
+ {
+  "id": "3962c02d-16cb-5589-b77d-2357817410ad",
+  "muscle_group": "chest",
+  "sub_category": "תחתון:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "פרפר בשכיבה בשיפוע חיובי, כנגד קרוסאובר בגובה כתף, תנועה למטה",
+  "station_default": null,
+  "source_ref": "חזה!F17"
+ },
+ {
+  "id": "3dbbecb1-1729-5f35-9bcf-184645c949b6",
+  "muscle_group": "chest",
+  "sub_category": "תחתון:",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "לחיצת חזה בשכיבה שיפוע שלילי כנגד מוט",
+  "station_default": "19",
+  "source_ref": "חזה!F20"
+ },
+ {
+  "id": "5615e138-3d00-59cb-bc43-2af65c372496",
+  "muscle_group": "chest",
+  "sub_category": "תחתון:",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "לחיצת חזה בשכיבה, שיפוע שלילי כנגד סמית' משין",
+  "station_default": "26",
+  "source_ref": "חזה!F23"
+ },
+ {
+  "id": "9907c7a9-060a-5f77-ae6d-ee73843338a1",
+  "muscle_group": "chest",
+  "sub_category": "תחתון:",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "שכיבות סמיכה ידיים על הבוסו",
+  "station_default": null,
+  "source_ref": "חזה!F28"
+ },
+ {
+  "id": "ad5e576c-e713-5ca3-8d33-d93cdc5323b3",
+  "muscle_group": "chest",
+  "sub_category": "תחתון:",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "שכיבות סמיכה ידיים על הספה",
+  "station_default": null,
+  "source_ref": "חזה!F29"
+ },
+ {
+  "id": "0998e1c9-8fc0-570f-9f74-faebdf3d38c2",
+  "muscle_group": "chest",
+  "sub_category": "תחתון:",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "שכיבות סמיכה ידיים על הפיטבול",
+  "station_default": null,
+  "source_ref": "חזה!F30"
+ },
+ {
+  "id": "246ad745-c209-560e-94ad-8cafd9c2a465",
+  "muscle_group": "chest",
+  "sub_category": "תחתון:",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "שכיבות סמיכה ידיים על מוט של סמית' משין",
+  "station_default": "26",
+  "source_ref": "חזה!F31"
+ },
+ {
+  "id": "c35fcfb0-f357-572d-b542-e036dca01e02",
+  "muscle_group": "chest",
+  "sub_category": "תחתון:",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "מקבילים, באחיזה, רחב",
+  "station_default": "17",
+  "source_ref": "חזה!F32"
+ },
+ {
+  "id": "21c2a558-0739-5e2d-aceb-c1af298540d1",
+  "muscle_group": "back",
+  "sub_category": "משיכה",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "משיכה בישיבה כנגד פולי עליון, באחיזה צרה",
+  "station_default": "10",
+  "source_ref": "גב!B11"
+ },
+ {
+  "id": "3d29d2a3-060f-52e9-bd6e-b5d4cdd3ec98",
+  "muscle_group": "back",
+  "sub_category": "משיכה",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "משיכה בישיבה כנגד פולי עליון, באחיזה רחבה",
+  "station_default": "10",
+  "source_ref": "גב!B12"
+ },
+ {
+  "id": "6eaad60c-4099-52c5-96ed-e43aa5db9f22",
+  "muscle_group": "back",
+  "sub_category": "משיכה",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "משיכה בישיבה כנגד פולי עליון, באחיזה בינונית",
+  "station_default": "10",
+  "source_ref": "גב!B13"
+ },
+ {
+  "id": "5f885ed2-c22f-5848-819a-fd9cf6f01eed",
+  "muscle_group": "back",
+  "sub_category": "משיכה",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "משיכה בישיבה כנגד פולי עליון, באחיזה צרה, והפוכה",
+  "station_default": "10",
+  "source_ref": "גב!B14"
+ },
+ {
+  "id": "587f002e-69bc-5c63-9313-b6e3149b2afd",
+  "muscle_group": "back",
+  "sub_category": "משיכה",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "משיכה בישיבה כנגד פולי עליון, כל יד בנפרד",
+  "station_default": "10",
+  "source_ref": "גב!B15"
+ },
+ {
+  "id": "e707470f-a069-5c97-b3b6-1b4d8deea840",
+  "muscle_group": "back",
+  "sub_category": "משיכה",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "מתח בגרביטרון, באחיזה צרה",
+  "station_default": null,
+  "source_ref": "גב!B33"
+ },
+ {
+  "id": "f92db756-4900-53a1-8766-3a78161cb20e",
+  "muscle_group": "back",
+  "sub_category": "משיכה",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "מתח בגרביטרון, באחיזה רחבה",
+  "station_default": null,
+  "source_ref": "גב!B34"
+ },
+ {
+  "id": "04af9143-95ff-560f-bd24-2b075e06d121",
+  "muscle_group": "back",
+  "sub_category": "משיכה",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "מתח בגרביטרון, באחיזה בינונית",
+  "station_default": null,
+  "source_ref": "גב!B35"
+ },
+ {
+  "id": "f2741efb-eff5-51ee-9503-646c96a6c7d7",
+  "muscle_group": "back",
+  "sub_category": "משיכה",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "מתח בגרביטרון, באחיזה צרה והפוכה",
+  "station_default": null,
+  "source_ref": "גב!B36"
+ },
+ {
+  "id": "35436c05-9aa9-540e-bfdf-3b334b74ba3b",
+  "muscle_group": "back",
+  "sub_category": "משיכה",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "משיכה בישיבה, כנגד מכונה באחיזה צרה",
+  "station_default": "11",
+  "source_ref": "גב!B37"
+ },
+ {
+  "id": "cbf07e0b-1df7-5a4f-a96b-ee2a2dd55f35",
+  "muscle_group": "back",
+  "sub_category": "משיכה",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "משיכה בישיבה, כנגד מכונה באחיזה בינונית",
+  "station_default": "11",
+  "source_ref": "גב!B38"
+ },
+ {
+  "id": "9aab0e32-8b21-531f-b3c7-a9cf511c1fe4",
+  "muscle_group": "back",
+  "sub_category": "משיכה",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "משיכה בישיבה, כנגד מכונה באחיזה רחבה",
+  "station_default": "11",
+  "source_ref": "גב!B39"
+ },
+ {
+  "id": "131817c7-f389-5cfa-96cb-a8de94a0f6cd",
+  "muscle_group": "back",
+  "sub_category": "משיכה",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "מתח באחיזה צרה",
+  "station_default": "17",
+  "source_ref": "גב!B42"
+ },
+ {
+  "id": "6eb7b0ef-17a2-5b35-98fb-de5ad5270b16",
+  "muscle_group": "back",
+  "sub_category": "משיכה",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "מתח באחיזה רחבה",
+  "station_default": "17",
+  "source_ref": "גב!B43"
+ },
+ {
+  "id": "e2a6d4d9-9341-5db6-9161-08c0cb0d4c3e",
+  "muscle_group": "back",
+  "sub_category": "משיכה",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "מתח באחיזה בינונית",
+  "station_default": "17",
+  "source_ref": "גב!B44"
+ },
+ {
+  "id": "f6887427-ce1e-56c7-a3bf-8c624eadabd9",
+  "muscle_group": "back",
+  "sub_category": "משיכה",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "מתח באחיזה צרה (כל יד באחיזה שונה)",
+  "station_default": "17",
+  "source_ref": "גב!B45"
+ },
+ {
+  "id": "ec5d9342-25c8-5ec9-a941-af37564b7ed2",
+  "muscle_group": "back",
+  "sub_category": "משיכה",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "מתח באחיזה רחבה (כל יד באחיזה שונה)",
+  "station_default": "17",
+  "source_ref": "גב!B46"
+ },
+ {
+  "id": "04567828-e253-5747-97dc-be05abcaf8a0",
+  "muscle_group": "back",
+  "sub_category": "משיכה",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "מתח באחיזה בינונית (כל יד באחיזה שונה)",
+  "station_default": "17",
+  "source_ref": "גב!B47"
+ },
+ {
+  "id": "36c146dc-6332-597e-8d0d-fc7fd85441df",
+  "muscle_group": "back",
+  "sub_category": "חתירה",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "חתירה בשכיבה על הבטן, שיפוע 15-30 מעלות, כנגד משקולות",
+  "station_default": null,
+  "source_ref": "גב!D6"
+ },
+ {
+  "id": "c4e653b3-9cbd-5c62-9442-21c444b37b56",
+  "muscle_group": "back",
+  "sub_category": "חתירה",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "חתירה בהטיית גוף תמיכה ליד, כנגד משקולת כל יד בנפרד",
+  "station_default": null,
+  "source_ref": "גב!D7"
+ },
+ {
+  "id": "1ed8f5f4-ab6d-5422-9add-a33f9cc54e04",
+  "muscle_group": "back",
+  "sub_category": "חתירה",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "חתירה בהטיית גוף, בתמיכה עם רגל ויד על ספה, כנגד משקולות, כל יד בנפרד",
+  "station_default": null,
+  "source_ref": "גב!D8"
+ },
+ {
+  "id": "77e79bfc-67b5-55e9-b3b4-01d7935ee61b",
+  "muscle_group": "back",
+  "sub_category": "חתירה",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "חתירה בשכיבה על הגב כנגד פולי עליון רחב",
+  "station_default": null,
+  "source_ref": "גב!D11"
+ },
+ {
+  "id": "8d4c9173-d226-5c39-8b30-e3b13abc7a74",
+  "muscle_group": "back",
+  "sub_category": "חתירה",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "חתירה בשכיבה על הגב כנגד פולי עליון יד-יד",
+  "station_default": null,
+  "source_ref": "גב!D12"
+ },
+ {
+  "id": "fde86419-0f96-5abd-a966-b1af57f56fa2",
+  "muscle_group": "back",
+  "sub_category": "חתירה",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "חתירה בשכיבה על הגב כנגד פולי עליון צר",
+  "station_default": null,
+  "source_ref": "גב!D13"
+ },
+ {
+  "id": "15769b15-afe5-50f3-86ad-8304e9363a8d",
+  "muscle_group": "back",
+  "sub_category": "חתירה",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "חתירה בהטיית גוף כנגד פולי תחתון",
+  "station_default": null,
+  "source_ref": "גב!D14"
+ },
+ {
+  "id": "4b57453e-2e97-5b9f-97c3-2558126b9119",
+  "muscle_group": "back",
+  "sub_category": "חתירה",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "חתירה בעמידה על בוסו כנגד פולי תחתון",
+  "station_default": null,
+  "source_ref": "גב!D15"
+ },
+ {
+  "id": "bda901e5-2fac-5307-be3d-f9ca8451b1fd",
+  "muscle_group": "back",
+  "sub_category": "חתירה",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "חתירה בישיבה כנגד פולי מול בטן באחיזה רחבה ידיים ביחד",
+  "station_default": null,
+  "source_ref": "גב!D16"
+ },
+ {
+  "id": "6a203fa8-7e95-50b9-918f-5e75f52b0343",
+  "muscle_group": "back",
+  "sub_category": "חתירה",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "חתירה בישיבה כנגד פולי מול בטן באחיזה רחבה יד אחת בנפרד",
+  "station_default": null,
+  "source_ref": "גב!D17"
+ },
+ {
+  "id": "a6eaef1e-2707-5654-927d-aa39ddf6c894",
+  "muscle_group": "back",
+  "sub_category": "חתירה",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "חתירה בישיבה כנגד פולי מול בטן באחיזה צרה ידיים ביחד",
+  "station_default": null,
+  "source_ref": "גב!D18"
+ },
+ {
+  "id": "f43c6738-d46b-5b14-b854-d24fc5977c14",
+  "muscle_group": "back",
+  "sub_category": "חתירה",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "חתירה בישיבה כנגד פולי מול בטן באחיזה צרה יד אחת בנפרד",
+  "station_default": null,
+  "source_ref": "גב!D19"
+ },
+ {
+  "id": "def43551-c138-505e-8355-abe2f03f1340",
+  "muscle_group": "back",
+  "sub_category": "חתירה",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "חתירה בעמידה כנגד פולי בגובה מרפק כל יד בנפרד",
+  "station_default": null,
+  "source_ref": "גב!D24"
+ },
+ {
+  "id": "1c99701e-8bb8-5b31-8aa0-ac2f63d557e4",
+  "muscle_group": "back",
+  "sub_category": "חתירה",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "חתירה בשכיבה על הבטן שיפוע קל כנגד מוט",
+  "station_default": null,
+  "source_ref": "גב!D27"
+ },
+ {
+  "id": "ea671b51-6dbf-583a-a78d-8e7a89bd1268",
+  "muscle_group": "back",
+  "sub_category": "חתירה",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "חתירה בהטיית גוף כנגד מוט",
+  "station_default": null,
+  "source_ref": "גב!D28"
+ },
+ {
+  "id": "475b0c6b-801b-5343-8914-c4ce43ebb888",
+  "muscle_group": "back",
+  "sub_category": "חתירה",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "חתירה בעמידה כנגד קצה של המוט באחיזה צרה (t-bar)",
+  "station_default": null,
+  "source_ref": "גב!D29"
+ },
+ {
+  "id": "ceb9eb7d-fefd-5131-bf43-c3eae5d83bce",
+  "muscle_group": "back",
+  "sub_category": "חתירה",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "חתירה בעמידה כנגד קצה של המוט באחיזה רחבה (t-bar)",
+  "station_default": null,
+  "source_ref": "גב!D30"
+ },
+ {
+  "id": "53f3db94-0ffa-5f3a-a3f7-a5d95be5b66b",
+  "muscle_group": "back",
+  "sub_category": "חתירה",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "חתירה בישיבה כנגד מכונה באחיזה רחבה",
+  "station_default": "10",
+  "source_ref": "גב!D33"
+ },
+ {
+  "id": "bb060666-8869-5049-9a6c-a34d3c604c45",
+  "muscle_group": "back",
+  "sub_category": "חתירה",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "חתירה בישיבה כנגד מכונה באחיזה צרה",
+  "station_default": "10",
+  "source_ref": "גב!D34"
+ },
+ {
+  "id": "6cc15572-b892-5a8e-ba16-98c566652420",
+  "muscle_group": "back",
+  "sub_category": "חתירה",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "חתירה כנגד משקל גוף בסמית' משין",
+  "station_default": "26",
+  "source_ref": "גב!D42"
+ },
+ {
+  "id": "10b9e74a-4bff-533d-b66c-25679eeaa7aa",
+  "muscle_group": "back",
+  "sub_category": "חתירה",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "חתירה כנגד משקל גוף ב-TRX",
+  "station_default": null,
+  "source_ref": "גב!D43"
+ },
+ {
+  "id": "076f54e7-3d63-58ab-ba0b-feebbfa992ec",
+  "muscle_group": "back",
+  "sub_category": "Pullover",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "פשיטת כתף בשכיבה כנגד משקולת 1",
+  "station_default": null,
+  "source_ref": "גב!F6"
+ },
+ {
+  "id": "baa5726a-a180-5115-bf8b-4f4e2b9a9914",
+  "muscle_group": "back",
+  "sub_category": "Pullover",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "פשיטת כתף בשכיבה בשיפוע שלילי כנגד משקולת 1",
+  "station_default": null,
+  "source_ref": "גב!F7"
+ },
+ {
+  "id": "966fc4dd-96ca-5ff5-82a1-c31cef25572f",
+  "muscle_group": "back",
+  "sub_category": "Pullover",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "פשיטת כתף בשכיבה על FITBALL כנגד משקולת 1",
+  "station_default": null,
+  "source_ref": "גב!F8"
+ },
+ {
+  "id": "08a96671-34df-5b7d-8aa2-09326fef540c",
+  "muscle_group": "back",
+  "sub_category": "Pullover",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "פשיטת כתף בעמידה כנגד פולי עליון פנים לפולי",
+  "station_default": null,
+  "source_ref": "גב!F11"
+ },
+ {
+  "id": "e0effa60-c942-5cce-9ac9-64d853908a86",
+  "muscle_group": "back",
+  "sub_category": "Pullover",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "פשיטת כתף בעמידה כנגד פולי עליון גב לפולי",
+  "station_default": null,
+  "source_ref": "גב!F12"
+ },
+ {
+  "id": "7b3079fd-c330-54ff-9116-a9855ff9bb28",
+  "muscle_group": "back",
+  "sub_category": "Pullover",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "פשיטת כתף בשכיבה כנגד פולי (שיפועים שונים)",
+  "station_default": null,
+  "source_ref": "גב!F13"
+ },
+ {
+  "id": "5a83472d-a8aa-5766-aa1f-9a18a4fbf5ed",
+  "muscle_group": "back",
+  "sub_category": "Pullover",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "פשיטת כתף בשכיבה בשיפוע שלילי כנגד פולי (שיפועים שונים)",
+  "station_default": null,
+  "source_ref": "גב!F14"
+ },
+ {
+  "id": "5514103b-b0bb-5fde-8242-0e9d7db7f406",
+  "muscle_group": "back",
+  "sub_category": "Pullover",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "פשיטת כתף בשכיבה על FITBALL כנגד פולי (שיפועים שונים)",
+  "station_default": null,
+  "source_ref": "גב!F15"
+ },
+ {
+  "id": "42083297-b47e-550b-83dd-8427c401e2cc",
+  "muscle_group": "back",
+  "sub_category": "Pullover",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "קירוב כתף בישיבה על ברכיים כנגד קרוסאובר פולי עליון",
+  "station_default": null,
+  "source_ref": "גב!F16"
+ },
+ {
+  "id": "09d04999-9a3f-59a7-9bc2-fe5085ab0d9f",
+  "muscle_group": "back",
+  "sub_category": "Pullover",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "קירוב כתף בעמידה על ברכיים כנגד קרוסאובר פולי עליון",
+  "station_default": null,
+  "source_ref": "גב!F17"
+ },
+ {
+  "id": "6a1d44ec-e0d2-5f26-9df0-6e034122c805",
+  "muscle_group": "back",
+  "sub_category": "Pullover",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "פשיטת כתף בשכיבה כנגד מוט W",
+  "station_default": null,
+  "source_ref": "גב!F27"
+ },
+ {
+  "id": "57157bb2-21c2-522c-98ed-72a360c293af",
+  "muscle_group": "back",
+  "sub_category": "Pullover",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "פשיטת כתף בשכיבה כנגד מוט H",
+  "station_default": null,
+  "source_ref": "גב!F28"
+ },
+ {
+  "id": "1d68b23f-cc52-5b31-9fd1-769eb17535d9",
+  "muscle_group": "back",
+  "sub_category": "Pullover",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "פשיטת כתף בשכיבה בשיפוע שלילי כנגד מוט W",
+  "station_default": null,
+  "source_ref": "גב!F29"
+ },
+ {
+  "id": "4a5452c1-0749-574b-9b1a-091c8e34d81d",
+  "muscle_group": "back",
+  "sub_category": "Pullover",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "פשיטת כתף בשכיבה בשיפוע שלילי כנגד מוט H",
+  "station_default": null,
+  "source_ref": "גב!F30"
+ },
+ {
+  "id": "718bb7ed-3b94-5693-9b40-d4ce6e58247d",
+  "muscle_group": "back",
+  "sub_category": "Pullover",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "פשיטת כתפיים על מתח כנגד משקל גוף עם גומיה",
+  "station_default": "17",
+  "source_ref": "גב!F42"
+ },
+ {
+  "id": "b3de5d88-fc93-550b-a44c-eb84772a358b",
+  "muscle_group": "back",
+  "sub_category": "Pullover",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "פשיטת כתפיים עם גלגל ידני עם גב ישר",
+  "station_default": null,
+  "source_ref": "גב!F43"
+ },
+ {
+  "id": "8ecb335e-f140-5322-97c6-37348031f7c8",
+  "muscle_group": "back",
+  "sub_category": "טרפזים:",
+  "equipment": "barbell",
+  "equipment_inferred": true,
+  "name_he": "הרמת כתף בעמידה כנגד סמית' משין מקדימה צר",
+  "station_default": "26",
+  "source_ref": "גב!F45"
+ },
+ {
+  "id": "8b7c81e5-124f-58cb-952c-b8addc786d93",
+  "muscle_group": "back",
+  "sub_category": "טרפזים:",
+  "equipment": "barbell",
+  "equipment_inferred": true,
+  "name_he": "הרמת כתף בעמידה כנגד סמית' משי�� מקדימה רחב",
+  "station_default": "26",
+  "source_ref": "גב!F46"
+ },
+ {
+  "id": "2a260148-bac6-5d47-b2ea-632cd7508c91",
+  "muscle_group": "back",
+  "sub_category": "טרפזים:",
+  "equipment": "barbell",
+  "equipment_inferred": true,
+  "name_he": "הרמת כתף בעמידה כנגד סמית' משין מאחורה צר",
+  "station_default": "26",
+  "source_ref": "גב!F47"
+ },
+ {
+  "id": "0df3ee6f-0445-540a-9d18-c81ad0d17e2f",
+  "muscle_group": "back",
+  "sub_category": "טרפזים:",
+  "equipment": "barbell",
+  "equipment_inferred": true,
+  "name_he": "הרמת כתף בעמידה כנגד סמית' משין מאחורה רחב",
+  "station_default": "26",
+  "source_ref": "גב!F48"
+ },
+ {
+  "id": "3f494469-4f07-5d58-bbe3-6162b190e613",
+  "muscle_group": "back",
+  "sub_category": "טרפזים:",
+  "equipment": "dumbbells",
+  "equipment_inferred": true,
+  "name_he": "הרמת כתף בעמידה כנגד משקולות",
+  "station_default": null,
+  "source_ref": "גב!F49"
+ },
+ {
+  "id": "3495180c-df30-5cff-aa9f-8aefc5f887e3",
+  "muscle_group": "back",
+  "sub_category": "טרפזים:",
+  "equipment": "barbell",
+  "equipment_inferred": true,
+  "name_he": "הרמת כתף בעמידה כנגד מוט תחתון צר מקדימה",
+  "station_default": null,
+  "source_ref": "גב!F50"
+ },
+ {
+  "id": "16ba648c-6df0-5099-904e-fa0820e58fd2",
+  "muscle_group": "back",
+  "sub_category": "טרפזים:",
+  "equipment": "barbell",
+  "equipment_inferred": true,
+  "name_he": "הרמת כתף בעמידה כנגד מוט תחתון צר מאחורה",
+  "station_default": null,
+  "source_ref": "גב!F51"
+ },
+ {
+  "id": "4e74cb5f-747a-5863-8097-9fcbabd5a140",
+  "muscle_group": "back",
+  "sub_category": "טרפזים:",
+  "equipment": "barbell",
+  "equipment_inferred": true,
+  "name_he": "הרמת כתף בעמידה כנגד מוט תחתון רחב מקדימה",
+  "station_default": null,
+  "source_ref": "גב!F52"
+ },
+ {
+  "id": "50243d1e-2502-5208-aa2d-e8be1aa0cce4",
+  "muscle_group": "back",
+  "sub_category": "טרפזים:",
+  "equipment": "barbell",
+  "equipment_inferred": true,
+  "name_he": "הרמת כתף בעמידה כנגד מוט תחתון רחב מאחורה",
+  "station_default": null,
+  "source_ref": "גב!F53"
+ },
+ {
+  "id": "6e89f6da-d91f-5ec4-86f8-29b381b1e3b6",
+  "muscle_group": "back",
+  "sub_category": "טרפזים:",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "הרמת כתף בעמידה כנגד פולי תחתון צר מקדימה",
+  "station_default": null,
+  "source_ref": "גב!F54"
+ },
+ {
+  "id": "118bf276-581a-5d64-b342-fe01daf1fed5",
+  "muscle_group": "back",
+  "sub_category": "טרפזים:",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "הרמת כתף בעמידה כנגד פולי תחתון צר מאחורה",
+  "station_default": null,
+  "source_ref": "גב!F55"
+ },
+ {
+  "id": "66822882-7509-58bb-9960-51aaaba6428b",
+  "muscle_group": "back",
+  "sub_category": "טרפזים:",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "הרמת כתף בעמידה כנגד פולי תחתון רחב מקדימה",
+  "station_default": null,
+  "source_ref": "גב!F56"
+ },
+ {
+  "id": "7eb25ec0-7f79-5ec2-bfbf-45cf7ac3836c",
+  "muscle_group": "back",
+  "sub_category": "טרפזים:",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "הרמת כתף בעמידה כנגד פולי תחתון רחב מאחורה",
+  "station_default": null,
+  "source_ref": "גב!F57"
+ },
+ {
+  "id": "2ac2250b-4365-5343-901a-09e96473e527",
+  "muscle_group": "back",
+  "sub_category": "שכמות:",
+  "equipment": "machine",
+  "equipment_inferred": true,
+  "name_he": "קירוב שכמות בישיבה כנגד מכונה",
+  "station_default": "10",
+  "source_ref": "גב!F59"
+ },
+ {
+  "id": "6f7da6ba-9ea2-529b-92d7-31d65a3ba36c",
+  "muscle_group": "back",
+  "sub_category": "שכמות:",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "קירוב שכמות בישיבה כנגד פולי תחתון",
+  "station_default": null,
+  "source_ref": "גב!F60"
+ },
+ {
+  "id": "65b95a72-9526-5042-9455-66b2f48f9e65",
+  "muscle_group": "back",
+  "sub_category": "שכמות:",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "קירוב שכמות בישיבה כנגד t-bar",
+  "station_default": null,
+  "source_ref": "גב!F61"
+ },
+ {
+  "id": "e50e6d88-99c1-50a7-95dc-1c0382fb267e",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד משקולות",
+  "station_default": null,
+  "source_ref": "יד קדמית!B6"
+ },
+ {
+  "id": "ad3ba7d7-150d-5298-aa98-ce9cc428492e",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בישיבה כנגד משקולות",
+  "station_default": null,
+  "source_ref": "יד קדמית!B7"
+ },
+ {
+  "id": "fa0b7701-2c82-57c7-82b7-29f5f0c14eec",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד משקולות יד יד",
+  "station_default": null,
+  "source_ref": "יד קדמית!B8"
+ },
+ {
+  "id": "3ff3c4b4-2ecf-53c2-bafd-7676c0cb8f73",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בישיבה כנגד משקולות יד יד",
+  "station_default": null,
+  "source_ref": "יד קדמית!B9"
+ },
+ {
+  "id": "4751a640-774d-5cfa-be68-c83f77495c38",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה (התייה לפנים) כנגד משקולות",
+  "station_default": null,
+  "source_ref": "יד קדמית!B10"
+ },
+ {
+  "id": "641e2d14-57fa-5e2e-a1fc-fc217b3e95b6",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בישיבה 60-45 מעלות כנגד משקולות",
+  "station_default": null,
+  "source_ref": "יד קדמית!B11"
+ },
+ {
+  "id": "d49508a7-b58a-5418-8b36-5593dafb5c26",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בישיבה 60-45 מעלות כנגד משקולות יד יד",
+  "station_default": null,
+  "source_ref": "יד קדמית!B12"
+ },
+ {
+  "id": "d0c0fd99-7616-55af-a58a-39b4d55952ae",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד משקולות יד-יד ביחד",
+  "station_default": null,
+  "source_ref": "יד קדמית!B13"
+ },
+ {
+  "id": "014e4814-5430-5156-bfc5-4deb3af296f9",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד משקולות יד-יד לסירוגין",
+  "station_default": null,
+  "source_ref": "יד קדמית!B14"
+ },
+ {
+  "id": "faaf1b12-e774-5893-8717-17a6bf416faf",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על הבטן(15-60 מעלות מעלות) כנגד משקולות",
+  "station_default": null,
+  "source_ref": "יד קדמית!B15"
+ },
+ {
+  "id": "3fc95193-73f7-516b-b4b0-4efd380cad10",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בכיסא כומר כנגד משקולות 2 ידים יד בנפרד",
+  "station_default": null,
+  "source_ref": "יד קדמית!B16"
+ },
+ {
+  "id": "ef861fd6-ec80-580b-a585-48139fe72736",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בכיסא כומר כנגד משקולות 2 כל יד בנפרד",
+  "station_default": null,
+  "source_ref": "יד קדמית!B17"
+ },
+ {
+  "id": "8624c7a7-c275-57ac-aa53-0961c69466ba",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בישיבה בהישענות עם המרפק בחלק הפנימי של הירך כנגד משקולת",
+  "station_default": null,
+  "source_ref": "יד קדמית!B18"
+ },
+ {
+  "id": "358c9dc8-4802-58e8-9468-8ec93eca85cc",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד משקולות ח 7+7+7",
+  "station_default": null,
+  "source_ref": "יד קדמית!B19"
+ },
+ {
+  "id": "3aacbc37-0fba-52c7-94bc-86f56212f3b8",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד פולי תחתון",
+  "station_default": null,
+  "source_ref": "יד קדמית!B22"
+ },
+ {
+  "id": "82045104-29b7-5a79-88a5-541cd7faca43",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד פולי תחתון כל יד בנפרד",
+  "station_default": null,
+  "source_ref": "יד קדמית!B23"
+ },
+ {
+  "id": "1077d211-7763-5ee8-a150-84bcdd7eee1a",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד קרוסאובר פולי תחתון קן פולי",
+  "station_default": null,
+  "source_ref": "יד קדמית!B24"
+ },
+ {
+  "id": "05b683ac-6d4d-50de-89c9-3bc53a640bac",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד קרוסאובר פולי תחתון קן קדימה",
+  "station_default": null,
+  "source_ref": "יד קדמית!B25"
+ },
+ {
+  "id": "b0d356b5-42fa-5d4a-88a6-737a4c019df6",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד קרוסאובר פולי תחתון קן אחורה",
+  "station_default": null,
+  "source_ref": "יד קדמית!B26"
+ },
+ {
+  "id": "8279a513-127e-549a-9af4-368dadd2a2f8",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה עם הגב לפולי כנגד פולי תחתון",
+  "station_default": null,
+  "source_ref": "יד קדמית!B27"
+ },
+ {
+  "id": "dbe39c48-6c6f-59f6-a4f6-ff1b00f00389",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד פולי מול הכתף עליון",
+  "station_default": null,
+  "source_ref": "יד קדמית!B28"
+ },
+ {
+  "id": "d401b2ed-442d-5cd0-9274-e440a04691cc",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד פולי מול פולי עליון",
+  "station_default": null,
+  "source_ref": "יד קדמית!B29"
+ },
+ {
+  "id": "6b1fa868-be87-5db9-afd6-5cc0bad5fd3a",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד קרוסאובר פולי מול הכתף עליון",
+  "station_default": null,
+  "source_ref": "יד קדמית!B30"
+ },
+ {
+  "id": "27ca2a31-f571-5639-836b-2af8e8a9500c",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד קרוסאובר פולי מול פולי עליון",
+  "station_default": null,
+  "source_ref": "יד קדמית!B31"
+ },
+ {
+  "id": "de8701b2-ab5b-564d-a07c-ae6f52453959",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על הבטן (70 מעלות) כנגד פולי תחתון",
+  "station_default": null,
+  "source_ref": "יד קדמית!B32"
+ },
+ {
+  "id": "d0c0bddd-f599-55ee-a884-e24a82d32e5b",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על הבטן (70 מעלות) כנגד פולי אמצעי",
+  "station_default": null,
+  "source_ref": "יד קדמית!B33"
+ },
+ {
+  "id": "17d6ac9b-9ba9-5533-a8e9-2ddd6d8db617",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על הבטן (70 מעלות) כנגד פולי עליון",
+  "station_default": null,
+  "source_ref": "יד קדמית!B34"
+ },
+ {
+  "id": "dee9e255-15d9-597e-9dae-93941097ed49",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על גב(ראש לפולי) כנגד פולי עליון",
+  "station_default": null,
+  "source_ref": "יד קדמית!B35"
+ },
+ {
+  "id": "3657e54d-c34b-508e-a2cd-2284b7020c27",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על גב(רגליים לפולי) כנגד פולי עליון",
+  "station_default": null,
+  "source_ref": "יד קדמית!B36"
+ },
+ {
+  "id": "63a77fad-904e-53ac-aee6-59b3e865c5d5",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על גב(רגליים לפולי) כנגד פולי אמצעי",
+  "station_default": null,
+  "source_ref": "יד קדמית!B37"
+ },
+ {
+  "id": "3b6c78df-59e8-5ef3-8bae-d398033e8fa7",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בישיבה גב לפולי יד-יד",
+  "station_default": null,
+  "source_ref": "יד קדמית!B38"
+ },
+ {
+  "id": "0538e49e-15b6-5222-baa7-87ce5f3b5b04",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד פולי תחתון ח 7+7+7",
+  "station_default": null,
+  "source_ref": "יד קדמית!B39"
+ },
+ {
+  "id": "764a2f0b-81a3-5e88-b4fe-d1d63bfe3d4d",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד מוט",
+  "station_default": null,
+  "source_ref": "יד קדמית!B43"
+ },
+ {
+  "id": "e9b17d7f-8c38-5ad9-b4b6-43c6fa8e359a",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד מוט W",
+  "station_default": null,
+  "source_ref": "יד קדמית!B44"
+ },
+ {
+  "id": "db36ef81-ad82-518e-8edb-83e5e88bd266",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על הבטן (30-60 מעלות) כנגד מוט",
+  "station_default": null,
+  "source_ref": "יד קדמית!B45"
+ },
+ {
+  "id": "1c77fc35-cebd-54bc-a796-a849ce607c3a",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על הבטן (30-60 מעלות) כנגד מוט W",
+  "station_default": null,
+  "source_ref": "יד קדמית!B46"
+ },
+ {
+  "id": "3b9109e4-9fc2-5774-8f59-c65ace9c1b78",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בכיסא כומר כנגד מוט",
+  "station_default": null,
+  "source_ref": "יד קדמית!B47"
+ },
+ {
+  "id": "bf4eec2e-4abf-5b04-a706-9966ebf4df70",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בכיסא כומר כנגד מוט W",
+  "station_default": null,
+  "source_ref": "יד קדמית!B48"
+ },
+ {
+  "id": "303ddeb6-ee8b-58d5-829f-7472c72340b6",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד מוט ח 7+7+7",
+  "station_default": null,
+  "source_ref": "יד קדמית!B49"
+ },
+ {
+  "id": "720b516d-5714-51eb-8d8e-4ef2f4e1c3da",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד מוט W 7+7+7",
+  "station_default": null,
+  "source_ref": "יד קדמית!B50"
+ },
+ {
+  "id": "18ccfe99-00dd-5fbf-ad22-1ef682d8fcff",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בישיבה כנגד מכונה",
+  "station_default": "14",
+  "source_ref": "יד קדמית!B53"
+ },
+ {
+  "id": "b83ed525-e368-56d0-a4c1-edbc3faeba9d",
+  "muscle_group": "biceps",
+  "sub_category": "biceps",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בישיבה כנגד מכונה, כל יד בנפרד",
+  "station_default": "14",
+  "source_ref": "יד קדמית!B54"
+ },
+ {
+  "id": "af415a38-8761-558a-add2-224b0bcfeb81",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד משקולות באחיזה פטיש",
+  "station_default": null,
+  "source_ref": "יד קדמית!D6"
+ },
+ {
+  "id": "f00d5855-f11d-5e92-8285-f257fd91bf39",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בישיבה כנגד משקולות באחיזה פטיש",
+  "station_default": null,
+  "source_ref": "יד קדמי��!D7"
+ },
+ {
+  "id": "361ab45b-570b-5805-8a54-b2a4162495ab",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד משקולות יד יד באחיזה פטיש",
+  "station_default": null,
+  "source_ref": "יד קדמית!D8"
+ },
+ {
+  "id": "ac6deba7-3f66-5cb6-becb-2cc842fa5fc6",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בישיבה כנגד משקולות יד יד באחיזה פטיש",
+  "station_default": null,
+  "source_ref": "יד קדמית!D9"
+ },
+ {
+  "id": "2cf869e7-15f1-5791-a847-c60f9a43fa80",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה (התייה לפנים) כנגד משקולות באחיזה פטיש",
+  "station_default": null,
+  "source_ref": "יד קדמית!D10"
+ },
+ {
+  "id": "5569a8d9-80a2-5892-83e4-fda0df47b179",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בישיבה 60 מעלות כנגד משקולות באחיזה פטיש",
+  "station_default": null,
+  "source_ref": "יד קדמית!D11"
+ },
+ {
+  "id": "ebf61362-a3cc-5fa3-bd67-57e0ceee7875",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בישיבה 60 מעלות כנגד משקולות יד יד באחיזה פטיש",
+  "station_default": null,
+  "source_ref": "יד קדמית!D12"
+ },
+ {
+  "id": "f1796856-ebfc-59ce-b585-56f91f328f1c",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד משקולות יד-יד ביחד באחיזה פטיש",
+  "station_default": null,
+  "source_ref": "יד קדמית!D13"
+ },
+ {
+  "id": "aa7f9c57-3415-5380-a3ad-2e1989a3747d",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד משקולות יד-יד לסירוגין באחיזה פטיש",
+  "station_default": null,
+  "source_ref": "יד קדמית!D14"
+ },
+ {
+  "id": "e931bb43-33cf-581f-80cc-25accb10e82f",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על הבטן(15-60 מעלות מעלות) כנגד משקולות באחיזה פטיש",
+  "station_default": null,
+  "source_ref": "יד קדמית!D15"
+ },
+ {
+  "id": "b0c91f1f-3097-56fe-9f71-cb7a86ae13c7",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בכיסא כומר כנגד משקולות 2 ידים יד בנפרד באחיזה פטיש",
+  "station_default": null,
+  "source_ref": "יד קדמית!D16"
+ },
+ {
+  "id": "9c4e8c41-8f6c-5e4f-9535-9f1869c7b6a4",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בכיסא כומר כנגד משקולות 2 כל יד בנפרד באחיזה פטיש",
+  "station_default": null,
+  "source_ref": "יד קדמית!D17"
+ },
+ {
+  "id": "028f2a4a-0314-5ff6-ab4c-55e3fe94ed6c",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בישיבה בהישענות עם המרפק בחלק הפנימי של הירך כנגד משקולת באחיזה פטיש",
+  "station_default": null,
+  "source_ref": "יד קדמית!D18"
+ },
+ {
+  "id": "a210c988-3686-5fce-a81a-803c97e45cde",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד משקולות ח 7+7+7 באחיזה פטיש",
+  "station_default": null,
+  "source_ref": "יד קדמית!D19"
+ },
+ {
+  "id": "61fc2a48-8192-5541-9307-d397b5ff0369",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד פולי תחתון ע�� חבל",
+  "station_default": null,
+  "source_ref": "יד קדמית!D22"
+ },
+ {
+  "id": "8b64f104-19a9-5d7d-9420-6db5c5860879",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד פולי תחתון כל יד בנפרד עם חבל ידית",
+  "station_default": null,
+  "source_ref": "יד קדמית!D23"
+ },
+ {
+  "id": "c5f23110-4a5f-56f6-9f61-0757ef09311b",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד פולי תחתון כל יד בנפרד עם בלי ידית",
+  "station_default": null,
+  "source_ref": "יד קדמית!D24"
+ },
+ {
+  "id": "f6c3c9ed-b710-506c-97f4-d308dc55fdfe",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד קרוסאובר פולי תחתון קן פולי באחיזה פטיש",
+  "station_default": null,
+  "source_ref": "יד קדמית!D25"
+ },
+ {
+  "id": "976d859d-eab1-5bd7-be1d-a89d9450ea86",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד קרוסאובר פולי תחתון קן קדימה באחיזה פטיש",
+  "station_default": null,
+  "source_ref": "יד קדמית!D26"
+ },
+ {
+  "id": "769740a5-4888-56ac-90e7-110e618fe8a5",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד קרוסאובר פולי תחתון קן אחורה באחיזה פטיש",
+  "station_default": null,
+  "source_ref": "יד קדמית!D27"
+ },
+ {
+  "id": "403bb5a2-b618-5352-86d2-c382fce8f4fa",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה עם הגב לפולי כנגד פולי תחתון עם חבל",
+  "station_default": null,
+  "source_ref": "יד קדמית!D28"
+ },
+ {
+  "id": "0e47afb9-4b66-58bb-9a4f-697461d21248",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד פולי מול הכתף עליון עם חבל",
+  "station_default": null,
+  "source_ref": "יד קדמית!D29"
+ },
+ {
+  "id": "86806225-47ac-5b02-8613-d9e88fb9715a",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד פולי מול פולי עליון עם חבל",
+  "station_default": null,
+  "source_ref": "יד קדמית!D30"
+ },
+ {
+  "id": "19bb3b9d-f66e-56a0-a4a1-3b75a0f2cf6e",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד קרוסאובר פולי מול הכתף עליון בלי ידיות",
+  "station_default": null,
+  "source_ref": "יד קדמית!D31"
+ },
+ {
+  "id": "47e8e6a2-9fe9-53eb-8b2d-4dceb261441d",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד קרוסאובר פולי מול פולי עליון בלי ידיות",
+  "station_default": null,
+  "source_ref": "יד קדמית!D32"
+ },
+ {
+  "id": "9b3fba93-78b0-5de2-abed-c2cef3282138",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על הבטן (70 מעלות) כנגד פולי תחתון עם חבל",
+  "station_default": null,
+  "source_ref": "יד קדמית!D33"
+ },
+ {
+  "id": "ec7d0d9d-1f30-5067-a9ee-488869018a24",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על הבטן (70 מעלות) כנגד פולי אמצעי עם חבל",
+  "station_default": null,
+  "source_ref": "יד קדמית!D34"
+ },
+ {
+  "id": "0314cde9-6e74-58bc-880d-951f30cad20e",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על הבטן (70 מעלות) כנגד פולי עליון עם חבל",
+  "station_default": null,
+  "source_ref": "יד קדמית!D35"
+ },
+ {
+  "id": "f1834e67-4bf4-5a63-82fb-f4fcf862c67d",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על גב(ראש לפולי) כנגד פולי עליון עם חבל",
+  "station_default": null,
+  "source_ref": "יד קדמית!D36"
+ },
+ {
+  "id": "469f0e8e-57ee-57f6-b7c5-7df494dd576a",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על גב(רגליים לפולי) כנגד פולי עליון עם חבל",
+  "station_default": null,
+  "source_ref": "יד קדמית!D37"
+ },
+ {
+  "id": "8daacfa1-b58b-5305-83e9-999d2258fdb0",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על גב(רגליים לפולי) כנגד פולי אמצעי עם חבל",
+  "station_default": null,
+  "source_ref": "יד קדמית!D38"
+ },
+ {
+  "id": "5e1202ff-e1b0-5b80-87bd-d024faa1ff25",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בישיבה גב לפולי יד-יד בלי ידית",
+  "station_default": null,
+  "source_ref": "יד קדמית!D39"
+ },
+ {
+  "id": "440278af-3808-5dfd-a51d-1153d68db7ea",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד פולי תחתון ח 7+7+7 עם חבל",
+  "station_default": null,
+  "source_ref": "יד קדמית!D40"
+ },
+ {
+  "id": "03ca3c95-cb6c-58bf-9178-a059feb4e1b0",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד מוט H",
+  "station_default": null,
+  "source_ref": "יד קדמית!D43"
+ },
+ {
+  "id": "b62d2e1e-cf70-50fc-ac94-719927281bba",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על הבטן (30-60 מעלות) כנגד H",
+  "station_default": null,
+  "source_ref": "יד קדמית!D44"
+ },
+ {
+  "id": "2c6480fa-b566-5f6f-a59b-fee8af0b188f",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בכיסא כומר כנגד מוט H",
+  "station_default": null,
+  "source_ref": "יד קדמית!D45"
+ },
+ {
+  "id": "5046995e-4803-5242-a88b-0752f3774768",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד מוט H 7+7+7",
+  "station_default": null,
+  "source_ref": "יד קדמית!D46"
+ },
+ {
+  "id": "75efbf5d-dde2-5336-8fcd-43459701aaa3",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד מוט ח 7+7+7",
+  "station_default": null,
+  "source_ref": "יד קדמית!D47"
+ },
+ {
+  "id": "862349ea-6509-50c0-86fd-e5160c9aa9ee",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בישיבה כנגד מכונה באחיזה פתישים",
+  "station_default": "14",
+  "source_ref": "יד קדמית!D53"
+ },
+ {
+  "id": "38e63c53-7533-557d-8ba5-7accf7edd673",
+  "muscle_group": "biceps",
+  "sub_category": "brachioradialis",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בישיבה כנגד מכונה באחיזה פתישים, כל יד בנפרד",
+  "station_default": "14",
+  "source_ref": "יד קדמית!D54"
+ },
+ {
+  "id": "5c863a99-d007-576c-9da0-b0e1cbc506a8",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד משקולות באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F6"
+ },
+ {
+  "id": "a0c96401-4590-513b-b446-22957dc770d5",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בישיבה כנגד משקולות באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F7"
+ },
+ {
+  "id": "e1148925-788c-5d79-a92b-ebf34ecfd559",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד משקולות יד יד באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F8"
+ },
+ {
+  "id": "9b9fd1a4-57d5-5f72-8869-09e3b885fa61",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בישיבה כנגד משקולות יד יד באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F9"
+ },
+ {
+  "id": "aba6e640-dceb-5463-9806-dd260953e5a0",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה (התייה לפנים) כנגד משקולות באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F10"
+ },
+ {
+  "id": "92f2c267-b992-5a39-82de-a14b336b74fe",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בישיבה 60 מעלות כנגד משקולות באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F11"
+ },
+ {
+  "id": "75ffd649-bc28-5077-9c99-c38e6c7b25b5",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בישיבה 60 מעלות כנגד משקולות יד יד באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F12"
+ },
+ {
+  "id": "fdacd66d-6cae-59aa-80a9-ce54a5be8c24",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד משקולות יד-יד ביחד באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F13"
+ },
+ {
+  "id": "3f6ae573-20d3-5f66-ae4b-66c3ccf4a973",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד משקולות יד-יד לסירוגין באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F14"
+ },
+ {
+  "id": "e057b127-085b-5856-a6dc-2410e3e160f5",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על הבטן(15-60 מעלות מעלות) כנגד משקולות באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F15"
+ },
+ {
+  "id": "b8586174-cf2f-52ce-bef1-e48e05b1c7a2",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בכיסא כומר כנגד משקולות 2 ידים יד בנפרד באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F16"
+ },
+ {
+  "id": "b4afcb40-17e8-552a-9350-b864080e0860",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בכיסא כומר כנגד משקולות 2 כל יד בנפרד באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F17"
+ },
+ {
+  "id": "8d046299-1fe3-5b00-87b2-729126286418",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בישיבה בהישענות עם המרפק בחלק הפנימי של הירך כנגד משקולת באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F18"
+ },
+ {
+  "id": "44c68522-9940-5b55-85ea-077cc771e45b",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד משקולות ח 7+7+7 באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F19"
+ },
+ {
+  "id": "01c11cbe-3ad8-580c-b218-3d3b02e134ab",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד פולי תחתון באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F22"
+ },
+ {
+  "id": "ad1cf02f-dc78-5d3b-bdda-648d418e6664",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד פולי תחתון כל יד בנפרד באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F23"
+ },
+ {
+  "id": "9c7ccdee-13e9-5429-9f7d-2332dc5243ca",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד קרוסאובר פולי תחתון קן פולי באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F24"
+ },
+ {
+  "id": "f8bd8be1-82f0-5e59-99a7-1a481fc1b12b",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד קרוסאובר פולי תחתון קן קדימה באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F25"
+ },
+ {
+  "id": "4771674a-b31e-5307-859a-82788b7e5216",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד קרוסאובר פולי תחתון קן אחורה באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F26"
+ },
+ {
+  "id": "526a6d79-0d98-585a-aadb-4080cad3d74f",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה עם הגב לפולי כנגד פולי תחתון באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F27"
+ },
+ {
+  "id": "14bf146a-42fa-5179-bedf-454880f66adb",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד פולי מול הכתף עליון באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F28"
+ },
+ {
+  "id": "0d3847f2-cf1b-5510-ab04-be4cbc561b5f",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד פולי מול פולי עליון באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F29"
+ },
+ {
+  "id": "89b79b3e-b6ae-57cc-b991-cd7c2326439b",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על הבטן (70 מעלות) כנגד פולי תחתון באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F30"
+ },
+ {
+  "id": "f94807e0-ac4a-5415-99b4-cf1205b69621",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על הבטן (70 מעלות) כנגד פולי אמצעי באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F31"
+ },
+ {
+  "id": "4dd250b0-5f83-57d1-86c9-dd831387d167",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על הבטן (70 מעלות) כנגד פולי עליון באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F32"
+ },
+ {
+  "id": "81caedec-12b2-57e0-bb34-e2affa7cb221",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על גב(ראש לפולי) כנגד פולי עליון באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F33"
+ },
+ {
+  "id": "12b67ab0-b8f3-5491-bf6d-9d96a4360c0e",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על גב(רגליים לפולי) כנגד פולי עליון באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F34"
+ },
+ {
+  "id": "e21e5428-a2f3-56b4-87f9-5ee2ba2ba5db",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על גב(רגליים לפולי) כנגד פולי אמצעי באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F35"
+ },
+ {
+  "id": "37db5426-2e77-574c-9164-e3001f570623",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בישיבה גב לפולי יד-יד בלי ידית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F36"
+ },
+ {
+  "id": "36a7c5a0-210c-59cb-a840-adc393d9a8c3",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד פולי תחתון ח 7+7+7 באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F37"
+ },
+ {
+  "id": "08996ebc-b0e4-5b89-baee-99f2381a5a20",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד מוט באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F43"
+ },
+ {
+  "id": "8be3be93-0079-5b23-a2d4-00bc8503825e",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד מוט W באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F44"
+ },
+ {
+  "id": "d5398c10-4dee-53f1-bcb9-b0047dcd1141",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על הבטן (30-60 מעלות) כנגד מוט באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F45"
+ },
+ {
+  "id": "83ca51ca-e1c4-5c63-a46d-c12ed0bbaaa1",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בשכיבה על הבטן (30-60 מעלות) כנגד מוט W באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F46"
+ },
+ {
+  "id": "7daf4fa1-05db-520f-8000-4e1a7655ff56",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בכיסא כומר כנגד מוט באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F47"
+ },
+ {
+  "id": "7a9ffe0f-9d60-5dfc-ab2c-167fc35fba24",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בכיסא כומר כנגד מוט W באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F48"
+ },
+ {
+  "id": "688b3f8c-eed7-551d-8f59-239b8d0dc938",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד מוט ח 7+7+7 באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F49"
+ },
+ {
+  "id": "1f3ffd42-ad84-596a-acf2-8ba0d2c66f36",
+  "muscle_group": "biceps",
+  "sub_category": "brachialis",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפת מרפקים בעמידה כנגד מוט W 7+7+7 באחיזה עילית",
+  "station_default": null,
+  "source_ref": "יד קדמית!F50"
+ },
+ {
+  "id": "efe619e7-b957-5320-82c6-062a71a3ac3b",
+  "muscle_group": "triceps",
+  "sub_category": "תרגיל מורכב",
+  "equipment": "dumbbells",
+  "equipment_inferred": true,
+  "name_he": "לחיצת חזה באחיזה צרה (מרפקים צמודים למותניים) כנגד משקולות",
+  "station_default": null,
+  "source_ref": "יד אחורית!B4"
+ },
+ {
+  "id": "5a70717e-d1e1-5386-a574-848af963aa07",
+  "muscle_group": "triceps",
+  "sub_category": "תרגיל מורכב",
+  "equipment": "barbell",
+  "equipment_inferred": true,
+  "name_he": "לחיצת חזה באחיזה צרה (מרפקים צמודים למותניים) כנגד מוט",
+  "station_default": "18, 23",
+  "source_ref": "יד אחורית!B5"
+ },
+ {
+  "id": "03b649dd-af44-5de5-aeec-7b59fb0ebdbd",
+  "muscle_group": "triceps",
+  "sub_category": "תרגיל מורכב",
+  "equipment": "barbell",
+  "equipment_inferred": true,
+  "name_he": "לחיצת חזה באחיזה צ��ה (מרפקים צמודים למותניים) כנגד מוט H",
+  "station_default": "18, 23",
+  "source_ref": "יד אחורית!B6"
+ },
+ {
+  "id": "57e978a7-ab8a-52d7-8c61-81c6c40988d6",
+  "muscle_group": "triceps",
+  "sub_category": "תרגיל מורכב",
+  "equipment": "barbell",
+  "equipment_inferred": true,
+  "name_he": "לחיצת חזה באחיזה צרה (מרפקים צמודים למותניים) כנגד סמית' משין",
+  "station_default": "26",
+  "source_ref": "יד אחורית!B7"
+ },
+ {
+  "id": "790ba5c4-42d4-58c5-abc0-9c6129cd2d66",
+  "muscle_group": "triceps",
+  "sub_category": "תרגיל מורכב",
+  "equipment": "bodyweight",
+  "equipment_inferred": true,
+  "name_he": "מקבילים באחיזה צרה (מרפקים צמודים למותניים לאורך כל התנועה)",
+  "station_default": "17",
+  "source_ref": "יד אחורית!B8"
+ },
+ {
+  "id": "eadd131e-c302-56fc-bc87-0557702316b8",
+  "muscle_group": "triceps",
+  "sub_category": "תרגיל מורכב",
+  "equipment": null,
+  "equipment_inferred": true,
+  "name_he": "שכיבות סמיכה באחיזה צרה (מרפקים צמודים למותניים לאורך כל התנועה)",
+  "station_default": null,
+  "source_ref": "יד אחורית!B9"
+ },
+ {
+  "id": "73d949f6-27ba-52eb-996d-5d37d62d6b7b",
+  "muscle_group": "triceps",
+  "sub_category": "תרגיל מורכב",
+  "equipment": "barbell",
+  "equipment_inferred": true,
+  "name_he": "שכיבות סמיכה באחיזה צרה על מוט של סמית' משין (מרפקים צמודים למותניים)",
+  "station_default": "26",
+  "source_ref": "יד אחורית!B10"
+ },
+ {
+  "id": "36e6f564-cbfb-56bf-ace2-8f0f5c6c8384",
+  "muscle_group": "triceps",
+  "sub_category": "תרגיל מורכב",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "לחיצת חזה בעמידה כנגד באחיזה צרה פולי בגובה מרפק",
+  "station_default": null,
+  "source_ref": "יד אחורית!B11"
+ },
+ {
+  "id": "9e493a2f-2c5d-594a-8e35-a44610d13113",
+  "muscle_group": "triceps",
+  "sub_category": "שכיבה על גב",
+  "equipment": "barbell",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בשכיבה כנגד מוט W באחיזה צרה",
+  "station_default": null,
+  "source_ref": "יד אחורית!D4"
+ },
+ {
+  "id": "4789a2c1-18ca-5daa-ac7b-4412afb0b67c",
+  "muscle_group": "triceps",
+  "sub_category": "שכיבה על גב",
+  "equipment": "barbell",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בשכיבה כנגד מוט W באחיזה רחבה",
+  "station_default": null,
+  "source_ref": "יד אחורית!D5"
+ },
+ {
+  "id": "7c036b38-10a1-5018-95cc-e51f953ed570",
+  "muscle_group": "triceps",
+  "sub_category": "שכיבה על גב",
+  "equipment": "dumbbells",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בשכיבה כנגד משקולות",
+  "station_default": null,
+  "source_ref": "יד אחורית!D6"
+ },
+ {
+  "id": "6ac88eef-8792-5134-8d35-5759ece72ffc",
+  "muscle_group": "triceps",
+  "sub_category": "שכיבה על גב",
+  "equipment": "dumbbells",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בשכיבה כנגד משקולת 1",
+  "station_default": null,
+  "source_ref": "יד אחורית!D7"
+ },
+ {
+  "id": "92a65223-d1cd-5725-8718-99e2c9a0a7b8",
+  "muscle_group": "triceps",
+  "sub_category": "שכיבה על גב",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בשכיבה כנגד פולי תחתון ראש לפולי",
+  "station_default": null,
+  "source_ref": "יד אחורית!D8"
+ },
+ {
+  "id": "b0c33197-1dde-5970-8004-c32c47e1d55b",
+  "muscle_group": "triceps",
+  "sub_category": "שכיבה על גב",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בישיבה כנגד פולי תחתון גב לפולי",
+  "station_default": null,
+  "source_ref": "יד אחורית!D9"
+ },
+ {
+  "id": "f66737d7-d218-5287-88a7-e647d14c9cd7",
+  "muscle_group": "triceps",
+  "sub_category": "שכיבה על גב",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בשכיבה שיפוע חיובי כנגד קרוסאובר פולי תחתון בהצלבה",
+  "station_default": null,
+  "source_ref": "יד אחורית!D10"
+ },
+ {
+  "id": "1c03a339-3552-5d54-aa79-bb4c79109962",
+  "muscle_group": "triceps",
+  "sub_category": "שכיבה על גב",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בשכיבה שיפוע חיובי כנגד פולי תחת��ן כל יד בנפרד",
+  "station_default": null,
+  "source_ref": "יד אחורית!D11"
+ },
+ {
+  "id": "a40ae8ee-f146-56de-907f-b48c1a13b6b4",
+  "muscle_group": "triceps",
+  "sub_category": "שכיבה על בטן",
+  "equipment": "dumbbells",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בשכיבה על הבטן 30-45 מעלות כנגד משקולת 1",
+  "station_default": null,
+  "source_ref": "יד אחורית!D13"
+ },
+ {
+  "id": "1dcd20ec-88ac-58cf-a3f9-455ba8f16710",
+  "muscle_group": "triceps",
+  "sub_category": "שכיבה על בטן",
+  "equipment": "dumbbells",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בשכיבה על הבטן 30-45 מעלות כנגד משקולות",
+  "station_default": null,
+  "source_ref": "יד אחורית!D14"
+ },
+ {
+  "id": "3d65d644-e33b-5e62-904c-44017827b153",
+  "muscle_group": "triceps",
+  "sub_category": "שכיבה על בטן",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בשכיבה על הבטן 30-45 מעלות פולי תחתון כל יד בנפרד",
+  "station_default": null,
+  "source_ref": "יד אחורית!D15"
+ },
+ {
+  "id": "376a2d1f-ca4c-5c14-b34a-3f33380cea97",
+  "muscle_group": "triceps",
+  "sub_category": "בישיבה",
+  "equipment": "dumbbells",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בישיבה כנגד משקולת 1 (מאחורי הראש)",
+  "station_default": null,
+  "source_ref": "יד אחורית!F4"
+ },
+ {
+  "id": "b977e2b8-5a2d-5ffa-a89b-8f28bddafbfc",
+  "muscle_group": "triceps",
+  "sub_category": "בישיבה",
+  "equipment": "dumbbells",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בישיבה כנגד משקולת 1 (מאחורי הראש) כל יד בנפרד",
+  "station_default": null,
+  "source_ref": "יד אחורית!F5"
+ },
+ {
+  "id": "bef56226-e3b1-5351-8290-ff0090678aac",
+  "muscle_group": "triceps",
+  "sub_category": "בישיבה",
+  "equipment": "dumbbells",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בישיבה כנגד משקולות (מאחורי הראש)",
+  "station_default": null,
+  "source_ref": "יד אחורית!F6"
+ },
+ {
+  "id": "d3ae10f5-07d3-57bf-816b-fab69cf041ed",
+  "muscle_group": "triceps",
+  "sub_category": "בישיבה",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בישיבה כנגד פולי תחתון (מאחורי הראש)",
+  "station_default": null,
+  "source_ref": "יד אחורית!F7"
+ },
+ {
+  "id": "efbc86c5-9585-54fe-aaca-321da22fd7fc",
+  "muscle_group": "triceps",
+  "sub_category": "בישיבה",
+  "equipment": "barbell",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בישיבה כנגד מוט W (מאחורי הראש)",
+  "station_default": null,
+  "source_ref": "יד אחורית!F8"
+ },
+ {
+  "id": "30a25134-fb85-5c11-ba63-5310d2538c84",
+  "muscle_group": "triceps",
+  "sub_category": "בישיבה",
+  "equipment": "barbell",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בעמידה, כנגד מוט W (מאחורי הראש)",
+  "station_default": null,
+  "source_ref": "יד אחורית!F9"
+ },
+ {
+  "id": "08bbceb8-483b-5047-96b4-2fc691830058",
+  "muscle_group": "triceps",
+  "sub_category": "בישיבה",
+  "equipment": "machine",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בישיבה כנגד מכונה",
+  "station_default": "14",
+  "source_ref": "יד אחורית!F10"
+ },
+ {
+  "id": "6313df59-76fa-55e5-84b0-dcbf0e0709f5",
+  "muscle_group": "triceps",
+  "sub_category": "בהטיית גוף",
+  "equipment": "dumbbells",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בהטיית גוף כנגד משקולת 1",
+  "station_default": null,
+  "source_ref": "יד אחורית!F12"
+ },
+ {
+  "id": "31850b03-1aa4-5500-b31a-b82451cdeb21",
+  "muscle_group": "triceps",
+  "sub_category": "בהטיית גוף",
+  "equipment": "dumbbells",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בהטיית גוף כנגד משקולות",
+  "station_default": null,
+  "source_ref": "יד אחורית!F13"
+ },
+ {
+  "id": "22455c1f-a1cb-57b0-bb26-081ccb1243d8",
+  "muscle_group": "triceps",
+  "sub_category": "בהטיית גוף",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בהטיית גוף כנגד פולי עליון, כיוון למטה",
+  "station_default": null,
+  "source_ref": "יד אחורית!F14"
+ },
+ {
+  "id": "5f806cfe-c07b-559e-9165-fd6ad8e12e12",
+  "muscle_group": "triceps",
+  "sub_category": "בהטיית גוף",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בהטיית גוף כנגד קרוסאובר פולי תחתון",
+  "station_default": null,
+  "source_ref": "יד אחורית!F15"
+ },
+ {
+  "id": "12e30705-8b44-5c17-96c9-93af4768113a",
+  "muscle_group": "triceps",
+  "sub_category": "בהטיית גוף",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בהטיית גוף כנגד פולי עליון בהצלבה",
+  "station_default": null,
+  "source_ref": "יד אחורית!F16"
+ },
+ {
+  "id": "34ad168d-b893-53f3-95b8-728b069ba62d",
+  "muscle_group": "triceps",
+  "sub_category": "בהטיית גוף",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בהטיית גוף כנגד פולי בגובה צוואר,גב לפולי, כיוון קדימה",
+  "station_default": null,
+  "source_ref": "יד אחורית!F17"
+ },
+ {
+  "id": "6f73ab3e-cf9d-57ce-8115-7bf4c195b28a",
+  "muscle_group": "triceps",
+  "sub_category": "בהטיית גוף",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בעמידה, גוף כנגד פולי בגובה ישבן, גב לפולי, כיוון למעלה",
+  "station_default": null,
+  "source_ref": "יד אחורית!F18"
+ },
+ {
+  "id": "ae6ff1fb-33e5-5d34-8a3f-c8a2c34a4840",
+  "muscle_group": "triceps",
+  "sub_category": "בעמידה",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בעמידה כנגד פולי עליון ב-2 ידיים",
+  "station_default": null,
+  "source_ref": "יד אחורית!F20"
+ },
+ {
+  "id": "18b9996f-99b5-5240-953c-8adf2a60deb6",
+  "muscle_group": "triceps",
+  "sub_category": "בעמידה",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "יד 1 פנים לפולי",
+  "station_default": null,
+  "source_ref": "יד אחורית!F21"
+ },
+ {
+  "id": "90fabdeb-ccc7-5b58-9563-fb2885cca8b4",
+  "muscle_group": "triceps",
+  "sub_category": "בעמידה",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "יד 1 גב לפולי",
+  "station_default": null,
+  "source_ref": "יד אחורית!F22"
+ },
+ {
+  "id": "17adf0ba-e89a-5560-8ef6-47a4e665eb78",
+  "muscle_group": "triceps",
+  "sub_category": "בעמידה",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בעמידה כנגד פולי עליון ביד 1 פנים לפולי",
+  "station_default": null,
+  "source_ref": "יד אחורית!F23"
+ },
+ {
+  "id": "1db33cc8-72e7-5c80-b4f1-a8716ae10668",
+  "muscle_group": "triceps",
+  "sub_category": "בעמידה",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "פשיטת מרפקים בעמידה כנגד פולי עליון ביד 1 גב לפולי",
+  "station_default": null,
+  "source_ref": "יד אחורית!F24"
+ },
+ {
+  "id": "5df982bd-fda0-5315-8852-7f3b64683bcd",
+  "muscle_group": "back_ext",
+  "sub_category": null,
+  "equipment": "bodyweight",
+  "equipment_inferred": true,
+  "name_he": "פשיטת גו בכיסא רומי, שיפוע___, גובה כרית__",
+  "station_default": "25",
+  "source_ref": "זוקפי גו!B3"
+ },
+ {
+  "id": "eb73711a-10a6-58a8-9d96-c83228c0c481",
+  "muscle_group": "back_ext",
+  "sub_category": null,
+  "equipment": "bodyweight",
+  "equipment_inferred": true,
+  "name_he": "פשיטת גו בכיסא רומי, שיפוע___, גובה כרית__, כל צד בנפרד",
+  "station_default": "25",
+  "source_ref": "זוקפי גו!B4"
+ },
+ {
+  "id": "4dac2c0a-7d69-5ce4-b9a2-491ca2c0c948",
+  "muscle_group": "back_ext",
+  "sub_category": null,
+  "equipment": "dumbbells",
+  "equipment_inferred": true,
+  "name_he": "פשיטת גו באלכסון בעמידה, כנגד משקולת, כל צד בנפרד",
+  "station_default": null,
+  "source_ref": "זוקפי גו!B5"
+ },
+ {
+  "id": "1d281476-3bc4-5cd8-a46f-bd16f101a867",
+  "muscle_group": "back_ext",
+  "sub_category": null,
+  "equipment": null,
+  "equipment_inferred": true,
+  "name_he": "פשיטת גו בעמידה ל 3 צדדים, צד צד בנפרד",
+  "station_default": null,
+  "source_ref": "זוקפי גו!B6"
+ },
+ {
+  "id": "76d13a91-78ef-53dc-928e-4d74b9ad0b7f",
+  "muscle_group": "back_ext",
+  "sub_category": null,
+  "equipment": null,
+  "equipment_inferred": true,
+  "name_he": "פשיטת גו בעמידה ל 3 צדדים, כל צד בנפרד",
+  "station_default": null,
+  "source_ref": "זוקפי גו!B7"
+ },
+ {
+  "id": "23623e1a-596f-59d6-a1b8-3201b95e4522",
+  "muscle_group": "back_ext",
+  "sub_category": null,
+  "equipment": "bodyweight",
+  "equipment_inferred": true,
+  "name_he": "פשיטת גו בשכיבה על בוסו",
+  "station_default": null,
+  "source_ref": "זוקפי גו!B8"
+ },
+ {
+  "id": "0a9cc725-4398-5bc5-92c3-c02b3513bc71",
+  "muscle_group": "back_ext",
+  "sub_category": null,
+  "equipment": "bodyweight",
+  "equipment_inferred": true,
+  "name_he": "פשיטת גו בשכיבה על פיטבול",
+  "station_default": null,
+  "source_ref": "זוקפי גו!B9"
+ },
+ {
+  "id": "fce2d702-3bf9-57f8-a679-f2190b55d757",
+  "muscle_group": "back_ext",
+  "sub_category": null,
+  "equipment": "dumbbells",
+  "equipment_inferred": true,
+  "name_he": "פשיטת גו בעמידה כנגד משקולות",
+  "station_default": null,
+  "source_ref": "זוקפי גו!B10"
+ },
+ {
+  "id": "db3e8b9f-e549-52f7-a73c-ab68d04784c3",
+  "muscle_group": "back_ext",
+  "sub_category": null,
+  "equipment": "barbell",
+  "equipment_inferred": true,
+  "name_he": "פשיטת גו בעמידה כנגד מוט",
+  "station_default": null,
+  "source_ref": "זוקפי גו!B11"
+ },
+ {
+  "id": "6b6f5439-f1bd-5248-a457-b73b2325a5e8",
+  "muscle_group": "back_ext",
+  "sub_category": null,
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "פשיטת גו כנגד פולי תחתון, פנים לפולי",
+  "station_default": null,
+  "source_ref": "זוקפי גו!B12"
+ },
+ {
+  "id": "4b3f0bcc-2c27-5544-a974-bb71f71176e7",
+  "muscle_group": "back_ext",
+  "sub_category": null,
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "פשיטת גו כנגד פולי תחתון, גב לפולי",
+  "station_default": null,
+  "source_ref": "זוקפי גו!B13"
+ },
+ {
+  "id": "6bd2a7d3-f249-5e7f-8ad8-8f778252e07f",
+  "muscle_group": "back_ext",
+  "sub_category": null,
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "פשיטת גו באלכסון בעמידה כנגד פולי תחתון, כל צד בנפרד",
+  "station_default": null,
+  "source_ref": "זוקפי גו!B14"
+ },
+ {
+  "id": "50f35c0b-df55-5250-be95-d49b5e40b2e8",
+  "muscle_group": "back_ext",
+  "sub_category": null,
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "פשיטת גו באלכסון בישיבה כנגד פולי תחתון, כל צד בנפרד",
+  "station_default": null,
+  "source_ref": "זוקפי גו!B15"
+ },
+ {
+  "id": "d4135bb9-4fbd-58a5-8ef0-9a6f4d43643a",
+  "muscle_group": "back_ext",
+  "sub_category": null,
+  "equipment": "machine",
+  "equipment_inferred": true,
+  "name_he": "פשיטת גו בישיבה כנגד מכונה, גובה כיסא___, מנוף___",
+  "station_default": "3",
+  "source_ref": "זוקפי גו!B16"
+ },
+ {
+  "id": "84f2ea28-a773-5c5e-b34d-5e593b98e98c",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן בשכיבה עם משקולת (ידיים ישרות)",
+  "station_default": null,
+  "source_ref": "בטן!B7"
+ },
+ {
+  "id": "354f4087-55dd-58f8-97f4-c947ff7f7542",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן בשכיבה שיפוע שלילי עם משקולת (ידיים ישרות)",
+  "station_default": null,
+  "source_ref": "בטן!B8"
+ },
+ {
+  "id": "09732df7-6ed9-5d99-81ff-bcc11bfe032d",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן בשכיבה עם משקולת (מאחורי הראש)",
+  "station_default": null,
+  "source_ref": "בטן!B9"
+ },
+ {
+  "id": "4ee8aa0e-c8f0-5166-ada5-2ab3e8d9067d",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן בישיבה כנגד פולי מעל ראש, עם חבל",
+  "station_default": null,
+  "source_ref": "בטן!B12"
+ },
+ {
+  "id": "ade1f459-df49-5301-91a1-1a6e23927b0d",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן בשכיבה כנגד פולי תחתון",
+  "station_default": null,
+  "source_ref": "בטן!B13"
+ },
+ {
+  "id": "798d63fd-5737-5634-ae16-7c353e5898d7",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן, בעמידה על ברכיים, כנגד פולי עליון, גב לפולי",
+  "station_default": null,
+  "source_ref": "בטן!B14"
+ },
+ {
+  "id": "c0961b42-e21f-5b63-a6bb-25d7478d06c1",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן, בעמידה, כנגד פולי עליון, פנים לפולי",
+  "station_default": null,
+  "source_ref": "בטן!B15"
+ },
+ {
+  "id": "a3100854-e008-5b71-925a-9625cbbd20d7",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן בשכיבה עם מוט W H",
+  "station_default": null,
+  "source_ref": "בטן!B19"
+ },
+ {
+  "id": "fdc3c6ea-e785-5082-8c44-8fc42114aee8",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן בשכיבה עם מוט מוט H",
+  "station_default": null,
+  "source_ref": "בטן!B20"
+ },
+ {
+  "id": "735afd6b-ee81-509c-849a-7b38be1dbc46",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן בשכיבה עם מות W H",
+  "station_default": null,
+  "source_ref": "בטן!B21"
+ },
+ {
+  "id": "2ccfd612-26dd-5b71-b220-b4ff7cd973c3",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן בשכיבה עם מות מוט H",
+  "station_default": null,
+  "source_ref": "בטן!B22"
+ },
+ {
+  "id": "ae71503c-7239-56ab-80b0-32dc525344ca",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן בשכיבה עם מוט צר W H",
+  "station_default": null,
+  "source_ref": "בטן!B23"
+ },
+ {
+  "id": "41b2be3d-0a19-5e22-bb3d-942d762c152d",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן בשכיבה עם מוט צר מוט H",
+  "station_default": null,
+  "source_ref": "בטן!B24"
+ },
+ {
+  "id": "ac678ab2-9e77-50c6-b5c8-689f1443aa62",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן בשכיבה עם מוט מות W H",
+  "station_default": null,
+  "source_ref": "בטן!B25"
+ },
+ {
+  "id": "1c6c0e38-0a78-58b8-a6e9-c05d25c69bc8",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן בשכיבה עם מוט מות מוט H",
+  "station_default": null,
+  "source_ref": "בטן!B26"
+ },
+ {
+  "id": "26ce5a71-eff4-5ba2-9b5b-f6cdddad37ac",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן בשכיבה שיפוע שלילי עם מוט W H",
+  "station_default": null,
+  "source_ref": "בטן!B27"
+ },
+ {
+  "id": "1fad4ea5-6148-550c-9882-7d69a8863423",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן בשכיבה שיפוע שלילי עם מוט מוט H",
+  "station_default": null,
+  "source_ref": "בטן!B28"
+ },
+ {
+  "id": "8e6a4e40-f35f-52ba-830e-f5fdf42f70f6",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן בשכיבה שיפוע שלילי עם מות W H",
+  "station_default": null,
+  "source_ref": "בטן!B29"
+ },
+ {
+  "id": "a2cd035c-f6df-50a6-967c-b59d9f691a12",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן בשכיבה שיפוע שלילי עם מות מוט H",
+  "station_default": null,
+  "source_ref": "בטן!B30"
+ },
+ {
+  "id": "98e87cd7-a274-5b8c-925d-42d74328eb9a",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן בשכיבה שיפוע שלילי עם מוט צר W H",
+  "station_default": null,
+  "source_ref": "בטן!B31"
+ },
+ {
+  "id": "d976a500-a8c8-5309-b8c5-63cf6718e6f2",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן בשכיבה שיפוע שלילי עם מוט צר מוט H",
+  "station_default": null,
+  "source_ref": "בטן!B32"
+ },
+ {
+  "id": "367e747c-5655-531d-b10c-243d1d17ca78",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן בשכיבה שיפוע שלילי עם מוט מות W H",
+  "station_default": null,
+  "source_ref": "בטן!B33"
+ },
+ {
+  "id": "d8b3199c-b2a7-5af9-a235-c0d36cc22e00",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן בשכיבה שיפוע שלילי עם מוט מות מוט H",
+  "station_default": null,
+  "source_ref": "בטן!B34"
+ },
+ {
+  "id": "d2246de7-d8cf-5d40-b75b-7aeeeb59ba8a",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן בישיבה כנגד מכונה",
+  "station_default": "2, 3",
+  "source_ref": "בטן!B37"
+ },
+ {
+  "id": "89d3f588-a148-594c-8271-4d8476fd0613",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן כנגד גלגל ידני",
+  "station_default": null,
+  "source_ref": "בטן!B39"
+ },
+ {
+  "id": "49ca032c-0be3-5404-9da1-41b3c3150644",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן בשכיבה (ידיים ישרות)",
+  "station_default": null,
+  "source_ref": "בטן!B42"
+ },
+ {
+  "id": "8955b0f5-164d-594a-ab7e-32bde12b5614",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן, רגליים ב80 מעלות, ידים לכיוון רגליים",
+  "station_default": null,
+  "source_ref": "בטן!B43"
+ },
+ {
+  "id": "19c16195-8e48-57b1-9ee4-365c602cb247",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן על בוסו",
+  "station_default": null,
+  "source_ref": "בטן!B44"
+ },
+ {
+  "id": "2afbdecf-4970-5430-8648-305775bb19cf",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן על פיטבול",
+  "station_default": null,
+  "source_ref": "בטן!B45"
+ },
+ {
+  "id": "4c976e3f-cfc9-5242-896d-d26d1d65ece3",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן במצב מקבילים",
+  "station_default": null,
+  "source_ref": "בטן!B46"
+ },
+ {
+  "id": "b4aecf0f-8dcb-519a-8ee7-b07d42d01927",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "גלגול אגן לאחור בשכיבה",
+  "station_default": null,
+  "source_ref": "בטן!B47"
+ },
+ {
+  "id": "f7de3592-ae6b-57d9-a284-f09c99745803",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "גלגול אגן לאחור בתליה",
+  "station_default": null,
+  "source_ref": "בטן!B48"
+ },
+ {
+  "id": "4be762c3-19f2-55c9-8fc6-8455d01d0465",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "גלגול אגן לאחור בשכיבה שיפוע חיובי ידיים למעלה (ספה 1)",
+  "station_default": null,
+  "source_ref": "בטן!B49"
+ },
+ {
+  "id": "a6ff8e4b-18f4-5632-9bcc-335cc0e997a1",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "גלגול אגן במתקן 17, בתמיכה עם הגב",
+  "station_default": null,
+  "source_ref": "בטן!B50"
+ },
+ {
+  "id": "c01fd81b-06b9-5c10-b02f-10e3c2958fe4",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן מבוסו לעמידה",
+  "station_default": null,
+  "source_ref": "בטן!B51"
+ },
+ {
+  "id": "8ab85d41-bd1a-57ce-87b1-c2632c24fb6e",
+  "muscle_group": "abs",
+  "sub_category": "ישר בטני",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן מהמזרן, לעמידה",
+  "station_default": null,
+  "source_ref": "בטן!B52"
+ },
+ {
+  "id": "e91a05a1-f041-58ea-93ff-2cfb1a5e62f7",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפה צידית בעמידה כנגד משקולת",
+  "station_default": null,
+  "source_ref": "בטן!D7"
+ },
+ {
+  "id": "829e7994-04cf-57af-942b-d6786b72d9f8",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן בשכיבה באלכסון כנגד משקולות עם ידים ישרות (צד צד)",
+  "station_default": null,
+  "source_ref": "בטן!D8"
+ },
+ {
+  "id": "5e537425-4cac-5b72-851f-cddce3014867",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת בטן באלכסון בעמידה, כנגד כדור כוח, צד צד (שאיפה-ונשיפה)",
+  "station_default": null,
+  "source_ref": "בטן!D9"
+ },
+ {
+  "id": "4f81756e-0647-55ca-8e39-39bbbe2266f1",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפה צידית בעמידה כנגד פולי תחתון",
+  "station_default": null,
+  "source_ref": "בטן!D12"
+ },
+ {
+  "id": "a5d1c051-7ba9-5cb3-815d-0f1d3a553fdf",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן באלכסון בעמידה כנגד מוט מחובר לפולי עליון כל צד בנפרד",
+  "station_default": null,
+  "source_ref": "בטן!D13"
+ },
+ {
+  "id": "ed031027-39ca-5fca-b45c-c2072a38a38b",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן באלכסון, בעמידה על ברכיים, כנגד פולי עליון, גב אלכסון לפולי",
+  "station_default": null,
+  "source_ref": "בטן!D14"
+ },
+ {
+  "id": "b6a2e267-13f5-5d36-a4c7-70b8dfb178a3",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן באלכסון, בעמידה, כנגד פולי עליון,פנים לפולי, צד צד בנפרד",
+  "station_default": null,
+  "source_ref": "בטן!D15"
+ },
+ {
+  "id": "1d6cc6ee-7649-53ca-8e28-414f4a74a3e7",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן באלכסון, בעמידה, כנגד פולי עליון,פנים לפולי, כל צד בנפרד",
+  "station_default": null,
+  "source_ref": "בטן!D16"
+ },
+ {
+  "id": "a2672e5b-3ee4-54b8-853d-0714e2d0c89f",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "אלכסונים בישיבה כנגד מכונה, כל צד בנפרד",
+  "station_default": "2",
+  "source_ref": "בטן!D37"
+ },
+ {
+  "id": "91e8c298-ed15-5088-8640-927da9eba63a",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "אלכסונים בשכיבה כף רגל מעל הברך כל צד בנפרד",
+  "station_default": null,
+  "source_ref": "בטן!D42"
+ },
+ {
+  "id": "474549bc-f58c-5b68-b074-b85141588997",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן באלכסון, רגליים ב80 מעלות, יד לכיוון רגל נגדית, צד צד בנפרד",
+  "station_default": null,
+  "source_ref": "בטן!D43"
+ },
+ {
+  "id": "fbc745e8-7894-585e-9174-1ea94c1e707b",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן באלכסון, רגליים ב80 מעלות, יד לכיוון רגל נגדית, כל צד בנפרד",
+  "station_default": null,
+  "source_ref": "בטן!D44"
+ },
+ {
+  "id": "eed03853-74c2-592c-ad55-5c547a33d6c8",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן באלכסון על בוסו, צד צד, כל צד בנפרד, יד למעלה",
+  "station_default": null,
+  "source_ref": "בטן!D45"
+ },
+ {
+  "id": "7ea52f9f-d3f3-584c-a8a3-f5616a56cce6",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן באלכסון על פיטבול, צד צד בנפרד",
+  "station_default": null,
+  "source_ref": "בטן!D46"
+ },
+ {
+  "id": "d36bf5d6-254d-5691-8eca-0a085bce63fc",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן באלכסון על פיטבול, כל צד בנפרד",
+  "station_default": null,
+  "source_ref": "בטן!D47"
+ },
+ {
+  "id": "d8e4a189-c38d-5a07-8b26-dc2c367750f5",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "אלכסונים במצב מקבילים, צד צד בנפרד",
+  "station_default": null,
+  "source_ref": "בטן!D48"
+ },
+ {
+  "id": "12698fb7-9c14-5834-b6f3-7e8edf11b3d6",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "אלכסונים במצב מקבילים, כל צד בנפרד",
+  "station_default": null,
+  "source_ref": "בטן!D49"
+ },
+ {
+  "id": "9d034981-5d61-5505-b230-e4a27731908c",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן באלכסון, בשכיבה, צד צד בנפרד",
+  "station_default": null,
+  "source_ref": "בטן!D50"
+ },
+ {
+  "id": "4aa0e937-77c7-5131-ab0a-1b3746c76a9b",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן באלכסון, בשכיבה, כל צד בנפרד",
+  "station_default": null,
+  "source_ref": "בטן!D51"
+ },
+ {
+  "id": "7f582e63-f33e-59e3-babc-b17c38da4afe",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן באלכסון, בתליה, צד צד בנפרד",
+  "station_default": null,
+  "source_ref": "בטן!D52"
+ },
+ {
+  "id": "70126cd0-4db3-5fd7-8e5e-dc72db4d2ba0",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "כפיפות בטן באלכסון, בתליה, כל צד בנפרד",
+  "station_default": null,
+  "source_ref": "בטן!D53"
+ },
+ {
+  "id": "f5569d0f-73bc-55d0-a3db-eef2e7fb739b",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "גלגול אגן באלכסון בשכיבה, שיפוע חיובי ידיים למעלה (ספה 1), צד צד בנפרד",
+  "station_default": null,
+  "source_ref": "בטן!D54"
+ },
+ {
+  "id": "e4e5a2c7-3718-5591-a2ab-f6217f354434",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "גלגול אגן באלכסון בשכיבה, שיפוע חיובי ידיים למעלה (ספה 1), כל צד בנפרד",
+  "station_default": null,
+  "source_ref": "בטן!D55"
+ },
+ {
+  "id": "517fdc9c-f564-5cbd-ab02-787b5606a0bb",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "גלגול אגן באלכסון במתקן 17, בתמיכה עם הגב, צד צד בנפרד",
+  "station_default": null,
+  "source_ref": "בטן!D56"
+ },
+ {
+  "id": "97690e00-a7ca-5be7-bfb9-44c3766b6591",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "גלגול אגן באלכסון במתקן 17, בתמיכה עם הגב, כל צד בנפרד",
+  "station_default": null,
+  "source_ref": "בטן!D57"
+ },
+ {
+  "id": "92fe4333-7f3f-5cd2-96e9-e22716f1756d",
+  "muscle_group": "abs",
+  "sub_category": "אלכסונים",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "כפיפה צידית על כיסא רומי, כל צד בנפרד",
+  "station_default": "25",
+  "source_ref": "בטן!D58"
+ },
+ {
+  "id": "40af503a-c01e-5205-a0e2-d0ccdbfcd568",
+  "muscle_group": "abs",
+  "sub_category": "בטן פנימי",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "רוטציה בבטן בשכיבה כנגד כדור כוח, שמאלה וימינה",
+  "station_default": null,
+  "source_ref": "בטן!F7"
+ },
+ {
+  "id": "b5592dfb-3f19-51ae-9375-650889279e4e",
+  "muscle_group": "abs",
+  "sub_category": "בטן פנימי",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "רוטציה בבטן בעמידה כנגד פולי בגובה חזה, עם ידית 1, כל צד בנפרד",
+  "station_default": null,
+  "source_ref": "בטן!F12"
+ },
+ {
+  "id": "625d5ac6-c748-5a2a-9ae4-52d1a14c4e31",
+  "muscle_group": "abs",
+  "sub_category": "בטן תחתון",
+  "equipment": "bodyweight",
+  "equipment_inferred": true,
+  "name_he": "עליות ברכיים בישיבה על מזרן כנגד כדור כוח - להחזיק עם כפות רגליים",
+  "station_default": null,
+  "source_ref": "בטן!F14"
+ },
+ {
+  "id": "931b94f7-ea75-5774-88d9-2d3b0536db15",
+  "muscle_group": "shoulders",
+  "sub_category": "אמצעי:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "לחיצת כתפיים, בישיבה כנגד משקולות",
+  "station_default": null,
+  "source_ref": "כתפיים!B6"
+ },
+ {
+  "id": "2c7fb170-8f41-5b0b-8799-f5eec7a473a2",
+  "muscle_group": "shoulders",
+  "sub_category": "אמצעי:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "לחיצת כתפיים, בעמידה, כנגד משקולות",
+  "station_default": null,
+  "source_ref": "כתפיים!B7"
+ },
+ {
+  "id": "414905f2-d179-5a8c-8712-f6003b901d7f",
+  "muscle_group": "shoulders",
+  "sub_category": "אמצעי:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "לחיצת ארנולד, בישיבה כנגד משקולות",
+  "station_default": null,
+  "source_ref": "כתפיים!B8"
+ },
+ {
+  "id": "2701e37b-7885-58c1-90b6-726cdff6738a",
+  "muscle_group": "shoulders",
+  "sub_category": "אמצעי:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "לחיצת ארנולד, בעמידה, כנגד משקולות",
+  "station_default": null,
+  "source_ref": "כתפיים!B9"
+ },
+ {
+  "id": "90cbab5a-3644-5fb1-8816-ab5e41ac36c9",
+  "muscle_group": "shoulders",
+  "sub_category": "אמצעי:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "חתירה בעמידה כנגד משקולות",
+  "station_default": null,
+  "source_ref": "כתפיים!B10"
+ },
+ {
+  "id": "d7d12a24-b248-5f99-b296-3e2379a8eedb",
+  "muscle_group": "shoulders",
+  "sub_category": "אמצעי:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "הרחקת כתפיים בישיבה על פיטבול כנגד משקולות",
+  "station_default": null,
+  "source_ref": "כתפיים!B11"
+ },
+ {
+  "id": "e9c466d6-6c75-5d66-8693-7fed702d4568",
+  "muscle_group": "shoulders",
+  "sub_category": "אמצעי:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "הרחקת כתפיים בישיבה כנגד משקולות",
+  "station_default": null,
+  "source_ref": "כתפיים!B12"
+ },
+ {
+  "id": "c219473b-1915-5acf-9c9a-046f8a2881ed",
+  "muscle_group": "shoulders",
+  "sub_category": "אמצעי:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "הרחקת כתפיים בעמידה כנגד משקולות",
+  "station_default": null,
+  "source_ref": "כתפיים!B13"
+ },
+ {
+  "id": "c3a488ef-7e84-5f95-9636-291f4e143e95",
+  "muscle_group": "shoulders",
+  "sub_category": "אמצעי:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "הרחקת כתפיים, בישיבה 60 מעלות, כנגד משקולות",
+  "station_default": null,
+  "source_ref": "כתפיים!B14"
+ },
+ {
+  "id": "af630d28-a876-56bb-9db5-df3c6015c01a",
+  "muscle_group": "shoulders",
+  "sub_category": "אמצעי:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "לחיצת כתפיים בעמידה כנגד קרוסאובר פולי תחתון",
+  "station_default": null,
+  "source_ref": "כתפיים!B17"
+ },
+ {
+  "id": "6606689b-7b6d-5632-8a72-4ad19dbf4e14",
+  "muscle_group": "shoulders",
+  "sub_category": "אמצעי:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "לחיצת כתפיים בישיבה כנגד קרוסאובר פולי תחתון",
+  "station_default": null,
+  "source_ref": "כתפיים!B18"
+ },
+ {
+  "id": "c3cc992c-1a62-59d7-87cb-07aef4966cf0",
+  "muscle_group": "shoulders",
+  "sub_category": "אמצעי:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "הרחקת כתפיים בעמידה כנגד פולי תחתון כל יד בנפרד",
+  "station_default": null,
+  "source_ref": "כתפיים!B19"
+ },
+ {
+  "id": "1dc9c116-5c41-5713-bf2f-4dbfb9be48fe",
+  "muscle_group": "shoulders",
+  "sub_category": "אמצעי:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "הרחקת כתפיים בעמידה כנגד פולי בגובה כף יד, כל יד בנפרד",
+  "station_default": null,
+  "source_ref": "כתפיים!B20"
+ },
+ {
+  "id": "9bf19626-ef7a-5f12-bef4-11ff36e11c8d",
+  "muscle_group": "shoulders",
+  "sub_category": "אמצעי:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "חתירה בעמידה כנגד פולי תחתון",
+  "station_default": null,
+  "source_ref": "כתפיים!B21"
+ },
+ {
+  "id": "6309cb8a-0e5d-5c8e-8885-640611957d30",
+  "muscle_group": "shoulders",
+  "sub_category": "אמצעי:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "הרחקת כתפיים בעמידה כנגד פולי תחתון בהצלבה",
+  "station_default": null,
+  "source_ref": "כתפיים!B22"
+ },
+ {
+  "id": "28112d12-e968-51e7-9a7c-b8119daf6379",
+  "muscle_group": "shoulders",
+  "sub_category": "אמצעי:",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "לחיצת כתפיים בישיבה כנגד מוט",
+  "station_default": null,
+  "source_ref": "כתפיים!B25"
+ },
+ {
+  "id": "53072e26-4541-5eb3-9b7c-dd1c599eca4c",
+  "muscle_group": "shoulders",
+  "sub_category": "אמצעי:",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "חתירה בעמידה כנגד מוט W",
+  "station_default": null,
+  "source_ref": "כתפיים!B26"
+ },
+ {
+  "id": "05a644cc-2141-5d6e-9c3c-bf9a87bc7bca",
+  "muscle_group": "shoulders",
+  "sub_category": "אמצעי:",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "לחיצת כתפיים בישיבה כנגד סמית' משין (אחיזה רחבה)",
+  "station_default": "26",
+  "source_ref": "כתפיים!B31"
+ },
+ {
+  "id": "d8faa1d4-cd7a-5331-8010-72a898c414a1",
+  "muscle_group": "shoulders",
+  "sub_category": "אמצעי:",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "לחיצת כתפיים בישיבה כנגד מכונה באחיזה רחבה",
+  "station_default": "13",
+  "source_ref": "כתפיים!B32"
+ },
+ {
+  "id": "16980074-d0d4-5f69-8af6-ed2175d14b9b",
+  "muscle_group": "shoulders",
+  "sub_category": "אמצעי:",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "חתירה בעמידה כנגד סמית' משין",
+  "station_default": "26",
+  "source_ref": "כתפיים!B33"
+ },
+ {
+  "id": "686b3ca6-ed9e-59d4-ad65-6888af2349fa",
+  "muscle_group": "shoulders",
+  "sub_category": "רוטציה בכתף:",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "רוטציה חיצונית בכתף כנגד פולי בגובה מרפק כל יד בנפרד",
+  "station_default": null,
+  "source_ref": "כתפיים!B35"
+ },
+ {
+  "id": "6fa9b0e9-8a89-5d81-8aef-d5d022fd927c",
+  "muscle_group": "shoulders",
+  "sub_category": "רוטציה בכתף:",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "רוטציה פנימית בכתף כנגד פולי בגובה מרפק כל יד בנפרד",
+  "station_default": null,
+  "source_ref": "כתפיים!B36"
+ },
+ {
+  "id": "a3937b45-f7a0-5019-93c8-8a38a6e2f0fa",
+  "muscle_group": "shoulders",
+  "sub_category": "רוטציה בכתף:",
+  "equipment": "bodyweight",
+  "equipment_inferred": true,
+  "name_he": "רוטציה חיצונית בכתף כנגד גומיה בגובה מרפק כל יד בנפרד",
+  "station_default": null,
+  "source_ref": "כתפיים!B37"
+ },
+ {
+  "id": "da3852e3-6672-5087-aa7f-888b55278018",
+  "muscle_group": "shoulders",
+  "sub_category": "רוטציה בכתף:",
+  "equipment": "bodyweight",
+  "equipment_inferred": true,
+  "name_he": "רוטציה פנימית בכתף כנגד גומיה בגובה מרפק כל יד בנפרד",
+  "station_default": null,
+  "source_ref": "כתפיים!B38"
+ },
+ {
+  "id": "ad82979c-c35c-5572-83d8-a7875a657e63",
+  "muscle_group": "shoulders",
+  "sub_category": "רוטציה בכתף:",
+  "equipment": "barbell",
+  "equipment_inferred": true,
+  "name_he": "רוטציה חיצונית בכתף כנגד משקולת, (מרפק על מוט של סמית' משין) כל יד בנפרד",
+  "station_default": null,
+  "source_ref": "כתפיים!B39"
+ },
+ {
+  "id": "dc3e924e-bab4-5d55-a4e0-e2e7127784c1",
+  "muscle_group": "shoulders",
+  "sub_category": "קידמית:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "לחיצת כתפיים, בישיבה כנגד משקולות אחיזה צרה",
+  "station_default": null,
+  "source_ref": "כתפיים!D6"
+ },
+ {
+  "id": "b37aac7c-80ba-5530-ad3c-6aefb8d101be",
+  "muscle_group": "shoulders",
+  "sub_category": "קידמית:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת כתף בעמידה כנגד משקולות יד יד",
+  "station_default": null,
+  "source_ref": "כתפיים!D7"
+ },
+ {
+  "id": "75f2a93e-cf51-50b9-82b4-a98681adec97",
+  "muscle_group": "shoulders",
+  "sub_category": "קידמית:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "הנפת משקולת יד מגובע של ברך כל יד בנפרד",
+  "station_default": null,
+  "source_ref": "כתפיים!D8"
+ },
+ {
+  "id": "57c47e10-5ac4-5351-ae00-9cc6d7b2e6f1",
+  "muscle_group": "shoulders",
+  "sub_category": "קידמית:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "הנפת משקולת יד מגובע של מהרצפה, כל יד בנפרד",
+  "station_default": null,
+  "source_ref": "כתפיים!D9"
+ },
+ {
+  "id": "8d388ceb-d236-5ac3-ba75-087effc25dd7",
+  "muscle_group": "shoulders",
+  "sub_category": "קידמית:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת כתפיים בישיבה על פיטבול כנגד משקולות יד יד",
+  "station_default": null,
+  "source_ref": "כתפיים!D10"
+ },
+ {
+  "id": "c8e15caa-be1b-5c29-8b50-a951654d1d64",
+  "muscle_group": "shoulders",
+  "sub_category": "קידמית:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת כתף בעמידה כנגד משקולות",
+  "station_default": null,
+  "source_ref": "כתפיים!D11"
+ },
+ {
+  "id": "952e0dcf-abff-54c1-8ec9-afe7af572390",
+  "muscle_group": "shoulders",
+  "sub_category": "קידמית:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת כתף בישיבה כנגד משקולות",
+  "station_default": null,
+  "source_ref": "כתפיים!D12"
+ },
+ {
+  "id": "d5c49cf7-8a2b-5f7f-8910-1ffc4459e13b",
+  "muscle_group": "shoulders",
+  "sub_category": "קידמית:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "כפיפת כתפיים, בישיבה 60 מעלות, כנגד משקולות",
+  "station_default": null,
+  "source_ref": "כתפיים!D13"
+ },
+ {
+  "id": "03e597c6-0234-50b6-89a5-b8ccb0894cdc",
+  "muscle_group": "shoulders",
+  "sub_category": "קידמית:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת כתף בעמידה על מדרגה, כנגד פולי תחתון, גב לפולי",
+  "station_default": null,
+  "source_ref": "כתפיים!D17"
+ },
+ {
+  "id": "933160ff-893d-55cd-8409-1b6ae0f2b742",
+  "muscle_group": "shoulders",
+  "sub_category": "קידמית:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת כתף בעמידה כנגד פולי תחתון פנים לפולי לפולי, כל יד בנפרד",
+  "station_default": null,
+  "source_ref": "כתפיים!D18"
+ },
+ {
+  "id": "9a21f519-c5ca-5654-99fa-95cd15fd93b0",
+  "muscle_group": "shoulders",
+  "sub_category": "קידמית:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת כתף בעמידה כנגד פולי תחתון פנים גב לפולי, כל יד בנפרד",
+  "station_default": null,
+  "source_ref": "כתפיים!D19"
+ },
+ {
+  "id": "ca492958-b0d5-5398-8fd0-068a47d544b7",
+  "muscle_group": "shoulders",
+  "sub_category": "קידמית:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "כפיפת כתף בהטיה לפנים, כנגד פולי בגובה כף יד, גב לפולי, כל יד בנפרד",
+  "station_default": null,
+  "source_ref": "כתפיים!D20"
+ },
+ {
+  "id": "98da07a3-4b9c-58d9-ad8e-c405471cd3eb",
+  "muscle_group": "shoulders",
+  "sub_category": "קידמית:",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפת כתף בעמידה כנגד מוט W",
+  "station_default": null,
+  "source_ref": "כתפיים!D25"
+ },
+ {
+  "id": "909917ce-2cd0-57e4-b387-83b81ea30cc7",
+  "muscle_group": "shoulders",
+  "sub_category": "קידמית:",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "כפיפת כתף בישיבה 60 מעלות כנגד מוט W",
+  "station_default": null,
+  "source_ref": "כתפיים!D26"
+ },
+ {
+  "id": "0df1fa11-1f24-5b9a-98cb-95695f9ac825",
+  "muscle_group": "shoulders",
+  "sub_category": "קידמית:",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "לחיצת כתפיים בישיבה, כנגד מוט H",
+  "station_default": null,
+  "source_ref": "כתפיים!D27"
+ },
+ {
+  "id": "bf1d4336-fd6e-5627-9b1c-ef480399b830",
+  "muscle_group": "shoulders",
+  "sub_category": "קידמית:",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "לחיצת כתף, בהמידת על ברך אחד, כנגד קצה של המוט, כל יד בנפרד",
+  "station_default": null,
+  "source_ref": "כתפיים!D28"
+ },
+ {
+  "id": "2cd1913f-61a1-57ca-8af3-91e4b3da35d2",
+  "muscle_group": "shoulders",
+  "sub_category": "קידמית:",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "לחיצת כתפיים בישיבה כנגד סמית' משין (אחיזה צרה)",
+  "station_default": "26",
+  "source_ref": "כתפיים!D31"
+ },
+ {
+  "id": "e53a6089-0dce-547d-a429-3390a38e14e9",
+  "muscle_group": "shoulders",
+  "sub_category": "קידמית:",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "לחיצת כתפיים בישיבה כנגד מכונה (אחיזה צרה)",
+  "station_default": "13",
+  "source_ref": "כתפיים!D32"
+ },
+ {
+  "id": "d52d6a0b-f207-5693-abb9-57fa4a4785e1",
+  "muscle_group": "shoulders",
+  "sub_category": "קידמית:",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "לחיצת כתפיים בישיבה 60 מעלות כנגד סמית' משין (אחיזה צרה)",
+  "station_default": "26",
+  "source_ref": "כתפיים!D33"
+ },
+ {
+  "id": "e668d771-ec17-5fda-a3d8-4d4988b67551",
+  "muscle_group": "shoulders",
+  "sub_category": "אחורית:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "הרחקה אופקית בשכיבה על הבטן, שיפוע 15-30 מעלות, כנגד משקולות",
+  "station_default": null,
+  "source_ref": "כתפיים!F6"
+ },
+ {
+  "id": "8f21d4ab-eee7-504d-a065-4a641a7a68ee",
+  "muscle_group": "shoulders",
+  "sub_category": "אחורית:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "חתירה באחיזה רחבה (הרחקה אופקית) בשכיבה על הבטן כנגד משקולות",
+  "station_default": null,
+  "source_ref": "כתפיים!F7"
+ },
+ {
+  "id": "585df252-7df5-5d2a-982d-f8854e4a7f3e",
+  "muscle_group": "shoulders",
+  "sub_category": "אחורית:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "חתירה אופקית, בהטיית גוף, תמיכה ליד השנייה, כנגד משקולת, כל יד בנפרד",
+  "station_default": null,
+  "source_ref": "כתפיים!F8"
+ },
+ {
+  "id": "dbc8cc44-71db-55da-8f6c-2966cd1bdcb4",
+  "muscle_group": "shoulders",
+  "sub_category": "אחורית:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "הרחקה אופקית בהטיית גוף כנגד משקולות",
+  "station_default": null,
+  "source_ref": "כתפיים!F9"
+ },
+ {
+  "id": "cda95e92-715e-5ed2-ac9c-0e4c258f2656",
+  "muscle_group": "shoulders",
+  "sub_category": "אחורית:",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "הרחקה אופקית בהטיית גוף כנגד משקולת 1, כל יד בנפרד",
+  "station_default": null,
+  "source_ref": "כתפיים!F10"
+ },
+ {
+  "id": "632f509b-77eb-5c84-b820-fc9736d6283f",
+  "muscle_group": "shoulders",
+  "sub_category": "אחורית:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "הרחקה אופקית בשכיבה על הגב כנגד כייבל קרוס",
+  "station_default": null,
+  "source_ref": "כתפיים!F17"
+ },
+ {
+  "id": "3057b610-3ac2-5404-a158-a059c585f209",
+  "muscle_group": "shoulders",
+  "sub_category": "אחורית:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "הרחקה אופקית בשכיבה שיפוע חיובי כנגד כייבל קרוס פולי אמצעי בהצלבה",
+  "station_default": null,
+  "source_ref": "כתפיים!F18"
+ },
+ {
+  "id": "6d41dadb-30a5-56e3-bb99-4f49df397170",
+  "muscle_group": "shoulders",
+  "sub_category": "אחורית:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "חתירה באחיזה רחבה כנגד T-BAR עם קצה של המוט",
+  "station_default": null,
+  "source_ref": "כתפיים!F19"
+ },
+ {
+  "id": "6fff7459-c0de-5a63-ae9a-86ddf849ab51",
+  "muscle_group": "shoulders",
+  "sub_category": "אחורית:",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "חתירה אופקית בעמידה כנגד כייבל קרוס פולי אמצעי",
+  "station_default": null,
+  "source_ref": "כתפיים!F20"
+ },
+ {
+  "id": "b0bcdccc-90c2-537e-905b-d09ef0e8c385",
+  "muscle_group": "shoulders",
+  "sub_category": "אחורית:",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "חתירה בשכיבה על בטן, שיפוע 15-30 מעלות, כנגד מוט W (אחיזה רחבה)",
+  "station_default": null,
+  "source_ref": "כתפיים!F25"
+ },
+ {
+  "id": "c1c3ff03-d9a1-572f-9aa4-48301356c0ee",
+  "muscle_group": "shoulders",
+  "sub_category": "אחורית:",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "הרחקה אופקית בישיבה כנגד מכונה",
+  "station_default": "12",
+  "source_ref": "כתפיים!F31"
+ },
+ {
+  "id": "e25f6912-4ebe-54be-bed1-0d3c09ef43e3",
+  "muscle_group": "shoulders",
+  "sub_category": "אחורית:",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "הרחקה אופקית בישיבה מהצד כנגד מכונה, כל יד בנפרד",
+  "station_default": "12",
+  "source_ref": "כתפיים!F32"
+ },
+ {
+  "id": "c18ffce6-c2ed-5276-a6b4-8ca4ebc1aaba",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "סקוואט כנגד משקולת 1 \\\\ 2 משקולות",
+  "station_default": null,
+  "source_ref": "רגליים!B28"
+ },
+ {
+  "id": "defbbf52-eb24-5d11-8b9f-76742e815482",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "סקוואט סומו כנגד משקולת 1",
+  "station_default": null,
+  "source_ref": "רגליים!B29"
+ },
+ {
+  "id": "ed707a8b-4cac-5d07-bb88-957b798defea",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "סקוואט בעמידה על בוסו כנגד משקולות",
+  "station_default": null,
+  "source_ref": "רגליים!B30"
+ },
+ {
+  "id": "32bbf9bd-5baa-55e2-9005-6af80905f2fc",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "מכרעים סטטי כנגד משקולות, כל צד בנפרד",
+  "station_default": null,
+  "source_ref": "רגליים!B31"
+ },
+ {
+  "id": "8943c3aa-2eb7-53cc-9a23-a11a3e0deb33",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "דד ליפט כנגד משקולות",
+  "station_default": null,
+  "source_ref": "רגליים!B32"
+ },
+ {
+  "id": "c970b06c-2464-50be-8794-4977d6aeb417",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "dumbbells",
+  "equipment_inferred": false,
+  "name_he": "סומו דד ליפט כנגד משקולת",
+  "station_default": null,
+  "source_ref": "רגליים!B33"
+ },
+ {
+  "id": "1a40f652-6a11-5e97-847c-59cfa912618a",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "סקוואט כנגד קרוסאובר פולי תחתון",
+  "station_default": null,
+  "source_ref": "רגליים!B36"
+ },
+ {
+  "id": "594f2fa9-79bc-5648-8a8a-7cbb6bda2592",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "סקוואט סומו כנגד קרוסאובר פולי תחתון",
+  "station_default": null,
+  "source_ref": "רגליים!B37"
+ },
+ {
+  "id": "94b83690-5a19-5651-b51b-4514f92bfc04",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "cable",
+  "equipment_inferred": false,
+  "name_he": "סקוואט בעמידה על בוסו כנגד קרוסאובר פולי תחתון",
+  "station_default": null,
+  "source_ref": "רגליים!B38"
+ },
+ {
+  "id": "b2881c97-09ed-5e20-94a7-53b08515d202",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "סקוואט כנגד מוט",
+  "station_default": null,
+  "source_ref": "רגליים!B41"
+ },
+ {
+  "id": "03e8e4eb-843a-5320-b2a3-670e673be58b",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "סקוואט סומו כנגד מוט",
+  "station_default": null,
+  "source_ref": "רגליים!B42"
+ },
+ {
+  "id": "3552c8e1-f61b-52f5-8c82-f7b719c19f8d",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "סקוואט בעמידה על בוסו כנגד משקולות גוף",
+  "station_default": null,
+  "source_ref": "רגליים!B43"
+ },
+ {
+  "id": "dfdd7e7c-8b95-5ced-b923-6865077e9a74",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "סקוואט בעמידה על בוסו כנגד משקולות מוט",
+  "station_default": null,
+  "source_ref": "רגליים!B44"
+ },
+ {
+  "id": "a255fde6-9489-5ff9-ad42-1731e734fa41",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "סקוואט בעמידה על בוסו כנגד משקל גוף",
+  "station_default": null,
+  "source_ref": "רגליים!B45"
+ },
+ {
+  "id": "83a4e01c-2302-54f9-8188-27317515fff6",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "סקוואט בעמידה על בוסו כנגד משקל מוט",
+  "station_default": null,
+  "source_ref": "רגליים!B46"
+ },
+ {
+  "id": "5cb0a6dd-da5c-56bd-b7e1-d63caad7739c",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "מכרעים כנגד מוט",
+  "station_default": null,
+  "source_ref": "רגליים!B47"
+ },
+ {
+  "id": "1ea98125-2411-5496-8997-44c6edbb4aa5",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "דד ליפט כנגד מוט",
+  "station_default": null,
+  "source_ref": "רגליים!B48"
+ },
+ {
+  "id": "c6882047-9a4e-5613-ac47-7d5f9bd0f1de",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "barbell",
+  "equipment_inferred": false,
+  "name_he": "סומו דד ליפט כנגד מוט",
+  "station_default": null,
+  "source_ref": "רגליים!B49"
+ },
+ {
+  "id": "53c0d628-8d73-5a52-aa47-aa60962b2fb8",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "סקוואט כנגד סמית' משין",
+  "station_default": "26",
+  "source_ref": "רגליים!B52"
+ },
+ {
+  "id": "f29ae485-a3a1-5edc-80f4-1ce1828b4cd0",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "סקוואט סומו כנגד סמית' משין",
+  "station_default": "26",
+  "source_ref": "רגליים!B53"
+ },
+ {
+  "id": "b5716098-c5f3-5d04-bacf-6ac42be562b5",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "מכרעים כנגד סמית' משין",
+  "station_default": "26",
+  "source_ref": "רגליים!B54"
+ },
+ {
+  "id": "3f03d200-6dea-5f3b-904a-a41f4dadf799",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "דד ליפט כנגד סמית' משין",
+  "station_default": "26",
+  "source_ref": "רגליים!B55"
+ },
+ {
+  "id": "e008248d-4889-52a7-a9a5-dbf54dd24fe9",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "סומו דד ליפט כנגד סמית' משין",
+  "station_default": "26",
+  "source_ref": "רגליים!B56"
+ },
+ {
+  "id": "18f49d17-adab-542c-9335-15db23ee62e3",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "לחיצת רגליים בישיבה כנגד מכונה רגליים ביחד רגל בנפרד",
+  "station_default": "15",
+  "source_ref": "רגליים!B57"
+ },
+ {
+  "id": "c2bbd661-2018-589b-a89f-e5f7635b5692",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "לחיצת רגליים בישיבה כנגד מכונה רגליים כל רגל בנפרד",
+  "station_default": "15",
+  "source_ref": "רגליים!B58"
+ },
+ {
+  "id": "1e1bf3b9-7a6e-5328-85d2-719a19a37d0c",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "machine",
+  "equipment_inferred": false,
+  "name_he": "פשיטת ירך בהטיית גוף כנגד מכונה",
+  "station_default": "8",
+  "source_ref": "רגליים!B59"
+ },
+ {
+  "id": "948ec6e4-1fa9-55d1-ad3d-c164a6c59b13",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "סקוואט כנגד משקל גוף",
+  "station_default": null,
+  "source_ref": "רגליים!B62"
+ },
+ {
+  "id": "56c08aea-8c15-5112-b6e9-9c7c437dabed",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "סקוואט סומו כנגד משקל גוף",
+  "station_default": null,
+  "source_ref": "רגליים!B63"
+ },
+ {
+  "id": "52c52cf5-12da-5b0a-9bd0-7a7c2dadd4c5",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "פיסטול סקוואט עם עזרה של מוט סמית' משין",
+  "station_default": "26",
+  "source_ref": "רגליים!B64"
+ },
+ {
+  "id": "84690286-1173-5fb9-90ee-8ea038650ffc",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "מכרעים על בוסו, כל צד בנפרד",
+  "station_default": null,
+  "source_ref": "רגליים!B66"
+ },
+ {
+  "id": "af9dcd6f-9a33-5cbd-9cfc-30d857992677",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "מכרעים דינמי בתנועה קדימה",
+  "station_default": null,
+  "source_ref": "רגליים!B67"
+ },
+ {
+  "id": "1f9bd594-3657-5403-b7f3-5683bdfb0968",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "מכרעים דינמי בתנועה אחורה",
+  "station_default": null,
+  "source_ref": "רגליים!B68"
+ },
+ {
+  "id": "719def45-398b-5e73-8291-0b0a8f71be33",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "קפיצה על מדרגה",
+  "station_default": null,
+  "source_ref": "רגליים!B69"
+ },
+ {
+  "id": "879a8d13-ab46-527d-ae94-46968b7547cd",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "קפיצה על BOX",
+  "station_default": null,
+  "source_ref": "רגליים!B70"
+ },
+ {
+  "id": "c6074055-1157-545d-9fda-38b9d4cca029",
+  "muscle_group": "legs",
+  "sub_category": "glut+quad",
+  "equipment": "bodyweight",
+  "equipment_inferred": false,
+  "name_he": "עליה על ארגז כל רגל בנפרד",
+  "station_default": null,
+  "source_ref": "רגליים!B71"
+ },
+ {
+  "id": "9a0d3ab0-91b6-5078-8d6d-a41f8c159e6f",
+  "muscle_group": "legs",
+  "sub_category": "hamstrings",
+  "equipment": "machine",
+  "equipment_inferred": true,
+  "name_he": "כפיפת ברכיים, בישיבה כנגד מכונה",
+  "station_default": "6",
+  "source_ref": "רגליים!D4"
+ },
+ {
+  "id": "ac2a0131-8e55-5de9-a4f5-cffa5e6fe9b3",
+  "muscle_group": "legs",
+  "sub_category": "hamstrings",
+  "equipment": "machine",
+  "equipment_inferred": true,
+  "name_he": "כפיפת ברכיים בישיבה כנגד מכונה, כל רגל בנפרד",
+  "station_default": "6",
+  "source_ref": "רגליים!D5"
+ },
+ {
+  "id": "d5182979-4a19-59a1-96ed-84462db58736",
+  "muscle_group": "legs",
+  "sub_category": "hamstrings",
+  "equipment": "machine",
+  "equipment_inferred": true,
+  "name_he": "כפיפת ברכיים בעמידה על מדרגה, כנגד מכונה, כל רגל בנפרד",
+  "station_default": "6",
+  "source_ref": "רגליים!D6"
+ },
+ {
+  "id": "ff95cbfc-359a-5978-a281-593cc88fc5ce",
+  "muscle_group": "legs",
+  "sub_category": "hamstrings",
+  "equipment": "machine",
+  "equipment_inferred": true,
+  "name_he": "נפילה קדימה מעמידת ברכיים על ארגז, רגליים במכונה",
+  "station_default": "11",
+  "source_ref": "רגליים!D7"
+ },
+ {
+  "id": "353cf376-2b41-5ca8-a4e9-c2e5766059c2",
+  "muscle_group": "legs",
+  "sub_category": "hamstrings",
+  "equipment": "bodyweight",
+  "equipment_inferred": true,
+  "name_he": "כפיפת ברכיים עם משקל גוף, רגליים על ארגז, בטליה על מקבלים",
+  "station_default": null,
+  "source_ref": "רגליים!D8"
+ },
+ {
+  "id": "7edd5908-b85d-5d51-bb2c-29a95401aeeb",
+  "muscle_group": "legs",
+  "sub_category": "hamstrings",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "כפיפת ברך בשכיבה על בטן כנגד פולי תחתון",
+  "station_default": null,
+  "source_ref": "רגליים!D9"
+ },
+ {
+  "id": "2439878b-84bf-52c6-bd3f-3523ffc32655",
+  "muscle_group": "legs",
+  "sub_category": "hamstrings",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "כפיפת ברכיים בשכיבה על בטן כנגד פולי תחתון",
+  "station_default": null,
+  "source_ref": "רגליים!D10"
+ },
+ {
+  "id": "08da0c35-6580-59b7-8aec-5bb8370e2f32",
+  "muscle_group": "legs",
+  "sub_category": "hamstrings",
+  "equipment": "dumbbells",
+  "equipment_inferred": true,
+  "name_he": "סטיף לג דד ליפט כנגד משקולת משין",
+  "station_default": null,
+  "source_ref": "רגליים!D11"
+ },
+ {
+  "id": "d340f7e2-e9d2-5a24-b3d0-dc6fec237a98",
+  "muscle_group": "legs",
+  "sub_category": "hamstrings",
+  "equipment": "barbell",
+  "equipment_inferred": true,
+  "name_he": "סטיף לג דד ליפט כנגד סמית' משין",
+  "station_default": "26",
+  "source_ref": "רגליים!D12"
+ },
+ {
+  "id": "ab5278cd-1079-594f-bf3d-ce6dca574f9f",
+  "muscle_group": "legs",
+  "sub_category": "hamstrings",
+  "equipment": "barbell",
+  "equipment_inferred": true,
+  "name_he": "סטיף לג דד ליפט כנגד מוט משין",
+  "station_default": null,
+  "source_ref": "רגליים!D13"
+ },
+ {
+  "id": "25c87e92-4519-5b83-baae-b73a39549d0e",
+  "muscle_group": "legs",
+  "sub_category": "hamstrings",
+  "equipment": null,
+  "equipment_inferred": true,
+  "name_he": "כפיפת ברך 1 בעמידה",
+  "station_default": null,
+  "source_ref": "רגליים!D14"
+ },
+ {
+  "id": "ed6d4700-f7b0-561e-bf45-3a4db31ce71d",
+  "muscle_group": "legs",
+  "sub_category": "quad",
+  "equipment": "machine",
+  "equipment_inferred": true,
+  "name_he": "פשיטת ברכיים בישיבה כנגד מכונה",
+  "station_default": "6",
+  "source_ref": "רגליים!D16"
+ },
+ {
+  "id": "bbdbed24-e220-5902-97bc-135945a0a85c",
+  "muscle_group": "legs",
+  "sub_category": "quad",
+  "equipment": "machine",
+  "equipment_inferred": true,
+  "name_he": "פשיטת ברכיים בישיבה כנגד מכונה (רגל-רגל)",
+  "station_default": "6",
+  "source_ref": "רגליים!D17"
+ },
+ {
+  "id": "8902428e-ac04-5eb3-8655-ee3d96a892e4",
+  "muscle_group": "legs",
+  "sub_category": "quad",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "פשיטת ברכיים בשכיבה שיפוע שלילי כנגד פולי תחתון על ספה 30№",
+  "station_default": null,
+  "source_ref": "רגליים!D18"
+ },
+ {
+  "id": "9917bfae-9621-5f46-a7ca-65b2bae91bc5",
+  "muscle_group": "legs",
+  "sub_category": "glut",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "פשיטת ירך בהטיית גוף כנגד פולי תחתון",
+  "station_default": null,
+  "source_ref": "רגליים!D20"
+ },
+ {
+  "id": "7e67b3f0-10d0-5d37-8105-8ef82643b935",
+  "muscle_group": "legs",
+  "sub_category": "glut",
+  "equipment": "dumbbells",
+  "equipment_inferred": true,
+  "name_he": "פשיטת ירך בעמידת 6 עם משקולת על הרגל",
+  "station_default": null,
+  "source_ref": "רגליים!D21"
+ },
+ {
+  "id": "d0e7d595-3ad6-5c11-8afd-4081091b4f09",
+  "muscle_group": "legs",
+  "sub_category": "glut",
+  "equipment": "bodyweight",
+  "equipment_inferred": true,
+  "name_he": "הרמת ישבן על מזרן עם גומיה",
+  "station_default": null,
+  "source_ref": "רגליים!D22"
+ },
+ {
+  "id": "5347333e-5dfc-52ba-9a28-4ddf9daa3a10",
+  "muscle_group": "legs",
+  "sub_category": "glut",
+  "equipment": null,
+  "equipment_inferred": true,
+  "name_he": "היפ טראסט, גב על ספה, רגליים על הרגז",
+  "station_default": null,
+  "source_ref": "רגליים!D23"
+ },
+ {
+  "id": "78e0e27f-7923-5384-b414-42aab2c2c2fe",
+  "muscle_group": "legs",
+  "sub_category": "glut",
+  "equipment": "barbell",
+  "equipment_inferred": true,
+  "name_he": "היפ טראסט בסמית' משין",
+  "station_default": "26",
+  "source_ref": "רגליים!D24"
+ },
+ {
+  "id": "2501505d-335e-54df-8902-c0cfc039d9ed",
+  "muscle_group": "legs",
+  "sub_category": "glut",
+  "equipment": "barbell",
+  "equipment_inferred": true,
+  "name_he": "היפ טראסט על ספה 30, כנגד מוט",
+  "station_default": null,
+  "source_ref": "רגליים!D25"
+ },
+ {
+  "id": "ca1aaf78-402d-5f84-b803-0aadbe9f3057",
+  "muscle_group": "legs",
+  "sub_category": "מרחיקים",
+  "equipment": "machine",
+  "equipment_inferred": true,
+  "name_he": "הרחקה אופקית בישיבה כנגד מכונה",
+  "station_default": "5",
+  "source_ref": "רגליים!F4"
+ },
+ {
+  "id": "009fcd66-c97f-508a-973e-3a58b49f13fc",
+  "muscle_group": "legs",
+  "sub_category": "מרחיקים",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "הרחקת ירך בעמידה על מדרגה, כנגד פולי תחתון, כל רגל בנפרד",
+  "station_default": null,
+  "source_ref": "רגליים!F5"
+ },
+ {
+  "id": "7c8d4f2d-15b4-561d-8b09-49bbbcc22c4c",
+  "muscle_group": "legs",
+  "sub_category": "מרחיקים",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "הרחקת ירך, בעמידה על מדרגה, ממצב משיכה, כנגד פולי תחתון, כל רגל בנפרד",
+  "station_default": null,
+  "source_ref": "רגליים!F6"
+ },
+ {
+  "id": "3ce67256-af73-5386-ac0a-a66a5031a265",
+  "muscle_group": "legs",
+  "sub_category": "מרחיקים",
+  "equipment": "dumbbells",
+  "equipment_inferred": true,
+  "name_he": "הרחקת ירך בעמידה עם משקולת ביד על הרגל, כל רגל בנפרד",
+  "station_default": null,
+  "source_ref": "רגליים!F7"
+ },
+ {
+  "id": "89d72365-7145-5f11-93f0-66e5e3bb4cd6",
+  "muscle_group": "legs",
+  "sub_category": "מרחיקים",
+  "equipment": "dumbbells",
+  "equipment_inferred": true,
+  "name_he": "הרחקת ירך בשכיבהעל הצד, שיפוע 45-60 מעלות, עם משקולת ביד על הרגל, כל רגל בנפרד",
+  "station_default": null,
+  "source_ref": "רגליים!F8"
+ },
+ {
+  "id": "9ce05ccc-88de-548d-ba98-473ebea3c607",
+  "muscle_group": "legs",
+  "sub_category": "מקרבים",
+  "equipment": "machine",
+  "equipment_inferred": true,
+  "name_he": "קירוב אופקי בישיבה כנגד מכונה",
+  "station_default": "5",
+  "source_ref": "רגליים!F10"
+ },
+ {
+  "id": "8fddaf80-703b-5d60-98f3-38a797272622",
+  "muscle_group": "legs",
+  "sub_category": "מקרבים",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "קירוב ירך בעמידה כנגד פולי תחתון",
+  "station_default": null,
+  "source_ref": "רגליים!F11"
+ },
+ {
+  "id": "1f16d1cc-a537-535b-8aba-15c5e1c49b5d",
+  "muscle_group": "legs",
+  "sub_category": "מקרבים",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "קירוב ירך בעמידה כנגד פולי אמצעי",
+  "station_default": null,
+  "source_ref": "רגליים!F12"
+ },
+ {
+  "id": "ec6e6613-e76c-58fa-9b88-5a3db495e424",
+  "muscle_group": "legs",
+  "sub_category": "gastrocnemius",
+  "equipment": "barbell",
+  "equipment_inferred": true,
+  "name_he": "פשיטת שורש כף רגל בעמידה על מדרגה כנגד סמית' משין",
+  "station_default": "26",
+  "source_ref": "רגליים!F14"
+ },
+ {
+  "id": "052179b7-1644-548c-ad86-530f8fceb79b",
+  "muscle_group": "legs",
+  "sub_category": "gastrocnemius",
+  "equipment": "dumbbells",
+  "equipment_inferred": true,
+  "name_he": "פשיטת שורש כף רגל בעמידה על מדרגה כנגד משקולת",
+  "station_default": null,
+  "source_ref": "רגליים!F15"
+ },
+ {
+  "id": "8e1a2b6b-8d11-51f3-9e68-a6af750ddd97",
+  "muscle_group": "legs",
+  "sub_category": "gastrocnemius",
+  "equipment": "dumbbells",
+  "equipment_inferred": true,
+  "name_he": "פשיטת שורש כף רגל בעמידה על מדרגה כנגד משקולת רגל-רגל",
+  "station_default": null,
+  "source_ref": "רגליים!F16"
+ },
+ {
+  "id": "989a1534-c989-51b7-bc4d-245255e09ad7",
+  "muscle_group": "legs",
+  "sub_category": "gastrocnemius",
+  "equipment": "machine",
+  "equipment_inferred": true,
+  "name_he": "פשיטת שורש כף רגל בישיבה כנגד מכונה",
+  "station_default": "15",
+  "source_ref": "רגליים!F17"
+ },
+ {
+  "id": "c27570d6-0697-54e8-904b-a1e12ae87915",
+  "muscle_group": "legs",
+  "sub_category": "gastrocnemius",
+  "equipment": null,
+  "equipment_inferred": true,
+  "name_he": "פשיטת שורש כף רגל בעמידה על מדרגה, כל רגל בנפרד",
+  "station_default": null,
+  "source_ref": "רגליים!F18"
+ },
+ {
+  "id": "723533b4-3865-503c-869d-9e5ac95a03f0",
+  "muscle_group": "legs",
+  "sub_category": "כופפי ירך",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "כפיפת ירך בהטיית כנגד פולי תחתון כל רגל בנפרד הברך מוביל",
+  "station_default": null,
+  "source_ref": "רגליים!F20"
+ },
+ {
+  "id": "ba205eb9-9062-5e98-8f2c-f5cfc27b5b29",
+  "muscle_group": "legs",
+  "sub_category": "כופפי ירך",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "כפיפת ירך בעמידה כנגד פולי תחתון כל רגל בנפרד כף רגל מוביל",
+  "station_default": null,
+  "source_ref": "רגליים!F21"
+ },
+ {
+  "id": "ee03c4d6-eb83-51e8-8730-b031ea227e65",
+  "muscle_group": "legs",
+  "sub_category": "כופפי ירך",
+  "equipment": "cable",
+  "equipment_inferred": true,
+  "name_he": "כפיפת ירך בעמידה כנגד פולי אמצעי כל רגל בנפרד",
+  "station_default": null,
+  "source_ref": "רגליים!F22"
+ }
+]
