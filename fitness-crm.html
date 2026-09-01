@@ -9377,7 +9377,28 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       }
     };
 
-    const PG2_LAYOUT = (()=>{ const c=JSON.parse(JSON.stringify(PG_LAYOUT)); c.sections.legs.rows=8; return c; })();
+    const PG2_LAYOUT = {
+      fields: {
+        lastName: {x:118.3, x2:141.1, y:29.71, w:22.8}, firstName: {x:75.2, x2:106.4, y:29.71, w:31.2},
+        age: {x:143.8, x2:151.5, y:34.46, w:7.7}, weight: {x:118.3, x2:133.9, y:34.46, w:15.6},
+        dateFrom: {x:118.3, x2:146.4, y:39.28, w:28.1}, dateTo: {x:75.2, x2:106.4, y:39.28, w:31.2},
+        limits: {x:75.2, x2:136.9, y:44.32, w:61.7}, goal: {x:75.2, x2:147.8, y:48.85, w:72.6},
+        perWeek: {x:117.5, x2:133.7, y:53.25, w:16.2}, trainer: {x:75.2, x2:102.5, y:53.25, w:27.3}
+      },
+      sections: {
+        chest: {top:66.79, rows:6, rowH:4.331, label:"חזה"}, back: {top:92.776, rows:6, rowH:4.331, label:"גב"},
+        biceps: {top:118.762, rows:4, rowH:4.331, label:"יד קדמית"}, triceps: {top:136.086, rows:4, rowH:4.331, label:"יד אחורית"},
+        back_ext: {top:153.41, rows:3, rowH:4.331, label:"זוקפי גב"}, abs: {top:166.403, rows:4, rowH:4.331, label:"בטן"},
+        shoulders: {top:183.727, rows:6, rowH:4.331, label:"כתפיים"}, legs: {top:209.713, rows:5, rowH:4.331, label:"רגליים"}
+      },
+      cols: {
+        station: {x:177.36, w:11.26}, exercise: {x:53.85, w:123.51},
+        sets: {x:43.44, w:10.41}, reps: {x:32.39, w:11.05}
+      },
+      aero: {rows:[{y:245.0,h:10.4},{y:255.4,h:10.4},{y:265.8,h:7.6}], nameX:84, nameW:66, timeX:167.5, timeW:15.5},
+      firstRowTop:66.79, rowH:4.331, rows:38
+    };
+    let _pg2Active=false;
 
     /* Map a CRM exercise to a PG section key.
        Uses exercise_base canonical group (g) — falls back to exercise.group string. */
@@ -9531,22 +9552,32 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           const setsArr = ex.sets || [];
           const setsCount = setsArr.length;
           const firstSet = setsArr[0] || {};
+          const stationVal = _pg2Active && cached ? (cached.station_default || cached.station || '') : '';
           buckets[section].push({
             name: exName,
             sets: setsCount > 0 ? String(setsCount) : '',
             reps: firstSet.reps != null ? String(firstSet.reps) : '',
             weight: firstSet.weight != null ? String(firstSet.weight) : '',
+            station: stationVal,
             note: firstSet.time || firstSet.rpe || ''
           });
         });
       });
 
       // Calibration: position + rotation + scale of the whole sheet
-      // Defaults calibrated from the user's Private Gym form scan (X=1.5, scale=107%).
+      // PG uses pgPrintCal, PG2 uses pg2PrintCal (separate)
+      const calKey = _pg2Active ? 'pg2PrintCal' : 'pgPrintCal';
+      const layoutOvKey = _pg2Active ? 'pg2LayoutOv' : 'pgLayoutOv';
       let cal = { x: 1.5, y: 0, rot: 0, scale: 1.07 };
-      try { cal = Object.assign({ x:1.5, y:0, rot:0, scale:1.07 }, JSON.parse(localStorage.getItem('pgPrintCal') || '{}')); } catch (err) {}
+      try { cal = Object.assign({ x:1.5, y:0, rot:0, scale:1.07 }, JSON.parse(localStorage.getItem(calKey) || '{}')); } catch (err) {}
 
-      const L = pgGetLayout();
+      const L = _pg2Active ? JSON.parse(JSON.stringify(PG2_LAYOUT)) : pgGetLayout();
+      if (_pg2Active) {
+        try{
+          const ov2 = JSON.parse(localStorage.getItem('pg2LayoutOv')||'null');
+          if(ov2 && ov2.sections){ Object.keys(ov2.sections).forEach(id=>{ if(!L.sections[id]) return; const o=ov2.sections[id]; if(o.top!=null) L.sections[id].top=parseFloat(o.top); if(o.rowH!=null) L.sections[id].rowH=parseFloat(o.rowH); if(o.rows!=null) L.sections[id].rows=Math.max(1,parseInt(o.rows,10)); }); }
+        }catch(e){}
+      }
 
       // Cell builder (HTML div absolutely positioned in mm)
       const cell = (x, y, w, txt, opts) => {
@@ -9611,10 +9642,18 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           const multi = arr.length > 1;
           const nm = arr.map(a => a.name).join(' | ');
           const fs = multi ? 6.5 : (nm.length > 55 ? 7 : 8.5);
-          mainBody += cell(L.cols.name.x,   y, L.cols.name.w,   nm,    { fs: fs, sec: secId, row: r, block:'main' });
-          mainBody += cell(L.cols.sets.x,   y, L.cols.sets.w,   arr[0].sets,   { center:1, sec: secId, row: r, block:'main' });
-          mainBody += cell(L.cols.reps.x,   y, L.cols.reps.w,   multi ? arr.map(a => a.reps).filter(Boolean).join('/')   : arr[0].reps,   { center:1, fs: multi ? 6.5 : null, sec: secId, row: r, block:'main' });
-          mainBody += cell(L.cols.weight.x, y, L.cols.weight.w, multi ? arr.map(a => a.weight).filter(Boolean).join('/') : arr[0].weight, { center:1, fs: multi ? 6.5 : null, sec: secId, row: r, block:'main' });
+          if (_pg2Active && L.cols.station) {
+            const st = arr[0].station || (arr[0].station_default || '');
+            mainBody += cell(L.cols.station.x, y, L.cols.station.w, st, { center:1, fs: multi ? 6.5 : null, sec: secId, row: r, block:'main' });
+            mainBody += cell(L.cols.exercise.x, y, L.cols.exercise.w, nm, { fs: fs, sec: secId, row: r, block:'main' });
+            mainBody += cell(L.cols.sets.x, y, L.cols.sets.w, arr[0].sets, { center:1, sec: secId, row: r, block:'main' });
+            mainBody += cell(L.cols.reps.x, y, L.cols.reps.w, multi ? arr.map(a => a.reps).filter(Boolean).join('/') : arr[0].reps, { center:1, fs: multi ? 6.5 : null, sec: secId, row: r, block:'main' });
+          } else {
+            mainBody += cell(L.cols.name.x,   y, L.cols.name.w,   nm,    { fs: fs, sec: secId, row: r, block:'main' });
+            mainBody += cell(L.cols.sets.x,   y, L.cols.sets.w,   arr[0].sets,   { center:1, sec: secId, row: r, block:'main' });
+            mainBody += cell(L.cols.reps.x,   y, L.cols.reps.w,   multi ? arr.map(a => a.reps).filter(Boolean).join('/')   : arr[0].reps,   { center:1, fs: multi ? 6.5 : null, sec: secId, row: r, block:'main' });
+            mainBody += cell(L.cols.weight.x, y, L.cols.weight.w, multi ? arr.map(a => a.weight).filter(Boolean).join('/') : arr[0].weight, { center:1, fs: multi ? 6.5 : null, sec: secId, row: r, block:'main' });
+          }
         });
       });
 
@@ -9749,6 +9788,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           '<button onclick="window.print()">🖨️ ' + LPG.print + '</button>' +
           '<span class="hint">' + LPG.barHint + '</span>' +
         '</div>' +
+        '<div id="pg2ExtraBar" style="display:none; gap:8px; align-items:center; flex-wrap:wrap; padding:8px 0; border-top:1px solid #eee; margin-top:8px;">' +
+          '<label style="display:flex; gap:4px; align-items:center; font-size:12px;"><input type="checkbox" id="pg2PerDay"> Отдельный бланк на каждый день</label>' +
+          '<button id="pg2CalBtn" class="pb-btn" style="font-size:12px; padding:4px 8px;">Калибровочный лист</button>' +
+          '<span id="pg2OverflowWarn" style="font-size:12px; color:var(--warn, #f59e0b); display:none;"></span>' +
+        '</div>' +
         '<div id="tunePanel">' +
           '<div class="tune-group">' +
             '<h4>📋 ' + LPG.block1Title + '</h4>' +
@@ -9815,6 +9859,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         '<scr' + 'ipt>' +
         'var sheet=document.getElementById("sheet");' +
         'var SECS=' + JSON.stringify(secData) + ';' +
+        'var pg2ExtraBarEl=document.getElementById("pg2ExtraBar");' +
+        'if(pg2ExtraBarEl) pg2ExtraBarEl.style.display=(window.opener && window.opener._pg2Active) ? "flex" : "none";' +
         'function apply(){' +
           'var x=parseFloat(document.getElementById("offX").value)||0;' +
           'var y=parseFloat(document.getElementById("offY").value)||0;' +
@@ -9822,7 +9868,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           'var sc=parseFloat(document.getElementById("scl").value)||1;' +
           'sheet.style.transformOrigin="105mm 148.5mm";' +
           'sheet.style.transform="translate("+x+"mm,"+y+"mm) rotate("+rot+"deg) scale("+sc+")";' +
-          'try{ if(window.opener) window.opener.localStorage.setItem("pgPrintCal", JSON.stringify({x:x,y:y,rot:rot,scale:sc})); }catch(e){}' +
+          'try{ if(window.opener) window.opener.localStorage.setItem("'+calKey+'", JSON.stringify({x:x,y:y,rot:rot,scale:sc})); }catch(e){}' +
           'var rv=document.getElementById("rotVal"); if(rv) rv.textContent=rot+"°";' +
           'var sv=document.getElementById("sclVal"); if(sv) sv.textContent=Math.round(sc*100)+"%";' +
         '}' +
@@ -9867,7 +9913,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           'var i=applyOne("bi","blockInfo");' +
           'var m=applyOne("bm","blockMain");' +
           'var a=applyOne("ba","blockAero");' +
-          'try{ var ov=JSON.parse(window.opener.localStorage.getItem("pgLayoutOv")||"{}"); ov.blockInfo=i; ov.blockMain=m; ov.blockAero=a; window.opener.localStorage.setItem("pgLayoutOv",JSON.stringify(ov)); }catch(e){}' +
+          'try{ var ov=JSON.parse(window.opener.localStorage.getItem("'+layoutOvKey+'")||"{}"); ov.blockInfo=i; ov.blockMain=m; ov.blockAero=a; window.opener.localStorage.setItem("'+layoutOvKey+'",JSON.stringify(ov)); }catch(e){}' +
         '}' +
         'function applyCols(){' +
           'var s=parseFloat(document.getElementById("colS").value)||1;' +
@@ -9878,7 +9924,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             'el.style.left=(ol*s+ox)+"mm";' +
             'el.style.width=(ow*s)+"mm";' +
           '});' +
-          'try{ var ov=JSON.parse(window.opener.localStorage.getItem("pgLayoutOv")||"{}"); ov.cols={scale:s,offsetX:ox}; window.opener.localStorage.setItem("pgLayoutOv",JSON.stringify(ov)); }catch(e){}' +
+          'try{ var ov=JSON.parse(window.opener.localStorage.getItem("'+layoutOvKey+'")||"{}"); ov.cols={scale:s,offsetX:ox}; window.opener.localStorage.setItem("'+layoutOvKey+'",JSON.stringify(ov)); }catch(e){}' +
         '}' +
         'function applyAero(){' +
           'var ax=parseFloat(document.getElementById("aeroX").value)||0;' +
@@ -9889,7 +9935,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             'el.style.left=(ol+ax)+"mm";' +
             'el.style.top=(oy+ay)+"mm";' +
           '});' +
-          'try{ var ov=JSON.parse(window.opener.localStorage.getItem("pgLayoutOv")||"{}"); ov.aero={offsetX:ax,offsetY:ay}; window.opener.localStorage.setItem("pgLayoutOv",JSON.stringify(ov)); }catch(e){}' +
+          'try{ var ov=JSON.parse(window.opener.localStorage.getItem("'+layoutOvKey+'")||"{}"); ov.aero={offsetX:ax,offsetY:ay}; window.opener.localStorage.setItem("'+layoutOvKey+'",JSON.stringify(ov)); }catch(e){}' +
         '}' +
         'function applyFields(){' +
           'var fields={};' +
@@ -9907,7 +9953,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             'var el=document.querySelector("[data-field=\'"+fid+"\']");' +
             'if(el){ el.style.left=x+"mm"; el.style.top=y+"mm"; el.style.width=w+"mm"; if(fs>0) el.style.fontSize=fs+"pt"; }' +
           '});' +
-          'try{ var ov=JSON.parse(window.opener.localStorage.getItem("pgLayoutOv")||"{}"); ov.fields=fields; window.opener.localStorage.setItem("pgLayoutOv",JSON.stringify(ov)); }catch(e){}' +
+          'try{ var ov=JSON.parse(window.opener.localStorage.getItem("'+layoutOvKey+'")||"{}"); ov.fields=fields; window.opener.localStorage.setItem("'+layoutOvKey+'",JSON.stringify(ov)); }catch(e){}' +
         '}' +
         'function applySections(){' +
           'var ov={sections:{}, table:{}};' +
@@ -9925,9 +9971,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               'else { el.style.top=(top+r*rh+(rh-4.2)/2)+"mm"; }' +
             '});' +
           '});' +
-          'try{ var full=JSON.parse(window.opener.localStorage.getItem("pgLayoutOv")||"{}"); full.sections=ov.sections; full.table=ov.table; window.opener.localStorage.setItem("pgLayoutOv",JSON.stringify(full)); }catch(e){}' +
+          'try{ var full=JSON.parse(window.opener.localStorage.getItem("'+layoutOvKey+'")||"{}"); full.sections=ov.sections; full.table=ov.table; window.opener.localStorage.setItem("'+layoutOvKey+'",JSON.stringify(full)); }catch(e){}' +
         '}' +
-        'function resetTune(){ try{ if(window.opener){ window.opener.localStorage.removeItem("pgLayoutOv"); window.opener.localStorage.removeItem("pgPrintCal"); } }catch(e){} alert("Сброшено. Закройте и откройте печать заново."); }' +
+        'function resetTune(){ try{ if(window.opener){ window.opener.localStorage.removeItem("'+layoutOvKey+'"); window.opener.localStorage.removeItem("'+calKey+'"); } }catch(e){} alert("Сброшено. Закройте и откройте печать заново."); }' +
         '["offX","offY","rot","scl"].forEach(function(id){ document.getElementById(id).addEventListener("input",apply); });' +
         'document.getElementById("rotL").addEventListener("click",function(){ var r=parseFloat(document.getElementById("rot").value)||0; r=Math.max(-180, r-1); document.getElementById("rot").value=r; apply(); });' +
         'document.getElementById("rotR").addEventListener("click",function(){ var r=parseFloat(document.getElementById("rot").value)||0; r=Math.min(180, r+1); document.getElementById("rot").value=r; apply(); });' +
@@ -9983,10 +10029,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     }
 
     async function printPrivateGym2(programId){
-      // PG2: печать по сетке с сайта-эталона (ноги 8 строк, остальное как у нас), калибровка/по дням как у них
-      const origLegsRows = PG_LAYOUT.sections.legs.rows;
-      PG_LAYOUT.sections.legs.rows = 8;
-      try{ return await printPrivateGym(programId); } finally { PG_LAYOUT.sections.legs.rows = origLegsRows; }
+      _pg2Active=true;
+      try{ return await printPrivateGym(programId); } finally { _pg2Active=false; }
     }
 
     async function createProgram(program) {
