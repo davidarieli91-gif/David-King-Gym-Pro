@@ -9368,7 +9368,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         erectors:  { top:153.41, rows:3, rowH:4.331, label:'זוקפי גב' },
         abs:       { top:166.403,rows:4, rowH:4.331, label:'בטן' },
         shoulders: { top:183.727,rows:6, rowH:4.331, label:'כתפיים' },
-        legs:      { top:209.713, rows:8, rowH:4.331, label:'רגליים' }
+        legs:      { top:209.713, rows:5, rowH:4.331, label:'רגליים' }
       },
       /* lower «פעילות אירובית» table: 3 rows */
       aero: {
@@ -10038,7 +10038,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       { key:'erectors',  label:'זוקפי גב', rows:3 },
       { key:'abs',       label:'בטן',      rows:4 },
       { key:'shoulders', label:'כתפיים',   rows:6 },
-      { key:'legs',      label:'רגליים',   rows:8 }
+      { key:'legs',      label:'רגליים',   rows:5 }
     ];
     function pg2SheetHTML(prog, client, buckets, perDayLabel){
       const esc2 = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -10082,8 +10082,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         +'<div class="af"><div class="fld"><span class="al">מתאריך</span><span class="av">'+esc2(dstr)+'</span></div><div class="fld"><span class="al">עד תאריך</span><span class="av"></span></div></div>'
         +'<div class="af"><div class="fld"><span class="al">מגבלות רפואיות:</span><span class="av">'+esc2(client?(client.limits||client.medical||''):'')+'</span></div></div>'
         +'<div class="af"><div class="fld"><span class="al">מטרה</span><span class="av">'+esc2((client&&goalMap[client.goal])||(client?client.goal:'')||'')+'</span></div></div>'
-        +'<div class="af"><div class="fld"><span class="al">מס׳ פעמים בשבוע</span><span class="av">'+esc2(activeDays)+'</span></div></div>'
-        +'<div class="af"><div class="fld"><span class="al">שם המדריך:</span><span class="av"></span></div></div>'
+        +'<div class="af"><div class="fld"><span class="al">מס׳ פעמים בשבוע</span><span class="av">'+esc2(activeDays)+'</span></div><div class="fld"><span class="al">שם המדריך:</span><span class="av"></span></div></div>'
         +(perDayLabel?'<div class="af"><div class="fld"><span class="al">יום:</span><span class="av">'+esc2(perDayLabel)+'</span></div></div>':'')
         +'</div>'
         +'<div class="pg2rules"><div class="pg2rules-t">תקנון ועקרונות</div><ul>'
