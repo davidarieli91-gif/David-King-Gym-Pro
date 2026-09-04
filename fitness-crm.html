@@ -9368,7 +9368,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         erectors:  { top:153.41, rows:3, rowH:4.331, label:'זוקפי גב' },
         abs:       { top:166.403,rows:4, rowH:4.331, label:'בטן' },
         shoulders: { top:183.727,rows:6, rowH:4.331, label:'כתפיים' },
-        legs:      { top:209.713, rows:5, rowH:4.331, label:'רגליים' }
+        legs:      { top:209.713, rows:8, rowH:4.331, label:'רגליים' }
       },
       /* lower «פעילות אירובית» table: 3 rows */
       aero: {
@@ -10038,7 +10038,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       { key:'erectors',  label:'זוקפי גב', rows:3 },
       { key:'abs',       label:'בטן',      rows:4 },
       { key:'shoulders', label:'כתפיים',   rows:6 },
-      { key:'legs',      label:'רגליים',   rows:5 }
+      { key:'legs',      label:'רגליים',   rows:8 }
     ];
     function pg2SheetHTML(prog, client, buckets, perDayLabel){
       const esc2 = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -10077,14 +10077,14 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         +'<div class="pg2head">'
         +'<div class="pg2logo">Private<br>Gym<span>הכושר כדרך חיים</span></div>'
         +'<div class="pg2anket">'
-        +F('שם משפחה',lastName)+F('שם פרטי',firstName)
-        +F('גיל',client?(client.age||''):'')+F('משקל',client?(client.weight||''):'')
-        +'<div class="af"><span class="al">מין:</span><span class="av"></span></div>'
-        +F('מתאריך',dstr)+F('עד תאריך','')
-        +'<div class="af"><span class="al">מגבלות רפואיות:</span><span class="av">'+esc2(client?(client.limits||client.medical||''):'')+'</span></div>'
-        +F('מטרה',(client&&goalMap[client.goal])||(client?client.goal:'')||'')
-        +F("מס' פעמים בשבוע",activeDays)+F('שם המדריך','')
-        +(perDayLabel?'<div class="af"><span class="al">יום:</span><span class="av">'+esc2(perDayLabel)+'</span></div>':'')
+        +'<div class="af"><div class="fld"><span class="al">שם משפחה</span><span class="av">'+esc2(lastName)+'</span></div><div class="fld"><span class="al">שם פרטי</span><span class="av">'+esc2(firstName)+'</span></div></div>'
+        +'<div class="af"><div class="fld"><span class="al">גיל</span><span class="av">'+esc2(client?(client.age||''):'')+'</span></div><div class="fld"><span class="al">משקל</span><span class="av">'+esc2(client?(client.weight||''):'')+'</span></div><div class="fld"><span class="al">מין</span><span class="av"></span></div></div>'
+        +'<div class="af"><div class="fld"><span class="al">מתאריך</span><span class="av">'+esc2(dstr)+'</span></div><div class="fld"><span class="al">עד תאריך</span><span class="av"></span></div></div>'
+        +'<div class="af"><div class="fld"><span class="al">מגבלות רפואיות:</span><span class="av">'+esc2(client?(client.limits||client.medical||''):'')+'</span></div></div>'
+        +'<div class="af"><div class="fld"><span class="al">מטרה</span><span class="av">'+esc2((client&&goalMap[client.goal])||(client?client.goal:'')||'')+'</span></div></div>'
+        +'<div class="af"><div class="fld"><span class="al">מס׳ פעמים בשבוע</span><span class="av">'+esc2(activeDays)+'</span></div></div>'
+        +'<div class="af"><div class="fld"><span class="al">שם המדריך:</span><span class="av"></span></div></div>'
+        +(perDayLabel?'<div class="af"><div class="fld"><span class="al">יום:</span><span class="av">'+esc2(perDayLabel)+'</span></div></div>':'')
         +'</div>'
         +'<div class="pg2rules"><div class="pg2rules-t">תקנון ועקרונות</div><ul>'
         +'<li>המשמע להוראות המדריך בשעת האימון.</li>'
@@ -10159,7 +10159,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         +'.pg2rules-t{font-weight:800;text-align:center;color:#0d47a1;margin-bottom:1mm;}'
         +'.pg2rules ul{margin:0;padding:0 4mm 0 0;list-style:disc;}'
         +'.pg2anket{background:#fff;border:1.5px solid #000;flex:1.3;padding:2mm;font-size:9pt;}'
-        +'.pg2anket .af{display:flex;border-bottom:1px dotted #555;padding:0.6mm 0;}'
+        +'.pg2anket .af{display:flex;gap:3mm;padding:1mm 0;}'
+        +'.pg2anket .fld{flex:1;display:flex;border-bottom:1px dotted #555;padding:0.4mm 0;}'
         +'.pg2anket .al{white-space:nowrap;font-weight:700;margin-inline-end:2mm;}'
         +'.pg2anket .av{flex:1;text-align:center;}'
         +'.pg2logo{flex:0.55;color:#fff;font-style:italic;font-weight:800;font-size:20pt;line-height:1.1;text-align:center;align-self:flex-start;padding-top:2mm;}'
@@ -10172,7 +10173,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         +'.pg2aero-t{text-align:right;color:#fff;font-weight:800;margin:3mm 0 1mm;}'
         +'.pg2aero{display:flex;gap:3mm;}'
         +'.pg2notes{background:#dcebfb;border:1.5px solid #000;flex:1;padding:2mm;font-size:9pt;font-weight:700;}'
-        +'.pg2atable{flex:1.4;border-collapse:collapse;background:#fff;font-size:8.5pt;}'
+        +'.pg2atable{flex:1.7;border-collapse:collapse;background:#fff;font-size:8.5pt;}'
         +'.pg2atable th,.pg2atable td{border:1px solid #000;padding:1mm;text-align:center;}'
         +'.pg2atable th{background:#e8f1fb;}'
         +'@media print{.pg2bar,.pg2warn{display:none!important;}.pg2sheet{margin:0;zoom:1!important;}}';
