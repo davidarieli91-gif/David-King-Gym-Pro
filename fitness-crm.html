@@ -10038,7 +10038,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       { key:'erectors',  label:'זוקפי גב', rows:3 },
       { key:'abs',       label:'בטן',      rows:4 },
       { key:'shoulders', label:'כתפיים',   rows:6 },
-      { key:'legs',      label:'רגליים',   rows:8 }
+      { key:'legs',      label:'רגליים',   rows:5 }
     ];
     function pg2SheetHTML(prog, client, buckets, perDayLabel){
       const esc2 = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -10075,15 +10075,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       return '<div class="pg2sheet">'
         +'<div class="pg2title">תכנית אימונים אישית למתאמן בחדר כושר</div>'
         +'<div class="pg2head">'
-        +'<div class="pg2rules"><div class="pg2rules-t">תקנון ועקרונות</div><ul>'
-        +'<li>המשמע להוראות המדריך בשעת האימון.</li>'
-        +'<li>הקפד על הופעה ספורטיבית מלאה ונעלי ספורט.</li>'
-        +'<li>בצע חימום כללי / ספציפי לפני כל אימון.</li>'
-        +'<li>השתמש במשקולות ובמכשירים אישיים.</li>'
-        +'<li>הקפד על הסדר – החזר המשקולות למקומן בסיום התרגול.</li>'
-        +'<li>המתאמן עושה זאת על אחריותו האישית בלבד.</li>'
-        +'<li>השימוש בטלפון נייד בחדר כושר אסור.</li>'
-        +'</ul></div>'
+        +'<div class="pg2logo">Private<br>Gym<span>הכושר כדרך חיים</span></div>'
         +'<div class="pg2anket">'
         +F('שם משפחה',lastName)+F('שם פרטי',firstName)
         +F('גיל',client?(client.age||''):'')+F('משקל',client?(client.weight||''):'')
@@ -10094,9 +10086,17 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         +F("מס' פעמים בשבוע",activeDays)+F('שם המדריך','')
         +(perDayLabel?'<div class="af"><span class="al">יום:</span><span class="av">'+esc2(perDayLabel)+'</span></div>':'')
         +'</div>'
-        +'<div class="pg2logo">Private<br>Gym<span>הכושר כדרך חיים</span></div>'
+        +'<div class="pg2rules"><div class="pg2rules-t">תקנון ועקרונות</div><ul>'
+        +'<li>המשמע להוראות המדריך בשעת האימון.</li>'
+        +'<li>הקפד על הופעה ספורטיבית מלאה ונעלי ספורט.</li>'
+        +'<li>בצע חימום כללי / ספציפי לפני כל אימון.</li>'
+        +'<li>השתמש במשקולות ובמכשירים אישיים.</li>'
+        +'<li>הקפד על הסדר – החזר המשקולות למקומן בסיום התרגול.</li>'
+        +'<li>המתאמן עושה זאת על אחריותו האישית בלבד.</li>'
+        +'<li>השימוש בטלפון נייד בחדר כושר אסור.</li>'
+        +'</ul></div>'
         +'</div>'
-        +'<table class="pg2tbl"><thead><tr><th>קבי שריר</th><th>תחנה</th><th>תרגיל + הדגמה</th><th>סטים</th><th>חזרות</th><th colspan="3">משקל</th></tr></thead>'
+        +'<table class="pg2tbl"><colgroup><col style="width:16mm"><col style="width:11.26mm"><col><col style="width:10.41mm"><col style="width:11.05mm"><col style="width:8.4mm"><col style="width:8.4mm"><col style="width:8.4mm"></colgroup><thead><tr><th>קבי שריר</th><th>תחנה</th><th>תרגיל + הדגמה</th><th>סטים</th><th>חזרות</th><th colspan="3">משקל</th></tr></thead>'
         +'<tbody>'+rowsHtml+'</tbody></table>'
         +'<div class="pg2aero-t">פעילות אירובית</div>'
         +'<div class="pg2aero"><table class="pg2atable"><thead><tr><th>סוג מכשיר</th><th>משך זמן</th><th>מהירות</th><th>מרחק</th><th>דופק</th><th>שיפוע</th><th>הערות</th></tr></thead>'
@@ -10161,10 +10161,10 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         +'.pg2anket .af{display:flex;border-bottom:1px dotted #555;padding:0.6mm 0;}'
         +'.pg2anket .al{white-space:nowrap;font-weight:700;margin-inline-end:2mm;}'
         +'.pg2anket .av{flex:1;text-align:center;}'
-        +'.pg2logo{flex:0.7;color:#fff;font-style:italic;font-weight:800;font-size:20pt;line-height:1.1;text-align:center;align-self:center;}'
+        +'.pg2logo{flex:0.55;color:#fff;font-style:italic;font-weight:800;font-size:20pt;line-height:1.1;text-align:center;align-self:flex-start;padding-top:2mm;}'
         +'.pg2logo span{display:block;font-size:10pt;font-weight:400;}'
-        +'.pg2tbl{width:100%;border-collapse:collapse;background:#fff;font-size:9pt;}'
-        +'.pg2tbl th,.pg2tbl td{border:1px solid #000;padding:1mm;text-align:center;}'
+        +'.pg2tbl{width:100%;border-collapse:collapse;background:#fff;font-size:8.5pt;table-layout:fixed;}'
+        +'.pg2tbl th,.pg2tbl td{border:0.3mm solid #000;padding:0.2mm 0.8mm;text-align:center;height:4.331mm;line-height:1.15;overflow:hidden;white-space:nowrap;}'
         +'.pg2tbl th{background:#e8f1fb;}'
         +'.pg2tbl td.nm{text-align:right;}'
         +'.pg2tbl td.grp{font-weight:800;background:#eef4fc;}'
