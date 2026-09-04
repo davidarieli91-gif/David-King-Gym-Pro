@@ -10079,7 +10079,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         +'<div class="pg2anket">'
         +F('שם משפחה',lastName)+F('שם פרטי',firstName)
         +F('גיל',client?(client.age||''):'')+F('משקל',client?(client.weight||''):'')
-        +'<div class="af"><span class="al">מין:</span><span class="av">זכר / נקבה</span></div>'
+        +'<div class="af"><span class="al">מין:</span><span class="av"></span></div>'
         +F('מתאריך',dstr)+F('עד תאריך','')
         +'<div class="af"><span class="al">מגבלות רפואיות:</span><span class="av">'+esc2(client?(client.limits||client.medical||''):'')+'</span></div>'
         +F('מטרה',(client&&goalMap[client.goal])||(client?client.goal:'')||'')
@@ -10125,9 +10125,10 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             const cached = exById.get(ex.exercise_id);
             const nm = getExName(ex); if(!nm) return;
             const section = pgTargetRow(cached, ex.group);
-            const setsArr = ex.sets||[];
+            const setsArr = Array.isArray(ex.sets)?ex.sets:[];
             const ws = setsArr.map(s=>s.weight!=null?String(s.weight):'').filter(Boolean);
-            const reps = setsArr.length===1 ? String(setsArr[0].reps??'') : setsArr.map(s=>s.reps!=null?String(s.reps):'—').join('/');
+            if(!ws.length && ex.weight!=null) ws.push(String(ex.weight));
+            const reps = setsArr.length===1 ? String(setsArr[0].reps??ex.reps??'') : (setsArr.length?setsArr.map(s=>s.reps!=null?String(s.reps):'—').join('/') : String(ex.reps??''));
             b[section].push({ name:nm, sets:setsArr.length?String(setsArr.length):'', reps:reps, weights:ws.slice(0,3),
               station:(cached&&(cached.station_default||cached.station))||'', note:'' });
           });
