@@ -10087,6 +10087,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         +'<div class="pg2anket">'
         +F('שם משפחה',lastName)+F('שם פרטי',firstName)
         +F('גיל',client?(client.age||''):'')+F('משקל',client?(client.weight||''):'')
+        +'<div class="af"><span class="al">מין:</span><span class="av">זכר / נקבה</span></div>'
         +F('מתאריך',dstr)+F('עד תאריך','')
         +'<div class="af"><span class="al">מגבלות רפואיות:</span><span class="av">'+esc2(client?(client.limits||client.medical||''):'')+'</span></div>'
         +F('מטרה',(client&&goalMap[client.goal])||(client?client.goal:'')||'')
@@ -10098,11 +10099,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         +'<table class="pg2tbl"><thead><tr><th>קבי שריר</th><th>תחנה</th><th>תרגיל + הדגמה</th><th>סטים</th><th>חזרות</th><th colspan="3">משקל</th></tr></thead>'
         +'<tbody>'+rowsHtml+'</tbody></table>'
         +'<div class="pg2aero-t">פעילות אירובית</div>'
-        +'<div class="pg2aero"><div class="pg2notes"><div>* הפסקות בין סט לסט ________ 45-60 שניות</div>'
+        +'<div class="pg2aero"><table class="pg2atable"><thead><tr><th>סוג מכשיר</th><th>משך זמן</th><th>מהירות</th><th>מרחק</th><th>דופק</th><th>שיפוע</th><th>הערות</th></tr></thead>'
+        +'<tbody>'+aeroRows+'</tbody></table>'
+        +'<div class="pg2notes"><div>* הפסקות בין סט לסט ________ 45-60 שניות</div>'
         +'<div>* נא לבצע מתיחות כלליות וספציפיות לפני תחילת כל אימון למשך כמה דקות.</div>'
-        +'<div>* לבצע כמה סטים של חימום (50%-70% מהיכולת) לפני תחילת אימון התנגדות.</div></div>'
-        +'<table class="pg2atable"><thead><tr><th>סוג מכשיר</th><th>משך זמן</th><th>מהירות</th><th>מרחק</th><th>דופק</th><th>שיפוע</th><th>הערות</th></tr></thead>'
-        +'<tbody>'+aeroRows+'</tbody></table></div>'
+        +'<div>* לבצע כמה סטים של חימום (50%-70% מהיכולת) לפני תחילת אימון התנגדות.</div></div></div>'
         +'</div>';
     }
     window._pg2reopen = function(pid, perDay){ printPrivateGym2(pid, {perDay:perDay}); };
