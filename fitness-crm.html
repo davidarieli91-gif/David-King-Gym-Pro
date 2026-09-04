@@ -9390,7 +9390,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         chest: {top:66.79, rows:6, rowH:4.331, label:"חזה"}, back: {top:92.776, rows:6, rowH:4.331, label:"גב"},
         biceps: {top:118.762, rows:4, rowH:4.331, label:"יד קדמית"}, triceps: {top:136.086, rows:4, rowH:4.331, label:"יד אחורית"},
         back_ext: {top:153.41, rows:3, rowH:4.331, label:"זוקפי גב"}, abs: {top:166.403, rows:4, rowH:4.331, label:"בטן"},
-        shoulders: {top:183.727, rows:6, rowH:4.331, label:"כתפיים"}, legs: {top:209.713, rows:5, rowH:4.331, label:"רגליים"}
+        shoulders: {top:183.727, rows:6, rowH:4.331, label:"כתפיים"}, legs: {top:209.713, rows:8, rowH:4.331, label:"רגליים"}
       },
       cols: {
         station: {x:177.36, w:11.26}, exercise: {x:53.85, w:123.51},
@@ -10029,9 +10029,173 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       win.document.close();
     }
 
-    async function printPrivateGym2(programId){
-      _pg2Active=true;
-      try{ return await printPrivateGym(programId); } finally { _pg2Active=false; }
+    /* PG2 section order/labels/rows — exact copy of the paper form */
+    const PG2_SECTIONS = [
+      { key:'chest',     label:'חזה',      rows:6 },
+      { key:'back',      label:'גב',       rows:6 },
+      { key:'front_arm', label:'יד קדמית', rows:4 },
+      { key:'rear_arm',  label:'יד אחורית',rows:4 },
+      { key:'erectors',  label:'זוקפי גב', rows:3 },
+      { key:'abs',       label:'בטן',      rows:4 },
+      { key:'shoulders', label:'כתפיים',   rows:6 },
+      { key:'legs',      label:'רגליים',   rows:8 }
+    ];
+    function pg2SheetHTML(prog, client, buckets, perDayLabel){
+      const esc2 = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      const fullName = String((client&&(client.full_name||client.name))||'').trim();
+      const parts = fullName.split(/\s+/).filter(Boolean);
+      const firstName = parts[0]||'', lastName = parts.slice(1).join(' ')||'';
+      const today = new Date();
+      const dstr = String(today.getDate()).padStart(2,'0')+'.'+String(today.getMonth()+1).padStart(2,'0')+'.'+today.getFullYear();
+      const activeDays = (prog.workout_days||[]).filter(d=>!d.is_rest_day).length;
+      const goalMap = { hypertrophy:'עלייה במסת שריר', strength:'כוח', fat_loss:'ירידה במשקל', endurance:'סיבולת', rehab:'שיקום' };
+      const F = (lbl,val)=>'<div class="af"><span class="al">'+lbl+'</span><span class="av">'+esc2(val)+'</span></div>';
+      let rowsHtml='';
+      PG2_SECTIONS.forEach(sec=>{
+        const items = buckets[sec.key]||[];
+        const n = Math.max(sec.rows, items.length);
+        for(let r=0;r<n;r++){
+          const it = items[r]||{};
+          const ws = Array.isArray(it.weights)?it.weights:[];
+          rowsHtml+='<tr>'
+            +'<td class="c-w">'+esc2(ws[0]||'')+'</td><td class="c-w">'+esc2(ws[1]||'')+'</td><td class="c-w">'+esc2(ws[2]||'')+'</td>'
+            +'<td>'+esc2(it.reps||'')+'</td>'
+            +'<td>'+esc2(it.sets||'')+'</td>'
+            +'<td class="nm">'+esc2(it.name||'')+'</td>'
+            +'<td>'+esc2(it.station||'')+'</td>'
+            +(r===0?'<td class="grp" rowspan="'+n+'">'+sec.label+'</td>':'')
+            +'</tr>';
+        }
+      });
+      const aero = buckets.aero_cardio||[];
+      const aeroRows = ['מסילת ריצה','קרוס טריינר',''].map((m,i)=>{
+        const a = aero[i]||{};
+        return '<tr><td>'+esc2(m)+'</td><td>'+esc2(a.time||'')+'</td><td>'+esc2(a.speed||'')+'</td><td>'+esc2(a.dist||'')+'</td><td>'+esc2(a.pulse||'')+'</td><td>'+esc2(a.incline||'')+'</td><td>'+esc2(a.note||'')+'</td></tr>';
+      }).join('');
+      return '<div class="pg2sheet">'
+        +'<div class="pg2title">תכנית אימונים אישית למתאמן בחדר כושר</div>'
+        +'<div class="pg2head">'
+        +'<div class="pg2rules"><div class="pg2rules-t">תקנון ועקרונות</div><ul>'
+        +'<li>המשמע להוראות המדריך בשעת האימון.</li>'
+        +'<li>הקפד על הופעה ספורטיבית מלאה ונעלי ספורט.</li>'
+        +'<li>בצע חימום כללי / ספציפי לפני כל אימון.</li>'
+        +'<li>השתמש במשקולות ובמכשירים אישיים.</li>'
+        +'<li>הקפד על הסדר – החזר המשקולות למקומן בסיום התרגול.</li>'
+        +'<li>המתאמן עושה זאת על אחריותו האישית בלבד.</li>'
+        +'<li>השימוש בטלפון נייד בחדר כושר אסור.</li>'
+        +'</ul></div>'
+        +'<div class="pg2anket">'
+        +F('שם משפחה',lastName)+F('שם פרטי',firstName)
+        +F('גיל',client?(client.age||''):'')+F('משקל',client?(client.weight||''):'')
+        +F('מתאריך',dstr)+F('עד תאריך','')
+        +'<div class="af"><span class="al">מגבלות רפואיות:</span><span class="av">'+esc2(client?(client.limits||client.medical||''):'')+'</span></div>'
+        +F('מטרה',(client&&goalMap[client.goal])||(client?client.goal:'')||'')
+        +F("מס' פעמים בשבוע",activeDays)+F('שם המדריך','')
+        +(perDayLabel?'<div class="af"><span class="al">יום:</span><span class="av">'+esc2(perDayLabel)+'</span></div>':'')
+        +'</div>'
+        +'<div class="pg2logo">Private<br>Gym<span>הכושר כדרך חיים</span></div>'
+        +'</div>'
+        +'<table class="pg2tbl"><thead><tr><th colspan="3">משקל</th><th>חזרות</th><th>סטים</th><th>תרגיל + הדגמה</th><th>תחנה</th><th>קבי שריר</th></tr></thead>'
+        +'<tbody>'+rowsHtml+'</tbody></table>'
+        +'<div class="pg2aero-t">פעילות אירובית</div>'
+        +'<div class="pg2aero"><div class="pg2notes"><div>* הפסקות בין סט לסט ________ 45-60 שניות</div>'
+        +'<div>* נא לבצע מתיחות כלליות וספציפיות לפני תחילת כל אימון למשך כמה דקות.</div>'
+        +'<div>* לבצע כמה סטים של חימום (50%-70% מהיכולת) לפני תחילת אימון התנגדות.</div></div>'
+        +'<table class="pg2atable"><thead><tr><th>סוג מכשיר</th><th>משך זמן</th><th>מהירות</th><th>מרחק</th><th>דופק</th><th>שיפוע</th><th>הערות</th></tr></thead>'
+        +'<tbody>'+aeroRows+'</tbody></table></div>'
+        +'</div>';
+    }
+    window._pg2reopen = function(pid, perDay){ printPrivateGym2(pid, {perDay:perDay}); };
+    async function printPrivateGym2(programId, opts){
+      opts = opts||{};
+      const prog = await db.get('client_programs', programId);
+      if(!prog){ toast(t('programs.noData')||'No program data','warning',2500); return; }
+      const client = prog.client_id ? (await db.get('clients', prog.client_id)) : null;
+      let exerciseCache = [];
+      try{ exerciseCache = (await db.all('exercise_base')).filter(e=>!e.is_archived); }catch(e){}
+      const exById = buildExerciseIndex(exerciseCache);
+      const lang = currentLang();
+      const getExName = ex => { const c=exById.get(ex.exercise_id); return c?(c['name_'+lang]||c.name_en||c.nE||ex.name||'?'):(ex.name||'?'); };
+      const buildBuckets = days => {
+        const b = { chest:[], back:[], front_arm:[], rear_arm:[], erectors:[], abs:[], shoulders:[], legs:[], aero_warm:[], aero_cardio:[] };
+        (days||[]).forEach(day=>{
+          if(day.is_rest_day) return;
+          (day.exercises||[]).forEach(ex=>{
+            const cached = exById.get(ex.exercise_id);
+            const nm = getExName(ex); if(!nm) return;
+            const section = pgTargetRow(cached, ex.group);
+            const setsArr = ex.sets||[];
+            const ws = setsArr.map(s=>s.weight!=null?String(s.weight):'').filter(Boolean);
+            const reps = setsArr.length===1 ? String(setsArr[0].reps??'') : setsArr.map(s=>s.reps!=null?String(s.reps):'—').join('/');
+            b[section].push({ name:nm, sets:setsArr.length?String(setsArr.length):'', reps:reps, weights:ws.slice(0,3),
+              station:(cached&&(cached.station_default||cached.station))||'', note:'' });
+          });
+        });
+        const cardio=[], warm=[];
+        Object.keys(b).forEach(k=>{ if(k!=='aero_warm'&&k!=='aero_cardio') return; (b[k]||[]).forEach(x=>{(k==='aero_warm'?warm:cardio).push(x);}); });
+        b.aero_cardio = cardio.slice(0,3); b.aero_warm = warm.slice(0,3);
+        return b;
+      };
+      const perDay = !!opts.perDay;
+      const days = (prog.workout_days||[]).filter(d=>!d.is_rest_day);
+      const sheets = perDay && days.length
+        ? days.map(d=>pg2SheetHTML(prog, client, buildBuckets([d]), d.name||('יום '+d.day_letter)))
+        : [pg2SheetHTML(prog, client, buildBuckets(prog.workout_days||[]), '')];
+      const overflow = [];
+      PG2_SECTIONS.forEach(sec=>{ const bk = buildBuckets(prog.workout_days||[])[sec.key]||[]; if(bk.length>sec.rows) overflow.push(sec.label+' — '+(bk.length-sec.rows)); });
+      const css = '@page{size:A4 portrait;margin:0;}'
+        +'body{margin:0;background:#fff;font-family:Arial,sans-serif;}'
+        +'.pg2bar{display:flex;gap:8px;align-items:center;padding:10px 14px;background:#1e1e2e;color:#fff;font-size:13px;position:sticky;top:0;z-index:5;}'
+        +'.pg2bar button{background:#e5484d;color:#fff;border:0;border-radius:8px;padding:8px 16px;font-weight:700;cursor:pointer;}'
+        +'.pg2bar label{display:flex;gap:6px;align-items:center;}'
+        +'.pg2bar input{width:64px;}'
+        +'.pg2warn{background:#3a2b00;color:#ffd166;padding:8px 14px;font-size:13px;}'
+        +'.pg2sheet{width:210mm;min-height:297mm;margin:0 auto;background:#1565c0;color:#000;padding:6mm 5mm;box-sizing:border-box;page-break-after:always;}'
+        +'.pg2title{color:#fff;font-size:22pt;font-weight:800;text-align:center;margin-bottom:4mm;}'
+        +'.pg2head{display:flex;gap:3mm;margin-bottom:3mm;}'
+        +'.pg2rules{background:#fff;border:1.5px solid #000;flex:1.15;padding:2mm;font-size:8pt;line-height:1.45;}'
+        +'.pg2rules-t{font-weight:800;text-align:center;color:#0d47a1;margin-bottom:1mm;}'
+        +'.pg2rules ul{margin:0;padding:0 4mm 0 0;list-style:disc;}'
+        +'.pg2anket{background:#fff;border:1.5px solid #000;flex:1.3;padding:2mm;font-size:9pt;}'
+        +'.pg2anket .af{display:flex;border-bottom:1px dotted #555;padding:0.6mm 0;}'
+        +'.pg2anket .al{white-space:nowrap;font-weight:700;margin-inline-end:2mm;}'
+        +'.pg2anket .av{flex:1;text-align:center;}'
+        +'.pg2logo{flex:0.7;color:#fff;font-style:italic;font-weight:800;font-size:20pt;line-height:1.1;text-align:center;align-self:center;}'
+        +'.pg2logo span{display:block;font-size:10pt;font-weight:400;}'
+        +'.pg2tbl{width:100%;border-collapse:collapse;background:#fff;font-size:9pt;}'
+        +'.pg2tbl th,.pg2tbl td{border:1px solid #000;padding:1mm;text-align:center;}'
+        +'.pg2tbl th{background:#e8f1fb;}'
+        +'.pg2tbl td.nm{text-align:right;}'
+        +'.pg2tbl td.grp{font-weight:800;background:#eef4fc;}'
+        +'.pg2aero-t{text-align:right;color:#fff;font-weight:800;margin:3mm 0 1mm;}'
+        +'.pg2aero{display:flex;gap:3mm;}'
+        +'.pg2notes{background:#dcebfb;border:1.5px solid #000;flex:1;padding:2mm;font-size:9pt;font-weight:700;}'
+        +'.pg2atable{flex:1.4;border-collapse:collapse;background:#fff;font-size:8.5pt;}'
+        +'.pg2atable th,.pg2atable td{border:1px solid #000;padding:1mm;text-align:center;}'
+        +'.pg2atable th{background:#e8f1fb;}'
+        +'@media print{.pg2bar,.pg2warn{display:none!important;}.pg2sheet{margin:0;}}';
+      const html = '<html dir="rtl" lang="he"><head><meta charset="utf-8"><title>Private Gym 2</title><style>'+css+'</style></head><body>'
+        +'<div class="pg2bar"><button onclick="window.print()">Печать / הדפסה</button>'
+        +'<label><input type="checkbox" id="pg2pd"'+(perDay?' checked':'')+'> Отдельный бланк на каждый день</label>'
+        +'<label>dx <input type="number" id="pg2dx" step="0.5" value="0"></label>'
+        +'<label>dy <input type="number" id="pg2dy" step="0.5" value="0"></label>'
+        +'<span style="opacity:.7">A4 · 100% · поля 0</span></div>'
+        +(overflow.length?'<div class="pg2warn">Не влезло в бланк: '+overflow.map(pgEsc).join(' · ')+'</div>':'')
+        +sheets.join('')
+        +'<scr'+'ipt>var pg2pid='+JSON.stringify(programId)+';document.getElementById("pg2pd").addEventListener("change",function(){'
+        +'try{if(window.opener&&window.opener._pg2reopen){window.opener._pg2reopen(pg2pid,this.checked);window.close();}}catch(e){}});'
+        +'function pg2apply(){var x=parseFloat(document.getElementById("pg2dx").value)||0;var y=parseFloat(document.getElementById("pg2dy").value)||0;'
+        +'document.querySelectorAll(".pg2sheet").forEach(function(s){s.style.transform="translate("+x+"mm,"+y+"mm)";});'
+        +'try{localStorage.setItem("pg2PrintCal",JSON.stringify({x:x,y:y}));}catch(e){}}'
+        +'document.getElementById("pg2dx").addEventListener("input",pg2apply);'
+        +'document.getElementById("pg2dy").addEventListener("input",pg2apply);'
+        +'(function(){try{var c=JSON.parse(localStorage.getItem("pg2PrintCal")||"{}");'
+        +'if(c.x!=null)document.getElementById("pg2dx").value=c.x;'
+        +'if(c.y!=null)document.getElementById("pg2dy").value=c.y;pg2apply();}catch(e){}})();'
+        +'</scr'+'ipt></body></html>';
+      const win = window.open('', '_blank');
+      if(!win){ toast(t('programs.popupBlocked')||'Pop-up blocked','warning',4000); return; }
+      win.document.write(html); win.document.close();
     }
 
     async function createProgram(program) {
