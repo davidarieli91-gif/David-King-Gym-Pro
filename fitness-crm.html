@@ -4298,6 +4298,48 @@
       function assignSubgroup(e) {
         const nameLower = (e.nE || '').toLowerCase();
         const existingSub = e.sE || '';
+        if (e.src === 'gv') {
+          // GymVisual: keyword-based subgroups, same taxonomy as mm
+          switch (e.g) {
+            case 'elbow_flexors':
+            case 'biceps':
+              if (nameLower.includes('hammer')) return 'Brachialis';
+              if (nameLower.includes('reverse') || nameLower.includes('zottman') || nameLower.includes('pronat') || nameLower.includes('supinat')) return 'Brachioradialis';
+              return 'Biceps';
+            case 'chest':
+              if (nameLower.includes('incline')) return 'Upper';
+              if (nameLower.includes('decline') || nameLower.includes('dip')) return 'Lower';
+              return 'Middle';
+            case 'shoulders':
+              if (nameLower.includes('front') && nameLower.includes('raise')) return 'Front';
+              if (nameLower.includes('rear') || nameLower.includes('bent over') || nameLower.includes('face pull') || nameLower.includes('lateral')) return 'Rear';
+              if (nameLower.includes('shrug')) return 'Trapezius';
+              return 'Middle';
+            case 'abdominals':
+              if (nameLower.includes('oblique') || nameLower.includes('side') || nameLower.includes('twist') || nameLower.includes('bicycle') || nameLower.includes('russian')) return 'Obliques';
+              if (nameLower.includes('hanging') || nameLower.includes('leg raise') || nameLower.includes('knee raise') || nameLower.includes('reverse')) return 'Lower';
+              return 'Upper';
+            case 'triceps':
+              if (nameLower.includes('overhead')) return 'Seated';
+              if (nameLower.includes('lying') || nameLower.includes('skull')) return 'Lying';
+              return 'Compound';
+            case 'back':
+              if (nameLower.includes('pull-up') || nameLower.includes('pullup') || nameLower.includes('pulldown') || nameLower.includes('chin') || nameLower.includes('lat ')) return 'Pull-up';
+              if (nameLower.includes('pullover')) return 'Pullover';
+              if (nameLower.includes('deadlift') || nameLower.includes('hyperextension') || nameLower.includes('hyper ') || nameLower.includes('good morning') || nameLower.includes('back extension')) return 'Lower Back';
+              if (nameLower.includes('shrug')) return 'Trapezius';
+              if (nameLower.includes('row')) return 'Row';
+              return 'Middle Back';
+            case 'legs':
+              if (nameLower.includes('lunge') || nameLower.includes('squat') || nameLower.includes('step') || nameLower.includes('leg press') || nameLower.includes('leg extension')) return 'Quadriceps';
+              if (nameLower.includes('deadlift') || nameLower.includes('curl') || nameLower.includes('good morning') || nameLower.includes('hamstring')) return 'Hamstrings';
+              if (nameLower.includes('calf') || nameLower.includes('toe raise') || nameLower.includes('donkey')) return 'Calves';
+              if (nameLower.includes('glute') || nameLower.includes('bridge') || nameLower.includes('hip thrust') || nameLower.includes('abduct') || nameLower.includes('adduct')) return 'Glutes';
+              return 'Quadriceps';
+            default:
+              return 'General';
+          }
+        }
         if (e.src === 'mm') {
           switch (e.g) {
             case 'elbow_flexors':
@@ -4937,7 +4979,9 @@
       if (typeof _exerciseDbLoaded !== 'undefined' && !_exerciseDbLoaded) {
         await loadExerciseDbExternal();
       }
-    // Check if v21 seed flag is set — if not, force re-seed.
+    // Check if v23 seed flag is set — if not, force re-seed.
+    // v23 = GymVisual RU names + 3 reviewed imports + gif autoplay — 2026-09
+    // v22 = GymVisual subgroup taxonomy (gv keyword subgroups) — 2026-09
     // v21 = force fresh exercise-db.json fetch (cache-bust v26) — 2026-09
     // v20 = GymVisual subgroup cleanup (gv sE cleared, target merged into synergists) — 2026-09
     // v19 = WebP image migration (jpg/gif->webp) — 2026-08
@@ -4946,10 +4990,10 @@
     //      + PG "General" subgroups removed + technique fields added
     // v4 = new folder_path structure (no "General" subgroup, no equipment level)
     // v3 = original 1265-exercise seed
-    const v5Flag = await db.get('settings', 'seeded_exercise_base_v21');
+    const v5Flag = await db.get('settings', 'seeded_exercise_base_v23');
     if (!v5Flag) {
       force = true;
-      console.info('[seed] v21 flag missing — forcing re-seed of exercise_base (fresh JSON fetch)');
+      console.info('[seed] v22 flag missing — forcing re-seed of exercise_base (GV subgroups)');
     }
     const current = await db.count('exercise_base');
     if (current > 0 && !force) {
@@ -4963,7 +5007,7 @@
       return 0;
     }
     await db.bulkPut('exercise_base', exercises);
-    await db.put('settings', { key: 'seeded_exercise_base_v21', value: true });
+    await db.put('settings', { key: 'seeded_exercise_base_v23', value: true });
     console.info(`[seed] injected ${exercises.length} exercises into exercise_base`);
     return exercises.length;
   }
@@ -11681,12 +11725,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               <div class="ex-anim-badge">ANIM</div>
             </div>`;
         } else if (images.length === 1) {
-          // Single image — tap-to-play GIF if record has one (GymVisual source)
+          // Single image + GymVisual GIF → autoplay GIF directly (like mm crossfade)
           const gvGif = e.gif || '';
           gifSlot.innerHTML = gvGif
-            ? `<div class="relative w-full h-full cursor-pointer" data-gv-gif="${escAttr(gvGif)}" data-gv-poster="${escAttr(images[0])}">
-                 <img src="${escAttr(images[0])}" alt="" class="w-full h-full object-contain bg-surface-2" loading="lazy" />
-                 <span class="absolute bottom-2 end-2 text-[10px] font-bold px-2 py-1 rounded-lg bg-black/60 text-white">▶ GIF</span>
+            ? `<div class="relative w-full h-full">
+                 <img src="${escAttr(gvGif)}" alt="" class="w-full h-full object-contain bg-surface-2" />
+                 <span class="absolute bottom-2 end-2 text-[10px] font-bold px-2 py-1 rounded-lg bg-black/60 text-white">GIF</span>
                </div>${e.attribution ? `<p class="text-[10px] text-muted mt-1">${esc(e.attribution)}</p>` : ''}`
             : `<img src="${escAttr(images[0])}" alt="" class="w-full h-full object-contain bg-surface-2" loading="lazy" />`;
         } else {
