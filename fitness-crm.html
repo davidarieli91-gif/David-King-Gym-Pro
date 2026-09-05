@@ -4230,9 +4230,12 @@
   /** Exercise database is fetched from exercise-db.json at runtime (was: inline script tag — removed). */
   let EXERCISE_DB_RAW = '[]';
       let _exerciseDbLoaded = false;
+      // Bump EXERCISE_DB_BUST when exercise-db.json changes — defeats SW/browser
+      // cache-first staleness so reseed always unpacks the deployed dataset.
+      const EXERCISE_DB_BUST = 'v26';
       async function loadExerciseDbExternal() {
         try {
-          const resp = await fetch('exercise-db.json');
+          const resp = await fetch('exercise-db.json?v=' + EXERCISE_DB_BUST);
           if (resp.ok) {
             EXERCISE_DB_RAW = await resp.text();
             _exerciseDbLoaded = true;
@@ -4934,7 +4937,8 @@
       if (typeof _exerciseDbLoaded !== 'undefined' && !_exerciseDbLoaded) {
         await loadExerciseDbExternal();
       }
-    // Check if v20 seed flag is set — if not, force re-seed.
+    // Check if v21 seed flag is set — if not, force re-seed.
+    // v21 = force fresh exercise-db.json fetch (cache-bust v26) — 2026-09
     // v20 = GymVisual subgroup cleanup (gv sE cleared, target merged into synergists) — 2026-09
     // v19 = WebP image migration (jpg/gif->webp) — 2026-08
     // v17 = added force/level/mechanic/category classification fields (2026-08)
@@ -4942,10 +4946,10 @@
     //      + PG "General" subgroups removed + technique fields added
     // v4 = new folder_path structure (no "General" subgroup, no equipment level)
     // v3 = original 1265-exercise seed
-    const v5Flag = await db.get('settings', 'seeded_exercise_base_v20');
+    const v5Flag = await db.get('settings', 'seeded_exercise_base_v21');
     if (!v5Flag) {
       force = true;
-      console.info('[seed] v20 flag missing — forcing re-seed of exercise_base (GV subgroup cleanup)');
+      console.info('[seed] v21 flag missing — forcing re-seed of exercise_base (fresh JSON fetch)');
     }
     const current = await db.count('exercise_base');
     if (current > 0 && !force) {
@@ -4959,7 +4963,7 @@
       return 0;
     }
     await db.bulkPut('exercise_base', exercises);
-    await db.put('settings', { key: 'seeded_exercise_base_v20', value: true });
+    await db.put('settings', { key: 'seeded_exercise_base_v21', value: true });
     console.info(`[seed] injected ${exercises.length} exercises into exercise_base`);
     return exercises.length;
   }

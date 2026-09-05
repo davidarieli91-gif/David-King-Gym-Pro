@@ -1,6 +1,6 @@
 // Service Worker - David King Gym PWA
-// v25: added logo-web.webp (root + assets/) to precache shell
-const CACHE_NAME = 'dk-gym-v25';
+// v26: purge stale caches (old exercise-db.json without gv subgroup fix)
+const CACHE_NAME = 'dk-gym-v26';
 const APP_SHELL = [
   './',
   './index.html',
