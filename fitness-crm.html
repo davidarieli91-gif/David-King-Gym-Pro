@@ -4934,17 +4934,18 @@
       if (typeof _exerciseDbLoaded !== 'undefined' && !_exerciseDbLoaded) {
         await loadExerciseDbExternal();
       }
-    // Check if v18 seed flag is set — if not, force re-seed.
-    // v18 = WebP image migration (jpg/gif->webp) — 2026-08
+    // Check if v20 seed flag is set — if not, force re-seed.
+    // v20 = GymVisual subgroup cleanup (gv sE cleared, target merged into synergists) — 2026-09
+    // v19 = WebP image migration (jpg/gif->webp) — 2026-08
     // v17 = added force/level/mechanic/category classification fields (2026-08)
     // v16 = anatomical subgroup split (biceps/brachialis/brachioradialis, etc.)
     //      + PG "General" subgroups removed + technique fields added
     // v4 = new folder_path structure (no "General" subgroup, no equipment level)
     // v3 = original 1265-exercise seed
-    const v5Flag = await db.get('settings', 'seeded_exercise_base_v19');
+    const v5Flag = await db.get('settings', 'seeded_exercise_base_v20');
     if (!v5Flag) {
       force = true;
-      console.info('[seed] v19 flag missing — forcing re-seed of exercise_base (WebP migration)');
+      console.info('[seed] v20 flag missing — forcing re-seed of exercise_base (GV subgroup cleanup)');
     }
     const current = await db.count('exercise_base');
     if (current > 0 && !force) {
@@ -4958,7 +4959,7 @@
       return 0;
     }
     await db.bulkPut('exercise_base', exercises);
-    await db.put('settings', { key: 'seeded_exercise_base_v19', value: true });
+    await db.put('settings', { key: 'seeded_exercise_base_v20', value: true });
     console.info(`[seed] injected ${exercises.length} exercises into exercise_base`);
     return exercises.length;
   }
@@ -14224,11 +14225,17 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           else { btn.classList.remove('bg-primary','text-white'); btn.classList.add('text-muted'); }
         });
       };
-      if (tabAll) tabAll.onclick = () => { _tab = 'body'; _sourceFilter = null; setActiveTab(tabAll); renderAll(); };
-      if (tabPG) tabPG.onclick = () => { _tab = 'body'; _sourceFilter = 'private_gym'; setActiveTab(tabPG); renderAll(); };
-      if (tabMM) tabMM.onclick = () => { _tab = 'body'; _sourceFilter = 'muscle_motion'; setActiveTab(tabMM); renderAll(); };
-      if (tabBF) tabBF.onclick = () => { _tab = 'body'; _sourceFilter = 'burnfit'; setActiveTab(tabBF); renderAll(); };
-      if (tabGV) tabGV.onclick = () => { _tab = 'body'; _sourceFilter = 'gymvisual'; setActiveTab(tabGV); renderAll(); };
+      // Switching source clears group/subgroup/equipment/class filters: each source
+      // has its own taxonomy, stale filters from another tab would dead-end the grid.
+      const resetSourceFilters = () => {
+        _activeGroup = null; _activeSubgroup = null; _equipFilter = 'all';
+        _classFilter = { force: null, level: null, mechanic: null, category: null };
+      };
+      if (tabAll) tabAll.onclick = () => { _tab = 'body'; _sourceFilter = null; resetSourceFilters(); setActiveTab(tabAll); renderAll(); };
+      if (tabPG) tabPG.onclick = () => { _tab = 'body'; _sourceFilter = 'private_gym'; resetSourceFilters(); setActiveTab(tabPG); renderAll(); };
+      if (tabMM) tabMM.onclick = () => { _tab = 'body'; _sourceFilter = 'muscle_motion'; resetSourceFilters(); setActiveTab(tabMM); renderAll(); };
+      if (tabBF) tabBF.onclick = () => { _tab = 'body'; _sourceFilter = 'burnfit'; resetSourceFilters(); setActiveTab(tabBF); renderAll(); };
+      if (tabGV) tabGV.onclick = () => { _tab = 'body'; _sourceFilter = 'gymvisual'; resetSourceFilters(); setActiveTab(tabGV); renderAll(); };
       const tabFav = document.getElementById('bm-tab-favorites');
       if (tabFav) tabFav.onclick = () => { _tab = 'favorites'; renderAll(); };
       const tabRecent = document.getElementById('bm-tab-recent');
@@ -14558,6 +14565,17 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       return [...types].sort();
     }
 
+    /** Subgroup match with tolerance: records without subgroup info (empty/'General',
+     *  e.g. GymVisual which has no subgroup taxonomy) match any subgroup of their
+     *  own group instead of dead-ending the grid. Group scoping is enforced by the
+     *  separate group filter, so this never leaks across groups. */
+    function matchSubgroup(e) {
+      if (!_activeSubgroup) return true;
+      const s = e.subgroup_en || e.sE || '';
+      if (s === _activeSubgroup) return true;
+      return !s || s.toLowerCase() === 'general';
+    }
+
     /** Equipment label in current language. */
     function equipLabel(type) {
       const lang = currentLang();
@@ -14593,7 +14611,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         filtered = filtered.filter(e => (e.group_canonical || e.g) === _activeGroup);
       }
       if (_activeSubgroup) {
-        filtered = filtered.filter(e => (e.subgroup_en || e.sE || '') === _activeSubgroup);
+        filtered = filtered.filter(matchSubgroup);
       }
       const types = getEquipTypes(filtered);
       const allLabel = (typeof t === 'function' && t('common.all')) ? t('common.all') : 'All';
@@ -14633,7 +14651,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         baseFiltered = baseFiltered.filter(e => (e.group_canonical || e.g) === _activeGroup);
       }
       if (_activeSubgroup) {
-        baseFiltered = baseFiltered.filter(e => (e.subgroup_en || e.sE || '') === _activeSubgroup);
+        baseFiltered = baseFiltered.filter(matchSubgroup);
       }
       if (_equipFilter !== 'all') {
         baseFiltered = baseFiltered.filter(e => (e.equipment_type || e.e) === _equipFilter);
@@ -14697,7 +14715,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       }
       // Subgroup filter (NEW — only active when user clicks a specific subgroup)
       if (_activeSubgroup) {
-        filtered = filtered.filter(e => (e.subgroup_en || e.sE || '') === _activeSubgroup);
+        filtered = filtered.filter(matchSubgroup);
       }
       // Equipment filter
       if (_equipFilter !== 'all') {
