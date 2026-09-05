@@ -4319,6 +4319,8 @@
         'לחימה מעל': 'Overhead Press', 'לחיצה מעל': 'Overhead Press',
         'מנחים': 'General', 'כללי': 'General',
         'ניידות': 'Mobility', 'רוטציה בכתף': 'Rotator Cuff',
+        'לחימה מעל': 'Middle', 'לחיצה מעל': 'Middle',
+        'צידית': 'Middle',
         'general': 'General'
       };
 
@@ -5013,6 +5015,7 @@
         await loadExerciseDbExternal();
       }
     // Check if v23 seed flag is set — if not, force re-seed.
+    // v25 = exercise modal gif autoplay + bf bridge regroup + overhead/side normalize — 2026-09
     // v24 = subgroup normalization extended (pg Hebrew variants) — 2026-09
     // v23 = GymVisual RU names + 3 reviewed imports + gif autoplay — 2026-09
     // v22 = GymVisual subgroup taxonomy (gv keyword subgroups) — 2026-09
@@ -5024,7 +5027,7 @@
     //      + PG "General" subgroups removed + technique fields added
     // v4 = new folder_path structure (no "General" subgroup, no equipment level)
     // v3 = original 1265-exercise seed
-    const v5Flag = await db.get('settings', 'seeded_exercise_base_v24');
+    const v5Flag = await db.get('settings', 'seeded_exercise_base_v25');
     if (!v5Flag) {
       force = true;
       console.info('[seed] v22 flag missing — forcing re-seed of exercise_base (GV subgroups)');
@@ -5041,7 +5044,7 @@
       return 0;
     }
     await db.bulkPut('exercise_base', exercises);
-    await db.put('settings', { key: 'seeded_exercise_base_v24', value: true });
+    await db.put('settings', { key: 'seeded_exercise_base_v25', value: true });
     console.info(`[seed] injected ${exercises.length} exercises into exercise_base`);
     return exercises.length;
   }
@@ -17771,6 +17774,7 @@ Select foods for each meal. Output as JSON only.`;
       // XSS fix (2026-08): escape all image URLs via escapeAttr before interpolating into innerHTML.
       // Previous version concatenated raw imgs[0] which could inject attributes via " onerror="alert(1)".
       if (imgs.length >= 2) gifSlot.innerHTML = '<div class="ex-anim-container"><img src="' + escapeAttr(imgs[0]) + '" alt="" class="ex-anim-frame-1" loading="lazy" /><img src="' + escapeAttr(imgs[1]) + '" alt="" class="ex-anim-frame-2" loading="lazy" /><div class="ex-anim-badge">ANIM</div></div>';
+      else if (imgs.length === 1 && ex.gif) gifSlot.innerHTML = '<div class="relative w-full h-full"><img src="' + escapeAttr(ex.gif) + '" alt="" class="w-full h-full object-contain bg-surface-2" /><span class="absolute bottom-2 end-2 text-[10px] font-bold px-2 py-1 rounded-lg bg-black/60 text-white">GIF</span></div>' + (ex.attribution ? '<p class="text-[10px] text-muted mt-1">' + escapeHTML(ex.attribution) + '</p>' : '');
       else if (imgs.length === 1) gifSlot.innerHTML = '<img src="' + escapeAttr(imgs[0]) + '" alt="" class="w-full h-full object-contain bg-surface-2" loading="lazy" />';
       else {
         const vector = (typeof exerciseVectorIllustration === 'function') ? exerciseVectorIllustration(ex, { both: true }) : '';
