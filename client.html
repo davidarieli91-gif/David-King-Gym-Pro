@@ -1022,7 +1022,7 @@
       const restSec = liveEx ? liveEx.rest_sec : (parseInt(ex.rest_sec,10) || 90);
       const thumbHtml = (() => {
         if (imgs.length >= 2) return `<div class="ex-anim-container w-16 h-16 sm:w-20 sm:h-20 shrink-0 cursor-pointer" data-open-exercise><img src="${escapeAttr(imgs[0])}" alt="" class="ex-anim-frame-1" loading="lazy" /><img src="${escapeAttr(imgs[1])}" alt="" class="ex-anim-frame-2" loading="lazy" /></div>`;
-        if (img) return `<img src="${escapeAttr(img)}" alt="" class="ex-img w-16 h-16 sm:w-20 sm:h-20 shrink-0 object-cover cursor-pointer" loading="lazy" data-open-exercise />`;
+        if (img) return `<div class="relative w-16 h-16 sm:w-20 sm:h-20 shrink-0 cursor-pointer" data-open-exercise><img src="${escapeAttr(img)}" alt="" class="ex-img w-full h-full object-cover" loading="lazy" />${exData && exData.gif ? '<span class="absolute bottom-0.5 end-0.5 text-[8px] font-bold px-1 py-0.5 rounded bg-black/60 text-white">▶</span>' : ''}</div>`;
         const v = (typeof window.exerciseVectorIllustration==='function') ? window.exerciseVectorIllustration(exData||ex,{both:false,size:80}) : '';
         return v ? `<div class="w-16 h-16 sm:w-20 sm:h-20 shrink-0 grid place-items-center cursor-pointer" data-open-exercise>${v}</div>` : '';
       })();
@@ -1488,7 +1488,10 @@
       if(imgs.length>=2){
         slot.innerHTML=`<div class="ex-anim-container"><img src="${escapeAttr(imgs[0])}" alt="" class="ex-anim-frame-1" loading="lazy" /><img src="${escapeAttr(imgs[1])}" alt="" class="ex-anim-frame-2" loading="lazy" /><div class="ex-anim-badge">ANIM</div></div>`;
       } else if(imgs.length===1){
-        slot.innerHTML=`<img src="${escapeAttr(imgs[0])}" alt="" class="w-full h-full object-contain bg-[rgb(var(--c-surface-2))]" loading="lazy" />`;
+        const gvGif2 = ex.gif || '';
+        slot.innerHTML = gvGif2
+          ? `<div class="relative w-full h-full cursor-pointer" data-gv-gif="${escapeAttr(gvGif2)}"><img src="${escapeAttr(imgs[0])}" alt="" class="w-full h-full object-contain bg-[rgb(var(--c-surface-2))]" loading="lazy" /><span class="absolute bottom-2 end-2 text-[10px] font-bold px-2 py-1 rounded-lg bg-black/60 text-white">▶ GIF</span></div>`
+          : `<img src="${escapeAttr(imgs[0])}" alt="" class="w-full h-full object-contain bg-[rgb(var(--c-surface-2))]" loading="lazy" />`;
       } else {
         const vector = (typeof window.exerciseVectorIllustration==='function') ? window.exerciseVectorIllustration(ex,{both:true}) : '';
         slot.innerHTML = vector || `<div class="text-center text-muted p-6"><p class="text-xs">${esc(t('noImage'))}</p></div>`;
@@ -1675,8 +1678,14 @@
         if(ex) openExerciseModal(exKey(ex));
       });
     }
-    // Tap on big image inside modal -> fullscreen viewer
+    // Tap on big image inside modal -> play GIF (gv) or fullscreen viewer
     document.getElementById('exercise-gif-slot')?.addEventListener('click', e=>{
+      const gv=e.target.closest('[data-gv-gif]');
+      if(gv && !gv.dataset.playing){
+        gv.dataset.playing='1';
+        gv.innerHTML=`<img src="${escapeAttr(gv.dataset.gvGif)}" alt="" class="w-full h-full object-contain bg-[rgb(var(--c-surface-2))]" />`;
+        return;
+      }
       const img=e.target.closest('img');
       if(img && img.src) openViewer(img.src);
     });

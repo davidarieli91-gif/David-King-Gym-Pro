@@ -14,6 +14,7 @@ const assets = [
   'logo-web.webp',
   'icon-512.png',
   'images',
+  'videos',
   'vendor',
   'data',
   'reports',

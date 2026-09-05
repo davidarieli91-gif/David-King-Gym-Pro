@@ -2379,6 +2379,7 @@
                   <button id="bm-tab-pg" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs min-[1440px]:text-[14px] font-semibold transition text-muted" data-i18n="exercise.sourcePrivateGym">Private Gym</button>
                   <button id="bm-tab-mm" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs min-[1440px]:text-[14px] font-semibold transition text-muted" data-i18n="exercise.sourceMuscleMotion">Muscle Motion</button>
                   <button id="bm-tab-bf" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs min-[1440px]:text-[14px] font-semibold transition bg-primary text-white" data-i18n="exercise.sourceBurnfit">Burnfit</button>
+                  <button id="bm-tab-gv" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs min-[1440px]:text-[14px] font-semibold transition text-muted" data-i18n="exercise.sourceGymVisual">Gym Visual</button>
                   <button id="bm-tab-favorites" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs font-semibold transition text-muted">⭐</button>
                   <button id="bm-tab-recent" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs font-semibold transition text-muted">🕐</button>
                 </div>
@@ -4369,7 +4370,7 @@
         const groupHe = GROUP_HE_OVERRIDES[e.g] || e.gH;
         return {
           id: e.id,
-          source: (e.src === 'mm' ? 'muscle_motion' : (e.src === 'bf' ? 'burnfit' : 'private_gym')),
+          source: (e.src === 'mm' ? 'muscle_motion' : (e.src === 'bf' ? 'burnfit' : (e.src === 'gv' ? 'gymvisual' : 'private_gym'))),
           group_canonical: e.g,
           group_en: e.gE, group_ru: groupRu, group_he: groupHe,
           subgroup_en: subgroup, subgroup_ru: subgroup, subgroup_he: subgroup,
@@ -4384,6 +4385,7 @@
           images: e.i || [],
           folder_path: folderPath,
           gif_url: (e.i && e.i.length > 0) ? e.i[0] : '',
+          gif: e.gif || '',
           synergist_muscles: e.synergists || [],
           movement_type: e.mt || 'isolation',
           // Classification dimensions (added 2026-08 — used by body map picker filters)
@@ -11674,14 +11676,27 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               <div class="ex-anim-badge">ANIM</div>
             </div>`;
         } else if (images.length === 1) {
-          // Single image — no animation
-          gifSlot.innerHTML = `<img src="${escAttr(images[0])}" alt="" class="w-full h-full object-contain bg-surface-2" loading="lazy" />`;
+          // Single image — tap-to-play GIF if record has one (GymVisual source)
+          const gvGif = e.gif || '';
+          gifSlot.innerHTML = gvGif
+            ? `<div class="relative w-full h-full cursor-pointer" data-gv-gif="${escAttr(gvGif)}" data-gv-poster="${escAttr(images[0])}">
+                 <img src="${escAttr(images[0])}" alt="" class="w-full h-full object-contain bg-surface-2" loading="lazy" />
+                 <span class="absolute bottom-2 end-2 text-[10px] font-bold px-2 py-1 rounded-lg bg-black/60 text-white">▶ GIF</span>
+               </div>${e.attribution ? `<p class="text-[10px] text-muted mt-1">${esc(e.attribution)}</p>` : ''}`
+            : `<img src="${escAttr(images[0])}" alt="" class="w-full h-full object-contain bg-surface-2" loading="lazy" />`;
         } else {
           const vector = (typeof exerciseVectorIllustration === 'function') ? exerciseVectorIllustration(e, { both: true }) : '';
           gifSlot.innerHTML = vector || `<div class="text-center text-muted">
             <svg class="w-12 h-12 mx-auto mb-2 opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
             <p class="text-xs">${t('exercise.noPhoto')}</p>
           </div>`;
+        }
+        const gvPlay = gifSlot.querySelector('[data-gv-gif]');
+        if (gvPlay && !gvPlay.dataset.wired) {
+          gvPlay.dataset.wired = '1';
+          gvPlay.addEventListener('click', () => {
+            gvPlay.innerHTML = `<img src="${escAttr(gvPlay.dataset.gvGif)}" alt="" class="w-full h-full object-contain bg-surface-2" />`;
+          });
         }
       }
 
@@ -14200,9 +14215,10 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const tabPG = document.getElementById('bm-tab-pg');
       const tabMM = document.getElementById('bm-tab-mm');
       const tabBF = document.getElementById('bm-tab-bf');
+      const tabGV = document.getElementById('bm-tab-gv');
       const tabAll = document.getElementById('bm-tab-all');
       const setActiveTab = (active) => {
-        [tabAll, tabPG, tabMM, tabBF].forEach(btn => {
+        [tabAll, tabPG, tabMM, tabBF, tabGV].forEach(btn => {
           if (!btn) return;
           if (btn === active) { btn.classList.add('bg-primary','text-white'); btn.classList.remove('text-muted'); }
           else { btn.classList.remove('bg-primary','text-white'); btn.classList.add('text-muted'); }
@@ -14212,6 +14228,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       if (tabPG) tabPG.onclick = () => { _tab = 'body'; _sourceFilter = 'private_gym'; setActiveTab(tabPG); renderAll(); };
       if (tabMM) tabMM.onclick = () => { _tab = 'body'; _sourceFilter = 'muscle_motion'; setActiveTab(tabMM); renderAll(); };
       if (tabBF) tabBF.onclick = () => { _tab = 'body'; _sourceFilter = 'burnfit'; setActiveTab(tabBF); renderAll(); };
+      if (tabGV) tabGV.onclick = () => { _tab = 'body'; _sourceFilter = 'gymvisual'; setActiveTab(tabGV); renderAll(); };
       const tabFav = document.getElementById('bm-tab-favorites');
       if (tabFav) tabFav.onclick = () => { _tab = 'favorites'; renderAll(); };
       const tabRecent = document.getElementById('bm-tab-recent');
@@ -14728,8 +14745,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         const img2 = imgs[1] || '';
         const id = e.id;
         const isFav = _favorites.includes(id);
-        const src = e.source === 'muscle_motion' || e.src === 'mm' ? 'MM' : (e.source === 'burnfit' || e.src === 'bf' ? 'BF' : 'PG');
-        const srcClass = src === 'MM' ? 'bg-accent/15 text-accent' : (src === 'BF' ? 'bg-success/15 text-success' : 'bg-primary/15 text-primary-2');
+        const src = e.source === 'muscle_motion' || e.src === 'mm' ? 'MM' : (e.source === 'burnfit' || e.src === 'bf' ? 'BF' : (e.source === 'gymvisual' || e.src === 'gv' ? 'GV' : 'PG'));
+        const srcClass = src === 'MM' ? 'bg-accent/15 text-accent' : (src === 'BF' ? 'bg-success/15 text-success' : (src === 'GV' ? 'bg-warning/15 text-warning' : 'bg-primary/15 text-primary-2'));
         const hasVector = typeof exerciseVectorIllustration === 'function';
         const vectorHtml = hasVector ? exerciseVectorIllustration(e, { both: false, size: 140 }) : '';
         const imgHtml = img1 && img2
@@ -14926,8 +14943,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       grid.innerHTML = favExercises.map(e => {
         const name = e['name_' + lang] || e.name_en || '?';
         const img = (e.images && e.images[0]) || (e.i && e.i[0]) || '';
-        const src = e.source === 'muscle_motion' || e.src === 'mm' ? 'MM' : (e.source === 'burnfit' || e.src === 'bf' ? 'BF' : 'PG');
-        const srcClass = src === 'MM' ? 'bg-accent/15 text-accent' : (src === 'BF' ? 'bg-success/15 text-success' : 'bg-primary/15 text-primary-2');
+        const src = e.source === 'muscle_motion' || e.src === 'mm' ? 'MM' : (e.source === 'burnfit' || e.src === 'bf' ? 'BF' : (e.source === 'gymvisual' || e.src === 'gv' ? 'GV' : 'PG'));
+        const srcClass = src === 'MM' ? 'bg-accent/15 text-accent' : (src === 'BF' ? 'bg-success/15 text-success' : (src === 'GV' ? 'bg-warning/15 text-warning' : 'bg-primary/15 text-primary-2'));
         return `<div class="bm-ex-card bg-surface-2 border border-border rounded-xl overflow-hidden hover:border-primary/30 transition cursor-pointer" data-bm-add="${esc(e.id)}">
           <div class="aspect-square bg-surface relative">
             ${img ? `<img src="${esc(img)}" alt="" class="w-full h-full object-cover" loading="lazy"/>` : `<div class="w-full h-full grid place-items-center"><svg class="w-8 h-8 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>`}
@@ -14982,8 +14999,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       grid.innerHTML = recentExercises.map(e => {
         const name = e['name_' + lang] || e.name_en || '?';
         const img = (e.images && e.images[0]) || (e.i && e.i[0]) || '';
-        const src = e.source === 'muscle_motion' || e.src === 'mm' ? 'MM' : (e.source === 'burnfit' || e.src === 'bf' ? 'BF' : 'PG');
-        const srcClass = src === 'MM' ? 'bg-accent/15 text-accent' : (src === 'BF' ? 'bg-success/15 text-success' : 'bg-primary/15 text-primary-2');
+        const src = e.source === 'muscle_motion' || e.src === 'mm' ? 'MM' : (e.source === 'burnfit' || e.src === 'bf' ? 'BF' : (e.source === 'gymvisual' || e.src === 'gv' ? 'GV' : 'PG'));
+        const srcClass = src === 'MM' ? 'bg-accent/15 text-accent' : (src === 'BF' ? 'bg-success/15 text-success' : (src === 'GV' ? 'bg-warning/15 text-warning' : 'bg-primary/15 text-primary-2'));
         return `<div class="bm-ex-card bg-surface-2 border border-border rounded-xl overflow-hidden hover:border-primary/30 transition cursor-pointer" data-bm-add="${esc(e.id)}">
           <div class="aspect-square bg-surface relative">
             ${img ? `<img src="${esc(img)}" alt="" class="w-full h-full object-cover" loading="lazy"/>` : `<div class="w-full h-full grid place-items-center"><svg class="w-8 h-8 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>`}
@@ -21125,7 +21142,8 @@ async function boot() {
                 group: ex.group_canonical || ex.g || '', subgroup: ex.subgroup_en || ex.sE || '',
                 equipment: ex.equipment_ru || ex.eE || ex.e || '',
                 synergists: ex.synergist_muscles || ex.synergists || [],
-                video_url: ex.video_url || ''
+                video_url: ex.video_url || '',
+                gif: ex.gif || ''
               };
             } catch (_) {}
           }
