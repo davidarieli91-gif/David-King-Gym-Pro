@@ -52,10 +52,15 @@ for (const x of ds) {
   const gid = 'gv_' + x.id;
   if (have.has(gid)) { skipped++; continue; }
   const g = refineGroup(x.category, x.target);
+  // NOTE: sE/sR/sH stay EMPTY for gv — dataset has no subgroup taxonomy.
+  // Raw target goes into synergists so no info is lost. Empty-subgroup records
+  // match any subgroup of their own group (see matchSubgroup in fitness-crm.html).
+  const syn = [...(x.secondary_muscles || [])];
+  if (x.target && !syn.some(s => String(s).toLowerCase() === String(x.target).toLowerCase())) syn.push(x.target);
   db.push({
     id: gid, src: 'gv',
     g, gE: x.category, gR: x.category, gH: x.category,
-    sE: x.target || '', sR: x.target || '', sH: x.target || '',
+    sE: '', sR: '', sH: '',
     e: EQ2E[x.equipment] || 'other', eE: x.equipment, eR: x.equipment, eH: x.equipment,
     nE: x.name, nR: x.name, nH: x.name,
     t: steps(x.instruction_steps && x.instruction_steps.en),
@@ -65,7 +70,7 @@ for (const x of ds) {
     gif: 'videos/gv_' + x.id + '.gif',
     media_id: x.media_id || '',
     attribution: '© Gym visual — https://gymvisual.com/',
-    synergists: x.secondary_muscles || [],
+    synergists: syn,
     pg: { pose: 'standing' }
   });
   imported++;

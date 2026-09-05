@@ -8,6 +8,7 @@ const gv = db.filter(x => x.src === 'gv');
 const errs = [];
 const GROUPS = new Set(['abdominals','legs','elbow_flexors','shoulders','chest','back','stretching','warmup','fullbody','calisthenics','triceps','forearms','biceps','back_ext','abs']);
 gv.forEach(x => {
+  if (x.sE || x.sR || x.sH) errs.push(x.id + ': subgroup fields must be empty (use synergists)');
   if (!x.nH || x.nH === x.nE) errs.push(x.id + ': nH missing/fallback');
   if (!x.tHe) errs.push(x.id + ': tHe missing');
   if (!GROUPS.has(x.g)) errs.push(x.id + ': bad group ' + x.g);
