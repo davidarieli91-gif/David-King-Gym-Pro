@@ -1885,9 +1885,8 @@
               <div class="flex items-center gap-2 mb-3 flex-wrap">
                 <div class="flex gap-1 bg-surface-2 border border-border rounded-lg p-1">
                   <button data-exercise-source="all" class="ex-src-btn px-3 py-1.5 rounded-md text-xs font-semibold transition bg-primary text-white" data-i18n="common.all">All</button>
-                  <button data-exercise-source="muscle_motion" class="ex-src-btn px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted" data-i18n="exercise.sourceMuscleMotion">Muscle Motion</button>
-                  <button data-exercise-source="private_gym" class="ex-src-btn px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted" data-i18n="exercise.sourcePrivateGym">Private Gym</button>
                   <button data-exercise-source="burnfit" class="ex-src-btn px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted" data-i18n="exercise.sourceBurnfit">Burnfit</button>
+                  <button data-exercise-source="gymvisual" class="ex-src-btn px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted" data-i18n="exercise.sourceGymVisual">Gym Visual</button>
                 </div>
                 <span id="exercise-count" class="text-xs text-muted bg-surface-2 border border-border rounded-full px-2 py-0.5">0</span>
                 <button id="exercise-edit-mode-btn" class="bg-surface-2 hover:bg-border/40 border border-border text-sm font-medium px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1.5">
@@ -2376,8 +2375,6 @@
                 </div>
                 <div class="flex gap-1 bg-surface-2 border border-border rounded-lg p-0.5 mt-1 min-[1440px]:mt-2 flex-nowrap overflow-x-auto no-scrollbar min-[1440px]:overflow-x-visible min-[1440px]:flex-wrap">
                   <button id="bm-tab-all" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs min-[1440px]:text-[14px] font-semibold transition text-muted" data-i18n="common.all">All</button>
-                  <button id="bm-tab-pg" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs min-[1440px]:text-[14px] font-semibold transition text-muted" data-i18n="exercise.sourcePrivateGym">Private Gym</button>
-                  <button id="bm-tab-mm" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs min-[1440px]:text-[14px] font-semibold transition text-muted" data-i18n="exercise.sourceMuscleMotion">Muscle Motion</button>
                   <button id="bm-tab-bf" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs min-[1440px]:text-[14px] font-semibold transition bg-primary text-white" data-i18n="exercise.sourceBurnfit">Burnfit</button>
                   <button id="bm-tab-gv" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs min-[1440px]:text-[14px] font-semibold transition text-muted" data-i18n="exercise.sourceGymVisual">Gym Visual</button>
                   <button id="bm-tab-favorites" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs font-semibold transition text-muted">⭐</button>
@@ -4321,6 +4318,7 @@
         'ניידות': 'Mobility', 'רוטציה בכתף': 'Rotator Cuff',
         'לחימה מעל': 'Middle', 'לחיצה מעל': 'Middle',
         'צידית': 'Middle',
+        'fullbody': 'General',
         'general': 'General'
       };
 
@@ -4371,6 +4369,9 @@
               if (nameLower.includes('calf') || nameLower.includes('toe raise') || nameLower.includes('donkey')) return 'Calves';
               if (nameLower.includes('glute') || nameLower.includes('bridge') || nameLower.includes('hip thrust') || nameLower.includes('abduct') || nameLower.includes('adduct')) return 'Glutes';
               return 'Quadriceps';
+            case 'forearms':
+              if (nameLower.includes('wrist') || nameLower.includes('finger') || nameLower.includes('grip') || nameLower.includes('pronat') || nameLower.includes('supinat')) return 'Wrist Curls';
+              return 'General';
             default:
               return 'General';
           }
@@ -4535,6 +4536,7 @@
     'forearms':      { en: 'Forearms',    ru: 'Предплечья',    he: 'כפות ידים' },
     'abdominals':    { en: 'Abs',         ru: 'Пресс',         he: 'בטן' },
     'legs':          { en: 'Legs',        ru: 'Ноги',          he: 'רגליים' },
+    'fullbody':      { en: 'Full Body',   ru: 'Фулбоди',       he: 'גוף מלא' },
     'stretching':    { en: 'Stretching',  ru: 'Растяжка',      he: 'מתיחות' },
     'warmup':        { en: 'Warm-up',     ru: 'Разминка',      he: 'חימום' },
     'calisthenics':  { en: 'Calisthenics',ru: 'Калистеника',   he: 'משקל גוף' },
@@ -4576,6 +4578,7 @@
       forearms: '✊',       // fist (forearm)
       abdominals: '🎯',     // six-pack target
       legs: '🦵',           // leg
+      fullbody: '🏋️',       // full body
       calisthenics: '🤸',   // workout
       stretching: '🧘',     // yoga/stretch
       warmup: '🔥'          // warm-up fire
@@ -5015,6 +5018,7 @@
         await loadExerciseDbExternal();
       }
     // Check if v23 seed flag is set — if not, force re-seed.
+    // v26 = remove pg/mm sources (bf+gv only), merge biceps→elbow_flexors — 2026-09
     // v25 = exercise modal gif autoplay + bf bridge regroup + overhead/side normalize — 2026-09
     // v24 = subgroup normalization extended (pg Hebrew variants) — 2026-09
     // v23 = GymVisual RU names + 3 reviewed imports + gif autoplay — 2026-09
@@ -5027,7 +5031,7 @@
     //      + PG "General" subgroups removed + technique fields added
     // v4 = new folder_path structure (no "General" subgroup, no equipment level)
     // v3 = original 1265-exercise seed
-    const v5Flag = await db.get('settings', 'seeded_exercise_base_v25');
+    const v5Flag = await db.get('settings', 'seeded_exercise_base_v26');
     if (!v5Flag) {
       force = true;
       console.info('[seed] v22 flag missing — forcing re-seed of exercise_base (GV subgroups)');
@@ -5044,7 +5048,7 @@
       return 0;
     }
     await db.bulkPut('exercise_base', exercises);
-    await db.put('settings', { key: 'seeded_exercise_base_v25', value: true });
+    await db.put('settings', { key: 'seeded_exercise_base_v26', value: true });
     console.info(`[seed] injected ${exercises.length} exercises into exercise_base`);
     return exercises.length;
   }
@@ -8671,8 +8675,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               if (child.exercises.length > 0) {
                 child.exercises.forEach(e => {
                   const name = e['name_' + lang] || e.name_en || '?';
-                  const src = e.source === 'muscle_motion' ? 'MM' : (e.source === 'burnfit' ? 'BF' : 'PG');
-                  const srcClass = e.source === 'muscle_motion' ? 'bg-accent/15 text-accent' : (e.source === 'burnfit' ? 'bg-success/15 text-success' : 'bg-primary/15 text-primary-2');
+                  const src = e.source === 'gymvisual' ? 'GV' : (e.source === 'burnfit' ? 'BF' : 'BF');
+                  const srcClass = e.source === 'gymvisual' ? 'bg-warning/15 text-warning' : 'bg-success/15 text-success';
                   const hasPhoto = e.images && e.images.length > 0;
                   html += `<div data-pb-pick="${escapeAttr(e.id)}" class="flex items-center gap-2 bg-surface-2 border border-border rounded-lg p-2 hover:bg-border/30 hover:border-primary/30 transition cursor-pointer" style="margin-inline-start: ${(depth + 1) * 16 + 8}px">
                     <div class="w-7 h-7 rounded-lg shrink-0 overflow-hidden bg-surface border border-border grid place-items-center">
@@ -8723,8 +8727,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         list.innerHTML = filtered.map(e => {
           const name = e['name_' + lang] || e.name_en || '?';
           const group = e['group_' + lang] || e.group_en || '';
-          const src = e.source === 'muscle_motion' ? 'MM' : (e.source === 'burnfit' ? 'BF' : 'PG');
-          const srcClass = e.source === 'muscle_motion' ? 'bg-accent/15 text-accent' : (e.source === 'burnfit' ? 'bg-success/15 text-success' : 'bg-primary/15 text-primary-2');
+          const src = e.source === 'gymvisual' ? 'GV' : (e.source === 'burnfit' ? 'BF' : 'BF');
+          const srcClass = e.source === 'gymvisual' ? 'bg-warning/15 text-warning' : 'bg-success/15 text-success';
           const hasPhoto = e.images && e.images.length > 0;
           return `<div data-pb-pick="${escapeAttr(e.id)}" class="flex items-center gap-3 bg-surface-2 border border-border rounded-xl p-3 hover:bg-border/30 hover:border-primary/30 transition cursor-pointer">
             <div class="w-9 h-9 rounded-lg shrink-0 overflow-hidden bg-surface border border-border grid place-items-center">
@@ -11241,8 +11245,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         if (node.exercises.length > 0) {
           node.exercises.forEach(e => {
             const name = exName(e);
-            const src = e.source === 'muscle_motion' ? 'MM' : (e.source === 'burnfit' ? 'BF' : 'PG');
-            const srcClass = e.source === 'muscle_motion' ? 'bg-accent/15 text-accent' : (e.source === 'burnfit' ? 'bg-success/15 text-success' : 'bg-primary/15 text-primary-2');
+            const src = e.source === 'gymvisual' ? 'GV' : (e.source === 'burnfit' ? 'BF' : 'BF');
+            const srcClass = e.source === 'gymvisual' ? 'bg-warning/15 text-warning' : 'bg-success/15 text-success';
             const hasPhoto = e.images && e.images.length > 0;
             const hasVideo = e.video_url && extractYouTubeId(e.video_url);
             html += `<div data-exercise-id="${escAttr(e.id)}" class="exercise-card flex items-center gap-2 bg-surface-2 border border-border rounded-lg p-2 hover:bg-border/30 hover:border-primary/30 transition cursor-pointer" style="margin-inline-start: ${(depth + 1) * 20}px"${_editMode ? ' draggable="true"' : ''}>
@@ -13222,14 +13226,13 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
       // If no search query → show tree with source root folders (collapsed)
       if (!query) {
-        // Build folder tree with three roots: Muscle Motion + Private Gym + Burnfit
+        // Build folder tree with two roots: Burnfit + Gym Visual
         const root = { children: {
-          muscle_motion: { name: 'muscle_motion', label: 'Muscle Motion', pathKey: 'muscle_motion', children: {}, exercises: [] },
-          private_gym: { name: 'private_gym', label: 'Private Gym', pathKey: 'private_gym', children: {}, exercises: [] },
-          burnfit: { name: 'burnfit', label: 'Burnfit', pathKey: 'burnfit', children: {}, exercises: [] }
+          burnfit: { name: 'burnfit', label: 'Burnfit', pathKey: 'burnfit', children: {}, exercises: [] },
+          gymvisual: { name: 'gymvisual', label: 'Gym Visual', pathKey: 'gymvisual', children: {}, exercises: [] }
         }, exercises: [] };
         filtered.forEach(e => {
-          const sourceKey = e.source === 'muscle_motion' ? 'muscle_motion' : (e.source === 'burnfit' ? 'burnfit' : 'private_gym');
+          const sourceKey = e.source === 'gymvisual' ? 'gymvisual' : 'burnfit';
           const sourceNode = root.children[sourceKey];
           const path = e.folder_path || [e.group_canonical || 'other', 'general', e.equipment_type || 'other'];
           let node = sourceNode;
@@ -13277,8 +13280,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               if (child.exercises.length > 0) {
                 child.exercises.forEach(e => {
                   const name = e['name_' + lang] || e.name_en || '?';
-                  const src = e.source === 'muscle_motion' ? 'MM' : (e.source === 'burnfit' ? 'BF' : 'PG');
-                  const srcClass = e.source === 'muscle_motion' ? 'bg-accent/15 text-accent' : (e.source === 'burnfit' ? 'bg-success/15 text-success' : 'bg-primary/15 text-primary-2');
+                  const src = e.source === 'gymvisual' ? 'GV' : (e.source === 'burnfit' ? 'BF' : 'BF');
+                  const srcClass = e.source === 'gymvisual' ? 'bg-warning/15 text-warning' : 'bg-success/15 text-success';
                   const hasPhoto = e.images && e.images.length > 0;
                   html += `<div data-pick-exercise="${escapeAttr(e.id)}" class="flex items-center gap-2 bg-surface-2 border border-border rounded-lg p-2 hover:bg-border/30 hover:border-primary/30 transition cursor-pointer" style="margin-inline-start: ${(depth + 1) * 16 + 8}px">
                     <div class="w-7 h-7 rounded-lg shrink-0 overflow-hidden bg-surface border border-border grid place-items-center">
@@ -13316,8 +13319,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         list.innerHTML = filtered.map(e => {
           const name = e['name_' + lang] || e.name_en || '?';
           const group = e['group_' + lang] || e.group_en || '';
-          const src = e.source === 'muscle_motion' ? 'MM' : (e.source === 'burnfit' ? 'BF' : 'PG');
-          const srcClass = e.source === 'muscle_motion' ? 'bg-accent/15 text-accent' : (e.source === 'burnfit' ? 'bg-success/15 text-success' : 'bg-primary/15 text-primary-2');
+          const src = e.source === 'gymvisual' ? 'GV' : (e.source === 'burnfit' ? 'BF' : 'BF');
+          const srcClass = e.source === 'gymvisual' ? 'bg-warning/15 text-warning' : 'bg-success/15 text-success';
           const hasPhoto = e.images && e.images.length > 0;
           return `
             <div data-pick-exercise="${escapeAttr(e.id)}" class="flex items-center gap-3 bg-surface-2 border border-border rounded-xl p-3 hover:bg-border/30 hover:border-primary/30 transition cursor-pointer">
@@ -14298,13 +14301,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const searchInput = document.getElementById('bm-search');
       if (searchInput) searchInput.placeholder = t('exercise.searchPlaceholder') || 'Search...';
       // Wire tab buttons
-      const tabPG = document.getElementById('bm-tab-pg');
-      const tabMM = document.getElementById('bm-tab-mm');
       const tabBF = document.getElementById('bm-tab-bf');
       const tabGV = document.getElementById('bm-tab-gv');
       const tabAll = document.getElementById('bm-tab-all');
       const setActiveTab = (active) => {
-        [tabAll, tabPG, tabMM, tabBF, tabGV].forEach(btn => {
+        [tabAll, tabBF, tabGV].forEach(btn => {
           if (!btn) return;
           if (btn === active) { btn.classList.add('bg-primary','text-white'); btn.classList.remove('text-muted'); }
           else { btn.classList.remove('bg-primary','text-white'); btn.classList.add('text-muted'); }
@@ -14317,8 +14318,6 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         _classFilter = { force: null, level: null, mechanic: null, category: null };
       };
       if (tabAll) tabAll.onclick = () => { _tab = 'body'; _sourceFilter = null; resetSourceFilters(); setActiveTab(tabAll); renderAll(); };
-      if (tabPG) tabPG.onclick = () => { _tab = 'body'; _sourceFilter = 'private_gym'; resetSourceFilters(); setActiveTab(tabPG); renderAll(); };
-      if (tabMM) tabMM.onclick = () => { _tab = 'body'; _sourceFilter = 'muscle_motion'; resetSourceFilters(); setActiveTab(tabMM); renderAll(); };
       if (tabBF) tabBF.onclick = () => { _tab = 'body'; _sourceFilter = 'burnfit'; resetSourceFilters(); setActiveTab(tabBF); renderAll(); };
       if (tabGV) tabGV.onclick = () => { _tab = 'body'; _sourceFilter = 'gymvisual'; resetSourceFilters(); setActiveTab(tabGV); renderAll(); };
       const tabFav = document.getElementById('bm-tab-favorites');
@@ -14546,7 +14545,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const groups = getGroupsWithSubgroups();
       // Display order for groups
       const GROUP_ORDER = ['chest', 'back', 'shoulders', 'elbow_flexors', 'triceps', 'forearms',
-                           'abdominals', 'legs', 'calisthenics', 'stretching', 'warmup'];
+                           'abdominals', 'legs', 'fullbody', 'calisthenics', 'stretching', 'warmup'];
       const orderedGroups = Object.keys(groups).sort((a, b) => {
         const ia = GROUP_ORDER.indexOf(a);
         const ib = GROUP_ORDER.indexOf(b);
@@ -22431,7 +22430,7 @@ async function boot() {
       });
     }
 
-    // Source toggle buttons (All / Muscle Motion / Private Gym)
+    // Source toggle buttons (All / Burnfit / Gym Visual)
     document.querySelectorAll('.ex-src-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const src = btn.getAttribute('data-exercise-source');
