@@ -4282,10 +4282,43 @@
         'upper': 'Upper', 'middle': 'Middle', 'lower': 'Lower',
         'front': 'Front', 'rear': 'Rear',
         'obliques': 'Obliques', 'oblique': 'Obliques',
-        'biceps': 'Biceps', 'brachialis': 'Brachialis',
+        'biceps': 'Biceps', 'brachialis': 'Brachialis', 'brachioradialis': 'Brachioradialis',
         'compound': 'Compound', 'seated': 'Seated', 'lying': 'Lying',
         'wrist curls': 'Wrist Curls', 'grip': 'Grip',
         'rotator cuff': 'Rotator Cuff',
+        'glut+quad': 'Glutes + Quads', 'quad': 'Quadriceps', 'gastrocnemius': 'Calves',
+        'upper abs': 'Upper Abs', 'inner abs': 'Inner Abs',
+        // Hebrew pg variants (group-aware values from Private Gym DB)
+        'אמצעי:': 'Middle', 'אמצעי': 'Middle',
+        'עליון:': 'Upper', 'עליון': 'Upper',
+        'תחתון:': 'Lower', 'תחתון': 'Lower',
+        'קידמית:': 'Front', 'קידמית': 'Front', 'קדמי': 'Front',
+        'אחורית:': 'Rear', 'אחורית': 'Rear', 'אחורי': 'Rear',
+        'טרפזים:': 'Trapezius', 'טרפז': 'Trapezius',
+        'משיכה': 'Pull-up', 'חתירה': 'Row',
+        'ישר בטני': 'Upper Abs', 'בטן תחתון': 'Lower',
+        'אלכסונים': 'Obliques', 'אלכסוני': 'Obliques',
+        'רוטציה בכתף:': 'Rotator Cuff', 'רוטציה בכתף': 'Rotator Cuff',
+        'כופפי ירך': 'Hip Flexors', 'מרחיקים': 'Abductors',
+        'בהטיית גוף': 'Compound', 'בעמידה': 'Compound',
+        'תרגיל מורכב': 'Compound',
+        'שכיבה על גב': 'Lying', 'שכיבה על בטן': 'Lying', 'בישיבה': 'Seated',
+        'בטן פנימי': 'Inner Abs',
+        'עכוז': 'Glutes', 'עכוז + ארבע ראשי': 'Glutes + Quads',
+        'ארבע ראשי': 'Quadriceps', 'ישבן': 'Glutes',
+        'שוקיים': 'Calves', 'תאומים': 'Calves',
+        'גב אמצעי': 'Middle Back', 'גב תחתון': 'Lower Back',
+        'זוקפי גב': 'Lower Back', 'לטיסימוס': 'Lats', 'רחבת גב': 'Lats',
+        'צוואר': 'Neck', 'ברכיאליס': 'Brachialis', 'ברכיורדיאליס': 'Brachioradialis',
+        'ביצפס': 'Biceps', 'יד קדמית': 'Front',
+        'כפיפות שורש כף היד': 'Wrist Curls', 'כפיפת שורש כף היד': 'Wrist Curls',
+        'ליבה': 'Upper', 'שכיבה': 'Lying', 'צידית': 'Side',
+        'אחיזה': 'Grip', 'בידוד': 'Isolation',
+        'מאחורי הראש': 'Seated', 'רגליים': 'Legs', 'ידיים': 'Arms',
+        'מתח': 'Pull-up', 'ישיבה': 'Seated',
+        'לחימה מעל': 'Overhead Press', 'לחיצה מעל': 'Overhead Press',
+        'מנחים': 'General', 'כללי': 'General',
+        'ניידות': 'Mobility', 'רוטציה בכתף': 'Rotator Cuff',
         'general': 'General'
       };
 
@@ -4980,6 +5013,7 @@
         await loadExerciseDbExternal();
       }
     // Check if v23 seed flag is set — if not, force re-seed.
+    // v24 = subgroup normalization extended (pg Hebrew variants) — 2026-09
     // v23 = GymVisual RU names + 3 reviewed imports + gif autoplay — 2026-09
     // v22 = GymVisual subgroup taxonomy (gv keyword subgroups) — 2026-09
     // v21 = force fresh exercise-db.json fetch (cache-bust v26) — 2026-09
@@ -4990,7 +5024,7 @@
     //      + PG "General" subgroups removed + technique fields added
     // v4 = new folder_path structure (no "General" subgroup, no equipment level)
     // v3 = original 1265-exercise seed
-    const v5Flag = await db.get('settings', 'seeded_exercise_base_v23');
+    const v5Flag = await db.get('settings', 'seeded_exercise_base_v24');
     if (!v5Flag) {
       force = true;
       console.info('[seed] v22 flag missing — forcing re-seed of exercise_base (GV subgroups)');
@@ -5007,7 +5041,7 @@
       return 0;
     }
     await db.bulkPut('exercise_base', exercises);
-    await db.put('settings', { key: 'seeded_exercise_base_v23', value: true });
+    await db.put('settings', { key: 'seeded_exercise_base_v24', value: true });
     console.info(`[seed] injected ${exercises.length} exercises into exercise_base`);
     return exercises.length;
   }
