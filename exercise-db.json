@@ -32,7 +32,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -42,9 +44,9 @@
   "gE": "Shoulders",
   "gR": "Плечи",
   "gH": "כתפיים",
-  "sE": "Middle",
-  "sR": "Средний",
-  "sH": "אמצעי",
+  "sE": "Rear",
+  "sR": "Задний",
+  "sH": "אחורי",
   "e": "dumbbell",
   "eE": "Dumbbell",
   "eR": "Гантель",
@@ -68,7 +70,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "trapezius",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -104,7 +109,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -140,7 +148,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "trapezius",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -176,7 +187,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -212,7 +226,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "biceps",
+   "rear_delts"
+  ],
   "mt": "isolation"
  },
  {
@@ -248,7 +265,11 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes",
+   "hamstrings",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -258,9 +279,9 @@
   "gE": "Abdominals",
   "gR": "Мышцы кора",
   "gH": "בטן",
-  "sE": "General",
-  "sR": "Общее",
-  "sH": "כללי",
+  "sE": "Lower",
+  "sR": "Нижний",
+  "sH": "תחתון",
   "e": "machine",
   "eE": "Machine",
   "eR": "Тренажёр",
@@ -284,7 +305,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "hip_flexors"
+  ],
   "mt": "isolation"
  },
  {
@@ -320,7 +343,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "obliques"
+  ],
   "mt": "isolation"
  },
  {
@@ -356,7 +381,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "hamstrings",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -392,7 +420,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "shoulders",
+   "back"
+  ],
   "mt": "isolation"
  },
  {
@@ -428,7 +459,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "hip_flexors"
+  ],
   "mt": "isolation"
  },
  {
@@ -464,7 +497,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -500,7 +536,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "triceps",
+   "shoulders"
+  ],
   "mt": "isolation"
  },
  {
@@ -536,7 +575,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "forearms"
+  ],
   "mt": "isolation"
  },
  {
@@ -572,7 +613,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "triceps",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -608,7 +652,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "legs",
+   "shoulders"
+  ],
   "mt": "isolation"
  },
  {
@@ -618,9 +665,9 @@
   "gE": "Chest",
   "gR": "Грудь",
   "gH": "חזה",
-  "sE": "Middle",
-  "sR": "Средний",
-  "sH": "אמצעי",
+  "sE": "Lower",
+  "sR": "Нижний",
+  "sH": "תחתון",
   "e": "machine",
   "eE": "Machine",
   "eR": "Тренажёр",
@@ -644,7 +691,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "triceps",
+   "shoulders"
+  ],
   "mt": "isolation"
  },
  {
@@ -680,7 +730,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "biceps",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -716,7 +769,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes",
+   "hamstrings"
+  ],
   "mt": "isolation"
  },
  {
@@ -752,7 +808,11 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes",
+   "hamstrings",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -788,7 +848,11 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "chest",
+   "triceps",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -824,7 +888,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "forearms"
+  ],
   "mt": "isolation"
  },
  {
@@ -860,7 +926,10 @@
   "bf_desc_en": "A classic barbell push exercise that builds overall upper body strength, focusing on the chest muscles.",
   "bf_desc_ru": "Классическое упражнение с жимом штанги, которое развивает общую силу верхнего тела, фокусируясь на грудных мышцах.",
   "bf_desc_he": "תרגיל לחיצת מוט קלאסי שבונה כוח כללי בחלק העליון של הגוף, עם דגש על שרירי החזה.",
-  "synergists": [],
+  "synergists": [
+   "triceps",
+   "shoulders"
+  ],
   "mt": "isolation"
  },
  {
@@ -1190,9 +1259,9 @@
   "gE": "Chest",
   "gR": "Грудь",
   "gH": "חזה",
-  "sE": "Middle",
-  "sR": "Средний",
-  "sH": "אמצעי",
+  "sE": "Upper",
+  "sR": "Верхний",
+  "sH": "עליון",
   "e": "barbell",
   "eE": "Barbell",
   "eR": "Штанга",
@@ -1903,13 +1972,13 @@
  {
   "id": "bf_bird-dog",
   "src": "bf",
-  "g": "abdominals",
+  "g": "back",
   "gE": "Abdominals",
-  "gR": "Мышцы кора",
-  "gH": "בטן",
-  "sE": "Lower",
-  "sR": "Нижний",
-  "sH": "תחתון",
+  "gR": "Спина",
+  "gH": "גב",
+  "sE": "Lower Back",
+  "sR": "Поясница",
+  "sH": "גב תחתון",
   "e": "bodyweight",
   "eE": "Bodyweight",
   "eR": "Вес тела",
@@ -2542,9 +2611,9 @@
   "gE": "Triceps",
   "gR": "Трицепс",
   "gH": "יד אחורית",
-  "sE": "Compound",
-  "sR": "Базовое",
-  "sH": "בסיסי",
+  "sE": "Lying",
+  "sR": "Лёжа",
+  "sH": "שכיבה",
   "e": "machine",
   "eE": "Machine",
   "eR": "Тренажёр",
@@ -2620,9 +2689,9 @@
   "gE": "Triceps",
   "gR": "Трицепс",
   "gH": "יד אחורית",
-  "sE": "Compound",
-  "sR": "Базовое",
-  "sH": "בסיסי",
+  "sE": "Seated",
+  "sR": "Сидя",
+  "sH": "ישיבה",
   "e": "machine",
   "eE": "Machine",
   "eR": "Тренажёр",
@@ -2978,7 +3047,7 @@
   "eE": "Bodyweight",
   "eR": "Вес тела",
   "eH": "משקל גוף",
-  "nE": "Captain&#039;s Chair Knee Raise",
+  "nE": "Captain's Chair Knee Raise",
   "nR": "Подъем коленей в тренажере капитанского стула",
   "nH": "הרמת ברכיים בכיסא הקפטן",
   "t": "Mount the captain's chair machine and support your body by placing your elbows and forearms on the pads. Hold the handles to stabilize your position while keeping your back and torso upright. | Let your legs hang naturally downward and engage your core. | Exhale as you bend your knees and lift them toward your chest using the strength of your abdominal muscles. Avoid using momentum, and focus on slightly tucking your pelvis as you perform the movement. | Pause briefly when your knees reach navel height or higher and your abs are fully contracted, then inhale as you slowly lower your legs back to the starting position while feeling your abdominal muscles relax.",
@@ -3563,9 +3632,9 @@
   "gE": "Chest",
   "gR": "Грудь",
   "gH": "חזה",
-  "sE": "Middle",
-  "sR": "Средний",
-  "sH": "אמצעי",
+  "sE": "Lower",
+  "sR": "Нижний",
+  "sH": "תחתון",
   "e": "machine",
   "eE": "Machine",
   "eR": "Тренажёр",
@@ -3640,9 +3709,9 @@
   "gE": "Chest",
   "gR": "Грудь",
   "gH": "חזה",
-  "sE": "Middle",
-  "sR": "Средний",
-  "sH": "אמצעי",
+  "sE": "Lower",
+  "sR": "Нижний",
+  "sH": "תחתון",
   "e": "dumbbell",
   "eE": "Dumbbell",
   "eR": "Гантель",
@@ -3679,9 +3748,9 @@
   "gE": "Chest",
   "gR": "Грудь",
   "gH": "חזה",
-  "sE": "Middle",
-  "sR": "Средний",
-  "sH": "אמצעי",
+  "sE": "Lower",
+  "sR": "Нижний",
+  "sH": "תחתון",
   "e": "bodyweight",
   "eE": "Bodyweight",
   "eR": "Вес тела",
@@ -3719,9 +3788,9 @@
   "gE": "Abdominals",
   "gR": "Мышцы кора",
   "gH": "בטן",
-  "sE": "Upper",
-  "sR": "Верхний",
-  "sH": "עליון",
+  "sE": "Lower",
+  "sR": "Нижний",
+  "sH": "תחתון",
   "e": "bodyweight",
   "eE": "Bodyweight",
   "eR": "Вес тела",
@@ -5939,10 +6008,10 @@
  {
   "id": "bf_handstand-push-up",
   "src": "bf",
-  "g": "chest",
+  "g": "shoulders",
   "gE": "Chest",
-  "gR": "Грудь",
-  "gH": "חזה",
+  "gR": "Плечи",
+  "gH": "כתפיים",
   "sE": "Middle",
   "sR": "Средний",
   "sH": "אמצעי",
@@ -5983,7 +6052,7 @@
   "gE": "Legs",
   "gR": "Ноги",
   "gH": "רגליים",
-  "sE": "Fullbody",
+  "sE": "Quadriceps",
   "sR": "Fullbody",
   "sH": "Fullbody",
   "e": "barbell",
@@ -6617,9 +6686,9 @@
   "gE": "Chest",
   "gR": "Грудь",
   "gH": "חזה",
-  "sE": "Middle",
-  "sR": "Средний",
-  "sH": "אמצעי",
+  "sE": "Upper",
+  "sR": "Верхний",
+  "sH": "עליון",
   "e": "machine",
   "eE": "Machine",
   "eR": "Тренажёр",
@@ -6695,9 +6764,9 @@
   "gE": "Chest",
   "gR": "Грудь",
   "gH": "חזה",
-  "sE": "Middle",
-  "sR": "Средний",
-  "sH": "אמצעי",
+  "sE": "Upper",
+  "sR": "Верхний",
+  "sH": "עליון",
   "e": "machine",
   "eE": "Machine",
   "eR": "Тренажёр",
@@ -6734,9 +6803,9 @@
   "gE": "Chest",
   "gR": "Грудь",
   "gH": "חזה",
-  "sE": "Middle",
-  "sR": "Средний",
-  "sH": "אמצעי",
+  "sE": "Upper",
+  "sR": "Верхний",
+  "sH": "עליון",
   "e": "dumbbell",
   "eE": "Dumbbell",
   "eR": "Гантель",
@@ -6812,9 +6881,9 @@
   "gE": "Chest",
   "gR": "Грудь",
   "gH": "חזה",
-  "sE": "Middle",
-  "sR": "Средний",
-  "sH": "אמצעי",
+  "sE": "Upper",
+  "sR": "Верхний",
+  "sH": "עליון",
   "e": "dumbbell",
   "eE": "Dumbbell",
   "eR": "Гантель",
@@ -6890,9 +6959,9 @@
   "gE": "Chest",
   "gR": "Грудь",
   "gH": "חזה",
-  "sE": "Middle",
-  "sR": "Средний",
-  "sH": "אמצעי",
+  "sE": "Upper",
+  "sR": "Верхний",
+  "sH": "עליון",
   "e": "bodyweight",
   "eE": "Bodyweight",
   "eR": "Вес тела",
@@ -7933,9 +8002,9 @@
   "gE": "Chest",
   "gR": "Грудь",
   "gH": "חזה",
-  "sE": "Lower",
-  "sR": "Нижний",
-  "sH": "תחתון",
+  "sE": "Upper",
+  "sR": "Верхний",
+  "sH": "עליון",
   "e": "machine",
   "eE": "Machine",
   "eR": "Тренажёр",
@@ -8175,9 +8244,9 @@
   "gE": "Triceps",
   "gR": "Трицепс",
   "gH": "יד אחורית",
-  "sE": "Compound",
-  "sR": "Базовое",
-  "sH": "בסיסי",
+  "sE": "Lying",
+  "sR": "Лёжа",
+  "sH": "שכיבה",
   "e": "ez_bar",
   "eE": "EZ-Bar",
   "eR": "EZ-гриф",
@@ -9014,10 +9083,10 @@
  {
   "id": "bf_pike-push-up",
   "src": "bf",
-  "g": "chest",
+  "g": "shoulders",
   "gE": "Chest",
-  "gR": "Грудь",
-  "gH": "חזה",
+  "gR": "Плечи",
+  "gH": "כתפיים",
   "sE": "Middle",
   "sR": "Средний",
   "sH": "אמצעי",
@@ -9217,9 +9286,9 @@
   "gE": "Abdominals",
   "gR": "Мышцы кора",
   "gH": "בטן",
-  "sE": "Upper",
-  "sR": "Верхний",
-  "sH": "עליון",
+  "sE": "Obliques",
+  "sR": "Косые мышцы",
+  "sH": "אלכסוני",
   "e": "bodyweight",
   "eE": "Bodyweight",
   "eR": "Вес тела",
@@ -9243,7 +9312,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "shoulders"
+  ],
   "mt": "isolation"
  },
  {
@@ -9279,7 +9350,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "triceps",
+   "trapezius"
+  ],
   "mt": "isolation"
  },
  {
@@ -9315,7 +9389,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "forearms"
+  ],
   "mt": "isolation"
  },
  {
@@ -9351,7 +9427,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "biceps",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -9387,7 +9466,11 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "triceps",
+   "core",
+   "legs"
+  ],
   "mt": "isolation"
  },
  {
@@ -9423,7 +9506,11 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "triceps",
+   "shoulders",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -9433,9 +9520,9 @@
   "gE": "Elbow Flexors",
   "gR": "Сгибатели локтя",
   "gH": "כופפי מרפק",
-  "sE": "Biceps",
-  "sR": "Бицепс",
-  "sH": "ביצפס",
+  "sE": "Brachioradialis",
+  "sR": "Брахиорадиалис",
+  "sH": "ברכיורדיאליס",
   "e": "barbell",
   "eE": "Barbell",
   "eR": "Штанга",
@@ -9459,7 +9546,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "forearms"
+  ],
   "mt": "isolation"
  },
  {
@@ -9495,7 +9584,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "forearms"
+  ],
   "mt": "isolation"
  },
  {
@@ -9505,9 +9596,9 @@
   "gE": "Abdominals",
   "gR": "Мышцы кора",
   "gH": "בטן",
-  "sE": "Upper",
-  "sR": "Верхний",
-  "sH": "עליון",
+  "sE": "Lower",
+  "sR": "Нижний",
+  "sH": "תחתון",
   "e": "bodyweight",
   "eE": "Bodyweight",
   "eR": "Вес тела",
@@ -9531,7 +9622,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "hip_flexors"
+  ],
   "mt": "isolation"
  },
  {
@@ -9567,7 +9660,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "forearms"
+  ],
   "mt": "isolation"
  },
  {
@@ -9603,7 +9698,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "trapezius"
+  ],
   "mt": "isolation"
  },
  {
@@ -9639,7 +9736,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes",
+   "hamstrings"
+  ],
   "mt": "isolation"
  },
  {
@@ -9675,7 +9775,11 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "chest",
+   "triceps",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -9711,7 +9815,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes",
+   "back"
+  ],
   "mt": "isolation"
  },
  {
@@ -9747,7 +9854,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -9783,7 +9893,11 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "legs",
+   "back",
+   "biceps"
+  ],
   "mt": "isolation"
  },
  {
@@ -9819,7 +9933,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "legs"
+  ],
   "mt": "isolation"
  },
  {
@@ -9855,7 +9971,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "core",
+   "hip_flexors"
+  ],
   "mt": "isolation"
  },
  {
@@ -9891,7 +10010,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "triceps",
+   "trapezius"
+  ],
   "mt": "isolation"
  },
  {
@@ -9927,7 +10049,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "biceps",
+   "rear_delts"
+  ],
   "mt": "isolation"
  },
  {
@@ -9963,7 +10088,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "soleus"
+  ],
   "mt": "isolation"
  },
  {
@@ -9973,9 +10100,9 @@
   "gE": "Chest",
   "gR": "Грудь",
   "gH": "חזה",
-  "sE": "Middle",
-  "sR": "Средний",
-  "sH": "אמצעי",
+  "sE": "Lower",
+  "sR": "Нижний",
+  "sH": "תחתון",
   "e": "machine",
   "eE": "Machine",
   "eR": "Тренажёр",
@@ -9999,7 +10126,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "triceps",
+   "shoulders"
+  ],
   "mt": "isolation"
  },
  {
@@ -10009,9 +10139,9 @@
   "gE": "Shoulders",
   "gR": "Плечи",
   "gH": "כתפיים",
-  "sE": "Middle",
-  "sR": "Средний",
-  "sH": "אמצעי",
+  "sE": "Rear",
+  "sR": "Задний",
+  "sH": "אחורי",
   "e": "dumbbell",
   "eE": "Dumbbell",
   "eR": "Гантель",
@@ -10035,7 +10165,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "trapezius"
+  ],
   "mt": "isolation"
  },
  {
@@ -10071,7 +10203,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "triceps",
+   "trapezius"
+  ],
   "mt": "isolation"
  },
  {
@@ -10081,9 +10216,9 @@
   "gE": "Triceps",
   "gR": "Трицепс",
   "gH": "יד אחורית",
-  "sE": "Compound",
-  "sR": "Базовое",
-  "sH": "בסיסי",
+  "sE": "Seated",
+  "sR": "Сидя",
+  "sH": "ישיבה",
   "e": "dumbbell",
   "eE": "Dumbbell",
   "eR": "Гантель",
@@ -10107,7 +10242,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "shoulders"
+  ],
   "mt": "isolation"
  },
  {
@@ -10117,9 +10254,9 @@
   "gE": "Abdominals",
   "gR": "Мышцы кора",
   "gH": "בטן",
-  "sE": "General",
-  "sR": "Общее",
-  "sH": "כללי",
+  "sE": "Lower",
+  "sR": "Нижний",
+  "sH": "תחתון",
   "e": "bodyweight",
   "eE": "Bodyweight",
   "eR": "Вес тела",
@@ -10143,7 +10280,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "hip_flexors"
+  ],
   "mt": "isolation"
  },
  {
@@ -10179,7 +10318,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes"
+  ],
   "mt": "isolation"
  },
  {
@@ -10215,7 +10356,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "biceps",
+   "rear_delts"
+  ],
   "mt": "isolation"
  },
  {
@@ -10251,7 +10395,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes"
+  ],
   "mt": "isolation"
  },
  {
@@ -10287,7 +10433,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "triceps",
+   "trapezius"
+  ],
   "mt": "isolation"
  },
  {
@@ -10323,7 +10472,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "core",
+   "chest"
+  ],
   "mt": "isolation"
  },
  {
@@ -10359,7 +10511,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "forearms"
+  ],
   "mt": "isolation"
  },
  {
@@ -10369,9 +10523,9 @@
   "gE": "Abdominals",
   "gR": "Мышцы кора",
   "gH": "בטן",
-  "sE": "Upper",
-  "sR": "Верхний",
-  "sH": "עליון",
+  "sE": "Obliques",
+  "sR": "Косые мышцы",
+  "sH": "אלכסוני",
   "e": "bodyweight",
   "eE": "Bodyweight",
   "eR": "Вес тела",
@@ -10395,7 +10549,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -10405,9 +10561,9 @@
   "gE": "Legs",
   "gR": "Ноги",
   "gH": "רגליים",
-  "sE": "General",
-  "sR": "Общее",
-  "sH": "כללי",
+  "sE": "Abductors",
+  "sR": "Отводящие",
+  "sH": "מרחיקים",
   "e": "bodyweight",
   "eE": "Bodyweight",
   "eR": "Вес тела",
@@ -10431,7 +10587,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes"
+  ],
   "mt": "isolation"
  },
  {
@@ -10467,7 +10625,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "shoulders",
+   "glutes"
+  ],
   "mt": "isolation"
  },
  {
@@ -10503,7 +10664,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "hamstrings",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -10539,7 +10703,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes",
+   "hamstrings"
+  ],
   "mt": "isolation"
  },
  {
@@ -10575,7 +10742,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes"
+  ],
   "mt": "isolation"
  },
  {
@@ -10611,7 +10780,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes"
+  ],
   "mt": "isolation"
  },
  {
@@ -10647,7 +10818,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes",
+   "hamstrings"
+  ],
   "mt": "isolation"
  },
  {
@@ -10683,7 +10857,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "hip_flexors"
+  ],
   "mt": "isolation"
  },
  {
@@ -10719,7 +10895,11 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "legs",
+   "back",
+   "shoulders"
+  ],
   "mt": "isolation"
  },
  {
@@ -10729,9 +10909,9 @@
   "gE": "Triceps",
   "gR": "Трицепс",
   "gH": "יד אחורית",
-  "sE": "Compound",
-  "sR": "Базовое",
-  "sH": "בסיסי",
+  "sE": "Lying",
+  "sR": "Лёжа",
+  "sH": "שכיבה",
   "e": "ez_bar",
   "eE": "EZ-Bar",
   "eR": "EZ-гриф",
@@ -10755,7 +10935,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "shoulders"
+  ],
   "mt": "isolation"
  },
  {
@@ -10791,7 +10973,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "triceps",
+   "shoulders"
+  ],
   "mt": "isolation"
  },
  {
@@ -10827,7 +11012,11 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes",
+   "back",
+   "trapezius"
+  ],
   "mt": "isolation"
  },
  {
@@ -10837,9 +11026,9 @@
   "gE": "Chest",
   "gR": "Грудь",
   "gH": "חזה",
-  "sE": "Middle",
-  "sR": "Средний",
-  "sH": "אמצעי",
+  "sE": "Upper",
+  "sR": "Верхний",
+  "sH": "עליון",
   "e": "machine",
   "eE": "Machine",
   "eR": "Тренажёр",
@@ -10863,7 +11052,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "triceps",
+   "shoulders"
+  ],
   "mt": "isolation"
  },
  {
@@ -10899,7 +11091,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "biceps",
+   "rear_delts"
+  ],
   "mt": "isolation"
  },
  {
@@ -10935,7 +11130,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "forearms"
+  ],
   "mt": "isolation"
  },
  {
@@ -10971,7 +11168,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes",
+   "hamstrings"
+  ],
   "mt": "isolation"
  },
  {
@@ -11007,7 +11207,11 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes",
+   "hamstrings",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -11043,7 +11247,12 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "legs",
+   "back",
+   "shoulders",
+   "trapezius"
+  ],
   "mt": "isolation"
  },
  {
@@ -11079,7 +11288,11 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "legs",
+   "shoulders",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -11115,7 +11328,11 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "trapezius",
+   "back",
+   "legs"
+  ],
   "mt": "isolation"
  },
  {
@@ -11151,7 +11368,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "triceps",
+   "shoulders"
+  ],
   "mt": "isolation"
  },
  {
@@ -11187,7 +11407,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "shoulders",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -11223,7 +11446,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "shoulders"
+  ],
   "mt": "isolation"
  },
  {
@@ -11259,7 +11484,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "soleus"
+  ],
   "mt": "isolation"
  },
  {
@@ -11295,7 +11522,11 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes",
+   "hamstrings",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -11331,7 +11562,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes",
+   "hamstrings"
+  ],
   "mt": "isolation"
  },
  {
@@ -11367,7 +11601,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -11403,7 +11640,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes",
+   "hamstrings"
+  ],
   "mt": "isolation"
  },
  {
@@ -11413,9 +11653,9 @@
   "gE": "Back",
   "gR": "Спина",
   "gH": "גב",
-  "sE": "Lower Back",
-  "sR": "Поясница",
-  "sH": "גב תחתון",
+  "sE": "Trapezius",
+  "sR": "Трапеции",
+  "sH": "טרפז",
   "e": "barbell",
   "eE": "Barbell",
   "eR": "Штанга",
@@ -11439,7 +11679,11 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "trapezius",
+   "shoulders",
+   "quadriceps"
+  ],
   "mt": "isolation"
  },
  {
@@ -11475,7 +11719,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "legs",
+   "shoulders"
+  ],
   "mt": "isolation"
  },
  {
@@ -11511,7 +11758,11 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "shoulders",
+   "triceps",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -11521,9 +11772,9 @@
   "gE": "Abdominals",
   "gR": "Мышцы кора",
   "gH": "בטן",
-  "sE": "General",
-  "sR": "Общее",
-  "sH": "כללי",
+  "sE": "Lower",
+  "sR": "Нижний",
+  "sH": "תחתון",
   "e": "bodyweight",
   "eE": "Bodyweight",
   "eR": "Вес тела",
@@ -11547,7 +11798,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "hip_flexors",
+   "forearms"
+  ],
   "mt": "isolation"
  },
  {
@@ -11583,7 +11837,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -11619,7 +11875,11 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes",
+   "trapezius",
+   "quadriceps"
+  ],
   "mt": "isolation"
  },
  {
@@ -11655,7 +11915,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "legs"
+  ],
   "mt": "isolation"
  },
  {
@@ -11691,7 +11953,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "shoulders"
+  ],
   "mt": "isolation"
  },
  {
@@ -11727,7 +11991,12 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "shoulders",
+   "core",
+   "legs",
+   "glutes"
+  ],
   "mt": "isolation"
  },
  {
@@ -11763,7 +12032,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "biceps",
+   "rear_delts"
+  ],
   "mt": "isolation"
  },
  {
@@ -11799,7 +12071,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "biceps",
+   "rear_delts"
+  ],
   "mt": "isolation"
  },
  {
@@ -11835,7 +12110,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "biceps",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -11871,7 +12149,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "hip_flexors"
+  ],
   "mt": "isolation"
  },
  {
@@ -11907,7 +12187,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "legs"
+  ],
   "mt": "isolation"
  },
  {
@@ -11943,7 +12225,11 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "shoulders",
+   "triceps",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -11979,7 +12265,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes",
+   "hamstrings"
+  ],
   "mt": "isolation"
  },
  {
@@ -12015,7 +12304,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "hamstrings",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -12051,7 +12343,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "biceps",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -12087,7 +12382,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "hip_flexors"
+  ],
   "mt": "isolation"
  },
  {
@@ -12123,7 +12420,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "hip_flexors"
+  ],
   "mt": "isolation"
  },
  {
@@ -12133,9 +12432,9 @@
   "gE": "Chest",
   "gR": "Грудь",
   "gH": "חזה",
-  "sE": "Middle",
-  "sR": "Средний",
-  "sH": "אמצעי",
+  "sE": "Lower",
+  "sR": "Нижний",
+  "sH": "תחתון",
   "e": "bodyweight",
   "eE": "Bodyweight",
   "eR": "Вес тела",
@@ -12159,7 +12458,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "triceps",
+   "shoulders"
+  ],
   "mt": "isolation"
  },
  {
@@ -12195,7 +12497,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "forearms"
+  ],
   "mt": "isolation"
  },
  {
@@ -12231,7 +12535,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "biceps",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -12267,7 +12574,11 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "triceps",
+   "shoulders",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -12303,7 +12614,11 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes",
+   "hamstrings",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -12339,7 +12654,9 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "forearms"
+  ],
   "mt": "isolation"
  },
  {
@@ -12349,9 +12666,9 @@
   "gE": "Shoulders",
   "gR": "Плечи",
   "gH": "כתפיים",
-  "sE": "Middle",
-  "sR": "Средний",
-  "sH": "אמצעי",
+  "sE": "Rear",
+  "sR": "Задний",
+  "sH": "אחורי",
   "e": "bodyweight",
   "eE": "Bodyweight",
   "eR": "Вес тела",
@@ -12375,7 +12692,10 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "trapezius",
+   "core"
+  ],
   "mt": "isolation"
  },
  {
@@ -12411,7 +12731,11 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "core",
+   "back",
+   "legs"
+  ],
   "mt": "isolation"
  },
  {
@@ -12447,7 +12771,12 @@
   "bf_desc_en": "",
   "bf_desc_ru": "",
   "bf_desc_he": "",
-  "synergists": [],
+  "synergists": [
+   "glutes",
+   "hamstrings",
+   "core",
+   "back"
+  ],
   "mt": "isolation"
  },
  {

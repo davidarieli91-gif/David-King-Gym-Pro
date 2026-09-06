@@ -149,3 +149,6 @@ desktop.ini
 *.bak
 *.tmp
 npm-debug.log*
+
+exercises-dataset-main/
+*.backup.json

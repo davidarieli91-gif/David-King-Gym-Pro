@@ -26,11 +26,13 @@ const _mmEsc = (v) => String(v == null ? '' : v)
       'trapezius': 'back', 'traps': 'back', 'rhomboids': 'back', 'teres minor': 'back',
       'infraspinatus': 'back', 'levator scapulae': 'back', 'levator_scapulae': 'back',
       'spinal erectors': 'back', 'spinal_erectors': 'back', 'spine': 'back',
-      'rotator cuff': 'back', 'rotator_cuff': 'back', 'rear deltoids': 'back', 'rear_deltoids': 'back',
+      'quadratus lumborum': 'back', 'quadratus_lumborum': 'back',
+      'rotator cuff': 'back', 'rotator_cuff': 'back',
       // shoulders
       'shoulders': 'shoulders', 'deltoids': 'shoulders', 'front deltoids': 'shoulders',
       'front_deltoids': 'shoulders', 'front delts': 'shoulders', 'front_delts': 'shoulders',
-      'front shoulders': 'shoulders', 'rear deltoids': 'shoulders', 'rear_delts': 'shoulders',
+      'front shoulders': 'shoulders', 'rear deltoids': 'shoulders', 'rear_deltoids': 'shoulders',
+      'rear delts': 'shoulders', 'rear_delts': 'shoulders',
       'rear shoulders': 'shoulders', 'rear_delt': 'shoulders', 'rear_delts': 'shoulders',
       // elbow flexors (biceps)
       'biceps': 'elbow_flexors', 'brachialis': 'elbow_flexors', 'brachioradialis': 'elbow_flexors',
@@ -942,3 +944,4 @@ const _mmEsc = (v) => String(v == null ? '' : v)
 // Экспорт палитры для bodyMapPicker/recoveryMap
 window.GROUP_COLORS = GROUP_COLORS;
 window.AUX_HIGHLIGHT_COLOR = AUX_HIGHLIGHT_COLOR;
+window.SYNERGIST_CANONICAL = SYNERGIST_CANONICAL;

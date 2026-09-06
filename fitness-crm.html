@@ -4229,7 +4229,7 @@
       let _exerciseDbLoaded = false;
       // Bump EXERCISE_DB_BUST when exercise-db.json changes — defeats SW/browser
       // cache-first staleness so reseed always unpacks the deployed dataset.
-      const EXERCISE_DB_BUST = 'v26';
+      const EXERCISE_DB_BUST = 'v27';
       async function loadExerciseDbExternal() {
         try {
           const resp = await fetch('exercise-db.json?v=' + EXERCISE_DB_BUST);
@@ -5027,6 +5027,7 @@
     // v23 = GymVisual RU names + 3 reviewed imports + gif autoplay — 2026-09
     // v22 = GymVisual subgroup taxonomy (gv keyword subgroups) — 2026-09
     // v21 = force fresh exercise-db.json fetch (cache-bust v26) — 2026-09
+    // v29 = BurnFit audit: group/subgroup fixes + synergists for all 324 — 2026-09
     // v20 = GymVisual subgroup cleanup (gv sE cleared, target merged into synergists) — 2026-09
     // v19 = WebP image migration (jpg/gif->webp) — 2026-08
     // v17 = added force/level/mechanic/category classification fields (2026-08)
@@ -5034,10 +5035,10 @@
     //      + PG "General" subgroups removed + technique fields added
     // v4 = new folder_path structure (no "General" subgroup, no equipment level)
     // v3 = original 1265-exercise seed
-    const v5Flag = await db.get('settings', 'seeded_exercise_base_v28');
+    const v5Flag = await db.get('settings', 'seeded_exercise_base_v29');
     if (!v5Flag) {
       force = true;
-      console.info('[seed] v22 flag missing — forcing re-seed of exercise_base (GV subgroups)');
+      console.info('[seed] v29 flag missing — forcing re-seed of exercise_base (BF audit)');
     }
     const current = await db.count('exercise_base');
     if (current > 0 && !force) {
@@ -5051,7 +5052,7 @@
       return 0;
     }
     await db.bulkPut('exercise_base', exercises);
-    await db.put('settings', { key: 'seeded_exercise_base_v28', value: true });
+    await db.put('settings', { key: 'seeded_exercise_base_v29', value: true });
     console.info(`[seed] injected ${exercises.length} exercises into exercise_base`);
     return exercises.length;
   }
@@ -15219,6 +15220,14 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       if (!localizedName) return null;
       // Try direct match against ALL_GROUPS (in case it's already canonical)
       if (ALL_GROUPS.indexOf(localizedName) !== -1) return localizedName;
+      // Shared synergist alias map from muscle-map.js (aliases → 11 groups)
+      try {
+        var _syn = (typeof window !== 'undefined') ? window.SYNERGIST_CANONICAL : null;
+        if (_syn) {
+          var _hit = _syn[String(localizedName).trim().toLowerCase()];
+          if (_hit) return _hit;
+        }
+      } catch (e) {}
       // Try reverse lookup against GROUP_I18N
       for (var i = 0; i < ALL_GROUPS.length; i++) {
         var g = ALL_GROUPS[i];
