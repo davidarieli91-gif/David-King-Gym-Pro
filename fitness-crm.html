@@ -3459,6 +3459,8 @@
             <span id="badge-subgroup" class="text-[11px] font-semibold px-2 py-1 rounded-md bg-accent/15 text-accent"></span>
             <span id="badge-equipment" class="text-[11px] font-semibold px-2 py-1 rounded-md bg-surface-2 text-muted border border-border"></span>
           </div>
+          <!-- Working muscles: target highlighted + secondaries -->
+          <div id="exercise-muscle-chips" class="flex flex-wrap gap-1.5"></div>
 
           <!-- Technique description -->
           <div>
@@ -4229,7 +4231,7 @@
       let _exerciseDbLoaded = false;
       // Bump EXERCISE_DB_BUST when exercise-db.json changes — defeats SW/browser
       // cache-first staleness so reseed always unpacks the deployed dataset.
-      const EXERCISE_DB_BUST = 'v27';
+      const EXERCISE_DB_BUST = 'v28';
       async function loadExerciseDbExternal() {
         try {
           const resp = await fetch('exercise-db.json?v=' + EXERCISE_DB_BUST);
@@ -5027,6 +5029,7 @@
     // v23 = GymVisual RU names + 3 reviewed imports + gif autoplay — 2026-09
     // v22 = GymVisual subgroup taxonomy (gv keyword subgroups) — 2026-09
     // v21 = force fresh exercise-db.json fetch (cache-bust v26) — 2026-09
+    // v30 = GV audit: group moves, canonical labels, equipment RU/HE, syn cleanup, HE desc batch 1 — 2026-09
     // v29 = BurnFit audit: group/subgroup fixes + synergists for all 324 — 2026-09
     // v20 = GymVisual subgroup cleanup (gv sE cleared, target merged into synergists) — 2026-09
     // v19 = WebP image migration (jpg/gif->webp) — 2026-08
@@ -5035,10 +5038,10 @@
     //      + PG "General" subgroups removed + technique fields added
     // v4 = new folder_path structure (no "General" subgroup, no equipment level)
     // v3 = original 1265-exercise seed
-    const v5Flag = await db.get('settings', 'seeded_exercise_base_v29');
+    const v5Flag = await db.get('settings', 'seeded_exercise_base_v30');
     if (!v5Flag) {
       force = true;
-      console.info('[seed] v29 flag missing — forcing re-seed of exercise_base (BF audit)');
+      console.info('[seed] v30 flag missing — forcing re-seed of exercise_base (GV audit)');
     }
     const current = await db.count('exercise_base');
     if (current > 0 && !force) {
@@ -5052,7 +5055,7 @@
       return 0;
     }
     await db.bulkPut('exercise_base', exercises);
-    await db.put('settings', { key: 'seeded_exercise_base_v29', value: true });
+    await db.put('settings', { key: 'seeded_exercise_base_v30', value: true });
     console.info(`[seed] injected ${exercises.length} exercises into exercise_base`);
     return exercises.length;
   }
@@ -11798,6 +11801,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       setText('badge-group', group);
       setText('badge-subgroup', subgroup);
       setText('badge-equipment', equipment);
+      // Working-muscle chips (target ◉ + secondaries ○)
+      try {
+        const _chips = document.getElementById('exercise-muscle-chips');
+        if (_chips) _chips.innerHTML = (typeof window.getExerciseMuscleChips === 'function') ? window.getExerciseMuscleChips(e, currentLang()) : '';
+      } catch (_) {}
 
       // Video: YouTube embed if video_url exists, else show "Search on YouTube" button
       const videoSection = document.getElementById('exercise-video-section');
@@ -17814,6 +17822,11 @@ Select foods for each meal. Output as JSON only.`;
     const gBadge = document.getElementById('badge-group'); if (gBadge) gBadge.textContent = group;
     const sgBadge = document.getElementById('badge-subgroup'); if (sgBadge) sgBadge.textContent = typeof subgroupName === 'function' ? subgroupName(ex.subgroup_en || ex.sE || '') : '';
     const eqBadge = document.getElementById('badge-equipment'); if (eqBadge) eqBadge.textContent = ex['equipment_' + lang] || ex.equipment_en || ex.eE || '';
+    // Working-muscle chips (target ◉ + secondaries ○)
+    try {
+      const _chips = document.getElementById('exercise-muscle-chips');
+      if (_chips) _chips.innerHTML = (typeof window.getExerciseMuscleChips === 'function') ? window.getExerciseMuscleChips(ex, lang) : '';
+    } catch (_) {}
     modal.classList.remove('hidden');
   }
 

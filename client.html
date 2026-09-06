@@ -1478,7 +1478,7 @@
     // muscle chips
     const chipsEl=document.getElementById('exercise-muscle-chips');
     if(chipsEl){
-      const chips = (typeof window.getExerciseMuscleChips==='function') ? window.getExerciseMuscleChips(ex) : '';
+      const chips = (typeof window.getExerciseMuscleChips==='function') ? window.getExerciseMuscleChips(ex, currentLang) : '';
       chipsEl.innerHTML = chips || '';
       if(chips) chipsEl.classList.remove('hidden'); else chipsEl.classList.add('hidden');
     }

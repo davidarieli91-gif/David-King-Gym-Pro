@@ -20,8 +20,9 @@ const _mmEsc = (v) => String(v == null ? '' : v)
     const SYNERGIST_CANONICAL = {
       // chest
       'chest': 'chest', 'upper chest': 'chest', 'upper_chest': 'chest', 'upper_chest ': 'chest',
+      'pectorals': 'chest', 'pec': 'chest', 'pecs': 'chest', 'serratus anterior': 'chest',
       // back
-      'back': 'back', 'lats': 'back', 'lat': 'back', 'middle back': 'back', 'middle_back': 'back',
+      'back': 'back', 'lats': 'back', 'lat': 'back', 'latissimus dorsi': 'back', 'middle back': 'back', 'middle_back': 'back',
       'lower back': 'back', 'lower_back': 'back', 'upper back': 'back', 'upper_back': 'back',
       'trapezius': 'back', 'traps': 'back', 'rhomboids': 'back', 'teres minor': 'back',
       'infraspinatus': 'back', 'levator scapulae': 'back', 'levator_scapulae': 'back',
@@ -29,7 +30,7 @@ const _mmEsc = (v) => String(v == null ? '' : v)
       'quadratus lumborum': 'back', 'quadratus_lumborum': 'back',
       'rotator cuff': 'back', 'rotator_cuff': 'back',
       // shoulders
-      'shoulders': 'shoulders', 'deltoids': 'shoulders', 'front deltoids': 'shoulders',
+      'shoulders': 'shoulders', 'deltoids': 'shoulders', 'delts': 'shoulders', 'delt': 'shoulders', 'front deltoids': 'shoulders',
       'front_deltoids': 'shoulders', 'front delts': 'shoulders', 'front_delts': 'shoulders',
       'front shoulders': 'shoulders', 'rear deltoids': 'shoulders', 'rear_deltoids': 'shoulders',
       'rear delts': 'shoulders', 'rear_delts': 'shoulders',
@@ -41,13 +42,15 @@ const _mmEsc = (v) => String(v == null ? '' : v)
       'triceps': 'triceps', 'anconeus': 'triceps',
       // forearms / grip
       'forearms': 'forearms', 'forearm': 'forearms', 'grip': 'forearms', 'wrists': 'forearms',
+      'wrist extensors': 'forearms', 'wrist flexors': 'forearms',
       // abdominals / core
       'abdominals': 'abdominals', 'abdominals ': 'abdominals', 'abs': 'abdominals',
       'core': 'abdominals', 'obliques': 'abdominals', 'rectus abdominis': 'abdominals',
       'rectus_abdominis': 'abdominals', 'upper_abs': 'abdominals', 'upper abs': 'abdominals',
       // legs
-      'legs': 'legs', 'quadriceps': 'legs', 'hamstrings': 'legs', 'glutes': 'legs',
+      'legs': 'legs', 'quadriceps': 'legs', 'quads': 'legs', 'hamstrings': 'legs', 'glutes': 'legs',
       'calves': 'legs', 'calf': 'legs', 'adductors': 'legs', 'abductors': 'legs',
+      'groin': 'legs', 'inner thighs': 'legs',
       'gastrocnemius': 'legs', 'soleus': 'legs', 'hip flexors': 'legs', 'hip_flexors': 'legs',
       'hip abductors': 'legs', 'hips': 'legs', 'shins': 'legs', 'tibialis anterior': 'legs',
       'quadriceps ': 'legs',
@@ -73,6 +76,48 @@ const _mmEsc = (v) => String(v == null ? '' : v)
         if (c && c !== primary) auxSet.add(c);
       });
       return { primary, aux: Array.from(auxSet) };
+    }
+    // Trilingual display names for the 11 canonical groups (+fullbody/other).
+    // Matches GROUP_I18N in fitness-crm.html — keep in sync.
+    const GROUP_NAMES_3 = {
+      chest: { en: 'Chest', ru: 'Грудь', he: 'חזה' },
+      back: { en: 'Back', ru: 'Спина', he: 'גב' },
+      shoulders: { en: 'Shoulders', ru: 'Плечи', he: 'כתפיים' },
+      elbow_flexors: { en: 'Biceps', ru: 'Бицепс', he: 'יד קדמית' },
+      triceps: { en: 'Triceps', ru: 'Трицепс', he: 'יד אחורית' },
+      forearms: { en: 'Forearms', ru: 'Предплечья', he: 'כפות ידים' },
+      abdominals: { en: 'Abs', ru: 'Пресс', he: 'בטן' },
+      legs: { en: 'Legs', ru: 'Ноги', he: 'רגליים' },
+      warmup: { en: 'Warm-up', ru: 'Разминка', he: 'חימום' },
+      calisthenics: { en: 'Calisthenics', ru: 'Калистеника', he: 'משקל גוף' },
+      stretching: { en: 'Stretching', ru: 'Растяжка', he: 'מתיחות' },
+      fullbody: { en: 'Full Body', ru: 'Всё тело', he: 'כל הגוף' },
+      other: { en: 'Other', ru: 'Другое', he: 'אחר' }
+    };
+    // Card chips: every working muscle, target highlighted in group color (◉),
+    // secondaries neutral (○). ex = any exercise shape; lang = 'en'|'ru'|'he'.
+    function getExerciseMuscleChips(ex, lang) {
+      if (!ex) return '';
+      let L = lang || ((typeof document !== 'undefined' && document.documentElement && document.documentElement.lang) || 'en');
+      L = String(L).slice(0, 2).toLowerCase();
+      if (L !== 'ru' && L !== 'he') L = 'en';
+      let primary = 'other', aux = [];
+      try {
+        const r = getExerciseMuscleGroups(ex) || {};
+        primary = r.primary || 'other';
+        aux = r.aux || [];
+      } catch (e) {}
+      if (primary === 'other') {
+        const raw = String(ex.g || ex.group_canonical || ex.group || '').trim().toLowerCase();
+        if (raw === 'fullbody') primary = 'fullbody';
+      }
+      const nm = (g) => ((GROUP_NAMES_3[g] && GROUP_NAMES_3[g][L]) || g);
+      const pc = GROUP_COLORS[primary] || GROUP_COLORS.other;
+      let html = '<span class="text-[11px] font-bold px-2 py-1 rounded-md" style="background:' + pc + '26;color:' + pc + '">◉ ' + _mmEsc(nm(primary)) + '</span>';
+      aux.forEach(a => {
+        html += '<span class="text-[11px] px-2 py-1 rounded-md" style="background:rgba(127,140,160,.14);color:inherit;opacity:.85">○ ' + _mmEsc(nm(a)) + '</span>';
+      });
+      return html;
     }
 
     /* =====================================================================
@@ -945,3 +990,5 @@ const _mmEsc = (v) => String(v == null ? '' : v)
 window.GROUP_COLORS = GROUP_COLORS;
 window.AUX_HIGHLIGHT_COLOR = AUX_HIGHLIGHT_COLOR;
 window.SYNERGIST_CANONICAL = SYNERGIST_CANONICAL;
+window.getExerciseMuscleGroups = getExerciseMuscleGroups;
+window.getExerciseMuscleChips = getExerciseMuscleChips;
