@@ -2369,6 +2369,16 @@
               <div class="px-3 pt-1.5 pb-1 min-[1440px]:p-3 border-b border-border shrink-0">
                 <div class="flex items-center gap-2">
                   <h3 class="font-display font-bold text-sm min-[1440px]:text-base flex-1 min-w-0 truncate" data-i18n="programs.quickPick">Quick Pick</h3>
+                  <!-- Duplicate language switcher (mirrors the app-header #lang-select) -->
+                  <div class="relative shrink-0">
+                    <select id="bm-lang-select" title="Language"
+                            class="appearance-none bg-surface-2 hover:bg-border/40 transition rounded-lg text-[11px] min-[1440px]:text-xs font-semibold py-1 min-[1440px]:py-1.5 ps-2 pe-6 border border-border focus:outline-none focus:ring-2 focus:ring-primary/60 cursor-pointer">
+                      <option value="en">EN</option>
+                      <option value="ru">RU</option>
+                      <option value="he">HE</option>
+                    </select>
+                    <svg class="pointer-events-none absolute end-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                  </div>
                   <button id="bm-close" class="w-7 h-7 min-[1440px]:w-8 min-[1440px]:h-8 grid place-items-center rounded-lg hover:bg-surface-2 text-muted shrink-0">
                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
                   </button>
@@ -15194,7 +15204,19 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     }
 
 
-    return { open, close };
+    /** Re-render picker content in the current language (language switch
+     *  while the modal is open). Preserves tab, filters and search text. */
+    function refresh() {
+      const modal = document.getElementById('bodymap-picker-modal');
+      if (!modal || modal.classList.contains('hidden')) return;
+      const qpTitle = modal.querySelector('[data-i18n="programs.quickPick"]');
+      if (qpTitle) qpTitle.textContent = t('programs.quickPick');
+      const searchInput = document.getElementById('bm-search');
+      if (searchInput) searchInput.placeholder = t('exercise.searchPlaceholder') || 'Search...';
+      renderAll();
+    }
+
+    return { open, close, refresh };
   })();
 
   /* =====================================================================
@@ -21688,13 +21710,7 @@ async function boot() {
     // Language selector (settings screen)
     const langSel = document.getElementById('settings-lang-select');
     if (langSel) langSel.addEventListener('change', (e) => {
-      applyLang(e.target.value);
-      try {
-        if (typeof router !== 'undefined' && router.refreshCurrent) router.refreshCurrent();
-        applyI18n(currentLang());
-        const headerSel = document.getElementById('lang-select');
-        if (headerSel) headerSel.value = e.target.value;
-      } catch (_) {}
+      switchAppLanguage(e.target.value);
       toast(t('toast.langChanged', { lang: e.target.value.toUpperCase() }), 'info', 1800);
     });
 
@@ -23176,9 +23192,11 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
-    // Sync the language <select>
+    // Sync all language <select> duplicates (header, settings, picker)
     const sel = document.getElementById('lang-select');
     if (sel) sel.value = lang;
+    const bmSel = document.getElementById('bm-lang-select');
+    if (bmSel) bmSel.value = lang;
 
     // Re-render injury checklist labels (they use t() at creation time)
     if (typeof window.renderClientInjuryList === 'function') {
@@ -23210,6 +23228,22 @@ document.addEventListener('DOMContentLoaded', function () {
     applyI18n(lang);                         // sync — DOM updates immediately
     db.put('settings', { key: 'lang', value: lang }).catch(() => {}); // fire-and-forget persistence
     return Promise.resolve();
+  }
+
+  /** Central language switch: persist + translate static strings + instantly
+   *  re-render the visible screen (and the open exercise picker, if any).
+   *  Used by the header selector, the settings selector and the picker duplicate. */
+  function switchAppLanguage(lang) {
+    if (!SUPPORTED_LANGS.includes(lang)) lang = 'en';
+    applyLang(lang);
+    try {
+      // Instant re-render: data-i18n updates static strings, but screen bodies
+      // built by render functions need an explicit refresh (same as navigation).
+      if (typeof router !== 'undefined' && router.refreshCurrent) router.refreshCurrent();
+      // Re-render the open exercise picker (dynamic grid/tree/chips/search)
+      if (typeof bodyMapPicker !== 'undefined' && bodyMapPicker.refresh) bodyMapPicker.refresh();
+      applyI18n(currentLang());
+    } catch (_) {}
   }
 
   /** Persist theme to settings store + set data-theme + data-mode attributes.
@@ -23311,15 +23345,13 @@ document.addEventListener('DOMContentLoaded', function () {
   // so the handlers just delegate.
   document.getElementById('lang-select').addEventListener('change', (e) => {
     const lang = e.target.value;
-    applyLang(lang);
-    // Instant re-render: data-i18n updates static strings, but screen bodies
-    // built by render functions need an explicit refresh (same as navigation).
-    try {
-      if (typeof router !== 'undefined' && router.refreshCurrent) router.refreshCurrent();
-      applyI18n(currentLang());
-      const settingsSel = document.getElementById('settings-lang-select');
-      if (settingsSel) settingsSel.value = lang;
-    } catch (_) {}
+    switchAppLanguage(lang);
+    toast(t('toast.langChanged', { lang: lang.toUpperCase() }), 'info', 1800);
+  });
+  // Picker duplicate language selector (mirrors the header one)
+  document.getElementById('bm-lang-select').addEventListener('change', (e) => {
+    const lang = e.target.value;
+    switchAppLanguage(lang);
     toast(t('toast.langChanged', { lang: lang.toUpperCase() }), 'info', 1800);
   });
 
