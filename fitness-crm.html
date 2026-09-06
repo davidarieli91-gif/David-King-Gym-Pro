@@ -4243,7 +4243,7 @@
       let _exerciseDbLoaded = false;
       // Bump EXERCISE_DB_BUST when exercise-db.json changes — defeats SW/browser
       // cache-first staleness so reseed always unpacks the deployed dataset.
-      const EXERCISE_DB_BUST = 'v31';
+      const EXERCISE_DB_BUST = 'v32';
       async function loadExerciseDbExternal() {
         try {
           const resp = await fetch('exercise-db.json?v=' + EXERCISE_DB_BUST);
@@ -5041,6 +5041,7 @@
     // v23 = GymVisual RU names + 3 reviewed imports + gif autoplay — 2026-09
     // v22 = GymVisual subgroup taxonomy (gv keyword subgroups) — 2026-09
     // v21 = force fresh exercise-db.json fetch (cache-bust v26) — 2026-09
+    // v34 = GI RU names batch 2/6 (711) — 2026-09
     // v33 = GI RU names batch 1/6 (711) — 2026-09
     // v32 = GymImpulse source: 4265 gi exercises + GI tab — 2026-09
     // v31 = GV Hebrew instructions: all 1030 fully translated (3610 sentences) — 2026-09
@@ -5053,10 +5054,10 @@
     //      + PG "General" subgroups removed + technique fields added
     // v4 = new folder_path structure (no "General" subgroup, no equipment level)
     // v3 = original 1265-exercise seed
-    const v5Flag = await db.get('settings', 'seeded_exercise_base_v33');
+    const v5Flag = await db.get('settings', 'seeded_exercise_base_v34');
     if (!v5Flag) {
       force = true;
-      console.info('[seed] v33 flag missing — forcing re-seed of exercise_base (GI RU names 1)');
+      console.info('[seed] v34 flag missing — forcing re-seed of exercise_base (GI RU names 2)');
     }
     const current = await db.count('exercise_base');
     if (current > 0 && !force) {
@@ -5070,7 +5071,7 @@
       return 0;
     }
     await db.bulkPut('exercise_base', exercises);
-    await db.put('settings', { key: 'seeded_exercise_base_v33', value: true });
+    await db.put('settings', { key: 'seeded_exercise_base_v34', value: true });
     console.info(`[seed] injected ${exercises.length} exercises into exercise_base`);
     return exercises.length;
   }
