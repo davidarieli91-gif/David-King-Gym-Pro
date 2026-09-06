@@ -4357,17 +4357,18 @@
               if (nameLower.includes('lying') || nameLower.includes('skull')) return 'Lying';
               return 'Compound';
             case 'back':
-              if (nameLower.includes('pull-up') || nameLower.includes('pullup') || nameLower.includes('pulldown') || nameLower.includes('chin') || nameLower.includes('lat ')) return 'Pull-up';
-              if (nameLower.includes('pullover')) return 'Pullover';
+              // Only 4 subgroups: Lats / Middle Back / Trapezius / Lower Back (in this order)
               if (nameLower.includes('deadlift') || nameLower.includes('hyperextension') || nameLower.includes('hyper ') || nameLower.includes('good morning') || nameLower.includes('back extension')) return 'Lower Back';
-              if (nameLower.includes('shrug')) return 'Trapezius';
-              if (nameLower.includes('row')) return 'Row';
-              return 'Middle Back';
+              if (nameLower.includes('shrug') || nameLower.includes('neck')) return 'Trapezius';
+              if (nameLower.includes('row') || nameLower.includes('rowing')) return 'Middle Back';
+              return 'Lats';
             case 'legs':
+              if (nameLower.includes('adduct')) return 'Adductors';
+              if (nameLower.includes('abduct')) return 'Abductors';
               if (nameLower.includes('lunge') || nameLower.includes('squat') || nameLower.includes('step') || nameLower.includes('leg press') || nameLower.includes('leg extension')) return 'Quadriceps';
               if (nameLower.includes('deadlift') || nameLower.includes('curl') || nameLower.includes('good morning') || nameLower.includes('hamstring')) return 'Hamstrings';
               if (nameLower.includes('calf') || nameLower.includes('toe raise') || nameLower.includes('donkey')) return 'Calves';
-              if (nameLower.includes('glute') || nameLower.includes('bridge') || nameLower.includes('hip thrust') || nameLower.includes('abduct') || nameLower.includes('adduct')) return 'Glutes';
+              if (nameLower.includes('glute') || nameLower.includes('bridge') || nameLower.includes('hip thrust')) return 'Glutes';
               return 'Quadriceps';
             case 'forearms':
               if (nameLower.includes('wrist') || nameLower.includes('finger') || nameLower.includes('grip') || nameLower.includes('pronat') || nameLower.includes('supinat')) return 'Wrist Curls';
@@ -5018,6 +5019,7 @@
         await loadExerciseDbExternal();
       }
     // Check if v23 seed flag is set — if not, force re-seed.
+    // v28 = back 4-subgroup redistribution + per-source tree/chips + legs abduct/adduct — 2026-09
     // v27 = gv_1625 regroup elbow_flexors→triceps — 2026-09
     // v26 = remove pg/mm sources (bf+gv only), merge biceps→elbow_flexors — 2026-09
     // v25 = exercise modal gif autoplay + bf bridge regroup + overhead/side normalize — 2026-09
@@ -5032,7 +5034,7 @@
     //      + PG "General" subgroups removed + technique fields added
     // v4 = new folder_path structure (no "General" subgroup, no equipment level)
     // v3 = original 1265-exercise seed
-    const v5Flag = await db.get('settings', 'seeded_exercise_base_v27');
+    const v5Flag = await db.get('settings', 'seeded_exercise_base_v28');
     if (!v5Flag) {
       force = true;
       console.info('[seed] v22 flag missing — forcing re-seed of exercise_base (GV subgroups)');
@@ -5049,7 +5051,7 @@
       return 0;
     }
     await db.bulkPut('exercise_base', exercises);
-    await db.put('settings', { key: 'seeded_exercise_base_v27', value: true });
+    await db.put('settings', { key: 'seeded_exercise_base_v28', value: true });
     console.info(`[seed] injected ${exercises.length} exercises into exercise_base`);
     return exercises.length;
   }
@@ -14504,9 +14506,16 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
     /** Build a list of muscle groups with their available subgroups from the cache.
      *  Only groups that actually have exercises show up. */
+    /** Same source predicate as the grid: keeps tree/chips coherent with the active tab. */
+    function matchSource(e) {
+      if (!_sourceFilter) return true;
+      return (e.source || e.src) === _sourceFilter ||
+        (e.src === 'pg' && _sourceFilter === 'private_gym') ||
+        (e.src === 'mm' && _sourceFilter === 'muscle_motion');
+    }
     function getGroupsWithSubgroups() {
       const groups = {};
-      _cache.forEach(e => {
+      _cache.filter(matchSource).forEach(e => {
         const g = e.group_canonical || e.g;
         if (!g) return;
         if (!groups[g]) groups[g] = { count: 0, subgroups: new Set() };
@@ -14519,7 +14528,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       // Sort subgroups within each group
       const SUBGROUP_ORDER = ['Upper', 'Middle', 'Lower', 'Front', 'Rear', 'Biceps', 'Brachialis', 'Brachioradialis',
                               'Seated', 'Lying', 'Compound', 'Upper Abs', 'Obliques', 'Inner Abs',
-                              'Row', 'Pullover', 'Pull-up', 'Lower Back', 'Trapezius',
+                              'Row', 'Pullover', 'Pull-up', 'Lats', 'Middle Back', 'Trapezius', 'Lower Back',
                               'Rotator Cuff', 'Quadriceps', 'Hamstrings', 'Calves', 'Glutes',
                               'Glutes + Quads', 'Adductors', 'Abductors', 'Hip Flexors',
                               'Pull-up Bar', 'Arms', 'Legs', 'Neck'];
@@ -14691,7 +14700,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     function renderEquipChips() {
       const container = document.getElementById('bm-equip-chips');
       if (!container) return;
-      let filtered = _cache;
+      let filtered = _cache.filter(matchSource);
       if (_activeGroup) {
         filtered = filtered.filter(e => (e.group_canonical || e.g) === _activeGroup);
       }
