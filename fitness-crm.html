@@ -4231,7 +4231,7 @@
       let _exerciseDbLoaded = false;
       // Bump EXERCISE_DB_BUST when exercise-db.json changes — defeats SW/browser
       // cache-first staleness so reseed always unpacks the deployed dataset.
-      const EXERCISE_DB_BUST = 'v28';
+      const EXERCISE_DB_BUST = 'v29';
       async function loadExerciseDbExternal() {
         try {
           const resp = await fetch('exercise-db.json?v=' + EXERCISE_DB_BUST);
@@ -5029,6 +5029,7 @@
     // v23 = GymVisual RU names + 3 reviewed imports + gif autoplay — 2026-09
     // v22 = GymVisual subgroup taxonomy (gv keyword subgroups) — 2026-09
     // v21 = force fresh exercise-db.json fetch (cache-bust v26) — 2026-09
+    // v31 = GV Hebrew instructions: all 1030 fully translated (3610 sentences) — 2026-09
     // v30 = GV audit: group moves, canonical labels, equipment RU/HE, syn cleanup, HE desc batch 1 — 2026-09
     // v29 = BurnFit audit: group/subgroup fixes + synergists for all 324 — 2026-09
     // v20 = GymVisual subgroup cleanup (gv sE cleared, target merged into synergists) — 2026-09
@@ -5038,10 +5039,10 @@
     //      + PG "General" subgroups removed + technique fields added
     // v4 = new folder_path structure (no "General" subgroup, no equipment level)
     // v3 = original 1265-exercise seed
-    const v5Flag = await db.get('settings', 'seeded_exercise_base_v30');
+    const v5Flag = await db.get('settings', 'seeded_exercise_base_v31');
     if (!v5Flag) {
       force = true;
-      console.info('[seed] v30 flag missing — forcing re-seed of exercise_base (GV audit)');
+      console.info('[seed] v31 flag missing — forcing re-seed of exercise_base (GV Hebrew)');
     }
     const current = await db.count('exercise_base');
     if (current > 0 && !force) {
@@ -5055,7 +5056,7 @@
       return 0;
     }
     await db.bulkPut('exercise_base', exercises);
-    await db.put('settings', { key: 'seeded_exercise_base_v30', value: true });
+    await db.put('settings', { key: 'seeded_exercise_base_v31', value: true });
     console.info(`[seed] injected ${exercises.length} exercises into exercise_base`);
     return exercises.length;
   }
