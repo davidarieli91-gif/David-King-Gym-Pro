@@ -1016,7 +1016,7 @@
       const imgs = exData && Array.isArray(exData.images) ? exData.images : [];
       const img = imgs[0] || '';
       const technique = exData ? (exData['technique_'+lang] || exData.technique_en || '') : '';
-      const equipment = exData ? (exData.equipment || '') : '';
+      const equipment = exData ? (exData['equipment_'+lang] || exData.equipment_en || exData.equipment || '') : '';
       const groupLabel = exData ? (exData['group_'+lang] || exData.group_en || ex.group || '') : (ex.group || '');
       const liveEx = sess ? (sess.exercises||[])[ei] : null;
       const restSec = liveEx ? liveEx.rest_sec : (parseInt(ex.rest_sec,10) || 90);
@@ -1463,7 +1463,7 @@
     const name = ex['name_'+lang] || ex.name_en || ex.name_ru || '?';
     const group = ex['group_'+lang] || ex.group_en || ex.group || '';
     const subgroup = ex.subgroup || '';
-    const equipment = ex.equipment || '';
+    const equipment = ex['equipment_'+lang] || ex.equipment_en || ex.equipment || '';
     const technique = ex['technique_'+lang] || ex.technique_en || '';
     const imgs = ex.images || [];
     const videoUrl = ex.video_url || '';

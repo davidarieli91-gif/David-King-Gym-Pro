@@ -6433,19 +6433,13 @@
   const screens = {};
 
   /** Global helper: get localized exercise name by exercise_id from cache.
-   *  Works everywhere — loads cache from _pb if available, or uses stored name as fallback. */
+   *  Works everywhere — program-builder cache first, then the shared
+   *  boot-loaded cache, then the stored snapshot name as fallback. */
   function globalExName(ex) {
     if (!ex) return '?';
     const lang = (typeof currentLang === 'function') ? currentLang() : 'en';
-    if (typeof _pb !== 'undefined' && _pb && _pb.exerciseCache) {
-      // Sprint 3 #2: use Map index for O(1) lookup (was O(n) .find() per call)
-      if (!_pb._exMap || _pb._exMapSize !== _pb.exerciseCache.length) {
-        _pb._exMap = buildExerciseIndex(_pb.exerciseCache);
-        _pb._exMapSize = _pb.exerciseCache.length;
-      }
-      const cached = _pb._exMap.get(ex.exercise_id);
-      if (cached) return cached['name_' + lang] || cached.name_en || cached.nE || ex.name || '?';
-    }
+    const cached = lookupExerciseGlobal(ex.exercise_id);
+    if (cached) return cached['name_' + lang] || cached.name_en || cached.nE || ex.name || '?';
     if (lang === 'ru') return ex.name_ru || ex.name_en || ex.name || '?';
     if (lang === 'he') return ex.name_he || ex.name_en || ex.name || '?';
     return ex.name_en || ex.name || '?';
@@ -6455,43 +6449,59 @@
   function globalExGroup(ex) {
     if (!ex || !ex.exercise_id) return ex.group || '';
     const lang = (typeof currentLang === 'function') ? currentLang() : 'en';
-    if (typeof _pb !== 'undefined' && _pb && _pb.exerciseCache) {
-      if (!_pb._exMap || _pb._exMapSize !== _pb.exerciseCache.length) {
-        _pb._exMap = buildExerciseIndex(_pb.exerciseCache);
-        _pb._exMapSize = _pb.exerciseCache.length;
-      }
-      const cached = _pb._exMap.get(ex.exercise_id);
-      if (cached) return cached['group_' + lang] || cached.group_en || cached.gE || ex.group || '';
-    }
+    const cached = lookupExerciseGlobal(ex.exercise_id);
+    if (cached) return cached['group_' + lang] || cached.group_en || cached.gE || ex.group || '';
     return ex.group || '';
   }
 
   /** Global helper: get first image URL of an exercise by ID from cache.
    *  Used for thumbnails in program builder + day preview + program list.
-   *  Falls back to _profileExerciseCache when _pb (program builder) isn't open. */
+   *  Falls back to _profileExerciseCache when neither _pb nor the shared
+   *  boot cache has the record. */
   let _profileExerciseCache = null;
   let _profileExMap = null;
-  function globalExImage(ex) {
-    if (!ex || !ex.exercise_id) return '';
-    // Try program builder cache first
-    if (typeof _pb !== 'undefined' && _pb && _pb.exerciseCache) {
+  /* Shared always-loaded exercise cache (filled once at boot, refreshed on
+   * re-seed). _pb.exerciseCache exists only while the program builder is
+   * open — without this, preview modal / live workout / history rendered
+   * from snapshots (wrong language) when the builder was never opened. */
+  let _globalExerciseCache = [];
+  let _globalExMap = null;
+  async function ensureGlobalExCache(force) {
+    if (_globalExMap && !force) return _globalExMap;
+    try {
+      _globalExerciseCache = (await db.all('exercise_base')).filter(e => !e.is_archived);
+      _globalExMap = buildExerciseIndex(_globalExerciseCache);
+    } catch (e) { /* keep previous cache */ }
+    return _globalExMap;
+  }
+  function lookupExerciseGlobal(exerciseId) {
+    if (!exerciseId) return null;
+    // Freshest first: program builder cache (while builder is open)
+    if (typeof _pb !== 'undefined' && _pb && _pb.exerciseCache && _pb.exerciseCache.length) {
+      // Sprint 3 #2: use Map index for O(1) lookup (was O(n) .find() per call)
       if (!_pb._exMap || _pb._exMapSize !== _pb.exerciseCache.length) {
         _pb._exMap = buildExerciseIndex(_pb.exerciseCache);
         _pb._exMapSize = _pb.exerciseCache.length;
       }
-      const cached = _pb._exMap.get(ex.exercise_id);
-      if (cached) {
-        const imgs = cached.images || cached.i || [];
-        return imgs[0] || '';
-      }
+      const hit = _pb._exMap.get(exerciseId);
+      if (hit) return hit;
     }
-    // Fallback: profile-scoped cache (loaded by loadPrograms)
+    if (_globalExMap) {
+      const hit = _globalExMap.get(exerciseId);
+      if (hit) return hit;
+    }
     if (_profileExerciseCache && _profileExMap) {
-      const cached = _profileExMap.get(ex.exercise_id);
-      if (cached) {
-        const imgs = cached.images || cached.i || [];
-        return imgs[0] || '';
-      }
+      const hit = _profileExMap.get(exerciseId);
+      if (hit) return hit;
+    }
+    return null;
+  }
+  function globalExImage(ex) {
+    if (!ex || !ex.exercise_id) return '';
+    const cached = lookupExerciseGlobal(ex.exercise_id);
+    if (cached) {
+      const imgs = cached.images || cached.i || [];
+      return imgs[0] || '';
     }
     return '';
   }
@@ -12912,7 +12922,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     /** Build HTML for a single exercise block with set table. */
     function exerciseHTML(ex, idx) {
       const name = globalExName(ex);
-      const group = ex.group || '';
+      const group = globalExGroup(ex);
       const sets = ex.sets || [];
       // Exercise thumbnail (Sprint 3+): look up image from local cache via Map index
       if (!_exMap || _exMapSize !== _exerciseCache.length) {
@@ -20478,6 +20488,10 @@ async function boot() {
       await ensureDefaultSettings();
       const seedCount = await seedExerciseBase(false);
       await seedFoodDatabase(false);
+      // Shared exercise cache for localized name/group/image lookups in ANY
+      // screen (preview modal, live workout, history) — independent of the
+      // program builder being open.
+      try { await ensureGlobalExCache(true); } catch (_) {}
       if (nutritionPlans) nutritionPlans.loadFoods();
       // Preload food database tab + nutrition templates so first tab-switch is instant
       if (typeof foodDatabase !== 'undefined') foodDatabase.load();
@@ -20540,6 +20554,7 @@ async function boot() {
       const btnRerunSeed = document.getElementById('btn-rerun-seed');
       if (btnRerunSeed) btnRerunSeed.addEventListener('click', async () => {
         const n = await seedExerciseBase(true);
+        try { await ensureGlobalExCache(true); } catch (_) {}
         toast(t('exercise.title') + ' → ' + n + ' ' + t('boot.rowsUnit'), 'success');
         const seedEl = document.getElementById('db-status-seed');
         if (seedEl) seedEl.textContent = `${n} ${t("boot.rowsUnit")}`;
@@ -21277,8 +21292,13 @@ async function boot() {
                 name_en: ex.name_en, name_ru: ex.name_ru, name_he: ex.name_he,
                 images: ex.images || [], technique_en: ex.technique_en || '',
                 technique_ru: ex.technique_ru || '', technique_he: ex.technique_he || '',
-                group: ex.group_canonical || ex.g || '', subgroup: ex.subgroup_en || ex.sE || '',
+                group: ex.group_canonical || ex.g || '',
+                group_en: ex.group_en || '', group_ru: ex.group_ru || '', group_he: ex.group_he || '',
+                subgroup: ex.subgroup_en || ex.sE || '',
                 equipment: ex.equipment_ru || ex.eE || ex.e || '',
+                equipment_en: ex.equipment_en || ex.equipment_ru || ex.eE || '',
+                equipment_ru: ex.equipment_ru || ex.eE || ex.e || '',
+                equipment_he: ex.equipment_he || ex.equipment_ru || ex.eE || '',
                 synergists: ex.synergist_muscles || ex.synergists || [],
                 video_url: ex.video_url || '',
                 gif: ex.gif || ''
@@ -21857,6 +21877,7 @@ async function boot() {
     const reseedBtn = document.getElementById('settings-btn-reseed');
     if (reseedBtn) reseedBtn.addEventListener('click', async () => {
       const n = await seedExerciseBase(true);
+      try { await ensureGlobalExCache(true); } catch (_) {}
       toast(t('exercise.title') + ' → ' + n + ' ' + t('boot.rowsUnit'), 'success');
     });
 
