@@ -1,6 +1,6 @@
 // Service Worker - David King Gym PWA
-// v26: purge stale caches (old exercise-db.json without gv subgroup fix)
-const CACHE_NAME = 'dk-gym-v26';
+// v27: purge stale caches (gi images replaced with original 180.webp)
+const CACHE_NAME = 'dk-gym-v27';
 const APP_SHELL = [
   './',
   './index.html',
