@@ -1,6 +1,6 @@
 // Service Worker - David King Gym PWA
-// v27: purge stale caches (gi images replaced with original 180.webp)
-const CACHE_NAME = 'dk-gym-v27';
+// v28: muscle-icons added (anatomical group/subgroup thumbnails)
+const CACHE_NAME = 'dk-gym-v28';
 const APP_SHELL = [
   './',
   './index.html',

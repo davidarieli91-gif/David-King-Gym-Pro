@@ -18,6 +18,7 @@ const assets = [
   'vendor',
   'data',
   'reports',
+  'muscle-icons',
   'src/muscle-map.js',
 ];
 

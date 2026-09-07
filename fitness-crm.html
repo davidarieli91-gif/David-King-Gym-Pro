@@ -516,6 +516,10 @@
     .bm-class-chip.active { background: rgb(var(--c-accent)); color: #fff; border-color: rgb(var(--c-accent)); }
     /* Subtle row separator for classification chips */
     #bm-class-chips:not(:empty) { padding-top: 4px; border-top: 1px dashed rgb(var(--c-border)); }
+    /* Анатомические иконки мышц (muscle-icons/, стиль SciePro): круглые миниатюры в дереве групп/подгрупп */
+    .mg-icon { width: 1.5em; height: 1.5em; max-width: 24px; max-height: 24px; object-fit: cover; object-position: center; border-radius: 9999px; display: inline-block; vertical-align: middle; background: #0a0a0f; box-shadow: 0 0 0 1px rgb(var(--c-border, 220 220 220)); flex-shrink: 0; }
+    .mg-icon-fallback { display: none; line-height: 1; }
+    @media (max-width: 767px) { .mg-icon { width: 1.45em; height: 1.45em; max-width: 19px; max-height: 19px; } }
     /* Grouped grid: when bm-ex-grid has .bm-grouped class, it becomes a vertical stack of sections */
     #bm-ex-grid.bm-grouped { display: flex; flex-direction: column; gap: 0.75rem; }
     #bm-ex-grid.bm-grouped > .bm-section-grid { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 0.5rem; }
@@ -4582,76 +4586,101 @@
     return g.charAt(0).toUpperCase() + g.slice(1).replace(/_/g, ' ');
   }
 
-  /** Emoji icon for each muscle group (anatomically suggestive where possible). */
-  function muscleGroupIcon(g) {
-    const icons = {
-      chest: '🫁',          // lungs shape resembles chest area
-      back: '🔙',           // back arrow
-      shoulders: '💆',      // shoulders/neck massage
-      elbow_flexors: '💪',  // biceps flex
-      triceps: '🦾',        // arm
-      forearms: '✊',       // fist (forearm)
-      abdominals: '🎯',     // six-pack target
-      legs: '🦵',           // leg
-      fullbody: '🏋️',       // full body
-      calisthenics: '🤸',   // workout
-      stretching: '🧘',     // yoga/stretch
-      warmup: '🔥'          // warm-up fire
-    };
-    return icons[g] || '⭐';
+  /* =====================================================================
+     АНАТОМИЧЕСКИЕ ИКОНКИ МЫШЦ (muscle-icons/ — стиль SciePro)
+     Маленькие круглые рендеры: серое тело, целевая мышца подсвечена красным.
+     Файлы: muscle-icons/<group>.webp и muscle-icons/<group>-<subgroup>.webp.
+     Если файл не найден — плавный фолбэк на прежнюю emoji-иконку.
+     ===================================================================== */
+  const MUSCLE_ICON_DIR = 'muscle-icons';
+
+  /** Emoji-фолбэк для групп (прошлые иконки — используются только при ошибке загрузки). */
+  const MUSCLE_GROUP_EMOJI = {
+    chest: '🫁', back: '🔙', shoulders: '💆', elbow_flexors: '💪', triceps: '🦾',
+    forearms: '✊', abdominals: '🎯', legs: '🦵', fullbody: '🏋️', calisthenics: '🤸',
+    stretching: '🧘', warmup: '🔥'
+  };
+
+  /** Подгруппы-«движения» (Row/Pullover/Seated/…) → файл иконки ближайшей мышцы. */
+  const MUSCLE_SUBGROUP_FILE = {
+    'elbow_flexors|biceps': 'elbow_flexors',
+    'triceps|compound': 'triceps',
+    'triceps|seated': 'triceps',
+    'triceps|lying': 'triceps',
+    'back|row': 'back-middle-back',
+    'back|pullover': 'back-lats',
+    'back|pull-up': 'back-lats',
+    'abdominals|general': 'abdominals',
+    'abdominals|upper abs': 'abdominals-upper',
+    'abdominals|lower abs': 'abdominals-lower',
+    'abdominals|inner abs': 'abdominals-inner',
+    'shoulders|trapezius': 'back-trapezius',
+    'forearms|wrist curls': 'forearms',
+    'forearms|grip': 'forearms',
+    'fullbody|compound': 'fullbody',
+    'fullbody|glutes': 'legs-glutes',
+    'calisthenics|pull-up bar': 'calisthenics',
+    'calisthenics|pull-up': 'calisthenics',
+    'forearms|isolation': 'forearms',
+    'chest|general': 'chest',
+    'shoulders|general': 'shoulders',
+    'elbow_flexors|general': 'elbow_flexors',
+    'triceps|general': 'triceps',
+    'forearms|general': 'forearms',
+    'back|general': 'back',
+    'legs|general': 'legs',
+    'fullbody|general': 'fullbody',
+    'calisthenics|general': 'calisthenics',
+    'stretching|general': 'stretching',
+    'warmup|general': 'warmup',
+    'stretching|arms': 'stretching',
+    'stretching|legs': 'stretching'
+  };
+
+  /** Emoji-фолбэк для подгрупп (прошлые иконки — только при ошибке загрузки). */
+  const MUSCLE_SUBGROUP_EMOJI = {
+    'chest|upper': '⬆️', 'chest|middle': '⏺️', 'chest|lower': '⬇️',
+    'shoulders|front': '🔼', 'shoulders|middle': '⏺️', 'shoulders|rear': '🔽', 'shoulders|rotator cuff': '🔄',
+    'elbow_flexors|biceps': '💪', 'elbow_flexors|brachialis': '🦾', 'elbow_flexors|brachioradialis': '✊',
+    'triceps|compound': '🏋️', 'triceps|seated': '🪑', 'triceps|lying': '🛏️',
+    'back|lats': '🦅', 'back|middle back': '🔙', 'back|lower back': '⬇️', 'back|trapezius': '🔺',
+    'back|neck': '🦒', 'back|row': '🚣', 'back|pullover': '🔄', 'back|pull-up': '🧗',
+    'abdominals|upper abs': '⬆️', 'abdominals|lower abs': '⬇️', 'abdominals|obliques': '↔️', 'abdominals|inner abs': '🎯', 'abdominals|general': '⭐',
+    'legs|quadriceps': '🦵', 'legs|hamstrings': '🦿', 'legs|calves': '🦶', 'legs|glutes': '🍑',
+    'legs|glutes + quads': '🍑', 'legs|adductors': '↔️', 'legs|abductors': '↔️', 'legs|hip flexors': '🔄',
+    'calisthenics|pull-up bar': '🧗', 'stretching|arms': '🙆', 'stretching|legs': '🧘'
+  };
+
+  /** Глобальный обработчик ошибки загрузки: прячем <img>, показываем emoji-фолбэк рядом. */
+  window.mgIconFallback = function (img) {
+    img.style.display = 'none';
+    const fb = img.nextElementSibling;
+    if (fb && fb.classList && fb.classList.contains('mg-icon-fallback')) fb.style.display = 'inline';
+  };
+
+  /** Собирает HTML пары <img + emoji-фолбэк>. */
+  function mgIconHTML(file, emojiFallback) {
+    const esc = String(file).replace(/[^a-z0-9_-]/g, '');
+    const emo = emojiFallback || '⭐';
+    return '<img src="' + MUSCLE_ICON_DIR + '/' + esc + '.webp" alt="" aria-hidden="true" class="mg-icon" loading="lazy" decoding="async" onerror="mgIconFallback(this)">' +
+           '<span class="mg-icon-fallback">' + emo + '</span>';
   }
 
-  /** Emoji icon for each muscle subgroup (anatomically suggestive where possible). */
+  /** Анатомическая иконка мышечной группы (мини-рендер в стиле SciePro). */
+  function muscleGroupIcon(g) {
+    if (!g) return '';
+    const key = String(g).toLowerCase();
+    return mgIconHTML(key, MUSCLE_GROUP_EMOJI[key] || '⭐');
+  }
+
+  /** Анатомическая иконка подгруппы мышц: muscle-icons/<group>-<subgroup>.webp. */
   function subgroupIcon(group, sub) {
     if (!sub) return '';
-    const key = (group || '').toLowerCase() + '|' + sub.toLowerCase();
-    const icons = {
-      // Chest
-      'chest|upper': '⬆️',
-      'chest|middle': '⏺️',
-      'chest|lower': '⬇️',
-      // Shoulders
-      'shoulders|front': '🔼',
-      'shoulders|rear': '🔽',
-      'shoulders|rotator cuff': '🔄',
-      // Elbow flexors
-      'elbow_flexors|biceps': '💪',
-      'elbow_flexors|brachialis': '🦾',
-      'elbow_flexors|brachioradialis': '✊',
-      // Triceps
-      'triceps|compound': '🏋️',
-      'triceps|seated': '🪑',
-      'triceps|lying': '🛏️',
-      // Back
-      'back|lats': '🦅',
-      'back|middle back': '🔙',
-      'back|lower back': '⬇️',
-      'back|trapezius': '🔺',
-      'back|neck': '🦒',
-      'back|row': '🚣',
-      'back|pullover': '🔄',
-      'back|pull-up': '🧗',
-      // Abs
-      'abdominals|upper abs': '⬆️',
-      'abdominals|obliques': '↔️',
-      'abdominals|inner abs': '🎯',
-      'abdominals|general': '⭐',
-      // Legs
-      'legs|quadriceps': '🦵',
-      'legs|hamstrings': '🦿',
-      'legs|calves': '🦶',
-      'legs|glutes': '🍑',
-      'legs|glutes + quads': '🍑',
-      'legs|adductors': '↔️',
-      'legs|abductors': '↔️',
-      'legs|hip flexors': '🔄',
-      // Calisthenics
-      'calisthenics|pull-up bar': '🧗',
-      // Stretching
-      'stretching|arms': '🙆',
-      'stretching|legs': '🧘',
-    };
-    return icons[key] || '•';
+    const g = String(group || '').toLowerCase();
+    const s = String(sub).toLowerCase();
+    const override = MUSCLE_SUBGROUP_FILE[g + '|' + s];
+    const file = override || (g + '-' + s.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''));
+    return mgIconHTML(file, MUSCLE_SUBGROUP_EMOJI[g + '|' + s] || '•');
   }
 
   function subgroupName(en) {
@@ -11264,7 +11293,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         <div class="flex items-center" style="padding-inline-start: ${indent}px" data-drop-target="${escAttr(node.pathKey)}">
           <button class="flex-1 flex items-center gap-2 p-2 hover:bg-surface-2 rounded-lg transition ${depth === 0 ? 'text-sm font-semibold' : 'text-xs font-medium'}" data-toggle-folder="${escAttr(node.pathKey)}">
             <svg class="w-${depth === 0 ? 4 : 3} h-${depth === 0 ? 4 : 3} text-muted transition-transform ${isExpanded ? 'rotate-90' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
-            ${depth === 0 ? `<span class="text-base leading-none shrink-0" style="width:1.2em;text-align:center">${typeof muscleGroupIcon === 'function' ? muscleGroupIcon(node.name) : (groupColor ? `<span class="w-2.5 h-2.5 rounded-full inline-block" style="background: ${groupColor}"></span>` : '')}</span>` : (groupColor ? `<span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${groupColor}"></span>` : '')}
+            ${depth === 0 ? `<span class="text-base leading-none shrink-0" style="width:1.7em;text-align:center">${typeof muscleGroupIcon === 'function' ? muscleGroupIcon(node.name) : (groupColor ? `<span class="w-2.5 h-2.5 rounded-full inline-block" style="background: ${groupColor}"></span>` : '')}</span>` : (groupColor ? `<span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${groupColor}"></span>` : '')}
             <span class="flex-1 text-start truncate">${escHTML(label)}</span>
             <span class="text-[10px] text-muted font-mono">${totalCount}</span>
           </button>
@@ -14638,7 +14667,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         html += `<div class="bm-group-folder">
           <div class="bm-group-header flex items-center gap-1.5 text-[14px] font-semibold py-2 px-2.5 rounded-lg border ${activeClass} transition cursor-pointer" data-group="${esc(g)}">
             <span class="bm-caret text-[10px] w-3 shrink-0">${caret}</span>
-            <span class="text-base leading-none shrink-0" style="width:1.1em;text-align:center">${typeof muscleGroupIcon === 'function' ? muscleGroupIcon(g) : ''}</span>
+            <span class="text-base leading-none shrink-0" style="width:1.7em;text-align:center">${typeof muscleGroupIcon === 'function' ? muscleGroupIcon(g) : ''}</span>
             <span class="flex-1 truncate">${esc(label)}</span>
             <span class="text-[12px] opacity-70 shrink-0 font-semibold">${info.count}</span>
           </div>`;
@@ -14650,7 +14679,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             const sgActiveClass = sgActive ? 'bg-primary/30 text-primary-2 border-primary/40' : 'bg-surface hover:bg-primary/10 border-transparent';
             const sgIcon = (typeof subgroupIcon === 'function') ? subgroupIcon(g, s) : '•';
             html += `<div class="bm-subgroup-btn flex items-center gap-1 text-[10px] font-medium py-1 px-2 rounded-md border ${sgActiveClass} transition cursor-pointer" data-group="${esc(g)}" data-subgroup="${esc(s)}">
-              <span class="text-sm leading-none shrink-0" style="width:1.1em;text-align:center">${sgIcon}</span>
+              <span class="text-sm leading-none shrink-0" style="width:1.6em;text-align:center">${sgIcon}</span>
               <span class="flex-1 truncate">${esc(sgLabel)}</span>
             </div>`;
           });
