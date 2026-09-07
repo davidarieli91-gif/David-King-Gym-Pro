@@ -4243,7 +4243,7 @@
       let _exerciseDbLoaded = false;
       // Bump EXERCISE_DB_BUST when exercise-db.json changes — defeats SW/browser
       // cache-first staleness so reseed always unpacks the deployed dataset.
-      const EXERCISE_DB_BUST = 'v36';
+      const EXERCISE_DB_BUST = 'v37';
       async function loadExerciseDbExternal() {
         try {
           const resp = await fetch('exercise-db.json?v=' + EXERCISE_DB_BUST);
@@ -5041,6 +5041,7 @@
     // v23 = GymVisual RU names + 3 reviewed imports + gif autoplay — 2026-09
     // v22 = GymVisual subgroup taxonomy (gv keyword subgroups) — 2026-09
     // v21 = force fresh exercise-db.json fetch (cache-bust v26) — 2026-09
+    // v39 = GI instructions TM batches 4-6 RU+HE (1336 sents, 1837 ex partial) — 2026-09
     // v38 = GI instructions TM batches 1-3 RU+HE (526 sents, 1217 ex partial) — 2026-09
     // v37 = GI HE names complete 6/6 (4265) — 2026-09
     // v36 = GI RU names complete 6/6 (4265) — 2026-09
@@ -5058,10 +5059,10 @@
     //      + PG "General" subgroups removed + technique fields added
     // v4 = new folder_path structure (no "General" subgroup, no equipment level)
     // v3 = original 1265-exercise seed
-    const v5Flag = await db.get('settings', 'seeded_exercise_base_v38');
+    const v5Flag = await db.get('settings', 'seeded_exercise_base_v39');
     if (!v5Flag) {
       force = true;
-      console.info('[seed] v38 flag missing — forcing re-seed of exercise_base (GI instructions TM 1-3)');
+      console.info('[seed] v39 flag missing — forcing re-seed of exercise_base (GI instructions TM 4-6)');
     }
     const current = await db.count('exercise_base');
     if (current > 0 && !force) {
@@ -5075,7 +5076,7 @@
       return 0;
     }
     await db.bulkPut('exercise_base', exercises);
-    await db.put('settings', { key: 'seeded_exercise_base_v38', value: true });
+    await db.put('settings', { key: 'seeded_exercise_base_v39', value: true });
     console.info(`[seed] injected ${exercises.length} exercises into exercise_base`);
     return exercises.length;
   }
