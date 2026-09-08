@@ -1,6 +1,6 @@
 // Service Worker - David King Gym PWA
-// v32: Firebase compat SDK 11.8.1 — third-party-cookie-proof redirect OAuth
-const CACHE_NAME = 'dk-gym-v32';
+// v33: standalone-window OAuth relay (Google sign-in via a browser tab)
+const CACHE_NAME = 'dk-gym-v33';
 const APP_SHELL = [
   './',
   './index.html',

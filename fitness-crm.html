@@ -2169,7 +2169,7 @@
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c5</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c6</p>
             </div>
           </div>
 
@@ -21719,6 +21719,7 @@ async function boot() {
       const cloudUnlock = () => {
         if (auth.isUnlocked()) return;
         try { sessionStorage.removeItem('dk_cloud_login'); } catch (e) {}
+        try { localStorage.removeItem('dk_oauth_attempt'); } catch (e) {}
         auth.unlock();
         document.getElementById('lock-btn').classList.remove('hidden');
         router.show('dashboard');
@@ -21754,12 +21755,19 @@ async function boot() {
       const refreshCloudStatus = () => {
         if (!window.cloudSync || !window.cloudSync.getState) return;
         const s = window.cloudSync.getState();
+        // browser-tab relay outstanding → keep/restore the relay hint
+        let relayActive = false;
+        try {
+          const rts = Number(localStorage.getItem('dk_oauth_relay') || 0);
+          relayActive = !!(rts && (Date.now() - rts < 180000));
+        } catch (e) {}
         if (s && s.user) {
           setStatus(s.user.email ? (t('auth.cloudStatusSignedIn') + ' ' + s.user.email) : t('auth.cloudStatusSignedIn'));
         } else if (s && s.error) {
           setStatus(t('settings.cloudAccErrGeneric', { e: s.error }));
         } else if (s && s.ready) {
-          clearStatus(); // ready & signed out → silent (the button is self-explanatory)
+          if (relayActive) setStatus(t('auth.googleRelayOpened'));
+          else clearStatus(); // ready & signed out → silent (the button is self-explanatory)
         }
       };
       // --- Post-return watchdog: unlocks late-restored sessions (slow 4G,
@@ -21772,7 +21780,15 @@ async function boot() {
         if (s && s.user) { maybeCloudUnlock(); return; }
         let flag = false;
         try { flag = sessionStorage.getItem('dk_cloud_login') === '1'; } catch (e) {}
-        if (++wdChecks < 20) { setTimeout(watchdog, 1000); return; }
+        // a browser-tab relay is outstanding → be patient (up to 3 min)
+        let relayOutstanding = false;
+        try {
+          const rts = Number(localStorage.getItem('dk_oauth_relay') || 0);
+          relayOutstanding = !!(rts && (Date.now() - rts < 180000));
+        } catch (e) {}
+        if (relayOutstanding && wdChecks === 20) setStatus(t('auth.googleRelayOpened'));
+        const patience = relayOutstanding ? 180 : 20;
+        if (++wdChecks < patience) { setTimeout(watchdog, 1000); return; }
         if (flag) {
           // technical diagnostic suffix — lets a screenshot pinpoint the failure
           const bits = [];
@@ -21782,6 +21798,12 @@ async function boot() {
             bits.push('fb:' + ((window.firebase && firebase.apps && firebase.apps.length) ? 'ok' : 'missing'));
             const m = ((location.hash || '') + (location.search || '')).match(/(apiKey|authuser|oobCode|firebaseError)[^&#]*/);
             if (m) bits.push('ret:' + m[0].slice(0, 24));
+            const att = Number(localStorage.getItem('dk_oauth_attempt') || 0);
+            if (att) {
+              const dt = Math.round((Date.now() - att) / 1000);
+              bits.push('att:' + (dt > 999 ? 'stale' : dt + 's'));
+            }
+            bits.push('dm:' + ((window.matchMedia && (matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches)) ? 's' : 'b'));
           } catch (e) {}
           setStatus(t('auth.cloudSignInFailed') + (bits.length ? (' [' + bits.join(' · ') + ']') : ''));
         }
@@ -21790,6 +21812,12 @@ async function boot() {
       document.addEventListener('cloud:auth', maybeCloudUnlock);
       document.addEventListener('cloud:auth', refreshCloudStatus);
       window.addEventListener('pageshow', () => setTimeout(() => { maybeCloudUnlock(); refreshCloudStatus(); }, 300));
+      // relay flow: the session may arrive in this window when the browser tab
+      // finishes the OAuth — re-check on focus / visibility
+      window.addEventListener('focus', () => setTimeout(() => { maybeCloudUnlock(); refreshCloudStatus(); }, 400));
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) setTimeout(() => { maybeCloudUnlock(); refreshCloudStatus(); }, 400);
+      });
       if (window.cloudSync && window.cloudSync.ready) {
         setStatus(t('auth.cloudStatusChecking'));
         window.cloudSync.ready.then(() => {
@@ -21816,7 +21844,11 @@ async function boot() {
         gSetBusy(true);
         try { sessionStorage.setItem('dk_cloud_login', '1'); } catch (e) {}
         try {
-          await window.cloudSync.signIn(); // full-page redirect flow on every device
+          const res = await window.cloudSync.signIn(); // redirect flow; installed-app windows → browser-tab relay
+          if (res && res.relay) {
+            if (gHint) { gHint.textContent = t('auth.googleRelayOpened'); gHint.classList.remove('hidden'); }
+            return;
+          }
           const st2 = window.cloudSync.getState();
           if (st2 && st2.user) { cloudUnlock(); return; }
           setTimeout(maybeCloudUnlock, 600); // wait for auth state propagation
@@ -24938,9 +24970,44 @@ document.addEventListener('DOMContentLoaded', function () {
           render(u);
           // notify other modules (e.g. lock-screen Google sign-in glue)
           try { document.dispatchEvent(new CustomEvent('cloud:auth', { detail: { email: (u && u.email) || null } })); } catch (e) {}
+          // relay tab: session created → go back to the app window
+          try {
+            if (u && sessionStorage.getItem('dk_oauth_relay_done') === '1') {
+              setTimeout(function () { try { window.close(); } catch (e) {} }, 2000);
+            }
+          } catch (e) {}
           if (u && _syncedFor !== u.uid) { _syncedFor = u.uid; bootSyncCheck(); }
         });
       });
+    }
+
+    /* Escape hatch for installed-app windows: in a standalone/fullscreen (PWA)
+     * window a full-page OAuth redirect is the least reliable flow — Google
+     * frequently bounces or silently drops the return there (observed on a c5
+     * build: no session, no error, no return markers — [fb:ok] alone).
+     * Hand the OAuth to a regular browser TAB instead: origin storage
+     * (IndexedDB) is shared, so the moment the tab signs in, this window's
+     * onAuthStateChanged fires (SDK cross-tab sync) and the app unlocks. */
+    function isStandaloneDisplay() {
+      try {
+        return !!(window.matchMedia && (
+          matchMedia('(display-mode: standalone)').matches ||
+          matchMedia('(display-mode: fullscreen)').matches ||
+          window.navigator.standalone === true));
+      } catch (e) { return false; }
+    }
+    function handleOauthRelay() {
+      var m = (location.hash || '').match(/dk-oauth-relay=(\d+)/);
+      if (!m) return false;
+      var ts = Number(m[1] || 0);
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+      if (!ts || Date.now() - ts > 120000) return false; // stale hand-off — ignore
+      try {
+        if (sessionStorage.getItem('dk_oauth_relay_done') === '1') return false;
+        sessionStorage.setItem('dk_oauth_relay_done', '1');
+      } catch (e) {}
+      log('oauth relay: starting sign-in in browser tab');
+      return true;
     }
 
     async function signIn() {
@@ -24948,11 +25015,19 @@ document.addEventListener('DOMContentLoaded', function () {
         await ensureAuth();
         var provider = new firebase.auth.GoogleAuthProvider();
         provider.setCustomParameters({ prompt: 'select_account' });
-        // Full-page redirect flow ONLY. The popup handshake is the least
-        // reliable part of OAuth: desktop popups can silently fail to message
-        // the opener (presents as popup-closed-by-user), mobile popups open
-        // as un-communicated tabs. The redirect returns as a clean page
-        // reload; getRedirectResult() + the lock-screen glue finish the job.
+        try { localStorage.setItem('dk_oauth_attempt', String(Date.now())); } catch (e) {}
+        // Installed-app window → let a normal browser tab run the OAuth.
+        if (isStandaloneDisplay()) {
+          var ts = Date.now();
+          try { localStorage.setItem('dk_oauth_relay', String(ts)); } catch (e2) {}
+          var w = null;
+          try { w = window.open(location.href.split('#')[0] + '#dk-oauth-relay=' + ts, '_blank'); } catch (e3) {}
+          if (w) { log('oauth relay tab opened'); return { relay: true }; }
+          // tab blocked → in-place redirect is the only option left
+        }
+        // Full-page redirect in a regular browser tab: reliable and
+        // third-party-cookie-proof on SDK 11 (11.1+ carries the OAuth result
+        // through the URL / first-party storage — no cross-origin iframe).
         await _auth.signInWithRedirect(provider);
       } catch (e) {
         _authError = String((e && (e.code || e.message)) || e);
@@ -25337,6 +25412,10 @@ document.addEventListener('DOMContentLoaded', function () {
           // let the lock-screen status line show what went wrong
           try { document.dispatchEvent(new CustomEvent('cloud:auth', { detail: { email: null } })); } catch (e2) {}
         });
+        // relay tab opened by an installed app window: auto-start the OAuth here
+        if (handleOauthRelay()) {
+          ensureAuth().then(function () { return signIn(); }).catch(function (e) { log('relay sign-in failed', e); });
+        }
       });
       if (window.cloudSync) window.cloudSync.ready = _ready; // boot may be deferred (DOMContentLoaded)
       return _ready;

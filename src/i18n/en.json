@@ -217,7 +217,8 @@
   "googleNotConfigured": "Cloud is not set up on this device yet: Settings → Online account → Connect (one-time).",
   "cloudStatusChecking": "Checking cloud session…",
   "cloudStatusSignedIn": "Signed in:",
-  "cloudSignInFailed": "Google sign-in didn't complete — please try again"
+  "cloudSignInFailed": "Google sign-in didn't complete — please try again",
+  "googleRelayOpened": "Finish the sign-in in the browser tab that just opened — this window unlocks automatically."
  },
  "profile": {
   "moveHint": "Move mode: tap a panel to place the held panel before it",
