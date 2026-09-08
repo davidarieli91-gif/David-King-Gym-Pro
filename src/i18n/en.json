@@ -210,7 +210,11 @@
   "confirmPassword": "Confirm password",
   "passwordsDontMatch": "Passwords do not match",
   "welcome": "Welcome back",
-  "firstRunHint": "Set a trainer password to secure your client data."
+  "firstRunHint": "Set a trainer password to secure your client data.",
+  "or": "or",
+  "googleSignIn": "Sign in with Google (online account)",
+  "googleSigningIn": "Signing in with Google…",
+  "googleNotConfigured": "Cloud is not set up on this device yet: Settings → Online account → Connect (one-time)."
  },
  "profile": {
   "moveHint": "Move mode: tap a panel to place the held panel before it",

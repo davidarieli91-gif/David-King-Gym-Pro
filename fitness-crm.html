@@ -2153,6 +2153,20 @@
                     <button type="submit" class="w-full bg-primary hover:bg-primary-2 text-white font-semibold py-2.5 rounded-xl transition shadow-card" data-i18n="auth.login">Sign In</button>
                   </form>
                 </div>
+
+                <!-- Online account (Google) — optional, additive to the local password -->
+                <div id="login-cloud" class="mt-4 pt-4 border-t border-border">
+                  <div class="flex items-center gap-3 mb-3" aria-hidden="true">
+                    <span class="h-px bg-border flex-1"></span>
+                    <span class="text-[11px] text-muted" data-i18n="auth.or">or</span>
+                    <span class="h-px bg-border flex-1"></span>
+                  </div>
+                  <button type="button" id="login-btn-google" class="w-full inline-flex items-center justify-center gap-2.5 bg-white text-gray-800 border border-border rounded-xl py-2.5 text-sm font-semibold hover:bg-gray-100 active:scale-[0.98] transition shadow-sm">
+                    <svg class="w-4 h-4 shrink-0" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                    <span id="login-btn-google-label" data-i18n="auth.googleSignIn">Sign in with Google (online account)</span>
+                  </button>
+                  <p id="login-cloud-hint" class="hidden text-xs text-muted mt-2 text-center leading-relaxed"></p>
+                </div>
               </div>
 
               <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages</p>
@@ -6020,8 +6034,11 @@
 
     function isUnlocked() { return _state.unlocked; }
     function lock() { _state.unlocked = false; }
+    /** Unlock WITHOUT password — used only by the cloud (Google) sign-in path
+     *  on the lock screen. Local password login remains the default. */
+    function unlock() { _state.unlocked = true; }
 
-    return { isPasswordSet, setPassword, verifyPassword, isUnlocked, lock };
+    return { isPasswordSet, setPassword, verifyPassword, isUnlocked, lock, unlock };
   })();
 
   /* =====================================================================
@@ -21667,6 +21684,72 @@ async function boot() {
         setTimeout(() => screens.liveWorkout.checkDraft(), 500);
       }
     });
+
+    // ---- Online account (Google) sign-in from the lock screen (additive) ----
+    // Local password login stays the default; this button signs into the
+    // optional cloud account, then unlocks the app exactly like the password.
+    const gBtn = document.getElementById('login-btn-google');
+    if (gBtn) {
+      const gLabel = document.getElementById('login-btn-google-label');
+      const gHint = document.getElementById('login-cloud-hint');
+      const gSetBusy = (busy) => {
+        gBtn.disabled = busy;
+        gBtn.classList.toggle('opacity-60', busy);
+        if (gLabel) gLabel.textContent = t(busy ? 'auth.googleSigningIn' : 'auth.googleSignIn');
+      };
+      const cloudUnlock = () => {
+        if (auth.isUnlocked()) return;
+        try { sessionStorage.removeItem('dk_cloud_login'); } catch (e) {}
+        auth.unlock();
+        document.getElementById('lock-btn').classList.remove('hidden');
+        router.show('dashboard');
+        toast(t('auth.welcome'), 'success', 2000);
+        if (screens.liveWorkout && screens.liveWorkout.checkDraft) {
+          setTimeout(() => screens.liveWorkout.checkDraft(), 500);
+        }
+      };
+      const tryFlagUnlock = () => {
+        try {
+          if (sessionStorage.getItem('dk_cloud_login') !== '1' || auth.isUnlocked()) return;
+          if (window.cloudSync && window.cloudSync.getState) {
+            const s = window.cloudSync.getState();
+            if (s && s.user) cloudUnlock();
+          }
+        } catch (e) {}
+      };
+      // Return from signInWithRedirect: cloud:auth may fire before or after wiring
+      document.addEventListener('cloud:auth', tryFlagUnlock);
+      if (window.cloudSync && window.cloudSync.ready) {
+        window.cloudSync.ready.then(() => setTimeout(tryFlagUnlock, 400)).catch(() => {});
+      }
+      gBtn.addEventListener('click', async () => {
+        if (gHint) gHint.classList.add('hidden');
+        if (!window.cloudSync || !window.cloudSync.getState) {
+          if (gHint) { gHint.textContent = t('auth.googleNotConfigured'); gHint.classList.remove('hidden'); }
+          return;
+        }
+        try { await window.cloudSync.ready; } catch (e) {}
+        const st = window.cloudSync.getState();
+        if (!st.configured) {
+          if (gHint) { gHint.textContent = t('auth.googleNotConfigured'); gHint.classList.remove('hidden'); }
+          toast(t('auth.googleNotConfigured'), 'warning', 6000);
+          return;
+        }
+        if (st.user) { cloudUnlock(); return; } // session already active — instant unlock
+        gSetBusy(true);
+        try { sessionStorage.setItem('dk_cloud_login', '1'); } catch (e) {}
+        try {
+          await window.cloudSync.signIn(); // popup; falls back to redirect internally
+          const st2 = window.cloudSync.getState();
+          if (st2 && st2.user) { cloudUnlock(); return; }
+          setTimeout(tryFlagUnlock, 600); // popup path: wait for auth state propagation
+        } catch (e) {
+          try { sessionStorage.removeItem('dk_cloud_login'); } catch (e2) {}
+        } finally {
+          gSetBusy(false);
+        }
+      });
+    }
   }
 
   /** STEPS 7-9 — wire dashboard search / sort / filter / add / form modal. */
@@ -24593,6 +24676,11 @@ document.addEventListener('DOMContentLoaded', function () {
     var CFG_KEY = 'cloud_firebase_config';
     var AUTOSYNC_KEY = 'cloud_autosync';
     var LASTSYNC_KEY = 'cloud_last_sync';
+    /* Optional hard-coded fallback Firebase config (web keys are public by
+     * design — safe to ship). When set, Google sign-in (incl. the lock-screen
+     * button) works on ANY device without pasting the config in Settings first.
+     * A config stored via Settings still takes priority. */
+    var DEFAULT_CLOUD_CONFIG = null; // e.g. { apiKey: '...', authDomain: '...', projectId: '...', appId: '...' };
     var DEBOUNCE_MS = 20000;
     var USER_STORES = ['clients', 'client_programs', 'workout_history', 'nutrition_plans',
                        'nutrition_history', 'workout_templates', 'nutrition_templates'];
@@ -24601,6 +24689,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var _fbLoading = null, _auth = null, _fs = null, _user = null, _cfg = null;
     var _dirty = {}, _dirtyTimer = null, _busy = false, _savingQueued = false;
     var _autosync = true, _lastSync = 0, _lastMeta = null, _syncedFor = null;
+    var _ready = null;
 
     function $(id) { return document.getElementById(id); }
     function T(key, vars) {
@@ -24682,8 +24771,8 @@ document.addEventListener('DOMContentLoaded', function () {
     /* ---------- config ---------- */
     function getConfig() {
       return db.get('settings', CFG_KEY)
-        .then(function (row) { return (row && row.value) || null; })
-        .catch(function () { return null; });
+        .then(function (row) { return (row && row.value) || DEFAULT_CLOUD_CONFIG || null; })
+        .catch(function () { return DEFAULT_CLOUD_CONFIG || null; });
     }
     function parseConfig(text) {
       var m = String(text || '').match(/\{[\s\S]*\}/);
@@ -24723,6 +24812,8 @@ document.addEventListener('DOMContentLoaded', function () {
         _auth.onAuthStateChanged(function (u) {
           _user = u;
           render(u);
+          // notify other modules (e.g. lock-screen Google sign-in glue)
+          try { document.dispatchEvent(new CustomEvent('cloud:auth', { detail: { email: (u && u.email) || null } })); } catch (e) {}
           if (u && _syncedFor !== u.uid) { _syncedFor = u.uid; bootSyncCheck(); }
         });
       });
@@ -25115,13 +25206,15 @@ document.addEventListener('DOMContentLoaded', function () {
       var p1 = db.get('settings', AUTOSYNC_KEY).then(function (r) { _autosync = !r || r.value !== false; }).catch(function () {});
       var p2 = db.get('settings', LASTSYNC_KEY).then(function (r) { _lastSync = (r && r.value) || 0; }).catch(function () {});
       var p3 = getConfig().then(function (cfg) { _cfg = cfg; }).catch(function () {});
-      Promise.all([p1, p2, p3]).then(function () {
+      _ready = Promise.all([p1, p2, p3]).then(function () {
         var rules = $('cloud-rules-text');
         if (rules) rules.textContent = FIRESTORE_RULES;
         wire();
         render(null);
         if (_cfg) ensureAuth().catch(function (e) { log('init auth failed', e); });
       });
+      if (window.cloudSync) window.cloudSync.ready = _ready; // boot may be deferred (DOMContentLoaded)
+      return _ready;
     }
 
     function boot() {
@@ -25131,7 +25224,15 @@ document.addEventListener('DOMContentLoaded', function () {
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
     else boot();
 
-    window.cloudSync = { save: saveNow, restore: restoreFromCloud, signIn: signIn, version: 1 };
+    function getState() {
+      return {
+        configured: !!_cfg,
+        user: (_user && { email: _user.email || '', uid: _user.uid }) || null,
+        ready: !!_ready
+      };
+    }
+
+    window.cloudSync = { save: saveNow, restore: restoreFromCloud, signIn: signIn, ready: _ready, getState: getState, version: 1 };
   })();
   </script>
 

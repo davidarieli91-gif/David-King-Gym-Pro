@@ -210,7 +210,11 @@
   "confirmPassword": "אימות סיסמה",
   "passwordsDontMatch": "הסיסמאות אינן תואמות",
   "welcome": "ברוך שובך",
-  "firstRunHint": "הגדר סיסמת מאמן כדי להגן על נתוני המתאמנים."
+  "firstRunHint": "הגדר סיסמת מאמן כדי להגן על נתוני המתאמנים.",
+  "or": "או",
+  "googleSignIn": "התחברות עם Google (חשבון מקוון)",
+  "googleSigningIn": "מתחבר עם Google…",
+  "googleNotConfigured": "הענן עוד לא מוגדר במכשיר זה: הגדרות → חשבון מקוון → התחברות (פעם אחת)."
  },
  "profile": {
   "moveHint": "מצב הזזה: הקש על פאנל כדי למקם לפניו",
