@@ -5091,10 +5091,10 @@
     //      + PG "General" subgroups removed + technique fields added
     // v4 = new folder_path structure (no "General" subgroup, no equipment level)
     // v3 = original 1265-exercise seed
-    const v5Flag = await db.get('settings', 'seeded_exercise_base_v45');
+    const v5Flag = await db.get('settings', 'seeded_exercise_base_v46');
     if (!v5Flag) {
       force = true;
-      console.info('[seed] v45 flag missing — forcing re-seed of exercise_base (GI instructions TM continued 3)');
+      console.info('[seed] v46 flag missing — forcing re-seed of exercise_base (GI instructions TM continued 3)');
     }
     const current = await db.count('exercise_base');
     if (current > 0 && !force) {
@@ -5108,7 +5108,7 @@
       return 0;
     }
     await db.bulkPut('exercise_base', exercises);
-    await db.put('settings', { key: 'seeded_exercise_base_v45', value: true });
+    await db.put('settings', { key: 'seeded_exercise_base_v46', value: true });
     console.info(`[seed] injected ${exercises.length} exercises into exercise_base`);
     return exercises.length;
   }
