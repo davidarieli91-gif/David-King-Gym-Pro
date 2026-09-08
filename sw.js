@@ -1,6 +1,6 @@
 // Service Worker - David King Gym PWA
-// v31: redirect-only OAuth (popup removed) + error surfacing in status line
-const CACHE_NAME = 'dk-gym-v31';
+// v32: Firebase compat SDK 11.8.1 — third-party-cookie-proof redirect OAuth
+const CACHE_NAME = 'dk-gym-v32';
 const APP_SHELL = [
   './',
   './index.html',
