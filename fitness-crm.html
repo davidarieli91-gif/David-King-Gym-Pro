@@ -21558,24 +21558,43 @@ async function boot() {
 
       // ---- Route based on auth state ----
       const hasPwd = await auth.isPasswordSet();
-      if (hasPwd) {
-        // Returning user → enter password
-        document.getElementById('login-create').classList.add('hidden');
-        document.getElementById('login-enter').classList.remove('hidden');
-        router.show('login');
-        setTimeout(() => {
-          const pwdEl = document.getElementById('login-pwd');
-          if (pwdEl) pwdEl.focus();
-        }, 200);
-      } else {
-        // First run → create password
-        document.getElementById('login-create').classList.remove('hidden');
-        document.getElementById('login-enter').classList.add('hidden');
-        router.show('login');
-        setTimeout(() => {
-          const pwdEl = document.getElementById('login-pwd-create');
-          if (pwdEl) pwdEl.focus();
-        }, 200);
+      if (!auth.isUnlocked()) {
+        // Passwordless device with an active cloud session (return from Google
+        // sign-in or after a silent cloud-restore reload) → straight inside.
+        try {
+          const cs = (!hasPwd && window.cloudSync && window.cloudSync.getState)
+            ? window.cloudSync.getState() : null;
+          if (cs && cs.user) {
+            auth.unlock();
+            document.getElementById('lock-btn').classList.remove('hidden');
+            router.show('dashboard');
+            if (screens.liveWorkout && screens.liveWorkout.checkDraft) {
+              setTimeout(() => screens.liveWorkout.checkDraft(), 500);
+            }
+            console.info('[boot] cloud session restored (no local password)');
+          }
+        } catch (e) {}
+      }
+      if (!auth.isUnlocked()) {
+        if (hasPwd) {
+          // Returning user → enter password
+          document.getElementById('login-create').classList.add('hidden');
+          document.getElementById('login-enter').classList.remove('hidden');
+          router.show('login');
+          setTimeout(() => {
+            const pwdEl = document.getElementById('login-pwd');
+            if (pwdEl) pwdEl.focus();
+          }, 200);
+        } else {
+          // First run → create password
+          document.getElementById('login-create').classList.remove('hidden');
+          document.getElementById('login-enter').classList.add('hidden');
+          router.show('login');
+          setTimeout(() => {
+            const pwdEl = document.getElementById('login-pwd-create');
+            if (pwdEl) pwdEl.focus();
+          }, 200);
+        }
       }
 
       console.info(`[boot] ready · v${APP_VERSION} · ${db.NAME} v${db.VERSION} · ${lang}/${theme} · auth:${hasPwd ? 'set' : 'first-run'}`);
@@ -21708,9 +21727,19 @@ async function boot() {
           setTimeout(() => screens.liveWorkout.checkDraft(), 500);
         }
       };
-      const tryFlagUnlock = () => {
+      // Unlock decision for a signed-in cloud user:
+      //  - explicit Google sign-in on this page (dk_cloud_login flag) → unlock;
+      //  - device WITHOUT a local password (cloud-first profile) → auto-unlock,
+      //    so redirect returns and silent cloud-restore reloads land inside the
+      //    app instead of back on the start screen. Password-protected devices
+      //    are NOT affected: the local password remains the default key.
+      const maybeCloudUnlock = async () => {
+        if (auth.isUnlocked()) return;
         try {
-          if (sessionStorage.getItem('dk_cloud_login') !== '1' || auth.isUnlocked()) return;
+          let allow = false;
+          try { allow = sessionStorage.getItem('dk_cloud_login') === '1'; } catch (e) {}
+          if (!allow) allow = !(await auth.isPasswordSet());
+          if (!allow) return;
           if (window.cloudSync && window.cloudSync.getState) {
             const s = window.cloudSync.getState();
             if (s && s.user) cloudUnlock();
@@ -21718,9 +21747,12 @@ async function boot() {
         } catch (e) {}
       };
       // Return from signInWithRedirect: cloud:auth may fire before or after wiring
-      document.addEventListener('cloud:auth', tryFlagUnlock);
+      document.addEventListener('cloud:auth', maybeCloudUnlock);
       if (window.cloudSync && window.cloudSync.ready) {
-        window.cloudSync.ready.then(() => setTimeout(tryFlagUnlock, 400)).catch(() => {});
+        window.cloudSync.ready.then(() => {
+          setTimeout(maybeCloudUnlock, 400);
+          setTimeout(maybeCloudUnlock, 2500); // late Firebase init on slow networks
+        }).catch(() => {});
       }
       gBtn.addEventListener('click', async () => {
         if (gHint) gHint.classList.add('hidden');
@@ -21742,7 +21774,7 @@ async function boot() {
           await window.cloudSync.signIn(); // popup; falls back to redirect internally
           const st2 = window.cloudSync.getState();
           if (st2 && st2.user) { cloudUnlock(); return; }
-          setTimeout(tryFlagUnlock, 600); // popup path: wait for auth state propagation
+          setTimeout(maybeCloudUnlock, 600); // popup path: wait for auth state propagation
         } catch (e) {
           try { sessionStorage.removeItem('dk_cloud_login'); } catch (e2) {}
         } finally {

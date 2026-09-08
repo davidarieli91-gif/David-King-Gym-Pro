@@ -1,6 +1,6 @@
 // Service Worker - David King Gym PWA
-// v28: muscle-icons added (anatomical group/subgroup thumbnails)
-const CACHE_NAME = 'dk-gym-v28';
+// v29: cloud unlock fix (Google session restore lands inside the app)
+const CACHE_NAME = 'dk-gym-v29';
 const APP_SHELL = [
   './',
   './index.html',
