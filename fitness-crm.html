@@ -14079,7 +14079,6 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         toast(t('workouts.emptyLive'), 'warning', 3000);
         return;
       }
-      if (!confirm(t('workouts.finishConfirm'))) return;
 
       const duration = Math.floor((Date.now() - _workout.started_at) / 1000);
       const volume = _workout.exercises.reduce((s, ex) =>
@@ -14105,28 +14104,136 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         }))
       };
 
-      await db.put('workout_history', record);
+      // Previous workout of the same client (for the comparison section).
+      // Computed BEFORE saving so the current record is excluded.
+      let prev = null;
+      try {
+        const all = await db.all('workout_history');
+        const cands = (all || []).filter(h => h.client_id === record.client_id && h.date < record.date);
+        cands.sort((a, b) => b.date - a.date);
+        prev = cands[0] || null;
+      } catch (_) {}
+      openLiveReportModal(record, prev);
+    }
 
-      // Update client's last_active
-      const client = await db.get('clients', _workout.client_id);
-      if (client) {
-        client.last_active = Date.now();
-        await db.put('clients', client);
+    function liveDoneVolume(exSets) {
+      let v = 0, r = 0, d = 0;
+      (exSets || []).forEach(s => { if (s.done) { v += (Number(s.weight) || 0) * (Number(s.reps) || 0); r += (Number(s.reps) || 0); d++; } });
+      return { v: Math.round(v), r, d };
+    }
+
+    function liveFmtDay(ts) {
+      const dt = new Date(ts);
+      const p = n => String(n).padStart(2, '0');
+      return `${p(dt.getDate())}.${p(dt.getMonth() + 1)}.${dt.getFullYear()}`;
+    }
+
+    function closeLiveReportModal() {
+      const ov = document.getElementById('live-report-modal');
+      if (ov) ov.remove();
+    }
+
+    /** Post-workout report (same as client portal): tiles, per-exercise volume
+     *  bars, comparison vs previous workout. Save persists, Continue resumes. */
+    function openLiveReportModal(record, prev) {
+      closeLiveReportModal();
+      const total = record.exercises.reduce((s, ex) => s + (ex.sets || []).length, 0);
+      const done = record.exercises.reduce((s, ex) => s + liveDoneVolume(ex.sets).d, 0);
+      const reps = record.exercises.reduce((s, ex) => s + liveDoneVolume(ex.sets).r, 0);
+      const vol = record.exercises.reduce((s, ex) => s + liveDoneVolume(ex.sets).v, 0);
+      const mins = Math.round(record.duration / 60);
+      const partial = done < total;
+      const maxV = Math.max(1, ...record.exercises.map(ex => liveDoneVolume(ex.sets).v));
+      const prevByKey = {};
+      (prev ? prev.exercises || [] : []).forEach(ex => { prevByKey[ex.exercise_id || ex.key] = liveDoneVolume(ex.sets).v; });
+      const tile = (v, l) => `<div class="bg-surface-2 border border-border rounded-2xl py-3 px-1 text-center"><div class="font-mono font-extrabold text-lg">${esc(String(v))}</div><div class="text-[10px] text-muted mt-0.5">${esc(l)}</div></div>`;
+      const rows = record.exercises.map(ex => {
+        const ev = liveDoneVolume(ex.sets).v;
+        const pct = Math.round(ev / maxV * 100);
+        return `<div class="flex items-center gap-2 py-1">
+          <span class="text-[11px] truncate flex-1 min-w-0">${esc(ex.name)}</span>
+          <span class="w-2 h-2 rounded-full shrink-0" style="background:#f43f5e"></span>
+          <span class="flex-1 h-1.5 rounded-full bg-surface-2 overflow-hidden"><span class="block h-full rounded-full" style="width:${pct}%;background:linear-gradient(90deg,#f43f5e,#fb7185)"></span></span>
+          <span class="font-mono text-[11px] font-bold w-10 text-end shrink-0">${ev}</span>
+        </div>`;
+      }).join('');
+      let cmp = '';
+      if (!prev) {
+        cmp = `<div class="text-[12px] leading-relaxed">🌱 ${esc(t('report.baseline'))}</div>`;
+      } else {
+        cmp = record.exercises.map(ex => {
+          const ev = liveDoneVolume(ex.sets).v;
+          const pv = prevByKey[ex.exercise_id];
+          let chip;
+          if (pv == null) chip = `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-accent/15 text-accent shrink-0">${esc(t('report.newBadge'))}</span>`;
+          else if (ev > pv) chip = `<span class="font-mono text-[11px] font-bold text-success shrink-0">▲ +${ev - pv}</span>`;
+          else if (ev < pv) chip = `<span class="font-mono text-[11px] font-bold text-danger shrink-0">▼ ${ev - pv}</span>`;
+          else chip = `<span class="font-mono text-[11px] font-bold text-muted shrink-0">=</span>`;
+          return `<div class="flex items-center gap-2 py-1">
+            <span class="text-[11px] truncate flex-1 min-w-0">${esc(ex.name)}</span>${chip}
+          </div>`;
+        }).join('');
       }
-
-      stopDurationTimer();
-      restTimer.stop();
-      _workout = null;
-      await db.put('settings', { key: 'workout_draft', value: null });
-      // Force-clear ALL possible stuck overlays
-      document.querySelectorAll('.fixed.inset-0:not(.hidden)').forEach(el => {
-        if (el.id !== 'viewer-modal') el.classList.add('hidden');
+      const ov = document.createElement('div');
+      ov.id = 'live-report-modal';
+      ov.setAttribute('role', 'dialog');
+      ov.setAttribute('aria-modal', 'true');
+      ov.className = 'fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4';
+      ov.style.zIndex = '130';
+      ov.innerHTML = `<div class="bg-surface border border-border w-full sm:max-w-md max-h-[92vh] overflow-y-auto rounded-t-3xl sm:rounded-2xl p-4">
+        <div class="text-center text-2xl mb-1">🏁</div>
+        <h3 class="font-display font-extrabold text-lg text-center">📊 ${esc(t('report.title'))}</h3>
+        ${partial ? `<div class="text-center mt-1.5"><span class="inline-block text-[11px] font-bold px-3 py-1 rounded-full bg-warning/15 text-warning">${esc(t('report.partial'))}</span></div>` : ''}
+        <div class="text-center text-[11px] text-muted mt-1">${esc(record.name || '')} · ${esc(liveFmtDay(record.date))}</div>
+        <div class="grid grid-cols-4 gap-2 mt-3">
+          ${tile(done + '/' + total, t('report.sets'))}
+          ${tile(reps, t('report.reps'))}
+          ${tile(Number(vol).toLocaleString('ru-RU'), t('report.volume'))}
+          ${tile(mins, t('report.minutes'))}
+        </div>
+        <div class="mt-3 bg-surface-2/50 border border-border rounded-2xl p-3">
+          <div class="text-[12px] font-extrabold mb-1">${esc(t('report.perExercise'))}</div>${rows}
+        </div>
+        <div class="mt-3 bg-surface-2/50 border border-border rounded-2xl p-3">
+          <div class="text-[12px] font-extrabold mb-1">${esc(t('report.compare'))}</div>${cmp}
+        </div>
+        <button id="live-report-save" class="w-full mt-3 bg-success hover:bg-success/90 text-white text-sm font-extrabold py-3 rounded-2xl transition">💾 ${esc(t('report.save'))}</button>
+        <button id="live-report-continue" class="w-full mt-2 bg-surface-2 hover:bg-border/40 border border-border text-sm font-semibold py-2.5 rounded-2xl transition">← ${esc(t('report.continue'))}</button>
+        <button id="live-report-wa" class="w-full mt-2 text-[11px] font-semibold text-success py-1 transition">💬 ${esc(t('report.whatsapp'))}</button>
+      </div>`;
+      document.body.appendChild(ov);
+      ov.addEventListener('click', (e) => { if (e.target === ov) closeLiveReportModal(); });
+      document.getElementById('live-report-save').addEventListener('click', async () => {
+        await db.put('workout_history', record);
+        const client = await db.get('clients', record.client_id);
+        if (client) {
+          client.last_active = Date.now();
+          await db.put('clients', client);
+        }
+        stopDurationTimer();
+        restTimer.stop();
+        _workout = null;
+        await db.put('settings', { key: 'workout_draft', value: null });
+        closeLiveReportModal();
+        // Force-clear ALL possible stuck overlays
+        document.querySelectorAll('.fixed.inset-0:not(.hidden)').forEach(el => {
+          if (el.id !== 'viewer-modal' && el.id !== 'live-report-modal') el.classList.add('hidden');
+        });
+        toast(t('workouts.workoutLogged'), 'success', 3000);
+        router.show('workouts');
+        // Refresh history + analytics
+        if (screens.history) screens.history.refresh();
+        if (screens.dashboard) screens.dashboard.refresh();
       });
-      toast(t('workouts.workoutLogged'), 'success', 3000);
-      router.show('workouts');
-      // Refresh history + analytics
-      if (screens.history) screens.history.refresh();
-      if (screens.dashboard) screens.dashboard.refresh();
+      document.getElementById('live-report-continue').addEventListener('click', closeLiveReportModal);
+      document.getElementById('live-report-wa').addEventListener('click', () => {
+        const lines = [`🏋️ ${record.name || ''}`, `⏱ ${Math.floor(record.duration / 60)}:${String(record.duration % 60).padStart(2, '0')} · 🏋️ ${Number(vol).toLocaleString('ru-RU')} · ✔ ${done}/${total}`];
+        record.exercises.forEach(ex => {
+          const parts = (ex.sets || []).map(s => `${s.weight != null ? s.weight : '—'}×${s.reps != null ? s.reps : '—'}${s.done ? '✓' : ''}`);
+          if (parts.length) lines.push(`• ${ex.name}: ${parts.join(', ')}`);
+        });
+        window.open('https://wa.me/?text=' + encodeURIComponent(lines.join('\n')), '_blank');
+      });
     }
 
     /** Cancel workout without saving. */

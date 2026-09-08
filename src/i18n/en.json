@@ -212,13 +212,13 @@
   "welcome": "Welcome back",
   "firstRunHint": "Set a trainer password to secure your client data."
  },
-  "profile": {
-   "moveHint": "Move mode: tap a panel to place the held panel before it",
-   "moveHere": "Move here",
-   "moveCancel": "Cancel",
-   "moved": "Panel moved",
-   "moveCancelled": "Move cancelled"
-  },
+ "profile": {
+  "moveHint": "Move mode: tap a panel to place the held panel before it",
+  "moveHere": "Move here",
+  "moveCancel": "Cancel",
+  "moved": "Panel moved",
+  "moveCancelled": "Move cancelled"
+ },
  "clients": {
   "title": "Clients",
   "empty": "No clients yet. Tap “Add Client” to create the first profile.",
@@ -1205,5 +1205,20 @@
   "sendWhatsApp": "Send to client via WhatsApp",
   "openTab": "Open portal in new tab",
   "modalTitle": "Client Portal"
+ },
+ "report": {
+  "title": "Workout Report",
+  "partial": "Partial workout",
+  "sets": "Sets",
+  "reps": "Reps",
+  "volume": "Volume kg",
+  "minutes": "min",
+  "perExercise": "Volume per exercise",
+  "compare": "vs previous workout",
+  "baseline": "First recorded workout — it becomes your progress baseline!",
+  "save": "Save",
+  "continue": "Continue workout",
+  "whatsapp": "Share via WhatsApp",
+  "newBadge": "new"
  }
 }
