@@ -17,6 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
+<meta name="dk-build" content="c9" />
   <meta name="description" content="Fitness & Nutrition CRM for personal trainers — clients, workouts, nutrition, analytics." />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icon-512.png" />
@@ -2169,7 +2170,7 @@
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c8</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c9</p>
             </div>
           </div>
 
@@ -25171,16 +25172,23 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!getBackupApi()) return { ok: false, error: 'backup_api_missing' };
       if (_busy) { _savingQueued = true; return { ok: false, error: 'busy' }; }
       _busy = true;
-      try {
+      /* _saveStep tracks WHERE the upload is right now; the watchdog below
+       * reports it to the user if the cloud stalls (c9: no silent death). */
+      var _saveStep = 'start';
+      var timedOut = false, wTimer = null;
+      var work = (async function () {
+        var api = getBackupApi();
         var uid = _user.uid;
         var uRef = _fs.collection('users').doc(uid);
         var storesCol = uRef.collection('stores');
+        _saveStep = 'read-meta';
         var snap = await uRef.get();
         var prev = snap.exists ? snap.data() : {};
         var prevHashes = prev.store_hashes || {};
         var prevParts = prev.store_parts || {};
 
-        var ser = await getBackupApi().serialize();
+        _saveStep = 'read-local-db';
+        var ser = await api.serialize();
         var data = maskSecrets(ser.data);
         var names = db.storeNames();
         var gen = Date.now();
@@ -25194,6 +25202,7 @@ document.addEventListener('DOMContentLoaded', function () {
           var recs = data[name] || [];
           var s = JSON.stringify(recs);
           total += s.length;
+          _saveStep = 'hash:' + name;
           var h = await sha256Hex(s);
           hashes[name] = h;
           var pInfo = prevParts[name] || {};
@@ -25215,9 +25224,11 @@ document.addEventListener('DOMContentLoaded', function () {
           email: _user.email || '', lang: ser.meta.lang || ''
         };
         batch.set(uRef, meta, { merge: true });
+        _saveStep = 'commit:' + batches.length;
         await Promise.all(batches.map(function (b) { return b.commit(); }));
 
         // best-effort cleanup of superseded generation parts
+        _saveStep = 'cleanup';
         for (var c = 0; c < changed.length; c++) {
           var nm = changed[c], oldP = prevParts[nm];
           if (oldP && oldP.gen && oldP.gen !== gen) {
@@ -25235,10 +25246,25 @@ document.addEventListener('DOMContentLoaded', function () {
         _lastMeta = meta; _lastSync = gen; _dirty = {};
         try { await db.put('settings', { key: LASTSYNC_KEY, value: gen }); } catch (e) {}
         return { ok: true, meta: meta, changed: changed.length };
+      })();
+      /* Watchdog: the cloud MUST answer within 30 s. If it doesn't, surface
+       * the exact step instead of dying silently (the original keeps running
+       * in the background — its outcome is logged when it settles). */
+      var watchdog = new Promise(function (res) {
+        wTimer = setTimeout(function () { timedOut = true; res({ ok: false, error: 'timeout', step: _saveStep }); }, 30000);
+      });
+      try {
+        return await Promise.race([work, watchdog]);
       } catch (e) {
         errMsg(e);
         return { ok: false, error: (e && (e.code || e.message)) || 'error' };
       } finally {
+        if (wTimer !== null) clearTimeout(wTimer);
+        if (timedOut) {
+          log('save watchdog fired at step:', _saveStep);
+          work.then(function () { log('save finished late (ok)'); })
+              .catch(function (e2) { log('save failed late:', e2); });
+        }
         _busy = false;
         if (_savingQueued) {
           _savingQueued = false;
@@ -25475,30 +25501,48 @@ document.addEventListener('DOMContentLoaded', function () {
 
       var bSave = $('cloud-btn-save');
       if (bSave) bSave.addEventListener('click', async function () {
-        toastMsg(T('settings.cloudAccSaving') || 'Saving to cloud…', 'info', 8000);
-        bSave.disabled = true;
-        var r = await saveNow();
-        bSave.disabled = false;
-        if (r.ok) {
-          toastMsg((T('settings.cloudAccSaved') || '✓ Saved to cloud: {n} records, {kb} KB')
-            .replace('{n}', r.meta.total_records).replace('{kb}', Math.round(r.meta.total_bytes / 1024)), 'success', 5000);
-          renderStatus();
-        } else if (r.error && r.error !== 'busy') {
-          // never die silently again: surface the exact reason
-          toastMsg((T('settings.cloudAccErrGeneric') || 'Cloud error: {e}').replace('{e}', r.error), 'danger', 7000);
+        try {
+          toastMsg(T('settings.cloudAccSaving') || 'Saving to cloud…', 'info', 8000);
+          bSave.disabled = true;
+          var r = await saveNow();
+          bSave.disabled = false;
+          if (r.ok) {
+            toastMsg((T('settings.cloudAccSaved') || '✓ Saved to cloud: {n} records, {kb} KB')
+              .replace('{n}', r.meta.total_records).replace('{kb}', Math.round(r.meta.total_bytes / 1024)), 'success', 5000);
+            renderStatus();
+          } else if (r.error === 'busy') {
+            // was silent before c9 — a second click while saving looked like a dead button
+            toastMsg(T('settings.cloudAccBusy') || 'Already saving — please wait a few seconds', 'warning', 5000);
+          } else if (r.error === 'timeout') {
+            toastMsg((T('settings.cloudAccErrTimeout') || 'Cloud is not responding (30 s) — stalled at: {step}')
+              .replace('{step}', r.step || '?'), 'danger', 9000);
+          } else {
+            // never die silently: surface the exact reason
+            toastMsg((T('settings.cloudAccErrGeneric') || 'Cloud error: {e}').replace('{e}', r.error), 'danger', 7000);
+          }
+        } catch (e) {
+          try { bSave.disabled = false; } catch (e2) {}
+          errMsg(e);
         }
       });
 
       var bRestore = $('cloud-btn-restore');
       if (bRestore) bRestore.addEventListener('click', async function () {
-        bRestore.disabled = true;
-        var r = await restoreFromCloud({ silent: false });
-        bRestore.disabled = false;
-        if (r.ok) {
-          toastMsg(T('settings.cloudAccRestored') || '✓ Restored. Reloading…', 'success', 3000);
-          setTimeout(function () { location.reload(); }, 1000);
-        } else if (r.error === 'no_cloud') {
-          toastMsg(T('settings.cloudAccNoCloud') || 'Nothing in the cloud yet', 'warning', 5000);
+        try {
+          bRestore.disabled = true;
+          var r = await restoreFromCloud({ silent: false });
+          bRestore.disabled = false;
+          if (r.ok) {
+            toastMsg(T('settings.cloudAccRestored') || '✓ Restored. Reloading…', 'success', 3000);
+            setTimeout(function () { location.reload(); }, 1000);
+          } else if (r.error === 'no_cloud') {
+            toastMsg(T('settings.cloudAccNoCloud') || 'Nothing in the cloud yet', 'warning', 5000);
+          } else if (r.error && r.error !== 'cancelled') {
+            toastMsg((T('settings.cloudAccErrGeneric') || 'Cloud error: {e}').replace('{e}', r.error), 'danger', 7000);
+          }
+        } catch (e) {
+          try { bRestore.disabled = false; } catch (e2) {}
+          errMsg(e);
         }
       });
 
@@ -25831,6 +25875,82 @@ document.addEventListener('input', function (e) {
       </div>
     </div>
   </div>
+
+<script>
+/* =====================================================================
+   BUILD FRESHNESS CHECK — shipped in c9
+   The app is a cached PWA: a window left open for days keeps running
+   OLD code even though a new build is live on the server. Fetch the
+   live page (network, no-store) and compare its build marker with the
+   running one; if the live build is newer, show a one-tap refresh
+   banner. This kills the whole class of "my fix didn't ship" reports
+   caused by a stale app window.
+   ===================================================================== */
+(function () {
+  var RUNNING = 9; /* numeric part of dk-build c9 */
+  var checkTimer = null, banner = null, checking = false;
+
+  function extractLive(html) {
+    var m = html.match(/name="dk-build"\s+content="c(\d+)"/i);
+    if (!m) m = html.match(/· c(\d+)\s*<\/p>/); /* lock-screen footer fallback */
+    return m ? parseInt(m[1], 10) : 0;
+  }
+
+  function showBanner() {
+    if (banner) return;
+    banner = document.createElement('div');
+    banner.setAttribute('role', 'alert');
+    banner.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);' +
+      'bottom:calc(16px + env(safe-area-inset-bottom));z-index:2147483000;' +
+      'display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;' +
+      'background:#1c1917;border:1px solid rgba(245,158,11,.4);color:#fbbf24;' +
+      'font:600 13px/1.3 system-ui,-apple-system,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.45);' +
+      'max-width:calc(100vw - 24px);flex-wrap:wrap;';
+    var span = document.createElement('span');
+    span.textContent = 'Доступна новая версия приложения · New version available';
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = 'Обновить · Update';
+    btn.style.cssText = 'border:0;border-radius:10px;padding:7px 12px;cursor:pointer;' +
+      'font:700 12px/1 system-ui,-apple-system,sans-serif;background:#f59e0b;color:#1c1917;';
+    btn.addEventListener('click', function () {
+      btn.disabled = true; btn.textContent = '…';
+      try {
+        if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+          navigator.serviceWorker.getRegistrations().then(function (rs) {
+            rs.forEach(function (r) { try { r.update(); } catch (e) {} });
+          }).catch(function () {});
+        }
+      } catch (e) {}
+      setTimeout(function () { location.reload(); }, 700);
+    });
+    banner.appendChild(span); banner.appendChild(btn);
+    document.body.appendChild(banner);
+  }
+
+  function check() {
+    if (document.hidden || checking || banner) return;
+    checking = true;
+    fetch('fitness-crm.html?fresh=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.text() : null; })
+      .then(function (txt) {
+        checking = false;
+        if (!txt) return;
+        var live = extractLive(txt);
+        if (live > RUNNING) { showBanner(); if (checkTimer) clearInterval(checkTimer); }
+      })
+      .catch(function () { checking = false; });
+  }
+
+  function start() {
+    setTimeout(check, 5000); /* let the app settle first */
+    checkTimer = setInterval(check, 15 * 60 * 1000);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) check(); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+})();
+</script>
 
 </body>
 </html>

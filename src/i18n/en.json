@@ -1190,6 +1190,8 @@
   "cloudAccStatusAt": "Last sync: {t}",
   "cloudAccConflict": "Cloud data differs from this device. Choose “Restore from cloud” or “Save to cloud” below.",
   "cloudAccSaving": "Saving to cloud…",
+  "cloudAccBusy": "Already saving — please wait a few seconds",
+  "cloudAccErrTimeout": "Cloud is not responding (30 s) — stalled at: {step}",
   "cloudAccSaved": "✓ Saved to cloud: {n} records, {kb} KB",
   "cloudAccInitial": "First upload of your data to the account (may take a minute)…",
   "cloudAccRestored": "✓ Data restored from cloud. Reloading…",

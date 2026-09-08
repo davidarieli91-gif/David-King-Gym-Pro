@@ -1,6 +1,6 @@
 // Service Worker - David King Gym PWA
-// v35: fix cloud save silently dying (window.backup is not a property — const binding)
-const CACHE_NAME = 'dk-gym-v35';
+// v36: save watchdog + progress steps + build-freshness banner (c9)
+const CACHE_NAME = 'dk-gym-v36';
 const APP_SHELL = [
   './',
   './index.html',
