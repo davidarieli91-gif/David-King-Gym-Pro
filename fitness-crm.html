@@ -21787,7 +21787,14 @@ async function boot() {
           relayOutstanding = !!(rts && (Date.now() - rts < 180000));
         } catch (e) {}
         if (relayOutstanding && wdChecks === 20) setStatus(t('auth.googleRelayOpened'));
-        const patience = relayOutstanding ? 180 : 20;
+        // a visible Google dialog/button (One Tap or the official GIS button)
+        // means the user may still be completing the sign-in — be patient
+        let gsiPending = false;
+        try {
+          const gel = document.getElementById('login-gsi-host');
+          gsiPending = !!(gel && gel.offsetParent);
+        } catch (e) {}
+        const patience = (relayOutstanding || gsiPending) ? 180 : 20;
         if (++wdChecks < patience) { setTimeout(watchdog, 1000); return; }
         if (flag) {
           // technical diagnostic suffix — lets a screenshot pinpoint the failure
