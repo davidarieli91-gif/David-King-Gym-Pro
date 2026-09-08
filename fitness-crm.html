@@ -3496,6 +3496,66 @@
               </div>
             </div>
 
+            <!-- Cloud account & online sync (collapsible, additive to local mode) -->
+            <div class="bg-surface border border-border rounded-2xl shadow-card mb-4 settings-panel collapsed">
+              <div class="settings-panel-header p-5 pb-3">
+                <h3 class="font-display font-bold text-sm text-muted uppercase tracking-wider" data-i18n="settings.cloudAccTitle">Online account &amp; cloud sync (Google)</h3>
+                <svg class="w-4 h-4 text-muted settings-panel-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+              </div>
+              <div class="settings-panel-body p-5 pt-0">
+                <p class="text-xs text-muted mb-3 leading-relaxed" data-i18n="settings.cloudAccDesc">Optional Google sign-in: automatic backup of ALL data and sync between devices. This is an addition — the usual local mode keeps working exactly as before, and data always stays on this device too.</p>
+
+                <!-- Step 1: Firebase setup (shown until a config is stored) -->
+                <div id="cloud-setup" class="space-y-2">
+                  <p class="text-xs text-muted" data-i18n="settings.cloudAccSetupHint">One-time setup (3 min): create a free Firebase project, enable Google sign-in and paste its config here.</p>
+                  <textarea id="cloud-config-input" rows="4" spellcheck="false" class="w-full bg-surface-2 border border-border rounded-lg px-3 py-2 text-xs font-mono" data-i18n-ph="settings.cloudAccConfigPh" placeholder="const firebaseConfig = { apiKey: '...', authDomain: '...', projectId: '...', appId: '...' };"></textarea>
+                  <div class="flex flex-wrap gap-2">
+                    <button id="cloud-btn-connect" class="bg-primary/15 hover:bg-primary/25 text-primary-2 border border-primary/30 text-sm font-semibold px-3.5 py-2 rounded-lg transition inline-flex items-center gap-1.5" data-i18n="settings.cloudAccConnect">Connect</button>
+                  </div>
+                  <details class="pt-1">
+                    <summary class="text-xs font-semibold text-primary-2 cursor-pointer select-none" data-i18n="settings.cloudAccGuide">How to set up (step by step)</summary>
+                    <div class="text-[11px] text-muted mt-2 leading-relaxed whitespace-pre-line" data-i18n="settings.cloudAccGuideText">1. Open console.firebase.google.com → Add project (free).</div>
+                    <div class="mt-2 bg-surface-2 border border-border rounded-lg p-2 font-mono text-[10px] whitespace-pre-wrap text-muted" id="cloud-rules-text"></div>
+                    <button id="cloud-btn-copy-rules" class="mt-1 text-[11px] underline text-primary-2 hover:opacity-80" data-i18n="settings.cloudAccCopyRules">Copy Firestore rules</button>
+                  </details>
+                </div>
+
+                <!-- Signed out: Google button -->
+                <div id="cloud-signedout" class="hidden">
+                  <button id="cloud-btn-google" class="inline-flex items-center gap-2.5 bg-white text-gray-800 border border-border rounded-lg px-4 py-2.5 text-sm font-semibold hover:bg-gray-100 active:scale-[0.98] transition shadow-sm">
+                    <svg class="w-4 h-4" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                    <span data-i18n="settings.cloudAccSignIn">Sign in with Google</span>
+                  </button>
+                  <button id="cloud-btn-resetcfg" class="block mt-2 text-[11px] text-muted underline hover:text-text transition" data-i18n="settings.cloudAccResetCfg">Reset Firebase config</button>
+                </div>
+
+                <!-- Signed in: account + sync controls -->
+                <div id="cloud-signedin" class="hidden space-y-3">
+                  <div class="flex items-center flex-wrap gap-x-2 gap-y-1 text-sm">
+                    <span class="text-muted" data-i18n="settings.cloudAccSignedInAs">Signed in as</span>
+                    <span id="cloud-user-email" class="font-semibold break-all"></span>
+                  </div>
+                  <div id="cloud-status" class="text-xs text-muted"></div>
+                  <div id="cloud-conflict" class="hidden text-xs text-warning bg-warning/10 border border-warning/30 rounded-lg p-2.5 leading-relaxed" data-i18n="settings.cloudAccConflict">Cloud data differs from this device. Choose "Restore from cloud" or "Save to cloud" below.</div>
+                  <label class="flex items-center gap-2 text-sm cursor-pointer select-none">
+                    <input type="checkbox" id="cloud-autosync" class="w-4 h-4 accent-primary" />
+                    <span data-i18n="settings.cloudAccAuto">Auto-sync changes</span>
+                  </label>
+                  <div class="flex flex-wrap gap-2">
+                    <button id="cloud-btn-save" class="bg-primary/15 hover:bg-primary/25 text-primary-2 border border-primary/30 text-sm font-medium px-3.5 py-2 rounded-lg transition inline-flex items-center gap-1.5">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                      <span data-i18n="settings.cloudAccSaveNow">Save to cloud</span>
+                    </button>
+                    <button id="cloud-btn-restore" class="bg-surface-2 hover:bg-border/40 border border-border text-sm font-medium px-3.5 py-2 rounded-lg transition inline-flex items-center gap-1.5">
+                      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                      <span data-i18n="settings.cloudAccRestore">Restore from cloud</span>
+                    </button>
+                    <button id="cloud-btn-signout" class="bg-danger/10 hover:bg-danger/20 border border-danger/30 text-danger text-sm font-medium px-3.5 py-2 rounded-lg transition inline-flex items-center gap-1.5" data-i18n="settings.cloudAccSignOut">Sign out</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- AI Configuration (collapsible) -->
             
 
@@ -24509,6 +24569,569 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       }
     };
+  })();
+  </script>
+
+  <!-- ============================================================
+       CLOUD ACCOUNT & SYNC — Google sign-in (Firebase) + Firestore.
+       ADDITIVE module: with no stored Firebase config the app works
+       exactly as before (100% local). When configured and signed in:
+         • full IndexedDB dump is mirrored to Firestore users/{uid}
+         • per-store SHA-256 hashing → only changed stores re-upload
+         • large stores split into generation-tagged part documents
+           (each ~280K chars, safely below the 1MiB Firestore doc limit)
+         • auto-sync (debounced 20s) + manual save/restore buttons
+         • boot check: cloud newer → auto-restore; conflict → banner
+       Secrets (AI api key) are stripped before upload.
+       ============================================================ -->
+  <script>
+  (function () {
+    'use strict';
+
+    var FB_VER = '10.12.5';
+    var CHUNK_CHARS = 280000;
+    var CFG_KEY = 'cloud_firebase_config';
+    var AUTOSYNC_KEY = 'cloud_autosync';
+    var LASTSYNC_KEY = 'cloud_last_sync';
+    var DEBOUNCE_MS = 20000;
+    var USER_STORES = ['clients', 'client_programs', 'workout_history', 'nutrition_plans',
+                       'nutrition_history', 'workout_templates', 'nutrition_templates'];
+    var FIRESTORE_RULES = "rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /users/{uid}/{document=**} {\n      allow read, write: if request.auth != null && request.auth.uid == uid;\n    }\n  }\n}";
+
+    var _fbLoading = null, _auth = null, _fs = null, _user = null, _cfg = null;
+    var _dirty = {}, _dirtyTimer = null, _busy = false, _savingQueued = false;
+    var _autosync = true, _lastSync = 0, _lastMeta = null, _syncedFor = null;
+
+    function $(id) { return document.getElementById(id); }
+    function T(key, vars) {
+      try { if (typeof t === 'function') return t(key, vars); } catch (e) {}
+      return '';
+    }
+    function toastMsg(m, k, ms) {
+      if (typeof toast === 'function') { try { toast(m, k || 'info', ms || 4000); } catch (e) {} }
+    }
+    function log() {
+      var a = ['[cloud]'];
+      for (var i = 0; i < arguments.length; i++) a.push(arguments[i]);
+      try { console.log.apply(console, a); } catch (e) {}
+    }
+
+    function errMsg(e) {
+      var c = String((e && (e.code || e.message)) || e);
+      var msg;
+      if (c.indexOf('permission-denied') >= 0) msg = T('settings.cloudAccErrPerm') || c;
+      else if (c.indexOf('unauthorized-domain') >= 0) msg = T('settings.cloudAccErrDomain') || c;
+      else if (c.indexOf('load_failed') === 0 || c.indexOf('network') >= 0) msg = T('settings.cloudAccErrNetwork') || c;
+      else msg = (T('settings.cloudAccErrGeneric') || 'Cloud error: {e}').replace('{e}', c);
+      log('error:', e);
+      toastMsg(msg, 'danger', 7000);
+    }
+
+    /* ---------- hashing ---------- */
+    function fallbackHash(s) {
+      var h1 = 0x811c9dc5, h2 = 0x01000193;
+      for (var i = 0; i < s.length; i++) {
+        h1 = ((h1 ^ s.charCodeAt(i)) * 16777619) >>> 0;
+        h2 = ((h2 + s.charCodeAt(i) * (i % 7 + 1)) * 2654435761) >>> 0;
+      }
+      return 'fb' + h1.toString(16) + h2.toString(16);
+    }
+    function sha256Hex(str) {
+      try {
+        if (!(window.crypto && crypto.subtle)) return Promise.resolve(fallbackHash(str));
+        return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)).then(function (buf) {
+          var a = new Uint8Array(buf), h = '';
+          for (var i = 0; i < a.length; i++) h += ('0' + a[i].toString(16)).slice(-2);
+          return h;
+        });
+      } catch (e) { return Promise.resolve(fallbackHash(str)); }
+    }
+
+    /* Strip plaintext AI api key before anything leaves the device. */
+    function maskSecrets(data) {
+      var s = data && data.settings;
+      if (Array.isArray(s)) {
+        data.settings = s.map(function (r) {
+          return (r && r.key === 'ai_config' && r.value && typeof r.value === 'object')
+            ? Object.assign({}, r, { value: Object.assign({}, r.value, { apiKey: '' }) }) : r;
+        });
+      }
+      return data;
+    }
+
+    /* ---------- Firebase loader (lazy) ---------- */
+    function loadScript(src) {
+      return new Promise(function (res, rej) {
+        var s = document.createElement('script');
+        s.src = src; s.async = true;
+        s.onload = function () { res(); };
+        s.onerror = function () { rej(new Error('load_failed:' + src)); };
+        document.head.appendChild(s);
+      });
+    }
+    function loadFirebase() {
+      if (window.firebase && firebase.firestore) return Promise.resolve();
+      if (_fbLoading) return _fbLoading;
+      _fbLoading = loadScript('https://www.gstatic.com/firebasejs/' + FB_VER + '/firebase-app-compat.js')
+        .then(function () { return loadScript('https://www.gstatic.com/firebasejs/' + FB_VER + '/firebase-auth-compat.js'); })
+        .then(function () { return loadScript('https://www.gstatic.com/firebasejs/' + FB_VER + '/firebase-firestore-compat.js'); })
+        .catch(function (e) { _fbLoading = null; throw e; });
+      return _fbLoading;
+    }
+
+    /* ---------- config ---------- */
+    function getConfig() {
+      return db.get('settings', CFG_KEY)
+        .then(function (row) { return (row && row.value) || null; })
+        .catch(function () { return null; });
+    }
+    function parseConfig(text) {
+      var m = String(text || '').match(/\{[\s\S]*\}/);
+      if (!m) throw new Error('no {...} block found');
+      // The Firebase console snippet is a JS object literal (unquoted keys,
+      // possible single quotes / trailing commas) — normalize to JSON first.
+      var body = m[0]
+        .replace(/\/\/.*$/gm, '')                  // line comments
+        .replace(/\/\*[\s\S]*?\*\//g, '')          // block comments
+        .replace(/,(\s*[}\]])/g, '$1')             // trailing commas
+        .replace(/([{,]\s*)([A-Za-z_$][\w$]*)(\s*:)/g, '$1"$2"$3') // quote keys
+        .replace(/'/g, '"');                       // single → double quotes
+      var cfg = JSON.parse(body);
+      ['apiKey', 'projectId', 'appId'].forEach(function (k) {
+        if (!cfg[k]) throw new Error('missing "' + k + '"');
+      });
+      if (!cfg.authDomain) cfg.authDomain = cfg.projectId + '.firebaseapp.com';
+      return cfg;
+    }
+
+    /* ---------- auth ---------- */
+    function ensureAuth() {
+      if (_auth) return Promise.resolve();
+      return getConfig().then(function (cfg) {
+        if (!cfg) throw new Error('not_configured');
+        _cfg = cfg;
+        return loadFirebase();
+      }).then(function () {
+        if (!firebase.apps.length) firebase.initializeApp(_cfg);
+        _auth = firebase.auth();
+        _fs = firebase.firestore();
+        try {
+          _auth.getRedirectResult().catch(function (e) {
+            if (e && e.code && e.code !== 'auth/no-auth-event') errMsg(e);
+          });
+        } catch (e) {}
+        _auth.onAuthStateChanged(function (u) {
+          _user = u;
+          render(u);
+          if (u && _syncedFor !== u.uid) { _syncedFor = u.uid; bootSyncCheck(); }
+        });
+      });
+    }
+
+    async function signIn() {
+      try {
+        await ensureAuth();
+        var provider = new firebase.auth.GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
+        var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) ||
+                         navigator.standalone === true;
+        try {
+          if (standalone) { var e1 = new Error('standalone'); e1.code = 'auth/popup-blocked'; throw e1; }
+          await _auth.signInWithPopup(provider);
+        } catch (e) {
+          var c = (e && e.code) || '';
+          if (c === 'auth/popup-blocked' || c === 'auth/operation-not-supported-in-this-environment' ||
+              c === 'auth/popup-redirect-required') {
+            await _auth.signInWithRedirect(provider);
+          } else if (c !== 'auth/popup-closed-by-user' && c !== 'auth/cancelled-popup-request') {
+            errMsg(e);
+          }
+        }
+      } catch (e) { errMsg(e); }
+    }
+
+    /* ---------- upload (mirrors whole DB; hash-skip unchanged stores) ---------- */
+    async function saveNow() {
+      if (!_user || !_fs || !window.backup) return { ok: false, error: 'signed_out' };
+      if (_busy) { _savingQueued = true; return { ok: false, error: 'busy' }; }
+      _busy = true;
+      try {
+        var uid = _user.uid;
+        var uRef = _fs.collection('users').doc(uid);
+        var storesCol = uRef.collection('stores');
+        var snap = await uRef.get();
+        var prev = snap.exists ? snap.data() : {};
+        var prevHashes = prev.store_hashes || {};
+        var prevParts = prev.store_parts || {};
+
+        var ser = await backup.serialize();
+        var data = maskSecrets(ser.data);
+        var names = db.storeNames();
+        var gen = Date.now();
+        var hashes = {}, parts = {};
+        var total = 0, changed = [];
+        var batch = _fs.batch(), ops = 0;
+        var batches = [batch];
+
+        for (var i = 0; i < names.length; i++) {
+          var name = names[i];
+          var recs = data[name] || [];
+          var s = JSON.stringify(recs);
+          total += s.length;
+          var h = await sha256Hex(s);
+          hashes[name] = h;
+          var pInfo = prevParts[name] || {};
+          if (h === prevHashes[name] && pInfo.n > 0) { parts[name] = pInfo; continue; }
+          changed.push(name);
+          var n = Math.max(1, Math.ceil(s.length / CHUNK_CHARS));
+          parts[name] = { gen: gen, n: n };
+          var pRef = storesCol.doc(name).collection('parts');
+          for (var p = 0; p < n; p++) {
+            batch.set(pRef.doc(gen + '_' + p), { gen: gen, i: p, data: s.slice(p * CHUNK_CHARS, (p + 1) * CHUNK_CHARS) });
+            if (++ops >= 400) { batch = _fs.batch(); batches.push(batch); ops = 0; }
+          }
+        }
+
+        var meta = {
+          app: 'dk-gym-pro', format_version: 1, db_name: db.NAME,
+          updated_at: gen, total_records: ser.meta.total_records,
+          total_bytes: total, store_hashes: hashes, store_parts: parts,
+          email: _user.email || '', lang: ser.meta.lang || ''
+        };
+        batch.set(uRef, meta, { merge: true });
+        await Promise.all(batches.map(function (b) { return b.commit(); }));
+
+        // best-effort cleanup of superseded generation parts
+        for (var c = 0; c < changed.length; c++) {
+          var nm = changed[c], oldP = prevParts[nm];
+          if (oldP && oldP.gen && oldP.gen !== gen) {
+            try {
+              var oldSnap = await storesCol.doc(nm).collection('parts').where('gen', '==', oldP.gen).get();
+              if (!oldSnap.empty) {
+                var b2 = _fs.batch(), k = 0;
+                oldSnap.forEach(function (d) { b2.delete(d.ref); k++; });
+                if (k) await b2.commit();
+              }
+            } catch (e) { log('cleanup failed', nm, e); }
+          }
+        }
+
+        _lastMeta = meta; _lastSync = gen; _dirty = {};
+        try { await db.put('settings', { key: LASTSYNC_KEY, value: gen }); } catch (e) {}
+        return { ok: true, meta: meta, changed: changed.length };
+      } catch (e) {
+        errMsg(e);
+        return { ok: false, error: (e && (e.code || e.message)) || 'error' };
+      } finally {
+        _busy = false;
+        if (_savingQueued) {
+          _savingQueued = false;
+          setTimeout(function () { if (_user && _autosync && !_busy) saveNow(); }, 1500);
+        }
+      }
+    }
+
+    /* ---------- restore ---------- */
+    async function fetchCloudPayload() {
+      var uRef = _fs.collection('users').doc(_user.uid);
+      var snap = await uRef.get();
+      if (!snap.exists) return null;
+      var meta = snap.data();
+      var data = {};
+      var names = Object.keys(meta.store_parts || {});
+      for (var i = 0; i < names.length; i++) {
+        var name = names[i];
+        var info = meta.store_parts[name] || {};
+        var n = info.n || 0;
+        var arr = [];
+        for (var p = 0; p < n; p++) {
+          var d = await uRef.collection('stores').doc(name).collection('parts').doc((info.gen || 0) + '_' + p).get();
+          if (!d.exists) throw new Error('missing_part:' + name + ':' + p);
+          arr.push(d.data().data || '');
+        }
+        var s = arr.join('');
+        data[name] = s ? JSON.parse(s) : [];
+      }
+      return { meta: meta, data: data };
+    }
+
+    async function applyPayload(payload) {
+      var idb = await db.raw();
+      var storeNames = db.storeNames();
+      var tx = idb.transaction(storeNames, 'readwrite');
+      await Promise.all(storeNames.map(function (n) {
+        return new Promise(function (res, rej) {
+          var r = tx.objectStore(n).clear();
+          r.onsuccess = function () { res(); };
+          r.onerror = function () { rej(r.error); };
+        });
+      }));
+      var imported = 0;
+      Object.keys(payload.data).forEach(function (n) {
+        if (storeNames.indexOf(n) === -1) return;
+        var st = tx.objectStore(n);
+        (payload.data[n] || []).forEach(function (rec) {
+          if (rec && (rec.id !== undefined || rec.key !== undefined)) { st.put(rec); imported++; }
+        });
+      });
+      await new Promise(function (res, rej) {
+        tx.oncomplete = res;
+        tx.onerror = function () { rej(tx.error); };
+        tx.onabort = function () { rej(tx.error || new Error('restore_aborted')); };
+      });
+      return imported;
+    }
+
+    async function restoreFromCloud(opts) {
+      opts = opts || {};
+      if (!_user || !_fs) return { ok: false, error: 'signed_out' };
+      try {
+        var cloud = await fetchCloudPayload();
+        if (!cloud) return { ok: false, error: 'no_cloud' };
+        var payload = {
+          meta: {
+            format_version: 1, db_name: cloud.meta.db_name || db.NAME,
+            app_version: cloud.meta.app || '', created_at: cloud.meta.updated_at
+          },
+          data: cloud.data
+        };
+        backup.validate(payload);
+        var localAi = null;
+        try { localAi = await db.get('settings', 'ai_config'); } catch (e) {}
+        if (!opts.silent) {
+          var when = new Date(cloud.meta.updated_at || Date.now()).toLocaleString();
+          var msg = (T('backup.importConfirm') || 'Restore backup and replace current data?') + '\n' + when;
+          if (!confirm(msg)) return { ok: false, error: 'cancelled' };
+        }
+        _busy = true;
+        var imported;
+        try { imported = await applyPayload(payload); } finally { _busy = false; }
+        try {
+          // cloud copy has masked api key — keep the local one if it exists
+          if (localAi && localAi.value && localAi.value.apiKey) await db.put('settings', localAi);
+        } catch (e) {}
+        try { await db.put('settings', { key: LASTSYNC_KEY, value: cloud.meta.updated_at || Date.now() }); } catch (e) {}
+        _dirty = {};
+        return { ok: true, imported: imported, meta: cloud.meta };
+      } catch (e) {
+        errMsg(e);
+        return { ok: false, error: (e && (e.code || e.message)) || 'error' };
+      }
+    }
+
+    /* ---------- boot decision: cloud newer → auto-restore; else conflict banner ---------- */
+    async function localLastChange() {
+      var t0 = 0;
+      for (var i = 0; i < USER_STORES.length; i++) {
+        var recs = [];
+        try { recs = await db.all(USER_STORES[i]); } catch (e) { continue; }
+        for (var j = 0; j < recs.length; j++) {
+          var r = recs[j];
+          var ts = (r && (r.updated_at || r.created_at)) || 0;
+          if (typeof ts === 'string') { var pd = Date.parse(ts); ts = isNaN(pd) ? 0 : pd; }
+          if (ts > t0) t0 = ts;
+        }
+      }
+      return t0;
+    }
+
+    async function bootSyncCheck() {
+      if (!_user || !_fs) return;
+      try {
+        var uRef = _fs.collection('users').doc(_user.uid);
+        var snap = await uRef.get();
+        var last = 0;
+        try { var row = await db.get('settings', LASTSYNC_KEY); last = (row && row.value) || 0; } catch (e) {}
+        if (!snap.exists) {
+          // fresh account — upload everything once
+          toastMsg(T('settings.cloudAccInitial') || 'First upload…', 'info', 8000);
+          var r = await saveNow();
+          if (r.ok) {
+            toastMsg((T('settings.cloudAccSaved') || '✓ Saved to cloud: {n} records, {kb} KB')
+              .replace('{n}', r.meta.total_records).replace('{kb}', Math.round(r.meta.total_bytes / 1024)), 'success', 6000);
+            renderStatus();
+          }
+          return;
+        }
+        var meta = snap.data();
+        _lastMeta = meta;
+        var cloudAt = meta.updated_at || 0;
+        renderStatus();
+        if (cloudAt <= last + 1500) return; // this device is already up to date
+        var localAt = await localLastChange();
+        if (localAt <= cloudAt + 1500) {
+          // cloud is newer and this device has no newer local edits → silent restore
+          toastMsg(T('settings.cloudAccRestored') || '✓ Restored from cloud', 'success', 6000);
+          var r2 = await restoreFromCloud({ silent: true });
+          if (r2.ok) setTimeout(function () { location.reload(); }, 800);
+          return;
+        }
+        var cf = $('cloud-conflict');
+        if (cf) cf.classList.remove('hidden');
+        toastMsg(T('settings.cloudAccConflict') || 'Cloud and device data differ', 'warning', 8000);
+      } catch (e) { errMsg(e); }
+    }
+
+    /* ---------- dirty tracking (additive hooks on db writes) ---------- */
+    function markDirty(name) {
+      if (_busy) return;
+      _dirty[name] = 1;
+      if (_user && _autosync && _fs) {
+        if (_dirtyTimer) clearTimeout(_dirtyTimer);
+        _dirtyTimer = setTimeout(function () {
+          _dirtyTimer = null;
+          if (_user && _autosync && _fs && Object.keys(_dirty).length && !_busy) saveNow();
+        }, DEBOUNCE_MS);
+      }
+    }
+    function installHooks() {
+      ['put', 'bulkPut', 'del', 'clear'].forEach(function (m) {
+        var orig = db[m];
+        if (typeof orig !== 'function') return;
+        db[m] = function (store) {
+          try { markDirty(store); } catch (e) {}
+          return orig.apply(db, arguments);
+        };
+      });
+    }
+
+    /* ---------- UI ---------- */
+    function render(u) {
+      var setup = $('cloud-setup'), out = $('cloud-signedout'), inn = $('cloud-signedin');
+      if (!setup || !out || !inn) return;
+      setup.classList.toggle('hidden', !!_cfg);
+      out.classList.toggle('hidden', !_cfg || !!u);
+      inn.classList.toggle('hidden', !_cfg || !u);
+      if (u) {
+        var em = $('cloud-user-email');
+        if (em) em.textContent = u.email || u.uid;
+        renderStatus();
+        var cb = $('cloud-autosync');
+        if (cb) cb.checked = _autosync;
+        var cf = $('cloud-conflict');
+        if (cf) cf.classList.add('hidden');
+      }
+    }
+    function renderStatus() {
+      var el = $('cloud-status');
+      if (!el) return;
+      var txt;
+      if (_lastSync) {
+        txt = (T('settings.cloudAccStatusAt') || 'Last sync: {t}').replace('{t}', new Date(_lastSync).toLocaleString());
+      } else {
+        txt = T('settings.cloudAccStatusNever') || 'Not synced yet';
+      }
+      if (_lastMeta && _lastMeta.total_records != null) {
+        txt += ' · ' + _lastMeta.total_records + ' ' + (T('backup.recordsUnit') || 'records');
+      }
+      el.textContent = txt;
+    }
+
+    function wire() {
+      if (wire._done) return;
+      wire._done = true;
+
+      var bConnect = $('cloud-btn-connect');
+      if (bConnect) bConnect.addEventListener('click', async function () {
+        var ta = $('cloud-config-input');
+        try {
+          var cfg = parseConfig(ta && ta.value);
+          await db.put('settings', { key: CFG_KEY, value: cfg });
+          toastMsg(T('settings.cloudAccConnected') || 'Firebase connected. Reloading…', 'success', 2000);
+          setTimeout(function () { location.reload(); }, 600);
+        } catch (e) {
+          toastMsg((T('settings.cloudAccErrConfig') || 'Invalid Firebase config') + ': ' + e.message, 'danger', 6000);
+        }
+      });
+
+      var bReset = $('cloud-btn-resetcfg');
+      if (bReset) bReset.addEventListener('click', async function () {
+        if (!confirm('Remove stored Firebase config from this device?')) return;
+        try { await db.del('settings', CFG_KEY); } catch (e) {}
+        setTimeout(function () { location.reload(); }, 300);
+      });
+
+      var bGoogle = $('cloud-btn-google');
+      if (bGoogle) bGoogle.addEventListener('click', function () { signIn(); });
+
+      var bSave = $('cloud-btn-save');
+      if (bSave) bSave.addEventListener('click', async function () {
+        toastMsg(T('settings.cloudAccSaving') || 'Saving to cloud…', 'info', 8000);
+        bSave.disabled = true;
+        var r = await saveNow();
+        bSave.disabled = false;
+        if (r.ok) {
+          toastMsg((T('settings.cloudAccSaved') || '✓ Saved to cloud: {n} records, {kb} KB')
+            .replace('{n}', r.meta.total_records).replace('{kb}', Math.round(r.meta.total_bytes / 1024)), 'success', 5000);
+          renderStatus();
+        }
+      });
+
+      var bRestore = $('cloud-btn-restore');
+      if (bRestore) bRestore.addEventListener('click', async function () {
+        bRestore.disabled = true;
+        var r = await restoreFromCloud({ silent: false });
+        bRestore.disabled = false;
+        if (r.ok) {
+          toastMsg(T('settings.cloudAccRestored') || '✓ Restored. Reloading…', 'success', 3000);
+          setTimeout(function () { location.reload(); }, 1000);
+        } else if (r.error === 'no_cloud') {
+          toastMsg(T('settings.cloudAccNoCloud') || 'Nothing in the cloud yet', 'warning', 5000);
+        }
+      });
+
+      var bOut = $('cloud-btn-signout');
+      if (bOut) bOut.addEventListener('click', async function () {
+        try { await _auth.signOut(); } catch (e) { errMsg(e); }
+        _syncedFor = null;
+        render(null);
+      });
+
+      var cbAuto = $('cloud-autosync');
+      if (cbAuto) cbAuto.addEventListener('change', function () {
+        _autosync = !!cbAuto.checked;
+        try { db.put('settings', { key: AUTOSYNC_KEY, value: _autosync }); } catch (e) {}
+        if (_autosync && _user && !_busy) saveNow();
+      });
+
+      var bCopy = $('cloud-btn-copy-rules');
+      if (bCopy) bCopy.addEventListener('click', function () {
+        try {
+          navigator.clipboard.writeText(FIRESTORE_RULES).then(function () {
+            toastMsg(T('settings.cloudAccCopied') || 'Copied', 'success', 1500);
+          });
+        } catch (e) {}
+      });
+
+      window.addEventListener('online', function () {
+        if (_user && _autosync && Object.keys(_dirty).length && !_busy) saveNow();
+      });
+      document.addEventListener('visibilitychange', function () {
+        if (document.hidden && _user && _autosync && Object.keys(_dirty).length && !_busy) saveNow();
+      });
+    }
+
+    function init() {
+      var p1 = db.get('settings', AUTOSYNC_KEY).then(function (r) { _autosync = !r || r.value !== false; }).catch(function () {});
+      var p2 = db.get('settings', LASTSYNC_KEY).then(function (r) { _lastSync = (r && r.value) || 0; }).catch(function () {});
+      var p3 = getConfig().then(function (cfg) { _cfg = cfg; }).catch(function () {});
+      Promise.all([p1, p2, p3]).then(function () {
+        var rules = $('cloud-rules-text');
+        if (rules) rules.textContent = FIRESTORE_RULES;
+        wire();
+        render(null);
+        if (_cfg) ensureAuth().catch(function (e) { log('init auth failed', e); });
+      });
+    }
+
+    function boot() {
+      try { init(); } catch (e) { log('boot failed', e); }
+      try { installHooks(); } catch (e) {}
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+    else boot();
+
+    window.cloudSync = { save: saveNow, restore: restoreFromCloud, signIn: signIn, version: 1 };
   })();
   </script>
 
