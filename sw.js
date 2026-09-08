@@ -1,6 +1,6 @@
 // Service Worker - David King Gym PWA
-// v36: save watchdog + progress steps + build-freshness banner (c9)
-const CACHE_NAME = 'dk-gym-v36';
+// v37: content-addressed cloud parts + self-healing restore (c10)
+const CACHE_NAME = 'dk-gym-v37';
 const APP_SHELL = [
   './',
   './index.html',

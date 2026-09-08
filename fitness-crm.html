@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c9" />
+<meta name="dk-build" content="c10" />
   <meta name="description" content="Fitness & Nutrition CRM for personal trainers — clients, workouts, nutrition, analytics." />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icon-512.png" />
@@ -2170,7 +2170,7 @@
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c9</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c10</p>
             </div>
           </div>
 
@@ -24807,10 +24807,11 @@ document.addEventListener('DOMContentLoaded', function () {
      * Safari ITP). On SDK 10.x those browsers silently fail with
      * auth/no-auth-event and the user bounces back to the lock screen. */
     var FB_VER = '11.8.1';
-    var CHUNK_CHARS = 280000;
+    var CHUNK_CHARS = 240000; /* ≤240K chars ≈ ≤960KB UTF-8 — safe under the 1MB Firestore doc limit */
     var CFG_KEY = 'cloud_firebase_config';
     var AUTOSYNC_KEY = 'cloud_autosync';
     var LASTSYNC_KEY = 'cloud_last_sync';
+    var FORCE_FULL_KEY = 'cloud_force_full'; /* set when a restore finds the cloud copy damaged → next save re-uploads everything */
     /* Hard-coded fallback Firebase config (web keys are public by design —
      * safe to ship). Makes the Google sign-in (incl. the lock-screen button)
      * work on ANY device out of the box. A config stored via Settings (from a
@@ -24865,9 +24866,10 @@ document.addEventListener('DOMContentLoaded', function () {
       if (c.indexOf('permission-denied') >= 0) msg = T('settings.cloudAccErrPerm') || c;
       else if (c.indexOf('unauthorized-domain') >= 0) msg = T('settings.cloudAccErrDomain') || c;
       else if (c.indexOf('load_failed') === 0 || c.indexOf('network') >= 0) msg = T('settings.cloudAccErrNetwork') || c;
+      else if (c.indexOf('missing_part') >= 0 || c.indexOf('cloud_incomplete') >= 0) msg = T('settings.cloudAccErrIncomplete') || c;
       else msg = (T('settings.cloudAccErrGeneric') || 'Cloud error: {e}').replace('{e}', c);
       log('error:', e);
-      toastMsg(msg, 'danger', 7000);
+      toastMsg(msg, 'danger', 9000);
     }
 
     /* ---------- hashing ---------- */
@@ -25167,6 +25169,13 @@ document.addEventListener('DOMContentLoaded', function () {
       try { if (window.backup && typeof window.backup.serialize === 'function') return window.backup; } catch (e2) {}
       return null;
     }
+    function releaseBusy() {
+      _busy = false;
+      if (_savingQueued) {
+        _savingQueued = false;
+        setTimeout(function () { if (_user && _autosync && !_busy) saveNow(); }, 1500);
+      }
+    }
     async function saveNow() {
       if (!_user || !_fs) return { ok: false, error: 'signed_out' };
       if (!getBackupApi()) return { ok: false, error: 'backup_api_missing' };
@@ -25192,8 +25201,10 @@ document.addEventListener('DOMContentLoaded', function () {
         var data = maskSecrets(ser.data);
         var names = db.storeNames();
         var gen = Date.now();
+        var forceFull = false;
+        try { var ff = await db.get('settings', FORCE_FULL_KEY); forceFull = !!(ff && ff.value); } catch (e0) {}
         var hashes = {}, parts = {};
-        var total = 0, changed = [];
+        var total = 0, changed = 0;
         var batch = _fs.batch(), ops = 0;
         var batches = [batch];
 
@@ -25206,93 +25217,140 @@ document.addEventListener('DOMContentLoaded', function () {
           var h = await sha256Hex(s);
           hashes[name] = h;
           var pInfo = prevParts[name] || {};
-          if (h === prevHashes[name] && pInfo.n > 0) { parts[name] = pInfo; continue; }
-          changed.push(name);
+          /* Content-addressed parts (v9): the part doc ID is derived from the
+           * CONTENT hash, so identical content always maps to the SAME docs on
+           * every device. Two devices saving concurrently can therefore never
+           * repoint the shared meta at documents that do not exist — the
+           * c9-era race (stale {gen,n} pointer overwriting a fresher one whose
+           * parts the other device's cleanup had already deleted) is gone by
+           * design. forceFull re-uploads every store (heals a damaged cloud).
+           * Legacy {gen,n} pointers (c9 and earlier) don't carry .h and are
+           * silently converted to content-addressed parts by this save. */
+          if (!forceFull && pInfo.h === h && pInfo.n > 0) {
+            parts[name] = { h: h, n: pInfo.n };
+            continue;
+          }
+          changed++;
           var n = Math.max(1, Math.ceil(s.length / CHUNK_CHARS));
-          parts[name] = { gen: gen, n: n };
+          parts[name] = { h: h, n: n };
           var pRef = storesCol.doc(name).collection('parts');
           for (var p = 0; p < n; p++) {
-            batch.set(pRef.doc(gen + '_' + p), { gen: gen, i: p, data: s.slice(p * CHUNK_CHARS, (p + 1) * CHUNK_CHARS) });
+            batch.set(pRef.doc(h.slice(0, 24) + '_' + p), { h: h, i: p, gen: gen, data: s.slice(p * CHUNK_CHARS, (p + 1) * CHUNK_CHARS) });
             if (++ops >= 400) { batch = _fs.batch(); batches.push(batch); ops = 0; }
           }
         }
 
         var meta = {
-          app: 'dk-gym-pro', format_version: 1, db_name: db.NAME,
+          app: 'dk-gym-pro', format_version: 2, db_name: db.NAME,
           updated_at: gen, total_records: ser.meta.total_records,
           total_bytes: total, store_hashes: hashes, store_parts: parts,
           email: _user.email || '', lang: ser.meta.lang || ''
         };
-        batch.set(uRef, meta, { merge: true });
+        /* Parts FIRST, meta LAST: the meta doc is the commit point and must
+         * never become visible while its parts are still in flight. No
+         * destructive cleanup anymore — superseded generations are simply
+         * orphaned (they are content-addressed and bounded by real data
+         * churn, not by the number of saves). */
         _saveStep = 'commit:' + batches.length;
         await Promise.all(batches.map(function (b) { return b.commit(); }));
+        _saveStep = 'commit-meta';
+        await uRef.set(meta, { merge: true });
 
-        // best-effort cleanup of superseded generation parts
-        _saveStep = 'cleanup';
-        for (var c = 0; c < changed.length; c++) {
-          var nm = changed[c], oldP = prevParts[nm];
-          if (oldP && oldP.gen && oldP.gen !== gen) {
-            try {
-              var oldSnap = await storesCol.doc(nm).collection('parts').where('gen', '==', oldP.gen).get();
-              if (!oldSnap.empty) {
-                var b2 = _fs.batch(), k = 0;
-                oldSnap.forEach(function (d) { b2.delete(d.ref); k++; });
-                if (k) await b2.commit();
-              }
-            } catch (e) { log('cleanup failed', nm, e); }
-          }
-        }
-
+        if (forceFull) { try { await db.del('settings', FORCE_FULL_KEY); } catch (e4) {} }
         _lastMeta = meta; _lastSync = gen; _dirty = {};
         try { await db.put('settings', { key: LASTSYNC_KEY, value: gen }); } catch (e) {}
-        return { ok: true, meta: meta, changed: changed.length };
+        return { ok: true, meta: meta, changed: changed };
       })();
       /* Watchdog: the cloud MUST answer within 30 s. If it doesn't, surface
-       * the exact step instead of dying silently (the original keeps running
-       * in the background — its outcome is logged when it settles). */
+       * the exact step instead of dying silently. _busy is NOT released on
+       * timeout — only when the background work settles — so a retry can
+       * never run concurrently with the still-running save. */
       var watchdog = new Promise(function (res) {
         wTimer = setTimeout(function () { timedOut = true; res({ ok: false, error: 'timeout', step: _saveStep }); }, 30000);
       });
+      var out;
       try {
-        return await Promise.race([work, watchdog]);
+        out = await Promise.race([work, watchdog]);
       } catch (e) {
-        errMsg(e);
-        return { ok: false, error: (e && (e.code || e.message)) || 'error' };
-      } finally {
-        if (wTimer !== null) clearTimeout(wTimer);
-        if (timedOut) {
-          log('save watchdog fired at step:', _saveStep);
-          work.then(function () { log('save finished late (ok)'); })
-              .catch(function (e2) { log('save failed late:', e2); });
-        }
-        _busy = false;
-        if (_savingQueued) {
-          _savingQueued = false;
-          setTimeout(function () { if (_user && _autosync && !_busy) saveNow(); }, 1500);
-        }
+        log('save failed:', e);
+        out = { ok: false, error: (e && (e.code || e.message)) || 'error' };
       }
+      if (wTimer !== null) clearTimeout(wTimer);
+      if (timedOut) {
+        log('save watchdog fired at step:', _saveStep);
+        work.then(function () { log('save finished late (ok)'); releaseBusy(); })
+            .catch(function (e2) { log('save failed late:', e2); releaseBusy(); });
+      } else {
+        releaseBusy();
+      }
+      return out;
     }
 
     /* ---------- restore ---------- */
+    /* Assemble one store's records. Try the meta pointer first (content-
+     * addressed `h` or legacy `gen`); if any part is missing, scan the whole
+     * parts collection and fall back to the newest COMPLETE generation —
+     * self-healing instead of a hard failure. Returns { text, repaired }. */
+    async function assembleStore(uRef, name, info) {
+      var pRef = uRef.collection('stores').doc(name).collection('parts');
+      var tryPointer = async function (ptr) {
+        var n = (ptr && ptr.n) || 0, arr = [];
+        for (var p = 0; p < n; p++) {
+          var id = ptr.h ? (ptr.h.slice(0, 24) + '_' + p) : ((ptr.gen || 0) + '_' + p);
+          var d = await pRef.doc(id).get();
+          if (!d.exists) throw new Error('missing_part:' + name + ':' + p);
+          arr.push((d.data() || {}).data || '');
+        }
+        return arr.join('');
+      };
+      try {
+        return { text: await tryPointer(info || {}), repaired: null };
+      } catch (e) {
+        log('pointer failed for', name, (e && e.message) || e, '— scanning for a complete generation');
+      }
+      var snapAll = await pRef.get();
+      if (snapAll.empty) throw new Error('cloud_incomplete:' + name);
+      var groups = {};
+      snapAll.forEach(function (d) {
+        var v = d.data() || {};
+        var idx = (v.i != null) ? v.i : parseInt(String(d.id).split('_')[1], 10);
+        if (!(idx >= 0)) return;
+        var key = v.h ? String(v.h) : ('gen:' + (v.gen != null ? v.gen : String(d.id).split('_')[0]));
+        var g = groups[key] || (groups[key] = { n: 0, chunks: {}, h: v.h || null, gen: (v.h ? null : (v.gen != null ? v.gen : parseInt(String(d.id).split('_')[0], 10) || 0)) });
+        g.chunks[idx] = v.data || '';
+        if (idx + 1 > g.n) g.n = idx + 1;
+      });
+      var best = null, bestKey = null;
+      Object.keys(groups).forEach(function (k) {
+        var g = groups[k];
+        for (var i = 0; i < g.n; i++) if (!(i in g.chunks)) return; /* hole → incomplete */
+        if (!best || g.n > best.n) { best = g; bestKey = k; }
+      });
+      if (!best) throw new Error('cloud_incomplete:' + name);
+      var out = '';
+      for (var j = 0; j < best.n; j++) out += best.chunks[j];
+      var repaired = best.h ? { h: best.h, n: best.n } : (best.gen ? { gen: best.gen, n: best.n } : null);
+      return { text: out, repaired: repaired };
+    }
+
     async function fetchCloudPayload() {
       var uRef = _fs.collection('users').doc(_user.uid);
       var snap = await uRef.get();
       if (!snap.exists) return null;
       var meta = snap.data();
       var data = {};
+      var repairedParts = {}, fixedAny = false;
       var names = Object.keys(meta.store_parts || {});
       for (var i = 0; i < names.length; i++) {
         var name = names[i];
-        var info = meta.store_parts[name] || {};
-        var n = info.n || 0;
-        var arr = [];
-        for (var p = 0; p < n; p++) {
-          var d = await uRef.collection('stores').doc(name).collection('parts').doc((info.gen || 0) + '_' + p).get();
-          if (!d.exists) throw new Error('missing_part:' + name + ':' + p);
-          arr.push(d.data().data || '');
-        }
-        var s = arr.join('');
-        data[name] = s ? JSON.parse(s) : [];
+        var r = await assembleStore(uRef, name, meta.store_parts[name] || {});
+        data[name] = r.text ? JSON.parse(r.text) : [];
+        if (r.repaired) { repairedParts[name] = r.repaired; fixedAny = true; }
+        else repairedParts[name] = meta.store_parts[name];
+      }
+      /* heal the cloud index if we had to fall back to another generation */
+      if (fixedAny) {
+        try { await uRef.set({ store_parts: repairedParts }, { merge: true }); log('cloud index healed'); } catch (e) {}
       }
       return { meta: meta, data: data };
     }
@@ -25356,8 +25414,13 @@ document.addEventListener('DOMContentLoaded', function () {
         _dirty = {};
         return { ok: true, imported: imported, meta: cloud.meta };
       } catch (e) {
-        errMsg(e);
-        return { ok: false, error: (e && (e.code || e.message)) || 'error' };
+        var c = String((e && (e.code || e.message)) || e);
+        if (c.indexOf('missing_part') >= 0 || c.indexOf('cloud_incomplete') >= 0) {
+          /* heal path: the next "Save to cloud" on ANY device re-uploads every
+             store instead of trusting the damaged pointers */
+          try { await db.put('settings', { key: FORCE_FULL_KEY, value: true }); } catch (e2) {}
+        }
+        return { ok: false, error: c };
       }
     }
 
@@ -25392,6 +25455,8 @@ document.addEventListener('DOMContentLoaded', function () {
             toastMsg((T('settings.cloudAccSaved') || '✓ Saved to cloud: {n} records, {kb} KB')
               .replace('{n}', r.meta.total_records).replace('{kb}', Math.round(r.meta.total_bytes / 1024)), 'success', 6000);
             renderStatus();
+          } else if (r.error !== 'busy') {
+            errMsg(r.error);
           }
           return;
         }
@@ -25422,7 +25487,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (_dirtyTimer) clearTimeout(_dirtyTimer);
         _dirtyTimer = setTimeout(function () {
           _dirtyTimer = null;
-          if (_user && _autosync && _fs && Object.keys(_dirty).length && !_busy) saveNow();
+          if (_user && _autosync && _fs && Object.keys(_dirty).length && !_busy) {
+            saveNow().then(function (r) { if (r && !r.ok && r.error !== 'busy') errMsg(r.error); }).catch(function () {});
+          }
         }, DEBOUNCE_MS);
       }
     }
@@ -25517,8 +25584,8 @@ document.addEventListener('DOMContentLoaded', function () {
             toastMsg((T('settings.cloudAccErrTimeout') || 'Cloud is not responding (30 s) — stalled at: {step}')
               .replace('{step}', r.step || '?'), 'danger', 9000);
           } else {
-            // never die silently: surface the exact reason
-            toastMsg((T('settings.cloudAccErrGeneric') || 'Cloud error: {e}').replace('{e}', r.error), 'danger', 7000);
+            // never die silently: surface the exact reason (mapped to friendly text)
+            errMsg(r.error);
           }
         } catch (e) {
           try { bSave.disabled = false; } catch (e2) {}
@@ -25538,7 +25605,7 @@ document.addEventListener('DOMContentLoaded', function () {
           } else if (r.error === 'no_cloud') {
             toastMsg(T('settings.cloudAccNoCloud') || 'Nothing in the cloud yet', 'warning', 5000);
           } else if (r.error && r.error !== 'cancelled') {
-            toastMsg((T('settings.cloudAccErrGeneric') || 'Cloud error: {e}').replace('{e}', r.error), 'danger', 7000);
+            errMsg(r.error);
           }
         } catch (e) {
           try { bRestore.disabled = false; } catch (e2) {}
@@ -25570,10 +25637,14 @@ document.addEventListener('DOMContentLoaded', function () {
       });
 
       window.addEventListener('online', function () {
-        if (_user && _autosync && Object.keys(_dirty).length && !_busy) saveNow();
+        if (_user && _autosync && Object.keys(_dirty).length && !_busy) {
+          saveNow().then(function (r) { if (r && !r.ok && r.error !== 'busy') errMsg(r.error); }).catch(function () {});
+        }
       });
       document.addEventListener('visibilitychange', function () {
-        if (document.hidden && _user && _autosync && Object.keys(_dirty).length && !_busy) saveNow();
+        if (document.hidden && _user && _autosync && Object.keys(_dirty).length && !_busy) {
+          saveNow().then(function (r) { if (r && !r.ok && r.error !== 'busy') errMsg(r.error); }).catch(function () {});
+        }
       });
     }
 
@@ -25887,7 +25958,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 9; /* numeric part of dk-build c9 */
+  var RUNNING = 10; /* numeric part of dk-build c10 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

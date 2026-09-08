@@ -1192,6 +1192,7 @@
   "cloudAccSaving": "Saving to cloud…",
   "cloudAccBusy": "Already saving — please wait a few seconds",
   "cloudAccErrTimeout": "Cloud is not responding (30 s) — stalled at: {step}",
+  "cloudAccErrIncomplete": "The cloud copy is incomplete — some data chunks are missing. Press “Save to cloud” on the primary device (the app will repair the copy), then try “Restore from cloud” here again.",
   "cloudAccSaved": "✓ Saved to cloud: {n} records, {kb} KB",
   "cloudAccInitial": "First upload of your data to the account (may take a minute)…",
   "cloudAccRestored": "✓ Data restored from cloud. Reloading…",
