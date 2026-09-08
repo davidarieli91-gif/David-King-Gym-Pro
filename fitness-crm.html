@@ -2169,7 +2169,7 @@
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c3</p>
             </div>
           </div>
 
@@ -21746,12 +21746,46 @@ async function boot() {
           }
         } catch (e) {}
       };
+      // --- Visible cloud status on the lock screen ---
+      // Diagnoses devices where the Google return lands silently broken:
+      // shows checking… / signed-in email / concrete Firebase error.
+      const setStatus = (txt) => { if (gHint && txt) { gHint.textContent = txt; gHint.classList.remove('hidden'); } };
+      const clearStatus = () => { if (gHint) { gHint.textContent = ''; gHint.classList.add('hidden'); } };
+      const refreshCloudStatus = () => {
+        if (!window.cloudSync || !window.cloudSync.getState) return;
+        const s = window.cloudSync.getState();
+        if (s && s.user) {
+          setStatus(s.user.email ? (t('auth.cloudStatusSignedIn') + ' ' + s.user.email) : t('auth.cloudStatusSignedIn'));
+        } else if (s && s.error) {
+          setStatus(t('settings.cloudAccErrGeneric', { e: s.error }));
+        } else if (s && s.ready) {
+          clearStatus(); // ready & signed out → silent (the button is self-explanatory)
+        }
+      };
+      // --- Post-return watchdog: unlocks late-restored sessions (slow 4G,
+      // lost events) and never leaves a silent dead end after a sign-in
+      // attempt: after ~20s without a session it says so out loud. ---
+      let wdChecks = 0;
+      const watchdog = () => {
+        if (auth.isUnlocked()) return;
+        const s = (window.cloudSync && window.cloudSync.getState) ? window.cloudSync.getState() : null;
+        if (s && s.user) { maybeCloudUnlock(); return; }
+        let flag = false;
+        try { flag = sessionStorage.getItem('dk_cloud_login') === '1'; } catch (e) {}
+        if (++wdChecks < 20) { setTimeout(watchdog, 1000); return; }
+        if (flag) setStatus(t('auth.cloudSignInFailed'));
+      };
       // Return from signInWithRedirect: cloud:auth may fire before or after wiring
       document.addEventListener('cloud:auth', maybeCloudUnlock);
+      document.addEventListener('cloud:auth', refreshCloudStatus);
+      window.addEventListener('pageshow', () => setTimeout(() => { maybeCloudUnlock(); refreshCloudStatus(); }, 300));
       if (window.cloudSync && window.cloudSync.ready) {
+        setStatus(t('auth.cloudStatusChecking'));
         window.cloudSync.ready.then(() => {
+          refreshCloudStatus();
           setTimeout(maybeCloudUnlock, 400);
           setTimeout(maybeCloudUnlock, 2500); // late Firebase init on slow networks
+          setTimeout(watchdog, 1500);         // post-redirect return safety net
         }).catch(() => {});
       }
       gBtn.addEventListener('click', async () => {
@@ -24727,6 +24761,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var FIRESTORE_RULES = "rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /users/{uid}/{document=**} {\n      allow read, write: if request.auth != null && request.auth.uid == uid;\n    }\n  }\n}";
 
     var _fbLoading = null, _auth = null, _fs = null, _user = null, _cfg = null;
+    var _authError = null;
     var _dirty = {}, _dirtyTimer = null, _busy = false, _savingQueued = false;
     var _autosync = true, _lastSync = 0, _lastMeta = null, _syncedFor = null;
     var _ready = null;
@@ -24851,6 +24886,7 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (e) {}
         _auth.onAuthStateChanged(function (u) {
           _user = u;
+          _authError = null;
           render(u);
           // notify other modules (e.g. lock-screen Google sign-in glue)
           try { document.dispatchEvent(new CustomEvent('cloud:auth', { detail: { email: (u && u.email) || null } })); } catch (e) {}
@@ -24866,8 +24902,12 @@ document.addEventListener('DOMContentLoaded', function () {
         provider.setCustomParameters({ prompt: 'select_account' });
         var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) ||
                          navigator.standalone === true;
+        // Mobile browsers: popup OAuth is unreliable there (popups open as new
+        // tabs and often fail to message the opener) → go straight to the
+        // full-page redirect flow, which returns a clean page reload.
+        var touchDevice = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches);
         try {
-          if (standalone) { var e1 = new Error('standalone'); e1.code = 'auth/popup-blocked'; throw e1; }
+          if (standalone || touchDevice) { var e1 = new Error('mobile'); e1.code = 'auth/popup-blocked'; throw e1; }
           await _auth.signInWithPopup(provider);
         } catch (e) {
           var c = (e && e.code) || '';
@@ -24875,6 +24915,8 @@ document.addEventListener('DOMContentLoaded', function () {
               c === 'auth/popup-redirect-required') {
             await _auth.signInWithRedirect(provider);
           } else if (c !== 'auth/popup-closed-by-user' && c !== 'auth/cancelled-popup-request') {
+            _authError = String((e && (e.code || e.message)) || e);
+            try { document.dispatchEvent(new CustomEvent('cloud:auth', { detail: { email: null } })); } catch (e2) {}
             errMsg(e);
           }
         }
@@ -25251,7 +25293,12 @@ document.addEventListener('DOMContentLoaded', function () {
         if (rules) rules.textContent = FIRESTORE_RULES;
         wire();
         render(null);
-        if (_cfg) ensureAuth().catch(function (e) { log('init auth failed', e); });
+        if (_cfg) ensureAuth().catch(function (e) {
+          _authError = String((e && (e.code || e.message)) || e);
+          log('init auth failed', e);
+          // let the lock-screen status line show what went wrong
+          try { document.dispatchEvent(new CustomEvent('cloud:auth', { detail: { email: null } })); } catch (e2) {}
+        });
       });
       if (window.cloudSync) window.cloudSync.ready = _ready; // boot may be deferred (DOMContentLoaded)
       return _ready;
@@ -25268,7 +25315,8 @@ document.addEventListener('DOMContentLoaded', function () {
       return {
         configured: !!_cfg,
         user: (_user && { email: _user.email || '', uid: _user.uid }) || null,
-        ready: !!_ready
+        ready: !!_ready,
+        error: _authError
       };
     }
 

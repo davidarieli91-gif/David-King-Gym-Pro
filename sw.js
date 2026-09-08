@@ -1,6 +1,6 @@
 // Service Worker - David King Gym PWA
-// v29: cloud unlock fix (Google session restore lands inside the app)
-const CACHE_NAME = 'dk-gym-v29';
+// v30: mobile redirect-first OAuth + lock screen cloud status line
+const CACHE_NAME = 'dk-gym-v30';
 const APP_SHELL = [
   './',
   './index.html',
