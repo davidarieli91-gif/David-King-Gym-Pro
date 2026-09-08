@@ -829,6 +829,38 @@
       .pf-cols { flex-direction: row; align-items: flex-start; }
       .pf-cols > .pf-col { flex: 1; }
     }
+    /* Profile panel move mode (5-sec long-press on a panel, then tap a target).
+       .pf-moving = the panel being moved; .pf-targetable = valid drop targets;
+       .pf-drop-end = append-to-column-end zones; banner = mode hint + cancel. */
+    .pf-panel { position: relative; }
+    .pf-moving, .pf-targetable { -webkit-touch-callout: none; user-select: none; }
+    .pf-moving { outline: 2px dashed rgb(var(--c-primary)); outline-offset: 4px; border-radius: 1rem; animation: pf-pulse 1.2s ease-in-out infinite; }
+    @keyframes pf-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgb(var(--c-primary) / 0); }
+      50% { box-shadow: 0 0 0 6px rgb(var(--c-primary) / 0.25); }
+    }
+    .pf-targetable { cursor: pointer; }
+    .pf-targetable:hover { outline: 2px solid rgb(var(--c-success) / 0.65); outline-offset: 2px; }
+    .pf-move-banner {
+      position: sticky; top: 0; z-index: 20;
+      display: flex; align-items: center; gap: 0.5rem;
+      background: rgb(var(--c-primary) / 0.12);
+      border: 1px solid rgb(var(--c-primary) / 0.4);
+      border-radius: 0.75rem; padding: 0.5rem 0.75rem; margin-bottom: 0.75rem;
+      font-size: 12px; font-weight: 600; backdrop-filter: blur(8px);
+    }
+    .pf-move-banner button {
+      margin-inline-start: auto; flex-shrink: 0;
+      font-size: 12px; font-weight: 700; padding: 0.25rem 0.75rem;
+      border-radius: 0.5rem; border: 1px solid rgb(var(--c-border));
+      background: rgb(var(--c-surface-2)); cursor: pointer;
+    }
+    .pf-drop-end {
+      border: 2px dashed rgb(var(--c-success) / 0.5); border-radius: 0.75rem;
+      padding: 0.9rem; text-align: center; font-size: 12px; font-weight: 700;
+      color: rgb(var(--c-success)); cursor: pointer;
+    }
+    .pf-drop-end:hover { background: rgb(var(--c-success) / 0.08); }
 
     #bm-class-chips { container-type: inline-size; }
 
@@ -1971,6 +2003,10 @@
             </select>
             <svg class="pointer-events-none absolute end-2 top-1/2 -translate-y-1/2 w-3 h-3 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
           </div>
+
+          <!-- Font size quick stepper (mirrors Settings → font scale) -->
+          <button id="font-dec-btn" class="h-9 px-2 grid place-items-center rounded-lg bg-surface-2 hover:bg-border/40 transition border border-border text-sm font-bold" aria-label="Decrease font size" title="A−">A−</button>
+          <button id="font-inc-btn" class="h-9 px-2 grid place-items-center rounded-lg bg-surface-2 hover:bg-border/40 transition border border-border text-sm font-bold" aria-label="Increase font size" title="A+">A+</button>
 
           <!-- Theme toggle -->
           <button id="theme-toggle"
@@ -3617,6 +3653,16 @@
         <div class="p-4 border-b border-border flex items-center gap-3 shrink-0">
           <div class="flex-1 min-w-0">
             <input type="text" id="np-name" placeholder="Plan name" data-i18n-ph="nutrition.planName" class="w-full bg-transparent border-none focus:outline-none font-display font-bold text-base" />
+          </div>
+          <!-- Duplicate language switcher (mirrors the app-header #lang-select, same as Quick Pick) -->
+          <div class="relative shrink-0">
+            <select id="np-lang-select" title="Language"
+                    class="appearance-none bg-surface-2 hover:bg-border/40 transition rounded-lg text-[11px] font-semibold py-1 ps-2 pe-6 border border-border focus:outline-none focus:ring-2 focus:ring-primary/60 cursor-pointer">
+              <option value="en">EN</option>
+              <option value="ru">RU</option>
+              <option value="he">HE</option>
+            </select>
+            <svg class="pointer-events-none absolute end-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
           </div>
           <button id="np-close" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-surface-2 text-muted shrink-0">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -7518,6 +7564,9 @@
   screens.profile = (function () {
     let _clientId = null;
     let _client = null;
+    let _pfMove = null;    // { key, suppressClickUntil } while panel move mode is active
+    let _pfEscWired = false;
+    const PF_HOLD_MS = 5000; // long-press duration to pick up a panel
 
     async function load(clientId) {
       _clientId = clientId;
@@ -7531,6 +7580,11 @@
     }
 
     function render() {
+      // Async (panel layout loads from settings); callers don't await.
+      renderAsync().catch(e => console.error('[profile render]', e));
+    }
+
+    async function renderAsync() {
       if (!_client) return;
       const c = _client;
       const name = c.full_name || c.name || '?';
@@ -7538,20 +7592,63 @@
       // Header
       document.getElementById('profile-name').textContent = name;
 
-      const body = document.getElementById('profile-body');
       // Mobile (<1280px): под именем сразу программы тренировок, затем план питания.
       // Desktop (>=1280px): прежний порядок двух колонок - не трогаем.
+      // Saved custom order (from 5-sec long-press moves) overrides the base.
       const desktopLayout = window.matchMedia('(min-width: 1280px)').matches;
-      const col1Cards = desktopLayout
-        ? [heroCard(c, name), trainingCard(c), nutritionPlanCard(c), documentsCard(c)]
-        : [heroCard(c, name), programsCard(c), nutritionPlanCard(c), trainingCard(c), documentsCard(c)];
-      const col2Cards = desktopLayout
-        ? [personalInfoCard(c), programsCard(c), healthCard(c), photosCard(c)]
-        : [personalInfoCard(c), healthCard(c), photosCard(c)];
+      const layout = await pfLoadLayout(desktopLayout);
+      pfPaint(c, name, layout, desktopLayout);
+    }
+
+    /* ---- Profile panel layout: base orders + persisted custom order ---- */
+    const PF_PANELS = ['hero', 'training', 'nutrition', 'documents', 'personalInfo', 'programs', 'health', 'photos'];
+    function pfKey(desktop) { return desktop ? 'profile_panels_order_desktop' : 'profile_panels_order_mobile'; }
+    function pfBase(desktop) {
+      return desktop
+        ? { col1: ['hero', 'training', 'nutrition', 'documents'], col2: ['personalInfo', 'programs', 'health', 'photos'] }
+        : { col1: ['hero', 'programs', 'nutrition', 'training', 'documents'], col2: ['personalInfo', 'health', 'photos'] };
+    }
+    function pfSanitize(layout, desktop) {
+      const known = new Set(PF_PANELS);
+      const seen = new Set();
+      const clean = { col1: [], col2: [] };
+      ['col1', 'col2'].forEach(col => {
+        const arr = (layout && Array.isArray(layout[col])) ? layout[col] : [];
+        arr.forEach(k => { if (known.has(k) && !seen.has(k)) { seen.add(k); clean[col].push(k); } });
+      });
+      PF_PANELS.forEach(k => { if (!seen.has(k)) clean.col2.push(k); });
+      return clean;
+    }
+    async function pfLoadLayout(desktop) {
+      try {
+        const row = await db.get('settings', pfKey(desktop));
+        if (row && row.value) return pfSanitize(row.value, desktop);
+      } catch (_) {}
+      return pfBase(desktop);
+    }
+
+    function pfPaint(c, name, layout, desktopLayout) {
+      const body = document.getElementById('profile-body');
+      if (!body) return;
+      const builders = {
+        hero: () => heroCard(c, name),
+        training: () => trainingCard(c),
+        nutrition: () => nutritionPlanCard(c),
+        documents: () => documentsCard(c),
+        personalInfo: () => personalInfoCard(c),
+        programs: () => programsCard(c),
+        health: () => healthCard(c),
+        photos: () => photosCard(c)
+      };
+      const colHtml = (keys) => keys.map(k => {
+        let h = '';
+        try { h = (builders[k] ? builders[k]() : '') || ''; } catch (_) { h = ''; }
+        return h ? `<div class="pf-panel" data-pf-panel="${k}">${h}</div>` : '';
+      }).join('');
       body.innerHTML = `
         <div class="pf-cols">
-          <div class="pf-col">${col1Cards.join('')}</div>
-          <div class="pf-col">${col2Cards.join('')}</div>
+          <div class="pf-col" data-pf-col="col1">${colHtml(layout.col1)}</div>
+          <div class="pf-col" data-pf-col="col2">${colHtml(layout.col2)}</div>
         </div>
       `;
 
@@ -7569,6 +7666,121 @@
       // NOTE: 'profile-generate-nutrition' is wired centrally in wireDashboard()
       // via the consolidated click delegation — do NOT attach a second handler here
       // (that would cause two modals to open simultaneously).
+      wirePanelMove();
+    }
+
+    /* ---- Panel move mode: 5-sec long-press picks a panel up,
+       then tap another panel to insert before it (any column),
+       tap a dashed end-zone to append, tap the held panel / Cancel / Esc to abort. ---- */
+    function pfCancelMove(silent) {
+      _pfMove = null;
+      const body = document.getElementById('profile-body');
+      if (!body) return;
+      const banner = document.getElementById('pf-move-banner');
+      if (banner) banner.remove();
+      body.querySelectorAll('.pf-drop-end').forEach(z => z.remove());
+      body.querySelectorAll('.pf-moving,.pf-targetable').forEach(p => p.classList.remove('pf-moving', 'pf-targetable'));
+      if (!silent) { try { toast(t('profile.moveCancelled'), 'info', 1500); } catch (_) {} }
+    }
+
+    function pfActivateMove(panel) {
+      const key = panel.getAttribute('data-pf-panel');
+      if (!key || _pfMove) return;
+      _pfMove = { key, suppressClickUntil: Date.now() + 600 };
+      try { if (navigator.vibrate) navigator.vibrate(60); } catch (_) {}
+      const body = document.getElementById('profile-body');
+      if (!body) { _pfMove = null; return; }
+      body.querySelectorAll('.pf-panel').forEach(p => {
+        if (p === panel) p.classList.add('pf-moving');
+        else p.classList.add('pf-targetable');
+      });
+      const banner = document.createElement('div');
+      banner.id = 'pf-move-banner';
+      banner.className = 'pf-move-banner';
+      banner.innerHTML = `<span>${escapeHTML(t('profile.moveHint'))}</span><button type="button" id="pf-move-cancel">${escapeHTML(t('profile.moveCancel'))}</button>`;
+      body.prepend(banner);
+      banner.querySelector('#pf-move-cancel').addEventListener('click', (e) => { e.stopPropagation(); pfCancelMove(); });
+      body.querySelectorAll('.pf-col').forEach(col => {
+        const z = document.createElement('div');
+        z.className = 'pf-drop-end';
+        z.setAttribute('data-pf-col', col.getAttribute('data-pf-col'));
+        z.textContent = t('profile.moveHere');
+        col.appendChild(z);
+      });
+    }
+
+    async function pfCommitMove(key, col, index) {
+      const desktopLayout = window.matchMedia('(min-width: 1280px)').matches;
+      const layout = { col1: [], col2: [] };
+      document.querySelectorAll('#profile-body .pf-col').forEach(cEl => {
+        const cc = cEl.getAttribute('data-pf-col');
+        if (!layout[cc]) return;
+        cEl.querySelectorAll(':scope > .pf-panel').forEach(p => {
+          const k = p.getAttribute('data-pf-panel');
+          if (k) layout[cc].push(k);
+        });
+      });
+      ['col1', 'col2'].forEach(cc => { layout[cc] = layout[cc].filter(k => k !== key); });
+      if (!layout[col]) { pfCancelMove(true); return; }
+      if (index < 0 || index >= layout[col].length) layout[col].push(key);
+      else layout[col].splice(index, 0, key);
+      try { await db.put('settings', { key: pfKey(desktopLayout), value: layout }); } catch (_) {}
+      _pfMove = null;
+      try { toast(t('profile.moved'), 'success', 1500); } catch (_) {}
+      const y = window.scrollY;
+      try { await renderAsync(); } catch (_) {}
+      requestAnimationFrame(() => { try { window.scrollTo(0, y); } catch (_) {} });
+    }
+
+    function pfMoveClickCapture(e) {
+      if (!_pfMove) return;
+      if (e.target.closest && e.target.closest('#pf-move-banner')) return; // Cancel button works normally
+      e.stopPropagation();
+      e.preventDefault();
+      if (Date.now() < _pfMove.suppressClickUntil) return; // ignore release of the activating press
+      const zone = e.target.closest ? e.target.closest('.pf-drop-end') : null;
+      const target = e.target.closest ? e.target.closest('.pf-panel') : null;
+      if (zone) {
+        pfCommitMove(_pfMove.key, zone.getAttribute('data-pf-col'), -1);
+      } else if (target) {
+        const tkey = target.getAttribute('data-pf-panel');
+        if (tkey === _pfMove.key) { pfCancelMove(); return; }
+        const colEl = target.closest('.pf-col');
+        const col = colEl ? colEl.getAttribute('data-pf-col') : 'col1';
+        const panels = colEl ? [...colEl.querySelectorAll(':scope > .pf-panel')] : [];
+        pfCommitMove(_pfMove.key, col, panels.indexOf(target));
+      } else {
+        pfCancelMove();
+      }
+    }
+
+    function wirePanelMove() {
+      const body = document.getElementById('profile-body');
+      if (!body) return;
+      pfCancelMove(true);
+      if (!_pfEscWired) {
+        _pfEscWired = true;
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && _pfMove) pfCancelMove(); });
+      }
+      body.addEventListener('click', pfMoveClickCapture, true);
+      body.querySelectorAll('.pf-panel').forEach(panel => {
+        let timer = null, armed = false, sx = 0, sy = 0;
+        const disarm = () => { if (timer) { clearTimeout(timer); timer = null; } armed = false; };
+        panel.addEventListener('pointerdown', (e) => {
+          if (_pfMove) return;
+          if (e.button !== undefined && e.button > 0) return;
+          armed = true; sx = e.clientX || 0; sy = e.clientY || 0;
+          timer = setTimeout(() => { timer = null; if (!armed) return; armed = false; pfActivateMove(panel); }, PF_HOLD_MS);
+        });
+        panel.addEventListener('pointermove', (e) => {
+          if (!armed) return;
+          const dx = (e.clientX || 0) - sx, dy = (e.clientY || 0) - sy;
+          if (dx * dx + dy * dy > 144) disarm();
+        });
+        panel.addEventListener('pointerup', disarm);
+        panel.addEventListener('pointercancel', disarm);
+        panel.addEventListener('contextmenu', (e) => { if (armed || _pfMove) e.preventDefault(); });
+      });
     }
 
     /** Hero card with avatar + key stats. */
@@ -22293,6 +22505,21 @@ async function boot() {
     document.querySelectorAll('.fs-btn').forEach(btn => {
       btn.addEventListener('click', () => applyFontSize(parseFloat(btn.getAttribute('data-font-size'))));
     });
+    // Header font-size quick stepper (A− / A+ next to the language selector).
+    // Steps through the same 16 levels as the Settings grid.
+    const FONT_STEPS = Object.keys(FONT_SCALE_LABELS).map(Number).sort((a, b) => a - b);
+    function stepFontSize(dir) {
+      let cur = 1;
+      try { cur = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--font-scale')) || 1; } catch (_) {}
+      let idx = 0, best = Infinity;
+      FONT_STEPS.forEach((s, i) => { const d = Math.abs(s - cur); if (d < best) { best = d; idx = i; } });
+      idx = Math.min(FONT_STEPS.length - 1, Math.max(0, idx + dir));
+      applyFontSize(FONT_STEPS[idx]);
+    }
+    const fsDecBtn = document.getElementById('font-dec-btn');
+    if (fsDecBtn) fsDecBtn.addEventListener('click', () => stepFontSize(-1));
+    const fsIncBtn = document.getElementById('font-inc-btn');
+    if (fsIncBtn) fsIncBtn.addEventListener('click', () => stepFontSize(1));
     document.querySelectorAll('.ms-btn').forEach(btn => {
       btn.addEventListener('click', () => applyModalSize(parseFloat(btn.getAttribute('data-modal-size'))));
     });
@@ -23658,6 +23885,8 @@ document.addEventListener('DOMContentLoaded', function () {
     if (sel) sel.value = lang;
     const bmSel = document.getElementById('bm-lang-select');
     if (bmSel) bmSel.value = lang;
+    const npSel = document.getElementById('np-lang-select');
+    if (npSel) npSel.value = lang;
 
     // Re-render injury checklist labels (they use t() at creation time)
     if (typeof window.renderClientInjuryList === 'function') {
@@ -23815,6 +24044,12 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   // Picker duplicate language selector (mirrors the header one)
   document.getElementById('bm-lang-select').addEventListener('change', (e) => {
+    const lang = e.target.value;
+    switchAppLanguage(lang);
+    toast(t('toast.langChanged', { lang: lang.toUpperCase() }), 'info', 1800);
+  });
+  // Nutrition plan duplicate language selector (mirrors the header one)
+  document.getElementById('np-lang-select').addEventListener('change', (e) => {
     const lang = e.target.value;
     switchAppLanguage(lang);
     toast(t('toast.langChanged', { lang: lang.toUpperCase() }), 'info', 1800);

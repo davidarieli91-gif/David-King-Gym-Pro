@@ -212,6 +212,13 @@
   "welcome": "Welcome back",
   "firstRunHint": "Set a trainer password to secure your client data."
  },
+  "profile": {
+   "moveHint": "Move mode: tap a panel to place the held panel before it",
+   "moveHere": "Move here",
+   "moveCancel": "Cancel",
+   "moved": "Panel moved",
+   "moveCancelled": "Move cancelled"
+  },
  "clients": {
   "title": "Clients",
   "empty": "No clients yet. Tap “Add Client” to create the first profile.",
