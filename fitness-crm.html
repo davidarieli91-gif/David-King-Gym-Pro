@@ -237,6 +237,226 @@
     }
     [data-theme="aquarium"] .bg-primary { box-shadow: 0 4px 20px rgba(6,182,212,0.3); }
 
+    /* Bubble Lagoon — macro oil-droplets on lime/pink/indigo (photo 1) */
+    [data-theme="bubble-lagoon"] {
+      --c-bg:8 26 20; --c-surface:14 40 30; --c-surface-2:24 58 42;
+      --c-border:48 105 72; --c-text:226 250 236; --c-muted:130 182 148;
+      --c-primary:16 185 129; --c-primary-2:110 231 183; --c-accent:163 230 53;
+      --c-success:74 222 128; --c-warning:251 191 36; --c-danger:248 113 113;
+      --glass-bg: rgb(var(--c-surface) / 0.62);
+      --glass-bg-2: rgb(var(--c-surface-2) / 0.52);
+      --glass-blur: 18px;
+    }
+    [data-theme="bubble-lagoon"] body::before {
+      content: '';
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(ellipse 850px 620px at 78% 8%, rgba(163,230,53,0.16), transparent 65%),
+        radial-gradient(ellipse 700px 600px at 8% 45%, rgba(244,114,182,0.13), transparent 62%),
+        radial-gradient(ellipse 650px 500px at 12% 0%, rgba(129,140,248,0.12), transparent 60%),
+        radial-gradient(ellipse 900px 700px at 45% 105%, rgba(6,78,59,0.20), transparent 70%);
+      animation: lagoon-breathe 13s ease-in-out infinite alternate;
+    }
+    [data-theme="bubble-lagoon"] body::after {
+      content: '';
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(circle 4px at 12% 28%, rgba(255,255,255,0.55), transparent 70%),
+        radial-gradient(circle 3px at 32% 12%, rgba(163,230,53,0.65), transparent 70%),
+        radial-gradient(circle 5px at 68% 22%, rgba(255,255,255,0.45), transparent 70%),
+        radial-gradient(circle 3px at 84% 42%, rgba(244,114,182,0.6), transparent 70%),
+        radial-gradient(circle 4px at 55% 58%, rgba(255,255,255,0.4), transparent 70%),
+        radial-gradient(circle 3px at 22% 72%, rgba(163,230,53,0.55), transparent 70%),
+        radial-gradient(circle 5px at 76% 78%, rgba(165,180,252,0.5), transparent 70%),
+        radial-gradient(circle 3px at 44% 86%, rgba(255,255,255,0.45), transparent 70%);
+      animation: lagoon-twinkle 5s ease-in-out infinite alternate;
+    }
+    @keyframes lagoon-breathe {
+      0% { opacity: 0.55; transform: scale(1) translateX(0); }
+      100% { opacity: 1; transform: scale(1.05) translateX(-12px); }
+    }
+    @keyframes lagoon-twinkle {
+      0% { opacity: 0.35; }
+      100% { opacity: 0.9; }
+    }
+    [data-theme="bubble-lagoon"] .bg-surface,
+    [data-theme="bubble-lagoon"] .bg-surface-2 {
+      background-image:
+        linear-gradient(135deg, rgba(52,211,153,0.04) 0%, transparent 50%, rgba(163,230,53,0.025) 100%);
+    }
+    [data-theme="bubble-lagoon"] header.glass {
+      background: linear-gradient(180deg, rgba(14,40,30,0.88), rgba(14,40,30,0.72)) !important;
+      border-bottom-color: rgba(52,211,153,0.28) !important;
+    }
+    [data-theme="bubble-lagoon"] nav.bottom-nav,
+    [data-theme="bubble-lagoon"] nav.fixed.bottom-0 {
+      background: linear-gradient(0deg, rgba(14,40,30,0.92), rgba(14,40,30,0.78)) !important;
+      border-top-color: rgba(52,211,153,0.28) !important;
+    }
+    [data-theme="bubble-lagoon"] .bg-primary { box-shadow: 0 4px 20px rgba(52,211,153,0.32); }
+
+    /* Ember Tide — deep blue water with molten orange flow (photo 2) */
+    [data-theme="ember-tide"] {
+      --c-bg:7 15 30; --c-surface:13 27 50; --c-surface-2:22 42 70;
+      --c-border:45 75 110; --c-text:226 238 252; --c-muted:130 160 195;
+      --c-primary:249 115 22; --c-primary-2:251 146 60; --c-accent:56 189 248;
+      --c-success:74 222 128; --c-warning:251 191 36; --c-danger:248 113 113;
+      --glass-bg: rgb(var(--c-surface) / 0.62);
+      --glass-bg-2: rgb(var(--c-surface-2) / 0.52);
+      --glass-blur: 18px;
+    }
+    [data-theme="ember-tide"] body::before {
+      content: '';
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(ellipse 900px 650px at 12% 88%, rgba(249,115,22,0.20), transparent 62%),
+        radial-gradient(ellipse 600px 450px at 38% 62%, rgba(251,191,36,0.10), transparent 60%),
+        radial-gradient(ellipse 850px 650px at 85% 12%, rgba(37,99,235,0.22), transparent 65%),
+        radial-gradient(ellipse 700px 600px at 55% 105%, rgba(124,45,18,0.25), transparent 70%);
+      animation: ember-flow 15s ease-in-out infinite alternate;
+    }
+    [data-theme="ember-tide"] body::after {
+      content: '';
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(circle 4px at 18% 78%, rgba(251,146,60,0.7), transparent 70%),
+        radial-gradient(circle 3px at 30% 62%, rgba(253,224,71,0.6), transparent 70%),
+        radial-gradient(circle 5px at 72% 28%, rgba(125,211,252,0.5), transparent 70%),
+        radial-gradient(circle 3px at 86% 52%, rgba(251,146,60,0.55), transparent 70%),
+        radial-gradient(circle 4px at 58% 38%, rgba(255,255,255,0.4), transparent 70%),
+        radial-gradient(circle 3px at 42% 84%, rgba(253,224,71,0.5), transparent 70%),
+        radial-gradient(circle 5px at 90% 82%, rgba(96,165,250,0.45), transparent 70%),
+        radial-gradient(circle 3px at 8% 40%, rgba(255,255,255,0.4), transparent 70%);
+      animation: ember-twinkle 6s ease-in-out infinite alternate;
+    }
+    @keyframes ember-flow {
+      0% { opacity: 0.55; transform: scale(1) translateY(0); }
+      100% { opacity: 1; transform: scale(1.05) translateY(-12px); }
+    }
+    @keyframes ember-twinkle {
+      0% { opacity: 0.35; }
+      100% { opacity: 0.9; }
+    }
+    [data-theme="ember-tide"] .bg-surface,
+    [data-theme="ember-tide"] .bg-surface-2 {
+      background-image:
+        linear-gradient(135deg, rgba(249,115,22,0.045) 0%, transparent 50%, rgba(56,189,248,0.025) 100%);
+    }
+    [data-theme="ember-tide"] header.glass {
+      background: linear-gradient(180deg, rgba(13,27,50,0.88), rgba(13,27,50,0.72)) !important;
+      border-bottom-color: rgba(249,115,22,0.30) !important;
+    }
+    [data-theme="ember-tide"] nav.bottom-nav,
+    [data-theme="ember-tide"] nav.fixed.bottom-0 {
+      background: linear-gradient(0deg, rgba(13,27,50,0.92), rgba(13,27,50,0.78)) !important;
+      border-top-color: rgba(249,115,22,0.30) !important;
+    }
+    [data-theme="ember-tide"] .bg-primary { box-shadow: 0 4px 20px rgba(249,115,22,0.32); }
+
+    /* Crimson Reef — crimson/magenta bloom over cyan water (photo 3) */
+    [data-theme="crimson-reef"] {
+      --c-bg:24 10 16; --c-surface:40 17 27; --c-surface-2:58 28 40;
+      --c-border:100 55 70; --c-text:250 232 238; --c-muted:195 140 155;
+      --c-primary:244 63 94; --c-primary-2:251 113 133; --c-accent:34 211 238;
+      --c-success:74 222 128; --c-warning:251 191 36; --c-danger:248 113 113;
+      --glass-bg: rgb(var(--c-surface) / 0.62);
+      --glass-bg-2: rgb(var(--c-surface-2) / 0.52);
+      --glass-blur: 18px;
+    }
+    [data-theme="crimson-reef"] body::before {
+      content: '';
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(ellipse 850px 600px at 50% 0%, rgba(225,29,72,0.22), transparent 62%),
+        radial-gradient(ellipse 650px 550px at 5% 30%, rgba(217,70,239,0.12), transparent 60%),
+        radial-gradient(ellipse 900px 700px at 80% 90%, rgba(8,145,178,0.20), transparent 65%),
+        radial-gradient(ellipse 600px 500px at 30% 100%, rgba(76,5,25,0.25), transparent 70%);
+      animation: reef-breathe 13s ease-in-out infinite alternate;
+    }
+    [data-theme="crimson-reef"] body::after {
+      content: '';
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(circle 4px at 20% 24%, rgba(255,255,255,0.5), transparent 70%),
+        radial-gradient(circle 3px at 48% 14%, rgba(249,168,212,0.6), transparent 70%),
+        radial-gradient(circle 5px at 70% 34%, rgba(103,232,249,0.5), transparent 70%),
+        radial-gradient(circle 3px at 86% 58%, rgba(255,255,255,0.45), transparent 70%),
+        radial-gradient(circle 4px at 60% 66%, rgba(34,211,238,0.55), transparent 70%),
+        radial-gradient(circle 3px at 30% 78%, rgba(249,168,212,0.5), transparent 70%),
+        radial-gradient(circle 5px at 78% 86%, rgba(255,255,255,0.4), transparent 70%),
+        radial-gradient(circle 3px at 10% 60%, rgba(103,232,249,0.5), transparent 70%);
+      animation: reef-twinkle 5.5s ease-in-out infinite alternate;
+    }
+    @keyframes reef-breathe {
+      0% { opacity: 0.55; transform: scale(1) translateX(0); }
+      100% { opacity: 1; transform: scale(1.05) translateX(12px); }
+    }
+    @keyframes reef-twinkle {
+      0% { opacity: 0.35; }
+      100% { opacity: 0.9; }
+    }
+    [data-theme="crimson-reef"] .bg-surface,
+    [data-theme="crimson-reef"] .bg-surface-2 {
+      background-image:
+        linear-gradient(135deg, rgba(244,63,94,0.045) 0%, transparent 50%, rgba(34,211,238,0.025) 100%);
+    }
+    [data-theme="crimson-reef"] header.glass {
+      background: linear-gradient(180deg, rgba(40,17,27,0.88), rgba(40,17,27,0.72)) !important;
+      border-bottom-color: rgba(244,63,94,0.30) !important;
+    }
+    [data-theme="crimson-reef"] nav.bottom-nav,
+    [data-theme="crimson-reef"] nav.fixed.bottom-0 {
+      background: linear-gradient(0deg, rgba(40,17,27,0.92), rgba(40,17,27,0.78)) !important;
+      border-top-color: rgba(244,63,94,0.30) !important;
+    }
+    [data-theme="crimson-reef"] .bg-primary { box-shadow: 0 4px 20px rgba(244,63,94,0.32); }
+
+    /* Retro 1940 — warm paper, deep brown ink, firebrick + deep teal (light) */
+    [data-theme="retro-1940"] {
+      --c-bg:243 232 205; --c-surface:252 246 231; --c-surface-2:238 222 190;
+      --c-border:198 172 128; --c-text:48 34 22; --c-muted:120 94 62;
+      --c-primary:178 34 34; --c-primary-2:205 70 50; --c-accent:13 120 110;
+      --c-success:95 135 55; --c-warning:185 140 25; --c-danger:150 30 30;
+      --glass-bg: rgb(var(--c-surface) / 0.82);
+      --glass-bg-2: rgb(var(--c-surface-2) / 0.75);
+      --glass-blur: 14px;
+    }
+    [data-theme="retro-1940"] body::before {
+      content: '';
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none; z-index: 0;
+      background:
+        repeating-conic-gradient(from -90deg at 50% -12%, rgba(120,70,20,0.055) 0deg 5deg, transparent 5deg 11deg),
+        radial-gradient(ellipse 120% 90% at 50% 40%, transparent 55%, rgba(90,55,20,0.16) 100%);
+    }
+    [data-theme="retro-1940"] .font-display {
+      font-family: Georgia, 'Times New Roman', 'Noto Serif', serif;
+      letter-spacing: 0.01em;
+    }
+    [data-theme="retro-1940"] .bg-surface,
+    [data-theme="retro-1940"] .bg-surface-2 {
+      background-image:
+        linear-gradient(180deg, rgba(255,255,255,0.35) 0%, transparent 40%);
+    }
+    [data-theme="retro-1940"] header.glass {
+      background: linear-gradient(180deg, rgba(252,246,231,0.94), rgba(248,238,214,0.85)) !important;
+      border-bottom: 2px solid rgba(120,70,20,0.35) !important;
+    }
+    [data-theme="retro-1940"] nav.bottom-nav,
+    [data-theme="retro-1940"] nav.fixed.bottom-0 {
+      background: linear-gradient(0deg, rgba(252,246,231,0.96), rgba(248,238,214,0.88)) !important;
+      border-top: 2px solid rgba(120,70,20,0.35) !important;
+    }
+    [data-theme="retro-1940"] .bg-primary {
+      box-shadow: 0 3px 0 rgba(90,20,20,0.35), 0 4px 14px rgba(178,34,34,0.25);
+    }
+
     /* ===== Per-theme glass tuning — light themes get stronger shine, dark themes get deeper blur ===== */
     [data-mode="dark"] {
       --glass-bg:     rgb(var(--c-surface) / 0.68);
@@ -1258,6 +1478,108 @@
       50% { transform: translateX(60vw) translateY(20px); }
       75% { transform: translateX(80vw) translateY(-15px); }
       100% { transform: translateX(calc(100vw + 200px)) translateY(0); }
+    }
+
+    /* ---- MICRO-BUBBLES (Bubble Lagoon theme) ---- */
+    [data-theme="bubble-lagoon"] #theme-particles::before {
+      width: 5px; height: 5px; border-radius: 50%; background: rgba(163,230,53,0.35);
+      border: 1px solid rgba(163,230,53,0.25);
+      box-shadow:
+        80px 620px 0 rgba(163,230,53,0.3), 220px 520px 0 rgba(255,255,255,0.25),
+        360px 700px 0 rgba(244,114,182,0.3), 500px 480px 0 rgba(163,230,53,0.25),
+        640px 660px 0 rgba(255,255,255,0.3), 780px 540px 0 rgba(165,180,252,0.3),
+        920px 700px 0 rgba(163,230,53,0.3), 1060px 560px 0 rgba(255,255,255,0.25),
+        300px 380px 0 rgba(244,114,182,0.25), 700px 400px 0 rgba(163,230,53,0.3);
+      animation: lagoon-rise 9s linear infinite;
+    }
+    [data-theme="bubble-lagoon"] #theme-particles::after {
+      width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,0.7);
+      box-shadow:
+        150px 250px 0 rgba(255,255,255,0.5), 450px 150px 0 rgba(163,230,53,0.5),
+        750px 300px 0 rgba(255,255,255,0.5), 1050px 200px 0 rgba(244,114,182,0.5),
+        250px 450px 0 rgba(255,255,255,0.5), 650px 500px 0 rgba(163,230,53,0.5),
+        950px 420px 0 rgba(255,255,255,0.5), 350px 600px 0 rgba(165,180,252,0.5);
+      animation: lagoon-twinkle-p 4s ease-in-out infinite alternate;
+    }
+    @keyframes lagoon-rise {
+      0% { transform: translateY(100vh); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-100px); opacity: 0; }
+    }
+    @keyframes lagoon-twinkle-p {
+      0%, 100% { opacity: 0.25; }
+      50% { opacity: 0.9; }
+    }
+
+    /* ---- EMBERS (Ember Tide theme) ---- */
+    [data-theme="ember-tide"] #theme-particles::before {
+      width: 4px; height: 4px; border-radius: 50%; background: rgba(251,146,60,0.85);
+      box-shadow:
+        100px 600px 8px 2px rgba(249,115,22,0.55), 320px 500px 8px 2px rgba(251,191,36,0.45),
+        540px 680px 8px 2px rgba(249,115,22,0.6), 760px 520px 8px 2px rgba(251,191,36,0.4),
+        980px 660px 8px 2px rgba(249,115,22,0.55), 200px 420px 8px 2px rgba(251,191,36,0.5),
+        620px 420px 8px 2px rgba(249,115,22,0.5), 880px 380px 8px 2px rgba(251,191,36,0.55),
+        420px 720px 8px 2px rgba(249,115,22,0.45), 1100px 480px 8px 2px rgba(251,191,36,0.5);
+      animation: ember-flicker 3.5s ease-in-out infinite alternate;
+    }
+    [data-theme="ember-tide"] #theme-particles::after {
+      width: 6px; height: 6px; border-radius: 50%; background: rgba(125,211,252,0.3);
+      border: 1px solid rgba(125,211,252,0.25);
+      box-shadow:
+        150px 300px 0 rgba(125,211,252,0.25), 450px 550px 0 rgba(251,146,60,0.25),
+        750px 250px 0 rgba(125,211,252,0.25), 1050px 450px 0 rgba(251,146,60,0.25),
+        300px 650px 0 rgba(125,211,252,0.25), 900px 600px 0 rgba(251,146,60,0.25);
+      animation: lagoon-rise 11s linear infinite;
+    }
+    @keyframes ember-flicker {
+      0%, 100% { opacity: 0.35; }
+      50% { opacity: 1; }
+    }
+
+    /* ---- REEF SPARKS (Crimson Reef theme) ---- */
+    [data-theme="crimson-reef"] #theme-particles::before {
+      width: 5px; height: 5px; border-radius: 50%; background: rgba(103,232,249,0.4);
+      border: 1px solid rgba(103,232,249,0.3);
+      box-shadow:
+        80px 620px 0 rgba(103,232,249,0.3), 240px 520px 0 rgba(249,168,212,0.3),
+        400px 700px 0 rgba(103,232,249,0.35), 560px 480px 0 rgba(255,255,255,0.3),
+        720px 660px 0 rgba(103,232,249,0.3), 880px 540px 0 rgba(249,168,212,0.3),
+        1040px 680px 0 rgba(103,232,249,0.35), 320px 400px 0 rgba(255,255,255,0.3);
+      animation: lagoon-rise 10s linear infinite;
+    }
+    [data-theme="crimson-reef"] #theme-particles::after {
+      width: 3px; height: 3px; border-radius: 50%; background: rgba(249,168,212,0.8);
+      box-shadow:
+        150px 250px 0 rgba(249,168,212,0.55), 450px 150px 0 rgba(103,232,249,0.55),
+        750px 300px 0 rgba(249,168,212,0.55), 1050px 200px 0 rgba(255,255,255,0.5),
+        250px 450px 0 rgba(249,168,212,0.55), 650px 500px 0 rgba(103,232,249,0.55),
+        950px 420px 0 rgba(249,168,212,0.55), 550px 600px 0 rgba(255,255,255,0.5);
+      animation: lagoon-twinkle-p 4.5s ease-in-out infinite alternate;
+    }
+
+    /* ---- DUST MOTES (Retro 1940 theme) ---- */
+    [data-theme="retro-1940"] #theme-particles::before {
+      width: 3px; height: 3px; border-radius: 50%; background: rgba(120,85,40,0.35);
+      box-shadow:
+        120px 200px 0 rgba(120,85,40,0.3), 340px 420px 0 rgba(120,85,40,0.25),
+        560px 180px 0 rgba(120,85,40,0.3), 780px 380px 0 rgba(120,85,40,0.25),
+        1000px 220px 0 rgba(120,85,40,0.3), 220px 560px 0 rgba(120,85,40,0.25),
+        640px 600px 0 rgba(120,85,40,0.3), 900px 520px 0 rgba(120,85,40,0.25),
+        460px 300px 0 rgba(150,30,30,0.25), 820px 120px 0 rgba(120,85,40,0.3);
+      animation: retro-drift 16s ease-in-out infinite alternate;
+    }
+    [data-theme="retro-1940"] #theme-particles::after {
+      width: 2px; height: 2px; border-radius: 50%; background: rgba(120,85,40,0.28);
+      box-shadow:
+        200px 350px 0 rgba(120,85,40,0.22), 500px 150px 0 rgba(120,85,40,0.22),
+        800px 450px 0 rgba(120,85,40,0.22), 1100px 300px 0 rgba(120,85,40,0.22),
+        350px 600px 0 rgba(120,85,40,0.22), 950px 620px 0 rgba(120,85,40,0.22);
+      animation: retro-drift 22s ease-in-out infinite alternate-reverse;
+    }
+    @keyframes retro-drift {
+      0% { transform: translate(0, 0); opacity: 0.5; }
+      100% { transform: translate(-30px, -50px); opacity: 0.9; }
     }
 
     /* ---- STARS (dark themes: dark, ocean-deep, carbon-steel, royal-purple, etc.) ---- */
@@ -21871,6 +22193,11 @@ async function boot() {
       { id:'jungle',name:'Jungle',dark:true,color:'#22c55e',mid:true },
       { id:'aquarium',name:'Aquarium',dark:true,color:'#06b6d4',mid:true },
       { id:'winter',name:'Winter',dark:true,color:'#60a5fa',mid:true },
+      // === Oil-bubble photo series + retro ===
+      { id:'bubble-lagoon',name:'Bubble Lagoon',dark:true,color:'#10b981',mid:true },
+      { id:'ember-tide',name:'Ember Tide',dark:true,color:'#f97316',mid:true },
+      { id:'crimson-reef',name:'Crimson Reef',dark:true,color:'#f43f5e',mid:true },
+      { id:'retro-1940',name:'Retro 1940',dark:false,color:'#b22222' },
       // === Light themes ===
       { id:'light',name:'Pure White',dark:false,color:'#4f46e5' },
       { id:'cloud-blue',name:'Cloud Blue',dark:false,color:'#3b82f6' },
@@ -21892,7 +22219,7 @@ async function boot() {
         // Mid themes get a softer, mid-gray gradient; pure dark/light keep their looks
         let bgStyle;
         if (theme.mid) {
-          bgStyle = `background:linear-gradient(135deg, rgb(${theme.id === 'midnight-mint' ? '14,31,26' : theme.id === 'dusk-velvet' ? '26,18,36' : theme.id === 'graphite-mist' ? '28,29,34' : theme.id === 'tide-pool' ? '13,26,34' : theme.id === 'warm-espresso' ? '26,18,12' : theme.id === 'aurora-haze' ? '16,20,31' : theme.id === 'jungle' ? '6,18,12' : theme.id === 'aquarium' ? '4,16,28' : theme.id === 'winter' ? '12,18,30' : '16,20,31'}), rgb(${theme.id === 'midnight-mint' ? '32,60,50' : theme.id === 'dusk-velvet' ? '52,40,70' : theme.id === 'graphite-mist' ? '56,58,66' : theme.id === 'tide-pool' ? '34,60,75' : theme.id === 'warm-espresso' ? '58,42,28' : theme.id === 'aurora-haze' ? '40,48,68' : theme.id === 'jungle' ? '22,48,30' : theme.id === 'aquarium' ? '18,45,68' : theme.id === 'winter' ? '30,45,68' : '40,48,68'}))`;
+          bgStyle = `background:linear-gradient(135deg, rgb(${theme.id === 'midnight-mint' ? '14,31,26' : theme.id === 'dusk-velvet' ? '26,18,36' : theme.id === 'graphite-mist' ? '28,29,34' : theme.id === 'tide-pool' ? '13,26,34' : theme.id === 'warm-espresso' ? '26,18,12' : theme.id === 'aurora-haze' ? '16,20,31' : theme.id === 'jungle' ? '6,18,12' : theme.id === 'aquarium' ? '4,16,28' : theme.id === 'winter' ? '12,18,30' : theme.id === 'bubble-lagoon' ? '8,26,20' : theme.id === 'ember-tide' ? '7,15,30' : theme.id === 'crimson-reef' ? '24,10,16' : theme.id === 'retro-1940' ? '243,232,205' : '16,20,31'}), rgb(${theme.id === 'midnight-mint' ? '32,60,50' : theme.id === 'dusk-velvet' ? '52,40,70' : theme.id === 'graphite-mist' ? '56,58,66' : theme.id === 'tide-pool' ? '34,60,75' : theme.id === 'warm-espresso' ? '58,42,28' : theme.id === 'aurora-haze' ? '40,48,68' : theme.id === 'jungle' ? '22,48,30' : theme.id === 'aquarium' ? '18,45,68' : theme.id === 'winter' ? '30,45,68' : theme.id === 'bubble-lagoon' ? '24,58,42' : theme.id === 'ember-tide' ? '22,42,70' : theme.id === 'crimson-reef' ? '58,28,40' : theme.id === 'retro-1940' ? '252,246,231' : '40,48,68'}))`;
         } else if (theme.dark) {
           bgStyle = 'background:linear-gradient(135deg,#14141c,#202028)';
         } else {
@@ -23429,7 +23756,11 @@ document.addEventListener('DOMContentLoaded', function () {
     'aurora-haze':    { dark: true,  bgHex: '#10141f' },
     'jungle':         { dark: true,  bgHex: '#06120c' },
     'aquarium':       { dark: true,  bgHex: '#04101c' },
-    'winter':         { dark: true,  bgHex: '#0c121e' }
+    'winter':         { dark: true,  bgHex: '#0c121e' },
+    'bubble-lagoon':  { dark: true,  bgHex: '#081a14' },
+    'ember-tide':     { dark: true,  bgHex: '#070f1e' },
+    'crimson-reef':   { dark: true,  bgHex: '#180a10' },
+    'retro-1940':     { dark: false, bgHex: '#f3e8cd' }
   };
 
   /** Current active language getter (used by other modules). */
