@@ -1888,6 +1888,12 @@
     #exercise-modal { z-index: 110 !important; }
     #bodymap-picker-modal { z-index: 100 !important; }
 
+    /* Live-workout RPE intensity buttons 1 (green) → 10 (maroon), strip under each set row */
+    .lw-rpe-row { display: flex; align-items: center; gap: 3px; }
+    .lw-rpe-btn { width: 22px; height: 22px; border-radius: 9999px; font-size: 9px; font-weight: 800; color: #fff; display: grid; place-items: center; opacity: .5; transition: transform .12s, opacity .12s; outline: 2px solid transparent; outline-offset: 1px; border: none; cursor: pointer; padding: 0; flex-shrink: 0; }
+    .lw-rpe-btn.sel { opacity: 1; outline-color: #fff; transform: scale(1.18); }
+    .lw-rpe-vol { margin-inline-start: auto; font-family: monospace; font-size: 10px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+
     /* ===== FOOD DETAIL MODAL RESPONSIVE =====
        Prevent horizontal overflow on mobile for the macro grids. */
     #food-detail-modal .grid.grid-cols-4 {
@@ -13383,6 +13389,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     let _exerciseCache = []; // cached exercise_base for picker
     let _exMap = null;       // Sprint 3 #2: Map index for O(1) lookups
     let _exMapSize = -1;     // track cache size to invalidate Map
+    // RPE intensity scale 1 (green, lightest) → 10 (maroon, hardest) — same as client portal
+    const RPE_COLORS = ['#16a34a', '#22c55e', '#65a30d', '#84cc16', '#ca8a04', '#f59e0b', '#f97316', '#ef4444', '#dc2626', '#7f1d1d'];
 
     /** Start a fresh empty workout. */
     async function start() {
@@ -13629,7 +13637,6 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
                   <th class="px-2 py-2 text-center">${t('workouts.prevWeight')}</th>
                   <th class="px-2 py-2 text-center">${t('workouts.weight')}</th>
                   <th class="px-2 py-2 text-center">${t('workouts.reps')}</th>
-                  <th class="px-2 py-2 text-center hidden sm:table-cell">${t('workouts.rpe')}</th>
                   <th class="px-2 py-2 text-center w-10">${t('workouts.done')}</th>
                   <th class="px-1 py-2 w-8"></th>
                 </tr>
@@ -13668,6 +13675,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         amrap: 'bg-primary/15 text-primary-2'
       };
       const typeBadge = setType !== 'normal' ? `<span class="text-[8px] font-bold px-1 py-0.5 rounded ${typeColors[setType] || ''}">${t('workouts.' + setTypeLabelKey) || setType}</span>` : '';
+      const setVol = Math.round((Number(set.weight) || 0) * (Number(set.reps) || 0));
+      const rpeBtns = RPE_COLORS.map((c, i) => {
+        const v = i + 1;
+        return `<button class="lw-rpe-btn${set.rpe === v ? ' sel' : ''}" data-lw-rpe="${exIdx}.${setIdx}" data-v="${v}" style="background:${c}" title="RPE ${v}">${v}</button>`;
+      }).join('');
 
       return `
         <tr class="border-b border-border/50 ${doneClass}" data-set-row="${exIdx}.${setIdx}">
@@ -13684,9 +13696,6 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           <td class="px-2 py-1.5">
             <input type="number" min="0" value="${set.reps || ''}" data-set-input="${exIdx}.${setIdx}.reps" class="w-full bg-surface-2 border border-border rounded-md px-1.5 py-1 text-sm text-center focus:outline-none focus:ring-1 focus:ring-primary/60" placeholder="${setType === 'amrap' ? '∞' : '—'}" />
           </td>
-          <td class="px-2 py-1.5 hidden sm:table-cell">
-            <input type="number" min="0" max="10" step="0.5" value="${set.rpe || ''}" data-set-input="${exIdx}.${setIdx}.rpe" class="w-full bg-surface-2 border border-border rounded-md px-1.5 py-1 text-sm text-center focus:outline-none focus:ring-1 focus:ring-primary/60" placeholder="—" />
-          </td>
           <td class="px-2 py-2 text-center">
             <input type="checkbox" ${done} data-set-done="${exIdx}.${setIdx}" class="w-5 h-5 accent-success cursor-pointer" />
           </td>
@@ -13701,12 +13710,17 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             </button>` : ''}
           </td>
         </tr>
+        <tr class="border-b border-border/50" data-rpe-strip="${exIdx}.${setIdx}">
+          <td colspan="7" class="px-2 pt-0.5 pb-2">
+            <div class="lw-rpe-row">${rpeBtns}<span class="lw-rpe-vol">${setVol}</span></div>
+          </td>
+        </tr>
       `;
     }
 
     /** Wire all event handlers for the rendered exercise blocks. */
     function wireExerciseEvents() {
-      // Set inputs (weight/reps/rpe)
+      // Set inputs (weight/reps)
       document.querySelectorAll('[data-set-input]').forEach(input => {
         input.addEventListener('input', (e) => {
           const [exIdx, setIdx, field] = e.target.getAttribute('data-set-input').split('.');
@@ -13714,6 +13728,26 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           if (_workout && _workout.exercises[exIdx] && _workout.exercises[exIdx].sets[setIdx]) {
             _workout.exercises[exIdx].sets[setIdx][field] = val === '' ? null : (field === 'reps' || field === 'rpe' ? parseInt(val, 10) : parseFloat(val));
             updateStats();
+            // live-update the set volume readout next to the RPE buttons
+            const st = _workout.exercises[exIdx].sets[setIdx];
+            const strip = document.querySelector('[data-rpe-strip="' + exIdx + '.' + setIdx + '"] .lw-rpe-vol');
+            if (strip) strip.textContent = Math.round((Number(st.weight) || 0) * (Number(st.reps) || 0));
+          }
+        });
+      });
+
+      // RPE intensity buttons 1-10 (tap again to clear)
+      document.querySelectorAll('[data-lw-rpe]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const [exIdx, setIdx] = btn.getAttribute('data-lw-rpe').split('.').map(Number);
+          const v = Number(btn.getAttribute('data-v'));
+          if (_workout && _workout.exercises[exIdx] && _workout.exercises[exIdx].sets[setIdx]) {
+            const set = _workout.exercises[exIdx].sets[setIdx];
+            set.rpe = (set.rpe === v) ? null : v;
+            const strip = btn.closest('[data-rpe-strip]');
+            if (strip) strip.querySelectorAll('[data-lw-rpe]').forEach(b => b.classList.toggle('sel', Number(b.getAttribute('data-v')) === set.rpe));
+            updateStats();
+            saveDraft();
           }
         });
       });
