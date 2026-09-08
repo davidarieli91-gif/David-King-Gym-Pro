@@ -24676,11 +24676,19 @@ document.addEventListener('DOMContentLoaded', function () {
     var CFG_KEY = 'cloud_firebase_config';
     var AUTOSYNC_KEY = 'cloud_autosync';
     var LASTSYNC_KEY = 'cloud_last_sync';
-    /* Optional hard-coded fallback Firebase config (web keys are public by
-     * design — safe to ship). When set, Google sign-in (incl. the lock-screen
-     * button) works on ANY device without pasting the config in Settings first.
-     * A config stored via Settings still takes priority. */
-    var DEFAULT_CLOUD_CONFIG = null; // e.g. { apiKey: '...', authDomain: '...', projectId: '...', appId: '...' };
+    /* Hard-coded fallback Firebase config (web keys are public by design —
+     * safe to ship). Makes the Google sign-in (incl. the lock-screen button)
+     * work on ANY device out of the box. A config stored via Settings (from a
+     * synced backup) still takes priority. */
+    var DEFAULT_CLOUD_CONFIG = {
+      apiKey: 'AIzaSyCP1QVC8TqhqU4_LSG1fxirClo8KHMS9rM',
+      authDomain: 'david-king-gym.firebaseapp.com',
+      projectId: 'david-king-gym',
+      storageBucket: 'david-king-gym.firebasestorage.app',
+      messagingSenderId: '755766426093',
+      appId: '1:755766426093:web:6ef22ee31139ff6175cfe4',
+      measurementId: 'G-BWP31B0JBT'
+    };
     var DEBOUNCE_MS = 20000;
     var USER_STORES = ['clients', 'client_programs', 'workout_history', 'nutrition_plans',
                        'nutrition_history', 'workout_templates', 'nutrition_templates'];
