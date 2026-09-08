@@ -21847,7 +21847,9 @@ async function boot() {
         try {
           // 3PCD-proof first-party flow (Google One Tap / official button →
           // ID token → signInWithCredential); redirect is only the fallback.
-          const g = (window.cloudSync && window.cloudSync.signInGsi) ? await window.cloudSync.signInGsi() : null;
+          let g = null;
+          try { g = (window.cloudSync && window.cloudSync.signInGsi) ? await window.cloudSync.signInGsi() : null; }
+          catch (e3) { try { console.warn('[auth] GIS unavailable, falling back to redirect:', e3); } catch (e4) {} }
           if (g && g.gsi) {
             gSetBusy(false);
             if (gHint) { gHint.textContent = t('auth.googlePickAccount'); gHint.classList.remove('hidden'); }
