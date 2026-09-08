@@ -2169,7 +2169,7 @@
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c7</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c8</p>
             </div>
           </div>
 
@@ -25155,8 +25155,20 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /* ---------- upload (mirrors whole DB; hash-skip unchanged stores) ---------- */
+    /* The backup module is a top-level `const` in a classic script — that is a
+     * global LEXICAL binding, NOT a window property, so window.backup is
+     * undefined FOREVER. Resolve the binding safely instead. Before this fix
+     * the guard below never passed and "Save to cloud" died silently: info
+     * toast, then nothing (no green, no red) — bug found 2026-09-08 on c7,
+     * after the user finally cleared auth + Firestore rules. */
+    function getBackupApi() {
+      try { if (typeof backup !== 'undefined' && backup && typeof backup.serialize === 'function') return backup; } catch (e) {}
+      try { if (window.backup && typeof window.backup.serialize === 'function') return window.backup; } catch (e2) {}
+      return null;
+    }
     async function saveNow() {
-      if (!_user || !_fs || !window.backup) return { ok: false, error: 'signed_out' };
+      if (!_user || !_fs) return { ok: false, error: 'signed_out' };
+      if (!getBackupApi()) return { ok: false, error: 'backup_api_missing' };
       if (_busy) { _savingQueued = true; return { ok: false, error: 'busy' }; }
       _busy = true;
       try {
@@ -25168,7 +25180,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var prevHashes = prev.store_hashes || {};
         var prevParts = prev.store_parts || {};
 
-        var ser = await backup.serialize();
+        var ser = await getBackupApi().serialize();
         var data = maskSecrets(ser.data);
         var names = db.storeNames();
         var gen = Date.now();
@@ -25471,6 +25483,9 @@ document.addEventListener('DOMContentLoaded', function () {
           toastMsg((T('settings.cloudAccSaved') || '✓ Saved to cloud: {n} records, {kb} KB')
             .replace('{n}', r.meta.total_records).replace('{kb}', Math.round(r.meta.total_bytes / 1024)), 'success', 5000);
           renderStatus();
+        } else if (r.error && r.error !== 'busy') {
+          // never die silently again: surface the exact reason
+          toastMsg((T('settings.cloudAccErrGeneric') || 'Cloud error: {e}').replace('{e}', r.error), 'danger', 7000);
         }
       });
 

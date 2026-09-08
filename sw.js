@@ -1,6 +1,6 @@
 // Service Worker - David King Gym PWA
-// v34: Google Identity Services first-party sign-in (3PCD/storage-partitioning-proof)
-const CACHE_NAME = 'dk-gym-v34';
+// v35: fix cloud save silently dying (window.backup is not a property — const binding)
+const CACHE_NAME = 'dk-gym-v35';
 const APP_SHELL = [
   './',
   './index.html',
