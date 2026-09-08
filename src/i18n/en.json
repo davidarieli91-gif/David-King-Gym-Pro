@@ -218,7 +218,8 @@
   "cloudStatusChecking": "Checking cloud session…",
   "cloudStatusSignedIn": "Signed in:",
   "cloudSignInFailed": "Google sign-in didn't complete — please try again",
-  "googleRelayOpened": "Finish the sign-in in the browser tab that just opened — this window unlocks automatically."
+  "googleRelayOpened": "Finish the sign-in in the browser tab that just opened — this window unlocks automatically.",
+  "googlePickAccount": "Choose your Google account in the Google window — the app unlocks automatically."
  },
  "profile": {
   "moveHint": "Move mode: tap a panel to place the held panel before it",

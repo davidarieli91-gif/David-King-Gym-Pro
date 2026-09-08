@@ -1,6 +1,6 @@
 // Service Worker - David King Gym PWA
-// v33: standalone-window OAuth relay (Google sign-in via a browser tab)
-const CACHE_NAME = 'dk-gym-v33';
+// v34: Google Identity Services first-party sign-in (3PCD/storage-partitioning-proof)
+const CACHE_NAME = 'dk-gym-v34';
 const APP_SHELL = [
   './',
   './index.html',

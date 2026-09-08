@@ -2169,7 +2169,7 @@
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c6</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c7</p>
             </div>
           </div>
 
@@ -21796,6 +21796,7 @@ async function boot() {
             const s2 = (window.cloudSync && window.cloudSync.getState) ? window.cloudSync.getState() : null;
             if (s2 && s2.error) bits.push('err:' + s2.error);
             bits.push('fb:' + ((window.firebase && firebase.apps && firebase.apps.length) ? 'ok' : 'missing'));
+            bits.push('gsi:' + ((window.google && google.accounts && google.accounts.id) ? 'ok' : 'no'));
             const m = ((location.hash || '') + (location.search || '')).match(/(apiKey|authuser|oobCode|firebaseError)[^&#]*/);
             if (m) bits.push('ret:' + m[0].slice(0, 24));
             const att = Number(localStorage.getItem('dk_oauth_attempt') || 0);
@@ -21844,6 +21845,15 @@ async function boot() {
         gSetBusy(true);
         try { sessionStorage.setItem('dk_cloud_login', '1'); } catch (e) {}
         try {
+          // 3PCD-proof first-party flow (Google One Tap / official button →
+          // ID token → signInWithCredential); redirect is only the fallback.
+          const g = (window.cloudSync && window.cloudSync.signInGsi) ? await window.cloudSync.signInGsi() : null;
+          if (g && g.gsi) {
+            gSetBusy(false);
+            if (gHint) { gHint.textContent = t('auth.googlePickAccount'); gHint.classList.remove('hidden'); }
+            setTimeout(watchdog, 1500); // arms the safety net for this attempt too
+            return;
+          }
           const res = await window.cloudSync.signIn(); // redirect flow; installed-app windows → browser-tab relay
           if (res && res.relay) {
             if (gHint) { gHint.textContent = t('auth.googleRelayOpened'); gHint.classList.remove('hidden'); }
@@ -24802,7 +24812,17 @@ document.addEventListener('DOMContentLoaded', function () {
       storageBucket: 'david-king-gym.firebasestorage.app',
       messagingSenderId: '755766426093',
       appId: '1:755766426093:web:6ef22ee31139ff6175cfe4',
-      measurementId: 'G-BWP31B0JBT'
+      measurementId: 'G-BWP31B0JBT',
+      /* Google Identity Services OAuth client (public by design). Powers the
+       * FIRST-PARTY Google sign-in (ID token → signInWithCredential). The
+       * classic redirect flow relays its result through an embedded
+       * third-party authDomain iframe reading authDomain storage — and since
+       * storage partitioning (Chrome 115+, Safari ITP, Firefox TCP) that
+       * iframe sees a partitioned, EMPTY bucket: getRedirectResult() ends
+       * without a session AND without any error. GIS has no authDomain hop,
+       * so it works in every modern browser. The origin of the deployed app
+       * must be listed in this client's "Authorized JavaScript origins". */
+      googleClientId: '755766426093-la0s79tgkhcoe1ienk3edh7ehgja9kcs.apps.googleusercontent.com'
     };
     var DEBOUNCE_MS = 20000;
     var USER_STORES = ['clients', 'client_programs', 'workout_history', 'nutrition_plans',
@@ -25008,6 +25028,95 @@ document.addEventListener('DOMContentLoaded', function () {
       } catch (e) {}
       log('oauth relay: starting sign-in in browser tab');
       return true;
+    }
+
+    /* ---------- Google Identity Services sign-in (first-party, 3PCD-proof) ----------
+     * The redirect flow's OAuth result reaches the app from the authDomain
+     * handler widget ONLY through an embedded third-party authDomain iframe
+     * reading authDomain session storage. Browsers partition third-party
+     * storage by top-level site (Chrome 115+, Safari ITP, Firefox TCP), so
+     * the relay iframe reads an EMPTY bucket: no session, no error — just the
+     * watchdog message [fb:ok · dm:b] (reproduced on a fresh Chromium against
+     * the live site). GIS instead hands the app a Google ID token directly
+     * (browser-native One Tap dialog, or the official button opening a
+     * Google-hosted popup + postMessage) with NO cross-origin storage hop,
+     * then signInWithCredential creates the regular Firebase session. */
+    var _gsiLoading = null;
+    function loadGsi() {
+      if (window.google && google.accounts && google.accounts.id) return Promise.resolve();
+      if (_gsiLoading) return _gsiLoading;
+      _gsiLoading = loadScript('https://accounts.google.com/gsi/client')
+        .catch(function (e) { _gsiLoading = null; throw e; });
+      return _gsiLoading;
+    }
+    /* Official Google button, rendered inline where the hint lives — shown
+     * whenever One Tap cannot be displayed (unsupported browser, suppressed
+     * after dismissals, PWA webviews). */
+    function showGsiButton() {
+      try {
+        /* Render where the user actually is: the lock-screen hint area, or —
+         * when the sign-in was started from Settings — the signed-out panel. */
+        var host = null;
+        var hint = $('login-cloud-hint');
+        if (hint && hint.offsetParent) host = hint.parentElement;
+        if (!host) {
+          var so = $('cloud-signedout');
+          if (so && so.offsetParent) host = so;
+        }
+        if (!host) return;
+        var old = document.getElementById('login-gsi-host');
+        if (old) old.parentElement.removeChild(old);
+        var box = document.createElement('div');
+        box.id = 'login-gsi-host';
+        box.style.cssText = 'display:flex;justify-content:center;margin-top:10px;';
+        host.appendChild(box);
+        google.accounts.id.renderButton(box, {
+          type: 'standard', theme: 'filled_black', size: 'large',
+          text: 'signin_with', shape: 'pill', width: 264, logo_alignment: 'center'
+        });
+      } catch (e) { log('gsi renderButton failed', e); }
+    }
+    /* Returns {gsi:true} when the GIS flow took over (its UI completes the
+     * sign-in in place), null when GIS is unavailable — the caller then falls
+     * back to the legacy redirect/relay flow. */
+    async function signInGsi() {
+      await ensureAuth();
+      if (!_cfg || !_cfg.googleClientId) return null;
+      await loadGsi();
+      google.accounts.id.initialize({
+        client_id: _cfg.googleClientId,
+        callback: function (resp) {
+          try {
+            var cred = firebase.auth.GoogleAuthProvider.credential(resp.credential);
+            _auth.signInWithCredential(cred).catch(function (e) {
+              _authError = String((e && (e.code || e.message)) || e);
+              try { document.dispatchEvent(new CustomEvent('cloud:auth', { detail: { email: null } })); } catch (e2) {}
+              errMsg(e);
+            });
+          } catch (e) { errMsg(e); }
+        }
+      });
+      /* One Tap first — a browser-native dialog, zero extra clicks. If the
+       * browser refuses / the user closes it, the official button takes over. */
+      try {
+        google.accounts.id.prompt(function (n) {
+          try {
+            if (n && ((n.isNotDisplayed && n.isNotDisplayed()) ||
+                      (n.isSkippedMoment && n.isSkippedMoment()) ||
+                      (n.isDismissedMoment && n.isDismissedMoment()))) showGsiButton();
+          } catch (e) {}
+        });
+      } catch (e) { showGsiButton(); }
+      /* Safety net for webviews that suppress One Tap silently (and for the
+       * GSI re-prompt cooldown when the flow is started from another screen —
+       * a host left over from a previous screen counts as NOT shown). */
+      setTimeout(function () {
+        if (_user) return;
+        var el = document.getElementById('login-gsi-host');
+        if (el && el.offsetParent) return;
+        showGsiButton();
+      }, 4000);
+      return { gsi: true };
     }
 
     async function signIn() {
@@ -25338,7 +25447,10 @@ document.addEventListener('DOMContentLoaded', function () {
       });
 
       var bGoogle = $('cloud-btn-google');
-      if (bGoogle) bGoogle.addEventListener('click', function () { signIn(); });
+      if (bGoogle) bGoogle.addEventListener('click', function () {
+        signInGsi().then(function (g) { if (!g || !g.gsi) return signIn(); })
+          .catch(function () { return signIn(); });
+      });
 
       var bSave = $('cloud-btn-save');
       if (bSave) bSave.addEventListener('click', async function () {
@@ -25437,7 +25549,7 @@ document.addEventListener('DOMContentLoaded', function () {
       };
     }
 
-    window.cloudSync = { save: saveNow, restore: restoreFromCloud, signIn: signIn, ready: _ready, getState: getState, version: 1 };
+    window.cloudSync = { save: saveNow, restore: restoreFromCloud, signIn: signIn, signInGsi: signInGsi, ready: _ready, getState: getState, version: 1 };
   })();
   </script>
 
