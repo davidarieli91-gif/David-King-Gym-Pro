@@ -4428,6 +4428,57 @@
               return existingSub || 'General';
           }
         }
+        if (e.src === 'gi') {
+          // GymImpulse: keyword-based subgroups, same taxonomy as gv/bf
+          // (GI records carry no subgroup taxonomy — derive from EN name by meaning)
+          switch (e.g) {
+            case 'elbow_flexors':
+              if (nameLower.includes('hammer')) return 'Brachialis';
+              if (nameLower.includes('reverse') || nameLower.includes('zottman') || nameLower.includes('pronat') || nameLower.includes('supinat')) return 'Brachioradialis';
+              return 'Biceps';
+            case 'chest':
+              if (nameLower.includes('incline')) return 'Upper';
+              if (nameLower.includes('decline') || nameLower.includes('dip')) return 'Lower';
+              return 'Middle';
+            case 'shoulders':
+              if (nameLower.includes('front') && nameLower.includes('raise')) return 'Front';
+              if (nameLower.includes('rear') || nameLower.includes('bent over') || nameLower.includes('face pull') || nameLower.includes('reverse fly') || nameLower.includes('reverse-fly')) return 'Rear';
+              if (nameLower.includes('lateral') || nameLower.includes('side raise') || nameLower.includes('side-lying')) return 'Middle';
+              if (nameLower.includes('shrug')) return 'Trapezius';
+              if (nameLower.includes('rotator') || nameLower.includes('external rotation') || nameLower.includes('cuban')) return 'Rotator Cuff';
+              return 'Middle';
+            case 'abdominals':
+              if (nameLower.includes('oblique') || nameLower.includes('side') || nameLower.includes('twist') || nameLower.includes('bicycle') || nameLower.includes('russian')) return 'Obliques';
+              if (nameLower.includes('hanging') || nameLower.includes('leg raise') || nameLower.includes('knee raise') || nameLower.includes('reverse') || nameLower.includes('lower')) return 'Lower';
+              return 'Upper';
+            case 'triceps':
+              if (nameLower.includes('overhead')) return 'Seated';
+              if (nameLower.includes('lying') || nameLower.includes('skull') || nameLower.includes('french')) return 'Lying';
+              if (nameLower.includes('seated') || nameLower.includes('sitting')) return 'Seated';
+              return 'Compound';
+            case 'back':
+              // Only 4 subgroups: Lats / Middle Back / Trapezius / Lower Back (in this order)
+              if (nameLower.includes('deadlift') || nameLower.includes('hyperextension') || nameLower.includes('hyper ') || nameLower.includes('good morning') || nameLower.includes('back extension') || nameLower.includes('superman') || nameLower.includes('erector')) return 'Lower Back';
+              if (nameLower.includes('shrug') || nameLower.includes('neck')) return 'Trapezius';
+              if (nameLower.includes('row') || nameLower.includes('rowing')) return 'Middle Back';
+              if (nameLower.includes('pull-up') || nameLower.includes('pullup') || nameLower.includes('pulldown') || nameLower.includes('chin')) return 'Lats';
+              return 'Lats';
+            case 'legs':
+              if (nameLower.includes('adduct')) return 'Adductors';
+              if (nameLower.includes('abduct')) return 'Abductors';
+              if (nameLower.includes('calf') || nameLower.includes('toe raise') || nameLower.includes('donkey') || nameLower.includes('soleus') || nameLower.includes('gastrocnemius')) return 'Calves';
+              if (nameLower.includes('glute') || nameLower.includes('bridge') || nameLower.includes('hip thrust')) return 'Glutes';
+              if (nameLower.includes('lunge') || nameLower.includes('squat') || nameLower.includes('step') || nameLower.includes('leg press') || nameLower.includes('leg extension') || nameLower.includes('quad')) return 'Quadriceps';
+              if (nameLower.includes('deadlift') || nameLower.includes('curl') || nameLower.includes('good morning') || nameLower.includes('hamstring')) return 'Hamstrings';
+              if (nameLower.includes('hip flexor') || nameLower.includes('iliopsoas') || nameLower.includes('psoas')) return 'Hip Flexors';
+              return 'Quadriceps';
+            case 'forearms':
+              if (nameLower.includes('wrist') || nameLower.includes('finger') || nameLower.includes('grip') || nameLower.includes('pronat') || nameLower.includes('supinat')) return 'Wrist Curls';
+              return 'General';
+            default:
+              return 'General';
+          }
+        }
         if (existingSub) {
           const norm = normalizeSubgroup(existingSub);
           if (norm !== 'General') return norm;
@@ -14310,6 +14361,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     let _view = 'front';
     let _sourceFilter = 'burnfit'; // по умолчанию — Burnfit (таб bf активен в HTML)
     let _tab = 'body';
+    let _favOnly = false; // NEW: favorites tab reuses the full body layout (map + tree + grid), pool = favorites
     let _callback = null;
     let _favorites = [];
     let _recent = [];
@@ -14387,6 +14439,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       _groupBy = 'none';  // default: flat list (user preference 2026-08)
       _view = 'front';
       _tab = 'body';
+      _favOnly = false;
       loadFavorites();
       loadRecent();
       const modal = document.getElementById('bodymap-picker-modal');
@@ -14415,14 +14468,14 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         _activeGroup = null; _activeSubgroup = null; _equipFilter = 'all';
         _classFilter = { force: null, level: null, mechanic: null, category: null };
       };
-      if (tabAll) tabAll.onclick = () => { _tab = 'body'; _sourceFilter = null; resetSourceFilters(); setActiveTab(tabAll); renderAll(); };
-      if (tabBF) tabBF.onclick = () => { _tab = 'body'; _sourceFilter = 'burnfit'; resetSourceFilters(); setActiveTab(tabBF); renderAll(); };
-      if (tabGV) tabGV.onclick = () => { _tab = 'body'; _sourceFilter = 'gymvisual'; resetSourceFilters(); setActiveTab(tabGV); renderAll(); };
-      if (tabGI) tabGI.onclick = () => { _tab = 'body'; _sourceFilter = 'gymimpulse'; resetSourceFilters(); setActiveTab(tabGI); renderAll(); };
+      if (tabAll) tabAll.onclick = () => { _tab = 'body'; _favOnly = false; _sourceFilter = null; resetSourceFilters(); setActiveTab(tabAll); renderAll(); };
+      if (tabBF) tabBF.onclick = () => { _tab = 'body'; _favOnly = false; _sourceFilter = 'burnfit'; resetSourceFilters(); setActiveTab(tabBF); renderAll(); };
+      if (tabGV) tabGV.onclick = () => { _tab = 'body'; _favOnly = false; _sourceFilter = 'gymvisual'; resetSourceFilters(); setActiveTab(tabGV); renderAll(); };
+      if (tabGI) tabGI.onclick = () => { _tab = 'body'; _favOnly = false; _sourceFilter = 'gymimpulse'; resetSourceFilters(); setActiveTab(tabGI); renderAll(); };
       const tabFav = document.getElementById('bm-tab-favorites');
-      if (tabFav) tabFav.onclick = () => { _tab = 'favorites'; renderAll(); };
+      if (tabFav) tabFav.onclick = () => { _tab = 'favorites'; _favOnly = true; _sourceFilter = null; resetSourceFilters(); setActiveTab(null); renderAll(); };
       const tabRecent = document.getElementById('bm-tab-recent');
-      if (tabRecent) tabRecent.onclick = () => { _tab = 'recent'; renderAll(); };
+      if (tabRecent) tabRecent.onclick = () => { _tab = 'recent'; _favOnly = false; renderAll(); };
       // Wire search with debounce
       const search = document.getElementById('bm-search');
       if (search) {
@@ -14430,7 +14483,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         let timer;
         search.oninput = () => {
           clearTimeout(timer);
-          timer = setTimeout(() => { if (_tab === 'body') { renderClassChips(); renderExerciseGrid(); } }, 300);
+          timer = setTimeout(() => { if (_tab === 'body' || _tab === 'favorites') { renderClassChips(); renderExerciseGrid(); } }, 300);
         };
       }
       // Wire grouping toggle (Mechanic ⇄ Flat)
@@ -14499,8 +14552,14 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         renderClassChips();
         renderExerciseGrid();
       } else if (_tab === 'favorites') {
-        showFavView();
-        renderFavorites();
+        // Favorites reuse the full body layout (map + group/subgroup tree + full cards
+        // with eye/star/chips) — pool is restricted to favorites via matchFav().
+        showBodyView();
+        renderBodySVG();
+        renderGroupTree();
+        renderEquipChips();
+        renderClassChips();
+        renderExerciseGrid();
       } else if (_tab === 'recent') {
         showRecentView();
         renderRecent();
@@ -14609,9 +14668,13 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         (e.src === 'pg' && _sourceFilter === 'private_gym') ||
         (e.src === 'mm' && _sourceFilter === 'muscle_motion');
     }
+    /** Favorites-tab predicate: when _favOnly, pool = favorited exercises only. */
+    function matchFav(e) {
+      return !_favOnly || _favorites.includes(e.id);
+    }
     function getGroupsWithSubgroups() {
       const groups = {};
-      _cache.filter(matchSource).forEach(e => {
+      _cache.filter(e => matchSource(e) && matchFav(e)).forEach(e => {
         const g = e.group_canonical || e.g;
         if (!g) return;
         if (!groups[g]) groups[g] = { count: 0, subgroups: new Set() };
@@ -14796,7 +14859,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     function renderEquipChips() {
       const container = document.getElementById('bm-equip-chips');
       if (!container) return;
-      let filtered = _cache.filter(matchSource);
+      let filtered = _cache.filter(e => matchSource(e) && matchFav(e));
       if (_activeGroup) {
         filtered = filtered.filter(e => (e.group_canonical || e.g) === _activeGroup);
       }
@@ -14828,8 +14891,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     function renderClassChips() {
       const container = document.getElementById('bm-class-chips');
       if (!container) return;
-      // Compute the filtered set once (group + subgroup + equipment + source — NOT class filter itself, to avoid feedback loop)
-      let baseFiltered = _cache;
+      // Compute the filtered set once (group + subgroup + equipment + source + favorites — NOT class filter itself, to avoid feedback loop)
+      let baseFiltered = _cache.filter(matchFav);
       if (_sourceFilter) {
         baseFiltered = baseFiltered.filter(e =>
           (e.source || e.src) === _sourceFilter ||
@@ -14897,7 +14960,19 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     function renderExerciseGrid() {
       const grid = document.getElementById('bm-ex-grid');
       if (!grid) return;
-      let filtered = _cache;
+      let filtered = _cache.filter(matchFav);
+      // Favorites tab with nothing favorited yet → friendly empty state
+      if (_favOnly && _favorites.length === 0) {
+        const noFavMsg = (typeof t === 'function' && t('exercise.noFavorites')) ? t('exercise.noFavorites') : 'No favorites yet';
+        grid.classList.remove('bm-grouped');
+        grid.innerHTML = `<div class="col-span-full text-center py-8 text-sm text-muted">${esc(noFavMsg)}</div>`;
+        const countEl0 = document.getElementById('bm-result-count');
+        if (countEl0) {
+          const lang0 = (typeof currentLang === 'function') ? currentLang() : 'en';
+          countEl0.textContent = '0 ' + (lang0 === 'ru' ? 'упр.' : (lang0 === 'he' ? 'תרגילים' : 'exercises'));
+        }
+        return;
+      }
       if (_sourceFilter) { filtered = filtered.filter(e => (e.source || e.src) === _sourceFilter || (e.src === 'pg' && _sourceFilter === 'private_gym') || (e.src === 'mm' && _sourceFilter === 'muscle_motion')); }
       // Group filter
       if (_activeGroup) {
@@ -15050,6 +15125,14 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               _favorites.push(id);
             }
             saveFavorites();
+            if (_favOnly) {
+              // In favorites tab the pool/tree/counts change — refresh everything
+              // (un-starred card disappears from the grid).
+              renderBodySVG();
+              renderGroupTree();
+              renderEquipChips();
+              renderClassChips();
+            }
             renderExerciseGrid();
           });
         });
