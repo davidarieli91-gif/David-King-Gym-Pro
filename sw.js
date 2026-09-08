@@ -1,6 +1,6 @@
 // Service Worker - David King Gym PWA
-// v30: mobile redirect-first OAuth + lock screen cloud status line
-const CACHE_NAME = 'dk-gym-v30';
+// v31: redirect-only OAuth (popup removed) + error surfacing in status line
+const CACHE_NAME = 'dk-gym-v31';
 const APP_SHELL = [
   './',
   './index.html',

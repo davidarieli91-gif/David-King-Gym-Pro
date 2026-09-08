@@ -2169,7 +2169,7 @@
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c3</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c4</p>
             </div>
           </div>
 
@@ -21773,7 +21773,18 @@ async function boot() {
         let flag = false;
         try { flag = sessionStorage.getItem('dk_cloud_login') === '1'; } catch (e) {}
         if (++wdChecks < 20) { setTimeout(watchdog, 1000); return; }
-        if (flag) setStatus(t('auth.cloudSignInFailed'));
+        if (flag) {
+          // technical diagnostic suffix — lets a screenshot pinpoint the failure
+          const bits = [];
+          try {
+            const s2 = (window.cloudSync && window.cloudSync.getState) ? window.cloudSync.getState() : null;
+            if (s2 && s2.error) bits.push('err:' + s2.error);
+            bits.push('fb:' + ((window.firebase && firebase.apps && firebase.apps.length) ? 'ok' : 'missing'));
+            const m = ((location.hash || '') + (location.search || '')).match(/(apiKey|authuser|oobCode)[^&#]*/);
+            if (m) bits.push('ret:' + m[0].slice(0, 24));
+          } catch (e) {}
+          setStatus(t('auth.cloudSignInFailed') + (bits.length ? (' [' + bits.join(' · ') + ']') : ''));
+        }
       };
       // Return from signInWithRedirect: cloud:auth may fire before or after wiring
       document.addEventListener('cloud:auth', maybeCloudUnlock);
@@ -24881,7 +24892,12 @@ document.addEventListener('DOMContentLoaded', function () {
         _fs = firebase.firestore();
         try {
           _auth.getRedirectResult().catch(function (e) {
-            if (e && e.code && e.code !== 'auth/no-auth-event') errMsg(e);
+            if (e && e.code && e.code !== 'auth/no-auth-event') {
+              _authError = String((e && (e.code || e.message)) || e);
+              // surface the concrete redirect error on the lock screen
+              try { document.dispatchEvent(new CustomEvent('cloud:auth', { detail: { email: null } })); } catch (e2) {}
+              errMsg(e);
+            }
           });
         } catch (e) {}
         _auth.onAuthStateChanged(function (u) {
@@ -24900,27 +24916,17 @@ document.addEventListener('DOMContentLoaded', function () {
         await ensureAuth();
         var provider = new firebase.auth.GoogleAuthProvider();
         provider.setCustomParameters({ prompt: 'select_account' });
-        var standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) ||
-                         navigator.standalone === true;
-        // Mobile browsers: popup OAuth is unreliable there (popups open as new
-        // tabs and often fail to message the opener) → go straight to the
-        // full-page redirect flow, which returns a clean page reload.
-        var touchDevice = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches);
-        try {
-          if (standalone || touchDevice) { var e1 = new Error('mobile'); e1.code = 'auth/popup-blocked'; throw e1; }
-          await _auth.signInWithPopup(provider);
-        } catch (e) {
-          var c = (e && e.code) || '';
-          if (c === 'auth/popup-blocked' || c === 'auth/operation-not-supported-in-this-environment' ||
-              c === 'auth/popup-redirect-required') {
-            await _auth.signInWithRedirect(provider);
-          } else if (c !== 'auth/popup-closed-by-user' && c !== 'auth/cancelled-popup-request') {
-            _authError = String((e && (e.code || e.message)) || e);
-            try { document.dispatchEvent(new CustomEvent('cloud:auth', { detail: { email: null } })); } catch (e2) {}
-            errMsg(e);
-          }
-        }
-      } catch (e) { errMsg(e); }
+        // Full-page redirect flow ONLY. The popup handshake is the least
+        // reliable part of OAuth: desktop popups can silently fail to message
+        // the opener (presents as popup-closed-by-user), mobile popups open
+        // as un-communicated tabs. The redirect returns as a clean page
+        // reload; getRedirectResult() + the lock-screen glue finish the job.
+        await _auth.signInWithRedirect(provider);
+      } catch (e) {
+        _authError = String((e && (e.code || e.message)) || e);
+        try { document.dispatchEvent(new CustomEvent('cloud:auth', { detail: { email: null } })); } catch (e2) {}
+        errMsg(e);
+      }
     }
 
     /* ---------- upload (mirrors whole DB; hash-skip unchanged stores) ---------- */
