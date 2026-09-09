@@ -1,6 +1,6 @@
 // Service Worker - David King Gym PWA
-// v41: close guard (c14): beforeunload ask + back-gesture confirm on CRM and client portal
-const CACHE_NAME = 'dk-gym-v41';
+// v42: muscle tree thumbnails square full-height (c15)
+const CACHE_NAME = 'dk-gym-v42';
 const APP_SHELL = [
   './',
   './index.html',

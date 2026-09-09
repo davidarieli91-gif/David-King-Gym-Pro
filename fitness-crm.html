@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c14" />
+<meta name="dk-build" content="c15" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -759,10 +759,20 @@
     .bm-class-chip.active { background: rgb(var(--c-accent)); color: #fff; border-color: rgb(var(--c-accent)); }
     /* Subtle row separator for classification chips */
     #bm-class-chips:not(:empty) { padding-top: 4px; border-top: 1px dashed rgb(var(--c-border)); }
-    /* Анатомические иконки мышц (muscle-icons/, стиль SciePro): круглые миниатюры в дереве групп/подгрупп */
-    .mg-icon { width: 1.5em; height: 1.5em; max-width: 24px; max-height: 24px; object-fit: cover; object-position: center; border-radius: 9999px; display: inline-block; vertical-align: middle; background: #0a0a0f; box-shadow: 0 0 0 1px rgb(var(--c-border, 220 220 220)); flex-shrink: 0; }
-    .mg-icon-fallback { display: none; line-height: 1; }
-    @media (max-width: 767px) { .mg-icon { width: 1.45em; height: 1.45em; max-width: 19px; max-height: 19px; } }
+    /* Анатомические иконки мышц (muscle-icons/, стиль SciePro). c15: КВАДРАТНЫЕ
+       миниатюры во всю высоту кнопки (было — круглые 24px; юзер: «квадратные,
+       пошире, до самых краёв кнопки, кнопки чуть выше»). Размер задаёт .mg-icon-box
+       через --mg-size; <img> заливает коробку целиком (object-fit: cover). */
+    .mg-icon-box { --mg-size: 40px; width: var(--mg-size); height: var(--mg-size); flex-shrink: 0; border-radius: 7px; overflow: hidden; background: #0a0a0f; box-shadow: 0 0 0 1px rgb(var(--c-border, 220 220 220)); display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; position: relative; }
+    .mg-icon { width: 100%; height: 100%; max-width: none; max-height: none; object-fit: cover; object-position: center; display: block; }
+    .mg-icon-fallback { display: none; line-height: 1; font-size: calc(var(--mg-size, 40px) * 0.55); }
+    .bm-subgroup-btn .mg-icon-box { --mg-size: 32px; border-radius: 6px; }
+    .ex-folder .mg-icon-box { --mg-size: 34px; }
+    /* c15: кнопки дерева выше — картинка во всю высоту, минимум пустых полей.
+       Padding в собственном CSS (не Tailwind-утилиты) — работает и в исходнике, и в сборке. */
+    .bm-group-header { padding: 4px 10px; padding-inline-start: 6px; }
+    .bm-subgroup-btn { padding: 4px 8px; }
+    @media (max-width: 767px) { .mg-icon-box { --mg-size: 34px; border-radius: 6px; } .bm-subgroup-btn .mg-icon-box { --mg-size: 28px; } .ex-folder .mg-icon-box { --mg-size: 30px; } }
     /* Grouped grid: when bm-ex-grid has .bm-grouped class, it becomes a vertical stack of sections */
     #bm-ex-grid.bm-grouped { display: flex; flex-direction: column; gap: 0.75rem; }
     #bm-ex-grid.bm-grouped > .bm-section-grid { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 0.5rem; }
@@ -2192,7 +2202,7 @@
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c14</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c15</p>
             </div>
           </div>
 
@@ -10844,7 +10854,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         <div class="flex items-center" style="padding-inline-start: ${indent}px" data-drop-target="${escAttr(node.pathKey)}">
           <button class="flex-1 flex items-center gap-2 p-2 hover:bg-surface-2 rounded-lg transition ${depth === 0 ? 'text-sm font-semibold' : 'text-xs font-medium'}" data-toggle-folder="${escAttr(node.pathKey)}">
             <svg class="w-${depth === 0 ? 4 : 3} h-${depth === 0 ? 4 : 3} text-muted transition-transform ${isExpanded ? 'rotate-90' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
-            ${depth === 0 ? `<span class="text-base leading-none shrink-0" style="width:1.7em;text-align:center">${typeof muscleGroupIcon === 'function' ? muscleGroupIcon(node.name) : (groupColor ? `<span class="w-2.5 h-2.5 rounded-full inline-block" style="background: ${groupColor}"></span>` : '')}</span>` : (groupColor ? `<span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${groupColor}"></span>` : '')}
+            ${depth === 0 ? `<span class="mg-icon-box shrink-0">${typeof muscleGroupIcon === 'function' ? muscleGroupIcon(node.name) : (groupColor ? `<span class="w-2.5 h-2.5 rounded-full inline-block" style="background: ${groupColor}"></span>` : '')}</span>` : (groupColor ? `<span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: ${groupColor}"></span>` : '')}
             <span class="flex-1 text-start truncate">${escHTML(label)}</span>
             <span class="text-[10px] text-muted font-mono">${totalCount}</span>
           </button>
@@ -14363,9 +14373,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         const caret = hasSubgroups ? (isExpanded ? '▾' : '▸') : '';
         const activeClass = isActive ? 'bg-primary text-white border-primary' : 'bg-surface-2 hover:bg-primary/20 border-border';
         html += `<div class="bm-group-folder">
-          <div class="bm-group-header flex items-center gap-1.5 text-[14px] font-semibold py-2 px-2.5 rounded-lg border ${activeClass} transition cursor-pointer" data-group="${esc(g)}">
-            <span class="bm-caret text-[10px] w-3 shrink-0">${caret}</span>
-            <span class="text-base leading-none shrink-0" style="width:1.7em;text-align:center">${typeof muscleGroupIcon === 'function' ? muscleGroupIcon(g) : ''}</span>
+          <div class="bm-group-header flex items-center gap-1.5 text-[14px] font-semibold rounded-lg border ${activeClass} transition cursor-pointer" data-group="${esc(g)}">
+            <span class="bm-caret text-[10px] w-3 shrink-0 text-center">${caret}</span>
+            <span class="mg-icon-box shrink-0">${typeof muscleGroupIcon === 'function' ? muscleGroupIcon(g) : ''}</span>
             <span class="flex-1 truncate">${esc(label)}</span>
             <span class="text-[12px] opacity-70 shrink-0 font-semibold">${info.count}</span>
           </div>`;
@@ -14376,8 +14386,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             const sgActive = _activeGroup === g && _activeSubgroup === s;
             const sgActiveClass = sgActive ? 'bg-primary/30 text-primary-2 border-primary/40' : 'bg-surface hover:bg-primary/10 border-transparent';
             const sgIcon = (typeof subgroupIcon === 'function') ? subgroupIcon(g, s) : '•';
-            html += `<div class="bm-subgroup-btn flex items-center gap-1 text-[10px] font-medium py-1 px-2 rounded-md border ${sgActiveClass} transition cursor-pointer" data-group="${esc(g)}" data-subgroup="${esc(s)}">
-              <span class="text-sm leading-none shrink-0" style="width:1.6em;text-align:center">${sgIcon}</span>
+            html += `<div class="bm-subgroup-btn flex items-center gap-1.5 text-[10px] font-medium rounded-md border ${sgActiveClass} transition cursor-pointer" data-group="${esc(g)}" data-subgroup="${esc(s)}">
+              <span class="mg-icon-box shrink-0">${sgIcon}</span>
               <span class="flex-1 truncate">${esc(sgLabel)}</span>
             </div>`;
           });
@@ -24885,7 +24895,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 14; /* numeric part of dk-build c14 */
+  var RUNNING = 15; /* numeric part of dk-build c15 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
