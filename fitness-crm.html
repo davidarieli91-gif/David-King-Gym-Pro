@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c25" />
+<meta name="dk-build" content="c26" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2202,7 +2202,7 @@
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c25</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c26</p>
             </div>
           </div>
 
@@ -5543,10 +5543,10 @@
     //      + PG "General" subgroups removed + technique fields added
     // v4 = new folder_path structure (no "General" subgroup, no equipment level)
     // v3 = original 1265-exercise seed
-    const v5Flag = await db.get('settings', 'seeded_exercise_base_v60');
+    const v5Flag = await db.get('settings', 'seeded_exercise_base_v61');
     if (!v5Flag) {
       force = true;
-      console.info('[seed] v60 flag missing — forcing re-seed of exercise_base (GI TM RU 102-103 + HE 67-68)');
+      console.info('[seed] v61 flag missing — forcing re-seed of exercise_base (short cloud portal link #c=)');
     }
     const current = await db.count('exercise_base');
     if (current > 0 && !force) {
@@ -5575,7 +5575,7 @@
     }
     if (force) await db.clear('exercise_base');
     await db.bulkPut('exercise_base', exercises);
-    await db.put('settings', { key: 'seeded_exercise_base_v60', value: true });
+    await db.put('settings', { key: 'seeded_exercise_base_v61', value: true });
     console.info(`[seed] injected ${exercises.length} exercises into exercise_base (bf=${srcCount.burnfit} gv=${srcCount.gymvisual} gi=${srcCount.gymimpulse})`);
     return exercises.length;
   }
@@ -21323,7 +21323,9 @@ async function boot() {
       }
     });
 
-    const PORTAL_LINK_TTL_DAYS = 30;
+    /* c26: 365 days — cloud-hosted shares refresh `exp` on every regeneration, so
+     * the SAME short link keeps working as long as the trainer keeps the client. */
+    const PORTAL_LINK_TTL_DAYS = 365;
     const PORTAL_PBKDF2_ITERATIONS = 150000;
 
     function b64uEncode(bytes) {
@@ -21337,6 +21339,52 @@ async function boot() {
       const out = new Uint8Array(bin.length);
       for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
       return out;
+    }
+
+    /* ===== c26: cloud-hosted portal shares (SHORT link #c=ID) =====
+     * The SAME AES-256-GCM blob that used to travel inside the #e= link is
+     * uploaded to Firestore (portal_shares/{id}); the link now carries only a
+     * short id (~40 chars total — always fits WhatsApp/QR). The doc id is a
+     * SHA-256 derivative of the clientId, so re-generating the portal REFRESHES
+     * the plan behind the SAME link — the trainee never gets a new URL.
+     * Legacy long #e= link stays as a fallback when the cloud is unreachable. */
+    const PORTAL_SHARE_FB_VER = '11.8.1';
+    const PORTAL_SHARE_CFG = {
+      apiKey: 'AIzaSyCP1QVC8TqhqU4_LSG1fxirClo8KHMS9rM',
+      authDomain: 'david-king-gym.firebaseapp.com',
+      projectId: 'david-king-gym',
+      appId: '1:755766426093:web:6ef22ee31139ff6175cfe4'
+    };
+    let _portalFbLoading = null;
+    function loadPortalScript(src) {
+      return new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = src; s.async = true;
+        s.onload = () => res(); s.onerror = () => rej(new Error('load_failed:' + src));
+        document.head.appendChild(s);
+      });
+    }
+    async function ensurePortalFirebase() {
+      if (window.firebase && firebase.firestore) return;
+      if (_portalFbLoading) return _portalFbLoading;
+      _portalFbLoading = loadPortalScript('https://www.gstatic.com/firebasejs/' + PORTAL_SHARE_FB_VER + '/firebase-app-compat.js')
+        .then(() => loadPortalScript('https://www.gstatic.com/firebasejs/' + PORTAL_SHARE_FB_VER + '/firebase-firestore-compat.js'));
+      return _portalFbLoading;
+    }
+    async function portalShareId(clientId) {
+      try {
+        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('portal_share:' + String(clientId)));
+        const a = new Uint8Array(buf); let h = '';
+        for (let i = 0; i < 8; i++) h += ('0' + a[i].toString(16)).slice(-2);
+        return 'ps' + h; /* 18 chars, stable per client */
+      } catch (e) {
+        return 'ps' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      }
+    }
+    async function uploadPortalShare(id, blobB64) {
+      await ensurePortalFirebase();
+      if (!firebase.apps.length) firebase.initializeApp(PORTAL_SHARE_CFG);
+      await firebase.firestore().collection('portal_shares').doc(id).set({ d: blobB64, v: 1, ts: Date.now() });
     }
 
     async function derivePortalKey(code, salt, usages) {
@@ -21423,16 +21471,37 @@ async function boot() {
         blob.set(ciphertext, salt.length + iv.length);
 
         const origin = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
-        const clientUrl = `${origin}client.html#e=1.${b64uEncode(blob)}`;
+
+        /* c26: cloud-first link. Upload the SAME blob to Firestore and share a
+         * short #c=ID link; fall back to the legacy long #e= link when the
+         * cloud is unreachable or the rules are not open for portal_shares. */
+        let clientUrl = '', shareMode = 'cloud';
+        try {
+          const shareId = await portalShareId(clientId);
+          await uploadPortalShare(shareId, b64uEncode(blob));
+          clientUrl = `${origin}client.html#c=${shareId}`;
+        } catch (shareErr) {
+          shareMode = 'legacy';
+          clientUrl = `${origin}client.html#e=1.${b64uEncode(blob)}`;
+          console.warn('[openClientPortalModal] cloud share unavailable — legacy link:', shareErr);
+          const se = String((shareErr && (shareErr.code || shareErr.message)) || shareErr);
+          if (/permission|denied/i.test(se)) {
+            toast('Облако не открыто: обновите правила Firestore (Настройки → Облако → Скопировать правила). Ссылка отправлена в старом длинном формате.', 'warning', 9000);
+          } else if (/offline|network|unavailable|load_failed/i.test(se)) {
+            toast('Нет связи с облаком — ссылка отправлена в старом длинном формате.', 'warning', 7000);
+          }
+        }
 
         document.getElementById('portal-modal-client-name').textContent = client.full_name;
         document.getElementById('btn-open-portal-tab').href = clientUrl;
         document.getElementById('portal-access-code').textContent = accessCode;
 
-        // Local QR generation — client data never leaves the browser
+        // Local QR generation — the encrypted blob never leaves the app unencrypted
         try {
           const qrImg = document.getElementById('portal-qr-img');
           const qrBox = qrImg ? qrImg.parentElement : null;
+          const note = document.getElementById('portal-expiry-note');
+          if (note) note.textContent = shareMode === 'cloud' ? (t('portal.noteCloud') || '') : (t('portal.noteLegacy') || '');
           if (typeof QRCode !== 'undefined' && qrImg) {
             if (clientUrl.length <= 2900) {
               const qrDataUrl = await QRCode.toDataURL(clientUrl, { width: 250, margin: 2, errorCorrectionLevel: 'L' });
@@ -21440,7 +21509,7 @@ async function boot() {
               qrImg.classList.remove('hidden');
               if (qrBox) qrBox.title = '';
             } else {
-              // Payload too large for a QR code — link sharing still works
+              // Legacy long link still too big for a QR code — link sharing works
               qrImg.classList.add('hidden');
               if (qrBox) qrBox.title = 'Payload too large for QR';
               const hint = document.getElementById('portal-qr-img') && document.querySelector('#client-portal-modal .text-\\[11px\\]');
@@ -23715,7 +23784,10 @@ document.addEventListener('DOMContentLoaded', function () {
      * re-seeds references locally if a store came back empty. */
     var REF_STORES = ['exercise_base', 'food_database'];
     var SEED_FLAGS = ['seeded_exercise_base_v48', 'seeded_food_db_v54'];
-    var FIRESTORE_RULES = "rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /users/{uid}/{document=**} {\n      allow read, write: if request.auth != null && request.auth.uid == uid;\n    }\n  }\n}";
+    /* c26: /portal_shares is public-read (trainee portal opens WITHOUT sign-in)
+     * and open-write with a size guard (trainer uploads a share even when not
+     * signed in; doc ids are unguessable 18-char hashes). */
+    var FIRESTORE_RULES = "rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /users/{uid}/{document=**} {\n      allow read, write: if request.auth != null && request.auth.uid == uid;\n    }\n    match /portal_shares/{id} {\n      allow get, list: if true;\n      allow create, update: if request.resource.data.d is string && request.resource.data.d.size() < 1000000;\n      allow delete: if true;\n    }\n  }\n}";
 
     var _fbLoading = null, _auth = null, _fs = null, _user = null, _cfg = null;
     var _authError = null;
@@ -24986,7 +25058,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 25; /* numeric part of dk-build c25 */
+  var RUNNING = 26; /* numeric part of dk-build c26 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

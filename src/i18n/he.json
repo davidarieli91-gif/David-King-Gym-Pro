@@ -1245,11 +1245,13 @@
   "qrHint": "בקשו מהחניך לכוון את מצלמת הטלפון לקוד ה-QR",
   "accessCodeLabel": "קוד גישה לחניך",
   "copyCode": "העתק קוד",
-  "encryptionNote": "הקישור מוצפן (AES-256) ותקף 30 יום",
+  "encryptionNote": "הקישור מוצפן (AES-256) ותקף 365 יום",
   "copyLink": "העתק קישור אישי",
   "sendWhatsApp": "שלח לחניך ב-WhatsApp",
   "openTab": "פתח פורטל בכרטיסייה חדשה",
-  "modalTitle": "פורטל החניך"
+  "modalTitle": "פורטל החניך",
+  "noteCloud": "AES-256 · התוכנית בענן — הקישור קצר ותמיד מעודכן",
+  "noteLegacy": "הקישור מוצפן (AES-256) ותקף 365 יום"
  },
  "report": {
   "title": "דו״ח אימון",

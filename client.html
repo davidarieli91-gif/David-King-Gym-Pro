@@ -425,6 +425,7 @@
       workoutDoneTitle:'Тренировка завершена! 🎉',restLabel:'Отдых',unlockTitle:'Введите код доступа',
       unlockSubtitle:'Код прислал тренер вместе со ссылкой',unlockBtn:'Открыть портал',
       unlockWrongCode:'Неверный код',unlockExpired:'Срок действия ссылки истёк',unlockNoCrypto:'Откройте по https',
+      shareLoading:'Загружаю план из облака…',shareNotFound:'План не найден — попросите тренера отправить ссылку заново',shareDenied:'Облако пока не открыто для портала — тренеру нужно обновить правила базы (Настройки → Облако)',shareOffline:'Нет интернета — подключитесь к сети и откройте ссылку ещё раз',
       unlockBadFormat:'Неизвестный формат ссылки',legacyWarning:'⚠️ Ссылка устаревшего формата',
       historyTitle:'История замеров',noHistory:'Нет чек-инов',doneToday:'Выполнено ✓',
       reportWeight:'Вес',reportWaist:'Талия',reportHip:'Бёдра',reportEnergy:'Энергия',reportWater:'Вода',
@@ -454,6 +455,7 @@
       workoutDoneTitle:'Workout Complete! 🎉',restLabel:'Rest',unlockTitle:'Enter access code',
       unlockSubtitle:'Your coach sent the code',unlockBtn:'Open Portal',
       unlockWrongCode:'Wrong code',unlockExpired:'Link expired',unlockNoCrypto:'Open over https',
+      shareLoading:'Loading plan from cloud…',shareNotFound:'Plan not found — ask your trainer to resend the link',shareDenied:'Cloud is not open for the portal yet — the trainer must update the database rules (Settings → Cloud)',shareOffline:'No internet — reconnect and open the link again',
       unlockBadFormat:'Unknown link format',legacyWarning:'⚠️ Legacy link',
       historyTitle:'History',noHistory:'No check-ins',doneToday:'Done ✓',
       reportWeight:'Weight',reportWaist:'Waist',reportHip:'Hips',reportEnergy:'Energy',reportWater:'Water',
@@ -483,6 +485,7 @@
       workoutDoneTitle:'האימון הושלם! 🎉',restLabel:'מנוחה',unlockTitle:'הזן קוד גישה',
       unlockSubtitle:'הקוד נשלח על ידי המאמן',unlockBtn:'פתח פורטל',
       unlockWrongCode:'קוד שגוי',unlockExpired:'תוקף הקישור פג',unlockNoCrypto:'פתח דרך https',
+      shareLoading:'טוען את התוכנית מהענן…',shareNotFound:'התוכנית לא נמצאה — בקשו מהמאמן לשלוח את הקישור שוב',shareDenied:'הענן עדיין לא פתוח לפורטל — על המאמן לעדכן את כללי מסד הנתונים (הגדרות → ענן)',shareOffline:'אין אינטרנט — התחברו לרשת ופתחו את הקישור שוב',
       unlockBadFormat:'פורמט לא מוכר',legacyWarning:'⚠️ קישור ישן',
       historyTitle:'היסטוריה',noHistory:'אין צ׳ק-אינים',doneToday:'בוצע ✓',
       reportWeight:'משקל',reportWaist:'מותן',reportHip:'ירכיים',reportEnergy:'אנרגיה',reportWater:'מים',
@@ -626,6 +629,86 @@
     sessions = {};
     renderAll();
   }
+  /* ===== c26: cloud-hosted portal shares (short link #c=) =====
+   * The trainer uploads the SAME AES-256-GCM blob that used to travel inside
+   * the #e= link to Firestore (portal_shares/{id}). The link now carries only
+   * a 12-char id; the payload is fetched and decrypted locally with the
+   * 6-digit access code. Legacy #e= links keep working unchanged. */
+  const CLOUD_CFG = {
+    apiKey: 'AIzaSyCP1QVC8TqhqU4_LSG1fxirClo8KHMS9rM',
+    authDomain: 'david-king-gym.firebaseapp.com',
+    projectId: 'david-king-gym',
+    appId: '1:755766426093:web:6ef22ee31139ff6175cfe4'
+  };
+  const FB_VER_LITE = '11.8.1';
+  let _shareFbLoading = null;
+  function loadCloudScript(src) {
+    return new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = src; s.async = true;
+      s.onload = () => res(); s.onerror = () => rej(new Error('load_failed:' + src));
+      document.head.appendChild(s);
+    });
+  }
+  async function ensureFirebaseLite() {
+    if (window.firebase && firebase.firestore) return;
+    if (_shareFbLoading) return _shareFbLoading;
+    _shareFbLoading = loadCloudScript('https://www.gstatic.com/firebasejs/' + FB_VER_LITE + '/firebase-app-compat.js')
+      .then(() => loadCloudScript('https://www.gstatic.com/firebasejs/' + FB_VER_LITE + '/firebase-firestore-compat.js'));
+    return _shareFbLoading;
+  }
+  function setShareStatus(msg, busy) {
+    const err = document.getElementById('unlock-error');
+    const btn = document.getElementById('btn-unlock');
+    if (err) err.textContent = msg || '';
+    if (btn) { btn.disabled = !!busy; btn.style.opacity = busy ? '.6' : ''; }
+  }
+  async function fetchPortalShare(id) {
+    await ensureFirebaseLite();
+    if (!firebase.apps.length) firebase.initializeApp(CLOUD_CFG);
+    let snap;
+    try {
+      snap = await firebase.firestore().collection('portal_shares').doc(id).get({ source: 'server' });
+    } catch (e) {
+      const code = String((e && (e.code || e.message)) || e);
+      if (/permission|denied/i.test(code)) throw { code: 'denied' };
+      if (/unavailable|network|offline/i.test(code)) throw { code: 'offline' };
+      if (/not-found|not found/i.test(code)) throw { code: 'notfound' };
+      throw { code: 'notfound' };
+    }
+    if (!snap || !snap.exists) throw { code: 'notfound' };
+    const data = snap.data() || {};
+    if (!data.d) throw { code: 'notfound' };
+    return data;
+  }
+  async function startShareFlow(id) {
+    showUnlock();
+    setShareStatus(t('shareLoading'), true);
+    try {
+      const data = await fetchPortalShare(id);
+      portalBlob = b64uDecode(data.d);
+      try { localStorage.setItem('dk_client_data', JSON.stringify({ v: 1, blob: b64uEncode(portalBlob) })); } catch (e) {}
+      try { localStorage.setItem('dk_client_share', JSON.stringify({ id: id })); } catch (e) {}
+      setShareStatus('', false);
+    } catch (e) {
+      const cached = localStorage.getItem('dk_client_data');
+      if (e && e.code === 'offline' && cached) {
+        try {
+          const p = JSON.parse(cached);
+          if (p && p.v === 1 && p.blob) {
+            portalBlob = b64uDecode(p.blob);
+            setShareStatus(t('shareOffline') + ' — показан сохранённый план', false);
+            return;
+          }
+        } catch (e2) {}
+      }
+      setShareStatus(
+        (e && e.code === 'denied') ? t('shareDenied') :
+        (e && e.code === 'offline') ? t('shareOffline') :
+        t('shareNotFound'), false);
+    }
+  }
+
   function loadInitialData() {
     const hash = window.location.hash || '';
     try {
@@ -634,14 +717,24 @@
         if (!ver.startsWith('1.')) return;
         portalBlob = b64uDecode(ver.substring(2));
         localStorage.setItem('dk_client_data', JSON.stringify({v:1, blob:b64uEncode(portalBlob)}));
+        try{localStorage.removeItem('dk_client_share');}catch(e){}
         history.replaceState(null,'',window.location.pathname);
         showUnlock(); return;
+      }
+      if (hash.startsWith('#c=')) {
+        const sid = hash.substring(3).trim();
+        history.replaceState(null,'',window.location.pathname);
+        if (sid) { startShareFlow(sid); return; }
       }
       if (hash.startsWith('#data=')) {
         const parsed = JSON.parse(atob(decodeURIComponent(hash.substring(6))));
         history.replaceState(null,'',window.location.pathname);
         applyData(parsed); return;
       }
+      try {
+        const sh = JSON.parse(localStorage.getItem('dk_client_share') || 'null');
+        if (sh && sh.id) { startShareFlow(sh.id); return; }
+      } catch(eShare) {}
       const cached = localStorage.getItem('dk_client_data');
       if (cached) {
         const p = JSON.parse(cached);
