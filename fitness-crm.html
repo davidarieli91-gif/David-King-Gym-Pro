@@ -4603,7 +4603,7 @@
       let _exerciseDbLoaded = false;
       // Bump EXERCISE_DB_BUST when exercise-db.json changes — defeats SW/browser
       // cache-first staleness so reseed always unpacks the deployed dataset.
-      const EXERCISE_DB_BUST = 'v42';
+      const EXERCISE_DB_BUST = 'v43';
       async function loadExerciseDbExternal() {
         try {
           const resp = await fetch('exercise-db.json?v=' + EXERCISE_DB_BUST);
@@ -5477,6 +5477,7 @@
     // v23 = GymVisual RU names + 3 reviewed imports + gif autoplay — 2026-09
     // v22 = GymVisual subgroup taxonomy (gv keyword subgroups) — 2026-09
     // v21 = force fresh exercise-db.json fetch (cache-bust v26) — 2026-09
+    // v49 = GI instructions TM RU 79-81 + HE 44-46 (RU 21585: 0 EN-only; HE 11921: 55 EN-only) — 2026-09
     // v48 = GI keyword subgroups at unpack (reseed forces subgroup_en for gi) — 2026-09
     // v47 = bf source 100% RU+HE (21 names, 22 HE instr, hang-clean subgroup) + bust v41 catch-up — 2026-09
     // v46 = GI instructions TM HE batches 38-40 (11111 sents) — 2026-09
@@ -5504,10 +5505,10 @@
     //      + PG "General" subgroups removed + technique fields added
     // v4 = new folder_path structure (no "General" subgroup, no equipment level)
     // v3 = original 1265-exercise seed
-    const v5Flag = await db.get('settings', 'seeded_exercise_base_v48');
+    const v5Flag = await db.get('settings', 'seeded_exercise_base_v49');
     if (!v5Flag) {
       force = true;
-      console.info('[seed] v48 flag missing — forcing re-seed of exercise_base (GI subgroups at unpack)');
+      console.info('[seed] v49 flag missing — forcing re-seed of exercise_base (GI TM RU79-81 HE44-46)');
     }
     const current = await db.count('exercise_base');
     if (current > 0 && !force) {
@@ -5521,7 +5522,7 @@
       return 0;
     }
     await db.bulkPut('exercise_base', exercises);
-    await db.put('settings', { key: 'seeded_exercise_base_v48', value: true });
+    await db.put('settings', { key: 'seeded_exercise_base_v49', value: true });
     console.info(`[seed] injected ${exercises.length} exercises into exercise_base`);
     return exercises.length;
   }
