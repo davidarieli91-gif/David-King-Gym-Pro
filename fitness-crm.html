@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c12" />
+<meta name="dk-build" content="c13" />
   <meta name="description" content="Fitness & Nutrition CRM for personal trainers — clients, workouts, nutrition, analytics." />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icon-512.png" />
@@ -2170,7 +2170,7 @@
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c12</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c13</p>
             </div>
           </div>
 
@@ -24038,7 +24038,15 @@ document.addEventListener('DOMContentLoaded', function () {
           await batches[bi].commit();
         }
         _saveStep = 'commit-meta';
-        await uRef.set(meta, { merge: true });
+        /* v13 FIX: set(…, {merge:true}) DEEP-merges nested maps. The ref-store
+         * pointers left by c9/c11 saves («exercise_base», «food_database»)
+         * therefore SURVIVED in the cloud meta after a v12 save, while the v12
+         * hygiene deleted exactly those parts — meta kept pointing at nothing
+         * and every restore failed with «cloud copy is incomplete» on BOTH
+         * devices (report 2026-09-09 08:46, right after a green 18 KB save).
+         * This module owns the entire user doc, so a plain set REPLACES it:
+         * dead entries are really gone. */
+        await uRef.set(meta);
 
         /* v12 one-time cloud hygiene (best-effort, non-fatal):
          * 1) reference stores must not exist in the cloud anymore — wipe
@@ -24179,18 +24187,34 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!snap.exists) return null;
       var meta = snap.data();
       var data = {};
-      var repairedParts = {}, fixedAny = false;
-      var names = Object.keys(meta.store_parts || {});
+      var repairedParts = {}, fixedAny = false, deadKeys = [];
+      var allParts = meta.store_parts || {};
+      var names = Object.keys(allParts);
       for (var i = 0; i < names.length; i++) {
         var name = names[i];
-        var r = await assembleStore(uRef, name, meta.store_parts[name] || {});
+        /* v13: reference stores are NOT cloud data anymore. A merge quirk
+         * left their (already deleted) pointers inside cloud meta — restore
+         * must ignore them instead of failing on them (report 2026-09-09:
+         * «cloud copy is incomplete» right after a green 18 KB save). */
+        if (REF_STORES.indexOf(name) !== -1) { deadKeys.push(name); continue; }
+        var r = await assembleStore(uRef, name, allParts[name] || {});
         data[name] = r.text ? JSON.parse(r.text) : [];
-        if (r.repaired) { repairedParts[name] = r.repaired; fixedAny = true; }
-        else repairedParts[name] = meta.store_parts[name];
+        repairedParts[name] = r.repaired || allParts[name];
+        if (r.repaired) fixedAny = true;
       }
-      /* heal the cloud index if we had to fall back to another generation */
-      if (fixedAny) {
-        try { await uRef.set({ store_parts: repairedParts }, { merge: true }); log('cloud index healed'); } catch (e) {}
+      /* v13 heal: repaired pointers + PHYSICALLY remove dead ref entries
+       * (FieldValue.delete() — a plain merge would keep them forever). Runs
+       * right on the first successful restore, so the currently damaged
+       * cloud copies heal themselves without any manual save. */
+      if (fixedAny || deadKeys.length) {
+        try {
+          var upd = { store_parts: repairedParts };
+          for (var di = 0; di < deadKeys.length; di++) {
+            upd.store_parts[deadKeys[di]] = firebase.firestore.FieldValue.delete();
+          }
+          await uRef.set(upd, { merge: true });
+          log('cloud index healed:', 'repaired=' + fixedAny, 'removed=' + deadKeys.join(','));
+        } catch (e) { log('index heal (non-fatal)', e); }
       }
       return { meta: meta, data: data };
     }
@@ -24829,7 +24853,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 12; /* numeric part of dk-build c12 */
+  var RUNNING = 13; /* numeric part of dk-build c13 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

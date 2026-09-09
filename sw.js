@@ -1,6 +1,6 @@
 // Service Worker - David King Gym PWA
-// v39: user-only cloud sync (no 22MB reference stores), byte-capped commits, watchdog v2 (c12)
-const CACHE_NAME = 'dk-gym-v39';
+// v40: meta full-replace (merge kept dead ref pointers) + restore skips/heals dead ref entries (c13)
+const CACHE_NAME = 'dk-gym-v40';
 const APP_SHELL = [
   './',
   './index.html',
