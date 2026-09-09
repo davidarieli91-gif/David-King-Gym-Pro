@@ -1,6 +1,6 @@
 // Service Worker - David King Gym PWA
 // v46: GI translations RU 90-91 + HE 55-56, seed v54 (c19)
-const CACHE_NAME = 'dk-gym-v46';
+const CACHE_NAME = 'dk-gym-v47';
 const APP_SHELL = [
   './',
   './index.html',
