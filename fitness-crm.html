@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c10" />
+<meta name="dk-build" content="c11" />
   <meta name="description" content="Fitness & Nutrition CRM for personal trainers — clients, workouts, nutrition, analytics." />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icon-512.png" />
@@ -2170,7 +2170,7 @@
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c10</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c11</p>
             </div>
           </div>
 
@@ -23607,6 +23607,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (c.indexOf('permission-denied') >= 0) msg = T('settings.cloudAccErrPerm') || c;
       else if (c.indexOf('unauthorized-domain') >= 0) msg = T('settings.cloudAccErrDomain') || c;
       else if (c.indexOf('load_failed') === 0 || c.indexOf('network') >= 0) msg = T('settings.cloudAccErrNetwork') || c;
+      else if (c.indexOf('empty_local_refuse') >= 0) msg = T('settings.cloudAccErrEmptyLocal') || c;
       else if (c.indexOf('missing_part') >= 0 || c.indexOf('cloud_incomplete') >= 0) msg = T('settings.cloudAccErrIncomplete') || c;
       else msg = (T('settings.cloudAccErrGeneric') || 'Cloud error: {e}').replace('{e}', c);
       log('error:', e);
@@ -23940,6 +23941,17 @@ document.addEventListener('DOMContentLoaded', function () {
         _saveStep = 'read-local-db';
         var ser = await api.serialize();
         var data = maskSecrets(ser.data);
+        /* v11 SAFETY GUARD: never push an empty local DB over a populated
+         * cloud copy. A second device with cleared storage (or a failed
+         * restore) would otherwise repoint the cloud meta at empty parts —
+         * and every future restore on every device would then return empty
+         * stores (the orphaned good parts would still exist, but the valid
+         * pointer would mask them from the self-heal scan). */
+        var _recCount = (ser.meta && ser.meta.total_records) || 0;
+        if (!_recCount && prev && prev.total_records > 0) {
+          log('empty-local guard: refuse to overwrite cloud holding', prev.total_records, 'records');
+          return { ok: false, error: 'empty_local_refuse' };
+        }
         var names = db.storeNames();
         var gen = Date.now();
         var forceFull = false;
@@ -24208,10 +24220,21 @@ document.addEventListener('DOMContentLoaded', function () {
         if (cloudAt <= last + 1500) return; // this device is already up to date
         var localAt = await localLastChange();
         if (localAt <= cloudAt + 1500) {
-          // cloud is newer and this device has no newer local edits → silent restore
-          toastMsg(T('settings.cloudAccRestored') || '✓ Restored from cloud', 'success', 6000);
+          // cloud is newer and this device has no newer local edits → silent
+          // restore. v11 honesty fix: the success toast fires only AFTER the
+          // restore really succeeded (c10/c9 toasted BEFORE the restore and
+          // kept silent on failure — the user saw "restored" + an empty app,
+          // reported 2026-09-09 with missing_part:exercise_base:0 on c9).
           var r2 = await restoreFromCloud({ silent: true });
-          if (r2.ok) setTimeout(function () { location.reload(); }, 800);
+          if (r2.ok) {
+            toastMsg(T('settings.cloudAccRestored') || '✓ Restored from cloud', 'success', 6000);
+            setTimeout(function () { location.reload(); }, 800);
+          } else if (r2.error && r2.error !== 'signed_out' && r2.error !== 'cancelled') {
+            /* surface the real reason; restoreFromCloud already set
+             * FORCE_FULL_KEY so the next save from a data-intact device
+             * repairs the cloud copy */
+            errMsg(r2.error);
+          }
           return;
         }
         var cf = $('cloud-conflict');
@@ -24699,7 +24722,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 10; /* numeric part of dk-build c10 */
+  var RUNNING = 11; /* numeric part of dk-build c11 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

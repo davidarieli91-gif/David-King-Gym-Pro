@@ -1,6 +1,6 @@
 // Service Worker - David King Gym PWA
-// v37: content-addressed cloud parts + self-healing restore (c10)
-const CACHE_NAME = 'dk-gym-v37';
+// v38: honest boot-restore toasts + empty-local save guard (c11)
+const CACHE_NAME = 'dk-gym-v38';
 const APP_SHELL = [
   './',
   './index.html',
