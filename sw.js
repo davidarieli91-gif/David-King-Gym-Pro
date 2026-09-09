@@ -1,6 +1,6 @@
 // Service Worker - David King Gym PWA
-// v44: crash-safe exercise seed v52, full restore bf+gv+gi (c17)
-const CACHE_NAME = 'dk-gym-v44';
+// v45: GI translations RU 88-89 + HE 53-54, seed v53 (c18)
+const CACHE_NAME = 'dk-gym-v45';
 const APP_SHELL = [
   './',
   './index.html',
