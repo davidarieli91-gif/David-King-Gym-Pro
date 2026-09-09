@@ -1,6 +1,6 @@
 // Service Worker - David King Gym PWA
-// v38: honest boot-restore toasts + empty-local save guard (c11)
-const CACHE_NAME = 'dk-gym-v38';
+// v39: user-only cloud sync (no 22MB reference stores), byte-capped commits, watchdog v2 (c12)
+const CACHE_NAME = 'dk-gym-v39';
 const APP_SHELL = [
   './',
   './index.html',

@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c11" />
+<meta name="dk-build" content="c12" />
   <meta name="description" content="Fitness & Nutrition CRM for personal trainers — clients, workouts, nutrition, analytics." />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icon-512.png" />
@@ -2170,7 +2170,7 @@
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c11</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c12</p>
             </div>
           </div>
 
@@ -23579,6 +23579,15 @@ document.addEventListener('DOMContentLoaded', function () {
     var DEBOUNCE_MS = 20000;
     var USER_STORES = ['clients', 'client_programs', 'workout_history', 'nutrition_plans',
                        'nutrition_history', 'workout_templates', 'nutrition_templates'];
+    /* v12: the two big REFERENCE stores (~22 MB: 5619 exercises + 2344 foods)
+     * are NOT synced to the cloud. They are static app assets, re-seeded
+     * locally from the bundled JSON on every install; syncing them made every
+     * format-converting save a 20+ MB single-commit upload that stalled
+     * commits (report 2026-09-09: «Зависло на шаге: commit:1») and burned
+     * Firestore storage quota. The cloud mirrors USER data only; restore
+     * re-seeds references locally if a store came back empty. */
+    var REF_STORES = ['exercise_base', 'food_database'];
+    var SEED_FLAGS = ['seeded_exercise_base_v48', 'seeded_food_db_v54'];
     var FIRESTORE_RULES = "rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /users/{uid}/{document=**} {\n      allow read, write: if request.auth != null && request.auth.uid == uid;\n    }\n  }\n}";
 
     var _fbLoading = null, _auth = null, _fs = null, _user = null, _cfg = null;
@@ -23926,7 +23935,7 @@ document.addEventListener('DOMContentLoaded', function () {
       /* _saveStep tracks WHERE the upload is right now; the watchdog below
        * reports it to the user if the cloud stalls (c9: no silent death). */
       var _saveStep = 'start';
-      var timedOut = false, wTimer = null;
+      var timedOut = false;
       var work = (async function () {
         var api = getBackupApi();
         var uid = _user.uid;
@@ -23947,23 +23956,42 @@ document.addEventListener('DOMContentLoaded', function () {
          * and every future restore on every device would then return empty
          * stores (the orphaned good parts would still exist, but the valid
          * pointer would mask them from the self-heal scan). */
-        var _recCount = (ser.meta && ser.meta.total_records) || 0;
+        var _recCount0 = (ser.meta && ser.meta.total_records) || 0;
+        var allNames = db.storeNames();
+        var names = [];
+        for (var si = 0; si < allNames.length; si++) {
+          if (REF_STORES.indexOf(allNames[si]) === -1) names.push(allNames[si]);
+        }
+        /* v11/v12 SAFETY GUARD (user-data only): never push an empty local
+         * DB over a populated cloud copy. Reference stores are excluded from
+         * the count — they are ~7900 static records present on every device
+         * and would otherwise mask a truly empty user dataset. */
+        var _recCount = 0;
+        for (var sj = 0; sj < names.length; sj++) {
+          _recCount += (data[names[sj]] || []).length;
+        }
         if (!_recCount && prev && prev.total_records > 0) {
-          log('empty-local guard: refuse to overwrite cloud holding', prev.total_records, 'records');
+          log('empty-local guard: refuse to overwrite cloud holding', prev.total_records, 'records (local user records:', _recCount, ', total incl. refs:', _recCount0, ')');
           return { ok: false, error: 'empty_local_refuse' };
         }
-        var names = db.storeNames();
         var gen = Date.now();
         var forceFull = false;
         try { var ff = await db.get('settings', FORCE_FULL_KEY); forceFull = !!(ff && ff.value); } catch (e0) {}
         var hashes = {}, parts = {};
-        var total = 0, changed = 0;
-        var batch = _fs.batch(), ops = 0;
+        var total = 0, changed = 0, syncedRecs = 0;
+        /* v12 batching: cap every commit by op count AND by payload size. The
+         * old code carried the whole upload in ONE commit — on a slow uplink
+         * that looked exactly like a 30 s hang at «commit:1». Smaller
+         * sequential commits give live progress and stay far under the
+         * Firestore caps (500 ops / 10 MiB per request). */
+        var MAX_OPS = 400, MAX_BATCH_CHARS = 600000;
+        var batch = _fs.batch(), ops = 0, bChars = 0;
         var batches = [batch];
 
         for (var i = 0; i < names.length; i++) {
           var name = names[i];
           var recs = data[name] || [];
+          syncedRecs += recs.length;
           var s = JSON.stringify(recs);
           total += s.length;
           _saveStep = 'hash:' + name;
@@ -23988,38 +24016,89 @@ document.addEventListener('DOMContentLoaded', function () {
           parts[name] = { h: h, n: n };
           var pRef = storesCol.doc(name).collection('parts');
           for (var p = 0; p < n; p++) {
-            batch.set(pRef.doc(h.slice(0, 24) + '_' + p), { h: h, i: p, gen: gen, data: s.slice(p * CHUNK_CHARS, (p + 1) * CHUNK_CHARS) });
-            if (++ops >= 400) { batch = _fs.batch(); batches.push(batch); ops = 0; }
+            var chunk = s.slice(p * CHUNK_CHARS, (p + 1) * CHUNK_CHARS);
+            batch.set(pRef.doc(h.slice(0, 24) + '_' + p), { h: h, i: p, gen: gen, data: chunk });
+            ops++; bChars += chunk.length;
+            if (ops >= MAX_OPS || bChars >= MAX_BATCH_CHARS) { batch = _fs.batch(); batches.push(batch); ops = 0; bChars = 0; }
           }
         }
 
         var meta = {
           app: 'dk-gym-pro', format_version: 2, db_name: db.NAME,
-          updated_at: gen, total_records: ser.meta.total_records,
+          updated_at: gen, total_records: syncedRecs,
           total_bytes: total, store_hashes: hashes, store_parts: parts,
           email: _user.email || '', lang: ser.meta.lang || ''
         };
         /* Parts FIRST, meta LAST: the meta doc is the commit point and must
-         * never become visible while its parts are still in flight. No
-         * destructive cleanup anymore — superseded generations are simply
-         * orphaned (they are content-addressed and bounded by real data
-         * churn, not by the number of saves). */
-        _saveStep = 'commit:' + batches.length;
-        await Promise.all(batches.map(function (b) { return b.commit(); }));
+         * never become visible while its parts are still in flight. Commits
+         * run SEQUENTIALLY with live progress in _saveStep — the watchdog and
+         * the user always see which commit is in flight. */
+        for (var bi = 0; bi < batches.length; bi++) {
+          _saveStep = 'commit:' + (bi + 1) + '/' + batches.length;
+          await batches[bi].commit();
+        }
         _saveStep = 'commit-meta';
         await uRef.set(meta, { merge: true });
+
+        /* v12 one-time cloud hygiene (best-effort, non-fatal):
+         * 1) reference stores must not exist in the cloud anymore — wipe
+         *    their whole parts collections (frees ~22 MB of quota);
+         * 2) legacy numeric-id parts («<epoch>_<p>», pre-c10) are superseded
+         *    by content-addressed ids — delete them. Both sweeps are no-ops
+         *    on every save after the first converted one. */
+        _saveStep = 'cleanup';
+        try {
+          for (var ci = 0; ci < REF_STORES.length; ci++) {
+            if (!prevParts[REF_STORES[ci]]) continue; /* was never synced */
+            var deadRef = storesCol.doc(REF_STORES[ci]).collection('parts');
+            var dead = await deadRef.get();
+            if (dead.empty) continue;
+            var dBatch = _fs.batch(), dOps = 0;
+            dead.forEach(function (d) { dBatch.delete(d.ref); dOps++; });
+            _saveStep = 'cleanup:' + REF_STORES[ci];
+            if (dOps) await dBatch.commit();
+            log('cleaned reference parts:', REF_STORES[ci], dOps);
+          }
+          for (var ci2 = 0; ci2 < names.length; ci2++) {
+            var nm2 = names[ci2], pp2 = prevParts[nm2];
+            if (!pp2 || pp2.h) continue; /* already content-addressed */
+            var leg = await storesCol.doc(nm2).collection('parts').get();
+            if (leg.empty) continue;
+            var lBatch = _fs.batch(), lOps = 0;
+            leg.forEach(function (d) {
+              /* legacy ids are '<epoch>_<p>'; content-addressed ids start
+               * with a 24-hex hash — never touch those */
+              if (/^\d+_\d+$/.test(d.id)) { lBatch.delete(d.ref); lOps++; }
+            });
+            if (lOps) { _saveStep = 'cleanup:' + nm2; await lBatch.commit(); log('cleaned legacy parts:', nm2, lOps); }
+          }
+        } catch (eC) { log('cleanup (non-fatal)', eC); }
 
         if (forceFull) { try { await db.del('settings', FORCE_FULL_KEY); } catch (e4) {} }
         _lastMeta = meta; _lastSync = gen; _dirty = {};
         try { await db.put('settings', { key: LASTSYNC_KEY, value: gen }); } catch (e) {}
         return { ok: true, meta: meta, changed: changed };
       })();
-      /* Watchdog: the cloud MUST answer within 30 s. If it doesn't, surface
-       * the exact step instead of dying silently. _busy is NOT released on
-       * timeout — only when the background work settles — so a retry can
-       * never run concurrently with the still-running save. */
+      /* Watchdog v2 (c12): big-but-healthy uploads used to hit the 30 s wall
+       * and show a scary «зависло» error while the upload was actually
+       * progressing (report 2026-09-09). Now: 30 s → gentle «still uploading,
+       * step …» toast; 120 s → real timeout with the step. The work keeps
+       * running in the background either way; when it settles late we tell
+       * the user the OUTCOME instead of only logging it. _busy is NOT
+       * released on timeout — only when the background work settles — so a
+       * retry can never run concurrently with the still-running save. */
+      var _saveStart = Date.now();
+      var w1 = null, w2 = null;
       var watchdog = new Promise(function (res) {
-        wTimer = setTimeout(function () { timedOut = true; res({ ok: false, error: 'timeout', step: _saveStep }); }, 30000);
+        w1 = setTimeout(function () {
+          if (timedOut) return;
+          toastMsg((T('settings.cloudAccStill') || 'Still uploading — large data… step: {step}')
+            .replace('{step}', _saveStep), 'info', 12000);
+        }, 30000);
+        w2 = setTimeout(function () {
+          timedOut = true;
+          res({ ok: false, error: 'timeout', step: _saveStep });
+        }, 120000);
       });
       var out;
       try {
@@ -24028,11 +24107,19 @@ document.addEventListener('DOMContentLoaded', function () {
         log('save failed:', e);
         out = { ok: false, error: (e && (e.code || e.message)) || 'error' };
       }
-      if (wTimer !== null) clearTimeout(wTimer);
+      if (w1 !== null) clearTimeout(w1);
+      if (w2 !== null) clearTimeout(w2);
       if (timedOut) {
         log('save watchdog fired at step:', _saveStep);
-        work.then(function () { log('save finished late (ok)'); releaseBusy(); })
-            .catch(function (e2) { log('save failed late:', e2); releaseBusy(); });
+        work.then(function () {
+          releaseBusy();
+          var secs = Math.round((Date.now() - _saveStart) / 1000);
+          log('save finished late (ok, ' + secs + 's)');
+          toastMsg((T('settings.cloudAccLateOk') || '✓ Cloud updated — upload took {s} s').replace('{s}', secs), 'success', 8000);
+          renderStatus();
+        }).catch(function (e2) {
+          releaseBusy(); log('save failed late:', e2); errMsg(e2);
+        });
       } else {
         releaseBusy();
       }
@@ -24109,8 +24196,18 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     async function applyPayload(payload) {
+      /* v12: replace ONLY the stores present in the payload. Reference
+       * stores (exercise_base / food_database) are app assets, not cloud
+       * data — clearing them here would leave the app without its exercise
+       * and food databases until a manual reseed. */
       var idb = await db.raw();
-      var storeNames = db.storeNames();
+      var allNames = db.storeNames();
+      var pKeys = Object.keys(payload.data || {});
+      var storeNames = [];
+      for (var ai = 0; ai < allNames.length; ai++) {
+        if (pKeys.indexOf(allNames[ai]) !== -1) storeNames.push(allNames[ai]);
+      }
+      if (!storeNames.length) return 0;
       var tx = idb.transaction(storeNames, 'readwrite');
       await Promise.all(storeNames.map(function (n) {
         return new Promise(function (res, rej) {
@@ -24163,6 +24260,16 @@ document.addEventListener('DOMContentLoaded', function () {
           // cloud copy has masked api key — keep the local one if it exists
           if (localAi && localAi.value && localAi.value.apiKey) await db.put('settings', localAi);
         } catch (e) {}
+        /* v12: reference stores are not cloud data. If a legacy-format cloud
+         * (or an old-version wipe) left them empty, drop the seed flags so
+         * the next boot re-seeds them from the bundled JSON. */
+        try {
+          for (var ri = 0; ri < REF_STORES.length; ri++) {
+            var cnt = 0;
+            try { cnt = await db.count(REF_STORES[ri]); } catch (eR) {}
+            if (!cnt) { try { await db.del('settings', SEED_FLAGS[ri]); } catch (eR2) {} }
+          }
+        } catch (eR0) {}
         try { await db.put('settings', { key: LASTSYNC_KEY, value: cloud.meta.updated_at || Date.now() }); } catch (e) {}
         _dirty = {};
         return { ok: true, imported: imported, meta: cloud.meta };
@@ -24722,7 +24829,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 11; /* numeric part of dk-build c11 */
+  var RUNNING = 12; /* numeric part of dk-build c12 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
