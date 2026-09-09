@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c15" />
+<meta name="dk-build" content="c16" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2202,7 +2202,7 @@
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c15</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c16</p>
             </div>
           </div>
 
@@ -5560,6 +5560,72 @@
     console.info(`[seed] injected ${exercises.length} exercises into exercise_base`);
     return exercises.length;
   }
+
+  /* =====================================================================
+     IMAGE PATH HEAL (c16) — 2026-09-09
+     Devices that seeded exercise_base before the v19 WebP migration keep
+     Burnfit records pointing at images/bf_*.gif — those files no longer
+     exist on the server (converted to .webp, some renamed), so the exercise
+     picker shows broken cards with 404s (reported 2026-09-09).
+     A full re-seed would wipe trainer edits (custom gif URLs etc.), so
+     instead we heal ONLY the image fields in place:
+       • burnfit record + shipped JSON has it → copy images/gif_url/gif
+         from the shipped record (fixes .gif→.webp AND renames);
+       • any other record → just strip dead relative .gif paths
+         (anything ending .gif that is not videos/gv_*.gif — the only gif
+         files actually shipped; images/ contains zero .gif since v19).
+     Absolute http(s) URLs (trainer's custom gifs) are never touched.
+     Runs on every boot AFTER seeding (cheap: writes only changed records)
+     and after every cloud/file restore, so stale copies heal automatically.
+     ===================================================================== */
+  async function healExerciseImagePaths() {
+    try {
+      const all = await db.all('exercise_base');
+      if (!all.length) return 0;
+      let shipped = null;
+      try {
+        const raw = unpackExerciseDB();
+        if (raw && raw.length) {
+          shipped = Object.create(null);
+          for (let i = 0; i < raw.length; i++) shipped[raw[i].id] = raw[i];
+        }
+      } catch (_) { /* json not loaded — fall through to strip-only mode */ }
+      const isDeadGif = (p) => typeof p === 'string' && /\.gif$/i.test(p)
+        && !/^https?:/i.test(p) && !p.startsWith('videos/');
+      const changed = [];
+      for (let i = 0; i < all.length; i++) {
+        const r = all[i];
+        if (!r) continue;
+        let dirty = false;
+        const src = r.source || (String(r.id || '').indexOf('bf_') === 0 ? 'burnfit' : '');
+        const sh = shipped && shipped[r.id];
+        if (src === 'burnfit' && sh && Array.isArray(sh.images) && sh.images.length) {
+          const hasDead = (Array.isArray(r.images) && r.images.some(isDeadGif))
+            || isDeadGif(r.gif_url) || isDeadGif(r.gif);
+          if (hasDead || (!Array.isArray(r.images) || !r.images.length)) {
+            r.images = sh.images.slice();
+            r.gif_url = sh.gif_url || '';
+            r.gif = sh.gif || '';
+            dirty = true;
+          }
+        } else {
+          if (Array.isArray(r.images) && r.images.some(isDeadGif)) { r.images = r.images.filter((p) => !isDeadGif(p)); dirty = true; }
+          if (isDeadGif(r.gif_url)) { r.gif_url = ''; dirty = true; }
+          if (isDeadGif(r.gif)) { r.gif = ''; dirty = true; }
+        }
+        if (dirty) changed.push(r);
+      }
+      if (changed.length) {
+        await db.bulkPut('exercise_base', changed);
+        console.info('[img-heal] fixed exercise image paths:', changed.length);
+      }
+      return changed.length;
+    } catch (e) {
+      console.warn('[img-heal] failed:', e);
+      return 0;
+    }
+  }
+  window.__dkHealExerciseImages = healExerciseImagePaths;
 
   /* =====================================================================
      DEFAULT SETTINGS — written on first boot if missing.
@@ -20299,6 +20365,8 @@ async function boot() {
       await ensureDefaultSettings();
       const seedCount = await seedExerciseBase(false);
       await seedFoodDatabase(false);
+      // c16: heal stale image paths (old bf_*.gif seeds → webp) in place
+      try { await healExerciseImagePaths(); } catch (_) {}
       // Shared exercise cache for localized name/group/image lookups in ANY
       // screen (preview modal, live workout, history) — independent of the
       // program builder being open.
@@ -23500,6 +23568,8 @@ document.addEventListener('DOMContentLoaded', function () {
           console.warn('[restore] store ' + store + ' failed:', e);
         }
       }
+      /* c16: legacy backups may carry old bf_*.gif image paths — heal */
+      try { if (window.__dkHealExerciseImages) await window.__dkHealExerciseImages(); } catch (eH) {}
     }
 
     // === Public API ===
@@ -24336,6 +24406,8 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!cnt) { try { await db.del('settings', SEED_FLAGS[ri]); } catch (eR2) {} }
           }
         } catch (eR0) {}
+        /* c16: a legacy backup may carry old bf_*.gif image paths — heal */
+        try { if (window.__dkHealExerciseImages) await window.__dkHealExerciseImages(); } catch (eH) {}
         try { await db.put('settings', { key: LASTSYNC_KEY, value: cloud.meta.updated_at || Date.now() }); } catch (e) {}
         _dirty = {};
         return { ok: true, imported: imported, meta: cloud.meta };
@@ -24895,7 +24967,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 15; /* numeric part of dk-build c15 */
+  var RUNNING = 16; /* numeric part of dk-build c16 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

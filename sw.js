@@ -1,6 +1,6 @@
 // Service Worker - David King Gym PWA
-// v42: muscle tree thumbnails square full-height (c15)
-const CACHE_NAME = 'dk-gym-v42';
+// v43: heal stale bf_*.gif image paths to webp on boot (c16)
+const CACHE_NAME = 'dk-gym-v43';
 const APP_SHELL = [
   './',
   './index.html',
