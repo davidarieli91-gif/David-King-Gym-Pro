@@ -1,6 +1,6 @@
 // Service Worker - David King Gym PWA
-// v40: meta full-replace (merge kept dead ref pointers) + restore skips/heals dead ref entries (c13)
-const CACHE_NAME = 'dk-gym-v40';
+// v41: close guard (c14): beforeunload ask + back-gesture confirm on CRM and client portal
+const CACHE_NAME = 'dk-gym-v41';
 const APP_SHELL = [
   './',
   './index.html',

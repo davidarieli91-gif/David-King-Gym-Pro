@@ -419,7 +419,7 @@
   /* ============ I18N ============ */
   const I18N = {
     ru: {
-      portalTitle:'Мой Портал',coachBadge:'David King Gym',startBtn:'В зал',resumeBtn:'Продолжить',finishWorkout:'Завершить тренировку',
+      portalTitle:'Мой Портал',coachBadge:'David King Gym',closeGuard:'Закрыть портал подопечного?',startBtn:'В зал',resumeBtn:'Продолжить',finishWorkout:'Завершить тренировку',
       dailyTargets:'Суточная норма',waterTitle:'Водный баланс',dailyCheckin:'Утренний чек-ин',
       morningWeight:'Вес утром (кг)',savedToast:'Сохранено ✓',checkinSaved:'Чек-ин сохранён ✓',checkinNeedWeight:'Укажите вес',
       workoutDoneTitle:'Тренировка завершена! 🎉',restLabel:'Отдых',unlockTitle:'Введите код доступа',
@@ -448,7 +448,7 @@
       video:'Видео', searchOnYouTube:'Искать на YouTube', noImage:'Нет изображения', noTechnique:'Описание техники пока нет'
     },
     en: {
-      portalTitle:'My Portal',coachBadge:'David King Gym',startBtn:'Start',resumeBtn:'Resume',finishWorkout:'Finish Workout',
+      portalTitle:'My Portal',coachBadge:'David King Gym',closeGuard:'Close the client portal?',startBtn:'Start',resumeBtn:'Resume',finishWorkout:'Finish Workout',
       dailyTargets:'Daily Targets',waterTitle:'Water',dailyCheckin:'Morning Check-In',
       morningWeight:'Morning Weight (kg)',savedToast:'Saved ✓',checkinSaved:'Check-in saved ✓',checkinNeedWeight:'Enter weight',
       workoutDoneTitle:'Workout Complete! 🎉',restLabel:'Rest',unlockTitle:'Enter access code',
@@ -477,7 +477,7 @@
       video:'Video', searchOnYouTube:'Search on YouTube', noImage:'No image', noTechnique:'No technique description yet'
     },
     he: {
-      portalTitle:'הפורטל שלי',coachBadge:'David King Gym',startBtn:'התחל',resumeBtn:'המשך',finishWorkout:'סיים אימון',
+      portalTitle:'הפורטל שלי',coachBadge:'David King Gym',closeGuard:'לסגור את פורטל המתאמן?',startBtn:'התחל',resumeBtn:'המשך',finishWorkout:'סיים אימון',
       dailyTargets:'יעדים יומיים',waterTitle:'מאזן נוזלים',dailyCheckin:'צ׳ק-אין בוקר',
       morningWeight:'משקל בוקר (ק״ג)',savedToast:'נשמר ✓',checkinSaved:'צ׳ק-אין נשמר ✓',checkinNeedWeight:'הזן משקל',
       workoutDoneTitle:'האימון הושלם! 🎉',restLabel:'מנוחה',unlockTitle:'הזן קוד גישה',
@@ -1833,6 +1833,41 @@
       if(img && img.src) openViewer(img.src);
     });
   });
+  </script>
+  <script>
+  /* ===== c14 close guard: confirm before the portal closes =====
+   * beforeunload → native "Leave site?" dialog on tab/window close & reload.
+   * popstate sentinel → Android back gesture / swipe-back asks via confirm()
+   * (user request 2026-09-09: the portal used to close instantly on swipe). */
+  (function () {
+    'use strict';
+    var allow = false;
+    window.dkAllowClose = function () { allow = true; };
+    window.addEventListener('beforeunload', function (e) {
+      if (allow) return;
+      e.preventDefault();
+      e.returnValue = ' ';
+      return ' ';
+    });
+    function guardMsg() {
+      try { if (typeof t === 'function') { var m = t('closeGuard'); if (m && m !== 'closeGuard') return m; } } catch (e) {}
+      return 'Закрыть портал? / Close the portal?';
+    }
+    try {
+      history.replaceState({ dkRoot: 1 }, '');
+      history.pushState({ dkGuard: 1 }, '');
+      window.addEventListener('popstate', function () {
+        if (allow) return; /* a programmatic leave is in flight */
+        if (window.confirm(guardMsg())) {
+          window.dkAllowClose();
+          if (history.length > 1) history.back();
+          /* nothing behind → guard stays off; the next system back closes natively */
+        } else {
+          history.pushState({ dkGuard: 1 }, ''); /* stay: re-arm the sentinel */
+        }
+      });
+    } catch (e) {}
+  })();
   </script>
 </body>
 </html>

@@ -17,7 +17,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c13" />
+<meta name="dk-build" content="c14" />
+<script>
+/* ===== c14 close guard: confirm before the app window closes =====
+ * BEFOREUNLOAD ONLY. The app already has its own back-button trap
+ * (sentinel buffer + «Exit app?» dialog in the main script) — a popstate
+ * handler here would prompt TWICE on one swipe. This layer covers the
+ * plain window/tab close & reload on desktop (user request 2026-09-09:
+ * Windows closed the whole app without asking).
+ * Programmatic leaves MUST call window.dkAllowClose() first — every
+ * internal location.reload() site, the OAuth redirect and the back-trap's
+ * actuallyExit() do. */
+(function () {
+  'use strict';
+  window.__dkAllowUnload = false;
+  window.dkAllowClose = function () { window.__dkAllowUnload = true; };
+  window.addEventListener('beforeunload', function (e) {
+    if (window.__dkAllowUnload) return;
+    e.preventDefault();
+    e.returnValue = ' ';
+    return ' ';
+  });
+})();
+</script>
   <meta name="description" content="Fitness & Nutrition CRM for personal trainers — clients, workouts, nutrition, analytics." />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icon-512.png" />
@@ -2170,7 +2192,7 @@
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c13</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c14</p>
             </div>
           </div>
 
@@ -6291,6 +6313,9 @@
       // should NOT re-push sentinels or show another confirm — it would
       // create the infinite "jumping dialog" loop the user reported.
       _exiting = true;
+      // c14: the user already confirmed the exit in OUR dialog — the
+      // beforeunload close guard must not ask a second time.
+      try { if (window.dkAllowClose) window.dkAllowClose(); } catch (_) {}
       // Try window.close() first (only works if the tab was opened via
       // window.open() — usually a no-op for user-opened tabs, but harmless)
       try { window.close(); } catch (_) {}
@@ -6324,7 +6349,7 @@
               <div style="font-size:48px;margin-bottom:1rem">✓</div>
               <h1 style="font-size:22px;font-weight:700;margin-bottom:0.5rem">${t('common.safeToClose') || 'Safe to close'}</h1>
               <p style="font-size:14px;opacity:0.7;margin-bottom:2rem;max-width:320px">${t('common.safeToCloseDesc') || 'You can now close this tab or swipe the app away.'}</p>
-              <button onclick="location.reload()" style="background:#6366f1;color:#fff;border:0;padding:0.75rem 1.5rem;border-radius:8px;font-weight:600;cursor:pointer">${t('common.reopenApp') || 'Reopen app'}</button>
+              <button onclick="window.dkAllowClose&&window.dkAllowClose(),location.reload()" style="background:#6366f1;color:#fff;border:0;padding:0.75rem 1.5rem;border-radius:8px;font-weight:600;cursor:pointer">${t('common.reopenApp') || 'Reopen app'}</button>
             </div>
           </div>`;
       } catch (_) {}
@@ -20340,7 +20365,7 @@ async function boot() {
         if (!confirm(t('settings.wipeDb') + ' — ' + t('clients.deleteConfirm'))) return;
         await db.wipe();
         toast('⚠ ' + t('settings.wipeDb'), 'warning');
-        setTimeout(() => location.reload(), 800);
+        setTimeout(() => { window.dkAllowClose(); location.reload(); }, 800);
       });
 
       const btnExport = document.getElementById('btn-export-backup');
@@ -20364,7 +20389,7 @@ async function boot() {
             toast(t('common.cancel'), 'info', 1500);
           } else if (result) {
             toast(t('backup.importDone') + ' · ' + result.imported + ' records', 'success', 4000);
-            setTimeout(() => location.reload(), 1200);
+            setTimeout(() => { window.dkAllowClose(); location.reload(); }, 1200);
           }
         } catch (err) {
           console.error('[backup.import]', err);
@@ -21768,7 +21793,7 @@ async function boot() {
           toast(t('common.cancel'), 'info', 1500);
         } else if (result) {
           toast(t('backup.importDone') + ' · ' + result.imported + ' ' + t('backup.recordsUnit'), 'success', 4000);
-          setTimeout(() => location.reload(), 1200);
+          setTimeout(() => { window.dkAllowClose(); location.reload(); }, 1200);
         }
       } catch (err) {
         console.error('[backup.import]', err);
@@ -21814,7 +21839,7 @@ async function boot() {
       const result = await window.googleDriveBackup.load();
       if (result.ok) {
         toast('✓ Восстановлено ' + result.records + ' записей. Перезагрузка…', 'success', 3000);
-        setTimeout(() => location.reload(), 1500);
+        setTimeout(() => { window.dkAllowClose(); location.reload(); }, 1500);
       } else if (result.error !== 'Not configured' && result.error !== 'Cancelled') {
         toast('✗ Ошибка: ' + result.error, 'danger', 5000);
       }
@@ -21834,7 +21859,7 @@ async function boot() {
       if (!confirm(t('settings.wipeDb') + ' — ' + t('clients.deleteConfirm'))) return;
       await db.wipe();
       toast('⚠ ' + t('settings.wipeDb'), 'warning');
-      setTimeout(() => location.reload(), 800);
+      setTimeout(() => { window.dkAllowClose(); location.reload(); }, 800);
     });
 
     // ---- AI Configuration (Settings → AI Config) ----
@@ -22017,7 +22042,7 @@ async function boot() {
       window._pendingLogo = null;
       // Reload page to reset to default logo
       toast(t('settings.brandingReset') || 'Branding reset — reload to apply', 'warning', 3000);
-      setTimeout(() => location.reload(), 1500);
+      setTimeout(() => { window.dkAllowClose(); location.reload(); }, 1500);
     });
     const brandingSave = document.getElementById('branding-save');
     if (brandingSave) brandingSave.addEventListener('click', async () => {
@@ -22032,7 +22057,7 @@ async function boot() {
         logoDataUri: logoDataUri || existing.logoDataUri || ''
       }});
       toast(t('settings.brandingSaved') || 'Branding saved — reloading...', 'success', 2000);
-      setTimeout(() => location.reload(), 1000);
+      setTimeout(() => { window.dkAllowClose(); location.reload(); }, 1000);
     });
     loadBranding();
     // ---- UI Element Size Sliders (Settings → Appearance) ----
@@ -23903,8 +23928,12 @@ document.addEventListener('DOMContentLoaded', function () {
         // Full-page redirect in a regular browser tab: reliable and
         // third-party-cookie-proof on SDK 11 (11.1+ carries the OAuth result
         // through the URL / first-party storage — no cross-origin iframe).
+        /* c14: the redirect navigates the whole page — the close guard must
+         * not ask «leave?» in the middle of the Google sign-in. */
+        if (window.dkAllowClose) window.dkAllowClose();
         await _auth.signInWithRedirect(provider);
       } catch (e) {
+        window.__dkAllowUnload = false; /* stayed on the page → re-arm the guard */
         _authError = String((e && (e.code || e.message)) || e);
         try { document.dispatchEvent(new CustomEvent('cloud:auth', { detail: { email: null } })); } catch (e2) {}
         errMsg(e);
@@ -24362,7 +24391,7 @@ document.addEventListener('DOMContentLoaded', function () {
           var r2 = await restoreFromCloud({ silent: true });
           if (r2.ok) {
             toastMsg(T('settings.cloudAccRestored') || '✓ Restored from cloud', 'success', 6000);
-            setTimeout(function () { location.reload(); }, 800);
+            setTimeout(function () { window.dkAllowClose(); location.reload(); }, 800);
           } else if (r2.error && r2.error !== 'signed_out' && r2.error !== 'cancelled') {
             /* surface the real reason; restoreFromCloud already set
              * FORCE_FULL_KEY so the next save from a data-intact device
@@ -24445,7 +24474,7 @@ document.addEventListener('DOMContentLoaded', function () {
           var cfg = parseConfig(ta && ta.value);
           await db.put('settings', { key: CFG_KEY, value: cfg });
           toastMsg(T('settings.cloudAccConnected') || 'Firebase connected. Reloading…', 'success', 2000);
-          setTimeout(function () { location.reload(); }, 600);
+          setTimeout(function () { window.dkAllowClose(); location.reload(); }, 600);
         } catch (e) {
           toastMsg((T('settings.cloudAccErrConfig') || 'Invalid Firebase config') + ': ' + e.message, 'danger', 6000);
         }
@@ -24455,7 +24484,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (bReset) bReset.addEventListener('click', async function () {
         if (!confirm('Remove stored Firebase config from this device?')) return;
         try { await db.del('settings', CFG_KEY); } catch (e) {}
-        setTimeout(function () { location.reload(); }, 300);
+        setTimeout(function () { window.dkAllowClose(); location.reload(); }, 300);
       });
 
       var bGoogle = $('cloud-btn-google');
@@ -24499,7 +24528,7 @@ document.addEventListener('DOMContentLoaded', function () {
           bRestore.disabled = false;
           if (r.ok) {
             toastMsg(T('settings.cloudAccRestored') || '✓ Restored. Reloading…', 'success', 3000);
-            setTimeout(function () { location.reload(); }, 1000);
+            setTimeout(function () { window.dkAllowClose(); location.reload(); }, 1000);
           } else if (r.error === 'no_cloud') {
             toastMsg(T('settings.cloudAccNoCloud') || 'Nothing in the cloud yet', 'warning', 5000);
           } else if (r.error && r.error !== 'cancelled') {
@@ -24856,7 +24885,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 13; /* numeric part of dk-build c13 */
+  var RUNNING = 14; /* numeric part of dk-build c14 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
@@ -24891,7 +24920,7 @@ document.addEventListener('input', function (e) {
           }).catch(function () {});
         }
       } catch (e) {}
-      setTimeout(function () { location.reload(); }, 700);
+      setTimeout(function () { window.dkAllowClose(); location.reload(); }, 700);
     });
     banner.appendChild(span); banner.appendChild(btn);
     document.body.appendChild(banner);
