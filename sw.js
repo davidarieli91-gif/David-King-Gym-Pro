@@ -1,6 +1,6 @@
 // Service Worker - David King Gym PWA
-// v43: heal stale bf_*.gif image paths to webp on boot (c16)
-const CACHE_NAME = 'dk-gym-v43';
+// v44: crash-safe exercise seed v52, full restore bf+gv+gi (c17)
+const CACHE_NAME = 'dk-gym-v44';
 const APP_SHELL = [
   './',
   './index.html',
