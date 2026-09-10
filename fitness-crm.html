@@ -4644,7 +4644,7 @@
       let _exerciseDbLoaded = false;
       // Bump EXERCISE_DB_BUST when exercise-db.json changes — defeats SW/browser
       // cache-first staleness so reseed always unpacks the deployed dataset.
-      const EXERCISE_DB_BUST = 'v48';
+      const EXERCISE_DB_BUST = 'v49';
       async function loadExerciseDbExternal() {
         try {
           const resp = await fetch('exercise-db.json?v=' + EXERCISE_DB_BUST);
@@ -4855,7 +4855,7 @@
               return 'Compound';
             case 'back':
               // Only 4 subgroups: Lats / Middle Back / Trapezius / Lower Back (in this order)
-              if (nameLower.includes('deadlift') || nameLower.includes('hyperextension') || nameLower.includes('hyper ') || nameLower.includes('good morning') || nameLower.includes('back extension') || nameLower.includes('superman') || nameLower.includes('erector')) return 'Lower Back';
+              if (nameLower.includes('deadlift') || nameLower.includes('hyperextension') || nameLower.includes('hyper ') || nameLower.includes('good morning') || nameLower.includes('back extension') || nameLower.includes('superman') || nameLower.includes('erector') || nameLower.includes('toe-touch')) return 'Lower Back';
               if (nameLower.includes('shrug') || nameLower.includes('neck')) return 'Trapezius';
               if (nameLower.includes('row') || nameLower.includes('rowing')) return 'Middle Back';
               if (nameLower.includes('pull-up') || nameLower.includes('pullup') || nameLower.includes('pulldown') || nameLower.includes('chin')) return 'Lats';
@@ -5518,6 +5518,7 @@
     // v23 = GymVisual RU names + 3 reviewed imports + gif autoplay — 2026-09
     // v22 = GymVisual subgroup taxonomy (gv keyword subgroups) — 2026-09
     // v21 = force fresh exercise-db.json fetch (cache-bust v26) — 2026-09
+    // v78 = 4 custom back exercises gi_91001-91004 (DB/BB forward-bend flow + 3-way toe-touch, Lower Back) — 2026-09
     // v54 = GI instructions TM RU 90-91 + HE 55-56 (+540 RU / +540 HE sentences) — 2026-09
     // v53 = GI instructions TM RU 88-89 + HE 53-54 (+540 RU / +539 HE sentences) — 2026-09
     // v52 = crash-safe seed (validate BEFORE clear) + full restore bf+gv+gi after
@@ -5552,10 +5553,10 @@
     //      + PG "General" subgroups removed + technique fields added
     // v4 = new folder_path structure (no "General" subgroup, no equipment level)
     // v3 = original 1265-exercise seed
-    const v5Flag = await db.get('settings', 'seeded_exercise_base_v77');
+    const v5Flag = await db.get('settings', 'seeded_exercise_base_v78');
     if (!v5Flag) {
       force = true;
-      console.info('[seed] v77 flag missing — forcing re-seed of exercise_base (GI TM HE 99-100)');
+      console.info('[seed] v78 flag missing — forcing re-seed of exercise_base (GI TM HE 99-100 + 4 custom gi_91001-91004)');
     }
     const current = await db.count('exercise_base');
     if (current > 0 && !force) {
@@ -5584,7 +5585,7 @@
     }
     if (force) await db.clear('exercise_base');
     await db.bulkPut('exercise_base', exercises);
-    await db.put('settings', { key: 'seeded_exercise_base_v77', value: true });
+    await db.put('settings', { key: 'seeded_exercise_base_v78', value: true });
     console.info(`[seed] injected ${exercises.length} exercises into exercise_base (bf=${srcCount.burnfit} gv=${srcCount.gymvisual} gi=${srcCount.gymimpulse})`);
     return exercises.length;
   }
@@ -23792,7 +23793,7 @@ document.addEventListener('DOMContentLoaded', function () {
      * Firestore storage quota. The cloud mirrors USER data only; restore
      * re-seeds references locally if a store came back empty. */
     var REF_STORES = ['exercise_base', 'food_database'];
-    var SEED_FLAGS = ['seeded_exercise_base_v48', 'seeded_food_db_v54'];
+    var SEED_FLAGS = ['seeded_exercise_base_v78', 'seeded_food_db_v54'];
     /* c26: /portal_shares is public-read (trainee portal opens WITHOUT sign-in)
      * and open-write with a size guard (trainer uploads a share even when not
      * signed in; doc ids are unguessable 18-char hashes). */
