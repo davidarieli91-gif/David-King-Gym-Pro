@@ -14,7 +14,8 @@
 // v58: GI translations RU 110-111 + HE 75-76, seed v65 (c31)
 // v59: GI translations RU 112-113 + HE 77-78, seed v66 (c32)
 // v60: GI translations RU 114-115 + HE 79-80, seed v67 (c33)
-const CACHE_NAME = 'dk-gym-v61'; // v61: GI translations RU 116-117 + HE 81-82, seed v68 (c34)
+// v61: GI translations RU 116-117 + HE 81-82, seed v68 (c34)
+const CACHE_NAME = 'dk-gym-v62'; // v62: GI translations RU 118-119 + HE 83-84, seed v69 (c35)
 const APP_SHELL = [
   './',
   './index.html',
