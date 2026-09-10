@@ -10,7 +10,8 @@
 // v54: portal rules copy button visible when signed in (c27)
 // v55: GI translations RU 104-105 + HE 69-70, seed v62 (c28)
 // v56: GI translations RU 106-107 + HE 71-72, seed v63 (c29)
-const CACHE_NAME = 'dk-gym-v57'; // v57: GI translations RU 108-109 + HE 73-74, seed v64 (c30)
+// v57: GI translations RU 108-109 + HE 73-74, seed v64 (c30)
+const CACHE_NAME = 'dk-gym-v58'; // v58: GI translations RU 110-111 + HE 75-76, seed v65 (c31)
 const APP_SHELL = [
   './',
   './index.html',
