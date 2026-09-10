@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c33" />
+<meta name="dk-build" content="c34" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2202,7 +2202,7 @@
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c33</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c34</p>
             </div>
           </div>
 
@@ -5552,10 +5552,10 @@
     //      + PG "General" subgroups removed + technique fields added
     // v4 = new folder_path structure (no "General" subgroup, no equipment level)
     // v3 = original 1265-exercise seed
-    const v5Flag = await db.get('settings', 'seeded_exercise_base_v67');
+    const v5Flag = await db.get('settings', 'seeded_exercise_base_v68');
     if (!v5Flag) {
       force = true;
-      console.info('[seed] v67 flag missing — forcing re-seed of exercise_base (GI TM RU 114-115 + HE 79-80)');
+      console.info('[seed] v68 flag missing — forcing re-seed of exercise_base (GI TM RU 116-117 + HE 81-82)');
     }
     const current = await db.count('exercise_base');
     if (current > 0 && !force) {
@@ -5584,7 +5584,7 @@
     }
     if (force) await db.clear('exercise_base');
     await db.bulkPut('exercise_base', exercises);
-    await db.put('settings', { key: 'seeded_exercise_base_v67', value: true });
+    await db.put('settings', { key: 'seeded_exercise_base_v68', value: true });
     console.info(`[seed] injected ${exercises.length} exercises into exercise_base (bf=${srcCount.burnfit} gv=${srcCount.gymvisual} gi=${srcCount.gymimpulse})`);
     return exercises.length;
   }
@@ -25079,7 +25079,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 33; /* numeric part of dk-build c33 */
+  var RUNNING = 34; /* numeric part of dk-build c34 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
