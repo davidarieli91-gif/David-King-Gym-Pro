@@ -7,7 +7,8 @@
 // v51: GI translations RU 100-101 + HE 65-66, seed v59 (c24)
 // v52: GI translations RU 102-103 + HE 67-68, seed v60 (c25)
 // v53: short cloud portal link #c= (portal_shares), seed v61 (c26)
-const CACHE_NAME = 'dk-gym-v54'; // v54: portal rules copy button visible when signed in (c27)
+// v54: portal rules copy button visible when signed in (c27)
+const CACHE_NAME = 'dk-gym-v55'; // v55: GI translations RU 104-105 + HE 69-70, seed v62 (c28)
 const APP_SHELL = [
   './',
   './index.html',
