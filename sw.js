@@ -20,7 +20,8 @@
 // v64: GI translations HE 87-88, seed v71 (c37)
 // v65: GI translations HE 89-90, seed v72 (c38)
 // v66: GI translations HE 91-92, seed v73 (c39)
-const CACHE_NAME = 'dk-gym-v67'; // v67: GI translations HE 93-94, seed v74 (c40)
+// v67: GI translations HE 93-94, seed v74 (c40)
+const CACHE_NAME = 'dk-gym-v68'; // v68: GI translations HE 95-96, seed v75 (c41)
 const APP_SHELL = [
   './',
   './index.html',
