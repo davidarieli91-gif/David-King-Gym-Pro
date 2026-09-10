@@ -1179,6 +1179,8 @@
   "cloudAccGuide": "איך להגדיר (שלב אחר שלב)",
   "cloudAccGuideText": "1. פתחו console.firebase.google.com → «הוסף פרויקט» (חינם, ללא כרטיס אשראי).\n2. בתפריט: Build → Authentication → Get started → הפעילו את ספק Google.\n3. Authentication → Settings → Authorized domains → הוסיפו: davidarieli91-gif.github.io\n4. Build → Firestore Database → צרו מסד נתונים → לשונית Rules → הדביקו את הכללים למטה → Publish.\n5. ⚙ Project settings → General → Your apps → אפליקציית אינטרנט (</>) → רשמו → העתיקו את האובייקט firebaseConfig → הדביקו בשדה למעלה → לחצו «חבר».",
   "cloudAccCopyRules": "העתק את כללי Firestore",
+  "cloudPortalRulesTitle": "כללי Firestore לפורטל המתאמן (קישורים קצרים)",
+  "cloudPortalRulesHint": "פעם אחת: פתחו Firebase console → Firestore → Rules, החליפו את כל הטקסט בטקסט הזה ולחצו Publish. זה פותח את הענן לקישורים הקצרים של הפורטל.",
   "cloudAccCopied": "הועתק",
   "cloudAccSignIn": "התחברות עם Google",
   "cloudAccSignedInAs": "מחובר בתור",

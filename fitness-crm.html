@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c26" />
+<meta name="dk-build" content="c27" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2202,7 +2202,7 @@
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c26</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c27</p>
             </div>
           </div>
 
@@ -3591,6 +3591,15 @@
                     </button>
                     <button id="cloud-btn-signout" class="bg-danger/10 hover:bg-danger/20 border border-danger/30 text-danger text-sm font-medium px-3.5 py-2 rounded-lg transition inline-flex items-center gap-1.5" data-i18n="settings.cloudAccSignOut">Sign out</button>
                   </div>
+
+                  <!-- c27: Firestore rules for the trainee portal — ALWAYS visible (the copy in
+                       #cloud-setup disappears once a config is stored / user is signed in) -->
+                  <details class="pt-1">
+                    <summary class="text-xs font-semibold text-primary-2 cursor-pointer select-none" data-i18n="settings.cloudPortalRulesTitle">Firestore rules for the trainee portal (short links)</summary>
+                    <div class="text-[11px] text-muted mt-2 leading-relaxed" data-i18n="settings.cloudPortalRulesHint">One-time: open Firebase console → Firestore → Rules, replace everything with this text and press Publish. This opens the cloud for trainee portal short links.</div>
+                    <div class="mt-2 bg-surface-2 border border-border rounded-lg p-2 font-mono text-[10px] whitespace-pre-wrap text-muted" id="cloud-rules-text2"></div>
+                    <button id="cloud-btn-copy-rules2" class="mt-1 text-[11px] underline text-primary-2 hover:opacity-80" data-i18n="settings.cloudAccCopyRules">Copy Firestore rules</button>
+                  </details>
                 </div>
               </div>
             </div>
@@ -24736,6 +24745,16 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (e) {}
       });
 
+      /* c27: second copy button, visible when signed in */
+      var bCopy2 = $('cloud-btn-copy-rules2');
+      if (bCopy2) bCopy2.addEventListener('click', function () {
+        try {
+          navigator.clipboard.writeText(FIRESTORE_RULES).then(function () {
+            toastMsg(T('settings.cloudAccCopied') || 'Copied', 'success', 1500);
+          });
+        } catch (e) {}
+      });
+
       window.addEventListener('online', function () {
         if (_user && _autosync && Object.keys(_dirty).length && !_busy) {
           saveNow().then(function (r) { if (r && !r.ok && r.error !== 'busy') errMsg(r.error); }).catch(function () {});
@@ -24755,6 +24774,8 @@ document.addEventListener('DOMContentLoaded', function () {
       _ready = Promise.all([p1, p2, p3]).then(function () {
         var rules = $('cloud-rules-text');
         if (rules) rules.textContent = FIRESTORE_RULES;
+        var rules2 = $('cloud-rules-text2');
+        if (rules2) rules2.textContent = FIRESTORE_RULES;
         wire();
         render(null);
         if (_cfg) ensureAuth().catch(function (e) {
@@ -25058,7 +25079,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 26; /* numeric part of dk-build c26 */
+  var RUNNING = 27; /* numeric part of dk-build c27 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

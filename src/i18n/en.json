@@ -1179,6 +1179,8 @@
   "cloudAccGuide": "How to set up (step by step)",
   "cloudAccGuideText": "1. Open console.firebase.google.com → “Add project” (free, no card needed).\n2. Left menu: Build → Authentication → Get started → enable the Google provider.\n3. Authentication → Settings → Authorized domains → add: davidarieli91-gif.github.io\n4. Build → Firestore Database → Create database → open the Rules tab → paste the rules below → Publish.\n5. Project settings (gear) → General → Your apps → Web app (</>) → register → copy the firebaseConfig object → paste it into the field above → press Connect.",
   "cloudAccCopyRules": "Copy Firestore rules",
+  "cloudPortalRulesTitle": "Firestore rules for the trainee portal (short links)",
+  "cloudPortalRulesHint": "One-time: open Firebase console → Firestore → Rules, replace everything with this text and press Publish. This opens the cloud for trainee portal short links.",
   "cloudAccCopied": "Copied",
   "cloudAccSignIn": "Sign in with Google",
   "cloudAccSignedInAs": "Signed in as",

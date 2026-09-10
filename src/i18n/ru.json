@@ -1179,6 +1179,8 @@
   "cloudAccGuide": "Как настроить (пошагово)",
   "cloudAccGuideText": "1. Откройте console.firebase.google.com → «Добавить проект» (бесплатно, карта не нужна).\n2. Меню слева: Build → Authentication → «Начать» → включите провайдера Google.\n3. Authentication → Settings → Authorized domains → добавьте: davidarieli91-gif.github.io\n4. Build → Firestore Database → «Создать базу данных» → вкладка Rules → вставьте правила ниже → Publish.\n5. ⚙ Настройки проекта → General → Ваши приложения → Веб-приложение (</>) → зарегистрируйте → скопируйте объект firebaseConfig → вставьте в поле выше → нажмите «Подключить».",
   "cloudAccCopyRules": "Скопировать правила Firestore",
+  "cloudPortalRulesTitle": "Правила Firestore для портала подопечного (короткие ссылки)",
+  "cloudPortalRulesHint": "Однократно: откройте Firebase console → Firestore → Rules, замените там весь текст этим и нажмите Publish. Это открывает облако для коротких ссылок портала.",
   "cloudAccCopied": "Скопировано",
   "cloudAccSignIn": "Войти через Google",
   "cloudAccSignedInAs": "Вы вошли как",
