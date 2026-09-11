@@ -1,0 +1,799 @@
+{
+  "generated": "2026-09-11T20:41:03.605Z",
+  "total": 5623,
+  "issueCount": 97,
+  "byCode": {
+    "G11-back-no-back-syn": 56,
+    "G8-upper-body-name-in-legs": 11,
+    "G3-forearm-elsewhere": 10,
+    "G13-triceps-syn-biceps": 1,
+    "G1-triceps-in-flexors": 1,
+    "G12-flexors-syn-triceps": 1,
+    "G4-glutes-in-back": 2,
+    "G9-leg-exercise-in-upper-group": 3,
+    "B14-shrug-as-lats": 1,
+    "B1-glute-sub-in-back": 3,
+    "B7-front-as-middle": 2,
+    "B4-lateral-as-rear": 5,
+    "B3-rdl-not-hamstrings": 1
+  },
+  "unreachableCombinations": {},
+  "issues": [
+    {
+      "id": "bf_Good-morning",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "bf_back-extension",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "bf_hyperextension",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "bf_weight-hyperextension",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gv_1314",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gv_1333",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gv_1334",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gv_1335",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gv_1336",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gv_0488",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gv_0573",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gv_1775",
+      "level": "group",
+      "code": "G8-upper-body-name-in-legs",
+      "msg": "upper-body exercise name in legs group",
+      "from": "legs",
+      "to": "?"
+    },
+    {
+      "id": "gv_0835",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_0877",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_1170",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_1171",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_4702",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_3483",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_0902",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_1540",
+      "level": "group",
+      "code": "G8-upper-body-name-in-legs",
+      "msg": "upper-body exercise name in legs group",
+      "from": "legs",
+      "to": "?"
+    },
+    {
+      "id": "gi_1541",
+      "level": "group",
+      "code": "G8-upper-body-name-in-legs",
+      "msg": "upper-body exercise name in legs group",
+      "from": "legs",
+      "to": "?"
+    },
+    {
+      "id": "gi_6442",
+      "level": "group",
+      "code": "G8-upper-body-name-in-legs",
+      "msg": "upper-body exercise name in legs group",
+      "from": "legs",
+      "to": "?"
+    },
+    {
+      "id": "gi_4692",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_1481",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_9871",
+      "level": "group",
+      "code": "G3-forearm-elsewhere",
+      "msg": "wrist/forearm exercise outside forearms group",
+      "from": "shoulders",
+      "to": "forearms"
+    },
+    {
+      "id": "gi_8663",
+      "level": "group",
+      "code": "G3-forearm-elsewhere",
+      "msg": "wrist/forearm exercise outside forearms group",
+      "from": "shoulders",
+      "to": "forearms"
+    },
+    {
+      "id": "gi_2336",
+      "level": "group",
+      "code": "G3-forearm-elsewhere",
+      "msg": "wrist/forearm exercise outside forearms group",
+      "from": "chest",
+      "to": "forearms"
+    },
+    {
+      "id": "gi_2840",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_1174",
+      "level": "group",
+      "code": "G13-triceps-syn-biceps",
+      "msg": "triceps group with only biceps synergists",
+      "from": "triceps",
+      "to": "?"
+    },
+    {
+      "id": "gi_5239",
+      "level": "group",
+      "code": "G1-triceps-in-flexors",
+      "msg": "triceps extensor name in elbow_flexors",
+      "from": "elbow_flexors",
+      "to": "triceps"
+    },
+    {
+      "id": "gi_5239",
+      "level": "group",
+      "code": "G12-flexors-syn-triceps",
+      "msg": "elbow_flexors with only triceps synergists",
+      "from": "elbow_flexors",
+      "to": "?"
+    },
+    {
+      "id": "gi_4738",
+      "level": "group",
+      "code": "G8-upper-body-name-in-legs",
+      "msg": "upper-body exercise name in legs group",
+      "from": "legs",
+      "to": "?"
+    },
+    {
+      "id": "gi_1553",
+      "level": "group",
+      "code": "G8-upper-body-name-in-legs",
+      "msg": "upper-body exercise name in legs group",
+      "from": "legs",
+      "to": "?"
+    },
+    {
+      "id": "gi_4822",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_4753",
+      "level": "group",
+      "code": "G8-upper-body-name-in-legs",
+      "msg": "upper-body exercise name in legs group",
+      "from": "legs",
+      "to": "?"
+    },
+    {
+      "id": "gi_3454",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_2658",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_5240",
+      "level": "group",
+      "code": "G8-upper-body-name-in-legs",
+      "msg": "upper-body exercise name in legs group",
+      "from": "legs",
+      "to": "?"
+    },
+    {
+      "id": "gi_2844",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_2941",
+      "level": "group",
+      "code": "G3-forearm-elsewhere",
+      "msg": "wrist/forearm exercise outside forearms group",
+      "from": "chest",
+      "to": "forearms"
+    },
+    {
+      "id": "gi_4764",
+      "level": "group",
+      "code": "G4-glutes-in-back",
+      "msg": "glute exercise in back group",
+      "from": "back",
+      "to": "legs > Glutes"
+    },
+    {
+      "id": "gi_4765",
+      "level": "group",
+      "code": "G4-glutes-in-back",
+      "msg": "glute exercise in back group",
+      "from": "back",
+      "to": "legs > Glutes"
+    },
+    {
+      "id": "gi_1860",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_1193",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_1198",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_4964",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_3918",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_3606",
+      "level": "group",
+      "code": "G9-leg-exercise-in-upper-group",
+      "msg": "leg exercise filed in upper-body group",
+      "from": "abdominals",
+      "to": "legs"
+    },
+    {
+      "id": "gi_4386",
+      "level": "group",
+      "code": "G9-leg-exercise-in-upper-group",
+      "msg": "leg exercise filed in upper-body group",
+      "from": "abdominals",
+      "to": "legs"
+    },
+    {
+      "id": "gi_1220",
+      "level": "group",
+      "code": "G8-upper-body-name-in-legs",
+      "msg": "upper-body exercise name in legs group",
+      "from": "legs",
+      "to": "?"
+    },
+    {
+      "id": "gi_1484",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_2851",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_3827",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_3829",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_3439",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_1421",
+      "level": "group",
+      "code": "G3-forearm-elsewhere",
+      "msg": "wrist/forearm exercise outside forearms group",
+      "from": "chest",
+      "to": "forearms"
+    },
+    {
+      "id": "gi_1234",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_2348",
+      "level": "group",
+      "code": "G3-forearm-elsewhere",
+      "msg": "wrist/forearm exercise outside forearms group",
+      "from": "elbow_flexors",
+      "to": "forearms"
+    },
+    {
+      "id": "gi_2878",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_1467",
+      "level": "group",
+      "code": "G3-forearm-elsewhere",
+      "msg": "wrist/forearm exercise outside forearms group",
+      "from": "chest",
+      "to": "forearms"
+    },
+    {
+      "id": "gi_3511",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_2423",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_2930",
+      "level": "group",
+      "code": "G3-forearm-elsewhere",
+      "msg": "wrist/forearm exercise outside forearms group",
+      "from": "shoulders",
+      "to": "forearms"
+    },
+    {
+      "id": "gi_10564",
+      "level": "group",
+      "code": "G3-forearm-elsewhere",
+      "msg": "wrist/forearm exercise outside forearms group",
+      "from": "legs",
+      "to": "forearms"
+    },
+    {
+      "id": "gi_9849",
+      "level": "group",
+      "code": "G8-upper-body-name-in-legs",
+      "msg": "upper-body exercise name in legs group",
+      "from": "legs",
+      "to": "?"
+    },
+    {
+      "id": "gi_3460",
+      "level": "group",
+      "code": "G8-upper-body-name-in-legs",
+      "msg": "upper-body exercise name in legs group",
+      "from": "legs",
+      "to": "?"
+    },
+    {
+      "id": "gi_1702",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_3407",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_3436",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_4939",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_3559",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_1079",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_1087",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_1142",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_3433",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_4800",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_4553",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_4091",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_5035",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_0836",
+      "level": "group",
+      "code": "G9-leg-exercise-in-upper-group",
+      "msg": "leg exercise filed in upper-body group",
+      "from": "abdominals",
+      "to": "legs"
+    },
+    {
+      "id": "gi_6982",
+      "level": "group",
+      "code": "G3-forearm-elsewhere",
+      "msg": "wrist/forearm exercise outside forearms group",
+      "from": "chest",
+      "to": "forearms"
+    },
+    {
+      "id": "gi_91001",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_91002",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_91003",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "gi_91004",
+      "level": "group",
+      "code": "G11-back-no-back-syn",
+      "msg": "filed as back but synergists only mention leg muscles",
+      "from": "back",
+      "to": "?"
+    },
+    {
+      "id": "bf_behind-neck-pulldown",
+      "level": "subgroup",
+      "code": "B14-shrug-as-lats",
+      "msg": "shrug/neck classified Lats → Trapezius",
+      "from": "back > Lats",
+      "to": "back > Trapezius"
+    },
+    {
+      "id": "bf_full-back-bridge",
+      "level": "subgroup",
+      "code": "B1-glute-sub-in-back",
+      "msg": "glute exercise in back>Lower Back",
+      "from": "back > Lower Back",
+      "to": "legs > Glutes"
+    },
+    {
+      "id": "gv_0335",
+      "level": "subgroup",
+      "code": "B7-front-as-middle",
+      "msg": "front-delt exercise classified Middle",
+      "from": "shoulders > Middle",
+      "to": "shoulders > Front"
+    },
+    {
+      "id": "gi_9872",
+      "level": "subgroup",
+      "code": "B4-lateral-as-rear",
+      "msg": "lateral raise classified Rear, must be Middle",
+      "from": "shoulders > Rear",
+      "to": "shoulders > Middle"
+    },
+    {
+      "id": "gi_9873",
+      "level": "subgroup",
+      "code": "B4-lateral-as-rear",
+      "msg": "lateral raise classified Rear, must be Middle",
+      "from": "shoulders > Rear",
+      "to": "shoulders > Middle"
+    },
+    {
+      "id": "gi_4013",
+      "level": "subgroup",
+      "code": "B4-lateral-as-rear",
+      "msg": "lateral raise classified Rear, must be Middle",
+      "from": "shoulders > Rear",
+      "to": "shoulders > Middle"
+    },
+    {
+      "id": "gi_9874",
+      "level": "subgroup",
+      "code": "B4-lateral-as-rear",
+      "msg": "lateral raise classified Rear, must be Middle",
+      "from": "shoulders > Rear",
+      "to": "shoulders > Middle"
+    },
+    {
+      "id": "gi_3685",
+      "level": "subgroup",
+      "code": "B4-lateral-as-rear",
+      "msg": "lateral raise classified Rear, must be Middle",
+      "from": "shoulders > Rear",
+      "to": "shoulders > Middle"
+    },
+    {
+      "id": "gi_4238",
+      "level": "subgroup",
+      "code": "B7-front-as-middle",
+      "msg": "front-delt exercise classified Middle",
+      "from": "shoulders > Middle",
+      "to": "shoulders > Front"
+    },
+    {
+      "id": "gi_4764",
+      "level": "subgroup",
+      "code": "B1-glute-sub-in-back",
+      "msg": "glute exercise in back>Lower Back",
+      "from": "back > Lower Back",
+      "to": "legs > Glutes"
+    },
+    {
+      "id": "gi_4765",
+      "level": "subgroup",
+      "code": "B1-glute-sub-in-back",
+      "msg": "glute exercise in back>Lower Back",
+      "from": "back > Lower Back",
+      "to": "legs > Glutes"
+    },
+    {
+      "id": "gi_3942",
+      "level": "subgroup",
+      "code": "B3-rdl-not-hamstrings",
+      "msg": "romanian/stiff-leg deadlift must be legs > Hamstrings",
+      "from": "abdominals > Upper",
+      "to": "legs > Hamstrings"
+    }
+  ]
+}

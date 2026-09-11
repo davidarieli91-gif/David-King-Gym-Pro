@@ -37,7 +37,8 @@
 // v80: GI translations HE 119-120, seed v88 (c53)
 // v82: i18n audit — trilingual render, RU tails, dict 1262 keys, seed v90 (c55)
 // v83: i18n dict loader fixed for vite build (data:URI mangle killed dictionaries on Pages) + dicts precached, seed v91 (c56)
-const CACHE_NAME = 'dk-gym-v83'; // v83: i18n dict loader fixed for vite build + dicts precached, seed v91 (c56)
+// v84: taxonomy order restored (208 group moves, explicit subgroups, seed v92, c57)
+const CACHE_NAME = 'dk-gym-v84'; // v84: taxonomy order restored, seed v92 (c57)
 const APP_SHELL = [
   './',
   './index.html',

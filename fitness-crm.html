@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c56" />
+<meta name="dk-build" content="c57" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2202,7 +2202,7 @@
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c56</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c57</p>
             </div>
           </div>
 
@@ -4746,6 +4746,13 @@
       function assignSubgroup(e) {
         const nameLower = (e.nE || '').toLowerCase();
         const existingSub = e.sE || '';
+        /* c57: subgroups now ship as explicit data (sE/sR/sH written into every
+           record of exercise-db.json). Trust the data first — the keyword rules
+           below remain only as fallback for custom records created without sE. */
+        if (existingSub) {
+          const norm = normalizeSubgroup(existingSub);
+          if (norm) return norm;
+        }
         if (e.src === 'gv') {
           // GymVisual: keyword-based subgroups, same taxonomy as mm
           switch (e.g) {
@@ -4760,7 +4767,8 @@
               return 'Middle';
             case 'shoulders':
               if (nameLower.includes('front') && nameLower.includes('raise')) return 'Front';
-              if (nameLower.includes('rear') || nameLower.includes('bent over') || nameLower.includes('face pull') || nameLower.includes('lateral')) return 'Rear';
+              if (nameLower.includes('rear') || nameLower.includes('bent over') || nameLower.includes('face pull')) return 'Rear';
+              if (nameLower.includes('lateral')) return 'Middle';
               if (nameLower.includes('shrug')) return 'Trapezius';
               return 'Middle';
             case 'abdominals':
@@ -4774,16 +4782,18 @@
             case 'back':
               // Only 4 subgroups: Lats / Middle Back / Trapezius / Lower Back (in this order)
               if (nameLower.includes('deadlift') || nameLower.includes('hyperextension') || nameLower.includes('hyper ') || nameLower.includes('good morning') || nameLower.includes('back extension')) return 'Lower Back';
-              if (nameLower.includes('shrug') || nameLower.includes('neck')) return 'Trapezius';
+              if (nameLower.includes('shrug')) return 'Trapezius';
+              if (nameLower.includes('neck')) return 'Neck';
               if (nameLower.includes('row') || nameLower.includes('rowing')) return 'Middle Back';
               return 'Lats';
             case 'legs':
-              if (nameLower.includes('adduct')) return 'Adductors';
+              if (nameLower.includes('adduct') || nameLower.includes('clam')) return 'Adductors';
               if (nameLower.includes('abduct')) return 'Abductors';
-              if (nameLower.includes('lunge') || nameLower.includes('squat') || nameLower.includes('step') || nameLower.includes('leg press') || nameLower.includes('leg extension')) return 'Quadriceps';
-              if (nameLower.includes('deadlift') || nameLower.includes('curl') || nameLower.includes('good morning') || nameLower.includes('hamstring')) return 'Hamstrings';
-              if (nameLower.includes('calf') || nameLower.includes('toe raise') || nameLower.includes('donkey')) return 'Calves';
+              if (nameLower.includes('calf') || nameLower.includes('toe raise') || nameLower.includes('donkey') || nameLower.includes('soleus') || nameLower.includes('heel')) return 'Calves';
               if (nameLower.includes('glute') || nameLower.includes('bridge') || nameLower.includes('hip thrust')) return 'Glutes';
+              if (nameLower.includes('romanian') || nameLower.includes('rumanian') || nameLower.includes('stiff') || nameLower.includes('good morning') || nameLower.includes('hamstring') || nameLower.includes('leg curl')) return 'Hamstrings';
+              if (nameLower.includes('deadlift')) return 'Glutes';
+              if (nameLower.includes('lunge') || nameLower.includes('squat') || nameLower.includes('step') || nameLower.includes('leg press') || nameLower.includes('leg extension')) return 'Quadriceps';
               return 'Quadriceps';
             case 'forearms':
               if (nameLower.includes('wrist') || nameLower.includes('finger') || nameLower.includes('grip') || nameLower.includes('pronat') || nameLower.includes('supinat')) return 'Wrist Curls';
@@ -4856,18 +4866,20 @@
             case 'back':
               // Only 4 subgroups: Lats / Middle Back / Trapezius / Lower Back (in this order)
               if (nameLower.includes('deadlift') || nameLower.includes('hyperextension') || nameLower.includes('hyper ') || nameLower.includes('good morning') || nameLower.includes('back extension') || nameLower.includes('superman') || nameLower.includes('erector') || nameLower.includes('toe-touch')) return 'Lower Back';
-              if (nameLower.includes('shrug') || nameLower.includes('neck')) return 'Trapezius';
+              if (nameLower.includes('shrug')) return 'Trapezius';
+              if (nameLower.includes('neck')) return 'Neck';
               if (nameLower.includes('row') || nameLower.includes('rowing')) return 'Middle Back';
               if (nameLower.includes('pull-up') || nameLower.includes('pullup') || nameLower.includes('pulldown') || nameLower.includes('chin')) return 'Lats';
               return 'Lats';
             case 'legs':
-              if (nameLower.includes('adduct')) return 'Adductors';
+              if (nameLower.includes('adduct') || nameLower.includes('clam')) return 'Adductors';
               if (nameLower.includes('abduct')) return 'Abductors';
-              if (nameLower.includes('calf') || nameLower.includes('toe raise') || nameLower.includes('donkey') || nameLower.includes('soleus') || nameLower.includes('gastrocnemius')) return 'Calves';
+              if (nameLower.includes('calf') || nameLower.includes('toe raise') || nameLower.includes('donkey') || nameLower.includes('soleus') || nameLower.includes('gastrocnemius') || nameLower.includes('heel')) return 'Calves';
               if (nameLower.includes('glute') || nameLower.includes('bridge') || nameLower.includes('hip thrust')) return 'Glutes';
-              if (nameLower.includes('lunge') || nameLower.includes('squat') || nameLower.includes('step') || nameLower.includes('leg press') || nameLower.includes('leg extension') || nameLower.includes('quad')) return 'Quadriceps';
-              if (nameLower.includes('deadlift') || nameLower.includes('curl') || nameLower.includes('good morning') || nameLower.includes('hamstring')) return 'Hamstrings';
+              if (nameLower.includes('romanian') || nameLower.includes('rumanian') || nameLower.includes('stiff') || nameLower.includes('good morning') || nameLower.includes('hamstring') || nameLower.includes('leg curl')) return 'Hamstrings';
+              if (nameLower.includes('deadlift')) return 'Glutes';
               if (nameLower.includes('hip flexor') || nameLower.includes('iliopsoas') || nameLower.includes('psoas')) return 'Hip Flexors';
+              if (nameLower.includes('lunge') || nameLower.includes('squat') || nameLower.includes('step') || nameLower.includes('leg press') || nameLower.includes('leg extension') || nameLower.includes('quad')) return 'Quadriceps';
               return 'Quadriceps';
             case 'forearms':
               if (nameLower.includes('wrist') || nameLower.includes('finger') || nameLower.includes('grip') || nameLower.includes('pronat') || nameLower.includes('supinat')) return 'Wrist Curls';
@@ -5553,10 +5565,10 @@
     //      + PG "General" subgroups removed + technique fields added
     // v4 = new folder_path structure (no "General" subgroup, no equipment level)
     // v3 = original 1265-exercise seed
-    const v5Flag = await db.get('settings', 'seeded_exercise_base_v91');
+    const v5Flag = await db.get('settings', 'seeded_exercise_base_v92');
     if (!v5Flag) {
       force = true;
-      console.info('[seed] v91 flag missing — forcing re-seed of exercise_base (c56: i18n dict loader fixed for vite build — data:URI mangle killed dictionaries on Pages; re-seed re-applies trilingual base)');
+      console.info('[seed] v92 flag missing — forcing re-seed of exercise_base (c57: taxonomy order restored — 208 group moves, explicit subgroups for all 5623, deadlift→glutes / RDL→hamstrings / hyperextension→back per trainer rules)');
     }
     const current = await db.count('exercise_base');
     if (current > 0 && !force) {
@@ -5585,7 +5597,7 @@
     }
     if (force) await db.clear('exercise_base');
     await db.bulkPut('exercise_base', exercises);
-    await db.put('settings', { key: 'seeded_exercise_base_v91', value: true });
+    await db.put('settings', { key: 'seeded_exercise_base_v92', value: true });
     console.info(`[seed] injected ${exercises.length} exercises into exercise_base (bf=${srcCount.burnfit} gv=${srcCount.gymvisual} gi=${srcCount.gymimpulse})`);
     return exercises.length;
   }
@@ -23806,7 +23818,7 @@ document.addEventListener('DOMContentLoaded', function () {
      * Firestore storage quota. The cloud mirrors USER data only; restore
      * re-seeds references locally if a store came back empty. */
     var REF_STORES = ['exercise_base', 'food_database'];
-    var SEED_FLAGS = ['seeded_exercise_base_v91', 'seeded_food_db_v54'];
+    var SEED_FLAGS = ['seeded_exercise_base_v92', 'seeded_food_db_v54'];
     /* c26: /portal_shares is public-read (trainee portal opens WITHOUT sign-in)
      * and open-write with a size guard (trainer uploads a share even when not
      * signed in; doc ids are unguessable 18-char hashes). */
@@ -25095,7 +25107,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 56; /* numeric part of dk-build c56 */
+  var RUNNING = 57; /* numeric part of dk-build c57 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
