@@ -35,7 +35,9 @@
 // v79: GI translations HE 117-118, seed v87 (c52)
 // v81: GI translations HE 121 — HE 100% (32385/32385), seed v89 (c54)
 // v80: GI translations HE 119-120, seed v88 (c53)
-const CACHE_NAME = 'dk-gym-v82'; // v82: i18n audit — trilingual render, RU tails, dict 1262 keys, seed v90 (c55)
+// v82: i18n audit — trilingual render, RU tails, dict 1262 keys, seed v90 (c55)
+// v83: i18n dict loader fixed for vite build (data:URI mangle killed dictionaries on Pages) + dicts precached, seed v91 (c56)
+const CACHE_NAME = 'dk-gym-v83'; // v83: i18n dict loader fixed for vite build + dicts precached, seed v91 (c56)
 const APP_SHELL = [
   './',
   './index.html',
@@ -51,7 +53,10 @@ const APP_SHELL = [
   './logo-web.webp',
   './assets/logo-web.webp',
   './assets/icon-192.png',
-  './assets/icon-512.png'
+  './assets/icon-512.png',
+  './src/i18n/en.json',
+  './src/i18n/ru.json',
+  './src/i18n/he.json'
 ];
 
 self.addEventListener('install', (event) => {

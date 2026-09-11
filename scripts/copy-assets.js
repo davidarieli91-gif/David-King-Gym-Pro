@@ -20,6 +20,7 @@ const assets = [
   'reports',
   'muscle-icons',
   'src/muscle-map.js',
+  'src/i18n',
 ];
 
 for (const asset of assets) {
@@ -32,6 +33,19 @@ for (const asset of assets) {
   await mkdir(resolve(dst, '..'), { recursive: true });
   await cp(src, dst, { recursive: true });
   console.log(`copied ${asset}`);
+}
+
+// c56: i18n словари также кладём в dist/assets/i18n — рядом с бандлом
+// assets/crm.js, чтобы module-relative кандидат ('./i18n/<name>.json' от
+// import.meta.url бандла) тоже находил файлы на GitHub Pages.
+try {
+  const i18nSrc = resolve(root, 'src/i18n');
+  if (existsSync(i18nSrc)) {
+    await cp(i18nSrc, resolve(dist, 'assets', 'i18n'), { recursive: true });
+    console.log('copied assets/i18n');
+  }
+} catch (e) {
+  console.warn('assets/i18n copy failed:', e.message);
 }
 
 // Дублируем PWA-файлы в dist/assets/ — манифест отдаётся оттуда же,
