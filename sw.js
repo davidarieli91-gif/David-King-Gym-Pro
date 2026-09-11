@@ -33,8 +33,9 @@
 // v77: GI translations HE 113-114, seed v85 (c50)
 // v78: GI translations HE 115-116, seed v86 (c51)
 // v79: GI translations HE 117-118, seed v87 (c52)
+// v81: GI translations HE 121 — HE 100% (32385/32385), seed v89 (c54)
 // v80: GI translations HE 119-120, seed v88 (c53)
-const CACHE_NAME = 'dk-gym-v81'; // v81: GI translations HE 121 — HE 100% (32385/32385), seed v89 (c54)
+const CACHE_NAME = 'dk-gym-v82'; // v82: i18n audit — trilingual render, RU tails, dict 1262 keys, seed v90 (c55)
 const APP_SHELL = [
   './',
   './index.html',

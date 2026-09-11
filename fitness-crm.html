@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c54" />
+<meta name="dk-build" content="c55" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2202,7 +2202,7 @@
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c54</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c55</p>
             </div>
           </div>
 
@@ -3755,7 +3755,7 @@
         <!-- Header -->
         <div class="p-3 border-b border-border flex items-center gap-2 shrink-0">
           <h3 class="font-display font-bold text-base flex-1" data-i18n="nutrition.foodPicker">Food picker</h3>
-          <button id="fp-ai-settings" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-violet-500/20 text-violet-400 border border-violet-500/30 shrink-0" title="🧠 AI Мозг — настройки">
+          <button id="fp-ai-settings" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-violet-500/20 text-violet-400 border border-violet-500/30 shrink-0" data-i18n-attr="title:ai.brainSettingsTip" title="🧠 AI Мозг — настройки">
             <span class="text-sm">🧠</span>
           </button>
           <button id="fp-close" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-surface-2 text-muted shrink-0">
@@ -3769,10 +3769,10 @@
             <button id="fp-scan-barcode" class="bg-accent/15 hover:bg-accent/25 text-accent border border-accent/30 rounded-xl p-2.5 transition inline-flex items-center justify-center shrink-0" title="${t('nutrition.scanBarcode') || 'Scan barcode'}">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5V3h2M17 3h2v2M21 17v2h-2M7 21H5v-2"/><rect x="7" y="7" width="10" height="10" rx="1"/><path d="M9 9h2v6H9zM13 9h2v6h-2z"/></svg>
             </button>
-            <button id="fp-photo" class="bg-primary/15 hover:bg-primary/25 text-primary border border-primary/30 rounded-xl p-2.5 transition inline-flex items-center justify-center shrink-0" title="Фото еды — AI оценка">
+            <button id="fp-photo" class="bg-primary/15 hover:bg-primary/25 text-primary border border-primary/30 rounded-xl p-2.5 transition inline-flex items-center justify-center shrink-0" data-i18n-attr="title:ai.foodPhotoTip" title="Фото еды — AI оценка">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
             </button>
-            <button id="fp-voice" class="bg-success/15 hover:bg-success/25 text-success border border-success/30 rounded-xl p-2.5 transition inline-flex items-center justify-center shrink-0" title="Голосовой ввод — скажите продукт">
+            <button id="fp-voice" class="bg-success/15 hover:bg-success/25 text-success border border-success/30 rounded-xl p-2.5 transition inline-flex items-center justify-center shrink-0" data-i18n-attr="title:ai.voiceInputTip" title="Голосовой ввод — скажите продукт">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10a7 7 0 0 1-14 0"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
             </button>
             <input type="file" id="fp-photo-input" accept="image/*" capture="environment" class="hidden" />
@@ -5553,10 +5553,10 @@
     //      + PG "General" subgroups removed + technique fields added
     // v4 = new folder_path structure (no "General" subgroup, no equipment level)
     // v3 = original 1265-exercise seed
-    const v5Flag = await db.get('settings', 'seeded_exercise_base_v89');
+    const v5Flag = await db.get('settings', 'seeded_exercise_base_v90');
     if (!v5Flag) {
       force = true;
-      console.info('[seed] v89 flag missing — forcing re-seed of exercise_base (GI TM HE 100% 32385/32385 + 4 custom gi_91001-91004)');
+      console.info('[seed] v90 flag missing — forcing re-seed of exercise_base (i18n audit: trilingual render everywhere + RU tails fixed + dict 1262 keys + 2 name fixes)');
     }
     const current = await db.count('exercise_base');
     if (current > 0 && !force) {
@@ -5585,7 +5585,7 @@
     }
     if (force) await db.clear('exercise_base');
     await db.bulkPut('exercise_base', exercises);
-    await db.put('settings', { key: 'seeded_exercise_base_v89', value: true });
+    await db.put('settings', { key: 'seeded_exercise_base_v90', value: true });
     console.info(`[seed] injected ${exercises.length} exercises into exercise_base (bf=${srcCount.burnfit} gv=${srcCount.gymvisual} gi=${srcCount.gymimpulse})`);
     return exercises.length;
   }
@@ -8006,7 +8006,7 @@
 
         <!-- Action buttons row -->
         <div class="flex flex-wrap gap-2 mb-4">
-          <button id="profile-open-client-portal" class="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white text-xs font-semibold px-3 py-2 rounded-lg transition inline-flex items-center gap-1.5 shadow-card" title="Поделиться с клиентом">
+          <button id="profile-open-client-portal" class="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white text-xs font-semibold px-3 py-2 rounded-lg transition inline-flex items-center gap-1.5 shadow-card" data-i18n-attr="title:clients.shareTip" title="Поделиться с клиентом">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
             <span>📱 ${t('programs.clientPortal') || 'Портал подопечного'}</span>
           </button>
@@ -8111,11 +8111,11 @@
                     <select class="text-[10px] font-semibold bg-surface-2 border border-border rounded px-1 py-0.5 shrink-0" data-day-of-week="${prog.id}.${i}">
                       ${[null,0,1,2,3,4,5,6].map(d => `<option value="${d === null ? '' : d}" ${dow === d ? 'selected' : ''}>${d === null ? t('client.noDay') : t('client.' + DAY_KEYS[d])}</option>`).join('')}
                     </select>
-                    <div class="flex-1 min-w-0"><div class="text-sm font-medium truncate">${dow != null ? t('client.' + ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'][dow]) : escapeHTML(day.name || 'Workout ' + (day.day_letter || (i+1)))}</div><div class="text-[11px] text-muted truncate">${exCount} ${t('exercise.exercises')}</div></div>
+                    <div class="flex-1 min-w-0"><div class="text-sm font-medium truncate">${dow != null ? t('client.' + ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'][dow]) : escapeHTML(day.name || t('programs.day') + ' ' + (day.day_letter || (i+1)))}</div><div class="text-[11px] text-muted truncate">${exCount} ${t('exercise.exercises')}</div></div>
                     ${(day.exercises || []).slice(0, 4).map(ex => {
                       const img = globalExImage(ex);
                       return img
-                        ? `<div class="w-8 h-8 rounded-lg shrink-0 overflow-hidden bg-surface-2 border border-border grid place-items-center" title="${escapeAttr(ex.name || '')}"><img src="${escapeAttr(img)}" alt="" class="w-full h-full object-contain" loading="lazy" onerror="this.style.display='none'" /></div>`
+                        ? `<div class="w-8 h-8 rounded-lg shrink-0 overflow-hidden bg-surface-2 border border-border grid place-items-center" title="${escapeAttr(globalExName(ex))}"><img src="${escapeAttr(img)}" alt="" class="w-full h-full object-contain" loading="lazy" onerror="this.style.display='none'" /></div>`
                         : '';
                     }).join('')}
                     ${(day.exercises || []).length > 4 ? `<span class="text-[10px] text-muted shrink-0">+${day.exercises.length - 4}</span>` : ''}
@@ -8253,7 +8253,7 @@
                     return `<div class="flex items-center gap-2 bg-surface rounded-lg p-1.5">
                       <span class="w-6 h-6 rounded-lg bg-muted/15 text-muted grid place-items-center font-mono font-bold text-[10px] shrink-0">${day.day_letter || (i+1)}</span>
                       <span class="text-[10px] font-semibold text-muted w-6 text-center shrink-0">${dLabel}</span>
-                      <div class="flex-1 min-w-0"><div class="text-xs font-medium truncate">${day.day_of_week != null ? t('client.' + ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'][day.day_of_week]) : escapeHTML(day.name || 'Workout ' + (day.day_letter || (i+1)))}</div></div>
+                      <div class="flex-1 min-w-0"><div class="text-xs font-medium truncate">${day.day_of_week != null ? t('client.' + ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'][day.day_of_week]) : escapeHTML(day.name || t('programs.day') + ' ' + (day.day_letter || (i+1)))}</div></div>
                       <span class="text-[10px] text-muted shrink-0">${exCount}ex</span>
                     </div>`;
                   }).join('')}
@@ -8300,7 +8300,7 @@
         }
         // Build a prefill object with the day's exercises
         const prefill = {
-          name: prog.name + ' — Day ' + (day.day_letter || (dayIdx + 1)),
+          name: prog.name + ' — ' + t('programs.day') + ' ' + (day.day_letter || (dayIdx + 1)),
           client_id: prog.client_id || '',
           exercises: (day.exercises || []).map(ex => ({
             exercise_id: ex.exercise_id,
@@ -8517,7 +8517,7 @@
       const letter = base[i];
       result.push({
         letter: letter,
-        name: 'Workout ' + letter,
+        name: t('programs.day') + ' ' + letter,
         isRest: false,
         groups: (window.SPLIT_GROUPS[splitType] || {})[letter] || []
       });
@@ -9450,7 +9450,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             if (!badge) {
               badge = document.createElement('span');
               badge.className = 'picker-added-check text-[10px] font-bold text-success bg-success/20 px-2 py-0.5 rounded-md shrink-0';
-              badge.textContent = '✓ Добавлено';
+              badge.textContent = t('exercise.addedCheck');
               el.appendChild(badge);
             }
             const doneBadge = document.getElementById('picker-done-count');
@@ -9486,7 +9486,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             if (!badge) {
               badge = document.createElement('span');
               badge.className = 'picker-added-check text-[10px] font-bold text-success bg-success/20 px-2 py-0.5 rounded-md shrink-0';
-              badge.textContent = '✓ Добавлено';
+              badge.textContent = t('exercise.addedCheck');
               el.appendChild(badge);
             }
             const doneBadge = document.getElementById('picker-done-count');
@@ -13122,7 +13122,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           if (!badge) {
             badge = document.createElement('span');
             badge.className = 'picker-added-check text-[10px] font-bold text-success bg-success/20 px-2 py-0.5 rounded-md shrink-0';
-            badge.textContent = '✓ Добавлено';
+            badge.textContent = t('exercise.addedCheck');
             el.appendChild(badge);
           }
           const doneBadge = document.getElementById('picker-done-count');
@@ -13244,7 +13244,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         const ev = liveDoneVolume(ex.sets).v;
         const pct = Math.round(ev / maxV * 100);
         return `<div class="flex items-center gap-2 py-1">
-          <span class="text-[11px] truncate flex-1 min-w-0">${esc(ex.name)}</span>
+          <span class="text-[11px] truncate flex-1 min-w-0">${esc(globalExName(ex))}</span>
           <span class="w-2 h-2 rounded-full shrink-0" style="background:#f43f5e"></span>
           <span class="flex-1 h-1.5 rounded-full bg-surface-2 overflow-hidden"><span class="block h-full rounded-full" style="width:${pct}%;background:linear-gradient(90deg,#f43f5e,#fb7185)"></span></span>
           <span class="font-mono text-[11px] font-bold w-10 text-end shrink-0">${ev}</span>
@@ -13263,7 +13263,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           else if (ev < pv) chip = `<span class="font-mono text-[11px] font-bold text-danger shrink-0">▼ ${ev - pv}</span>`;
           else chip = `<span class="font-mono text-[11px] font-bold text-muted shrink-0">=</span>`;
           return `<div class="flex items-center gap-2 py-1">
-            <span class="text-[11px] truncate flex-1 min-w-0">${esc(ex.name)}</span>${chip}
+            <span class="text-[11px] truncate flex-1 min-w-0">${esc(globalExName(ex))}</span>${chip}
           </div>`;
         }).join('');
       }
@@ -13281,7 +13281,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         <div class="grid grid-cols-4 gap-2 mt-3">
           ${tile(done + '/' + total, t('report.sets'))}
           ${tile(reps, t('report.reps'))}
-          ${tile(Number(vol).toLocaleString('ru-RU'), t('report.volume'))}
+          ${tile(Number(vol).toLocaleString(localeString()), t('report.volume'))}
           ${tile(mins, t('report.minutes'))}
         </div>
         <div class="mt-3 bg-surface-2/50 border border-border rounded-2xl p-3">
@@ -13320,10 +13320,10 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       });
       document.getElementById('live-report-continue').addEventListener('click', closeLiveReportModal);
       document.getElementById('live-report-wa').addEventListener('click', () => {
-        const lines = [`🏋️ ${record.name || ''}`, `⏱ ${Math.floor(record.duration / 60)}:${String(record.duration % 60).padStart(2, '0')} · 🏋️ ${Number(vol).toLocaleString('ru-RU')} · ✔ ${done}/${total}`];
+        const lines = [`🏋️ ${record.name || ''}`, `⏱ ${Math.floor(record.duration / 60)}:${String(record.duration % 60).padStart(2, '0')} · 🏋️ ${Number(vol).toLocaleString(localeString())} · ✔ ${done}/${total}`];
         record.exercises.forEach(ex => {
           const parts = (ex.sets || []).map(s => `${s.weight != null ? s.weight : '—'}×${s.reps != null ? s.reps : '—'}${s.done ? '✓' : ''}`);
-          if (parts.length) lines.push(`• ${ex.name}: ${parts.join(', ')}`);
+          if (parts.length) lines.push(`• ${globalExName(ex)}: ${parts.join(', ')}`);
         });
         window.open('https://wa.me/?text=' + encodeURIComponent(lines.join('\n')), '_blank');
       });
@@ -16034,7 +16034,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             .filter(d => d.isWorkout)
             .map((d, i) => ({
               day_letter: result.days.filter(d => d.isWorkout)[i]?.day_letter || String.fromCharCode(65 + (i % 5)),
-              name: 'Workout ' + (result.days.filter(d => d.isWorkout)[i]?.day_letter || String.fromCharCode(65 + (i % 5))),
+              name: t('programs.day') + ' ' + (result.days.filter(d => d.isWorkout)[i]?.day_letter || String.fromCharCode(65 + (i % 5))),
               is_rest_day: false,
               day_of_week: defaultDaysOfWeek(i, result.splitType),
               exercises: [],
@@ -16332,7 +16332,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         .filter(d => d.isWorkout && (d.exercises || []).length > 0)
         .map((d, i) => ({
           day_letter: d.day_letter || String.fromCharCode(65 + (i % 5)),
-          name: 'Workout ' + (d.day_letter || String.fromCharCode(65 + (i % 5))),
+          name: t('programs.day') + ' ' + (d.day_letter || String.fromCharCode(65 + (i % 5))),
           is_rest_day: false,
           day_of_week: defaultDaysOfWeek(i, result.splitType),
           exercises: (d.exercises || []).map(ex => ({
@@ -16456,7 +16456,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
                 ${day.exercises.map((ex, i) => `
                   <div class="flex items-center gap-2 text-xs bg-surface rounded-lg p-2">
                     <span class="w-5 h-5 rounded bg-primary/10 text-primary-2 grid place-items-center font-mono font-bold shrink-0">${i + 1}</span>
-                    <span class="flex-1 truncate font-medium">${escapeHTML(ex.name)}</span>
+                    <span class="flex-1 truncate font-medium">${escapeHTML(globalExName(ex))}</span>
                     <span class="font-mono text-muted shrink-0">${ex.sets}×${ex.repsMin}-${ex.repsMax}</span>
                   </div>
                 `).join('')}
@@ -17118,7 +17118,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         if (typeof nutritionPlans !== 'undefined' && typeof nutritionPlans.openCreator === 'function') {
           nutritionPlans.openCreator(clientId);
         } else {
-          toast('Создание плана: используйте вкладку «Питание» → «Новый план»', 'warning', 3500);
+          toast(t('nutrition.planHintToast'), 'warning', 3500);
         }
         return;
       }
@@ -18544,7 +18544,7 @@ Select foods for each meal. Output as JSON only.`;
           _editing.meals[0].foods.push({ id: tmpFood.id, name_he: tmpFood.name_he, name_en: tmpFood.name_en, name_ru: tmpFood.name_ru, grams: 150, unit:'g', unit_amount:150, nutrition: tmpFood.nutrition });
           renderMeals();
         }
-        toast('Фото добавлено: '+(estimate.name_ru||'оценка')+' ~'+(estimate.calories||150)+' ккал/100г', 'success', 2500);
+        toast(t('voice.photoAdded', {name: (estimate.name_ru || estimate.name_en || 'оценка'), cal: (estimate.calories || 150)}), 'success', 2500);
       };
       reader.readAsDataURL(file);
     };
@@ -18552,12 +18552,12 @@ Select foods for each meal. Output as JSON only.`;
   }
   function handleFoodVoice(){
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if(!SR){ toast('Голосовой ввод не поддерживается в этом браузере', 'warning', 2500); return; }
+    if(!SR){ toast(t('voice.unsupported'), 'warning', 2500); return; }
     const rec=new SR();
     const lang=(typeof currentLang==='function') ? currentLang() : 'ru';
     rec.lang = lang==='he' ? 'he-IL' : (lang==='en' ? 'en-US' : 'ru-RU');
     rec.interimResults=false; rec.maxAlternatives=1;
-    toast('Говорите: "200 грамм курицы"...', 'info', 2000);
+    toast(t('voice.speakNow'), 'info', 2000);
     rec.onresult=(ev)=>{
       const txt=((ev.results[0]||[])[0]&&ev.results[0][0].transcript||'').trim();
       if(!txt) return;
@@ -18569,15 +18569,15 @@ Select foods for each meal. Output as JSON only.`;
       if(food && _editing && _editing.meals && _editing.meals.length){
         _editing.meals[0].foods.push({ id: food.id, name_he: food.name_he, name_en: food.name_en, name_ru: food.name_ru, grams: grams, unit:'g', unit_amount:grams, nutrition: food.nutrition });
         renderMeals();
-        toast('Добавлено голосом: '+query+' '+grams+'г', 'success', 2000);
+        toast(t('voice.addedByVoice', {q: query, g: grams}), 'success', 2000);
       } else {
         const inp=document.getElementById('fp-search');
         if(inp){ inp.value=query; renderFoodResults(query); }
-        toast('Не найдено "'+query+'" — выберите из списка', 'warning', 2500);
+        toast(t('voice.notFound', {q: query}), 'warning', 2500);
       }
     };
-    rec.onerror=()=> toast('Ошибка микрофона', 'danger', 2000);
-    try{ rec.start(); }catch(e){ toast('Микрофон недоступен', 'danger', 2000); }
+    rec.onerror=()=> toast(t('voice.micError'), 'danger', 2000);
+    try{ rec.start(); }catch(e){ toast(t('voice.micUnavailable'), 'danger', 2000); }
   }
   function openAiSettings(){
     const cfg=getAiConfig();
@@ -21411,7 +21411,7 @@ async function boot() {
     async function openClientPortalModal(clientId) {
       try {
         const client = await db.get('clients', clientId);
-        if (!client) { toast('Клиент не найден', 'danger'); return; }
+        if (!client) { toast(t('clients.notFound'), 'danger'); return; }
         
         const _allPrograms = await db.find('client_programs', 'by_clientId', clientId);
         const programs = (_allPrograms || []).filter(p => p.status === 'active').sort((a,b)=>(b.created_at||0)-(a.created_at||0));
@@ -21422,7 +21422,7 @@ async function boot() {
         const activePlan = plans[0] || null;
 
         if (!window.crypto || !crypto.subtle || !crypto.subtle.encrypt) {
-          toast('Шифрование доступно только по https — откройте приложение по защищённой ссылке', 'danger', 4000);
+          toast(t('portal.httpsOnly'), 'danger', 4000);
           return;
         }
 
@@ -21496,9 +21496,9 @@ async function boot() {
           console.warn('[openClientPortalModal] cloud share unavailable — legacy link:', shareErr);
           const se = String((shareErr && (shareErr.code || shareErr.message)) || shareErr);
           if (/permission|denied/i.test(se)) {
-            toast('Облако не открыто: обновите правила Firestore (Настройки → Облако → Скопировать правила). Ссылка отправлена в старом длинном формате.', 'warning', 9000);
+            toast(t('portal.cloudRules'), 'warning', 9000);
           } else if (/offline|network|unavailable|load_failed/i.test(se)) {
-            toast('Нет связи с облаком — ссылка отправлена в старом длинном формате.', 'warning', 7000);
+            toast(t('portal.cloudOffline'), 'warning', 7000);
           }
         }
 
@@ -21532,17 +21532,17 @@ async function boot() {
 
         document.getElementById('btn-copy-portal-link').onclick = () => {
           navigator.clipboard.writeText(clientUrl).then(() => {
-            toast('Персональная ссылка скопирована в буфер!', 'success', 2000);
+            toast(t('portal.linkCopied'), 'success', 2000);
           }).catch(() => {
-            prompt('Скопируйте ссылку вручную:', clientUrl);
+            prompt(t('portal.copyLinkManually'), clientUrl);
           });
         };
 
         document.getElementById('btn-copy-portal-code').onclick = () => {
           navigator.clipboard.writeText(accessCode).then(() => {
-            toast('Код доступа скопирован!', 'success', 2000);
+            toast(t('portal.codeCopied'), 'success', 2000);
           }).catch(() => {
-            prompt('Скопируйте код вручную:', accessCode);
+            prompt(t('portal.copyCodeManually'), accessCode);
           });
         };
 
@@ -21562,7 +21562,7 @@ async function boot() {
         document.getElementById('client-portal-modal').classList.remove('hidden');
       } catch (err) {
         console.error('[openClientPortalModal] error:', err);
-        toast('Ошибка генерации клиентского портала', 'danger');
+        toast(t('portal.genError'), 'danger');
       }
     }
     // Wire recovery map modal events (mode/view tabs, close buttons)
@@ -21991,19 +21991,19 @@ async function boot() {
     const pwaInstallBtn = document.getElementById('settings-btn-install-pwa');
     if (pwaInstallBtn) pwaInstallBtn.addEventListener('click', () => {
       if (window.installPWA) window.installPWA();
-      else alert('PWA не поддерживается в этом браузере');
+      else alert(t('backup.pwaUnsupported'));
     });
 
     // Google Drive save
     const gdriveSaveBtn = document.getElementById('settings-btn-gdrive-save');
     if (gdriveSaveBtn) gdriveSaveBtn.addEventListener('click', async () => {
       if (!window.googleDriveBackup) return;
-      toast('Сохранение на Google Drive…', 'info', 2000);
+      toast(t('backup.savingToDrive'), 'info', 2000);
       const result = await window.googleDriveBackup.save();
       if (result.ok) {
-        toast('✓ Сохранено на Google Drive (' + result.records + ' записей, ' + Math.round(result.size/1024) + ' КБ)', 'success', 4000);
+        toast(t('backup.savedToDrive', {n: result.records, kb: Math.round(result.size/1024)}), 'success', 4000);
       } else if (result.error !== 'Not configured') {
-        toast('✗ Ошибка: ' + result.error, 'danger', 5000);
+        toast(t('backup.error', {msg: result.error}), 'danger', 5000);
       }
     });
 
@@ -22011,13 +22011,13 @@ async function boot() {
     const gdriveLoadBtn = document.getElementById('settings-btn-gdrive-load');
     if (gdriveLoadBtn) gdriveLoadBtn.addEventListener('click', async () => {
       if (!window.googleDriveBackup) return;
-      toast('Загрузка с Google Drive…', 'info', 2000);
+      toast(t('backup.loadingFromDrive'), 'info', 2000);
       const result = await window.googleDriveBackup.load();
       if (result.ok) {
-        toast('✓ Восстановлено ' + result.records + ' записей. Перезагрузка…', 'success', 3000);
+        toast(t('backup.restored', {n: result.records}), 'success', 3000);
         setTimeout(() => { window.dkAllowClose(); location.reload(); }, 1500);
       } else if (result.error !== 'Not configured' && result.error !== 'Cancelled') {
-        toast('✗ Ошибка: ' + result.error, 'danger', 5000);
+        toast(t('backup.error', {msg: result.error}), 'danger', 5000);
       }
     });
 
@@ -23136,7 +23136,18 @@ async function boot() {
 
   /** Master dictionary. Missing keys fall back to EN, then to the key itself. */
   var I18N = window.__I18N__ || { en: {}, ru: {}, he: {} };
-// ES-модуль словарей исполнится до DOMContentLoaded — наполняем до boot:
+  /* c55: i18n.js now loads the JSON dicts via fetch (async). When they arrive
+     it dispatches 'dk:i18n-ready' — copy them in and re-apply the current
+     language so late-loaded keys reach the DOM (fixes empty t() on engines
+     where JSON module import is rejected). */
+  document.addEventListener('dk:i18n-ready', function () {
+    try {
+      if (window.__I18N__ && !Object.keys(I18N.ru || {}).length) {
+        I18N.en = window.__I18N__.en; I18N.ru = window.__I18N__.ru; I18N.he = window.__I18N__.he;
+        if (typeof applyI18n === 'function' && SUPPORTED_LANGS.includes(_lang)) applyI18n(_lang);
+      }
+    } catch (e) { console.warn('[i18n] late apply failed', e); }
+  }, true);
 document.addEventListener('DOMContentLoaded', function () {
 
   /* Move full-screen modals to body to escape stacking contexts (#app has z-index:1).
@@ -23186,6 +23197,8 @@ document.addEventListener('DOMContentLoaded', function () {
    *   data-i18n-attr="title:key,label:key" → sets arbitrary attributes
    */
   function applyI18n(lang) {
+    // c55: dict may still be in flight (fetch) — don't wipe static fallbacks with empty strings.
+    if (!Object.keys(I18N.ru || {}).length && !Object.keys(I18N.en || {}).length) return;
     const html = document.documentElement;
     html.setAttribute('lang', lang);
     html.setAttribute('dir', RTL_LANGS.has(lang) ? 'rtl' : 'ltr');
@@ -23793,7 +23806,7 @@ document.addEventListener('DOMContentLoaded', function () {
      * Firestore storage quota. The cloud mirrors USER data only; restore
      * re-seeds references locally if a store came back empty. */
     var REF_STORES = ['exercise_base', 'food_database'];
-    var SEED_FLAGS = ['seeded_exercise_base_v89', 'seeded_food_db_v54'];
+    var SEED_FLAGS = ['seeded_exercise_base_v90', 'seeded_food_db_v54'];
     /* c26: /portal_shares is public-read (trainee portal opens WITHOUT sign-in)
      * and open-write with a size guard (trainer uploads a share even when not
      * signed in; doc ids are unguessable 18-char hashes). */
@@ -24873,7 +24886,9 @@ document.addEventListener('input', function (e) {
     try {
       var last = parseInt(localStorage.getItem("dk_last_backup") || "0", 10);
       var days = (Date.now() - last) / 86400000;
-      if (!last || days > 7 && typeof toast === "function") toast("⚠️ Сделайте резервную копию: Настройки → Export full backup", "warning", 8000);
+      var bmsg = (typeof t === "function") ? t("backup.reminderToast") : null;
+      if (!bmsg) bmsg = "⚠️ Сделайте резервную копию: Настройки → Export full backup";
+      if (!last || days > 7 && typeof toast === "function") toast(bmsg, "warning", 8000);
     } catch (e) {}
   }, 2500);
 })();
@@ -24945,7 +24960,7 @@ document.addEventListener('input', function (e) {
       if (age <= 30 * 86400000) last30++;
       else if (age <= 60 * 86400000) prev30++;
       (h.exercises || []).forEach(function (ex) {
-        var n = ex.name || "?";
+        var n = (typeof globalExName === 'function') ? globalExName(ex) : (ex.name || "?");
         exCount[n] = (exCount[n] || 0) + 1;
         (ex.sets || []).forEach(function (st) {
           var w = parseFloat(st.weight);
@@ -25080,7 +25095,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 54; /* numeric part of dk-build c54 */
+  var RUNNING = 55; /* numeric part of dk-build c55 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
