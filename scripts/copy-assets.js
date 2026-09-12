@@ -19,8 +19,10 @@ const assets = [
   'data',
   'reports',
   'muscle-icons',
+  'models',
   'src/muscle-map.js',
   'src/i18n',
+  'src/input.css',
 ];
 
 for (const asset of assets) {
