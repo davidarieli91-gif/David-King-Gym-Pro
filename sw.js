@@ -41,7 +41,7 @@
 // v85: taxonomy v2 — 800+ group fixes, seed v93 (c58)
 // v86: hinge-fix — RDL family → hamstrings, pull-through/hip-hinge family → glutes, seed v94 (c59)
 // v87: subgroup pass — hammer→brachioradialis / reverse→brachialis + 35 fixes, muscle kept on source switch, seed v95 (c60)
-const CACHE_NAME = 'dk-gym-v89'; // v89: c62 program day-row mobile fixes (live table, bottom bar, food db, picker, portal header) (c60)
+const CACHE_NAME = 'dk-gym-v90'; // v90: c63 live language refresh for open dynamic modals (day preview, exercise card, builder)
 const APP_SHELL = [
   './',
   './index.html',

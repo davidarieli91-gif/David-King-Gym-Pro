@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c62" />
+<meta name="dk-build" content="c63" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2226,7 +2226,7 @@
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c62</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c63</p>
             </div>
           </div>
 
@@ -8368,6 +8368,7 @@
      *  User reviews exercises, then clicks "Start workout" inside the
      *  modal to begin the live workout (timer starts only then). */
     function openProgramDayPreview(programId, dayIdx) {
+      window.__refreshDayPreview = function () { openProgramDayPreview(programId, dayIdx); }; /* c63: live lang refresh */
       db.get('client_programs', programId).then(prog => {
         if (!prog || !prog.workout_days[dayIdx]) {
           toast(t('programs.notFoundToast'), 'danger');
@@ -8383,7 +8384,7 @@
 
         // Set title
         if (titleEl) titleEl.textContent = (day.name || 'Workout') + ' ' + (day.day_letter || (dayIdx + 1));
-        if (subtitleEl) subtitleEl.textContent = prog.name + ' · ' + (day.exercises || []).length + ' exercises';
+        if (subtitleEl) subtitleEl.textContent = prog.name + ' · ' + (day.exercises || []).length + ' ' + t('exercise.exercises');
 
         // Build exercise list
         const exercises = day.exercises || [];
@@ -9056,6 +9057,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     }
 
     function renderBuilder() {
+      window.__refreshBuilder = function () { renderBuilder(); }; /* c63: live lang refresh */
       const freqHint = document.getElementById('pb-freq-hint');
       const config = SPLIT_CONFIGS[_pb.splitType];
       if (freqHint) freqHint.textContent = config ? config.freq : '';
@@ -17721,6 +17723,7 @@ Select foods for each meal. Output as JSON only.`;
      ===================================================================== */
   /* Global exercise modal opener — always opens in VIEW mode (never edit form) */
   async function openExerciseModal(exerciseId) {
+    window.__refreshExModal = function () { openExerciseModal(exerciseId); }; /* c63: live lang refresh */
     if (!exerciseId) return;
     let ex = null;
     try { ex = await db.get('exercise_base', exerciseId); } catch(e) {}
@@ -23352,6 +23355,39 @@ document.addEventListener('DOMContentLoaded', function () {
     return Promise.resolve();
   }
 
+  /* ===== c63: refresh open dynamic modals whose bodies are JS-built.
+     Exercise names/groups/muscle labels have no data-i18n attributes, so
+     applyI18n() cannot reach them — after a language switch these modals must
+     be rebuilt. The builder functions live inside module IIFEs ('use strict'),
+     so they are not global: each registers a closure callback on window when
+     it runs, and these helpers invoke it only while its modal is visible. ===== */
+  function refreshProgramDayPreview() {
+    try {
+      const m = document.getElementById('program-day-preview-modal');
+      if (!m || m.classList.contains('hidden')) return false;
+      if (typeof window.__refreshDayPreview === 'function') { window.__refreshDayPreview(); return true; }
+    } catch (_) {}
+    return false;
+  }
+  function refreshExerciseModalForLang() {
+    try {
+      const m = document.getElementById('exercise-modal');
+      if (!m || m.classList.contains('hidden')) return false;
+      const formEl = document.getElementById('exercise-form');
+      if (formEl && !formEl.classList.contains('hidden')) return false; /* user editing — don't clobber unsaved input */
+      if (typeof window.__refreshExModal === 'function') { window.__refreshExModal(); return true; }
+    } catch (_) {}
+    return false;
+  }
+  function refreshProgramBuilderForLang() {
+    try {
+      const m = document.getElementById('program-builder-modal');
+      if (!m || m.classList.contains('hidden')) return false;
+      if (typeof window.__refreshBuilder === 'function') { window.__refreshBuilder(); return true; }
+    } catch (_) {}
+    return false;
+  }
+
   /** Central language switch: persist + translate static strings + instantly
    *  re-render the visible screen (and the open exercise picker, if any).
    *  Used by the header selector, the settings selector and the picker duplicate. */
@@ -23364,6 +23400,10 @@ document.addEventListener('DOMContentLoaded', function () {
       if (typeof router !== 'undefined' && router.refreshCurrent) router.refreshCurrent();
       // Re-render the open exercise picker (dynamic grid/tree/chips/search)
       if (typeof bodyMapPicker !== 'undefined' && bodyMapPicker.refresh) bodyMapPicker.refresh();
+      /* c63: rebuild open dynamic modals so exercise names follow the new language */
+      refreshProgramDayPreview();
+      refreshExerciseModalForLang();
+      refreshProgramBuilderForLang();
       applyI18n(currentLang());
     } catch (_) {}
   }
@@ -25156,7 +25196,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 62; /* numeric part of dk-build c62 */
+  var RUNNING = 63; /* numeric part of dk-build c63 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
