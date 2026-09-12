@@ -1,0 +1,107 @@
+# c60 subgroup-fix — trainer-grade subgroup pass
+# 1) elbow flexors grip split: hammer/rope → Brachioradialis (40), reverse → Brachialis (29)
+# 2) 35 explicit subgroup dispositions (chest/shoulders/abs/back)
+gi_8622 | Seated Incline Chest Press on a Chair | chest/Middle → chest/Upper
+gi_8620 | Seated Decline Chest Press on a Chair | chest/Middle → chest/Lower
+bf_handstand-push-up | Handstand Push Up | shoulders/Middle → shoulders/Front
+bf_pike-push-up | Pike Push Up | shoulders/Middle → shoulders/Front
+gi_3401 | Pike Push-up (between Benches) | shoulders/Middle → shoulders/Front
+gi_3402 | Pike Push-up (between Chairs) | shoulders/Middle → shoulders/Front
+gi_5151 | Kipping Handstand Push-up | shoulders/Middle → shoulders/Front
+gi_9316 | Ring Elevanted Pike Push-up from deficit | shoulders/Middle → shoulders/Front
+gv_0161 | cable forward raise | shoulders/Middle → shoulders/Front
+gi_4394 | Alternate Shoulder Flexion Back to Wall | shoulders/Middle → shoulders/Front
+gi_6439 | Resistance Band Standing Single Arm Shoulder Flexion | shoulders/Middle → shoulders/Front
+gv_0154 | cable cross-over revers fly | shoulders/Middle → shoulders/Rear
+gi_1113 | Suspension Face Pul | shoulders/Middle → shoulders/Rear
+gi_10330 | Dumbbell Powell Raise | shoulders/Middle → shoulders/Rear
+gi_7252 | Dumbbell Incline Powell Raise | shoulders/Middle → shoulders/Rear
+gi_1503 | Band Pull Apart | shoulders/Middle → shoulders/Rear
+gi_4568 | Resistance Band Pull Apart | shoulders/Middle → shoulders/Rear
+gi_5317 | Resistance Band Pull Apart (45 degrees) | shoulders/Middle → shoulders/Rear
+gi_4412 | Resistance Band Pullapart (Pronated at 90 Degrees) | shoulders/Middle → shoulders/Rear
+gv_0863 | dumbbell lying external shoulder rotation | shoulders/Middle → shoulders/Rotator Cuff
+gi_5001 | Dumbbell Seated External Shoulder Rotation | shoulders/Middle → shoulders/Rotator Cuff
+SKIP already Rotator Cuff: dumbbell upright shoulder external rotation dumbbell upright shoulder external rotation
+gi_5819 | Dumbbell Empty Can Exercise | shoulders/Middle → shoulders/Rotator Cuff
+gi_5818 | Weighted Full Can Exercise | shoulders/Middle → shoulders/Rotator Cuff
+gi_11010 | Hip Lift - Low Back Off Floor | abdominals/Upper → abdominals/Lower
+gi_2839 | Chest Lift with Rotation | abdominals/Upper → abdominals/Obliques
+gi_10065 | Lever Torso Rotation | abdominals/Upper → abdominals/Obliques
+gi_5333 | Lever Trunk Rotation | abdominals/Upper → abdominals/Obliques
+gi_1699 | Medicine Ball Rotational Throw | abdominals/Upper → abdominals/Obliques
+gi_3866 | Resistance Band Anti Rotation Dead Bug | abdominals/Upper → abdominals/Obliques
+gi_5129 | Seated Upper Body Rotation | abdominals/Upper → abdominals/Obliques
+gi_3408 | Standing Upper Body Rotation | abdominals/Upper → abdominals/Obliques
+gv_1325 | cable wide grip rear pulldown behind neck | back/Neck → back/Lats
+gi_5060 | Prone Cervical Extension | back/Lats → back/Neck
+gi_5061 | Prone Cervical Extension Isometric Hold | back/Lats → back/Neck
+bf_cable-hammer-curl | Cable Hammer Curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+bf_dumbbell-hammer-curl | Dumbbell Hammer Curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gv_0165 | cable hammer curl (with rope) | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gv_1639 | cable rope hammer preacher curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gv_1640 | cable rope one arm hammer preacher curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gv_1646 | dumbbell alternate hammer preacher curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gv_1648 | dumbbell alternate seated hammer curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gv_0298 | dumbbell cross body hammer curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gv_1657 | dumbbell cross body hammer curl v. 2 | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gv_1659 | dumbbell hammer curl on exercise ball | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gv_2402 | dumbbell hammer curls (with arm blaster) | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gv_0320 | dumbbell incline hammer curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gv_1663 | dumbbell one arm hammer preacher curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gv_1666 | dumbbell one arm prone hammer curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gv_1669 | dumbbell one arm seated hammer curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gv_1671 | dumbbell one arm standing hammer curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gv_0370 | dumbbell peacher hammer curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gv_1674 | dumbbell prone incline hammer curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gv_1676 | dumbbell seated alternate hammer curl on exercise ball | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gv_1678 | dumbbell seated hammer curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gv_3560 | dumbbell standing alternate hammer curl and press | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gv_1615 | lever hammer grip preacher curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gv_0636 | olympic barbell hammer curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gi_0897 | Band hammer curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gi_4619 | Band Standing Hammer Curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gi_3554 | Bottle Hammer Curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gi_6069 | Bottle Weighted Alternate Hammer Curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gi_3068 | Cable Standing Biceps Curl (with rope) | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gi_5370 | Cable Standing One Arm Hammer Curl with Rope Attachment | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gi_6147 | Dumbbell Alternate Hammer Srtict Curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gi_1657 | Dumbbell Cross Body Hammer Curl (Version 2) | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gi_0312 | Dumbbell Hammer Curl (version 2) | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gi_5921 | Dumbbell Hammer Preacher Curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gi_1233 | Dumbbell Incline Alternate Hammer Curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gi_6264 | Dumbbell Prone Alternate Hammer Curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gi_1681 | Dumbbell Two Arm Seated Hammer Curl on Exercise Ball | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gi_3830 | Lying Double Legs Hammer Curl with Towel | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gi_4687 | Resistance Band Hammer Curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gi_5007 | Suspension Hammer Curl | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+gi_3851 | Two Legs Hammer Curl with Towel (VERSION 2) | elbow_flexors/Brachialis → elbow_flexors/Brachioradialis
+bf_reverse-barbell-curl | Reverse Barbell Curl | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gv_0081 | barbell reverse preacher curl | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gv_0110 | barbell standing reverse grip curl | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gv_1635 | cable one arm reverse preacher curl | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gv_1413 | cable reverse one arm curl | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gv_0209 | cable reverse preacher curl | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gv_1654 | dumbbell biceps curl reverse | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gv_1414 | dumbbell one arm reverse preacher curl | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gv_1667 | dumbbell one arm reverse spider curl | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gv_0384 | dumbbell reverse preacher curl | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gv_1675 | dumbbell reverse spider curl | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gv_0425 | dumbbell standing one arm reverse curl | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gv_0451 | ez barbell reverse grip curl | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gv_0452 | ez barbell reverse grip preacher curl | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gv_1616 | lever reverse grip preacher curl | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gi_0917 | Band reverse curl | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gi_6195 | Band Standing Reverse Curl | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gi_10110 | Barbell Fat Bar Reverse Curl | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gi_3988 | Barbell Incline Reverse grip Spider Curl with Chest Support | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gi_6070 | Bottle Weighted Reverse Curl | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gi_0206 | Cable Reverse Curl | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gi_1608 | Cable Reverse Grip Biceps Curl (SZ-bar) | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gi_2954 | Cable Standing Reverse Grip Curl (Straight bar) | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gi_3688 | Dumbbell Seated Reverse Grip Biceps Curl | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gi_6265 | Dumbbell Standing Alternate Reverse Curl | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gi_0429 | Dumbbell Standing Reverse Curl | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gi_7056 | Dumbbell Standing Reverse Curl Rotate | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gi_3831 | Lying Single Legs Reverse Biceps Curl with Towel | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
+gi_3850 | Two Legs Reverse Biceps Curl with Towel (VERSION 2) | elbow_flexors/Brachioradialis → elbow_flexors/Brachialis
