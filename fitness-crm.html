@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c60" />
+<meta name="dk-build" content="c61" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -1927,6 +1927,30 @@
     .lw-rpe-btn.sel { opacity: 1; outline-color: #fff; transform: scale(1.18); }
     .lw-rpe-vol { margin-inline-start: auto; font-family: monospace; font-size: 10px; font-weight: 700; color: var(--muted); white-space: nowrap; }
 
+    /* ===== c61 MOBILE RESPONSIVE FIXES =====
+       1) Live set table must fit the card: number inputs shrink, columns compact. */
+    #live-workout-exercises th, #live-workout-exercises td { padding-left: 4px; padding-right: 4px; }
+    #live-workout-exercises td:first-child { padding-left: 6px; }
+    #live-workout-exercises input[type="number"] { min-width: 0; width: 100%; }
+    /* 2) Bottom actions: two buttons share the row, Finish gets a full row (mobile only). */
+    #live-bottom-actions { flex-wrap: wrap; }
+    @media (max-width: 640px) {
+      #live-bottom-actions > button { flex: 1 1 40%; }
+      #live-bottom-actions > #live-workout-finish { flex-basis: 100%; }
+    }
+    /* 3) RPE strip: keep 10 circles + volume inside the card on narrow screens. */
+    @media (max-width: 430px) {
+      .lw-rpe-btn { width: 20px; height: 20px; font-size: 8.5px; }
+      .lw-rpe-row { gap: 2px; }
+    }
+    /* 4) Exercise picker toolbar (View + count): count wraps instead of overflow. */
+    #bm-view-toolbar { flex-wrap: wrap; row-gap: 2px; }
+    #bm-view-toolbar #bm-result-count { margin-inline-start: auto; }
+    /* 5) Client Photos/Documents header: controls wrap to the next line. */
+    #client-photos-header { flex-wrap: wrap; row-gap: 0.5rem; }
+    /* 6) Recovery map header: tabs wrap below the title instead of overlapping it. */
+    #recovery-map-modal .rm-head-row { flex-wrap: wrap; row-gap: 0.5rem; }
+
     /* ===== FOOD DETAIL MODAL RESPONSIVE =====
        Prevent horizontal overflow on mobile for the macro grids. */
     #food-detail-modal .grid.grid-cols-4 {
@@ -2202,7 +2226,7 @@
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c60</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c61</p>
             </div>
           </div>
 
@@ -2468,7 +2492,7 @@
               </div>
 
               <!-- Bottom actions -->
-              <div class="flex gap-2 mt-6 pb-4">
+              <div id="live-bottom-actions" class="flex gap-2 mt-6 pb-4">
                 <button id="live-workout-add-exercise" class="flex-1 bg-surface-2 hover:bg-border/40 border border-border text-sm font-semibold py-3 rounded-xl transition inline-flex items-center justify-center gap-2">
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
                   <span data-i18n="workouts.addExercise">Add exercise</span>
@@ -2673,7 +2697,7 @@
           <div id="recovery-map-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
             <div class="bg-surface w-full  lg:max-w-[min(96vw,1100px)] max-h-[92vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
               <!-- Header -->
-              <div class="p-4 border-b border-border flex items-center gap-3 shrink-0">
+              <div class="rm-head-row p-4 border-b border-border flex items-center gap-3 shrink-0">
                 <div class="flex-1 min-w-0">
                   <h3 class="font-display font-bold text-base" data-i18n="recovery.title">Recovery Map</h3>
                   <p id="recovery-subtitle" class="text-xs text-muted truncate"></p>
@@ -2897,7 +2921,7 @@
             <div data-nutrition-panel="database" class="overflow-x-hidden">
               <!-- Source toggle + count + add -->
               <div class="flex items-center gap-2 mb-3 flex-wrap max-w-full overflow-x-auto no-scrollbar">
-                <div class="flex gap-1 bg-surface-2 border border-border rounded-lg p-1 shrink-0">
+                <div id="food-db-source-group" class="flex flex-wrap gap-1 bg-surface-2 border border-border rounded-lg p-1 shrink-0 min-w-0 max-w-full">
                   <button data-food-db-source="all" class="food-db-src-btn px-3 py-1.5 rounded-md text-xs font-semibold transition bg-primary text-white" data-i18n="common.all">All</button>
                   <button data-food-db-source="FoodsDictionary_IL" class="food-db-src-btn px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted" data-i18n="food.sourceFoodsDictionaryIL">Israeli DB</button>
                   <button data-food-db-source="OpenFoodFacts_IL" class="food-db-src-btn px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted" data-i18n="food.sourceOpenFoodFactsIL">Israeli Brands</button>
@@ -10092,7 +10116,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
       return `
         <div class="bg-surface border border-border rounded-2xl shadow-card p-5">
-          <div class="flex items-center gap-2 mb-4">
+          <div id="client-photos-header" class="flex items-center gap-2 mb-4">
             <h3 class="font-display font-bold text-sm text-muted uppercase tracking-wider">${t('client.photos')}</h3>
             <span class="text-xs text-muted bg-surface-2 border border-border rounded-full px-2 py-0.5">${photos.length}</span>
             <div class="ms-auto flex gap-1.5">
@@ -25130,7 +25154,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 60; /* numeric part of dk-build c60 */
+  var RUNNING = 61; /* numeric part of dk-build c61 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

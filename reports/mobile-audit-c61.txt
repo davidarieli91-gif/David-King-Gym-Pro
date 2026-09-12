@@ -1,0 +1,66 @@
+# c61 — Мобильный аудит адаптивности (360px / font-scale 1.0–1.4) + портал
+
+Метод: agent-browser, viewport 360×800 (и 320×700, 1280×800), сканер переполнений
+__ovScan (elements с rect.left < -1 или rect.right > vw+1), прогон всех 25 модалок
+CRM + 3 модалок портала, сквозной сценарий: пароль → клиент → live-тренировка
+(2 упражнения, ввод 60×12/100) → finish → report; питание (Food DB, New food);
+recovery map; program builder; клиентский портал client.html (демо-данные).
+
+## Найдено и ИСПРАВЛЕНО (c61)
+
+1. **CRITICAL — Live-таблица подходов** (карточка упражнения в live-режиме):
+   input'ы веса/повторов без min-width:0 → таблица шире карточки (360/scale1.2:
+   scrollWidth 320 против 313) → после тапа по input браузер уводит горизонтальный
+   скролл → колонка «Подход» уходит за левый край (скрин юзера №1), ✕-колонка
+   срезается. Фикс: `#live-workout-exercises input[type=number]{min-width:0}`;
+   компактные паддинги td/th (4px); RPE-кнопки 20px на <430px.
+   Результат: scrollWidth==clientWidth на 320/360 × scale 1.0/1.2/1.4.
+
+2. **CRITICAL — Нижняя панель live** («Add exercise | Save as template | Finish
+   workout»): flex без wrap → Finish уезжает за экран (360/scale1.2: right=373;
+   скрин юзера №2). Фикс: id="live-bottom-actions" + <640px: две кнопки в ряд,
+   Finish — full-width строка. Результат: Finish right=344 ≤ 360 на всех scale.
+
+3. **HIGH — Food DB**: 4 кнопки-источника в ряду 1218px без wrap (3 кнопки
+   недоступны на смартфоне). Фикс: группе food-db-source-group добавлены
+   flex-wrap + max-w-full → кнопки в 4 строки внутри рамки.
+
+4. **HIGH — client.html (портал подопечного)**: шапка (аватар+имя+тема+язык+share)
+   → горизонтальный скролл ВСЕГО документа (docScrollWidth 395 > 360).
+   Фикс: header flex-wrap gap-y-2, имя/цель max-w-[110px] на <380px.
+   Результат: docSW=360, hScroll=false; контролы на 2-й строке шапки.
+
+5. **MEDIUM — Пикер упражнений**: тулбар «View: + grouping + result-count» шире
+   правой колонки (count R=404 > 360) → flex-wrap, count переносится (R=335).
+
+6. **MEDIUM — Карточка клиента (Photos/Docs)**: select+кнопки выталкивались за
+   край (R=443) → ряду заголовка добавлен id + flex-wrap (перенос на 2 строку).
+
+7. **LOW — Recovery map**: табы (Recovery/7d/30d) сжимали заголовок до «Recovery
+   M…» → rm-head-row flex-wrap: заголовок на своей строке.
+
+## Проверено — БЕЗ проблем (360px, scale 1.0–1.2)
+Все 25 модалок CRM (каркасы + ключевые по UI): client-modal, exercise-picker/
+bodymap-picker (кроме тулбара из п.5), workout-detail, template-picker,
+program-builder (кнопки «Save pro…» — внутренний ellipsis, приемлемо),
+program-day-preview, auto-arrange, folder-picker, food-search, food-portion,
+custom-food/New food, targets, nutrition-plan, food-picker, micronutrient,
+food-detail, nutrition-template(+picker), encyclopedia, viewer, ai-settings,
+client-portal-modal (QR/код/кнопки), live-report-modal (Workout Report),
+exercise-modal (детали упражнения). Экраны: Dashboard, Clients, Workouts,
+Nutrition (3 таба), Analytics, Settings. Кружки RPE 1–10 + vol — влезают
+(310–316px при карточке 326px).
+
+## client.html дополнительно
+Таблица подходов (.set-grid) и RPE-ряд (.rpe-row) — влезают в 360px (294px);
+заголовки колонок видны полностью (декоративный бейдж группы мышц частично
+перекрывает шапку таблицы — элемент дизайна, не дефект). Unlock-экран, нижняя
+навигация с safe-area — ок.
+
+## Артефакты
+- scripts/fix-mobile-c61.cjs — 8 правок (7 в fitness-crm.html + 3 в client.html,
+  счётчик отчёта OK×8/FAIL×0)
+- Версии: meta c61, RUNNING=61, футер «· c61», sw dk-gym-v88
+  (seed v95 и EXERCISE_DB_BUST v51 НЕ менялись — exercise-db.json не тронут)
+- Скриншоты: /home/z/my-project/shots/{live-360-before,fix-live-360,
+  fix-bottombar-360,fix-fooddb-360,fix-recovery-360,fix-portal-360}.png
