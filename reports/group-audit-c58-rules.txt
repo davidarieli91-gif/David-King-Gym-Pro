@@ -1,0 +1,684 @@
+bf bf_arnold-dumbbell-press shoulders/Middle -> shoulders/Front  [press-sub] Arnold Dumbbell Press
+bf bf_behind-neck-press shoulders/Middle -> shoulders/Front  [press-sub] Behind Neck Press
+bf bf_close-grip-push-up chest/Middle -> triceps/Compound  [closegrip] Close-grip Push Up
+bf bf_dumbbell-shoulder-press shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell Shoulder Press
+bf bf_farmers-walk forearms/Wrist Curls -> forearms/Grip  [grip-sub] Farmer’s Walk
+bf bf_overhead-press shoulders/Middle -> shoulders/Front  [press-sub] Overhead Press
+bf bf_plate-shoulder-press shoulders/Middle -> shoulders/Front  [press-sub] Plate Shoulder Press
+bf bf_push-press shoulders/Middle -> shoulders/Front  [press-sub] Push Press
+bf bf_seated-barbell-shoulder-press shoulders/Middle -> shoulders/Front  [press-sub] Seated Barbell Shoulder Press
+bf bf_seated-dumbbell-shoulder-press shoulders/Middle -> shoulders/Front  [press-sub] Seated Dumbbell Shoulder Press
+bf bf_shoulder-press-machine shoulders/Middle -> shoulders/Front  [press-sub] Shoulder Press Machine
+gv gv_1512 legs/Quadriceps -> stretching/General  [stretch] all fours squad stretch
+gv gv_1708 legs/Quadriceps -> stretching/General  [stretch] assisted lying calves stretch
+gv gv_1709 legs/Glutes -> stretching/General  [stretch] assisted lying glutes stretch
+gv gv_1710 legs/Glutes -> stretching/General  [stretch] assisted lying gluteus and piriformis stretch
+gv gv_1713 legs/Quadriceps -> stretching/General  [stretch] assisted prone lying quads stretch
+gv gv_1714 abdominals/Upper -> stretching/General  [stretch] assisted prone rectus femoris stretch
+gv gv_1716 chest/Middle -> stretching/General  [stretch] assisted seated pectoralis major stretch with stability ball
+gv gv_1712 legs/Adductors -> stretching/General  [stretch] assisted side lying adductor stretch
+gv gv_0980 legs/Quadriceps -> legs/Glutes  [hipext-sub] band bent-over hip extension
+gv gv_0997 shoulders/Middle -> shoulders/Front  [press-sub] band shoulder press
+gv gv_1012 shoulders/Middle -> shoulders/Front  [press-sub] band twisting overhead press
+gv gv_0067 shoulders/Middle -> fullbody/General  [oly] barbell one arm snatch
+gv gv_0086 shoulders/Middle -> shoulders/Front  [press-sub] barbell seated behind head military press
+gv gv_0087 shoulders/Middle -> shoulders/Front  [press-sub] barbell seated bradford rocky press
+gv gv_0091 shoulders/Middle -> shoulders/Front  [press-sub] barbell seated overhead press
+gv gv_0105 shoulders/Middle -> shoulders/Front  [press-sub] barbell standing bradford press
+gv gv_1456 shoulders/Middle -> shoulders/Front  [press-sub] barbell standing close grip military press
+gv gv_1457 shoulders/Middle -> shoulders/Front  [press-sub] barbell standing wide military press
+gv gv_0130 legs/Quadriceps -> legs/Glutes  [hipext-sub] bench hip extension
+gv gv_0148 shoulders/Middle -> shoulders/Front  [press-sub] cable alternate shoulder press
+gv gv_0228 legs/Quadriceps -> legs/Glutes  [hipext-sub] cable standing hip extension
+gv gv_1407 legs/Calves -> stretching/General  [stretch] calf push stretch with hands against wall
+gv gv_1377 legs/Calves -> stretching/General  [stretch] calf stretch with hands against wall
+gv gv_1378 legs/Calves -> stretching/General  [stretch] calf stretch with rope
+gv gv_1272 chest/Middle -> stretching/General  [stretch] chest stretch with exercise ball
+gv gv_0257 legs/Quadriceps -> stretching/General  [stretch] circles knee stretch
+gv gv_0286 shoulders/Middle -> shoulders/Front  [press-sub] dumbbell alternate side press
+gv gv_0290 shoulders/Middle -> shoulders/Front  [press-sub] dumbbell bench seated press
+gv gv_1700 shoulders/Middle -> shoulders/Front  [press-sub] dumbbell push press
+gv gv_2397 shoulders/Middle -> shoulders/Front  [press-sub] dumbbell scott press
+gv gv_0388 shoulders/Middle -> shoulders/Front  [press-sub] dumbbell seated alternate press
+gv gv_0404 shoulders/Middle -> shoulders/Front  [press-sub] dumbbell seated shoulder press (parallel grip)
+gv gv_0414 shoulders/Middle -> shoulders/Front  [press-sub] dumbbell standing alternate overhead press
+gv gv_0426 shoulders/Middle -> shoulders/Front  [press-sub] dumbbell standing overhead press
+gv gv_0438 shoulders/Middle -> shoulders/Front  [press-sub] dumbbell w-press
+gv gv_1167 chest/Middle -> stretching/General  [stretch] dynamic chest stretch (male)
+gv gv_1559 legs/Hip Flexors -> stretching/General  [stretch] exercise ball hip flexor stretch
+gv gv_1560 legs/Hamstrings -> stretching/General  [stretch] exercise ball seated hamstring stretch
+gv gv_0445 shoulders/Middle -> shoulders/Front  [press-sub] ez barbell anti gravity press
+gv gv_1419 legs/Quadriceps -> stretching/General  [stretch] iron cross stretch
+gv gv_1438 shoulders/Middle -> shoulders/Front  [press-sub] kettlebell seated two arm military press
+gv gv_2288 forearms/Wrist Curls -> forearms/Grip  [grip-sub] lever gripper hands
+gv gv_2286 legs/Quadriceps -> legs/Glutes  [hipext-sub] lever hip extension v. 2
+gv gv_0587 shoulders/Middle -> shoulders/Front  [press-sub] lever military press
+gv gv_0590 shoulders/Middle -> shoulders/Front  [press-sub] lever one arm shoulder press
+gv gv_0603 shoulders/Middle -> shoulders/Front  [press-sub] lever shoulder press
+gv gv_0869 shoulders/Middle -> shoulders/Front  [press-sub] lever shoulder press v. 2
+gv gv_2318 shoulders/Middle -> shoulders/Front  [press-sub] lever shoulder press v. 3
+gv gv_0613 legs/Quadriceps -> stretching/General  [stretch] lying (side) quads stretch
+gv gv_0669 shoulders/Rear -> stretching/General  [stretch] rear deltoid stretch
+gv gv_3122 shoulders/Middle -> shoulders/Front  [press-sub] resistance band seated shoulder press
+gv gv_2571 legs/Quadriceps -> stretching/General  [stretch] rocking frog stretch
+gv gv_2205 legs/Quadriceps -> stretching/General  [stretch] roller hip lat stretch
+gv gv_2202 legs/Quadriceps -> stretching/General  [stretch] roller hip stretch
+gv gv_1585 legs/Quadriceps -> stretching/General  [stretch] runners stretch
+gv gv_1390 legs/Calves -> stretching/General  [stretch] seated calf stretch (male)
+gv gv_1424 legs/Glutes -> stretching/General  [stretch] seated glute stretch
+gv gv_2567 legs/Quadriceps -> stretching/General  [stretch] seated piriformis stretch
+gv gv_0721 forearms/Wrist Curls -> stretching/General  [stretch] side wrist pull stretch
+gv gv_0747 shoulders/Middle -> shoulders/Front  [press-sub] smith behind neck press
+gv gv_1626 chest/Lower -> triceps/Compound  [closegrip] smith machine reverse decline close grip bench press
+gv gv_0765 shoulders/Middle -> shoulders/Front  [press-sub] smith seated shoulder press
+gv gv_0766 shoulders/Middle -> shoulders/Front  [press-sub] smith shoulder press
+gv gv_0772 shoulders/Middle -> shoulders/Front  [press-sub] smith standing behind head military press
+gv gv_0774 shoulders/Middle -> shoulders/Front  [press-sub] smith standing military press
+gv gv_0788 shoulders/Middle -> shoulders/Front  [press-sub] standing behind neck press
+gv gv_1398 legs/Calves -> stretching/General  [stretch] standing calves calf stretch
+gv gv_1599 legs/Calves -> stretching/General  [stretch] standing hamstring and calf stretch with strap
+gv gv_0854 forearms/Wrist Curls -> forearms/Grip  [grip-sub] weighted standing hand squeeze
+gv gv_3642 legs/Quadriceps -> stretching/General  [stretch] weighted stretch lunge
+gi gi_3244 abdominals/Upper -> stretching/General  [stretch] Abdominal Stretch
+gi gi_1906 legs/Abductors -> stretching/General  [stretch] Abduction Of One Leg Flexion Stretch
+gi gi_1777 chest/Middle -> stretching/General  [stretch] Above Head Chest Stretch
+gi gi_4512 legs/Adductors -> stretching/General  [stretch] Adductor Stretch
+gi gi_3479 legs/Calves -> legs/Quadriceps  [heelsquat] Alternate Heel Touch Side Kick Squat
+gi gi_4826 legs/Quadriceps -> abdominals/Lower  [legraise] Alternate Leg Raise
+gi gi_4001 legs/Quadriceps -> abdominals/Lower  [legraise] Alternate Leg Raise with Head-up
+gi gi_3590 legs/Quadriceps -> abdominals/Lower  [legraise] Alternate Lying Floor Leg Raise
+gi gi_1186 legs/Quadriceps -> abdominals/Lower  [legraise] Alternate Straight Leg Raise (on bosu ball)
+gi gi_5106 legs/Quadriceps -> abdominals/Lower  [legraise] Alternate Toe Tap Leg Lift
+gi gi_2761 legs/Quadriceps -> warmup/General  [articulation] Ankle - Dorsal Flexion - Articulations
+gi gi_2762 legs/Quadriceps -> warmup/General  [articulation] Ankle - Plantar Flexion - Articulations
+gi gi_1987 shoulders/Rotator Cuff -> stretching/General  [stretch] Arm Down Rotator Stretch
+gi gi_1986 shoulders/Rotator Cuff -> stretching/General  [stretch] Arm Up Rotator Stretch
+gi gi_1907 legs/Adductors -> stretching/General  [stretch] Assisted Lying Adductors Stretch
+gi gi_1708 legs/Calves -> stretching/General  [stretch] Assisted Lying Gastrocnemius Stretch
+gi gi_1709 legs/Glutes -> stretching/General  [stretch] Assisted Lying Gluteus Maximus Stretch
+gi gi_1923 legs/Hamstrings -> stretching/General  [stretch] Assisted Lying Hamstring Stretch
+gi gi_1932 legs/Quadriceps -> stretching/General  [stretch] Assisted Lying Hip Stretch In Supine Position
+gi gi_1711 legs/Glutes -> stretching/General  [stretch] Assisted Oblique Glute Minimus And Medius Stretch
+gi gi_1713 legs/Quadriceps -> stretching/General  [stretch] Assisted Prone Lying Quadriceps Stretch
+gi gi_1790 chest/Middle -> stretching/General  [stretch] Assisted Pulling Arms in Prone Position Chest Stretch
+gi gi_1784 chest/Middle -> stretching/General  [stretch] Assisted Pulling Backs Chest Stretch
+gi gi_1779 chest/Middle -> stretching/General  [stretch] Assisted Seated Chest Stretch
+gi gi_1973 shoulders/Middle -> stretching/General  [stretch] Assisted Sitting Reverse Shoulder Stretch
+gi gi_1778 chest/Middle -> stretching/General  [stretch] Assisted Standing Chest Stretch
+gi gi_1789 chest/Middle -> stretching/General  [stretch] Assisted Straight Arms Lying Stretch
+gi gi_1786 chest/Middle -> stretching/General  [stretch] Assisted Trunk Flex Chest Stretch
+gi gi_3995 chest/Middle -> stretching/General  [stretch] Back Slaps Wrap Arround Stretch
+gi gi_4006 abdominals/Upper -> stretching/General  [stretch] Backward Abdominal Stretch
+gi gi_1499 shoulders/Middle -> shoulders/Front  [press-sub] Band Behind Neck Shoulder Press
+gi gi_0901 legs/Quadriceps -> legs/Glutes  [hipext-sub] Band hip extension
+gi gi_0912 legs/Quadriceps -> abdominals/Lower  [legraise] Band lying leg raise
+gi gi_2996 shoulders/Middle -> shoulders/Front  [press-sub] Band Single Arm Shoulder Press
+gi gi_4034 legs/Quadriceps -> legs/Glutes  [hipext-sub] Band Standing Hip Extension
+gi gi_6195 forearms/Wrist Curls -> elbow_flexors/Brachioradialis  [revcurl] Band Standing Reverse Curl
+gi gi_4516 chest/Middle -> stretching/General  [stretch] Band Warm-up Shoulder Stretch
+gi gi_4700 shoulders/Middle -> shoulders/Front  [press-sub] Bar Band Side Bend Press
+gi gi_4686 shoulders/Middle -> shoulders/Front  [press-sub] Bar Band Standing Behind Head Military Press
+gi gi_4857 shoulders/Middle -> shoulders/Front  [press-sub] Barbell Behind the Back Push Press
+gi gi_10049 shoulders/Middle -> shoulders/Front  [press-sub] Barbell Butterfly Z Press
+gi gi_5705 shoulders/Middle -> fullbody/General  [oly] Barbell Clean High Pull
+gi gi_6271 chest/Middle -> triceps/Compound  [closegrip] Barbell Close Grip Larsen Press
+gi gi_9516 legs/Calves -> legs/Quadriceps  [heelsquat] Barbell Elevated Heel Clean Grip Squat
+gi gi_4178 legs/Calves -> legs/Quadriceps  [heelsquat] Barbell Elevated Heel Squat
+gi gi_10110 forearms/Wrist Curls -> elbow_flexors/Brachioradialis  [revcurl] Barbell Fat Bar Reverse Curl
+gi gi_9694 shoulders/Middle -> shoulders/Front  [press-sub] Barbell Half Kneeling Shoulders Press
+gi gi_10107 shoulders/Middle -> fullbody/General  [oly] Barbell Hang Clean High Pull
+gi gi_1522 chest/Middle -> fullbody/General  [oly] Barbell Hang Snatch
+gi gi_3186 shoulders/Middle -> shoulders/Front  [press-sub] Barbell Military Press (with hanging band technique)
+gi gi_1528 chest/Middle -> fullbody/General  [oly] Barbell Power Clean from Blocks
+gi gi_1530 chest/Middle -> fullbody/General  [oly] Barbell Power Snatch
+gi gi_1531 chest/Middle -> fullbody/General  [oly] Barbell Power Snatch From Blocks
+gi gi_1045 shoulders/Middle -> shoulders/Front  [press-sub] Barbell Seated Military Press (inside squat cage)
+gi gi_1533 chest/Middle -> fullbody/General  [oly] Barbell Snatch
+gi gi_1534 chest/Middle -> fullbody/General  [oly] Barbell Snatch Balance
+gi gi_1536 chest/Middle -> fullbody/General  [oly] Barbell Snatch from Blocks
+gi gi_1537 chest/Middle -> fullbody/General  [oly] Barbell Split Clean
+gi gi_1162 shoulders/Middle -> shoulders/Front  [press-sub] Barbell Standing Military Press
+gi gi_1165 shoulders/Middle -> shoulders/Front  [press-sub] Barbell Standing Military Press (without rack)
+gi gi_5668 shoulders/Middle -> shoulders/Front  [press-sub] Barbell Standing Shoulder Pin Press
+gi gi_5328 shoulders/Middle -> shoulders/Front  [press-sub] Barbell Standing Shoulders Press
+gi gi_4866 shoulders/Middle -> shoulders/Front  [press-sub] Barbell Z Press
+gi gi_1259 chest/Middle -> stretching/General  [stretch] Behind Head Chest Stretch
+gi gi_1780 chest/Middle -> stretching/General  [stretch] Bent Arm Chest Stretch
+gi gi_1981 shoulders/Middle -> stretching/General  [stretch] Bent Arm Shoulder Stretch
+gi gi_3034 legs/Quadriceps -> legs/Glutes  [kickback] Bent Leg Kickback (kneeling)
+gi gi_6540 chest/Middle -> stretching/General  [stretch] Big Turn Back Stretch
+gi gi_4279 legs/Quadriceps -> stretching/General  [stretch] Boat Stretch
+gi gi_4561 legs/Calves -> legs/Quadriceps  [heelsquat] Bodyweight Elevanted Heel Squat
+gi gi_9691 legs/Calves -> legs/Quadriceps  [heelsquat] Bodyweight Elevated Heel Front Squat
+gi gi_7551 legs/Calves -> legs/Quadriceps  [heelsquat] Bodyweight Heel Elevated Bulgarian Split Squat
+gi gi_7577 legs/Calves -> legs/Quadriceps  [heelsquat] Bodyweight Heel Elevated Squat
+gi gi_4346 shoulders/Middle -> shoulders/Front  [press-sub] Bodyweight Standing Military Press
+gi gi_4613 shoulders/Middle -> shoulders/Front  [press-sub] Bodyweight Standing Military Press Wall Supported
+gi gi_5882 abdominals/Upper -> abdominals/Obliques  [woodchop-sub] Bodyweight Wood Chop Squat
+gi gi_6070 forearms/Wrist Curls -> elbow_flexors/Brachioradialis  [revcurl] Bottle Weighted Reverse Curl
+gi gi_6076 shoulders/Middle -> shoulders/Front  [press-sub] Bottle Weighted Shoulder Press
+gi gi_3565 legs/Glutes -> stretching/General  [stretch] Bridge Pose Yoga Stretch
+gi gi_6742 legs/Calves -> legs/Glutes  [kickback] Cable Donkey Diagonal Kickback
+gi gi_4421 legs/Calves -> legs/Glutes  [kickback] Cable Donkey Kickback
+gi gi_2887 legs/Quadriceps -> abdominals/Lower  [legraise] Cable Hanging Leg Raise
+gi gi_8662 shoulders/Middle -> shoulders/Front  [press-sub] Cable Incline Close Grip Shoulder Press with V Bar
+gi gi_4010 shoulders/Middle -> shoulders/Front  [press-sub] Cable Kneeling Shoulder Press
+gi gi_9928 legs/Quadriceps -> legs/Glutes  [kickback] Cable Lying Incline Single Leg Kickback
+gi gi_5470 legs/Quadriceps -> legs/Glutes  [kickback] Cable Medius Kickback
+gi gi_0219 shoulders/Middle -> shoulders/Front  [press-sub] Cable Shoulder Press
+gi gi_9863 legs/Quadriceps -> legs/Glutes  [kickback] Cable Side Lying Floor Single Leg Kickback
+gi gi_0880 legs/Quadriceps -> legs/Glutes  [hipext-sub] Cable standing hip extension (version 2)
+gi gi_8083 legs/Quadriceps -> legs/Glutes  [kickback] Cable Straight Leg Diagonal Kickback
+gi gi_1209 shoulders/Middle -> shoulders/Front  [press-sub] Cable twisting overhead press
+gi gi_4510 legs/Quadriceps -> stretching/General  [stretch] Calves Stretch
+gi gi_1848 legs/Quadriceps -> stretching/General  [stretch] Calves Stretch Static Position
+gi gi_5107 legs/Quadriceps -> abdominals/Lower  [legraise] Captains Chair Leg Raise
+gi gi_2106 legs/Quadriceps -> stretching/General  [stretch] Cat Stretch (Version 2)
+gi gi_0250 legs/Quadriceps -> stretching/General  [stretch] Ceiling Look Stretch
+gi gi_1548 legs/Quadriceps -> stretching/General  [stretch] Chair Leg Extended Stretch
+gi gi_1271 chest/Middle -> stretching/General  [stretch] Chest and Front of Shoulder Stretch
+gi gi_4509 abdominals/Upper -> stretching/General  [stretch] Chin-to-chest Stretch
+gi gi_9600 chest/Middle -> stretching/General  [stretch] Coner Wall Chest Stretch
+gi gi_1781 chest/Middle -> stretching/General  [stretch] Conner Wall Chest Stretch
+gi gi_4557 legs/Quadriceps -> stretching/General  [stretch] Couch Stretch
+gi gi_2107 legs/Quadriceps -> stretching/General  [stretch] Cow Stretch
+gi gi_4296 legs/Hip Flexors -> stretching/General  [stretch] Crossover Kneeling Hip Flexor Stretch
+gi gi_1890 legs/Calves -> stretching/General  [stretch] Crouching Heel Back Achilles Stretch
+gi gi_1930 legs/Calves -> stretching/General  [stretch] Crouching Heel Back Calf Stretch
+gi gi_3915 shoulders/Middle -> shoulders/Front  [press-sub] Decline Pike Press (between benches)
+gi gi_7553 chest/Middle -> stretching/General  [stretch] Doorway Chest Stretch
+gi gi_1960 legs/Quadriceps -> stretching/General  [stretch] Double Kneeling Shin Stretch
+gi gi_1956 legs/Quadriceps -> stretching/General  [stretch] Double Lean Back Quadriceps Stretch
+gi gi_2843 abdominals/Upper -> stretching/General  [stretch] Double Leg Stretch
+gi gi_4067 shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell Alternate Arnold Press
+gi gi_3972 shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell Alternate Shoulder Press
+gi gi_6891 shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell Alternate Z-Press
+gi gi_0287 shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell Arnold Press (version 2)
+gi gi_0295 shoulders/Middle -> fullbody/General  [oly] Dumbbell Clean
+gi gi_3075 chest/Middle -> triceps/Compound  [closegrip] Dumbbell Close grip Press
+gi gi_9690 legs/Calves -> legs/Quadriceps  [heelsquat] Dumbbell Elevated Heel Front Squat
+gi gi_4577 shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell Half Kneeling Military Press
+gi gi_10117 shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell Half Kneeling Single Arm Clean Press
+gi gi_11016 shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell Half Kneeling Single Arm Shoulder Press
+gi gi_4739 chest/Middle -> fullbody/General  [oly] Dumbbell Hang Power Clean
+gi gi_4015 chest/Upper -> triceps/Compound  [closegrip] Dumbbell Incline Close-grip Press Variation
+gi gi_5261 shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell Incline Shoulders Press
+gi gi_4745 shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell Kneeling Arnold Press
+gi gi_8502 shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell Kneeling Opposite Shoulder Press
+gi gi_11017 shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell Kneeling Single Arm Shoulder Press
+gi gi_0361 shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell One Arm Shoulder Press
+gi gi_0360 shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell One Arm Shoulder Press (version 2)
+gi gi_1445 legs/Quadriceps -> stretching/General  [stretch] Dumbbell RDL Stretch Isometric
+gi gi_4237 shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell Seated Close Grip Press
+gi gi_4120 shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell Seated One Arm Arnold Press
+gi gi_1231 shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell Seated One Arm Shoulder Press
+gi gi_3690 shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell Seated on Exercise Ball Shoulder Press
+gi gi_6142 shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell Seated Reverse Arnold Press
+gi gi_10043 shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell Single Arm Z Press
+gi gi_4065 shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell Standing Alternate Arnold Press
+gi gi_6265 forearms/Wrist Curls -> elbow_flexors/Brachioradialis  [revcurl] Dumbbell Standing Alternate Reverse Curl
+gi gi_4108 shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell Standing Arnold Press
+gi gi_10094 shoulders/Middle -> fullbody/General  [oly] Dumbbell Standing Cross Clean
+gi gi_0424 shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell Standing One Arm Palm In Press
+gi gi_0427 shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell Standing Palms In Press
+gi gi_4833 shoulders/Middle -> shoulders/Front  [press-sub] Dumbbell Standing Single Arm Arnold Press
+gi gi_5108 back/Lats -> abdominals/Obliques  [woodchop] Dumbbell Wood Chop Squat
+gi gi_1167 chest/Middle -> stretching/General  [stretch] Dynamic Chest Stretch
+gi gi_2763 triceps/Compound -> warmup/General  [articulation] Elbow - Extension - Articulations
+gi gi_1985 shoulders/Rotator Cuff -> stretching/General  [stretch] Elbow Out Rotator Stretch
+gi gi_4672 chest/Middle -> stretching/General  [stretch] Elbows Back Stretch
+gi gi_1883 legs/Abductors -> stretching/General  [stretch] Exercise Ball Lying Abductor Stretch
+gi gi_1561 legs/Quadriceps -> stretching/General  [stretch] Exercise Ball Seated Quad Stretch
+gi gi_1990 shoulders/Middle -> stretching/General  [stretch] External Shoulder Rotation Stretch
+gi gi_3990 shoulders/Middle -> shoulders/Front  [press-sub] EZ-bar Seated Close grip Shoulder Press
+gi gi_1226 shoulders/Middle -> shoulders/Front  [press-sub] EZ-Bar Standing Overhead Press
+gi gi_4283 legs/Quadriceps -> stretching/General  [stretch] Feet and Ankles Rotation Stretch
+gi gi_3245 legs/Quadriceps -> stretching/General  [stretch] Feet and Ankles Side to Side Stretch
+gi gi_4282 legs/Quadriceps -> stretching/General  [stretch] Feet and Ankles Stretch
+gi gi_2095 forearms/Wrist Curls -> stretching/General  [stretch] Finger Extension Stretch
+gi gi_1827 forearms/Wrist Curls -> stretching/General  [stretch] Finger Extensor Stretch
+gi gi_1826 forearms/Wrist Curls -> stretching/General  [stretch] Finger Flexor Stretch
+gi gi_2089 forearms/Wrist Curls -> stretching/General  [stretch] Finger Stretch
+gi gi_3396 legs/Quadriceps -> stretching/General  [stretch] Flexion And Extension Hip Stretch
+gi gi_2096 forearms/Wrist Curls -> stretching/General  [stretch] Flexion Finger Stretch
+gi gi_2765 forearms/Wrist Curls -> warmup/General  [articulation] Forearm - Pronation - Articulations
+gi gi_1815 forearms/Wrist Curls -> stretching/General  [stretch] Forearm Pronator Stretch
+gi gi_2766 forearms/Wrist Curls -> warmup/General  [articulation] Forearm - Supination - Articulations
+gi gi_2101 legs/Quadriceps -> stretching/General  [stretch] Front Cross Over Shin Stretch
+gi gi_3468 legs/Hamstrings -> stretching/General  [stretch] Front Hamstring Stretch
+gi gi_6094 legs/Quadriceps -> abdominals/Lower  [legraise] Front Leg Lift Under Knee Tap
+gi gi_2935 chest/Middle -> stretching/General  [stretch] Half Kneeling PVC Pec Mobilization Stretch
+gi gi_6761 legs/Quadriceps -> stretching/General  [stretch] Half Pigeon Hip Stretch
+gi gi_1406 legs/Hamstrings -> stretching/General  [stretch] Hamstrings Lying Stretch
+gi gi_1511 legs/Hamstrings -> stretching/General  [stretch] Hamstring Stretch
+gi gi_3834 forearms/Wrist Curls -> forearms/Grip  [grip-sub] Handboard Half Crimp
+gi gi_3836 forearms/Wrist Curls -> forearms/Grip  [grip-sub] Handboard Hang with 135 Degree Elbow
+gi gi_3835 forearms/Wrist Curls -> forearms/Grip  [grip-sub] Handboard Hang with 90 Degree Elbow
+gi gi_3833 forearms/Wrist Curls -> forearms/Grip  [grip-sub] Handboard Open Hand Grip
+gi gi_3832 forearms/Wrist Curls -> forearms/Grip  [grip-sub] Handboard Slope Hang
+gi gi_3916 shoulders/Middle -> shoulders/Front  [press-sub] Handstand Shoulder Press with Wall (between benches)
+gi gi_2767 legs/Abductors -> warmup/General  [articulation] Hip - Abduction - Articulations
+gi gi_1903 legs/Abductors -> stretching/General  [stretch] Hip Abduction With Flexion In Front Stretch
+gi gi_2768 legs/Adductors -> warmup/General  [articulation] Hip - Adduction - Articulations
+gi gi_1931 legs/Quadriceps -> stretching/General  [stretch] Hip And Knee Flexion Squatting Stretch
+gi gi_4286 legs/Quadriceps -> stretching/General  [stretch] Hip Circles Stretch
+gi gi_2769 legs/Quadriceps -> warmup/General  [articulation] Hip - Extension - Articulations
+gi gi_2115 back/Lats -> legs/Glutes  [hipext-move] Hip Extension On Knees
+gi gi_4673 legs/Quadriceps -> stretching/General  [stretch] Hip Extension Stretch
+gi gi_2112 back/Lats -> legs/Glutes  [hipext-move] Hip Extension Supported From Back
+gi gi_1944 legs/Quadriceps -> stretching/General  [stretch] Hip External Rotator Stretch
+gi gi_2770 legs/Quadriceps -> warmup/General  [articulation] Hip - Flexion - Articulations
+gi gi_4674 legs/Hip Flexors -> stretching/General  [stretch] Hip Flexor Stretch Rear foot elevated
+gi gi_2771 legs/Quadriceps -> warmup/General  [articulation] Hip - Lateral Rotation (External Rotation) - Articulations
+gi gi_2772 legs/Quadriceps -> warmup/General  [articulation] Hip - Medial Rotation (Internal Rotation) - Articulations
+gi gi_5160 chest/Upper -> triceps/Compound  [closegrip] Incline Close Grip Push-up
+gi gi_1564 legs/Hip Flexors -> stretching/General  [stretch] Intermediate Hip Flexor and Quad Stretch
+gi gi_1991 shoulders/Middle -> stretching/General  [stretch] Internal Shoulder Rotation Stretch
+gi gi_0520 shoulders/Middle -> shoulders/Front  [press-sub] Kettlebell Alternating Press
+gi gi_0523 shoulders/Middle -> shoulders/Front  [press-sub] Kettlebell Arnold Press
+gi gi_0528 shoulders/Middle -> shoulders/Front  [press-sub] Kettlebell Double Push Press
+gi gi_0529 shoulders/Middle -> fullbody/General  [oly] Kettlebell Double Snatch
+gi gi_4446 shoulders/Middle -> shoulders/Front  [press-sub] Kettlebell Half Kneeling One Arm Bottoms-Up Press
+gi gi_2934 shoulders/Middle -> shoulders/Front  [press-sub] Kettlebell Half Kneeling Shoulder Press
+gi gi_0535 chest/Middle -> fullbody/General  [oly] Kettlebell Hang Clean
+gi gi_2927 shoulders/Middle -> shoulders/Front  [press-sub] Kettlebell Kneeling One Arm Bottoms Up Press
+gi gi_2932 shoulders/Middle -> shoulders/Front  [press-sub] Kettlebell Kneeling One Arm Shoulder Press
+gi gi_3577 shoulders/Middle -> shoulders/Front  [press-sub] Kettlebell Lunge Clean and Press
+gi gi_0537 chest/Middle -> fullbody/General  [oly] Kettlebell One Arm Clean and Jerk
+gi gi_0539 shoulders/Middle -> shoulders/Front  [press-sub] Kettlebell One Arm Military Press To The Side
+gi gi_0540 shoulders/Middle -> shoulders/Front  [press-sub] Kettlebell One Arm Push Press
+gi gi_0542 chest/Middle -> fullbody/General  [oly] Kettlebell One Arm Snatch
+gi gi_3737 shoulders/Middle -> shoulders/Front  [press-sub] Kettlebell Seated One Arm Military Press
+gi gi_0546 shoulders/Middle -> shoulders/Front  [press-sub] Kettlebell Seated Press
+gi gi_0547 shoulders/Middle -> shoulders/Front  [press-sub] Kettlebell Seesaw Press
+gi gi_3573 shoulders/Middle -> shoulders/Front  [press-sub] Kettlebell Sots Press
+gi gi_3736 shoulders/Middle -> shoulders/Front  [press-sub] Kettlebell Standing Bottoms Up One Arm Shoulder Press
+gi gi_3572 shoulders/Middle -> shoulders/Front  [press-sub] Kettlebell Strict Press
+gi gi_0552 shoulders/Middle -> fullbody/General  [oly] Kettlebell Two Arm Clean
+gi gi_0553 shoulders/Middle -> shoulders/Front  [press-sub] Kettlebell Two Arm Military Press
+gi gi_8025 abdominals/Upper -> abdominals/Obliques  [woodchop-sub] Kettlebell Wood Chop
+gi gi_9703 shoulders/Middle -> shoulders/Front  [press-sub] Kettlebell Z Press
+gi gi_2773 legs/Quadriceps -> warmup/General  [articulation] Knee - Extension - Articulations
+gi gi_2774 legs/Quadriceps -> warmup/General  [articulation] Knee - Flexion - Articulations
+gi gi_2109 abdominals/Upper -> stretching/General  [stretch] Kneeling Abdominal Stretch
+gi gi_1901 legs/Adductors -> stretching/General  [stretch] Kneeling Face Down Adductor Stretch
+gi gi_1892 legs/Calves -> stretching/General  [stretch] Kneeling Heel Down Achilles Stretch
+gi gi_1053 legs/Hip Flexors -> stretching/General  [stretch] Kneeling Hip Flexor Stretch
+gi gi_6771 legs/Hip Flexors -> stretching/General  [stretch] Kneeling Iliopsoas Stretch
+gi gi_1898 legs/Adductors -> stretching/General  [stretch] Kneeling Leg Out Adductor Stretch
+gi gi_1988 shoulders/Middle -> stretching/General  [stretch] Kneeling One Arm Cross Body Stretch
+gi gi_6770 legs/Quadriceps -> stretching/General  [stretch] Kneeling Sartorius Stretch
+gi gi_4772 legs/Quadriceps -> legs/Glutes  [kickback] Kneeling Straight Leg Kickback (VERSION 2)
+gi gi_6209 legs/Quadriceps -> legs/Glutes  [kickback] Kneeling Straight Leg Kickback (VERSION 2) (left)
+gi gi_1913 legs/Hamstrings -> stretching/General  [stretch] Kneeling Toe Up Hamstring Stretch
+gi gi_0561 forearms/Wrist Curls -> stretching/General  [stretch] Kneeling Wrist Flexor Stretch
+gi gi_0559 legs/Quadriceps -> stretching/General  [stretch] Knee to chest Stretch
+gi gi_10056 shoulders/Middle -> shoulders/Front  [press-sub] Landmine Banded Press
+gi gi_9695 shoulders/Middle -> shoulders/Front  [press-sub] Landmine Half Kneeling Shoulders Press
+gi gi_3525 shoulders/Middle -> shoulders/Front  [press-sub] Landmine Kneeling One Arm Shoulder Press
+gi gi_5636 shoulders/Middle -> shoulders/Front  [press-sub] Landmine Kneeling One Arm Shoulder Press (VERSION 2)
+gi gi_5282 shoulders/Middle -> shoulders/Front  [press-sub] Landmine Kneeling Thruster Press
+gi gi_4202 shoulders/Middle -> shoulders/Front  [press-sub] Landmine Resistance Band One Arm Shoulder Press
+gi gi_10190 shoulders/Middle -> shoulders/Front  [press-sub] Landmine Single Arm Push Press
+gi gi_2976 shoulders/Middle -> shoulders/Front  [press-sub] Landmine Squat and Press
+gi gi_2125 abdominals/Upper -> stretching/General  [stretch] Lateral Stretch On Floor Lying Down
+gi gi_5695 legs/Quadriceps -> stretching/General  [stretch] Lean Forward Stretch
+gi gi_1880 legs/Abductors -> stretching/General  [stretch] Leaning Abductor Stretch
+gi gi_2104 legs/Calves -> stretching/General  [stretch] Leaning Heel Back Achilles Stretch
+gi gi_2850 legs/Quadriceps -> abdominals/Lower  [legraise] Leg Raise (bent knee)
+gi gi_1852 legs/Quadriceps -> abdominals/Lower  [legraise] Leg Raise Hip Lift
+gi gi_1855 legs/Quadriceps -> abdominals/Lower  [legraise] Leg Raise Hip Lift with Head up
+gi gi_1576 legs/Hamstrings -> stretching/General  [stretch] Leg Up Hamstring Stretch
+gi gi_1862 shoulders/Middle -> shoulders/Front  [press-sub] Lever Cable Shoulder Press
+gi gi_1447 legs/Calves -> stretching/General  [stretch] Lever Calf Stretch (plate loaded) Isometric
+gi gi_2288 forearms/Wrist Curls -> forearms/Grip  [grip-sub] Lever Gripper Hands (plate loaded)
+gi gi_2286 legs/Quadriceps -> legs/Glutes  [hipext-sub] Lever Hip Extension (VERSION 2)
+gi gi_1856 legs/Quadriceps -> abdominals/Lower  [legraise] Lever Lying Leg Raise Bent Knee
+gi gi_0587 shoulders/Middle -> shoulders/Front  [press-sub] Lever Military Press (plate loaded)
+gi gi_0590 shoulders/Middle -> shoulders/Front  [press-sub] Lever One Arm Shoulder Press (plate loaded)
+gi gi_4174 shoulders/Middle -> shoulders/Front  [press-sub] Lever Reverse Shoulder Press (plate loaded)
+gi gi_2962 shoulders/Middle -> shoulders/Front  [press-sub] Lever Seated Hammer grip Shoulder Press
+gi gi_1454 shoulders/Middle -> shoulders/Front  [press-sub] Lever Seated Shoulder Press
+gi gi_0603 shoulders/Middle -> shoulders/Front  [press-sub] Lever Shoulder Press (plate loaded)
+gi gi_0869 shoulders/Middle -> shoulders/Front  [press-sub] Lever Shoulder Press (plate loaded) version 2
+gi gi_2318 shoulders/Middle -> shoulders/Front  [press-sub] Lever Shoulder Press (plate loaded) (version 3)
+gi gi_9324 legs/Quadriceps -> legs/Glutes  [hipext-sub] Long Lever Standing Hip Extension
+gi gi_2105 abdominals/Lower -> stretching/General  [stretch] Lower Trunk Flexor Stretch
+gi gi_4930 legs/Quadriceps -> stretching/General  [stretch] Lunge Stretch
+gi gi_3581 legs/Quadriceps -> abdominals/Lower  [legraise] Lunge with Leg Lift
+gi gi_1054 legs/Calves -> stretching/General  [stretch] Lunging Straight Leg Calf Stretch
+gi gi_1882 legs/Abductors -> stretching/General  [stretch] Lying Abductor Stretch
+gi gi_0614 legs/Quadriceps -> legs/Glutes  [hipext-sub] Lying Alternate Hip Extension
+gi gi_4929 legs/Calves -> stretching/General  [stretch] Lying Calf Stretch
+gi gi_1936 legs/Quadriceps -> stretching/General  [stretch] Lying Cross Over Knee Pull Down Stretch
+gi gi_1935 legs/Quadriceps -> stretching/General  [stretch] Lying Cross Over Knee Pull Up Stretch
+gi gi_0615 abdominals/Upper -> stretching/General  [stretch] Lying Crossover Stretch
+gi gi_3263 legs/Quadriceps -> abdominals/Lower  [legraise] Lying Full Leg raise
+gi gi_1056 legs/Glutes -> stretching/General  [stretch] Lying Glute Stretch
+gi gi_0616 legs/Hip Flexors -> stretching/General  [stretch] Lying Hip Flexor Stretch
+gi gi_0617 legs/Quadriceps -> abdominals/Lower  [legraise] Lying Hip Leg Raise (on floor)
+gi gi_0619 legs/Quadriceps -> abdominals/Lower  [legraise] Lying Hip Straight Leg Raise
+gi gi_2116 legs/Quadriceps -> stretching/General  [stretch] Lying Knee Roll Over Stretch
+gi gi_1810 legs/Quadriceps -> stretching/General  [stretch] Lying Knee To Chest Stretch
+gi gi_1905 legs/Quadriceps -> stretching/General  [stretch] Lying Leaning Against The Wall Stretch
+gi gi_1884 legs/Abductors -> stretching/General  [stretch] Lying Leg Hang Abductor Stretch
+gi gi_2852 legs/Quadriceps -> legs/Abductors  [legraise-side] Lying Leg Lift Side
+gi gi_1245 legs/Quadriceps -> abdominals/Lower  [legraise] Lying Leg Raise and Hold
+gi gi_0620 legs/Quadriceps -> abdominals/Lower  [legraise] Lying Leg Raise Flat Bench
+gi gi_4419 legs/Quadriceps -> abdominals/Lower  [legraise] Lying Leg Raise (Modified)
+gi gi_3475 legs/Quadriceps -> stretching/General  [stretch] Lying Leg Tuck Hip Back Stretch
+gi gi_3472 legs/Quadriceps -> stretching/General  [stretch] Lying Leg Tuck Hip Stretch
+gi gi_3476 legs/Quadriceps -> stretching/General  [stretch] Lying Leg Tuck Hip Twist Stretch
+gi gi_3478 chest/Middle -> stretching/General  [stretch] Lying Leg Tuck Hip Twist to Left Stretch
+gi gi_1168 abdominals/Upper -> stretching/General  [stretch] Lying (prone) Abdominal Stretch
+gi gi_0613 legs/Quadriceps -> stretching/General  [stretch] Lying (side) Quadriceps Stretch
+gi gi_0623 legs/Quadriceps -> abdominals/Lower  [legraise] Lying Simultaneous Alternating Leg Raise
+gi gi_1180 legs/Quadriceps -> abdominals/Lower  [legraise] Lying Simultaneous Alternating Straight Leg Raise
+gi gi_10913 legs/Quadriceps -> abdominals/Lower  [legraise] Lying Single Leg Raise
+gi gi_1776 legs/Quadriceps -> legs/Glutes  [hipext-sub] Lying Single Straight Leg Hip Extension
+gi gi_1181 legs/Quadriceps -> abdominals/Lower  [legraise] Lying Straight Leg Raise (version 2)
+gi gi_3539 legs/Quadriceps -> stretching/General  [stretch] Lying T-Spine Mobility Stretching
+gi gi_5031 legs/Quadriceps -> abdominals/Lower  [legraise] Medicine Ball Lying Leg Raise
+gi gi_1697 abdominals/Lower -> abdominals/Obliques  [woodchop-sub] Medicine Ball Reverse Wood Chop Squat
+gi gi_1704 abdominals/Upper -> abdominals/Obliques  [woodchop-sub] Medicine Ball Single Leg Wood Chop
+gi gi_4288 abdominals/Upper -> stretching/General  [stretch] Middle Back Stretch
+gi gi_1969 legs/Quadriceps -> stretching/General  [stretch] Mobilization Of Ankle Stretch
+gi gi_0632 abdominals/Upper -> triceps/Compound  [closegrip] Narrow Leg Bench Bridge
+gi gi_1976 shoulders/Middle -> stretching/General  [stretch] One Arm Shoulder Flexor Stretch
+gi gi_1049 legs/Quadriceps -> legs/Glutes  [kickback] One leg kickback (with bench support)
+gi gi_4601 chest/Middle -> stretching/General  [stretch] Open Book Stretch
+gi gi_1788 chest/Middle -> stretching/General  [stretch] Over Head Straight Arm Stretch
+gi gi_1388 legs/Quadriceps -> stretching/General  [stretch] Peroneals Stretch
+gi gi_3904 shoulders/Middle -> shoulders/Front  [press-sub] Pike Press (between benches)
+gi gi_1920 legs/Quadriceps -> stretching/General  [stretch] Plantar Flexion Stretch
+gi gi_1926 legs/Quadriceps -> stretching/General  [stretch] Plantar Flexor And Foot Everter Stretch
+gi gi_1927 legs/Quadriceps -> stretching/General  [stretch] Plantar Flexor And Foot Inverter Stretch
+gi gi_1044 forearms/Wrist Curls -> forearms/Grip  [grip-sub] Plate Pinch
+gi gi_4675 legs/Quadriceps -> stretching/General  [stretch] Plyo Side Lunge Stretch
+gi gi_1389 legs/Quadriceps -> stretching/General  [stretch] Posterior Tibialis Stretch
+gi gi_0648 chest/Middle -> fullbody/General  [oly] Power Clean
+gi gi_0649 legs/Quadriceps -> stretching/General  [stretch] Pretzel Stretch
+gi gi_4299 legs/Quadriceps -> stretching/General  [stretch] Quadriceps lying stretch
+gi gi_4300 legs/Quadriceps -> stretching/General  [stretch] Quadriceps stretch
+gi gi_1954 legs/Quadriceps -> stretching/General  [stretch] Quadriceps Stretch On Box
+gi gi_1959 legs/Quadriceps -> stretching/General  [stretch] Raised Foot Shin Stretch
+gi gi_1911 legs/Quadriceps -> stretching/General  [stretch] Raised Leg Knee Flexor Stretch
+gi gi_1808 legs/Quadriceps -> stretching/General  [stretch] Reclining Lower Trunk Extensor Stretch
+gi gi_1939 legs/Quadriceps -> stretching/General  [stretch] Recumbent Hip External Rotator And Hip Extensor Stretch
+gi gi_2099 legs/Quadriceps -> stretching/General  [stretch] Recumbent Hip External Rotator And Hip Extensor Stretch (Crossed Leg)
+gi gi_1921 legs/Quadriceps -> stretching/General  [stretch] Recumbent Knee Flexor Stretch
+gi gi_1922 legs/Quadriceps -> stretching/General  [stretch] Recumbent Knee Flexor Stretch With Towel
+gi gi_2149 legs/Quadriceps -> legs/Glutes  [kickback] Resistance Band Bent Leg Kickback (Kneeling)
+gi gi_7281 legs/Quadriceps -> legs/Glutes  [kickback] Resistance Band Leg Kickback
+gi gi_2419 legs/Quadriceps -> abdominals/Lower  [legraise] Resistance Band Leg Lift
+gi gi_2157 legs/Quadriceps -> abdominals/Lower  [legraise] Resistance Band Lying Leg Raise
+gi gi_2161 legs/Quadriceps -> legs/Glutes  [kickback] Resistance Band One Leg Kickback
+gi gi_3903 legs/Quadriceps -> legs/Glutes  [kickback] Resistance Band One Leg Kickback (Bent Position)
+gi gi_5205 shoulders/Middle -> shoulders/Front  [press-sub] Resistance Band Overhead Shoulder Press
+gi gi_8364 shoulders/Middle -> shoulders/Front  [press-sub] Resistance Band Overhead Shoulder Press (VERSION 2)
+gi gi_5480 legs/Calves -> stretching/General  [stretch] Resistance Band Seated Calf Stretch
+gi gi_3513 shoulders/Middle -> stretching/General  [stretch] Resistance Band Shoulder Stretch Behind the Back
+gi gi_5204 shoulders/Middle -> shoulders/Front  [press-sub] Resistance Band Single Arm Overhead Shoulder Press
+gi gi_2999 legs/Quadriceps -> stretching/General  [stretch] Resistance Band Standing Back Achilles Stretch
+gi gi_3000 legs/Quadriceps -> stretching/General  [stretch] Resistance Band Standing Forward Achilles Stretch
+gi gi_1782 chest/Middle -> stretching/General  [stretch] Reverse Chest Stretch
+gi gi_1971 shoulders/Middle -> stretching/General  [stretch] Reverse Shoulder Stretch
+gi gi_2936 legs/Quadriceps -> stretching/General  [stretch] Rocking Ankle Stretch
+gi gi_2947 legs/Calves -> stretching/General  [smr] Roll Anterior Calf Foam Rolling
+gi gi_5386 back/Lats -> stretching/General  [smr] Roll Around the World Lying on Floor
+gi gi_4470 legs/Adductors -> stretching/General  [smr] Roll Ball Adductors
+gi gi_4465 legs/Calves -> stretching/General  [smr] Roll Ball Calf
+gi gi_4611 shoulders/Middle -> stretching/General  [smr] Roll Ball Deltoid Posterior
+gi gi_4482 abdominals/Upper -> stretching/General  [smr] Roll Ball Diaphragm
+gi gi_4480 legs/Quadriceps -> stretching/General  [smr] Roll Ball Erector Spinae
+gi gi_4478 abdominals/Obliques -> stretching/General  [smr] Roll Ball External Oblique
+gi gi_4462 legs/Quadriceps -> stretching/General  [smr] Roll Ball Foot
+gi gi_4496 forearms/Wrist Curls -> stretching/General  [smr] Roll Ball Forearm Extensors
+gi gi_4494 forearms/Wrist Curls -> stretching/General  [smr] Roll Ball Forearm Flexors
+gi gi_4497 forearms/Wrist Curls -> stretching/General  [smr] Roll Ball Forearm Pronator
+gi gi_4495 forearms/Wrist Curls -> stretching/General  [smr] Roll Ball Forearm Supinator
+gi gi_4472 legs/Glutes -> stretching/General  [smr] Roll Ball Gluteus Medius
+gi gi_4477 legs/Quadriceps -> stretching/General  [smr] Roll Ball Iliacus - Abdominal Region
+gi gi_4475 legs/Hip Flexors -> stretching/General  [smr] Roll Ball Iliospsoas
+gi gi_4485 back/Lats -> stretching/General  [smr] Roll Ball Infraspinatus
+gi gi_4486 back/Lats -> stretching/General  [smr] Roll Ball Infraspinatus (VERSION 2)
+gi gi_4469 legs/Quadriceps -> stretching/General  [smr] Roll Ball Lateral Vastus
+gi gi_4493 back/Lats -> stretching/General  [smr] Roll Ball Latissimus Dorsi
+gi gi_4600 back/Lats -> stretching/General  [smr] Roll Ball Lower Back
+gi gi_4481 legs/Quadriceps -> stretching/General  [smr] Roll Ball Lumbar - Diagonal
+gi gi_6769 back/Lats -> stretching/General  [smr] Roll Ball Lying Semisplinalis Capitis Muscle Activation
+gi gi_4484 chest/Middle -> stretching/General  [smr] Roll Ball Pectoralis Major - Clavicular
+gi gi_4483 chest/Middle -> stretching/General  [smr] Roll Ball Pectoralis Major - Sternal
+gi gi_3569 chest/Middle -> stretching/General  [smr] Roll Ball Pectorial Release
+gi gi_4463 legs/Quadriceps -> stretching/General  [smr] Roll Ball Peroneus
+gi gi_4473 legs/Quadriceps -> stretching/General  [smr] Roll Ball Piriformis
+gi gi_3568 legs/Quadriceps -> stretching/General  [smr] Roll Ball Piriformis Release
+gi gi_4474 legs/Quadriceps -> stretching/General  [smr] Roll Ball Piriformis (VERSION 2)
+gi gi_4466 legs/Quadriceps -> stretching/General  [smr] Roll Ball Popliteal
+gi gi_6766 legs/Quadriceps -> stretching/General  [smr] Roll Ball Posterior Tibialis (Single Leg) Side Lying on Floor
+gi gi_4476 legs/Hip Flexors -> stretching/General  [smr] Roll Ball Psoas - Abdominal Region
+gi gi_4479 abdominals/Upper -> stretching/General  [smr] Roll Ball Rectus Abdominis
+gi gi_4468 legs/Quadriceps -> stretching/General  [smr] Roll Ball Rectus Femoris
+gi gi_4489 back/Lats -> stretching/General  [smr] Roll Ball Rhomboid
+gi gi_4487 back/Lats -> stretching/General  [smr] Roll Ball Scapula Levator
+gi gi_4488 back/Lats -> stretching/General  [smr] Roll Ball Scapula Levator (VERSION 2)
+gi gi_6767 back/Lats -> stretching/General  [smr] Roll Ball Side Lying Scalene Muscles Activation
+gi gi_6768 back/Lats -> stretching/General  [smr] Roll Ball Side Lying Scalene Muscles Activation (side POV)
+gi gi_4471 legs/Quadriceps -> stretching/General  [smr] Roll Ball Tensor Fasciae Latae
+gi gi_4464 legs/Quadriceps -> stretching/General  [smr] Roll Ball Tibialis Anterior
+gi gi_4467 legs/Quadriceps -> stretching/General  [smr] Roll Ball Tibialis Posterior
+gi gi_4491 back/Lats -> stretching/General  [smr] Roll Ball Trapezius Lower
+gi gi_4492 back/Lats -> stretching/General  [smr] Roll Ball Trapezius Lower (VERSION 2)
+gi gi_4490 back/Lats -> stretching/General  [smr] Roll Ball Trapezius Upper
+gi gi_3570 back/Lats -> stretching/General  [smr] Roll Ball Upper Trapezius Release
+gi gi_2206 legs/Quadriceps -> stretching/General  [smr] Roll Calves
+gi gi_2209 legs/Quadriceps -> stretching/General  [smr] Roll Calves (Single Leg)
+gi gi_5377 chest/Middle -> stretching/General  [smr] Roll Chest Lying on Floor
+gi gi_5376 chest/Middle -> stretching/General  [smr] Roll Chest Opener Lying on Floor
+gi gi_5387 legs/Quadriceps -> stretching/General  [smr] Roll Erector Spinae Lying on Floor
+gi gi_5398 legs/Quadriceps -> stretching/General  [smr] Roll Foot
+gi gi_5373 forearms/Wrist Curls -> stretching/General  [smr] Roll Forearms Standing Against Wall
+gi gi_5378 chest/Middle -> stretching/General  [smr] Roll Front Shoulder and Chest Lying on Floor
+gi gi_5390 legs/Glutes -> stretching/General  [smr] Roll Glutes Sitting on Floor
+gi gi_5391 legs/Glutes -> stretching/General  [smr] Roll Glute Twist Lying on Floor
+gi gi_5392 legs/Glutes -> stretching/General  [smr] Roll Hamstrings and Glute Sitting on Floor
+gi gi_2203 legs/Hamstrings -> stretching/General  [smr] Roll Hamstrings Sitting on Floor
+gi gi_2202 legs/Quadriceps -> stretching/General  [smr] Roll Hip Stretch
+gi gi_2200 legs/Glutes -> stretching/General  [smr] Roll Hip Thrust
+gi gi_4599 legs/Hip Flexors -> stretching/General  [smr] Roll Iliospsoas
+gi gi_5388 back/Lats -> stretching/General  [smr] Roll Kneeling Upper Back Rotation
+gi gi_2949 back/Lats -> stretching/General  [smr] Roll Lat Foam Rolling
+gi gi_5383 back/Lats -> stretching/General  [smr] Roll Lower Back (Side) Lying on Floor
+gi gi_5382 back/Lats -> stretching/General  [smr] Roll Middle Back Lying on Floor
+gi gi_5372 back/Neck -> stretching/General  [smr] Roll Neck Decompress Lying on Floor
+gi gi_5371 back/Neck -> stretching/General  [smr] Roll Neck Rotation Lying on Floor
+gi gi_2948 chest/Middle -> stretching/General  [smr] Roll Pec Foam Rolling
+gi gi_5396 legs/Quadriceps -> stretching/General  [smr] Roll Peroneal Side Lying on Floor
+gi gi_5397 legs/Quadriceps -> stretching/General  [smr] Roll Peroneal (Single Leg) Side Lying on Floor
+gi gi_5389 legs/Quadriceps -> stretching/General  [smr] Roll Pigeon Stretch
+gi gi_5379 shoulders/Middle -> stretching/General  [smr] Roll Posterior Shoulder Lying on Floor
+gi gi_5393 legs/Quadriceps -> stretching/General  [smr] Roll Quadriceps (Vastus Lateralis) Lying on Floor
+gi gi_2204 legs/Quadriceps -> stretching/General  [smr] Roll Rectus Femoris
+gi gi_2201 legs/Quadriceps -> stretching/General  [smr] Roll Recumbent Hip External Rotator and Hip Extensor Stretch (Crossed Leg)
+gi gi_3567 legs/Quadriceps -> stretching/General  [smr] Roll Recumbent Hip External Rotator and Hip Extensor Stretch (CrossedLeg)
+gi gi_5381 back/Lats -> stretching/General  [smr] Roll Rhomboids
+gi gi_5380 shoulders/Middle -> stretching/General  [smr] Roll Shoulder Back Rotation Lying on Floor
+gi gi_5385 back/Lats -> stretching/General  [smr] Roll Shoulder Blade Reach Lying on Floor
+gi gi_4598 legs/Quadriceps -> stretching/General  [smr] Roll Tensor Fasciae Latae
+gi gi_5384 back/Lats -> stretching/General  [smr] Roll Thoracic Spine Lying on Floor
+gi gi_5394 legs/Quadriceps -> stretching/General  [smr] Roll Tibialis Anterior
+gi gi_5395 legs/Quadriceps -> stretching/General  [smr] Roll Tibialis Anterior (Single Leg) Lying on Floor
+gi gi_3566 back/Lats -> stretching/General  [smr] Roll Upper Back
+gi gi_2111 abdominals/Upper -> stretching/General  [stretch] Rotating Stomach Stretch
+gi gi_1982 shoulders/Middle -> stretching/General  [stretch] Rotation Shoulder Stretch
+gi gi_4219 legs/Calves -> legs/Quadriceps  [heelsquat] Safety Bar Elevated Heel Squat
+gi gi_8615 chest/Middle -> stretching/General  [stretch] Seated Alternate Dynamic Chest Stretch on a Chair
+gi gi_2998 legs/Quadriceps -> stretching/General  [stretch] Seated Ankle Stretch
+gi gi_1937 legs/Quadriceps -> stretching/General  [stretch] Seated Bent Knee To Chest Buttock Stretch
+gi gi_1390 legs/Calves -> stretching/General  [stretch] Seated Calf Stretch
+gi gi_4928 legs/Calves -> stretching/General  [stretch] Seated Calf Stretch (Version 2)
+gi gi_4554 legs/Glutes -> stretching/General  [stretch] Seated Glute Stretch (VERSION 2)
+gi gi_1169 legs/Quadriceps -> stretching/General  [stretch] Seated Groin Stretch
+gi gi_7310 legs/Hamstrings -> stretching/General  [stretch] Seated Hamstring Stretch with Chair
+gi gi_1918 legs/Quadriceps -> stretching/General  [stretch] Seated Hip External Rotator And Hip Extensor Stretch
+gi gi_1938 legs/Quadriceps -> stretching/General  [stretch] Seated Hip Stretch With Slightly Bent Leg
+gi gi_3509 legs/Quadriceps -> abdominals/Lower  [legraise] Seated In Out Leg Raise on Floor
+gi gi_1914 legs/Adductors -> stretching/General  [stretch] Seated Knee Flexor And Hip Adductor Stretch
+gi gi_1915 legs/Quadriceps -> stretching/General  [stretch] Seated Knee Flexor Stretch
+gi gi_1934 legs/Quadriceps -> stretching/General  [stretch] Seated Knee Up Extended Rotation Stretch
+gi gi_1933 legs/Quadriceps -> stretching/General  [stretch] Seated Knee Up Rotation Stretch
+gi gi_2114 abdominals/Lower -> stretching/General  [stretch] Seated Lower Trunk Lateral Flexor Stretch
+gi gi_8369 chest/Middle -> stretching/General  [stretch] Seated Over Head Straight Arm Stretch
+gi gi_2100 legs/Quadriceps -> stretching/General  [stretch] Seated Quadriceps Stretch
+gi gi_1975 shoulders/Middle -> stretching/General  [stretch] Seated Shoulder Flexor Depresor Retractor Stretch
+gi gi_3564 chest/Middle -> stretching/General  [stretch] Seated Shoulder Flexor Depresor Retractor Stretch Bent Knee
+gi gi_8633 shoulders/Middle -> shoulders/Front  [press-sub] Seated Shoulder Press on a Chair
+gi gi_0692 legs/Hamstrings -> stretching/General  [stretch] Seated Single Leg Hamstring Stretch
+gi gi_8946 legs/Quadriceps -> abdominals/Lower  [legraise] Seated Single Leg Raise
+gi gi_0693 legs/Calves -> stretching/General  [stretch] Seated Straight Leg Calf Stretch
+gi gi_1963 legs/Quadriceps -> stretching/General  [stretch] Seated Toe Extensor And Foot Everter Stretch
+gi gi_1964 legs/Quadriceps -> stretching/General  [stretch] Seated Toe Extensor And Foot Inverter Stretch
+gi gi_1962 legs/Quadriceps -> stretching/General  [stretch] Seated Toe Extensor Stretch
+gi gi_1966 legs/Quadriceps -> stretching/General  [stretch] Seated Toe Flexor And Foot Everter Stretch
+gi gi_1967 legs/Quadriceps -> stretching/General  [stretch] Seated Toe Flexor And Foot Inverter Stretch
+gi gi_1965 legs/Quadriceps -> stretching/General  [stretch] Seated Toe Flexor Stretch
+gi gi_2093 forearms/Wrist Curls -> stretching/General  [stretch] Seated Wrist Ulnar Deviator And Flexor Stretch
+gi gi_2994 legs/Calves -> stretching/General  [smr] Self Anterior Calf Foam Rolling
+gi gi_2103 legs/Quadriceps -> stretching/General  [stretch] Separation Between Fingers Stretch
+gi gi_2097 forearms/Wrist Curls -> stretching/General  [stretch] Separation Finger Stretch
+gi gi_2775 chest/Middle -> warmup/General  [articulation] Shoulder - Abduction - Articulations
+gi gi_2776 chest/Middle -> warmup/General  [articulation] Shoulder - Adduction - Articulations
+gi gi_1979 shoulders/Middle -> stretching/General  [stretch] Shoulder Adductor Elevator And Protractor Stretch
+gi gi_2087 shoulders/Middle -> stretching/General  [stretch] Shoulder Adductor Protractor And Elevator Stretch
+gi gi_3516 shoulders/Middle -> stretching/General  [stretch] Shoulder Backbend Stretch
+gi gi_2777 chest/Middle -> warmup/General  [articulation] Shoulder - Extension - Articulations
+gi gi_1978 shoulders/Middle -> stretching/General  [stretch] Shoulder Extensor Adductor And Retractor Stretch
+gi gi_2778 chest/Middle -> warmup/General  [articulation] Shoulder - Flexion - Articulations
+gi gi_2779 back/Lats -> warmup/General  [articulation] Shoulder - Lateral Rotation (External Rotation) - Articulations
+gi gi_2780 chest/Middle -> warmup/General  [articulation] Shoulder - Medial Rotation (Internal Rotation) - Articulations
+gi gi_0698 shoulders/Middle -> shoulders/Front  [press-sub] Shoulder Press (with band)
+gi gi_1488 shoulders/Middle -> stretching/General  [stretch] Shoulder Stretch Behind the Back
+gi gi_2088 shoulders/Middle -> stretching/General  [stretch] Shoulder Stretch With Towel Behind The Back
+gi gi_2781 back/Lats -> warmup/General  [articulation] Shoulder - Transverse Abduction - Articulations
+gi gi_2782 chest/Middle -> warmup/General  [articulation] Shoulder - Transverse Adduction - Articulations
+gi gi_2783 back/Lats -> warmup/General  [articulation] Shoulder - Transverse Extension - Articulations
+gi gi_2784 chest/Middle -> warmup/General  [articulation] Shoulder - Transverse Flexion - Articulations
+gi gi_1899 legs/Adductors -> stretching/General  [stretch] Side Lunge Adductor Stretch
+gi gi_0711 legs/Quadriceps -> stretching/General  [stretch] Side Lunge Stretch
+gi gi_0719 abdominals/Obliques -> stretching/General  [stretch] Side Stretch Crunch
+gi gi_1886 legs/Calves -> stretching/General  [stretch] Single Heel Drop Achilles Stretch
+gi gi_1925 legs/Calves -> stretching/General  [stretch] Single Heel Drop Calf Stretch
+gi gi_1955 legs/Quadriceps -> stretching/General  [stretch] Single Lean Back Quadriceps Stretch
+gi gi_4931 legs/Quadriceps -> stretching/General  [stretch] Single Leg Calve Stretch
+gi gi_4309 legs/Quadriceps -> stretching/General  [stretch] Single Leg Stretch (bent knee)
+gi gi_4310 legs/Quadriceps -> stretching/General  [stretch] Single Straight Leg Stretch
+gi gi_1940 legs/Quadriceps -> stretching/General  [stretch] Sitting Foot To Chest Buttocks Stretch
+gi gi_2118 abdominals/Obliques -> stretching/General  [stretch] Sitting Lateral Side Stretch
+gi gi_1951 legs/Quadriceps -> stretching/General  [stretch] Sitting One Leg External Stretch
+gi gi_1948 legs/Quadriceps -> stretching/General  [stretch] Sitting Rotational Hip Stretch
+gi gi_1972 shoulders/Middle -> stretching/General  [stretch] Sitting Shoulders Stretch On Bench
+gi gi_3634 chest/Middle -> stretching/General  [stretch] Sitting Sumo with Arms-Up Mobility Stretch
+gi gi_1889 legs/Quadriceps -> stretching/General  [stretch] Sitting Toe Pull Achilles Stretch
+gi gi_2102 legs/Calves -> stretching/General  [stretch] Sitting Toe Pull Calf Stretch
+gi gi_1902 legs/Adductors -> stretching/General  [stretch] Sitting Wide Leg Adductor Stretch
+gi gi_3616 legs/Quadriceps -> triceps/Compound  [closegrip] Sled 45 degrees Narrow Stance Leg Press
+gi gi_1575 legs/Quadriceps -> triceps/Compound  [closegrip] Sled 45° Narrow Stance Leg Press
+gi gi_10863 shoulders/Middle -> shoulders/Front  [press-sub] Smith Seated Single Arm Neutral Grip Shoulders Press
+gi gi_1224 shoulders/Middle -> shoulders/Front  [press-sub] Smith Standing Shoulder Press
+gi gi_0776 chest/Middle -> fullbody/General  [oly] Snatch Pull
+gi gi_2785 back/Lats -> warmup/General  [articulation] Spine (Lumbar) - Extension - Articulations
+gi gi_2786 abdominals/Upper -> warmup/General  [articulation] Spine (Lumbar) - Flexion - Articulations
+gi gi_2787 legs/Quadriceps -> warmup/General  [articulation] Spine (Lumbar) - Lateral Flexion - Articulations
+gi gi_2788 legs/Quadriceps -> warmup/General  [articulation] Spine (Lumbar) - Rotation - Articulations
+gi gi_4315 legs/Quadriceps -> stretching/General  [stretch] Spine Stretch Forward
+gi gi_1893 legs/Quadriceps -> stretching/General  [stretch] Squatting Achilles Stretch
+gi gi_1961 legs/Quadriceps -> stretching/General  [stretch] Squatting Toe Stretch
+gi gi_2110 abdominals/Upper -> stretching/General  [stretch] Standing Abs Rotation Stretch
+gi gi_1888 legs/Quadriceps -> stretching/General  [stretch] Standing Achilles Stretch
+gi gi_3473 legs/Quadriceps -> stretching/General  [stretch] Standing Balance Outer Hip Stretch
+gi gi_3504 legs/Quadriceps -> stretching/General  [stretch] Standing Balance Quadriceps Stretch
+gi gi_1900 legs/Adductors -> stretching/General  [stretch] Standing Bent Knee Hip Adductor Stretch
+gi gi_5557 chest/Middle -> stretching/General  [stretch] Standing Chest Stretch against Door
+gi gi_1783 chest/Middle -> stretching/General  [stretch] Standing Chest Stretch (with Training Wall Bars)
+gi gi_1398 legs/Calves -> stretching/General  [stretch] Standing Gastrocnemius Calf Stretch
+gi gi_1887 legs/Calves -> stretching/General  [stretch] Standing Heel Back Achilles Stretch
+gi gi_1912 legs/Hamstrings -> stretching/General  [stretch] Standing High Leg Bent Knee Hamstring Stretch
+gi gi_1941 legs/Adductors -> stretching/General  [stretch] Standing Hip Adduction Stretch
+gi gi_0792 legs/Quadriceps -> legs/Glutes  [hipext-sub] Standing Hip Extension (bent knee)
+gi gi_2737 legs/Quadriceps -> legs/Glutes  [hipext-sub] Standing Hip Extension (straight leg)
+gi gi_1949 legs/Hip Flexors -> stretching/General  [stretch] Standing Hip Flexor Stretch
+gi gi_1877 legs/Adductors -> stretching/General  [stretch] Standing Hip Out Adductor Stretch
+gi gi_1942 legs/Quadriceps -> stretching/General  [stretch] Standing Iliotibial Stretch
+gi gi_1811 legs/Quadriceps -> stretching/General  [stretch] Standing Knee To Chest Stretch
+gi gi_2117 abdominals/Obliques -> stretching/General  [stretch] Standing Lateral Side Stretch
+gi gi_2108 abdominals/Upper -> stretching/General  [stretch] Standing Lean Back Stomach Stretch
+gi gi_1878 legs/Abductors -> stretching/General  [stretch] Standing Leg Cross Abductor Stretch
+gi gi_1879 legs/Quadriceps -> stretching/General  [stretch] Standing Leg Resting Hip Stretch
+gi gi_1946 legs/Quadriceps -> stretching/General  [stretch] Standing Leg Tuck Hip Stretch
+gi gi_1881 legs/Abductors -> stretching/General  [stretch] Standing Leg Under Abductor Stretch
+gi gi_1897 legs/Adductors -> stretching/General  [stretch] Standing Leg Up Adductor Stretch
+gi gi_1910 legs/Hamstrings -> stretching/General  [stretch] Standing Leg Up Hamstring Stretch
+gi gi_1058 chest/Middle -> stretching/General  [stretch] Standing one arm chest stretch
+gi gi_1947 legs/Quadriceps -> stretching/General  [stretch] Standing Outer Hip Stretch
+gi gi_6772 legs/Quadriceps -> stretching/General  [stretch] Standing Peroneus Muscles Stretch
+gi gi_1225 shoulders/Middle -> shoulders/Front  [press-sub] Standing Plate Presses
+gi gi_1059 legs/Quadriceps -> stretching/General  [stretch] Standing Quadriceps Stretch
+gi gi_1896 legs/Adductors -> stretching/General  [stretch] Standing Raised Leg Hip Adductor Stretch
+gi gi_1917 legs/Hamstrings -> stretching/General  [stretch] Standing Reach Down Hamstring Crossed Legs Stretch
+gi gi_1974 shoulders/Middle -> stretching/General  [stretch] Standing Reverse Shoulder Stretch
+gi gi_1895 legs/Quadriceps -> stretching/General  [stretch] Standing Rotational Hip Stretch
+gi gi_1957 legs/Quadriceps -> stretching/General  [stretch] Standing Shin Stretch
+gi gi_6773 legs/Quadriceps -> stretching/General  [stretch] Standing Tibialis Anterior Stretch
+gi gi_1908 legs/Hamstrings -> stretching/General  [stretch] Standing Toe Down Hamstring Stretch
+gi gi_1958 legs/Quadriceps -> stretching/General  [stretch] Standing Toe Extensor Stretch
+gi gi_1968 legs/Quadriceps -> stretching/General  [stretch] Standing Toe Flexor Stretch
+gi gi_1885 legs/Quadriceps -> stretching/General  [stretch] Standing Toe Up Achilles Stretch
+gi gi_1924 legs/Calves -> stretching/General  [stretch] Standing Toe Up Calf Stretch
+gi gi_1909 legs/Hamstrings -> stretching/General  [stretch] Standing Toe Up Hamstring Stretch
+gi gi_1970 shoulders/Middle -> stretching/General  [stretch] Standing Upright Shoulders Stretch
+gi gi_1894 legs/Adductors -> stretching/General  [stretch] Standing Wide Knees Adductor Stretch
+gi gi_1904 legs/Adductors -> stretching/General  [stretch] Standing Wide Leg Adductor Stretch
+gi gi_5402 shoulders/Middle -> stretching/General  [stretch] Stick Lunge with Overhead Raise Stretch
+gi gi_5407 legs/Quadriceps -> stretching/General  [stretch] Stick Overhead Full Sumo Squat Stretch
+gi gi_5404 shoulders/Middle -> stretching/General  [stretch] Stick Pass Around Stretch
+gi gi_5401 chest/Middle -> stretching/General  [stretch] Stick Shoulders Stretch
+gi gi_5405 abdominals/Obliques -> stretching/General  [stretch] Stick Side Bend Stretch
+gi gi_5406 legs/Quadriceps -> stretching/General  [stretch] Stick Side to Front Bend Stretch
+gi gi_5403 abdominals/Obliques -> stretching/General  [stretch] Stick Standing Twist Stretch
+gi gi_5408 legs/Quadriceps -> stretching/General  [stretch] Stick Twist Lunge Stretch
+gi gi_1787 chest/Middle -> stretching/General  [stretch] Straight Arms Backward Chest Stretch
+gi gi_3114 legs/Quadriceps -> legs/Glutes  [kickback] Straight Leg Kickback (kneeling)
+gi gi_2733 forearms/Wrist Curls -> forearms/Grip  [grip-sub] StrongMan Apollons Axle
+gi gi_2713 shoulders/Middle -> shoulders/Front  [press-sub] StrongMan Iron Block Press
+gi gi_2719 shoulders/Middle -> shoulders/Front  [press-sub] StrongMan Viking Press
+gi gi_4825 chest/Middle -> stretching/General  [stretch] Superman Chest Stretch
+gi gi_1953 legs/Hip Flexors -> stretching/General  [stretch] Supported One Leg Standing Hip Flexor And Knee Extensor Stretch
+gi gi_1158 legs/Quadriceps -> stretching/General  [stretch] Suspension Side Stretch
+gi gi_1928 legs/Quadriceps -> stretching/General  [stretch] Tibial Flexion Stretch On Wall Bar
+gi gi_1929 legs/Quadriceps -> stretching/General  [stretch] Tibial Stretch With Semi Flexed Knee
+gi gi_4220 forearms/Wrist Curls -> stretching/General  [smr] Tiger Tail Forearm
+gi gi_4221 legs/Hamstrings -> stretching/General  [smr] Tiger Tail Hamstring
+gi gi_4222 back/Neck -> stretching/General  [smr] Tiger Tail Neck
+gi gi_4223 legs/Quadriceps -> stretching/General  [smr] Tiger Tail Peroneal
+gi gi_1891 legs/Quadriceps -> stretching/General  [stretch] Toe Squat Stretch
+gi gi_7287 shoulders/Middle -> shoulders/Front  [press-sub] Trap Bar Overhead Press
+gi gi_3956 legs/Quadriceps -> stretching/General  [stretch] Twist Step Stretch
+gi gi_3623 legs/Quadriceps -> abdominals/Lower  [legraise] Vertical Leg Raise (on parallel bars) (VERSION 2)
+gi gi_2127 legs/Quadriceps -> abdominals/Lower  [legraise] Weighted Captains Chair Leg Raise
+gi gi_5529 shoulders/Middle -> shoulders/Front  [press-sub] Weighted Full Squat with Overhead Press
+gi gi_10388 shoulders/Middle -> shoulders/Front  [press-sub] Weighted Sandbag Military Press
+gi gi_5023 legs/Quadriceps -> abdominals/Lower  [legraise] Weighted Seated Leg Raise on Floor
+gi gi_3587 legs/Quadriceps -> abdominals/Lower  [legraise] Weighted Single Leg Lift
+gi gi_4175 shoulders/Middle -> shoulders/Front  [press-sub] Weighted Standing Shoulder Press
+gi gi_4807 chest/Middle -> triceps/Compound  [closegrip] Wide to Narrow Push-up
+gi gi_1604 legs/Quadriceps -> stretching/General  [stretch] World Greatest Stretch
+gi gi_4938 forearms/Wrist Curls -> warmup/General  [articulation] Wrist - Abduction - Articulations
+gi gi_2789 forearms/Wrist Curls -> warmup/General  [articulation] Wrist - Adduction - Articulations
+gi gi_2790 forearms/Wrist Curls -> warmup/General  [articulation] Wrist - Extension - Articulations
+gi gi_1849 forearms/Wrist Curls -> stretching/General  [stretch] Wrist Extensor Stretch
+gi gi_2791 forearms/Wrist Curls -> warmup/General  [articulation] Wrist - Flexion - Articulations
+gi gi_1850 forearms/Wrist Curls -> stretching/General  [stretch] Wrist Flexor Stretch
+gi gi_1823 forearms/Wrist Curls -> stretching/General  [stretch] Wrist Radial Deviator And Extensor Stretch
+gi gi_1824 forearms/Wrist Curls -> stretching/General  [stretch] Wrist Radial Deviator And Flexor Stretch
+gi gi_1822 forearms/Wrist Curls -> stretching/General  [stretch] Wrist Ulnar Deviator And Extensor Stretch
+gi gi_1825 forearms/Wrist Curls -> stretching/General  [stretch] Wrist Ulnar Deviator And Flexor Stretch
