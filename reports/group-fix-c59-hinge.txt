@@ -1,0 +1,18 @@
+# c59 hinge-fix — 16 trainer-biomechanics moves
+# Rules: RDL family → Hamstrings; pull-through / generic hip hinge → Glutes (deadlift pattern → таз)
+gi_10047 | Barbell Split Stance RDL | legs/Quadriceps → legs/Hamstrings | RDL (split stance) = hip hinge → hamstrings
+gi_3652 | Trap Bar Split Stance RDL | legs/Quadriceps → legs/Hamstrings | RDL (trap bar, split stance) = hip hinge → hamstrings
+gi_3651 | Dumbbell RDL Death March | legs/Quadriceps → legs/Hamstrings | RDL death march (single-leg hinge) → hamstrings
+gi_4971 | Bodyweight Single Leg RDL | legs/Quadriceps → legs/Hamstrings | single-leg RDL = hip hinge → hamstrings
+bf_Good-morning | Good-morning | back/Lower Back → legs/Hamstrings | good morning = hip hinge → hamstrings (ExRx; was back/Lower Back)
+gi_3918 | Landmine Single Leg Landmine RDL | back/Lats → legs/Hamstrings | landmine single-leg RDL = hip hinge → hamstrings (was back/Lats)
+gi_1157 | Suspension Hip Hinge | legs/Quadriceps → legs/Glutes | hip hinge drill (deadlift pattern) → glutes
+gi_4605 | PVC Hip Hinge | legs/Quadriceps → legs/Glutes | hip hinge drill (deadlift pattern) → glutes
+gi_2324 | Cable Straight Legs Pull Through (with rope) | legs/Quadriceps → legs/Glutes | pull-through = hip extension → glutes
+gi_3352 | Cable Kneeling Pull Through | legs/Quadriceps → legs/Glutes | pull-through = hip extension → glutes
+gi_5837 | Resistance Band Pull Through | legs/Quadriceps → legs/Glutes | pull-through = hip extension → glutes
+gv_0196 | cable pull through (with rope) | legs/Quadriceps → legs/Glutes | pull-through = hip extension → glutes
+gv_0991 | band pull through | legs/Quadriceps → legs/Glutes | pull-through = hip extension → glutes
+gv_2808 | dumbbell sumo pull through | legs/Quadriceps → legs/Glutes | pull-through = hip extension → glutes
+gi_1087 | Suspension Pull Through | back/Lats → legs/Glutes | suspension pull-through = hip extension → glutes (was back/Lats)
+bf_cable-pull-through | Cable Pull Through | legs/Hamstrings → legs/Glutes | pull-through = hip extension → glutes (was Hamstrings; ExRx: gluteus maximus; deadlift pattern → таз)

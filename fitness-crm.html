@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c58" />
+<meta name="dk-build" content="c59" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2202,7 +2202,7 @@
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c58</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c59</p>
             </div>
           </div>
 
@@ -4644,7 +4644,7 @@
       let _exerciseDbLoaded = false;
       // Bump EXERCISE_DB_BUST when exercise-db.json changes — defeats SW/browser
       // cache-first staleness so reseed always unpacks the deployed dataset.
-      const EXERCISE_DB_BUST = 'v49';
+      const EXERCISE_DB_BUST = 'v50';
       async function loadExerciseDbExternal() {
         try {
           const resp = await fetch('exercise-db.json?v=' + EXERCISE_DB_BUST);
@@ -5565,10 +5565,10 @@
     //      + PG "General" subgroups removed + technique fields added
     // v4 = new folder_path structure (no "General" subgroup, no equipment level)
     // v3 = original 1265-exercise seed
-    const v5Flag = await db.get('settings', 'seeded_exercise_base_v93');
+    const v5Flag = await db.get('settings', 'seeded_exercise_base_v94');
     if (!v5Flag) {
       force = true;
-      console.info('[seed] v93 flag missing — forcing re-seed of exercise_base (c58: taxonomy v2 — trainer-grade order across all groups, roups for all 5623, deadlift→glutes / RDL→hamstrings / hyperextension→back per trainer rules)');
+      console.info('[seed] v94 flag missing — forcing re-seed of exercise_base (c59: hinge-fix — RDL family → hamstrings, pull-through & hip-hinge family → glutes per trainer rules)');
     }
     const current = await db.count('exercise_base');
     if (current > 0 && !force) {
@@ -5597,7 +5597,7 @@
     }
     if (force) await db.clear('exercise_base');
     await db.bulkPut('exercise_base', exercises);
-    await db.put('settings', { key: 'seeded_exercise_base_v93', value: true });
+    await db.put('settings', { key: 'seeded_exercise_base_v94', value: true });
     console.info(`[seed] injected ${exercises.length} exercises into exercise_base (bf=${srcCount.burnfit} gv=${srcCount.gymvisual} gi=${srcCount.gymimpulse})`);
     return exercises.length;
   }
@@ -23818,7 +23818,7 @@ document.addEventListener('DOMContentLoaded', function () {
      * Firestore storage quota. The cloud mirrors USER data only; restore
      * re-seeds references locally if a store came back empty. */
     var REF_STORES = ['exercise_base', 'food_database'];
-    var SEED_FLAGS = ['seeded_exercise_base_v93', 'seeded_food_db_v54'];
+    var SEED_FLAGS = ['seeded_exercise_base_v94', 'seeded_food_db_v54'];
     /* c26: /portal_shares is public-read (trainee portal opens WITHOUT sign-in)
      * and open-write with a size guard (trainer uploads a share even when not
      * signed in; doc ids are unguessable 18-char hashes). */
@@ -25107,7 +25107,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 58; /* numeric part of dk-build c58 */
+  var RUNNING = 59; /* numeric part of dk-build c59 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

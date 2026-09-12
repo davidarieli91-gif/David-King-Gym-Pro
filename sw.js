@@ -38,7 +38,9 @@
 // v82: i18n audit — trilingual render, RU tails, dict 1262 keys, seed v90 (c55)
 // v83: i18n dict loader fixed for vite build (data:URI mangle killed dictionaries on Pages) + dicts precached, seed v91 (c56)
 // v84: taxonomy order restored (208 group moves, explicit subgroups, seed v92, c57)
-const CACHE_NAME = 'dk-gym-v85'; // v85: taxonomy v2 — 800+ group fixes, seed v93 (c58)
+// v85: taxonomy v2 — 800+ group fixes, seed v93 (c58)
+// v86: hinge-fix — RDL family → hamstrings, pull-through/hip-hinge family → glutes, seed v94 (c59)
+const CACHE_NAME = 'dk-gym-v86'; // v86: hinge-fix, seed v94 (c59)
 const APP_SHELL = [
   './',
   './index.html',
