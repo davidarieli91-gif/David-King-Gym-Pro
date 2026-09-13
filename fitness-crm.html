@@ -25184,8 +25184,15 @@ document.addEventListener('DOMContentLoaded', function () {
              precache (that mixed state blanked every new screen's labels). */
           try {
             if (reg.waiting) reg.waiting.postMessage('SKIP_WAITING');
-            reg.addEventListener('waiting', function (e) {
-              if (e.target && e.target.postMessage) e.target.postMessage('SKIP_WAITING');
+            reg.addEventListener('waiting', function () {
+              if (reg.waiting) reg.waiting.postMessage('SKIP_WAITING');
+            });
+            reg.addEventListener('updatefound', function () {
+              var w = reg.installing;
+              if (!w) return;
+              w.addEventListener('statechange', function () {
+                if (w.state === 'installed' && navigator.serviceWorker.controller) w.postMessage('SKIP_WAITING');
+              });
             });
           } catch (e) { /* noop */ }
           var hadController = !!navigator.serviceWorker.controller;
