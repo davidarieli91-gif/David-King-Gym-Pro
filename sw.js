@@ -41,7 +41,8 @@
 // v85: taxonomy v2 — 800+ group fixes, seed v93 (c58)
 // v86: hinge-fix — RDL family → hamstrings, pull-through/hip-hinge family → glutes, seed v94 (c59)
 // v87: subgroup pass — hammer→brachioradialis / reverse→brachialis + 35 fixes, muscle kept on source switch, seed v95 (c60)
-const CACHE_NAME = 'dk-gym-v107'; // v107: c80 — Tools screen (sidebar+bottom nav after Nutrition): MuscleWiki-style Calorie calculator (Harris-Benedict, activity, goal+weekly slider, ∓10% cards, metric/imperial), Macro calculator (preset splits 40/30/30|20/40/40|30/40/30|5/25/70, meals/day, per-meal strip, copy, use-calorie-target bridge), 1RM calculator (Brzycki, load-zone table Warm-up/Volume/Strength/Peak, copy chart); localStorage persistence + i18n RU/HE/EN; meta dk-build repaired (c79 left c78)
+// v108: c81 — mixed-cache blank labels fixed: i18n/*.json now NETWORK-FIRST, waiting SW auto-activates (SKIP_WAITING) + one guarded controllerchange reload, applyI18n keeps default text when a key is missing
+const CACHE_NAME = 'dk-gym-v108'; // v107: c80 — Tools screen (sidebar+bottom nav after Nutrition): MuscleWiki-style Calorie calculator (Harris-Benedict, activity, goal+weekly slider, ∓10% cards, metric/imperial), Macro calculator (preset splits 40/30/30|20/40/40|30/40/30|5/25/70, meals/day, per-meal strip, copy, use-calorie-target bridge), 1RM calculator (Brzycki, load-zone table Warm-up/Volume/Strength/Peak, copy chart); localStorage persistence + i18n RU/HE/EN; meta dk-build repaired (c79 left c78)
 // v104: c77 — UI sizes can no longer change themselves (zoom-based gif/food/cards, wheel/touch slider guards) + hard pre-login lock (Add Client included) + header theme quick menu with all 33 themes
 // v103: c76 — Exercise DB tab = exact Quick Pick copy (star/eye/+ cards, favorites/recent tabs, View grouping, localized map tabs)
 // v102: c75 — 3D atlas 1.5x + Settings ▸ UI sizes (atlas slider, bodymap/exercise-panel fixes) + Exercise DB tab rebuilt as picker-style browse
@@ -122,6 +123,26 @@ self.addEventListener('fetch', (event) => {
         return res;
       }).catch(() =>
         caches.match(req).then((cached) => cached || caches.match('./index.html'))
+      )
+    );
+    return;
+  }
+
+  // c81: dictionaries / small JSON — NETWORK-FIRST. They gate the labels of
+  // new screens; stale-while-revalidate kept serving an old dict against the
+  // new HTML for a whole release cycle (every new label rendered blank until
+  // the waiting SW finally activated).
+  const isDict = /\.json($|\?)/i.test(url.pathname) || url.pathname.indexOf('/src/i18n/') !== -1;
+  if (isDict) {
+    event.respondWith(
+      fetch(req).then((res) => {
+        if (res.ok) {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
+        }
+        return res;
+      }).catch(() =>
+        caches.match(req).then((cached) => cached || Response.error())
       )
     );
     return;

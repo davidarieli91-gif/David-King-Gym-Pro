@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c80" />
+<meta name="dk-build" content="c81" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2536,7 +2536,7 @@ body.auth-locked #app > .fixed.inset-0:not(.hidden) { pointer-events: none !impo
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c80</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c81</p>
             </div>
           </div>
 
@@ -24628,14 +24628,41 @@ loadTexture();
 
   /** Master dictionary. Missing keys fall back to EN, then to the key itself. */
   var I18N = window.__I18N__ || { en: {}, ru: {}, he: {} };
+  /* c81: adopt a freshly fetched dictionary whenever it is richer than the
+     running one. The old guard only adopted when the running dict was EMPTY,
+     so a stale precached dict (mixed SW cache right after a release) kept
+     blocking the new keys forever — every key it never saw rendered blank. */
+  function __dkCountDictKeys(o) {
+    var n = 0;
+    (function walk(x) {
+      if (!x || typeof x !== 'object') return;
+      Object.keys(x).forEach(function (k) {
+        n++;
+        if (x[k] && typeof x[k] === 'object') walk(x[k]);
+      });
+    })(o);
+    return n;
+  }
+  function dkAdoptFreshDict() {
+    try {
+      var fresh = window.__I18N__;
+      if (!fresh) return false;
+      if (__dkCountDictKeys(fresh.ru || {}) > __dkCountDictKeys(I18N.ru || {}) ||
+          __dkCountDictKeys(fresh.en || {}) > __dkCountDictKeys(I18N.en || {})) {
+        I18N.en = fresh.en; I18N.ru = fresh.ru; I18N.he = fresh.he;
+        return true;
+      }
+    } catch (e) { /* noop */ }
+    return false;
+  }
   /* c55: i18n.js now loads the JSON dicts via fetch (async). When they arrive
      it dispatches 'dk:i18n-ready' — copy them in and re-apply the current
      language so late-loaded keys reach the DOM (fixes empty t() on engines
      where JSON module import is rejected). */
   document.addEventListener('dk:i18n-ready', function () {
     try {
-      if (window.__I18N__ && !Object.keys(I18N.ru || {}).length) {
-        I18N.en = window.__I18N__.en; I18N.ru = window.__I18N__.ru; I18N.he = window.__I18N__.he;
+      /* c81: adopt whenever the fetched dict is richer (was: only when empty) */
+      if (window.__I18N__ && dkAdoptFreshDict()) {
         if (typeof applyI18n === 'function' && SUPPORTED_LANGS.includes(_lang)) applyI18n(_lang);
       }
     } catch (e) { console.warn('[i18n] late apply failed', e); }
@@ -24648,9 +24675,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const m = document.getElementById(mid);
     if (m) document.body.appendChild(m);
   });
-  if (window.__I18N__ && !Object.keys(I18N.ru || {}).length) {
-    I18N.en = window.__I18N__.en; I18N.ru = window.__I18N__.ru; I18N.he = window.__I18N__.he;
-  }
+  dkAdoptFreshDict(); /* c81: richer dict wins (was: only when empty) */
 }, true);;
 
   /** Current active language (defaults to 'en' until applyLang is called). */
@@ -24700,23 +24725,24 @@ document.addEventListener('DOMContentLoaded', function () {
       const key = el.getAttribute('data-i18n');
       // Support data-i18n-vars attribute for interpolation: data-i18n-vars="3"
       const varsAttr = el.getAttribute('data-i18n-vars');
-      if (varsAttr) {
-        el.textContent = t(key, { n: varsAttr });
-      } else {
-        el.textContent = t(key);
-      }
+      const str = varsAttr ? t(key, { n: varsAttr }) : t(key);
+      // c81: a key the running dict doesn't know yet (mixed SW cache right
+      // after a release) must never blank a label — keep the default text.
+      if (str) el.textContent = str;
     });
 
     // placeholders
     document.querySelectorAll('[data-i18n-ph]').forEach(el => {
       const key = el.getAttribute('data-i18n-ph');
-      el.setAttribute('placeholder', t(key));
+      const str = t(key);
+      if (str) el.setAttribute('placeholder', str); /* c81: keep default on miss */
     });
 
     // html content (rare — used for technique descriptions with markdown later)
     document.querySelectorAll('[data-i18n-html]').forEach(el => {
       const key = el.getAttribute('data-i18n-html');
-      el.innerHTML = t(key);
+      const str = t(key);
+      if (str) el.innerHTML = str; /* c81: keep default on miss */
     });
 
     // arbitrary attributes: data-i18n-attr="title:common.save,aria-label:common.save"
@@ -24724,7 +24750,10 @@ document.addEventListener('DOMContentLoaded', function () {
       const spec = el.getAttribute('data-i18n-attr');
       spec.split(',').forEach(pair => {
         const [attr, key] = pair.split(':').map(s => s.trim());
-        if (attr && key) el.setAttribute(attr, t(key));
+        if (attr && key) {
+          const str = t(key);
+          if (str) el.setAttribute(attr, str); /* c81: keep default on miss */
+        }
       });
     });
 
@@ -25150,6 +25179,23 @@ document.addEventListener('DOMContentLoaded', function () {
       window.addEventListener('load', function() {
         navigator.serviceWorker.register('sw.js').then(function(reg) {
           console.log('[PWA] Service Worker registered:', reg.scope);
+          /* c81: never sit on a waiting update — activate it immediately so the
+             new HTML cannot run for a whole release cycle against the old
+             precache (that mixed state blanked every new screen's labels). */
+          try {
+            if (reg.waiting) reg.waiting.postMessage('SKIP_WAITING');
+            reg.addEventListener('waiting', function (e) {
+              if (e.target && e.target.postMessage) e.target.postMessage('SKIP_WAITING');
+            });
+          } catch (e) { /* noop */ }
+          var hadController = !!navigator.serviceWorker.controller;
+          var reloaded = false;
+          navigator.serviceWorker.addEventListener('controllerchange', function () {
+            /* first install claims the page — nothing new to pick up */
+            if (!hadController || reloaded) return;
+            reloaded = true;
+            window.location.reload(); /* one clean pass on the consistent precache */
+          });
         }).catch(function(err) {
           console.warn('[PWA] SW registration failed:', err);
         });
@@ -26779,7 +26825,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 80; /* numeric part of dk-build c80 */
+  var RUNNING = 81; /* numeric part of dk-build c81 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
