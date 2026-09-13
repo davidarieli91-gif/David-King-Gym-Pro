@@ -1812,102 +1812,216 @@
       #theme-particles::after { animation: none !important; }
     }
 
-    /* ===== TEXTURE EFFECTS (overlay on any theme) — ENHANCED =====
-       Textures now apply to BOTH the background AND panels/cards/buttons
-       for a much more visible effect. Opacity slider has full range. */
-    :root {
-      --texture: none;
-      --texture-opacity: 0.15;
-      --texture-size: auto;
-      --texture-repeat: repeat;
-    }
-    /* Background layer */
-    body::after {
-      content: '';
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      pointer-events: none; z-index: 0;
-      opacity: var(--texture-opacity);
-      background-image: var(--texture, none);
-      background-size: var(--texture-size, auto);
-      background-repeat: var(--texture-repeat, repeat);
-    }
-    /* Panel/card layer — textures also appear ON panels, not just behind them */
-    body[data-texture]:not([data-texture="none"]) .bg-surface,
-    body[data-texture]:not([data-texture="none"]) .bg-surface-2 {
-      background-image: var(--texture, none), linear-gradient(rgb(var(--c-surface)), rgb(var(--c-surface)));
-      background-size: var(--texture-size, auto), 100% 100%;
-      background-repeat: var(--texture-repeat, repeat), no-repeat;
-      background-blend-mode: overlay, normal;
-    }
-    body[data-texture]:not([data-texture="none"]) .bg-surface-2 {
-      background-image: var(--texture, none), linear-gradient(rgb(var(--c-surface-2)), rgb(var(--c-surface-2)));
-      background-size: var(--texture-size, auto), 100% 100%;
-      background-repeat: var(--texture-repeat, repeat), no-repeat;
-      background-blend-mode: overlay, normal;
-    }
-    /* Glass effect — frosted glass overlay on panels */
-    body[data-texture="glass"] {
-      --texture: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 50%, rgba(255,255,255,0.12) 100%);
-      --texture-size: 100% 100%; --texture-repeat: no-repeat; --texture-opacity: 0.4;
-    }
-    body[data-texture="glass"] .bg-surface,
-    body[data-texture="glass"] .bg-surface-2 {
-      backdrop-filter: blur(6px) saturate(1.3);
-      -webkit-backdrop-filter: blur(6px) saturate(1.3);
-    }
-    /* Plastic effect — glossy rounded sheen */
-    body[data-texture="plastic"] {
-      --texture: radial-gradient(ellipse at 30% 15%, rgba(255,255,255,0.18), transparent 55%), radial-gradient(ellipse at 70% 85%, rgba(255,255,255,0.1), transparent 45%);
-      --texture-size: 100% 100%; --texture-repeat: no-repeat; --texture-opacity: 0.6;
-    }
-    body[data-texture="plastic"] .bg-surface,
-    body[data-texture="plastic"] .bg-surface-2 {
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(0,0,0,0.1);
-    }
-    /* Metal effect — brushed steel lines */
-    body[data-texture="metal"] {
-      --texture: linear-gradient(90deg, rgba(200,210,230,0.1) 0%, rgba(160,170,190,0.15) 25%, rgba(200,210,230,0.08) 50%, rgba(140,150,170,0.12) 75%, rgba(200,210,230,0.1) 100%);
-      --texture-size: 3px 100%; --texture-repeat: repeat; --texture-opacity: 0.5;
-    }
-    body[data-texture="metal"] .bg-surface,
-    body[data-texture="metal"] .bg-surface-2 {
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
-    }
-    /* Wood effect — natural grain pattern */
-    body[data-texture="wood"] {
-      --texture: repeating-linear-gradient(90deg, rgba(120,80,40,0.15) 0px, rgba(140,100,50,0.1) 2px, rgba(120,80,40,0.15) 4px, rgba(100,70,30,0.12) 8px, rgba(130,90,45,0.1) 12px);
-      --texture-size: auto; --texture-repeat: repeat; --texture-opacity: 0.4;
-    }
-    body[data-texture="wood"] .bg-surface,
-    body[data-texture="wood"] .bg-surface-2 {
-      box-shadow: inset 0 1px 0 rgba(160,120,60,0.1);
-    }
-    /* Gloss effect — high-shine top reflection */
-    body[data-texture="gloss"] {
-      --texture: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 35%, transparent 65%, rgba(255,255,255,0.05) 100%);
-      --texture-size: 100% 100%; --texture-repeat: no-repeat; --texture-opacity: 0.6;
-    }
-    body[data-texture="gloss"] .bg-surface,
-    body[data-texture="gloss"] .bg-surface-2 {
-      box-shadow: inset 0 2px 4px rgba(255,255,255,0.06);
-    }
-    /* Mosaic effect — geometric tile pattern */
-    body[data-texture="mosaic"] {
-      --texture: linear-gradient(45deg, rgba(128,128,255,0.12) 25%, transparent 25%, transparent 75%, rgba(128,128,255,0.12) 75%), linear-gradient(45deg, rgba(255,128,128,0.1) 25%, transparent 25%, transparent 75%, rgba(255,128,128,0.1) 75%);
-      --texture-size: 24px 24px; --texture-repeat: repeat; --texture-opacity: 0.3;
-      background-position: 0 0, 12px 12px;
-    }
-    /* Brick effect — red brick wall pattern */
-    body[data-texture="brick"] {
-      --texture: linear-gradient(335deg, rgba(180,80,60,0.14) 23%, transparent 23%), linear-gradient(155deg, rgba(180,80,60,0.14) 23%, transparent 23%), linear-gradient(335deg, rgba(180,80,60,0.14) 54%, transparent 54%), linear-gradient(155deg, rgba(180,80,60,0.14) 54%, transparent 54%);
-      --texture-size: 50px 25px; --texture-repeat: repeat; --texture-opacity: 0.35;
-    }
-    body[data-texture="brick"] .bg-surface,
-    body[data-texture="brick"] .bg-surface-2 {
-      box-shadow: inset 0 1px 0 rgba(180,80,60,0.08);
-    }
+    /* ===== TEXTURE EFFECTS v2 (c79) — professional overlays on any theme =====
+   Architecture: [data-tex] rules are shared by the body (live overlay) and by
+   .tex-swatch preview tiles. Opacity = user override (set inline on body by the
+   slider) falling back to a per-effect default. Lives on a dedicated
+   #dk-tex-overlay div so theme body::before/::after decorations never clash. */
+body {
+  --texture: none;
+  --texture-size: auto;
+  --texture-repeat: repeat;
+  --texture-opacity-def: 0.35;
+  --texture-opacity: var(--texture-opacity-user, var(--texture-opacity-def, 0.35));
+}
+#dk-tex-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none; z-index: 0;
+  opacity: var(--texture-opacity);
+  background-image: var(--texture, none);
+  background-size: var(--texture-size, auto);
+  background-repeat: var(--texture-repeat, repeat);
+}
+body[data-tex='none'] #dk-tex-overlay { display: none; }
+/* Panel/card layer — textures also appear ON panels, not just behind them */
+body[data-tex]:not([data-tex='none']) .bg-surface {
+  background-image: var(--texture, none), linear-gradient(rgb(var(--c-surface)), rgb(var(--c-surface)));
+  background-size: var(--texture-size, auto), 100% 100%;
+  background-repeat: var(--texture-repeat, repeat), no-repeat;
+  background-blend-mode: overlay, normal;
+}
+body[data-tex]:not([data-tex='none']) .bg-surface-2 {
+  background-image: var(--texture, none), linear-gradient(rgb(var(--c-surface-2)), rgb(var(--c-surface-2)));
+  background-size: var(--texture-size, auto), 100% 100%;
+  background-repeat: var(--texture-repeat, repeat), no-repeat;
+  background-blend-mode: overlay, normal;
+}
+/* Glass */
+[data-tex='glass'] {
+  --texture: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.03) 45%, rgba(255,255,255,0.18) 100%);
+  --texture-size: 100% 100%;
+  --texture-repeat: no-repeat;
+  --texture-opacity-def: 0.5;
+}
+/* Plastic */
+[data-tex='plastic'] {
+  --texture: radial-gradient(ellipse 60% 40% at 28% 12%, rgba(255,255,255,0.22), transparent 60%), radial-gradient(ellipse 50% 35% at 75% 88%, rgba(255,255,255,0.13), transparent 55%), linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.04));
+  --texture-size: 100% 100%;
+  --texture-repeat: no-repeat;
+  --texture-opacity-def: 0.55;
+}
+/* Gloss */
+[data-tex='gloss'] {
+  --texture: linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.04) 30%, transparent 55%, rgba(255,255,255,0.08) 100%);
+  --texture-size: 100% 100%;
+  --texture-repeat: no-repeat;
+  --texture-opacity-def: 0.55;
+}
+/* Metal */
+[data-tex='metal'] {
+  --texture: repeating-linear-gradient(90deg, rgba(255,255,255,0.1) 0px, rgba(120,130,150,0.11) 1px, rgba(255,255,255,0.05) 2px, rgba(90,100,120,0.1) 3px), linear-gradient(90deg, rgba(200,210,230,0.09), rgba(140,150,170,0.13) 30%, rgba(220,230,245,0.07) 55%, rgba(130,140,160,0.13) 80%, rgba(200,210,230,0.09));
+  --texture-size: 3px 100%, 100% 100%;
+  --texture-repeat: repeat, no-repeat;
+  --texture-opacity-def: 0.5;
+}
+/* Wood */
+[data-tex='wood'] {
+  --texture: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='120'%20height='120'%3E%20%3Cg%20fill-opacity='.14'%3E%3Crect%20width='40'%20height='120'%20fill='%238a5a2e'/%3E%3Crect%20x='40'%20width='40'%20height='120'%20fill='%23a06a36'/%3E%3Crect%20x='80'%20width='40'%20height='120'%20fill='%237c4f28'/%3E%3C/g%3E%20%3Cg%20fill='none'%20stroke-linecap='round'%3E%20%3Cpath%20d='M8%200Q12%2030%207%2060T10%20120'%20stroke='%235e3c1c'%20stroke-opacity='.5'%20stroke-width='1.1'/%3E%20%3Cpath%20d='M20%200Q16%2040%2022%2070T18%20120'%20stroke='%236b4522'%20stroke-opacity='.45'%20stroke-width='.8'/%3E%20%3Cpath%20d='M32%200Q35%2025%2030%2055T33%20120'%20stroke='%235e3c1c'%20stroke-opacity='.4'%20stroke-width='.7'/%3E%20%3Cpath%20d='M48%200Q44%2035%2050%2065T46%20120'%20stroke='%236b4522'%20stroke-opacity='.45'%20stroke-width='1'/%3E%20%3Cpath%20d='M62%200Q66%2028%2060%2058T64%20120'%20stroke='%235e3c1c'%20stroke-opacity='.5'%20stroke-width='.8'/%3E%20%3Cpath%20d='M74%200Q70%2042%2076%2072T72%20120'%20stroke='%236b4522'%20stroke-opacity='.4'%20stroke-width='.7'/%3E%20%3Cpath%20d='M88%200Q92%2030%2086%2060T90%20120'%20stroke='%235e3c1c'%20stroke-opacity='.5'%20stroke-width='1'/%3E%20%3Cpath%20d='M102%200Q98%2036%20104%2066T100%20120'%20stroke='%236b4522'%20stroke-opacity='.45'%20stroke-width='.8'/%3E%20%3Cpath%20d='M114%200Q117%2026%20112%2056T115%20120'%20stroke='%235e3c1c'%20stroke-opacity='.4'%20stroke-width='.7'/%3E%3C/g%3E%20%3Cpath%20d='M40%200V120M80%200V120'%20stroke='%233f2a12'%20stroke-opacity='.45'%20stroke-width='1.6'/%3E%20%3C/svg%3E");
+  --texture-size: 120px 120px;
+  --texture-repeat: repeat;
+  --texture-opacity-def: 0.5;
+}
+/* Parquet */
+[data-tex='parquet'] {
+  --texture: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='80'%20height='80'%3E%20%3Cg%20fill-opacity='.16'%3E%3Crect%20width='40'%20height='40'%20fill='%23a5713d'/%3E%3Crect%20x='40'%20y='40'%20width='40'%20height='40'%20fill='%23a5713d'/%3E%3Crect%20x='40'%20width='40'%20height='40'%20fill='%238a5a2e'/%3E%3Crect%20y='40'%20width='40'%20height='40'%20fill='%238a5a2e'/%3E%3C/g%3E%20%3Cg%20stroke='%235e3c1c'%20stroke-opacity='.4'%20stroke-width='1'%3E%20%3Cpath%20d='M10%200V40M20%200V40M30%200V40'/%3E%3Cpath%20d='M50%2040V80M60%2040V80M70%2040V80'/%3E%20%3Cpath%20d='M0%2050H40M0%2060H40M0%2070H40'/%3E%3Cpath%20d='M40%2010H80M40%2020H80M40%2030H80'/%3E%3C/g%3E%20%3Cpath%20d='M40%200V80M0%2040H80'%20stroke='%233f2a12'%20stroke-opacity='.5'%20stroke-width='1.4'/%3E%20%3C/svg%3E");
+  --texture-size: 80px 80px;
+  --texture-repeat: repeat;
+  --texture-opacity-def: 0.5;
+}
+/* Marble */
+[data-tex='marble'] {
+  --texture: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='200'%20height='200'%3E%20%3Cg%20fill='none'%20stroke='%237d8894'%3E%20%3Cpath%20d='M-10%2030Q40%2020%2070%2045T140%2060T215%2050'%20stroke-width='2.4'%20stroke-opacity='.38'/%3E%20%3Cpath%20d='M-10%2034Q42%2026%2072%2050T142%2066T215%2058'%20stroke-width='1'%20stroke-opacity='.22'/%3E%20%3Cpath%20d='M-10%20120Q50%20100%2090%20128T170%20140T215%20128'%20stroke-width='2'%20stroke-opacity='.32'/%3E%20%3Cpath%20d='M20%20215Q35%20160%2070%20150T120%20110'%20stroke-width='1.4'%20stroke-opacity='.26'/%3E%20%3Cpath%20d='M100%20-10Q110%2040%20150%2055T210%2090'%20stroke-width='1.6'%20stroke-opacity='.3'/%3E%20%3Cpath%20d='M-10%20180Q60%20170%20110%20190T210%20185'%20stroke-width='1'%20stroke-opacity='.2'/%3E%20%3Cpath%20d='M150%20215Q160%20170%20190%20150'%20stroke-width='1.2'%20stroke-opacity='.24'/%3E%3C/g%3E%20%3Cg%20fill='none'%20stroke='%23b8c2cc'%3E%20%3Cpath%20d='M70%2045Q85%2070%2075%2095'%20stroke-width='.8'%20stroke-opacity='.3'/%3E%20%3Cpath%20d='M90%20128Q105%20145%20100%20165'%20stroke-width='.7'%20stroke-opacity='.26'/%3E%20%3Cpath%20d='M150%2055Q165%2070%20160%2085'%20stroke-width='.7'%20stroke-opacity='.24'/%3E%3C/g%3E%20%3C/svg%3E");
+  --texture-size: 200px 200px;
+  --texture-repeat: repeat;
+  --texture-opacity-def: 0.42;
+}
+/* Ceramic tile */
+[data-tex='tile'] {
+  --texture: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='96'%20height='96'%3E%20%3Cg%3E%3Crect%20x='3'%20y='3'%20width='42'%20height='42'%20fill='%23e8f4f6'%20fill-opacity='.2'/%3E%3Crect%20x='51'%20y='3'%20width='42'%20height='42'%20fill='%23cfe8ec'%20fill-opacity='.16'/%3E%3Crect%20x='3'%20y='51'%20width='42'%20height='42'%20fill='%23cfe8ec'%20fill-opacity='.16'/%3E%3Crect%20x='51'%20y='51'%20width='42'%20height='42'%20fill='%23e8f4f6'%20fill-opacity='.2'/%3E%3C/g%3E%20%3Cg%20fill='none'%20stroke-width='2'%3E%20%3Cpath%20d='M3%2045V3H45'%20stroke='%23ffffff'%20stroke-opacity='.5'/%3E%3Cpath%20d='M45%203V45H3'%20stroke='%2325505a'%20stroke-opacity='.35'/%3E%20%3Cpath%20d='M51%2045V3H93'%20stroke='%23ffffff'%20stroke-opacity='.5'/%3E%3Cpath%20d='M93%203V45H51'%20stroke='%2325505a'%20stroke-opacity='.35'/%3E%20%3Cpath%20d='M3%2093V51H45'%20stroke='%23ffffff'%20stroke-opacity='.5'/%3E%3Cpath%20d='M45%2051V93H3'%20stroke='%2325505a'%20stroke-opacity='.35'/%3E%20%3Cpath%20d='M51%2093V51H93'%20stroke='%23ffffff'%20stroke-opacity='.5'/%3E%3Cpath%20d='M93%2051V93H51'%20stroke='%2325505a'%20stroke-opacity='.35'/%3E%3C/g%3E%20%3Cg%20fill='%23ffffff'%20fill-opacity='.15'%3E%3Cpath%20d='M6%206H20L6%2020Z'/%3E%3Cpath%20d='M54%206H68L54%2020Z'/%3E%3Cpath%20d='M6%2054H20L6%2068Z'/%3E%3Cpath%20d='M54%2054H68L54%2068Z'/%3E%3C/g%3E%20%3C/svg%3E");
+  --texture-size: 96px 96px;
+  --texture-repeat: repeat;
+  --texture-opacity-def: 0.5;
+}
+/* Brick */
+[data-tex='brick'] {
+  --texture: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='60'%20height='36'%3E%20%3Cg%20fill='%23b5502e'%20fill-opacity='.32'%20stroke='%236e2a18'%20stroke-opacity='.45'%20stroke-width='1'%3E%20%3Crect%20x='1'%20y='1'%20width='27'%20height='15'/%3E%3Crect%20x='31'%20y='1'%20width='28'%20height='15'/%3E%20%3Crect%20x='-14'%20y='19'%20width='27'%20height='15'/%3E%3Crect%20x='16'%20y='19'%20width='27'%20height='15'/%3E%3Crect%20x='46'%20y='19'%20width='27'%20height='15'/%3E%3C/g%3E%20%3C/svg%3E");
+  --texture-size: 60px 36px;
+  --texture-repeat: repeat;
+  --texture-opacity-def: 0.5;
+}
+/* Mosaic */
+[data-tex='mosaic'] {
+  --texture: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='80'%20height='80'%3E%20%3Cg%20stroke='%231c2430'%20stroke-opacity='.45'%20stroke-width='1'%3E%20%3Crect%20x='1'%20y='1'%20width='16'%20height='12'%20fill='%23c0392b'%20fill-opacity='.45'%20transform='rotate(-4%209%207)'/%3E%20%3Crect%20x='20'%20y='1'%20width='16'%20height='12'%20fill='%23e6a817'%20fill-opacity='.5'%20transform='rotate(3%2028%207)'/%3E%20%3Crect%20x='39'%20y='1'%20width='16'%20height='12'%20fill='%232e6db4'%20fill-opacity='.45'%20transform='rotate(-2%2047%207)'/%3E%20%3Crect%20x='58'%20y='1'%20width='16'%20height='12'%20fill='%232e8b57'%20fill-opacity='.45'%20transform='rotate(5%2066%207)'/%3E%20%3Crect%20x='1'%20y='17'%20width='16'%20height='12'%20fill='%232e6db4'%20fill-opacity='.42'%20transform='rotate(4%209%2023)'/%3E%20%3Crect%20x='20'%20y='17'%20width='16'%20height='12'%20fill='%238e44ad'%20fill-opacity='.4'%20transform='rotate(-3%2028%2023)'/%3E%20%3Crect%20x='39'%20y='17'%20width='16'%20height='12'%20fill='%23e6a817'%20fill-opacity='.48'%20transform='rotate(2%2047%2023)'/%3E%20%3Crect%20x='58'%20y='17'%20width='16'%20height='12'%20fill='%23c0392b'%20fill-opacity='.42'%20transform='rotate(-5%2066%2023)'/%3E%20%3Crect%20x='1'%20y='33'%20width='16'%20height='12'%20fill='%232e8b57'%20fill-opacity='.45'%20transform='rotate(-2%209%2039)'/%3E%20%3Crect%20x='20'%20y='33'%20width='16'%20height='12'%20fill='%23d35400'%20fill-opacity='.45'%20transform='rotate(4%2028%2039)'/%3E%20%3Crect%20x='39'%20y='33'%20width='16'%20height='12'%20fill='%232e6db4'%20fill-opacity='.4'%20transform='rotate(-4%2047%2039)'/%3E%20%3Crect%20x='58'%20y='33'%20width='16'%20height='12'%20fill='%23e6a817'%20fill-opacity='.46'%20transform='rotate(3%2066%2039)'/%3E%20%3Crect%20x='1'%20y='49'%20width='16'%20height='12'%20fill='%23e6a817'%20fill-opacity='.44'%20transform='rotate(2%209%2055)'/%3E%20%3Crect%20x='20'%20y='49'%20width='16'%20height='12'%20fill='%232e8b57'%20fill-opacity='.42'%20transform='rotate(-3%2028%2055)'/%3E%20%3Crect%20x='39'%20y='49'%20width='16'%20height='12'%20fill='%23c0392b'%20fill-opacity='.45'%20transform='rotate(5%2047%2055)'/%3E%20%3Crect%20x='58'%20y='49'%20width='16'%20height='12'%20fill='%232e6db4'%20fill-opacity='.44'%20transform='rotate(-2%2066%2055)'/%3E%20%3Crect%20x='1'%20y='65'%20width='16'%20height='12'%20fill='%238e44ad'%20fill-opacity='.38'%20transform='rotate(-4%209%2071)'/%3E%20%3Crect%20x='20'%20y='65'%20width='16'%20height='12'%20fill='%23e6a817'%20fill-opacity='.5'%20transform='rotate(3%2028%2071)'/%3E%20%3Crect%20x='39'%20y='65'%20width='16'%20height='12'%20fill='%232e8b57'%20fill-opacity='.42'%20transform='rotate(-2%2047%2071)'/%3E%20%3Crect%20x='58'%20y='65'%20width='16'%20height='12'%20fill='%23c0392b'%20fill-opacity='.44'%20transform='rotate(4%2066%2071)'/%3E%3C/g%3E%20%3C/svg%3E");
+  --texture-size: 80px 80px;
+  --texture-repeat: repeat;
+  --texture-opacity-def: 0.5;
+}
+/* Pebbles */
+[data-tex='pebbles'] {
+  --texture: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='100'%20height='100'%3E%20%3Cg%20stroke-width='1'%3E%20%3Cellipse%20cx='18'%20cy='16'%20rx='13'%20ry='9'%20fill='%239aa2a8'%20fill-opacity='.4'%20stroke='%235f6a72'%20transform='rotate(-12%2018%2016)'/%3E%20%3Cellipse%20cx='55'%20cy='12'%20rx='10'%20ry='7'%20fill='%23b8a89a'%20fill-opacity='.38'%20stroke='%236e6157'%20transform='rotate(8%2055%2012)'/%3E%20%3Cellipse%20cx='86'%20cy='20'%20rx='12'%20ry='8'%20fill='%238f9aa3'%20fill-opacity='.4'%20stroke='%23565f66'%20transform='rotate(-5%2086%2020)'/%3E%20%3Cellipse%20cx='32'%20cy='42'%20rx='11'%20ry='8'%20fill='%23aab3ba'%20fill-opacity='.36'%20stroke='%23667077'%20transform='rotate(14%2032%2042)'/%3E%20%3Cellipse%20cx='68'%20cy='45'%20rx='14'%20ry='10'%20fill='%239b8f83'%20fill-opacity='.38'%20stroke='%235c554d'%20transform='rotate(-8%2068%2045)'/%3E%20%3Cellipse%20cx='8'%20cy='70'%20rx='10'%20ry='7'%20fill='%23a39a8e'%20fill-opacity='.36'%20stroke='%23615a51'%20transform='rotate(6%208%2070)'/%3E%20%3Cellipse%20cx='42'%20cy='75'%20rx='13'%20ry='9'%20fill='%2393a1ab'%20fill-opacity='.4'%20stroke='%2357636c'%20transform='rotate(-10%2042%2075)'/%3E%20%3Cellipse%20cx='80'%20cy='78'%20rx='11'%20ry='8'%20fill='%23b0a496'%20fill-opacity='.36'%20stroke='%236a6156'%20transform='rotate(12%2080%2078)'/%3E%3C/g%3E%20%3Cg%20stroke='%23ffffff'%20stroke-opacity='.45'%20fill='none'%20stroke-width='1.2'%20stroke-linecap='round'%3E%20%3Cpath%20d='M10%2013Q17%209%2025%2012'/%3E%3Cpath%20d='M48%209Q54%207%2061%209'/%3E%3Cpath%20d='M24%2039Q31%2035%2040%2038'/%3E%20%3Cpath%20d='M58%2041Q66%2037%2078%2040'/%3E%3Cpath%20d='M33%2071Q41%2067%2052%2070'/%3E%3Cpath%20d='M72%2074Q79%2071%2088%2074'/%3E%3C/g%3E%20%3C/svg%3E");
+  --texture-size: 100px 100px;
+  --texture-repeat: repeat;
+  --texture-opacity-def: 0.5;
+}
+/* Asphalt */
+[data-tex='asphalt'] {
+  --texture: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='140'%20height='140'%3E%20%3Cfilter%20id='r'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.9'%20numOctaves='2'%20seed='7'%20stitchTiles='stitch'/%3E%3CfeColorMatrix%20type='matrix'%20values='0%200%200%200%200.05%200%200%200%200%200.05%200%200%200%200%200.06%200.85%200%200%200%200'/%3E%3C/filter%3E%20%3Crect%20width='140'%20height='140'%20filter='url(%23r)'/%3E%20%3Cfilter%20id='w'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.5'%20numOctaves='2'%20seed='23'%20stitchTiles='stitch'/%3E%3CfeColorMatrix%20type='matrix'%20values='0%200%200%200%200.62%200%200%200%200%200.63%200%200%200%200%200.65%200.5%200%200%200%200'/%3E%3C/filter%3E%20%3Crect%20width='140'%20height='140'%20filter='url(%23w)'%20opacity='.5'/%3E%20%3Cg%20fill='%23788088'%20fill-opacity='.4'%3E%3Cellipse%20cx='22'%20cy='30'%20rx='3'%20ry='2'/%3E%3Cellipse%20cx='90'%20cy='18'%20rx='2.4'%20ry='1.7'/%3E%3Cellipse%20cx='120'%20cy='66'%20rx='3'%20ry='2'/%3E%3Cellipse%20cx='48'%20cy='84'%20rx='2.6'%20ry='1.8'/%3E%3Cellipse%20cx='14'%20cy='110'%20rx='2.8'%20ry='2'/%3E%3Cellipse%20cx='104'%20cy='122'%20rx='3.2'%20ry='2.1'/%3E%3C/g%3E%20%3C/svg%3E");
+  --texture-size: 140px 140px;
+  --texture-repeat: repeat;
+  --texture-opacity-def: 0.5;
+}
+/* Water */
+[data-tex='water'] {
+  --texture: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='160'%20height='90'%3E%20%3Cg%20fill='none'%20stroke-linecap='round'%3E%20%3Cpath%20d='M0%2018Q20%208%2040%2018T80%2018T120%2018T160%2018'%20stroke='%238fd8ea'%20stroke-opacity='.5'%20stroke-width='2.2'/%3E%20%3Cpath%20d='M0%2024Q20%2015%2040%2024T80%2024T120%2024T160%2024'%20stroke='%235db8d4'%20stroke-opacity='.3'%20stroke-width='1.2'/%3E%20%3Cpath%20d='M0%2052Q20%2042%2040%2052T80%2052T120%2052T160%2052'%20stroke='%23a8e4f2'%20stroke-opacity='.42'%20stroke-width='1.8'/%3E%20%3Cpath%20d='M0%2058Q20%2049%2040%2058T80%2058T120%2058T160%2058'%20stroke='%234da8c8'%20stroke-opacity='.26'%20stroke-width='1'/%3E%20%3Cpath%20d='M0%2082Q20%2073%2040%2082T80%2082T120%2082T160%2082'%20stroke='%238fd8ea'%20stroke-opacity='.45'%20stroke-width='2'/%3E%20%3Cpath%20d='M-8%2066Q2%2062%2012%2066'%20stroke='%23ffffff'%20stroke-opacity='.35'%20stroke-width='1.4'/%3E%20%3Cpath%20d='M66%2040Q76%2036%2086%2040'%20stroke='%23ffffff'%20stroke-opacity='.3'%20stroke-width='1.2'/%3E%20%3Cpath%20d='M118%2070Q128%2066%20138%2070'%20stroke='%23ffffff'%20stroke-opacity='.32'%20stroke-width='1.2'/%3E%3C/g%3E%20%3C/svg%3E");
+  --texture-size: 160px 90px;
+  --texture-repeat: repeat;
+  --texture-opacity-def: 0.5;
+}
+/* Swamp */
+[data-tex='swamp'] {
+  --texture: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='120'%20height='120'%3E%20%3Cellipse%20cx='25'%20cy='30'%20rx='20'%20ry='12'%20fill='%232f4a26'%20fill-opacity='.4'/%3E%20%3Cellipse%20cx='80'%20cy='22'%20rx='24'%20ry='13'%20fill='%233a5c2e'%20fill-opacity='.35'/%3E%20%3Cellipse%20cx='60'%20cy='62'%20rx='28'%20ry='15'%20fill='%2326381e'%20fill-opacity='.42'/%3E%20%3Cellipse%20cx='20'%20cy='90'%20rx='22'%20ry='13'%20fill='%2333512a'%20fill-opacity='.38'/%3E%20%3Cellipse%20cx='95'%20cy='95'%20rx='24'%20ry='14'%20fill='%232a4022'%20fill-opacity='.4'/%3E%20%3Cg%20stroke='%2316240f'%20stroke-opacity='.45'%20fill='none'%20stroke-width='1.6'%20stroke-linecap='round'%3E%20%3Cpath%20d='M18%2022Q15%2012%2019%204'/%3E%3Cpath%20d='M26%2024Q27%2014%2024%206'/%3E%3Cpath%20d='M84%2016Q81%208%2085%201'/%3E%20%3Cpath%20d='M92%2018Q94%209%2091%203'/%3E%3Cpath%20d='M55%2055Q52%2046%2056%2038'/%3E%3Cpath%20d='M64%2058Q66%2048%2062%2040'/%3E%3C/g%3E%20%3Cg%20fill='%239ab84a'%20fill-opacity='.5'%3E%3Ccircle%20cx='40'%20cy='70'%20r='1.4'/%3E%3Ccircle%20cx='47'%20cy='66'%20r='1'/%3E%3Ccircle%20cx='75'%20cy='80'%20r='1.3'/%3E%3Ccircle%20cx='100'%20cy='60'%20r='1.1'/%3E%3Ccircle%20cx='12'%20cy='52'%20r='1.2'/%3E%3Ccircle%20cx='90'%20cy='40'%20r='1'/%3E%3Ccircle%20cx='35'%20cy='105'%20r='1.3'/%3E%3Ccircle%20cx='68'%20cy='100'%20r='1'/%3E%3C/g%3E%20%3Cg%20stroke='%23c8e08a'%20stroke-opacity='.3'%20stroke-width='1'%20stroke-linecap='round'%20fill='none'%3E%20%3Cpath%20d='M30%2028Q40%2024%2050%2027'/%3E%3Cpath%20d='M70%2060Q80%2056%2092%2060'/%3E%3C/g%3E%20%3C/svg%3E");
+  --texture-size: 120px 120px;
+  --texture-repeat: repeat;
+  --texture-opacity-def: 0.48;
+}
+/* Grass */
+[data-tex='grass'] {
+  --texture: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='90'%20height='90'%3E%20%3Cg%20fill='none'%20stroke-linecap='round'%3E%20%3Cpath%20d='M6%2092Q2%2045%208%20-2'%20stroke='%233e7d32'%20stroke-opacity='.55'%20stroke-width='2'/%3E%20%3Cpath%20d='M15%2092Q19%2048%2014%200'%20stroke='%2357a33e'%20stroke-opacity='.5'%20stroke-width='1.6'/%3E%20%3Cpath%20d='M24%2092Q20%2044%2026%20-2'%20stroke='%232f6627'%20stroke-opacity='.55'%20stroke-width='2'/%3E%20%3Cpath%20d='M33%2092Q37%2050%2032%200'%20stroke='%236dbb4a'%20stroke-opacity='.45'%20stroke-width='1.4'/%3E%20%3Cpath%20d='M43%2092Q39%2046%2045%20-2'%20stroke='%233e7d32'%20stroke-opacity='.5'%20stroke-width='2'/%3E%20%3Cpath%20d='M52%2092Q56%2048%2051%200'%20stroke='%2357a33e'%20stroke-opacity='.5'%20stroke-width='1.6'/%3E%20%3Cpath%20d='M62%2092Q58%2042%2064%20-2'%20stroke='%232f6627'%20stroke-opacity='.5'%20stroke-width='2'/%3E%20%3Cpath%20d='M71%2092Q75%2050%2070%200'%20stroke='%236dbb4a'%20stroke-opacity='.42'%20stroke-width='1.4'/%3E%20%3Cpath%20d='M81%2092Q77%2046%2083%20-2'%20stroke='%233e7d32'%20stroke-opacity='.5'%20stroke-width='1.8'/%3E%20%3Cpath%20d='M88%2092Q91%2052%2087%202'%20stroke='%2357a33e'%20stroke-opacity='.45'%20stroke-width='1.4'/%3E%3C/g%3E%20%3Cg%20fill='%23a8d878'%20fill-opacity='.5'%3E%3Cellipse%20cx='8'%20cy='3'%20rx='1.1'%20ry='2.4'/%3E%3Cellipse%20cx='26'%20cy='2'%20rx='1.1'%20ry='2.4'/%3E%3Cellipse%20cx='45'%20cy='3'%20rx='1.1'%20ry='2.4'/%3E%3Cellipse%20cx='64'%20cy='2'%20rx='1.1'%20ry='2.4'/%3E%3Cellipse%20cx='83'%20cy='3'%20rx='1'%20ry='2.2'/%3E%3C/g%3E%20%3C/svg%3E");
+  --texture-size: 90px 90px;
+  --texture-repeat: repeat;
+  --texture-opacity-def: 0.5;
+}
+/* Hay */
+[data-tex='hay'] {
+  --texture: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='90'%20height='90'%3E%20%3Cg%20stroke-linecap='round'%20fill='none'%3E%20%3Cpath%20d='M6%2012L22%208'%20stroke='%23d9b45c'%20stroke-opacity='.6'%20stroke-width='1.6'/%3E%20%3Cpath%20d='M40%204L52%2014'%20stroke='%23c9a24a'%20stroke-opacity='.55'%20stroke-width='1.3'/%3E%20%3Cpath%20d='M70%2010L86%206'%20stroke='%23e6c878'%20stroke-opacity='.6'%20stroke-width='1.5'/%3E%20%3Cpath%20d='M12%2028L28%2034'%20stroke='%23b08d3e'%20stroke-opacity='.5'%20stroke-width='1.2'/%3E%20%3Cpath%20d='M48%2026L60%2020'%20stroke='%23d9b45c'%20stroke-opacity='.6'%20stroke-width='1.6'/%3E%20%3Cpath%20d='M74%2030L88%2036'%20stroke='%23c9a24a'%20stroke-opacity='.5'%20stroke-width='1.2'/%3E%20%3Cpath%20d='M2%2048L18%2044'%20stroke='%23e6c878'%20stroke-opacity='.55'%20stroke-width='1.4'/%3E%20%3Cpath%20d='M34%2046L50%2052'%20stroke='%23d9b45c'%20stroke-opacity='.6'%20stroke-width='1.5'/%3E%20%3Cpath%20d='M64%2052L80%2046'%20stroke='%23b08d3e'%20stroke-opacity='.5'%20stroke-width='1.2'/%3E%20%3Cpath%20d='M10%2068L24%2074'%20stroke='%23c9a24a'%20stroke-opacity='.55'%20stroke-width='1.3'/%3E%20%3Cpath%20d='M42%2070L58%2064'%20stroke='%23e6c878'%20stroke-opacity='.6'%20stroke-width='1.5'/%3E%20%3Cpath%20d='M70%2072L86%2078'%20stroke='%23d9b45c'%20stroke-opacity='.55'%20stroke-width='1.4'/%3E%20%3Cpath%20d='M20%2086L36%2082'%20stroke='%23b08d3e'%20stroke-opacity='.5'%20stroke-width='1.2'/%3E%20%3Cpath%20d='M52%2088L66%2082'%20stroke='%23c9a24a'%20stroke-opacity='.5'%20stroke-width='1.3'/%3E%20%3Cpath%20d='M80%2088L90%2084'%20stroke='%23e6c878'%20stroke-opacity='.55'%20stroke-width='1.3'/%3E%20%3Cpath%20d='M30%2016L34%2030'%20stroke='%23d9b45c'%20stroke-opacity='.5'%20stroke-width='1.2'/%3E%20%3Cpath%20d='M58%2034L62%2048'%20stroke='%23b08d3e'%20stroke-opacity='.45'%20stroke-width='1.2'/%3E%20%3Cpath%20d='M24%2056L28%2070'%20stroke='%23e6c878'%20stroke-opacity='.5'%20stroke-width='1.2'/%3E%20%3Cpath%20d='M76%2058L80%2070'%20stroke='%23c9a24a'%20stroke-opacity='.45'%20stroke-width='1.2'/%3E%3C/g%3E%20%3Cg%20fill='%238a6d2f'%20fill-opacity='.5'%3E%3Cellipse%20cx='22'%20cy='8'%20rx='1.2'%20ry='.8'/%3E%3Cellipse%20cx='60'%20cy='20'%20rx='1.1'%20ry='.8'/%3E%3Cellipse%20cx='50'%20cy='52'%20rx='1.2'%20ry='.8'/%3E%3Cellipse%20cx='58'%20cy='64'%20rx='1.1'%20ry='.8'/%3E%3Cellipse%20cx='36'%20cy='82'%20rx='1.1'%20ry='.8'/%3E%3C/g%3E%20%3C/svg%3E");
+  --texture-size: 90px 90px;
+  --texture-repeat: repeat;
+  --texture-opacity-def: 0.5;
+}
+/* Snow */
+[data-tex='snow'] {
+  --texture: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='110'%20height='110'%3E%20%3Cg%20fill='%23ffffff'%3E%3Ccircle%20cx='14'%20cy='16'%20r='2.6'%20fill-opacity='.85'/%3E%3Ccircle%20cx='52'%20cy='8'%20r='1.8'%20fill-opacity='.7'/%3E%3Ccircle%20cx='88'%20cy='20'%20r='3'%20fill-opacity='.8'/%3E%3Ccircle%20cx='30'%20cy='46'%20r='1.6'%20fill-opacity='.65'/%3E%3Ccircle%20cx='70'%20cy='40'%20r='2.2'%20fill-opacity='.75'/%3E%3Ccircle%20cx='102'%20cy='58'%20r='1.7'%20fill-opacity='.6'/%3E%3Ccircle%20cx='8'%20cy='72'%20r='2'%20fill-opacity='.7'/%3E%3Ccircle%20cx='46'%20cy='66'%20r='2.8'%20fill-opacity='.8'/%3E%3Ccircle%20cx='86'%20cy='84'%20r='2'%20fill-opacity='.7'/%3E%3Ccircle%20cx='24'%20cy='96'%20r='1.6'%20fill-opacity='.6'/%3E%3Ccircle%20cx='62'%20cy='100'%20r='2.4'%20fill-opacity='.75'/%3E%3C/g%3E%20%3Cg%20stroke='%23dceeff'%20stroke-opacity='.8'%20stroke-width='1.1'%20stroke-linecap='round'%20fill='none'%3E%20%3Cg%20transform='translate(36%2026)'%3E%3Cpath%20d='M0%20-6V6M-6%200H6M-4.2%20-4.2L4.2%204.2M-4.2%204.2L4.2%20-4.2'/%3E%3C/g%3E%20%3Cg%20transform='translate(94%2096)'%3E%3Cpath%20d='M0%20-5.5V5.5M-5.5%200H5.5M-3.9%20-3.9L3.9%203.9M-3.9%203.9L3.9%20-3.9'/%3E%3C/g%3E%20%3Cg%20transform='translate(60%2076)'%3E%3Cpath%20d='M0%20-4.5V4.5M-4.5%200H4.5M-3.2%20-3.2L3.2%203.2M-3.2%203.2L3.2%20-3.2'/%3E%3C/g%3E%3C/g%3E%20%3Cg%20fill='%23eaf4ff'%20fill-opacity='.1'%3E%3Ccircle%20cx='80'%20cy='14'%20r='9'/%3E%3Ccircle%20cx='20'%20cy='60'%20r='11'/%3E%3Ccircle%20cx='100'%20cy='40'%20r='8'/%3E%3C/g%3E%20%3C/svg%3E");
+  --texture-size: 110px 110px;
+  --texture-repeat: repeat;
+  --texture-opacity-def: 0.6;
+}
+/* Bubbles */
+[data-tex='bubbles'] {
+  --texture: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='110'%20height='110'%3E%20%3Cg%20fill='none'%3E%20%3Ccircle%20cx='22'%20cy='22'%20r='12'%20stroke='%23ffffff'%20stroke-opacity='.55'%20stroke-width='1.4'%20fill='%237fd4e8'%20fill-opacity='.1'/%3E%20%3Cpath%20d='M14%2018A10%2010%200%200%201%2022%2010'%20stroke='%23ffffff'%20stroke-opacity='.7'%20stroke-width='1.6'/%3E%20%3Ccircle%20cx='70'%20cy='14'%20r='7'%20stroke='%23ffffff'%20stroke-opacity='.5'%20stroke-width='1.2'%20fill='%23f0a8d0'%20fill-opacity='.1'/%3E%20%3Cpath%20d='M65%2011A6%206%200%200%201%2070%208'%20stroke='%23ffffff'%20stroke-opacity='.65'%20stroke-width='1.3'/%3E%20%3Ccircle%20cx='100'%20cy='40'%20r='9'%20stroke='%23ffffff'%20stroke-opacity='.5'%20stroke-width='1.2'%20fill='%23b8e88a'%20fill-opacity='.1'/%3E%20%3Ccircle%20cx='42'%20cy='58'%20r='15'%20stroke='%23ffffff'%20stroke-opacity='.5'%20stroke-width='1.5'%20fill='%23c8b4f0'%20fill-opacity='.09'/%3E%20%3Cpath%20d='M31%2051A14%2014%200%200%201%2043%2043'%20stroke='%23ffffff'%20stroke-opacity='.6'%20stroke-width='1.7'/%3E%20%3Ccircle%20cx='88'%20cy='76'%20r='6'%20stroke='%23ffffff'%20stroke-opacity='.5'%20stroke-width='1.1'%20fill='%237fd4e8'%20fill-opacity='.12'/%3E%20%3Ccircle%20cx='16'%20cy='88'%20r='9'%20stroke='%23ffffff'%20stroke-opacity='.5'%20stroke-width='1.2'%20fill='%23f0d8a0'%20fill-opacity='.1'/%3E%20%3Cpath%20d='M10%2084A8%208%200%200%201%2017%2079'%20stroke='%23ffffff'%20stroke-opacity='.6'%20stroke-width='1.4'/%3E%20%3Ccircle%20cx='60'%20cy='96'%20r='4'%20stroke='%23ffffff'%20stroke-opacity='.5'%20stroke-width='1'%20fill='%23b8e88a'%20fill-opacity='.12'/%3E%20%3Ccircle%20cx='104'%20cy='104'%20r='3'%20stroke='%23ffffff'%20stroke-opacity='.45'%20stroke-width='.9'%20fill='%23f0a8d0'%20fill-opacity='.12'/%3E%3C/g%3E%20%3C/svg%3E");
+  --texture-size: 110px 110px;
+  --texture-repeat: repeat;
+  --texture-opacity-def: 0.55;
+}
+/* Film camera */
+[data-tex='film'] {
+  --texture: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='120'%20height='72'%3E%20%3Cfilter%20id='g'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.8'%20numOctaves='2'%20seed='4'%20stitchTiles='stitch'/%3E%3CfeColorMatrix%20type='matrix'%20values='0%200%200%200%200.1%200%200%200%200%200.09%200%200%200%200%200.08%200.5%200%200%200%200'/%3E%3C/filter%3E%20%3Crect%20width='120'%20height='72'%20filter='url(%23g)'%20opacity='.55'/%3E%20%3Cg%20fill='%23141414'%20fill-opacity='.5'%3E%3Crect%20width='120'%20height='9'/%3E%3Crect%20y='63'%20width='120'%20height='9'/%3E%3C/g%3E%20%3Cg%20fill='%23f5f2e8'%20fill-opacity='.55'%3E%20%3Crect%20x='6'%20y='2.5'%20width='6'%20height='4'%20rx='1'/%3E%3Crect%20x='26'%20y='2.5'%20width='6'%20height='4'%20rx='1'/%3E%3Crect%20x='46'%20y='2.5'%20width='6'%20height='4'%20rx='1'/%3E%3Crect%20x='66'%20y='2.5'%20width='6'%20height='4'%20rx='1'/%3E%3Crect%20x='86'%20y='2.5'%20width='6'%20height='4'%20rx='1'/%3E%3Crect%20x='106'%20y='2.5'%20width='6'%20height='4'%20rx='1'/%3E%20%3Crect%20x='6'%20y='65.5'%20width='6'%20height='4'%20rx='1'/%3E%3Crect%20x='26'%20y='65.5'%20width='6'%20height='4'%20rx='1'/%3E%3Crect%20x='46'%20y='65.5'%20width='6'%20height='4'%20rx='1'/%3E%3Crect%20x='66'%20y='65.5'%20width='6'%20height='4'%20rx='1'/%3E%3Crect%20x='86'%20y='65.5'%20width='6'%20height='4'%20rx='1'/%3E%3Crect%20x='106'%20y='65.5'%20width='6'%20height='4'%20rx='1'/%3E%3C/g%3E%20%3Cpath%20d='M97%209V63'%20stroke='%23ffffff'%20stroke-opacity='.14'%20stroke-width='1'/%3E%20%3Cpath%20d='M31%209V63'%20stroke='%23ffffff'%20stroke-opacity='.08'%20stroke-width='.8'/%3E%20%3C/svg%3E");
+  --texture-size: 120px 72px;
+  --texture-repeat: repeat;
+  --texture-opacity-def: 0.55;
+}
+/* VHS tape */
+[data-tex='vhs'] {
+  --texture: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='160'%20height='150'%3E%20%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.6'%20numOctaves='2'%20seed='9'%20stitchTiles='stitch'/%3E%3CfeColorMatrix%20type='matrix'%20values='0%200%200%200%200.9%200%200%200%200%200.92%200%200%200%200%200.95%200.65%200%200%200%200'/%3E%3C/filter%3E%20%3Crect%20width='160'%20height='26'%20filter='url(%23n)'/%3E%20%3C/svg%3E"), repeating-linear-gradient(0deg, rgba(8,10,14,0.3) 0px, rgba(8,10,14,0.3) 1px, transparent 1px, transparent 3px), linear-gradient(90deg, rgba(255,0,90,0.07) 0%, rgba(0,255,150,0.05) 33%, rgba(80,0,255,0.07) 66%, rgba(255,0,90,0.07) 100%);
+  --texture-size: 100% 150px, 100% 100%, 24px 100%;
+  --texture-repeat: repeat, repeat, repeat;
+  --texture-opacity-def: 0.6;
+}
+/* Church window */
+[data-tex='church'] {
+  --texture: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='130'%20height='170'%3E%20%3Cpath%20d='M30%20170V70Q30%2026%2065%2022Q100%2026%20100%2070V170Z'%20fill='%233b2a55'%20fill-opacity='.28'/%3E%20%3Cpath%20d='M30%2070Q30%2026%2065%2022L65%2060Z'%20fill='%232e6db4'%20fill-opacity='.4'/%3E%20%3Cpath%20d='M65%2022Q100%2026%20100%2070L65%2060Z'%20fill='%23c0392b'%20fill-opacity='.4'/%3E%20%3Ccircle%20cx='65'%20cy='52'%20r='13'%20fill='%23e6a817'%20fill-opacity='.5'/%3E%20%3Cpath%20d='M30%2092H100L92%20122H38Z'%20fill='%232e8b57'%20fill-opacity='.35'/%3E%20%3Cpath%20d='M38%20122H92L84%20150H46Z'%20fill='%238e44ad'%20fill-opacity='.32'/%3E%20%3Cpath%20d='M30%2070L38%2092H30Z'%20fill='%23d35400'%20fill-opacity='.35'/%3E%20%3Cpath%20d='M100%2070L100%2092L92%2092Z'%20fill='%23d35400'%20fill-opacity='.35'/%3E%20%3Cg%20fill='none'%20stroke='%2326202e'%20stroke-width='3'%20stroke-opacity='.75'%20stroke-linejoin='round'%3E%20%3Cpath%20d='M30%20170V70Q30%2026%2065%2022Q100%2026%20100%2070V170'/%3E%20%3Ccircle%20cx='65'%20cy='52'%20r='13'/%3E%20%3Cpath%20d='M65%2022V170'/%3E%20%3Cpath%20d='M30%2092H100M38%20122H92M46%20150H84'/%3E%20%3Cpath%20d='M30%2070Q48%2082%2065%2092M100%2070Q82%2082%2065%2092'/%3E%20%3Cpath%20d='M38%2092Q52%20106%2065%20122M92%2092Q78%20106%2065%20122'/%3E%3C/g%3E%20%3Cg%20stroke='%23ffffff'%20stroke-opacity='.3'%20stroke-width='1.6'%20fill='none'%20stroke-linecap='round'%3E%20%3Cpath%20d='M40%2040Q47%2030%2058%2027'/%3E%3Cpath%20d='M36%20100H56'/%3E%3C/g%3E%20%3C/svg%3E");
+  --texture-size: 130px 170px;
+  --texture-repeat: repeat;
+  --texture-opacity-def: 0.5;
+}
+/* per-effect surface enhancements */
+body[data-tex='glass'] .bg-surface,
+body[data-tex='glass'] .bg-surface-2 { backdrop-filter: blur(6px) saturate(1.25); -webkit-backdrop-filter: blur(6px) saturate(1.25); }
+body[data-tex='plastic'] .bg-surface,
+body[data-tex='plastic'] .bg-surface-2 { box-shadow: inset 0 1px 0 rgba(255,255,255,0.09), inset 0 -1px 0 rgba(0,0,0,0.1); }
+body[data-tex='metal'] .bg-surface,
+body[data-tex='metal'] .bg-surface-2 { box-shadow: inset 0 1px 0 rgba(255,255,255,0.11); }
+body[data-tex='wood'] .bg-surface,
+body[data-tex='wood'] .bg-surface-2 { box-shadow: inset 0 1px 0 rgba(160,120,60,0.12); }
+body[data-tex='gloss'] .bg-surface,
+body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,255,0.07); }
+/* ----- Texture panel UI (c79) ----- */
+.tex-cat { display:flex; align-items:center; gap:8px; font-size:10px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:rgb(var(--c-muted)); margin:2px 0 8px; }
+.tex-cat::after { content:''; flex:1; height:1px; background:rgb(var(--c-border) / .7); }
+.texture-btn { position:relative; cursor:pointer; overflow:hidden; transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease; }
+.texture-btn:hover { transform:translateY(-1px); }
+.texture-btn:active { transform:translateY(0) scale(.98); }
+.texture-btn:focus-visible { outline:2px solid rgb(var(--c-accent)); outline-offset:2px; }
+.tex-swatch { display:block; height:46px; background-color:var(--tex-swatch-bg, rgb(var(--c-surface-2))); background-image:var(--texture, none); background-size:var(--texture-size, auto); background-repeat:var(--texture-repeat, repeat); }
+/* sheen-type patterns are white-based — give their preview tiles a darker backing so they stay visible on light themes */
+[data-tex='glass'], [data-tex='plastic'], [data-tex='gloss'], [data-tex='metal'] { --tex-swatch-bg: rgb(var(--c-text) / .22); }
+.tex-name { display:block; padding:5px 4px 6px; font-size:10px; font-weight:700; line-height:1.2; color:rgb(var(--c-text)); background:rgb(var(--c-surface-2)); border-top:1px solid rgb(var(--c-border) / .5); text-align:center; }
+.texture-btn.active { border-color:rgb(var(--c-accent)) !important; box-shadow:0 0 0 2px rgb(var(--c-accent) / .5); }
+.texture-btn.active .tex-check { opacity:1; transform:scale(1); }
+.tex-check { position:absolute; top:5px; inset-inline-end:5px; width:17px; height:17px; border-radius:9999px; background:rgb(var(--c-accent)); color:rgb(var(--c-surface)); font-size:11px; font-weight:800; line-height:17px; text-align:center; opacity:0; transform:scale(.4); transition:opacity .15s ease, transform .15s ease; pointer-events:none; }
+#tex-active-badge { font-size:10px; font-weight:800; padding:2px 8px; border-radius:9999px; background:rgb(var(--c-accent) / .14); color:rgb(var(--c-accent)); border:1px solid rgb(var(--c-accent) / .35); text-transform:none; letter-spacing:0; white-space:nowrap; }
+#texture-opacity-val { font-size:10px; font-weight:800; padding:2px 6px; border-radius:6px; background:rgb(var(--c-accent) / .1); color:rgb(var(--c-accent)); border:1px solid rgb(var(--c-accent) / .25); font-variant-numeric:tabular-nums; }
 
-    /* ===== COLLAPSIBLE SETTINGS PANELS ===== */
+/* ===== COLLAPSIBLE SETTINGS PANELS ===== */
     .settings-panel { overflow: hidden; transition: max-height 0.3s ease; }
     .settings-panel-header { cursor: pointer; user-select: none; display: flex; align-items: center; justify-content: space-between; }
     .settings-panel-header:hover { opacity: 0.8; }
@@ -3667,55 +3781,154 @@ body.auth-locked #app > .fixed.inset-0:not(.hidden) { pointer-events: none !impo
               </div>
             </div>
 
-            <!-- Texture Effects (collapsible) -->
+                        <!-- Texture Effects v2 (c79) -->
             <div class="bg-surface border border-accent/30 rounded-2xl shadow-card mb-4 settings-panel collapsed">
               <div class="settings-panel-header p-5 pb-3">
-                <h3 class="font-display font-bold text-sm text-accent uppercase tracking-wider flex items-center gap-2 flex-1">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+                <h3 class="font-display font-bold text-sm text-accent uppercase tracking-wider flex items-center gap-2 flex-1 min-w-0">
+                  <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
                   <span data-i18n="settings.textureEffects">Texture effects</span>
+                  <span id="tex-active-badge" class="shrink-0">None</span>
                 </h3>
-                <svg class="w-4 h-4 text-muted settings-panel-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                <svg class="w-4 h-4 text-muted settings-panel-chevron shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
               </div>
               <div class="settings-panel-body p-5 pt-0">
-                <p class="text-xs text-muted mb-3 leading-relaxed" data-i18n="settings.textureHint">Apply visual texture effects on top of your theme. Effects are subtle overlays — combine with any theme.</p>
-                <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-3">
-                  <button class="texture-btn p-3 rounded-lg border border-border bg-surface-2 hover:bg-border/30 transition text-center" data-texture="none">
-                    <div class="text-lg mb-1">⬜</div>
-                    <div class="text-[10px] font-semibold" data-i18n="settings.textureNone">None</div>
+                <p class="text-xs text-muted mb-4 leading-relaxed" data-i18n="settings.textureHint">Visual texture overlays on top of any theme — noticeable, meaningful, comfortable. Pick an effect and fine-tune its opacity.</p>
+                <div class="tex-cat" data-i18n="settings.texCatBasics">Basics</div>
+                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2.5 mb-4">
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="none" aria-pressed="false">
+                    <span class="tex-swatch" data-tex="none" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.textureNone">None</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
                   </button>
-                  <button class="texture-btn p-3 rounded-lg border border-border bg-surface-2 hover:bg-border/30 transition text-center" data-texture="glass">
-                    <div class="text-lg mb-1">🔍</div>
-                    <div class="text-[10px] font-semibold" data-i18n="settings.textureGlass">Glass</div>
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="glass" aria-pressed="false">
+                    <span class="tex-swatch" data-tex="glass" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.textureGlass">Glass</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
                   </button>
-                  <button class="texture-btn p-3 rounded-lg border border-border bg-surface-2 hover:bg-border/30 transition text-center" data-texture="plastic">
-                    <div class="text-lg mb-1">🔷</div>
-                    <div class="text-[10px] font-semibold" data-i18n="settings.texturePlastic">Plastic</div>
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="plastic" aria-pressed="false">
+                    <span class="tex-swatch" data-tex="plastic" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.texturePlastic">Plastic</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
                   </button>
-                  <button class="texture-btn p-3 rounded-lg border border-border bg-surface-2 hover:bg-border/30 transition text-center" data-texture="metal">
-                    <div class="text-lg mb-1">⚙️</div>
-                    <div class="text-[10px] font-semibold" data-i18n="settings.textureMetal">Metal</div>
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="gloss" aria-pressed="false">
+                    <span class="tex-swatch" data-tex="gloss" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.textureGloss">Gloss</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
                   </button>
-                  <button class="texture-btn p-3 rounded-lg border border-border bg-surface-2 hover:bg-border/30 transition text-center" data-texture="wood">
-                    <div class="text-lg mb-1">🪵</div>
-                    <div class="text-[10px] font-semibold" data-i18n="settings.textureWood">Wood</div>
-                  </button>
-                  <button class="texture-btn p-3 rounded-lg border border-border bg-surface-2 hover:bg-border/30 transition text-center" data-texture="gloss">
-                    <div class="text-lg mb-1">✨</div>
-                    <div class="text-[10px] font-semibold" data-i18n="settings.textureGloss">Gloss</div>
-                  </button>
-                  <button class="texture-btn p-3 rounded-lg border border-border bg-surface-2 hover:bg-border/30 transition text-center" data-texture="mosaic">
-                    <div class="text-lg mb-1">🎨</div>
-                    <div class="text-[10px] font-semibold" data-i18n="settings.textureMosaic">Mosaic</div>
-                  </button>
-                  <button class="texture-btn p-3 rounded-lg border border-border bg-surface-2 hover:bg-border/30 transition text-center" data-texture="brick">
-                    <div class="text-lg mb-1">🧱</div>
-                    <div class="text-[10px] font-semibold" data-i18n="settings.textureBrick">Brick</div>
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="metal" aria-pressed="false">
+                    <span class="tex-swatch" data-tex="metal" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.textureMetal">Metal</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
                   </button>
                 </div>
-                <div>
-                  <label class="text-xs font-semibold text-muted block mb-1" data-i18n="settings.textureOpacity">Effect opacity</label>
-                  <input type="range" id="texture-opacity" min="0.05" max="1.0" step="0.05" value="0.3" class="w-full accent-accent" />
-                  <div class="flex justify-between text-[9px] text-muted mt-0.5"><span>5%</span><span>100%</span></div>
+                <div class="tex-cat" data-i18n="settings.texCatMaterials">Materials</div>
+                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2.5 mb-4">
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="wood" aria-pressed="false">
+                    <span class="tex-swatch" data-tex="wood" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.textureWood">Wood</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
+                  </button>
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="parquet" aria-pressed="false">
+                    <span class="tex-swatch" data-tex="parquet" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.textureParquet">Parquet</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
+                  </button>
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="marble" aria-pressed="false">
+                    <span class="tex-swatch" data-tex="marble" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.textureMarble">Marble</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
+                  </button>
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="tile" aria-pressed="false">
+                    <span class="tex-swatch" data-tex="tile" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.textureTile">Ceramic tile</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
+                  </button>
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="brick" aria-pressed="false">
+                    <span class="tex-swatch" data-tex="brick" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.textureBrick">Brick</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
+                  </button>
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="mosaic" aria-pressed="false">
+                    <span class="tex-swatch" data-tex="mosaic" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.textureMosaic">Mosaic</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
+                  </button>
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="pebbles" aria-pressed="false">
+                    <span class="tex-swatch" data-tex="pebbles" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.texturePebbles">Pebbles</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
+                  </button>
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="asphalt" aria-pressed="false">
+                    <span class="tex-swatch" data-tex="asphalt" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.textureAsphalt">Asphalt</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
+                  </button>
+                </div>
+                <div class="tex-cat" data-i18n="settings.texCatNature">Nature</div>
+                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2.5 mb-4">
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="water" aria-pressed="false">
+                    <span class="tex-swatch" data-tex="water" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.textureWater">Water</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
+                  </button>
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="swamp" aria-pressed="false">
+                    <span class="tex-swatch" data-tex="swamp" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.textureSwamp">Swamp</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
+                  </button>
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="grass" aria-pressed="false">
+                    <span class="tex-swatch" data-tex="grass" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.textureGrass">Grass</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
+                  </button>
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="hay" aria-pressed="false">
+                    <span class="tex-swatch" data-tex="hay" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.textureHay">Hay</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
+                  </button>
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="snow" aria-pressed="false">
+                    <span class="tex-swatch" data-tex="snow" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.textureSnow">Snow</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
+                  </button>
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="bubbles" aria-pressed="false">
+                    <span class="tex-swatch" data-tex="bubbles" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.textureBubbles">Bubbles</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
+                  </button>
+                </div>
+                <div class="tex-cat" data-i18n="settings.texCatRetro">Retro & special</div>
+                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2.5 mb-4">
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="film" aria-pressed="false">
+                    <span class="tex-swatch" data-tex="film" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.textureFilm">Film camera</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
+                  </button>
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="vhs" aria-pressed="false">
+                    <span class="tex-swatch" data-tex="vhs" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.textureVhs">VHS tape</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
+                  </button>
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="church" aria-pressed="false">
+                    <span class="tex-swatch" data-tex="church" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.textureChurch">Church window</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
+                  </button>
+                </div>
+                <div class="mt-1 pt-3 border-t border-border/60">
+                  <div class="flex items-center justify-between mb-1.5 gap-2 flex-wrap">
+                    <label class="text-xs font-semibold text-muted" for="texture-opacity" data-i18n="settings.textureOpacity">Effect opacity</label>
+                    <div class="flex items-center gap-2">
+                      <span id="texture-opacity-val">35%</span>
+                      <button type="button" id="texture-opacity-reset" class="text-[10px] font-semibold text-muted hover:text-accent border border-border rounded-md px-2 py-0.5 transition" data-i18n="settings.textureReset">Reset</button>
+                    </div>
+                  </div>
+                  <input type="range" id="texture-opacity" min="0.05" max="1" step="0.05" value="0.35" class="w-full accent-accent" />
+                  <div class="flex justify-between items-center text-[9px] text-muted mt-0.5 gap-2">
+                    <span>5%</span>
+                    <span class="text-center" data-i18n="settings.textureOpacityHint">Each effect has its own optimal level — Reset returns to it</span>
+                    <span>100%</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -22519,43 +22732,82 @@ async function boot() {
       });
     });
 
-    // ---- Texture Effects ----
-    async function loadTexture() {
-      try {
-        const row = await db.get('settings', 'texture');
-        const tex = row && row.value ? row.value : { name: 'none', opacity: 0.15 };
-        document.body.setAttribute('data-texture', tex.name);
-        document.documentElement.style.setProperty('--texture-opacity', tex.opacity);
-        const slider = document.getElementById('texture-opacity');
-        if (slider) slider.value = tex.opacity;
-        document.querySelectorAll('.texture-btn').forEach(btn => {
-          btn.classList.toggle('bg-primary', btn.getAttribute('data-texture') === tex.name);
-          btn.classList.toggle('text-white', btn.getAttribute('data-texture') === tex.name);
-          btn.classList.toggle('border-primary', btn.getAttribute('data-texture') === tex.name);
-        });
-      } catch(e) {}
-    }
-    document.querySelectorAll('.texture-btn').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const name = btn.getAttribute('data-texture');
-        const opacity = parseFloat(document.getElementById('texture-opacity').value);
-        document.body.setAttribute('data-texture', name);
-        document.documentElement.style.setProperty('--texture-opacity', opacity);
-        await db.put('settings', { key: 'texture', value: { name, opacity } });
-        loadTexture();
-        toast(t('settings.textureApplied') || 'Texture applied', 'success', 2000);
-      });
-    });
-    const texSlider = document.getElementById('texture-opacity');
-    if (texSlider) texSlider.addEventListener('input', async () => {
-      const opacity = parseFloat(texSlider.value);
-      document.documentElement.style.setProperty('--texture-opacity', opacity);
-      const row = await db.get('settings', 'texture');
-      const tex = row && row.value ? row.value : { name: 'none' };
-      tex.opacity = opacity;
-      await db.put('settings', { key: 'texture', value: tex });
-    });
-    loadTexture();
+// ---- Texture Effects v2 (c79) ----
+const TEX_FX = ['none','glass','plastic','gloss','metal','wood','parquet','marble','tile','brick','mosaic','pebbles','asphalt','water','swamp','grass','hay','snow','bubbles','film','vhs','church'];
+const TEX_LABEL = { none:'textureNone', glass:'textureGlass', plastic:'texturePlastic', gloss:'textureGloss', metal:'textureMetal', wood:'textureWood', parquet:'textureParquet', marble:'textureMarble', tile:'textureTile', brick:'textureBrick', mosaic:'textureMosaic', pebbles:'texturePebbles', asphalt:'textureAsphalt', water:'textureWater', swamp:'textureSwamp', grass:'textureGrass', hay:'textureHay', snow:'textureSnow', bubbles:'textureBubbles', film:'textureFilm', vhs:'textureVhs', church:'textureChurch' };
+function texEnsureOverlay() {
+  let el = document.getElementById('dk-tex-overlay');
+  if (!el) { el = document.createElement('div'); el.id = 'dk-tex-overlay'; el.setAttribute('aria-hidden', 'true'); document.body.prepend(el); }
+  return el;
+}
+let texState = { name: 'none', opacity: null };
+let texSaveTimer = null;
+function texPersist() {
+  clearTimeout(texSaveTimer);
+  texSaveTimer = setTimeout(async () => {
+    try { await db.put('settings', { key: 'texture', value: { name: texState.name, opacity: texState.opacity } }); } catch (e) {}
+  }, 250);
+}
+function texBadge() {
+  const b = document.getElementById('tex-active-badge');
+  if (b) b.textContent = t('settings.' + (TEX_LABEL[texState.name] || 'textureNone')) || texState.name;
+}
+function texApply(name, opacity) {
+  if (TEX_FX.indexOf(name) === -1) name = 'none';
+  texState.name = name;
+  texState.opacity = (typeof opacity === 'number' && isFinite(opacity)) ? Math.min(1, Math.max(0.05, opacity)) : null;
+  texEnsureOverlay();
+  document.body.setAttribute('data-tex', texState.name);
+  if (texState.opacity == null) document.body.style.removeProperty('--texture-opacity-user');
+  else document.body.style.setProperty('--texture-opacity-user', String(texState.opacity));
+  let defV = parseFloat(getComputedStyle(document.body).getPropertyValue('--texture-opacity-def'));
+  const shown = texState.opacity != null ? texState.opacity : (isFinite(defV) && defV > 0 ? defV : 0.35);
+  const slider = document.getElementById('texture-opacity');
+  if (slider) slider.value = String(shown);
+  const valEl = document.getElementById('texture-opacity-val');
+  if (valEl) valEl.textContent = Math.round(shown * 100) + '%';
+  document.querySelectorAll('.texture-btn').forEach(btn => {
+    const on = btn.getAttribute('data-tex') === texState.name;
+    btn.classList.toggle('active', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  texBadge();
+}
+async function loadTexture() {
+  try {
+    const row = await db.get('settings', 'texture');
+    const v = row && row.value ? row.value : {};
+    texApply(v.name || 'none', typeof v.opacity === 'number' && isFinite(v.opacity) ? v.opacity : null);
+  } catch (e) { texApply('none', null); }
+}
+document.querySelectorAll('.texture-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    texApply(btn.getAttribute('data-tex'), texState.opacity);
+    texPersist();
+    toast(t('settings.textureApplied') || 'Texture applied', 'success', 1800);
+  });
+});
+const texSlider = document.getElementById('texture-opacity');
+if (texSlider) {
+  texSlider.addEventListener('input', () => {
+    const v = parseFloat(texSlider.value);
+    if (!isFinite(v)) return;
+    texState.opacity = v;
+    document.body.style.setProperty('--texture-opacity-user', String(v));
+    const valEl = document.getElementById('texture-opacity-val');
+    if (valEl) valEl.textContent = Math.round(v * 100) + '%';
+    texPersist();
+  });
+  texSlider.addEventListener('change', () => texPersist());
+}
+const texResetBtn = document.getElementById('texture-opacity-reset');
+if (texResetBtn) texResetBtn.addEventListener('click', () => {
+  texApply(texState.name, null);
+  texPersist();
+  toast(t('settings.textureResetDone') || 'Returned to effect default', 'success', 1600);
+});
+document.addEventListener('dk-lang', texBadge);
+loadTexture();
 
     // ---- Branding ----
     async function loadBranding() {
@@ -25854,7 +26106,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 78; /* numeric part of dk-build c78 */
+  var RUNNING = 79; /* numeric part of dk-build c79 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

@@ -41,7 +41,7 @@
 // v85: taxonomy v2 — 800+ group fixes, seed v93 (c58)
 // v86: hinge-fix — RDL family → hamstrings, pull-through/hip-hinge family → glutes, seed v94 (c59)
 // v87: subgroup pass — hammer→brachioradialis / reverse→brachialis + 35 fixes, muscle kept on source switch, seed v95 (c60)
-const CACHE_NAME = 'dk-gym-v105'; // v105: c78 — ui-sizes persistence race fixed (stuck-at-max sanitized once, debounced single-write saves) + Exercise DB tab picker-parity (flat view default, localized All, no equip counts, compact muscle chips)
+const CACHE_NAME = 'dk-gym-v106'; // v106: c79 — Texture Effects 2.0: 22 effects (asphalt, pebbles, water, church window, marble, ceramic tile, parquet, swamp, film, VHS, grass, hay, snow, bubbles + rebuilt basics), live preview swatches, working opacity slider (per-effect defaults + body-scoped user override), dedicated overlay div (no more theme body::after conflicts)
 // v104: c77 — UI sizes can no longer change themselves (zoom-based gif/food/cards, wheel/touch slider guards) + hard pre-login lock (Add Client included) + header theme quick menu with all 33 themes
 // v103: c76 — Exercise DB tab = exact Quick Pick copy (star/eye/+ cards, favorites/recent tabs, View grouping, localized map tabs)
 // v102: c75 — 3D atlas 1.5x + Settings ▸ UI sizes (atlas slider, bodymap/exercise-panel fixes) + Exercise DB tab rebuilt as picker-style browse
