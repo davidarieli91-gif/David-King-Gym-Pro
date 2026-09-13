@@ -105,7 +105,7 @@ const _mmEsc = (v) => String(v == null ? '' : v)
     };
     // Card chips: every working muscle, target highlighted in group color (◉),
     // secondaries neutral (○). ex = any exercise shape; lang = 'en'|'ru'|'he'.
-    function getExerciseMuscleChips(ex, lang) {
+    function getExerciseMuscleChips(ex, lang, opts) {
       if (!ex) return '';
       let L = lang || ((typeof document !== 'undefined' && document.documentElement && document.documentElement.lang) || 'en');
       L = String(L).slice(0, 2).toLowerCase();
@@ -122,10 +122,17 @@ const _mmEsc = (v) => String(v == null ? '' : v)
       }
       const nm = (g) => ((GROUP_NAMES_3[g] && GROUP_NAMES_3[g][L]) || g);
       const pc = GROUP_COLORS[primary] || GROUP_COLORS.other;
+      /* c78: optional cap on secondary chips — fullbody moves used to print 5-6
+         stacked ○ chips that made cards tall and ragged; maxAux keeps it tidy. */
+      const maxAux = (opts && opts.maxAux > 0) ? opts.maxAux : 0;
+      const shown = maxAux ? aux.slice(0, maxAux) : aux;
       let html = '<span class="text-[11px] font-bold px-2 py-1 rounded-md" style="background:' + pc + '26;color:' + pc + '">◉ ' + _mmEsc(nm(primary)) + '</span>';
-      aux.forEach(a => {
+      shown.forEach(a => {
         html += '<span class="text-[11px] px-2 py-1 rounded-md" style="background:rgba(127,140,160,.14);color:inherit;opacity:.85">○ ' + _mmEsc(nm(a)) + '</span>';
       });
+      if (maxAux && aux.length > shown.length) {
+        html += '<span class="text-[11px] font-semibold px-2 py-1 rounded-md" style="background:rgba(127,140,160,.14);opacity:.75">+' + (aux.length - shown.length) + '</span>';
+      }
       return html;
     }
 
