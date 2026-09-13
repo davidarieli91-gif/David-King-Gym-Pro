@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c67" />
+<meta name="dk-build" content="c68" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2042,7 +2042,7 @@
 </style>
 
 <style id="atlas-style">
-/* ===== DK 3D Body Atlas (c67) ===== */
+/* ===== DK 3D Body Atlas (c68) ===== */
 html.atlas-lock { overflow: hidden; }
 #atlas-canvas { display: block; width: 100%; height: 100%; touch-action: none; outline: none; }
 #atlas-panel { display: none; }
@@ -2106,6 +2106,46 @@ html.atlas-lock { overflow: hidden; }
   animation: atlas-spin 1s linear infinite;
 }
 @keyframes atlas-spin { to { transform: rotate(360deg); } }
+/* ===== c68: peeling — hide / x-ray / isolate ===== */
+.atlas-row.hid { opacity: .45; }
+.atlas-row.hid .atlas-row-dot { background: transparent; border: 1.5px dashed rgb(var(--c-muted)); }
+.atlas-hide-btn { background: rgb(var(--c-surface)); color: rgb(var(--c-text)); border-color: rgb(var(--c-border)); }
+.atlas-hide-btn:hover { filter: brightness(1.25); }
+.atlas-hide-btn svg { width: 12px; height: 12px; flex: none; }
+#atlas-xray-slide {
+  pointer-events: auto; width: 76px; height: 28px; accent-color: #dc2626;
+  background: transparent; cursor: pointer; padding: 0;
+}
+#atlas-hidden {
+  position: absolute; top: 4.9rem; left: 50%; transform: translateX(-50%);
+  max-width: min(94%, 640px); max-height: 5.6rem; overflow-y: auto; overflow-x: hidden;
+  display: flex; align-items: center; gap: .35rem; flex-wrap: wrap; justify-content: center;
+  z-index: 10; padding: .4rem .5rem; border-radius: .8rem;
+  background: rgb(var(--c-surface) / .92); border: 1px solid rgb(var(--c-border));
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  scrollbar-width: thin;
+}
+#atlas-hidden::-webkit-scrollbar { width: 5px; }
+#atlas-hidden::-webkit-scrollbar-thumb { background: rgb(var(--c-border)); border-radius: 9999px; }
+#atlas-hidden.hidden { display: none; }
+.atlas-hidden-lbl { font-size: 10px; font-weight: 700; color: rgb(var(--c-muted)); text-transform: uppercase; letter-spacing: .04em; flex: none; }
+.atlas-hidden-chip {
+  display: inline-flex; align-items: center; gap: .3rem; flex: none; max-width: 11.5rem;
+  font-size: 10.5px; font-weight: 600; padding: .18rem .5rem; border-radius: 9999px; cursor: pointer;
+  background: rgb(var(--c-primary) / .12); color: rgb(var(--c-text));
+  border: 1px solid rgb(var(--c-border));
+  transition: border-color .15s ease, color .15s ease;
+}
+.atlas-hidden-chip .l { max-width: 9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.atlas-hidden-chip span[aria-hidden] { color: rgb(var(--c-muted)); font-size: 9px; flex: none; }
+.atlas-hidden-chip:hover { border-color: rgb(var(--c-primary) / .5); color: rgb(var(--c-primary-2)); }
+.atlas-restore-all {
+  display: inline-flex; align-items: center; flex: none;
+  font-size: 10.5px; font-weight: 700; padding: .18rem .55rem; border-radius: 9999px; cursor: pointer;
+  background: rgb(var(--c-primary)); color: #fff; border: 1px solid transparent;
+  transition: filter .15s ease;
+}
+.atlas-restore-all:hover { filter: brightness(1.12); }
 </style>
 </head>
 
@@ -2299,7 +2339,7 @@ html.atlas-lock { overflow: hidden; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c67</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c68</p>
             </div>
           </div>
 
@@ -2314,7 +2354,7 @@ html.atlas-lock { overflow: hidden; }
                 <span data-i18n="aside.addClient">Add Client</span>
               </button>
             </div>
-            <!-- 3D Body Atlas entry (c67) -->
+            <!-- 3D Body Atlas entry (c68) -->
             <button id="dash-atlas-card" class="w-full flex items-center gap-3 p-3 mb-3 rounded-xl bg-danger/10 border border-danger/25 text-start hover:bg-danger/15 transition shadow-card">
               <span class="w-10 h-10 grid place-items-center rounded-lg bg-danger/15 text-danger shrink-0">
                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="4.5" r="2"/><path d="M12 7v6M12 13l-4 7M12 13l4 7M8 9.5h8"/></svg>
@@ -25280,7 +25320,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 66; /* numeric part of dk-build c63 */
+  var RUNNING = 68; /* numeric part of dk-build c68 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
@@ -25346,7 +25386,7 @@ document.addEventListener('input', function (e) {
 </script>
 
 
-<!-- ============= 3D BODY ATLAS (c67) ============= -->
+<!-- ============= 3D BODY ATLAS (c67+c68) ============= -->
 <div id="atlas-modal" class="hidden fixed inset-0 z-[130] bg-surface" role="dialog" aria-modal="true" aria-label="3D Body Atlas">
   <div class="flex flex-col h-full">
     <div class="flex items-center gap-2 p-3 border-b border-border bg-surface shrink-0">
@@ -25369,6 +25409,7 @@ document.addEventListener('input', function (e) {
         <canvas id="atlas-canvas"></canvas>
         <div id="atlas-info" class="hidden absolute top-3 inset-x-3 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 glass border border-border rounded-xl px-3 py-2 shadow-card max-w-[92%] text-center z-10"></div>
         <div id="atlas-hint" class="absolute bottom-16 inset-x-0 text-center text-xs text-muted pointer-events-none px-4">Tap a muscle to highlight it</div>
+        <div id="atlas-hidden" class="hidden" aria-live="polite"></div>
         <div class="absolute bottom-3 inset-x-0 flex flex-wrap items-center justify-center gap-1.5 pointer-events-none px-2">
           <button id="atlas-reset" class="atlas-btn" aria-label="Reset view">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
@@ -25379,6 +25420,15 @@ document.addEventListener('input', function (e) {
           </button>
           <button id="atlas-front" class="atlas-btn"><span class="atlas-btn-txt">Front</span></button>
           <button id="atlas-back" class="atlas-btn"><span class="atlas-btn-txt">Back</span></button>
+          <button id="atlas-xray" class="atlas-btn" aria-label="X-ray" aria-pressed="false">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            <span class="atlas-btn-txt">X-ray</span>
+          </button>
+          <input id="atlas-xray-slide" class="hidden" type="range" min="5" max="60" step="1" value="16" aria-label="Ghost opacity">
+          <button id="atlas-iso" class="atlas-btn" aria-label="Isolate" aria-pressed="false">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+            <span class="atlas-btn-txt">Isolate</span>
+          </button>
           <button id="atlas-panel-toggle" class="atlas-btn" aria-label="Muscle list">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
             <span class="atlas-btn-txt">Muscles</span>
@@ -25402,7 +25452,7 @@ document.addEventListener('input', function (e) {
 </div>
 <script>
 /* ============================================================
-   DK 3D BODY ATLAS (c67)
+   DK 3D BODY ATLAS (c68)
    Self-contained classic script. No build-time module graph:
    three.js r170 is lazy-loaded on first open from jsDelivr
    (+esm bundles, absolute URLs — no importmap needed).
@@ -25434,7 +25484,15 @@ document.addEventListener('input', function (e) {
     credit:       { en: 'Model: Z-Anatomy (CC BY-SA 4.0) · BodyParts3D (CC BY-SA 2.1 JP)', ru: 'Модель: Z-Anatomy (CC BY-SA 4.0) · BodyParts3D (CC BY-SA 2.1 JP)', he: 'מודל: Z-Anatomy (CC BY-SA 4.0) · BodyParts3D (CC BY-SA 2.1 JP)' },
     close:        { en: 'Close', ru: 'Закрыть', he: 'סגור' },
     nothingSel:   { en: 'Nothing selected', ru: 'Ничего не выбрано', he: 'לא נבחר דבר' },
-    showEx:       { en: 'Show exercises', ru: 'Показать упражнения', he: 'הצג תרגילים' }
+    showEx:       { en: 'Show exercises', ru: 'Показать упражнения', he: 'הצג תרגילים' },
+    /* c68: peeling */
+    xray:         { en: 'X-ray', ru: 'Рентген', he: 'רנטגן' },
+    ghostOp:      { en: 'Ghost opacity', ru: 'Прозрачность', he: 'שקיפות' },
+    isolate:      { en: 'Isolate', ru: 'Изолировать', he: 'בידוד' },
+    hide:         { en: 'Hide', ru: 'Скрыть', he: 'הסתר' },
+    show:         { en: 'Show', ru: 'Показать', he: 'הצג' },
+    hiddenLbl:    { en: 'Hidden:', ru: 'Скрыты:', he: 'מוסתרות:' },
+    showAll:      { en: 'Show all', ru: 'Показать все', he: 'הצג הכל' }
   };
 
   /* Region labels (keys = top-level GLB group node names) */
@@ -25653,7 +25711,9 @@ document.addEventListener('input', function (e) {
     inited: false, initing: false, open: false,
     THREE: null, renderer: null, scene: null, camera: null, controls: null,
     root: null, raf: 0, parts: [], groups: new Map(), selected: [],
-    camBase: null, autoRot: false
+    camBase: null, autoRot: false,
+    /* c68 peeling: manually hidden bases, meshes hidden by isolate, x-ray */
+    hidden: new Map(), isoHidden: new Set(), xray: false, xrayOp: 0.16, isolate: false
   };
 
   /* ---------------- helpers ---------------- */
@@ -25701,7 +25761,9 @@ document.addEventListener('input', function (e) {
       infoChip._exWired = true;
       infoChip.addEventListener('click', function (e) {
         var b = e.target.closest ? e.target.closest('[data-gkey]') : null;
-        if (b) showExercisesFor(b.getAttribute('data-gkey'));
+        if (b) { showExercisesFor(b.getAttribute('data-gkey')); return; }
+        var h = e.target.closest ? e.target.closest('[data-act="hide"]') : null;
+        if (h) hideSelected();
       });
     }
   }
@@ -25808,6 +25870,8 @@ document.addEventListener('input', function (e) {
         } else {
           o.material = new THREE.MeshStandardMaterial({ color: 0xb9bcc4, roughness: 0.75, metalness: 0 });
         }
+        /* c68: unique material per mesh — x-ray ghosting must not leak to neighbours */
+        if (o.material.clone) o.material = o.material.clone();
       }
     });
 
@@ -25895,6 +25959,7 @@ document.addEventListener('input', function (e) {
     }
     meshes.forEach(function (m) { m.material = mat; });
     S.selected = meshes;
+    refreshRenderState();
   }
 
   function selectMuscle(mesh, scrollList) {
@@ -25917,9 +25982,13 @@ document.addEventListener('input', function (e) {
     var exHtml = gkey ? '<button type="button" class="atlas-ex-btn" data-gkey="' + esc(gkey) + '">' +
       '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 1 1"/><path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m18 22 4-4"/><path d="m2 6 4-4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/></svg>' +
       esc(tr(UI.showEx)) + '</button>' : '';
+    /* c68: «Скрыть» — peel the selected muscle away to reveal what is behind it */
+    var hideHtml = '<button type="button" class="atlas-ex-btn atlas-hide-btn" data-act="hide">' +
+      '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 4.32A10.4 10.4 0 0 1 12 4c7 0 10 8 10 8a17.4 17.4 0 0 1-2.16 3.19"/><path d="M6.61 6.61A16.9 16.9 0 0 0 2 12s3 8 10 8a10.7 10.7 0 0 0 5.39-1.61"/><path d="m2 2 20 20"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/></svg>' +
+      esc(tr(UI.hide)) + '</button>';
     infoChip.innerHTML = '<div class="font-semibold text-sm leading-tight">' + esc(muscleLabel(base)) +
       (sideTxt ? ' <span class="text-muted font-normal text-xs">· ' + esc(sideTxt) + '</span>' : '') + '</div>' +
-      '<div class="atlas-info-row">' + gHtml + exHtml + '</div>';
+      '<div class="atlas-info-row">' + gHtml + exHtml + hideHtml + '</div>';
     infoChip.classList.remove('hidden');
   }
 
@@ -25966,8 +26035,90 @@ document.addEventListener('input', function (e) {
     var hits = _rc.intersectObjects(S.root.children, true);
     for (var i = 0; i < hits.length; i++) {
       var m = hits[i].object;
-      if (m.isMesh && m.userData.base && !HIDE_RE.test(m.userData.base)) { selectMuscle(m, true); return; }
+      if (m.isMesh && m.visible && m.userData.base && !HIDE_RE.test(m.userData.base)) { selectMuscle(m, true); return; }
     }
+  }
+
+  /* ---------------- c68: peeling — hide / restore / x-ray / isolate ---------------- */
+  function refreshRenderState() {
+    /* release meshes auto-hidden by isolate, then re-apply from scratch */
+    S.isoHidden.forEach(function (m) { m.visible = true; });
+    S.isoHidden.clear();
+    if (S.isolate && S.selected.length) {
+      var sel = S.selected;
+      S.parts.forEach(function (m) {
+        if (!m.visible || S.hidden.has(m.userData.base)) return;
+        if (sel.indexOf(m) < 0) { m.visible = false; S.isoHidden.add(m); }
+      });
+    }
+    applyXray();
+  }
+  function applyXray() {
+    var op = S.xrayOp || 0.16;
+    var sel = S.selected || [];
+    S.parts.forEach(function (m) {
+      var mat = m.userData.origMat; if (!mat) return;
+      var ghost = S.xray && m.visible && sel.indexOf(m) < 0;
+      mat.transparent = ghost;
+      mat.opacity = ghost ? op : 1;
+      mat.depthWrite = !ghost;
+    });
+  }
+  function hideBase(base) {
+    var meshes = S.groups.get(base) || [];
+    meshes.forEach(function (m) { m.visible = false; S.isoHidden.delete(m); });
+    S.hidden.set(base, meshes);
+    if (S.selected.length) clearHighlight();
+    if (infoChip) infoChip.classList.add('hidden');
+    refreshRenderState();
+    renderHiddenStrip();
+    updateRowHidden(base);
+  }
+  function unhideBase(base, andSelect) {
+    var meshes = S.groups.get(base) || [];
+    meshes.forEach(function (m) { m.visible = true; });
+    S.hidden.delete(base);
+    refreshRenderState();
+    renderHiddenStrip();
+    updateRowHidden(base);
+    if (andSelect && meshes.length) { highlightMeshes(meshes); showChip(base); }
+  }
+  function restoreAll() {
+    Array.from(S.hidden.keys()).forEach(function (b) { unhideBase(b, false); });
+  }
+  function hideSelected() {
+    if (!S.selected || !S.selected.length) return;
+    var base = S.selected[0].userData.base;
+    if (S.isolate) setIso(false);
+    hideBase(base);
+  }
+  function setIso(on) {
+    S.isolate = !!on;
+    var b = $('atlas-iso');
+    if (b) { b.classList.toggle('on', S.isolate); b.setAttribute('aria-pressed', S.isolate ? 'true' : 'false'); }
+    refreshRenderState();
+  }
+  function renderHiddenStrip() {
+    var strip = $('atlas-hidden'); if (!strip) return;
+    var keys = Array.from(S.hidden.keys());
+    if (!keys.length) { strip.classList.add('hidden'); strip.innerHTML = ''; return; }
+    keys.sort(function (a, b) { return muscleLabel(a).localeCompare(muscleLabel(b)); });
+    var html = '<span class="atlas-hidden-lbl">' + esc(tr(UI.hiddenLbl)) + '</span>';
+    keys.forEach(function (b) {
+      html += '<button type="button" class="atlas-hidden-chip" data-unbase="' + esc(b) +
+        '" aria-label="' + esc(tr(UI.show)) + ': ' + esc(muscleLabel(b)) + '">' +
+        '<span class="l">' + esc(muscleLabel(b)) + '</span><span aria-hidden="true">✕</span></button>';
+    });
+    html += '<button type="button" class="atlas-restore-all" data-unall="1">' + esc(tr(UI.showAll)) + '</button>';
+    strip.innerHTML = html;
+    strip.classList.remove('hidden');
+  }
+  function updateRowHidden(base) {
+    if (!listEl) return;
+    var hid = S.hidden.has(base);
+    listEl.querySelectorAll('.atlas-row[data-base="' + cssEsc(base) + '"]').forEach(function (r) {
+      r.classList.toggle('hid', hid);
+    });
   }
 
   /* ---------------- list UI ---------------- */
@@ -26002,7 +26153,7 @@ document.addEventListener('input', function (e) {
         var parts = rmap.get(b);
         var sides = parts.map(function (m) { return m.userData.side; });
         var both = sides.indexOf('r') > -1 && sides.indexOf('l') > -1;
-        html += '<button type="button" class="atlas-row" data-base="' + esc(b) + '">' +
+        html += '<button type="button" class="atlas-row' + (S.hidden.has(b) ? ' hid' : '') + '" data-base="' + esc(b) + '">' +
           '<span class="atlas-row-dot"></span><span class="flex-1 min-w-0 truncate text-start">' + esc(muscleLabel(b)) + '</span>' +
           (both ? '<span class="text-[9px] text-muted font-mono">R/L</span>' : '') +
           '</button>';
@@ -26016,6 +26167,7 @@ document.addEventListener('input', function (e) {
         var base = btn.getAttribute('data-base');
         var group = S.groups.get(base) || [];
         if (!group.length) return;
+        if (S.hidden.has(base)) unhideBase(base, false);
         highlightMeshes(group);
         showChip(base);
         listEl.querySelectorAll('.atlas-row.sel').forEach(function (r) { r.classList.remove('sel'); });
@@ -26081,6 +26233,14 @@ document.addEventListener('input', function (e) {
     var er = document.querySelector('#atlas-load .atlas-err-txt'); if (er) er.textContent = tr(UI.loadErr);
     var ry = document.querySelector('#atlas-load .atlas-retry .atlas-btn-txt'); if (ry) ry.textContent = tr(UI.retry);
     var hint = $('atlas-hint'); if (hint) hint.textContent = tr(UI.tapHint);
+    ['atlas-xray', 'atlas-iso'].forEach(function (id) {
+      var b = $(id); if (!b) return;
+      var key = { 'atlas-xray': 'xray', 'atlas-iso': 'isolate' }[id];
+      var lbl = b.querySelector('.atlas-btn-txt');
+      if (lbl) lbl.textContent = tr(UI[key]);
+      b.setAttribute('aria-label', tr(UI[key]));
+    });
+    renderHiddenStrip();
     ['atlas-reset', 'atlas-rot', 'atlas-front', 'atlas-back', 'atlas-panel-toggle'].forEach(function (id) {
       var b = $(id); if (!b) return;
       var key = { 'atlas-reset': 'reset', 'atlas-rot': 'autoRotate', 'atlas-front': 'front', 'atlas-back': 'back', 'atlas-panel-toggle': 'showList' }[id];
@@ -26188,6 +26348,29 @@ document.addEventListener('input', function (e) {
     var pt = $('atlas-panel-toggle');
     if (pt) pt.addEventListener('click', function () {
       if (panelEl) panelEl.classList.toggle('atlas-panel-open');
+    });
+    /* c68: peeling controls */
+    var xr = $('atlas-xray');
+    if (xr) xr.addEventListener('click', function () {
+      S.xray = !S.xray;
+      xr.classList.toggle('on', S.xray);
+      xr.setAttribute('aria-pressed', S.xray ? 'true' : 'false');
+      var sl = $('atlas-xray-slide'); if (sl) sl.classList.toggle('hidden', !S.xray);
+      refreshRenderState();
+    });
+    var xs = $('atlas-xray-slide');
+    if (xs) xs.addEventListener('input', function () {
+      var v = parseInt(xs.value, 10); S.xrayOp = (isNaN(v) ? 16 : v) / 100;
+      if (S.xray) applyXray();
+    });
+    var iso = $('atlas-iso');
+    if (iso) iso.addEventListener('click', function () { setIso(!S.isolate); });
+    var strip = $('atlas-hidden');
+    if (strip) strip.addEventListener('click', function (e) {
+      var c = e.target.closest ? e.target.closest('[data-unbase]') : null;
+      if (c) { unhideBase(c.getAttribute('data-unbase'), true); return; }
+      var a = e.target.closest ? e.target.closest('[data-unall]') : null;
+      if (a) restoreAll();
     });
     if (searchEl) searchEl.addEventListener('input', function () {
       var q = searchEl.value.trim().toLowerCase();
