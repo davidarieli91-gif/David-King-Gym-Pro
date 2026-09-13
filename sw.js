@@ -41,7 +41,8 @@
 // v85: taxonomy v2 — 800+ group fixes, seed v93 (c58)
 // v86: hinge-fix — RDL family → hamstrings, pull-through/hip-hinge family → glutes, seed v94 (c59)
 // v87: subgroup pass — hammer→brachioradialis / reverse→brachialis + 35 fixes, muscle kept on source switch, seed v95 (c60)
-const CACHE_NAME = 'dk-gym-v102'; // v102: c75 — 3D atlas 1.5x + Settings ▸ UI sizes (atlas slider, bodymap/exercise-panel fixes) + Exercise DB tab rebuilt as picker-style browse
+const CACHE_NAME = 'dk-gym-v103'; // v103: c76 — Exercise DB tab = exact Quick Pick copy (star/eye/+ cards, favorites/recent tabs, View grouping, localized map tabs)
+// v102: c75 — 3D atlas 1.5x + Settings ▸ UI sizes (atlas slider, bodymap/exercise-panel fixes) + Exercise DB tab rebuilt as picker-style browse
 // v100: c73 sidebar Atlas above Settings + atlas auth-gated (no open before login)
 // v99: c72 atlas subgroup filter — MSUB muscle→sE (Upper/Lower chest, Lats, Rotator Cuff…) passed into Exercise DB body-map filter
 // v98: c71 i18n race — plans badge t() at render + delayed applyI18n pass for async renders
