@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c69" />
+<meta name="dk-build" content="c70" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2339,7 +2339,7 @@ html.atlas-lock { overflow: hidden; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c69</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c70</p>
             </div>
           </div>
 
@@ -6335,8 +6335,9 @@ html.atlas-lock { overflow: hidden; }
         const isActive = btn.getAttribute('data-nav') === name;
         btn.setAttribute('aria-current', isActive ? 'page' : 'false');
       });
-      // Trigger render hook
-      refreshCurrent();
+      // Trigger render hook (c70: guarded — a failing screen refresh must never
+      // skip the i18n re-apply below, or the new screen shows the old language)
+      try { refreshCurrent(); } catch (e) { console.warn('[router] refreshCurrent failed', e); }
       // Re-apply i18n so newly-shown content gets translated
       applyI18n(currentLang());
       // Scroll main to top on screen change
@@ -6349,34 +6350,47 @@ html.atlas-lock { overflow: hidden; }
      *  render functions doesn't update via data-i18n alone). */
     function refreshCurrent() {
       const name = _current;
+      /* c70: every branch is individually guarded — one broken screen refresh
+         must not abort the others (language switch runs several of these). */
+      const safe = (label, fn) => {
+        try { fn(); } catch (e) { console.warn('[router] refresh ' + label + ' failed', e); }
+      };
       if (name === 'dashboard' && screens.dashboard) {
-        screens.dashboard.refresh();
+        safe('dashboard', () => screens.dashboard.refresh());
       }
       if (name === 'analytics' && screens.analytics) {
-        screens.analytics.refresh();
+        safe('analytics', () => screens.analytics.refresh());
       }
       if (name === 'workouts' && screens.exercises) {
-        screens.exercises.refresh();
-        if (screens.templates) screens.templates.refresh();
-        if (screens.history) screens.history.refresh();
+        safe('exercises', () => screens.exercises.refresh());
+        if (screens.templates) safe('templates', () => screens.templates.refresh());
+        if (screens.history) safe('history', () => screens.history.refresh());
       }
       if (name === 'nutrition' && screens.nutrition) {
-        screens.nutrition.refresh();
-        if (typeof foodDatabase !== 'undefined') foodDatabase.refresh();
-        if (typeof nutritionTemplates !== 'undefined') nutritionTemplates.refresh();
+        safe('nutrition', () => screens.nutrition.refresh());
+        if (typeof foodDatabase !== 'undefined') safe('foodDatabase', () => foodDatabase.refresh());
+        if (typeof nutritionTemplates !== 'undefined') safe('nutritionTemplates', () => nutritionTemplates.refresh());
+        /* c70: Nutrition v2 plans list is JS-built with t() at render time —
+           re-render it so plan labels follow the new language (was stale until
+           the client was re-selected). */
+        if (typeof nutritionPlans !== 'undefined' && nutritionPlans.reloadPlans && screens.nutrition.clientId) {
+          safe('nutritionPlans', () => { nutritionPlans.reloadPlans(screens.nutrition.clientId); });
+        }
       }
       // Client card: re-render inner panels (programs, nutrition, stats)
       if (name === 'profile' && screens.profile && screens.profile.clientId) {
-        try { screens.profile.render(); } catch (_) {}
+        safe('profile', () => screens.profile.render());
       }
       // Live workout: re-render exercise names/groups in the new language
       if (name === 'live-workout' && screens.liveWorkout && screens.liveWorkout._workout) {
-        try { screens.liveWorkout.render(); } catch (_) {}
+        safe('liveWorkout', () => screens.liveWorkout.render());
       }
       if (name === 'settings') {
-        const langSel = document.getElementById('settings-lang-select');
-        if (langSel) langSel.value = currentLang();
-        if (typeof renderThemeGrid === 'function') renderThemeGrid();
+        safe('settings', () => {
+          const langSel = document.getElementById('settings-lang-select');
+          if (langSel) langSel.value = currentLang();
+          if (typeof renderThemeGrid === 'function') renderThemeGrid();
+        });
       }
     }
 
@@ -19513,7 +19527,13 @@ Select foods for each meal. Output as JSON only.`;
       if (backBtn) backBtn.addEventListener('click', () => renderMicronutrientAnalysis());
     }
 
-    return { loadFoods, loadPlans, openCreator, openEditor, savePlan, renderFoodResults,
+    /* c70: language-switch hooks — reloadPlans re-renders the plans list for a
+       client (t() labels are baked at render time); refreshEditor re-renders
+       the open plan editor body in the new language. Neither touches db state. */
+    function reloadPlans(clientId) { return loadPlans(clientId); }
+    function refreshEditor() { renderEditor(); }
+
+    return { loadFoods, loadPlans, reloadPlans, refreshEditor, openCreator, openEditor, savePlan, renderFoodResults,
              applyGenerated, _openPickerForTemplate, adjustMacro, scaleAllPortions,
              openMicronutrientAnalysis, renderMicronutrientAnalysis, suggestFoodsForGaps,
              switchMicroTab, renderAminoAcids,
@@ -23446,6 +23466,10 @@ document.addEventListener('DOMContentLoaded', function () {
     if (bmSel) bmSel.value = lang;
     const npSel = document.getElementById('np-lang-select');
     if (npSel) npSel.value = lang;
+    // c70: keep the settings-screen duplicate in sync too (applyI18n runs on
+    // navigation, i18n-ready and backup import — not only on lang switch)
+    const setSel = document.getElementById('settings-lang-select');
+    if (setSel) setSel.value = lang;
 
     // Re-render injury checklist labels (they use t() at creation time)
     if (typeof window.renderClientInjuryList === 'function') {
@@ -23511,6 +23535,43 @@ document.addEventListener('DOMContentLoaded', function () {
     } catch (_) {}
     return false;
   }
+  /* c70: rebuild the open nutrition plan editor in the new language.
+     np-lang-select lives inside that modal, so the user CAN switch language
+     mid-edit. renderEditor()/renderMeals() re-derive everything from _editing,
+     but unsaved input lives only in the DOM (header fields + meal amounts sync
+     to _editing on 'change' only) — capture and restore it around the rebuild. */
+  function refreshNutritionPlanForLang() {
+    try {
+      const m = document.getElementById('nutrition-plan-modal');
+      if (!m || m.classList.contains('hidden')) return false;
+      if (typeof nutritionPlans === 'undefined' || !nutritionPlans.refreshEditor) return false;
+      const hdrIds = ['np-name', 'np-target-cal', 'np-target-protein', 'np-target-carbs', 'np-target-fat'];
+      const hdrVals = hdrIds.map(id => { const el = document.getElementById(id); return el ? el.value : null; });
+      const amounts = Array.from(m.querySelectorAll('[data-np-amount]')).map(inp => inp.value);
+      nutritionPlans.refreshEditor();
+      hdrIds.forEach((id, i) => {
+        const el = document.getElementById(id);
+        if (el && hdrVals[i] != null) el.value = hdrVals[i];
+      });
+      Array.from(m.querySelectorAll('[data-np-amount]')).forEach((inp, i) => {
+        if (amounts[i] != null) inp.value = amounts[i];
+      });
+      return true;
+    } catch (_) {}
+    return false;
+  }
+  /* c70: open micronutrient analysis modal — labels/food names are t()-built */
+  function refreshMicronutrientForLang() {
+    try {
+      const m = document.getElementById('micronutrient-modal');
+      if (!m || m.classList.contains('hidden')) return false;
+      if (typeof nutritionPlans !== 'undefined' && nutritionPlans.renderMicronutrientAnalysis) {
+        nutritionPlans.renderMicronutrientAnalysis();
+        return true;
+      }
+    } catch (_) {}
+    return false;
+  }
 
   /** Central language switch: persist + translate static strings + instantly
    *  re-render the visible screen (and the open exercise picker, if any).
@@ -23518,18 +23579,26 @@ document.addEventListener('DOMContentLoaded', function () {
   function switchAppLanguage(lang) {
     if (!SUPPORTED_LANGS.includes(lang)) lang = 'en';
     applyLang(lang);
-    try {
-      // Instant re-render: data-i18n updates static strings, but screen bodies
-      // built by render functions need an explicit refresh (same as navigation).
-      if (typeof router !== 'undefined' && router.refreshCurrent) router.refreshCurrent();
-      // Re-render the open exercise picker (dynamic grid/tree/chips/search)
-      if (typeof bodyMapPicker !== 'undefined' && bodyMapPicker.refresh) bodyMapPicker.refresh();
-      /* c63: rebuild open dynamic modals so exercise names follow the new language */
-      refreshProgramDayPreview();
-      refreshExerciseModalForLang();
-      refreshProgramBuilderForLang();
-      applyI18n(currentLang());
-    } catch (_) {}
+    /* c70: each step is guarded separately — a single failing refresher must
+       not silently skip the rest (previously one throw left modals and even
+       the final applyI18n unapplied → "UI sometimes keeps the old language"). */
+    const step = (label, fn) => {
+      try { fn(); } catch (e) { console.warn('[i18n] ' + label + ' failed', e); }
+    };
+    // Instant re-render: data-i18n updates static strings, but screen bodies
+    // built by render functions need an explicit refresh (same as navigation).
+    if (typeof router !== 'undefined' && router.refreshCurrent) step('router', () => router.refreshCurrent());
+    // Re-render the open exercise picker (dynamic grid/tree/chips/search)
+    if (typeof bodyMapPicker !== 'undefined' && bodyMapPicker.refresh) step('bodyMapPicker', () => bodyMapPicker.refresh());
+    /* c63: rebuild open dynamic modals so exercise names follow the new language */
+    step('dayPreview', refreshProgramDayPreview);
+    step('exModal', refreshExerciseModalForLang);
+    step('builder', refreshProgramBuilderForLang);
+    /* c70: rebuild the open nutrition plan editor + micronutrient modal
+       (np-lang-select lives inside the editor, so language can change mid-edit) */
+    step('npEditor', refreshNutritionPlanForLang);
+    step('micronutrient', refreshMicronutrientForLang);
+    step('applyI18n', () => applyI18n(currentLang()));
   }
 
   /** Persist theme to settings store + set data-theme + data-mode attributes.
@@ -25320,7 +25389,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 69; /* numeric part of dk-build c69 */
+  var RUNNING = 70; /* numeric part of dk-build c70 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
