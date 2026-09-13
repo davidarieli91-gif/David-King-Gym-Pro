@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c70" />
+<meta name="dk-build" content="c71" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2339,7 +2339,7 @@ html.atlas-lock { overflow: hidden; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c70</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c71</p>
             </div>
           </div>
 
@@ -6340,6 +6340,9 @@ html.atlas-lock { overflow: hidden; }
       try { refreshCurrent(); } catch (e) { console.warn('[router] refreshCurrent failed', e); }
       // Re-apply i18n so newly-shown content gets translated
       applyI18n(currentLang());
+      // c70b: async screen refreshes settle later — one extra pass catches
+      // data-i18n nodes inside late-rendered HTML
+      setTimeout(function () { try { applyI18n(currentLang()); } catch (_) {} }, 150);
       // Scroll main to top on screen change
       const main = document.getElementById('main');
       if (main) main.scrollTop = 0;
@@ -18243,7 +18246,7 @@ Select foods for each meal. Output as JSON only.`;
           return `<div class="bg-surface-2 border border-primary/20 rounded-xl overflow-hidden mb-2">
             <div class="flex items-center gap-2 p-2.5 cursor-pointer hover:bg-border/20 transition" data-toggle-np="${p.id}">
               <svg class="w-4 h-4 text-muted shrink-0 transition-transform np-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-              <span class="text-[10px] uppercase tracking-wider text-success font-bold shrink-0" data-i18n="nutrition.activePlan">Active</span>
+              <span class="text-[10px] uppercase tracking-wider text-success font-bold shrink-0">${esc(t('nutrition.activePlan') || 'Active plan')}</span>
               <span class="text-sm font-bold truncate flex-1">${esc(p.name || 'Nutrition plan')}</span>
               <span class="text-[10px] text-muted shrink-0">${Math.round(totalCal)} ${t('nutrition.kcal')}</span>
             </div>
@@ -23599,6 +23602,11 @@ document.addEventListener('DOMContentLoaded', function () {
     step('npEditor', refreshNutritionPlanForLang);
     step('micronutrient', refreshMicronutrientForLang);
     step('applyI18n', () => applyI18n(currentLang()));
+    /* c70b: async refreshes (IndexedDB-backed renders like the nutrition plans
+       list) rebuild HTML AFTER the sync passes — re-apply once they settle so
+       late data-i18n nodes are translated too. */
+    setTimeout(function () { try { applyI18n(currentLang()); } catch (_) {} }, 120);
+    setTimeout(function () { try { applyI18n(currentLang()); } catch (_) {} }, 400);
   }
 
   /** Persist theme to settings store + set data-theme + data-mode attributes.
@@ -25389,7 +25397,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 70; /* numeric part of dk-build c70 */
+  var RUNNING = 71; /* numeric part of dk-build c71 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
