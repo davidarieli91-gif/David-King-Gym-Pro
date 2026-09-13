@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c68" />
+<meta name="dk-build" content="c69" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2042,7 +2042,7 @@
 </style>
 
 <style id="atlas-style">
-/* ===== DK 3D Body Atlas (c68) ===== */
+/* ===== DK 3D Body Atlas (c69) ===== */
 html.atlas-lock { overflow: hidden; }
 #atlas-canvas { display: block; width: 100%; height: 100%; touch-action: none; outline: none; }
 #atlas-panel { display: none; }
@@ -2339,7 +2339,7 @@ html.atlas-lock { overflow: hidden; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c68</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c69</p>
             </div>
           </div>
 
@@ -25320,7 +25320,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 68; /* numeric part of dk-build c68 */
+  var RUNNING = 69; /* numeric part of dk-build c69 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
@@ -25386,7 +25386,7 @@ document.addEventListener('input', function (e) {
 </script>
 
 
-<!-- ============= 3D BODY ATLAS (c67+c68) ============= -->
+<!-- ============= 3D BODY ATLAS (c67–c69) ============= -->
 <div id="atlas-modal" class="hidden fixed inset-0 z-[130] bg-surface" role="dialog" aria-modal="true" aria-label="3D Body Atlas">
   <div class="flex flex-col h-full">
     <div class="flex items-center gap-2 p-3 border-b border-border bg-surface shrink-0">
@@ -25452,7 +25452,7 @@ document.addEventListener('input', function (e) {
 </div>
 <script>
 /* ============================================================
-   DK 3D BODY ATLAS (c68)
+   DK 3D BODY ATLAS (c69)
    Self-contained classic script. No build-time module graph:
    three.js r170 is lazy-loaded on first open from jsDelivr
    (+esm bundles, absolute URLs — no importmap needed).
@@ -26053,12 +26053,16 @@ document.addEventListener('input', function (e) {
     }
     applyXray();
   }
+  var GHOST_C = 0x3a4150; /* dim shell colour — grey layers stack into a solid look, dark ones stay glassy */
   function applyXray() {
+    if (!S.THREE) return;
     var op = S.xrayOp || 0.16;
     var sel = S.selected || [];
     S.parts.forEach(function (m) {
       var mat = m.userData.origMat; if (!mat) return;
       var ghost = S.xray && m.visible && sel.indexOf(m) < 0;
+      if (ghost && m.userData._c0 == null) m.userData._c0 = mat.color ? mat.color.getHex() : 0xb9bcc4;
+      if (mat.color) mat.color.setHex(ghost ? GHOST_C : (m.userData._c0 != null ? m.userData._c0 : 0xb9bcc4));
       mat.transparent = ghost;
       mat.opacity = ghost ? op : 1;
       mat.depthWrite = !ghost;

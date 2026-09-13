@@ -41,7 +41,8 @@
 // v85: taxonomy v2 — 800+ group fixes, seed v93 (c58)
 // v86: hinge-fix — RDL family → hamstrings, pull-through/hip-hinge family → glutes, seed v94 (c59)
 // v87: subgroup pass — hammer→brachioradialis / reverse→brachialis + 35 fixes, muscle kept on source switch, seed v95 (c60)
-const CACHE_NAME = 'dk-gym-v95'; // v95: c68 atlas peeling — hide / x-ray ghost / isolate / restore-all
+const CACHE_NAME = 'dk-gym-v96'; // v96: c69 x-ray ghost = dark glass shell (colour dimming)
+// v95: c68 atlas peeling — hide / x-ray ghost / isolate / restore-all
 // v94: c67 atlas «Показать упражнения» + technical meshes off tap
 // v93: c66 3D Body Atlas (Z-Anatomy model, lazy-loaded)
 // v92: c65 muscle-icons round 2 (trapezius/triceps/adductors/abductors/middle-back)
