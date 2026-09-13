@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c66" />
+<meta name="dk-build" content="c67" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2042,7 +2042,7 @@
 </style>
 
 <style id="atlas-style">
-/* ===== DK 3D Body Atlas (c66) ===== */
+/* ===== DK 3D Body Atlas (c67) ===== */
 html.atlas-lock { overflow: hidden; }
 #atlas-canvas { display: block; width: 100%; height: 100%; touch-action: none; outline: none; }
 #atlas-panel { display: none; }
@@ -2078,6 +2078,16 @@ html.atlas-lock { overflow: hidden; }
   padding: .1rem .5rem; border-radius: 9999px;
   background: rgb(var(--c-primary) / .15); color: rgb(var(--c-primary-2));
 }
+.atlas-info-row { display: flex; align-items: center; justify-content: center; gap: .4rem; margin-top: .25rem; flex-wrap: wrap; }
+.atlas-ex-btn {
+  display: inline-flex; align-items: center; gap: .3rem; margin-top: .2rem;
+  font-size: 10px; font-weight: 700; padding: .22rem .6rem; border-radius: 9999px; cursor: pointer;
+  background: rgb(var(--c-primary)); color: #fff; border: 1px solid transparent;
+  transition: filter .15s ease, transform .15s ease;
+}
+.atlas-ex-btn:hover { filter: brightness(1.12); }
+.atlas-ex-btn:active { transform: scale(.96); }
+.atlas-ex-btn svg { width: 12px; height: 12px; flex: none; }
 .atlas-btn {
   display: inline-flex; align-items: center; gap: .35rem; pointer-events: auto;
   padding: .45rem .7rem; border-radius: .8rem;
@@ -2289,7 +2299,7 @@ html.atlas-lock { overflow: hidden; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c66</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c67</p>
             </div>
           </div>
 
@@ -2304,7 +2314,7 @@ html.atlas-lock { overflow: hidden; }
                 <span data-i18n="aside.addClient">Add Client</span>
               </button>
             </div>
-            <!-- 3D Body Atlas entry (c66) -->
+            <!-- 3D Body Atlas entry (c67) -->
             <button id="dash-atlas-card" class="w-full flex items-center gap-3 p-3 mb-3 rounded-xl bg-danger/10 border border-danger/25 text-start hover:bg-danger/15 transition shadow-card">
               <span class="w-10 h-10 grid place-items-center rounded-lg bg-danger/15 text-danger shrink-0">
                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="4.5" r="2"/><path d="M12 7v6M12 13l-4 7M12 13l4 7M8 9.5h8"/></svg>
@@ -25336,7 +25346,7 @@ document.addEventListener('input', function (e) {
 </script>
 
 
-<!-- ============= 3D BODY ATLAS (c66) ============= -->
+<!-- ============= 3D BODY ATLAS (c67) ============= -->
 <div id="atlas-modal" class="hidden fixed inset-0 z-[130] bg-surface" role="dialog" aria-modal="true" aria-label="3D Body Atlas">
   <div class="flex flex-col h-full">
     <div class="flex items-center gap-2 p-3 border-b border-border bg-surface shrink-0">
@@ -25392,7 +25402,7 @@ document.addEventListener('input', function (e) {
 </div>
 <script>
 /* ============================================================
-   DK 3D BODY ATLAS (c66)
+   DK 3D BODY ATLAS (c67)
    Self-contained classic script. No build-time module graph:
    three.js r170 is lazy-loaded on first open from jsDelivr
    (+esm bundles, absolute URLs — no importmap needed).
@@ -25423,7 +25433,8 @@ document.addEventListener('input', function (e) {
     sideBoth:     { en: 'both sides', ru: 'обе стороны', he: 'שני הצדדים' },
     credit:       { en: 'Model: Z-Anatomy (CC BY-SA 4.0) · BodyParts3D (CC BY-SA 2.1 JP)', ru: 'Модель: Z-Anatomy (CC BY-SA 4.0) · BodyParts3D (CC BY-SA 2.1 JP)', he: 'מודל: Z-Anatomy (CC BY-SA 4.0) · BodyParts3D (CC BY-SA 2.1 JP)' },
     close:        { en: 'Close', ru: 'Закрыть', he: 'סגור' },
-    nothingSel:   { en: 'Nothing selected', ru: 'Ничего не выбрано', he: 'לא נבחר דבר' }
+    nothingSel:   { en: 'Nothing selected', ru: 'Ничего не выбрано', he: 'לא נבחר דבר' },
+    showEx:       { en: 'Show exercises', ru: 'Показать упражнения', he: 'הצג תרגילים' }
   };
 
   /* Region labels (keys = top-level GLB group node names) */
@@ -25685,6 +25696,14 @@ document.addEventListener('input', function (e) {
     modal = $('atlas-modal'); canvasBox = $('atlas-canvas-box'); canvasEl = $('atlas-canvas');
     infoChip = $('atlas-info'); listEl = $('atlas-list'); searchEl = $('atlas-search');
     panelEl = $('atlas-panel'); loadBox = $('atlas-load');
+    /* c67: «Показать упражнения» — delegated handler on the info plaque */
+    if (infoChip && !infoChip._exWired) {
+      infoChip._exWired = true;
+      infoChip.addEventListener('click', function (e) {
+        var b = e.target.closest ? e.target.closest('[data-gkey]') : null;
+        if (b) showExercisesFor(b.getAttribute('data-gkey'));
+      });
+    }
   }
 
   /* ---------------- boot / lazy three.js ---------------- */
@@ -25894,9 +25913,42 @@ document.addEventListener('input', function (e) {
     var gkey = MGROUP[base];
     var gTxt = gkey ? tr(GROUP_LABEL[gkey]) : '';
     var gHtml = gTxt ? '<span class="atlas-chip-g">' + esc(gTxt) + '</span>' : '';
+    /* c67: «Показать упражнения» — jump to exercise DB filtered by this group */
+    var exHtml = gkey ? '<button type="button" class="atlas-ex-btn" data-gkey="' + esc(gkey) + '">' +
+      '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 1 1"/><path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m18 22 4-4"/><path d="m2 6 4-4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/></svg>' +
+      esc(tr(UI.showEx)) + '</button>' : '';
     infoChip.innerHTML = '<div class="font-semibold text-sm leading-tight">' + esc(muscleLabel(base)) +
-      (sideTxt ? ' <span class="text-muted font-normal text-xs">· ' + esc(sideTxt) + '</span>' : '') + '</div>' + gHtml;
+      (sideTxt ? ' <span class="text-muted font-normal text-xs">· ' + esc(sideTxt) + '</span>' : '') + '</div>' +
+      '<div class="atlas-info-row">' + gHtml + exHtml + '</div>';
     infoChip.classList.remove('hidden');
+  }
+
+  /* c67: close atlas → open Workouts ▸ Exercise database with body-map filter set to the muscle's group */
+  function showExercisesFor(gkey) {
+    if (!gkey) return;
+    try {
+      if (typeof router !== 'undefined' && router && router.show) router.show('workouts');
+      var tabBtn = document.querySelector('[data-workout-tab="exercises"]');
+      if (tabBtn && !tabBtn.classList.contains('active')) tabBtn.click();
+      var panel = document.getElementById('exercise-bodymap-panel');
+      if (panel && panel.classList.contains('hidden')) {
+        var tg = document.getElementById('exercise-bodymap-toggle');
+        if (tg) tg.click();
+      }
+      if (typeof screens !== 'undefined' && screens && screens.exercises && screens.exercises.setBodyMapFilter) {
+        screens.exercises.setBodyMapFilter(gkey);
+      }
+      var svgBox = document.getElementById('exercise-bodymap-svg');
+      if (svgBox) {
+        svgBox.querySelectorAll('.bm-muscle').forEach(function (m) { m.classList.remove('bm-selected'); });
+        svgBox.querySelectorAll('.bm-muscle[data-group="' + gkey + '"]').forEach(function (m) { m.classList.add('bm-selected'); });
+      }
+      var lbl = document.getElementById('exercise-bodymap-active');
+      if (lbl) lbl.textContent = (typeof groupName === 'function') ? groupName(gkey) : gkey;
+    } catch (err) {
+      console.warn('[atlas] show exercises failed:', err);
+    }
+    closeAtlas();
   }
 
   function esc(v) {
@@ -25914,7 +25966,7 @@ document.addEventListener('input', function (e) {
     var hits = _rc.intersectObjects(S.root.children, true);
     for (var i = 0; i < hits.length; i++) {
       var m = hits[i].object;
-      if (m.isMesh && m.userData.base) { selectMuscle(m, true); return; }
+      if (m.isMesh && m.userData.base && !HIDE_RE.test(m.userData.base)) { selectMuscle(m, true); return; }
     }
   }
 
