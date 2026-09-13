@@ -41,7 +41,8 @@
 // v85: taxonomy v2 — 800+ group fixes, seed v93 (c58)
 // v86: hinge-fix — RDL family → hamstrings, pull-through/hip-hinge family → glutes, seed v94 (c59)
 // v87: subgroup pass — hammer→brachioradialis / reverse→brachialis + 35 fixes, muscle kept on source switch, seed v95 (c60)
-const CACHE_NAME = 'dk-gym-v99'; // v99: c72 atlas subgroup filter — MSUB muscle→sE (Upper/Lower chest, Lats, Rotator Cuff…) passed into Exercise DB body-map filter
+const CACHE_NAME = 'dk-gym-v100'; // v100: c73 sidebar Atlas above Settings + atlas auth-gated (no open before login)
+// v99: c72 atlas subgroup filter — MSUB muscle→sE (Upper/Lower chest, Lats, Rotator Cuff…) passed into Exercise DB body-map filter
 // v98: c71 i18n race — plans badge t() at render + delayed applyI18n pass for async renders
 // v96: c69 x-ray ghost = dark glass shell (colour dimming)
 // v95: c68 atlas peeling — hide / x-ray ghost / isolate / restore-all

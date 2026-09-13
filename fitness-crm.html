@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c72" />
+<meta name="dk-build" content="c73" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2236,17 +2236,17 @@ html.atlas-lock { overflow: hidden; }
             </span>
             <span data-i18n="nav.analytics">Analytics</span>
           </button>
-          <button data-nav="settings" class="nav-pill w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-surface-2 transition">
-            <span class="w-8 h-8 grid place-items-center rounded-lg bg-muted/15 text-muted">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.36.16.66.43.86.78.2.35.28.76.24 1.17V11a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            </span>
-            <span data-i18n="nav.settings">Settings</span>
-          </button>
           <button id="nav-atlas" class="nav-pill w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-surface-2 transition" aria-label="3D Body Atlas">
             <span class="w-8 h-8 grid place-items-center rounded-lg bg-danger/15 text-danger">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="4.5" r="2"/><path d="M12 7v6M12 13l-4 7M12 13l4 7M8 9.5h8"/></svg>
             </span>
             <span data-i18n="nav.atlas">3D Body Atlas</span>
+          </button>
+          <button data-nav="settings" class="nav-pill w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-surface-2 transition">
+            <span class="w-8 h-8 grid place-items-center rounded-lg bg-muted/15 text-muted">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.36.16.66.43.86.78.2.35.28.76.24 1.17V11a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </span>
+            <span data-i18n="nav.settings">Settings</span>
           </button>
         </nav>
 
@@ -25397,7 +25397,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 72; /* numeric part of dk-build c72 */
+  var RUNNING = 73; /* numeric part of dk-build c73 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
@@ -26393,6 +26393,15 @@ document.addEventListener('input', function (e) {
 
   /* ---------------- open / close ---------------- */
   function openAtlas() {
+    /* c73: the atlas is members-only — while the session is locked, never open
+     * (sidebar stays visible under the login screen, so its button is a leak);
+     * bring the lock screen forward instead. */
+    if (typeof auth === 'undefined' || !auth || typeof auth.isUnlocked !== 'function' || !auth.isUnlocked()) {
+      if (typeof router !== 'undefined' && router && router.show) {
+        try { router.show('login'); } catch (e) { /* noop */ }
+      }
+      return;
+    }
     if (!bindDom.done) { bindDom(); bindDom.done = true; }
     if (!modal) return;
     S.open = true;
