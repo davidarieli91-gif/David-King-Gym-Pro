@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c71" />
+<meta name="dk-build" content="c72" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -25397,7 +25397,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 71; /* numeric part of dk-build c71 */
+  var RUNNING = 72; /* numeric part of dk-build c72 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
@@ -25764,6 +25764,52 @@ document.addEventListener('input', function (e) {
     'Tibialis anterior': 'legs', 'Tibialis posterior': 'legs', 'Fibularis longus': 'legs', 'Fibularis brevis': 'legs',
     'Iliacus': 'legs', 'Psoas major': 'legs', 'Piriformis': 'legs'
   };
+
+  /* c72: atlas muscle → exercise-DB subgroup (exact sE strings; also used by
+   * body-map data-subgroup). Falls back to group-only when absent. */
+  var MSUB = {
+    /* chest */
+    'Clavicular head of pectoralis major': 'Upper',
+    'Sternocostal head of pectoralis major': 'Middle',
+    'Abdominal part of pectoralis major muscle': 'Lower',
+    /* back */
+    'Latissimus dorsi': 'Lats', 'Teres major': 'Lats',
+    'Descending part of trapezius': 'Trapezius',
+    'Transverse part of trapezius': 'Middle Back',
+    'Ascending part of trapezius': 'Middle Back',
+    'Rhomboid major': 'Middle Back', 'Rhomboid minor': 'Middle Back',
+    'Levator scapulae': 'Neck', 'Splenius capitis': 'Neck', 'Splenius colli': 'Neck',
+    'Iliocostalis lumborum': 'Lower Back', 'Iliocostalis thoracis': 'Lower Back', 'Iliocostalis colli': 'Lower Back',
+    'Longissimus thoracis': 'Lower Back', 'Longissimus capitis': 'Lower Back', 'Longissimus colli': 'Lower Back',
+    'Spinalis thoracis': 'Lower Back', 'Spinalis capitis': 'Lower Back', 'Spinalis colli': 'Lower Back',
+    'Multifidus lumborum': 'Lower Back', 'Multifidus thoracis': 'Lower Back', 'Multifidus colli': 'Lower Back',
+    'Semispinalis thoracis': 'Lower Back', 'Semispinalis colli': 'Lower Back',
+    'Rotatores': 'Lower Back', 'Quadratus lumborum': 'Lower Back',
+    /* shoulders */
+    'Clavicular part of deltoid': 'Front', 'Acromial part of deltoid': 'Middle',
+    'Scapular spinal part of deltoid': 'Rear',
+    'Supraspinatus': 'Rotator Cuff', 'Infraspinatus': 'Rotator Cuff',
+    'Subscapularis': 'Rotator Cuff', 'Teres minor': 'Rotator Cuff',
+    /* elbow flexors */
+    'Long head of biceps brachii': 'Biceps', 'Short head of biceps brachii': 'Biceps',
+    'Brachialis': 'Brachialis', 'Brachioradialis': 'Brachioradialis',
+    /* abdominals */
+    'External abdominal oblique': 'Obliques', 'Internal abdominal oblique': 'Obliques',
+    'Transversus abdominis': 'Obliques',
+    /* legs */
+    'Gluteus maximus': 'Glutes', 'Gluteus medius': 'Glutes', 'Gluteus minimus': 'Glutes',
+    'Tensor fasciae latae': 'Abductors', 'Piriformis': 'Abductors',
+    'Rectus femoris': 'Quadriceps', 'Vastus lateralis': 'Quadriceps',
+    'Vastus medialis': 'Quadriceps', 'Vastus intermedius': 'Quadriceps',
+    'Adductor longus': 'Adductors', 'Adductor brevis': 'Adductors',
+    'Adductor magnus': 'Adductors', 'Adductor minimus': 'Adductors',
+    'Gracilis': 'Adductors', 'Pectineus': 'Adductors',
+    'Sartorius': 'Hip Flexors', 'Iliacus': 'Hip Flexors', 'Psoas major': 'Hip Flexors',
+    'Long head of biceps femoris': 'Hamstrings', 'Short head of biceps femoris': 'Hamstrings',
+    'Semitendinosus': 'Hamstrings', 'Semimembranosus': 'Hamstrings',
+    'Medial head of gastrocnemius': 'Calves', 'Lateral head of gastrocnemius': 'Calves',
+    'Soleus': 'Calves', 'Plantaris': 'Calves'
+  };
   var GROUP_LABEL = {
     chest:        { en: 'Chest', ru: 'Грудь', he: 'חזה' },
     back:         { en: 'Back', ru: 'Спина', he: 'גב' },
@@ -25838,7 +25884,7 @@ document.addEventListener('input', function (e) {
       infoChip._exWired = true;
       infoChip.addEventListener('click', function (e) {
         var b = e.target.closest ? e.target.closest('[data-gkey]') : null;
-        if (b) { showExercisesFor(b.getAttribute('data-gkey')); return; }
+        if (b) { showExercisesFor(b.getAttribute('data-gkey'), b.getAttribute('data-skey')); return; }
         var h = e.target.closest ? e.target.closest('[data-act="hide"]') : null;
         if (h) hideSelected();
       });
@@ -26053,10 +26099,16 @@ document.addEventListener('input', function (e) {
     var hasR = sides.indexOf('r') > -1, hasL = sides.indexOf('l') > -1;
     var sideTxt = hasR && hasL ? tr(UI.sideBoth) : (hasR ? tr(UI.sideR) : (hasL ? tr(UI.sideL) : ''));
     var gkey = MGROUP[base];
+    var skey = MSUB[base] || '';
     var gTxt = gkey ? tr(GROUP_LABEL[gkey]) : '';
+    if (gTxt && skey) {
+      var sTxt = (typeof subgroupName === 'function') ? subgroupName(skey) : skey;
+      if (sTxt) gTxt += ' · ' + sTxt;
+    }
     var gHtml = gTxt ? '<span class="atlas-chip-g">' + esc(gTxt) + '</span>' : '';
     /* c67: «Показать упражнения» — jump to exercise DB filtered by this group */
-    var exHtml = gkey ? '<button type="button" class="atlas-ex-btn" data-gkey="' + esc(gkey) + '">' +
+    /* c72: + data-skey — subgroup-precise filter (Upper chest, Lats, Rotator Cuff…) */
+    var exHtml = gkey ? '<button type="button" class="atlas-ex-btn" data-gkey="' + esc(gkey) + '" data-skey="' + esc(skey) + '">' +
       '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 1 1"/><path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m18 22 4-4"/><path d="m2 6 4-4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/></svg>' +
       esc(tr(UI.showEx)) + '</button>' : '';
     /* c68: «Скрыть» — peel the selected muscle away to reveal what is behind it */
@@ -26070,7 +26122,7 @@ document.addEventListener('input', function (e) {
   }
 
   /* c67: close atlas → open Workouts ▸ Exercise database with body-map filter set to the muscle's group */
-  function showExercisesFor(gkey) {
+  function showExercisesFor(gkey, skey) {
     if (!gkey) return;
     try {
       if (typeof router !== 'undefined' && router && router.show) router.show('workouts');
@@ -26082,15 +26134,21 @@ document.addEventListener('input', function (e) {
         if (tg) tg.click();
       }
       if (typeof screens !== 'undefined' && screens && screens.exercises && screens.exercises.setBodyMapFilter) {
-        screens.exercises.setBodyMapFilter(gkey);
+        screens.exercises.setBodyMapFilter(gkey, skey || null);
       }
       var svgBox = document.getElementById('exercise-bodymap-svg');
       if (svgBox) {
         svgBox.querySelectorAll('.bm-muscle').forEach(function (m) { m.classList.remove('bm-selected'); });
-        svgBox.querySelectorAll('.bm-muscle[data-group="' + gkey + '"]').forEach(function (m) { m.classList.add('bm-selected'); });
+        var sel = skey ? svgBox.querySelectorAll('.bm-muscle[data-group="' + gkey + '"][data-subgroup="' + skey + '"]') : [];
+        if (!sel.length) sel = svgBox.querySelectorAll('.bm-muscle[data-group="' + gkey + '"]');
+        sel.forEach(function (m) { m.classList.add('bm-selected'); });
       }
       var lbl = document.getElementById('exercise-bodymap-active');
-      if (lbl) lbl.textContent = (typeof groupName === 'function') ? groupName(gkey) : gkey;
+      if (lbl) {
+        var gName = (typeof groupName === 'function') ? groupName(gkey) : gkey;
+        var sName = (skey && typeof subgroupName === 'function') ? subgroupName(skey) : '';
+        lbl.textContent = gName + (sName ? ' / ' + sName : '');
+      }
     } catch (err) {
       console.warn('[atlas] show exercises failed:', err);
     }
