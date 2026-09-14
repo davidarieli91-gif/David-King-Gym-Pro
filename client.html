@@ -1966,13 +1966,9 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
     :root { --font-scale: 1; }
     html { font-size: clamp(10px, calc(16px * var(--font-scale)), 60px); }
 
-    /* ===== c85 portal compat: the texture layer also covers the portal's glass surfaces ===== */
-    body[data-tex]:not([data-tex='none']) .glass,
-    body[data-tex]:not([data-tex='none']) .glass-strong {
-      background-image: var(--texture, none);
-      background-size: var(--texture-size, auto);
-      background-repeat: var(--texture-repeat, repeat);
-    }
+    /* ===== c86: panels stay CLEAN — no texture is painted on .glass / .glass-strong.
+       The texture lives on the background (#dk-tex-overlay) and shows through the
+       translucent glass — exactly how the trainer app renders it. ===== */
     /* ===== c85: header buttons (dumbbell / theme menu / settings) + weight unit picker ===== */
     #dk-dumbbell-btn { position: relative; width: 2.25rem; height: 2.25rem; flex: none; display: grid; place-items: center; border-radius: .5rem; background: rgb(var(--c-surface-2)); border: 1px solid rgb(var(--c-border)); color: rgb(var(--c-text)); cursor: pointer; transition: background .15s ease, border-color .15s ease, color .15s ease; }
     #dk-dumbbell-btn:hover { background: rgb(var(--c-border) / .4); }
@@ -1984,6 +1980,9 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
     .wunit-check { visibility: hidden; color: rgb(var(--c-primary-2)); font-weight: 800; }
     .wunit-opt-active { border-color: rgb(var(--c-primary) / .6) !important; background: rgb(var(--c-primary) / .12) !important; color: rgb(var(--c-primary-2)); }
     [data-wunit-chip] { max-width: 9.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* c86: the weight column header is a top label — it opens the unit picker too */
+    [data-wunit-col] { cursor: pointer; transition: color .15s ease; }
+    [data-wunit-col]:hover { color: rgb(var(--c-accent)); }
     /* c85 parity: on light themes the portal's hardcoded white text follows the theme
        text color (the trainer app uses text-text; gradient buttons keep white) */
     [data-mode="light"] #banner-prog-name,
@@ -4166,11 +4165,12 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
     function wLabel(u) { return T(u === 'lb' ? 'wunitLb' : 'wunitKg'); }
     function wShort(u) { if (u == null) u = wGet(); return T(u === 'lb' ? 'wunitLbShort' : 'wunitKgShort'); }
     function wApply() {
-      var u = wGet(), sh = wShort(u);
-      document.querySelectorAll('[data-wunit-chip]').forEach(function (ch) { ch.textContent = wLabel(u); });
+      var u = wGet(), sh = wShort(u), wTitle = T('wunitTitle') || 'Weight unit';
+      document.querySelectorAll('[data-wunit-chip]').forEach(function (ch) { ch.textContent = wLabel(u); ch.title = wTitle; });
       document.querySelectorAll('[data-wunit-col]').forEach(function (el) {
         var base = el.getAttribute('data-wunit-base') || '';
         el.textContent = (base && base.toLowerCase() !== sh.toLowerCase()) ? base + ' · ' + sh : base;
+        el.title = wTitle;
       });
     }
     var _wSrc = null;
@@ -4282,10 +4282,10 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
         try { toast(T('applied'), 'success', 1600); } catch (err) {}
         return;
       }
-      var inp = e.target.closest('input[data-field="weight"]');
-      if (inp && inp.closest('#workout-exercises-list')) { wOpen(inp); return; }
       var chip = e.target.closest('[data-wunit-chip]');
       if (chip) { wOpen(null); return; }
+      var col = e.target.closest('[data-wunit-col]');
+      if (col) { wOpen(null); return; }
       if (e.target.closest('#portal-settings-btn')) { openSettingsSheet(); return; }
       if (e.target.closest('[data-cps-backdrop]') || e.target.closest('[data-cps-close]')) { closeSettingsSheet(); return; }
       if (e.target.closest('#cps-share')) {
