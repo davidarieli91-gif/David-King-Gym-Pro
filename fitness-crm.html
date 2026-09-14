@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c84" />
+<meta name="dk-build" content="c85" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2382,6 +2382,10 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
   0%, 55% { box-shadow: 0 0 0 3px rgb(var(--c-primary) / .55); }
   100% { box-shadow: 0 0 0 0 rgb(var(--c-primary) / 0); }
 }
+/* ===== c85: weight unit picker (live workouts) ===== */
+.wunit-check { visibility: hidden; color: rgb(var(--c-primary-2)); font-weight: 800; }
+.wunit-opt-active { border-color: rgb(var(--c-primary) / .6) !important; background: rgb(var(--c-primary) / .12) !important; color: rgb(var(--c-primary-2)); }
+#lw-unit-chip { max-width: 9.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* ===== c84: Quick Pick panel mounted inline in Workouts ▸ База упражнений ===== */
 #bm-root.bm-inline { max-width: none; height: min(74vh, 960px); }
 .bm-inline #bm-close { display: none; }
@@ -2586,7 +2590,7 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c84</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c85</p>
             </div>
           </div>
 
@@ -2844,6 +2848,7 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
                   <svg class="w-4 h-4 flip-rtl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
                 </button>
                 <input type="text" id="live-workout-name" data-i18n-ph="workouts.workoutName" class="flex-1 min-w-0 bg-transparent border-none focus:outline-none font-display font-extrabold text-xl tracking-tight" />
+                <button type="button" id="lw-unit-chip" data-wunit-chip class="shrink-0 h-9 px-2.5 grid place-items-center rounded-lg bg-surface-2 hover:bg-border/40 border border-border text-[10px] font-bold uppercase tracking-wide text-muted transition" title="Weight unit">кг</button>
                 <div class="text-end shrink-0">
                   <div class="font-mono font-bold text-lg" id="live-workout-duration">0:00</div>
                   <div class="text-[10px] text-muted uppercase tracking-wider" data-i18n="workouts.duration">Duration</div>
@@ -7000,6 +7005,90 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
      A green pulse dot + primary tint mark a running session; the button
      hides on the lock screen (body.auth-locked CSS rule).
      ===================================================================== */
+  /* ===== c85: weight unit (kg⇄lb) for live workouts — tap any weight input
+     or the header chip to pick the unit; the choice is shown AT THE TOP of the
+     live screen and next to the weight column of every exercise table. ===== */
+  var DK_WUNIT_KEY = 'dk_wunit';
+  function dkWUnitGet() { try { return localStorage.getItem(DK_WUNIT_KEY) === 'lb' ? 'lb' : 'kg'; } catch (_e) { return 'kg'; } }
+  function dkWUnitLabel(u) { return t('wunit.' + (u === 'lb' ? 'lb' : 'kg')) || (u === 'lb' ? 'Фунты' : 'Килограммы'); }
+  function dkWUnitShort(u) {
+    if (u == null) u = dkWUnitGet();
+    return t('wunit.' + (u === 'lb' ? 'lbShort' : 'kgShort')) || (u === 'lb' ? 'фт' : 'кг');
+  }
+  function dkWUnitApply() {
+    var u = dkWUnitGet(), sh = dkWUnitShort(u);
+    document.querySelectorAll('[data-wunit-chip]').forEach(function (ch) { ch.textContent = dkWUnitLabel(u); });
+    document.querySelectorAll('[data-wunit-col]').forEach(function (el) {
+      var base = el.getAttribute('data-wunit-base') || '';
+      el.textContent = (base && base.toLowerCase() !== sh.toLowerCase()) ? base + ' · ' + sh : base;
+    });
+  }
+  var _dkWUnitSrc = null;
+  function dkWUnitEnsureSheet() {
+    if (document.getElementById('dk-wunit-sheet')) return;
+    var wrap = document.createElement('div');
+    wrap.id = 'dk-wunit-sheet';
+    wrap.className = 'hidden fixed inset-0 z-[95] flex items-center justify-center p-4';
+    wrap.innerHTML =
+      '<div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-wunit-backdrop></div>' +
+      '<div class="relative w-full max-w-xs rounded-2xl border border-border bg-surface shadow-float p-4 space-y-2" role="dialog" aria-modal="true">' +
+        '<div class="text-[10px] font-bold uppercase tracking-wider text-muted mb-1" data-wunit-title></div>' +
+        '<button type="button" data-wunit-pick="kg" class="wunit-opt w-full flex items-center justify-between gap-2 rounded-xl border border-border bg-surface-2 px-3 py-3 text-sm font-bold text-text transition"><span data-wunit-opt-label="kg"></span><span class="wunit-check" aria-hidden="true">✓</span></button>' +
+        '<button type="button" data-wunit-pick="lb" class="wunit-opt w-full flex items-center justify-between gap-2 rounded-xl border border-border bg-surface-2 px-3 py-3 text-sm font-bold text-text transition"><span data-wunit-opt-label="lb"></span><span class="wunit-check" aria-hidden="true">✓</span></button>' +
+      '</div>';
+    document.body.appendChild(wrap);
+    wrap.addEventListener('click', function (e) {
+      if (e.target.closest('[data-wunit-backdrop]')) { dkWUnitClose(); return; }
+      var pick = e.target.closest('[data-wunit-pick]');
+      if (pick) dkWUnitSet(pick.getAttribute('data-wunit-pick'));
+    });
+  }
+  function dkWUnitRefreshSheet() {
+    var sheet = document.getElementById('dk-wunit-sheet');
+    if (!sheet) return;
+    var tt = sheet.querySelector('[data-wunit-title]');
+    if (tt) tt.textContent = t('wunit.title') || 'Единица веса';
+    ['kg', 'lb'].forEach(function (u) {
+      var lab = sheet.querySelector('[data-wunit-opt-label="' + u + '"]');
+      if (lab) lab.textContent = dkWUnitLabel(u) + ' · ' + dkWUnitShort(u);
+      var btn = sheet.querySelector('[data-wunit-pick="' + u + '"]');
+      if (btn) {
+        var on = dkWUnitGet() === u;
+        btn.classList.toggle('wunit-opt-active', on);
+        var c = btn.querySelector('.wunit-check');
+        if (c) c.style.visibility = on ? 'visible' : 'hidden';
+      }
+    });
+  }
+  function dkWUnitOpen(srcInput) {
+    _dkWUnitSrc = srcInput || null;
+    dkWUnitEnsureSheet();
+    dkWUnitRefreshSheet();
+    document.getElementById('dk-wunit-sheet').classList.remove('hidden');
+  }
+  function dkWUnitClose() {
+    var sh = document.getElementById('dk-wunit-sheet');
+    if (sh) sh.classList.add('hidden');
+    if (_dkWUnitSrc && document.contains(_dkWUnitSrc)) { try { _dkWUnitSrc.focus({ preventScroll: true }); } catch (_e) {} }
+    _dkWUnitSrc = null;
+  }
+  function dkWUnitSet(u) {
+    if (u !== 'lb') u = 'kg';
+    try { localStorage.setItem(DK_WUNIT_KEY, u); } catch (_e) {}
+    dkWUnitApply();
+    dkWUnitClose();
+  }
+  /* tap a weight input in the live workout → unit picker; the header chip opens it too */
+  document.addEventListener('click', function (e) {
+    var inp = e.target.closest('input[data-set-input$=".weight"]');
+    if (inp && inp.closest('#live-workout-exercises')) { dkWUnitOpen(inp); return; }
+    if (e.target.closest('[data-wunit-chip]')) dkWUnitOpen(null);
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') dkWUnitClose(); });
+  document.addEventListener('dk-lang', function () { try { dkWUnitApply(); } catch (_e) {} });
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { try { dkWUnitApply(); } catch (_e) {} });
+  else try { dkWUnitApply(); } catch (_e) {}
+
   function dkDumbbellActive() {
     try {
       return !!(typeof screens !== 'undefined' && screens.liveWorkout && screens.liveWorkout._workout);
@@ -13642,7 +13731,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
                 <tr class="text-[10px] uppercase tracking-wider text-muted border-b border-border">
                   <th class="px-2 py-2 text-center w-8">${t('workouts.set')}</th>
                   <th class="px-2 py-2 text-center">${t('workouts.prevWeight')}</th>
-                  <th class="px-2 py-2 text-center">${t('workouts.weight')}</th>
+                  <th class="px-2 py-2 text-center" data-wunit-col data-wunit-base="${t('workouts.weight')}">${t('workouts.weight')} · ${dkWUnitShort()}</th>
                   <th class="px-2 py-2 text-center">${t('workouts.reps')}</th>
                   <th class="px-2 py-2 text-center w-10">${t('workouts.done')}</th>
                   <th class="px-1 py-2 w-8"></th>
@@ -27066,7 +27155,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 84; /* numeric part of dk-build c84 */
+  var RUNNING = 85; /* numeric part of dk-build c85 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
