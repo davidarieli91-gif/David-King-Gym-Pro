@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c82" />
+<meta name="dk-build" content="c83" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2348,6 +2348,37 @@ body.auth-locked #app > .fixed.inset-0:not(.hidden) { pointer-events: none !impo
   transition: filter .15s ease;
 }
 .atlas-restore-all:hover { filter: brightness(1.12); }
+/* ===== c83: header dumbbell — one-tap return to the live workout ===== */
+#dk-dumbbell-btn {
+  position: relative; width: 2.25rem; height: 2.25rem; flex: none;
+  display: grid; place-items: center;
+  border-radius: .5rem;
+  background: rgb(var(--c-surface-2));
+  border: 1px solid rgb(var(--c-border));
+  color: rgb(var(--c-text));
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+#dk-dumbbell-btn:hover { background: rgb(var(--c-border) / .4); }
+#dk-dumbbell-btn.dk-dumbbell-active {
+  background: rgb(var(--c-primary) / .18);
+  color: rgb(var(--c-primary-2));
+  border-color: rgb(var(--c-primary) / .5);
+}
+#dk-dumbbell-dot {
+  position: absolute; inset-inline-end: 5px; top: 5px;
+  width: 8px; height: 8px; border-radius: 9999px;
+  background: #22c55e; box-shadow: 0 0 0 2px rgb(var(--c-surface));
+  animation: dk-dot-pulse 1.6s ease infinite;
+}
+@keyframes dk-dot-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+body.auth-locked #dk-dumbbell-btn { display: none; }
+#live-workout-exercises [data-exercise-idx] { scroll-margin-top: 4.25rem; }
+.dk-pos-flash { animation: dk-pos-flash-kf 2.4s ease; }
+@keyframes dk-pos-flash-kf {
+  0%, 55% { box-shadow: 0 0 0 3px rgb(var(--c-primary) / .55); }
+  100% { box-shadow: 0 0 0 0 rgb(var(--c-primary) / 0); }
+}
 </style>
 </head>
 
@@ -2365,6 +2396,11 @@ body.auth-locked #app > .fixed.inset-0:not(.hidden) { pointer-events: none !impo
     <header class="sticky top-0 z-30 glass" style="border-bottom: 1px solid var(--glass-border);">
       <div class="flex items-center gap-2 px-3 h-10">
         <div class="ms-auto flex items-center gap-1.5">
+          <!-- c83: dumbbell — one-tap return to the live workout at your current exercise -->
+          <button id="dk-dumbbell-btn" class="shrink-0" aria-label="Back to workout" title="Back to workout" data-i18n-attr="aria-label:aria.dumbbell,title:aria.dumbbell">
+            <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z"/><path d="m21.5 21.5-1.4-1.4"/><path d="M3.9 3.9 2.5 2.5"/><path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z"/></svg>
+            <span id="dk-dumbbell-dot" class="hidden" aria-hidden="true"></span>
+          </button>
           <!-- Language selector — populated by i18n engine in Step 3 -->
           <div class="relative">
             <select id="lang-select"
@@ -2550,7 +2586,7 @@ body.auth-locked #app > .fixed.inset-0:not(.hidden) { pointer-events: none !impo
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c82</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c83</p>
             </div>
           </div>
 
@@ -6955,6 +6991,44 @@ body.auth-locked #app > .fixed.inset-0:not(.hidden) { pointer-events: none !impo
     }).join(', ');
   }
 
+  /* =====================================================================
+     c83 — HEADER DUMBBELL: one-tap return to the live workout.
+     The button sits in the sticky header (left of the language selector),
+     so it is reachable from ANY screen (settings, analytics, atlas...) and
+     even while scrolling deep inside the live workout itself.
+       • live session active → screens.liveWorkout.returnToPosition():
+         opens live-workout and scrolls to the exercise the user is actually
+         working on (flash highlight marks it);
+       • no live session → opens the Workouts screen (where sessions start).
+     A green pulse dot + primary tint mark a running session; the button
+     hides on the lock screen (body.auth-locked CSS rule).
+     ===================================================================== */
+  function dkDumbbellActive() {
+    try {
+      return !!(typeof screens !== 'undefined' && screens.liveWorkout && screens.liveWorkout._workout);
+    } catch (_e) { return false; }
+  }
+  function dkDumbbellSync() {
+    var btn = document.getElementById('dk-dumbbell-btn');
+    if (!btn) return;
+    var active = dkDumbbellActive();
+    btn.classList.toggle('dk-dumbbell-active', active);
+    var dot = document.getElementById('dk-dumbbell-dot');
+    if (dot) dot.classList.toggle('hidden', !active);
+  }
+  function dkDumbbellGo() {
+    if (dkDumbbellActive() && screens.liveWorkout.returnToPosition) {
+      try { screens.liveWorkout.returnToPosition(); return; } catch (e) { console.warn('[dumbbell] returnToPosition failed', e); }
+    }
+    router.show('workouts');
+  }
+  (function dkDumbbellWire() {
+    var b = document.getElementById('dk-dumbbell-btn');
+    if (!b || b.dataset.dkWired) return;
+    b.dataset.dkWired = '1';
+    b.addEventListener('click', dkDumbbellGo);
+  })();
+
   const router = (function () {
     let _current = null;
 
@@ -7009,6 +7083,7 @@ body.auth-locked #app > .fixed.inset-0:not(.hidden) { pointer-events: none !impo
       });
       // Trigger render hook (c70: guarded — a failing screen refresh must never
       // skip the i18n re-apply below, or the new screen shows the old language)
+      try { if (typeof dkDumbbellSync === 'function') dkDumbbellSync(); } catch (_e) {}
       try { refreshCurrent(); } catch (e) { console.warn('[router] refreshCurrent failed', e); }
       // Re-apply i18n so newly-shown content gets translated
       applyI18n(currentLang());
@@ -13309,6 +13384,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     let _exerciseCache = []; // cached exercise_base for picker
     let _exMap = null;       // Sprint 3 #2: Map index for O(1) lookups
     let _exMapSize = -1;     // track cache size to invalidate Map
+    let _lastPosIdx = -1;    // c83: last exercise whose SET the user touched (dumbbell target)
+    let _lastPosStamp = null; // c83: started_at of that session — stale after finish/restore
     // RPE intensity scale 1 (green, lightest) → 10 (maroon, hardest) — same as client portal
     const RPE_COLORS = ['#16a34a', '#22c55e', '#65a30d', '#84cc16', '#ca8a04', '#f59e0b', '#f97316', '#ef4444', '#dc2626', '#7f1d1d'];
 
@@ -14220,6 +14297,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         document.querySelectorAll('[data-screen]').forEach(el => {
           el.classList.toggle('hidden', el.getAttribute('data-screen') !== 'workouts');
         });
+        try { if (typeof dkDumbbellSync === 'function') dkDumbbellSync(); } catch (_e) {}
         return;
       }
       cancel();
@@ -14277,7 +14355,63 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       toast(t('workouts.templateAppliedTo', { name: clientName }), 'success', 2500);
     }
 
-    return { start, startFromTemplate, startFromProgram, openPicker, finish, cancel, back, saveAsTemplate, applyTemplateToClient, checkDraft, render, get _workout() { return _workout; } };
+    /* c83: header dumbbell support — track WHERE the user is actually working.
+       One delegated listener on the static exercises container records the
+       exercise block of the last touched set control (weight/reps/rpe/done/
+       rest — 'input' and 'change'). Clicks (view/remove buttons) and plain
+       scrolling deliberately do NOT move the working position. */
+    (function () {
+      const c = document.getElementById('live-workout-exercises');
+      if (!c || c.dataset.dkPosWired) return;
+      c.dataset.dkPosWired = '1';
+      const mark = (ev) => {
+        const block = ev.target && ev.target.closest ? ev.target.closest('[data-exercise-idx]') : null;
+        if (!block || !_workout) return;
+        const i = parseInt(block.getAttribute('data-exercise-idx'), 10);
+        if (!isNaN(i)) { _lastPosIdx = i; _lastPosStamp = _workout.started_at; }
+      };
+      c.addEventListener('input', mark);
+      c.addEventListener('change', mark);
+    })();
+
+    /** c83: resolve the exercise the dumbbell should land on.
+     *  Priority: last set touched in THIS session (started_at-guarded so a
+     *  finished/restored session can't reuse a stale index) → first exercise
+     *  with unfinished sets → last exercise (everything done) → none. */
+    function _resolvePosIdx() {
+      if (!_workout || !_workout.exercises || !_workout.exercises.length) return -1;
+      if (_lastPosIdx >= 0 && _lastPosIdx < _workout.exercises.length && _lastPosStamp === _workout.started_at) return _lastPosIdx;
+      for (let i = 0; i < _workout.exercises.length; i++) {
+        const sets = _workout.exercises[i].sets || [];
+        if (sets.some(s => !s.done)) return i;
+      }
+      return _workout.exercises.length - 1;
+    }
+
+    /** c83: dumbbell — (re)open the live workout and scroll to the exercise
+     *  the user is working on. Returns false when no session is running. */
+    function returnToPosition() {
+      if (!_workout) return false;
+      render();
+      router.show('live-workout');
+      const idx = _resolvePosIdx();
+      const target = idx >= 0 ? document.querySelector('#live-workout-exercises [data-exercise-idx="' + idx + '"]') : null;
+      requestAnimationFrame(() => {
+        if (target) {
+          try { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+          catch (_) { try { target.scrollIntoView(); } catch (_e) {} }
+          target.classList.add('dk-pos-flash');
+          setTimeout(() => target.classList.remove('dk-pos-flash'), 2400);
+        } else {
+          const main = document.getElementById('main');
+          if (main) main.scrollTop = 0;
+          window.scrollTo(0, 0);
+        }
+      });
+      return true;
+    }
+
+    return { start, startFromTemplate, startFromProgram, openPicker, finish, cancel, back, saveAsTemplate, applyTemplateToClient, checkDraft, render, returnToPosition, get _workout() { return _workout; } };
   })();
 
   /* =====================================================================
@@ -26855,7 +26989,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 82; /* numeric part of dk-build c82 */
+  var RUNNING = 83; /* numeric part of dk-build c83 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
