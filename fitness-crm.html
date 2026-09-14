@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c83" />
+<meta name="dk-build" content="c84" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -1409,9 +1409,10 @@
        transform left the layout box untouched, so cards at >1x overlapped the
        rows/columns around them; zoom participates in grid layout so cards
        never overlap at any slider value. */
-    #bodymap-picker-modal #bm-ex-grid .flex.items-center.gap-2,
-    #bodymap-picker-modal #bm-fav-grid .flex.items-center.gap-2,
-    #bodymap-picker-modal #bm-recent-grid .flex.items-center.gap-2 {
+    /* c84: was scoped to the modal — the same grids now also render inline */
+    #bm-ex-grid .flex.items-center.gap-2,
+    #bm-fav-grid .flex.items-center.gap-2,
+    #bm-recent-grid .flex.items-center.gap-2 {
       zoom: var(--ui-exercise-card, 1);
     }
 
@@ -1420,8 +1421,10 @@
       /* transform: scale(var(--ui-bodymap)); — removed, was breaking clicks in bodyMapPicker */
     }
 
-    /* Modal width — affects all modal content containers */
-    [class*="fixed inset-0"] > [class*="bg-surface"] {
+    /* Modal width — affects all modal content containers
+       (c84: + the inline Quick Pick panel so both stay identical) */
+    [class*="fixed inset-0"] > [class*="bg-surface"],
+    #exb-qp-host > #bm-root {
       zoom: var(--ui-modal-width);
     }
     /* c77: a modal stacked INSIDE another overlay is already scaled by the
@@ -2379,6 +2382,9 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
   0%, 55% { box-shadow: 0 0 0 3px rgb(var(--c-primary) / .55); }
   100% { box-shadow: 0 0 0 0 rgb(var(--c-primary) / 0); }
 }
+/* ===== c84: Quick Pick panel mounted inline in Workouts ▸ База упражнений ===== */
+#bm-root.bm-inline { max-width: none; height: min(74vh, 960px); }
+.bm-inline #bm-close { display: none; }
 </style>
 </head>
 
@@ -2497,12 +2503,6 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
           </button>
         </nav>
 
-        <div class="p-3 border-t border-border">
-          <button id="aside-add-client" class="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-2 text-white font-semibold text-sm py-2.5 rounded-xl transition shadow-card">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-            <span data-i18n="aside.addClient">Add Client</span>
-          </button>
-        </div>
       </aside>
 
       <!-- ============= MAIN WORKSPACE ============= -->
@@ -2586,7 +2586,7 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c83</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c84</p>
             </div>
           </div>
 
@@ -2596,7 +2596,7 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
             <div class="flex items-center gap-2 mb-4">
               <h1 class="font-display font-extrabold text-xl tracking-tight" data-i18n="clients.title">Clients</h1>
               <span id="dash-count" class="text-xs text-muted bg-surface-2 border border-border rounded-full px-2 py-0.5">0</span>
-              <button id="dash-add-btn" class="ms-auto lg:hidden inline-flex items-center gap-1.5 bg-primary hover:bg-primary-2 text-white text-sm font-semibold px-3 py-1.5 rounded-lg transition shadow-card">
+              <button id="dash-add-btn" class="ms-auto inline-flex items-center gap-1.5 bg-primary hover:bg-primary-2 text-white text-sm font-semibold px-3 py-1.5 rounded-lg transition shadow-card">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
                 <span data-i18n="aside.addClient">Add Client</span>
               </button>
@@ -2693,15 +2693,6 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
             <div data-workout-panel="exercises">
               <!-- Source toggle + count + add + edit mode -->
               <div class="flex items-center gap-2 mb-3 flex-wrap">
-                <!-- c76: exact copy of the Quick Pick tab bar (All / Burnfit / Gym Visual / GymImpulse / ⭐ / 🕐) -->
-                <div class="flex gap-1 bg-surface-2 border border-border rounded-lg p-0.5 flex-nowrap overflow-x-auto no-scrollbar min-[1440px]:overflow-x-visible">
-                  <button data-exercise-source="all" class="ex-src-btn shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs min-[1440px]:text-[14px] font-semibold transition bg-primary text-white" data-i18n="common.all">All</button>
-                  <button data-exercise-source="burnfit" class="ex-src-btn shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs min-[1440px]:text-[14px] font-semibold transition text-muted" data-i18n="exercise.sourceBurnfit">Burnfit</button>
-                  <button data-exercise-source="gymvisual" class="ex-src-btn shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs min-[1440px]:text-[14px] font-semibold transition text-muted" data-i18n="exercise.sourceGymVisual">Gym Visual</button>
-                  <button data-exercise-source="gymimpulse" class="ex-src-btn shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs min-[1440px]:text-[14px] font-semibold transition text-muted" data-i18n="exercise.sourceGymImpulse">GymImpulse</button>
-                  <button id="exb-tab-favorites" aria-label="Favorites" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs min-[1440px]:text-[14px] font-semibold transition text-muted">⭐</button>
-                  <button id="exb-tab-recent" aria-label="Recent" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs min-[1440px]:text-[14px] font-semibold transition text-muted">🕐</button>
-                </div>
                 <span id="exercise-count" class="hidden text-xs text-muted bg-surface-2 border border-border rounded-full px-2 py-0.5">0</span>
                 <button id="exercise-edit-mode-btn" class="bg-surface-2 hover:bg-border/40 border border-border text-sm font-medium px-2 py-1.5 rounded-lg transition inline-flex items-center gap-1.5" data-i18n-attr="title:exercise.editMode">
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -2720,6 +2711,11 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
                   <span data-i18n="exercise.add">Add exercise</span>
                 </button>
               </div>
+              <!-- c84: the SAME Quick Pick component as the «Выбор упражнений» modal,
+                   mounted inline in browse mode (cards never auto-add to a workout) -->
+              <div id="exb-qp-host" class="hidden"></div>
+              <!-- c84: legacy browse DOM kept hidden — existing wiring references these IDs -->
+              <div class="hidden">
               <!-- Search -->
               <div class="flex flex-col sm:flex-row gap-2 mb-3">
                 <div class="relative flex-1">
@@ -2780,6 +2776,7 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
                   <svg class="w-7 h-7 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 4v16M18 4v16M6 12h12"/></svg>
                 </div>
                 <p class="text-sm text-muted" data-i18n="exercise.noResults">No exercises found</p>
+              </div>
               </div>
             </div>
 
@@ -3196,7 +3193,7 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
 
                     <!-- ============= BODY MAP PICKER MODAL (Quick Pick) ============= -->
           <div id="bodymap-picker-modal" class="hidden fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4" role="dialog" aria-modal="true">
-            <div class="bg-surface w-full max-w-[min(96vw,1152px)] max-h-[calc(100dvh-1rem)] sm:max-h-[92vh] flex flex-col rounded-2xl border border-border shadow-float" style="container-type:inline-size;container-name:bmPicker">
+            <div id="bm-root" class="bg-surface w-full max-w-[min(96vw,1152px)] max-h-[calc(100dvh-1rem)] sm:max-h-[92vh] flex flex-col rounded-2xl border border-border shadow-float" style="container-type:inline-size;container-name:bmPicker">
               <!-- Header -->
               <div class="px-3 pt-1.5 pb-1 min-[1440px]:p-3 border-b border-border shrink-0">
                 <div class="flex items-center gap-2">
@@ -11745,6 +11742,19 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         return true;
       });
       renderTree();
+      _mountPanel();
+    }
+
+    /* c84: (re)mount the SHARED Quick Pick panel into the Exercise DB tab.
+       Pool: non-archived (archived-only in archive mode); the atlas muscle
+       filter (setBodyMapFilter) is re-applied after mount. */
+    function _mountPanel() {
+      if (typeof bodyMapPicker === 'undefined' || !bodyMapPicker.mountInline) return;
+      try {
+        const pool = _all.filter(e => _archiveMode ? !!e.is_archived : !e.is_archived);
+        bodyMapPicker.mountInline('exb-qp-host', pool);
+        if (_bmGroup && bodyMapPicker.setGroupFilter) bodyMapPicker.setGroupFilter(_bmGroup, _bmSubgroup || null);
+      } catch (e0) { console.warn('[exercises] mount panel failed', e0); }
     }
 
     /** Build and render the N-level tree (unlimited nesting depth). */
@@ -15516,8 +15526,20 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
      * @param {Array} cache — exercise cache from caller
      */
     function open(onPick, cache) {
-      _callback = onPick;
+      _callback = onPick || null;
       _cache = cache || [];
+      /* c84: if the panel was mounted inline in the Workouts screen, take it
+         back into the modal shell first — one component, two mounts. */
+      __detachInline();
+      __restoreModalChrome();
+      __activate();
+      setTimeout(() => { const s = document.getElementById('bm-search'); if (s) s.focus(); }, 100);
+    }
+
+    /* c84: shared activation — reset filters + wire controls + render.
+       Used by BOTH open() (modal mode) and mountInline() (Workouts ▸
+       База упражнений), so the two are always identical by construction. */
+    function __activate() {
       _activeGroup = null;
       _activeSubgroup = null;
       _expandedGroups = new Set();
@@ -15529,14 +15551,6 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       _favOnly = false;
       loadFavorites();
       loadRecent();
-      const modal = document.getElementById('bodymap-picker-modal');
-      modal.classList.remove('hidden');
-      // Manually translate title (fix for dynamic modal)
-      const qpTitle = modal.querySelector('[data-i18n="programs.quickPick"]');
-      if (qpTitle) qpTitle.textContent = t('programs.quickPick');
-      // Translate search placeholder
-      const searchInput = document.getElementById('bm-search');
-      if (searchInput) searchInput.placeholder = t('exercise.searchPlaceholder') || 'Search...';
       // Wire tab buttons
       const tabBF = document.getElementById('bm-tab-bf');
       const tabGV = document.getElementById('bm-tab-gv');
@@ -15606,7 +15620,6 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       }
       updateGroupToggleLabel();
       renderAll();
-      setTimeout(() => { if (search) search.focus(); }, 100);
     }
 
     /** Update the grouping toggle button label based on current _groupBy state. */
@@ -15618,6 +15631,59 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
     function close() {
       document.getElementById('bodymap-picker-modal').classList.add('hidden');
+    }
+
+    /* c84: move the panel back into the modal shell if it was mounted inline */
+    function __detachInline() {
+      try {
+        const modal = document.getElementById('bodymap-picker-modal');
+        const root = document.getElementById('bm-root');
+        if (!modal || !root) return;
+        if (root.parentElement && root.parentElement.id === 'exb-qp-host') {
+          root.parentElement.classList.add('hidden');
+          modal.appendChild(root);
+        }
+        root.classList.remove('bm-inline');
+      } catch (_e) {}
+    }
+
+    /* c84: modal chrome — title back to «Выбор упражнений» */
+    function __restoreModalChrome() {
+      const modal = document.getElementById('bodymap-picker-modal');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      const qpTitle = modal.querySelector('[data-i18n="programs.quickPick"], [data-i18n="workouts.title"]');
+      if (qpTitle) { qpTitle.setAttribute('data-i18n', 'programs.quickPick'); qpTitle.textContent = t('programs.quickPick'); }
+      const searchInput = document.getElementById('bm-search');
+      if (searchInput) searchInput.placeholder = t('exercise.searchPlaceholder') || 'Search...';
+    }
+
+    /* c84: mount THE SAME picker component inline in the Workouts screen.
+       Browse mode: _callback = null → cards never add to a workout (the user
+       request); clicking a card opens its details instead. The panel is the
+       single shared DOM — any future edit applies to both mounts. */
+    function mountInline(hostId, cache) {
+      const host = document.getElementById(hostId);
+      const root = document.getElementById('bm-root');
+      const modal = document.getElementById('bodymap-picker-modal');
+      if (!host || !root || !modal) return;
+      _callback = null;
+      _cache = cache || _cache || [];
+      modal.classList.add('hidden');
+      if (root.parentElement !== host) host.appendChild(root);
+      root.classList.add('bm-inline');
+      host.classList.remove('hidden');
+      const qpTitle = root.querySelector('[data-i18n="programs.quickPick"], [data-i18n="workouts.title"]');
+      if (qpTitle) { qpTitle.setAttribute('data-i18n', 'workouts.title'); qpTitle.textContent = t('workouts.title'); }
+      __activate();
+    }
+
+    /* c84: filter the panel to a muscle group from outside (atlas flow) */
+    function setGroupFilter(group, subgroup) {
+      _activeGroup = group || null;
+      _activeSubgroup = subgroup || null;
+      if (_activeGroup) _expandedGroups.add(_activeGroup);
+      renderAll();
     }
 
     /** Load favorites from settings. */
@@ -16225,6 +16291,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             if (e.target.closest('[data-bm-view]')) return;
             const id = el.getAttribute('data-bm-add');
             const ex = _cache.find(x => x.id === id);
+            /* c84: browse mode (Workouts panel) — never adds; show details */
+            if (!_callback) { if (ex && typeof openExerciseModal === 'function') openExerciseModal(id); return; }
             if (ex && _callback) {
               _callback(ex);
               // Visual feedback instead of close()
@@ -16400,6 +16468,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         el.addEventListener('click', () => {
           const id = el.getAttribute('data-bm-add');
           const ex = _cache.find(x => x.id === id);
+          /* c84: browse mode (Workouts panel) — never adds; show details */
+          if (!_callback) { if (ex && typeof openExerciseModal === 'function') openExerciseModal(id); return; }
           if (ex && _callback) {
             _callback(ex);
             el.style.borderColor = 'var(--c-success, #22c55e)';
@@ -16456,6 +16526,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         el.addEventListener('click', () => {
           const id = el.getAttribute('data-bm-add');
           const ex = _cache.find(x => x.id === id);
+          /* c84: browse mode (Workouts panel) — never adds; show details */
+          if (!_callback) { if (ex && typeof openExerciseModal === 'function') openExerciseModal(id); return; }
           if (ex && _callback) {
             _callback(ex);
             el.style.borderColor = 'var(--c-success, #22c55e)';
@@ -16485,16 +16557,21 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     /** Re-render picker content in the current language (language switch
      *  while the modal is open). Preserves tab, filters and search text. */
     function refresh() {
+      /* c84: re-render in the current language wherever the panel lives —
+         modal OR inline in the Workouts screen (title follows the mount) */
       const modal = document.getElementById('bodymap-picker-modal');
-      if (!modal || modal.classList.contains('hidden')) return;
-      const qpTitle = modal.querySelector('[data-i18n="programs.quickPick"]');
-      if (qpTitle) qpTitle.textContent = t('programs.quickPick');
+      const root = document.getElementById('bm-root');
+      const inlineVisible = !!(root && root.classList.contains('bm-inline') && root.offsetParent !== null);
+      const modalVisible = !!(modal && !modal.classList.contains('hidden'));
+      if (!modalVisible && !inlineVisible) return;
+      const qpTitle = root ? root.querySelector('[data-i18n="programs.quickPick"], [data-i18n="workouts.title"]') : null;
+      if (qpTitle) qpTitle.textContent = t((inlineVisible && !modalVisible) ? 'workouts.title' : 'programs.quickPick');
       const searchInput = document.getElementById('bm-search');
       if (searchInput) searchInput.placeholder = t('exercise.searchPlaceholder') || 'Search...';
       renderAll();
     }
 
-    return { open, close, refresh };
+    return { open, close, refresh, mountInline, setGroupFilter };
   })();
 
   /* =====================================================================
@@ -26989,7 +27066,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 83; /* numeric part of dk-build c83 */
+  var RUNNING = 84; /* numeric part of dk-build c84 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
