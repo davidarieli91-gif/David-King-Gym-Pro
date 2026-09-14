@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c81" />
+<meta name="dk-build" content="c82" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2250,9 +2250,23 @@ body.auth-locked #app > .fixed.inset-0:not(.hidden) { pointer-events: none !impo
 @media (max-width: 359px) { #exb-grid.bm-grouped > .bm-section-grid { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); } }
 #exb-map-col:has(#exercise-bodymap-panel.hidden) { display: none; }
 @media (max-width: 1023px) {
+  /* c82: mobile browse — the revealed map becomes its own FULL-WIDTH ROW above
+     the tree + cards row. The old single-row reveal (width:100% inside a
+     non-wrapping flex line) pushed the tree and the whole cards grid
+     off-screen, and align-items:stretch stretched every column to the grid's
+     content height (tens of thousands of px of empty background). */
+  #exb-layout { flex-wrap: wrap; align-items: flex-start; }
   #exb-map-col { display: none; }
-  #exb-map-col:has(#exercise-bodymap-panel:not(.hidden)) { display: flex; width: 100%; }
-  #exb-tree-col { width: calc(150px * var(--ui-exercise-panel, 1)); }
+  /* .exb-map-open = JS hook (toggled since c75) — doubles as the :has() fallback */
+  #exb-map-col.exb-map-open,
+  #exb-map-col:has(#exercise-bodymap-panel:not(.hidden)) {
+    display: flex; flex: 1 1 100%; width: 100%; max-width: 100%; min-width: 0;
+  }
+  #exb-tree-col { width: min(calc(150px * var(--ui-exercise-panel, 1)), 46vw); }
+  /* c82: the embedded 3D widget never exceeds its column on phones
+     (190px * atlas 2.5 = 475px used to overflow a 412px viewport) */
+  #exercise-bodymap-panel > div:first-child { width: 100%; }
+  #exercise-bodymap-3d { width: min(calc(190px * var(--ui-atlas, 1.5)), 100%); height: auto; aspect-ratio: 19 / 31; }
 }
 /* c74: DKBody3D embedded widget */
 .b3d-box { position: relative; }
@@ -2536,7 +2550,7 @@ body.auth-locked #app > .fixed.inset-0:not(.hidden) { pointer-events: none !impo
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c81</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c82</p>
             </div>
           </div>
 
@@ -2691,7 +2705,7 @@ body.auth-locked #app > .fixed.inset-0:not(.hidden) { pointer-events: none !impo
                     <button id="ex-bm-view-back" class="px-2 py-1 rounded text-[10px] font-semibold transition text-muted">Back</button>
                     <button id="ex-bm-view-side" class="px-2 py-1 rounded text-[10px] font-semibold transition text-muted">Side</button>
                   </div>
-                  <div id="exercise-bodymap-svg" class="mx-auto" style="max-width: calc(160px * var(--ui-bodymap, 1));"></div>
+                  <div id="exercise-bodymap-svg" class="mx-auto" style="max-width: min(calc(160px * var(--ui-bodymap, 1)), 100%);"></div>
                   <div id="exercise-bodymap-3d" class="b3d-box hidden mx-auto mt-2 rounded-xl overflow-hidden border border-border"></div>
                 </div>
                 <div class="flex-1 min-w-0">
@@ -26661,6 +26675,15 @@ document.addEventListener('input', function (e) {
     } catch (e) {}
   }
 
+  /* c82: the injected label used to freeze at inject-time language
+     (screenshot: «Report» while the app ran in RU) — re-translate on change */
+  try {
+    new MutationObserver(function () {
+      var btn = document.getElementById("p54-btn");
+      if (btn) btn.textContent = S().btn;
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+  } catch (e) {}
+
   function dayStamp(d) { return Math.floor(d / 86400000); }
   function computeStreak(hist) {
     var days = {};
@@ -26832,7 +26855,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 81; /* numeric part of dk-build c81 */
+  var RUNNING = 82; /* numeric part of dk-build c82 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
