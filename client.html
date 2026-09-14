@@ -3891,6 +3891,12 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
         const card=e.target.closest('[data-exercise-card]');
         if(!card) return;
         if(e.target.closest('input,button')) return;
+        /* c87: the weight-unit top label opens ONLY the unit sheet (the
+         * document-level picker handler deals with it) — never the exercise
+         * card. Report: tapping «Вес» opened the card first (z-[110] above
+         * the z-[95] sheet), and the unit dialog only showed up after the
+         * card was closed. */
+        if(e.target.closest('[data-wunit-col],[data-wunit-chip]')) return;
         const idx=+card.dataset.exerciseCard;
         const day=dayInfo(activeDayIndex);
         const ex=(day&&day.exercises||[])[idx];

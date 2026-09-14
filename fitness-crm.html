@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c86" />
+<meta name="dk-build" content="c87" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2593,7 +2593,7 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c86</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c87</p>
             </div>
           </div>
 
@@ -25497,6 +25497,54 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // === Service Worker Registration ===
     if ('serviceWorker' in navigator) {
+      /* c87: a new version must NEVER seize the running app. The old c81
+         behavior reloaded the page the instant a waiting SW activated —
+         that is the «просто взяла и обновилась» the trainer reported, and
+         through the boot cloud-check it could silently restore an older
+         snapshot, destroying freshly created clients. Instead: a banner
+         with an explicit button (same bilingual style as the version
+         banner). The single-file app keeps running fine — i18n JSONs are
+         network-first and additive, asset names are stable — and the new
+         precache is picked up on the next natural restart. */
+      function dkShowUpdateBanner() {
+        if (document.getElementById('dk-sw-update-banner')) return;
+        var b = document.createElement('div');
+        b.id = 'dk-sw-update-banner';
+        b.setAttribute('role', 'alert');
+        b.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);' +
+          'bottom:calc(16px + env(safe-area-inset-bottom));z-index:2147483000;' +
+          'display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;' +
+          'background:#1c1917;border:1px solid rgba(245,158,11,.4);color:#fbbf24;' +
+          'font:600 13px/1.3 system-ui,-apple-system,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.45);' +
+          'max-width:calc(100vw - 24px);flex-wrap:wrap;';
+        var span = document.createElement('span');
+        span.textContent = 'Доступна новая версия приложения · New version available';
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = 'Обновить · Update';
+        btn.style.cssText = 'border:0;border-radius:10px;padding:7px 12px;cursor:pointer;' +
+          'font:700 12px/1 system-ui,-apple-system,sans-serif;background:#f59e0b;color:#1c1917;';
+        btn.addEventListener('click', function () {
+          btn.disabled = true; btn.textContent = '…';
+          try {
+            if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+              navigator.serviceWorker.getRegistrations().then(function (rs) {
+                rs.forEach(function (r) { try { r.update(); } catch (e) {} });
+              }).catch(function () {});
+            }
+          } catch (e) {}
+          setTimeout(function () { window.dkAllowClose(); location.reload(); }, 700);
+        });
+        var x = document.createElement('button');
+        x.type = 'button';
+        x.setAttribute('aria-label', 'Close');
+        x.textContent = '✕';
+        x.style.cssText = 'border:0;background:transparent;color:#fbbf24;cursor:pointer;' +
+          'font:700 13px/1 system-ui,-apple-system,sans-serif;padding:4px;opacity:.8;';
+        x.addEventListener('click', function () { b.remove(); });
+        b.appendChild(span); b.appendChild(btn); b.appendChild(x);
+        document.body.appendChild(b);
+      }
       window.addEventListener('load', function() {
         navigator.serviceWorker.register('sw.js').then(function(reg) {
           console.log('[PWA] Service Worker registered:', reg.scope);
@@ -25522,7 +25570,8 @@ document.addEventListener('DOMContentLoaded', function () {
             /* first install claims the page — nothing new to pick up */
             if (!hadController || reloaded) return;
             reloaded = true;
-            window.location.reload(); /* one clean pass on the consistent precache */
+            /* c87: NO forced reload — ask the user instead (dkShowUpdateBanner). */
+            try { dkShowUpdateBanner(); } catch (_e) { /* never break the app here */ }
           });
         }).catch(function(err) {
           console.warn('[PWA] SW registration failed:', err);
@@ -26636,6 +26685,21 @@ document.addEventListener('DOMContentLoaded', function () {
         renderStatus();
         if (cloudAt <= last + 1500) return; // this device is already up to date
         var localAt = await localLastChange();
+        /* c87 GUARD: `last` (LASTSYNC) is bumped ONLY by a completed
+         * save/restore. A record created after it (20 s debounced upload
+         * pending, or the tab died mid-debounce) may never have reached the
+         * cloud — even when cloudAt is newer (another device uploaded in
+         * between). A silent full-replace restore here is exactly how the
+         * freshly created profile «אור וינקלר» vanished (report 2026-09-14).
+         * Never wipe such records: surface the conflict banner and let the
+         * trainer pick — «Save to cloud» keeps the local data, «Restore from
+         * cloud» is an explicit choice. */
+        if (localAt > last + 1500) {
+          var cfNew = $('cloud-conflict');
+          if (cfNew) cfNew.classList.remove('hidden');
+          toastMsg(T('settings.cloudAccConflict') || 'Cloud and device data differ', 'warning', 8000);
+          return;
+        }
         if (localAt <= cloudAt + 1500) {
           // cloud is newer and this device has no newer local edits → silent
           // restore. v11 honesty fix: the success toast fires only AFTER the
@@ -27162,7 +27226,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 86; /* numeric part of dk-build c86 */
+  var RUNNING = 87; /* numeric part of dk-build c87 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
