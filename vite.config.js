@@ -13,6 +13,7 @@ export default defineConfig({
         index: resolve(__dirname, 'index.html'),
         crm: resolve(__dirname, 'fitness-crm.html'),
         portal: resolve(__dirname, 'client.html'),
+        recover: resolve(__dirname, 'recover.html'),
       },
       output: {
         // STABLE asset names forever — old cached HTML never 404s on assets

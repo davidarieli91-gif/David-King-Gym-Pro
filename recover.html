@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ru" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>David King Gym — восстановление профиля</title>
+<link rel="icon" type="image/png" href="./icon-192.png" />
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(1200px 800px at 50% -10%, #26313f 0%, #12161c 55%, #0b0e12 100%);
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans Hebrew', sans-serif;
+    color: #e8edf3; padding: 16px;
+  }
+  .card {
+    width: 100%; max-width: 430px; background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.1); border-radius: 18px;
+    padding: 28px 24px; backdrop-filter: blur(10px);
+    box-shadow: 0 18px 50px rgba(0,0,0,.45);
+  }
+  .logo { text-align: center; font-weight: 800; letter-spacing: .12em; font-size: 13px; color: #f5b942; text-transform: uppercase; }
+  h1 { text-align: center; font-size: 20px; margin: 10px 0 4px; }
+  .sub { text-align: center; font-size: 13px; color: #9aa7b5; line-height: 1.5; margin-bottom: 18px; }
+  input[type=text], input[type=tel] {
+    width: 100%; padding: 13px 14px; font-size: 22px; letter-spacing: .4em; text-align: center;
+    background: rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.14); border-radius: 12px;
+    color: #fff; outline: none; transition: border-color .15s;
+  }
+  input:focus { border-color: #f5b942; }
+  .btn {
+    display: block; width: 100%; margin-top: 14px; padding: 13px 16px; border: 0; border-radius: 12px;
+    font-size: 15px; font-weight: 700; cursor: pointer; transition: transform .08s, opacity .15s;
+    background: linear-gradient(135deg, #f5b942, #e08b1d); color: #1a1206;
+  }
+  .btn:active { transform: scale(.98); }
+  .btn.ghost { background: rgba(255,255,255,.08); color: #e8edf3; border: 1px solid rgba(255,255,255,.14); }
+  .btn[disabled] { opacity: .55; cursor: default; }
+  .msg { margin-top: 14px; font-size: 13.5px; line-height: 1.55; text-align: center; min-height: 20px; }
+  .msg.err { color: #ff8f8f; }
+  .msg.ok { color: #7fe3a0; }
+  .hidden { display: none; }
+  .result { text-align: center; }
+  .result .name { font-size: 22px; font-weight: 800; margin: 8px 0 2px; }
+  .result .meta { font-size: 13px; color: #9aa7b5; line-height: 1.6; margin-bottom: 6px; }
+  .okmark { width: 62px; height: 62px; margin: 6px auto 10px; border-radius: 50%;
+    display: grid; place-items: center; font-size: 30px; background: rgba(127,227,160,.12);
+    border: 1.5px solid rgba(127,227,160,.5); color: #7fe3a0; }
+  .steps { font-size: 12px; color: #7f8c9b; line-height: 1.7; margin-top: 16px; text-align: start; }
+  .steps b { color: #b9c4d0; }
+  .spin { display: inline-block; width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.25);
+    border-top-color: #f5b942; border-radius: 50%; animation: sp 1s linear infinite; vertical-align: -3px; }
+  @keyframes sp { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<main class="card" role="main">
+  <div class="logo">David&nbsp;King&nbsp;Gym</div>
+  <h1 id="title">Восстановление профиля</h1>
+  <p class="sub" id="subtitle">
+    Эта страница восстанавливает профиль клиента из облачной копии (ссылка портала) обратно в приложение тренера.
+  </p>
+
+  <!-- STEP 1: code -->
+  <section id="step-code">
+    <input id="code" type="tel" inputmode="numeric" maxlength="6" placeholder="••••••" autocomplete="one-time-code" aria-label="Код доступа" />
+    <button class="btn" id="btn-go">Восстановить</button>
+    <p class="msg err" id="err-code"></p>
+    <div class="steps">
+      <b>Где взять код?</b> Это 6-значный «Код доступа», который вы отправляли клиенту в WhatsApp
+      вместе со ссылкой («🔑 Код доступа: XXXXXX»). Если ссылку открывали с чужого кода — восстановление не сработает.
+    </div>
+  </section>
+
+  <!-- STEP 2: progress -->
+  <section id="step-busy" class="hidden">
+    <p class="msg" id="busy-msg"><span class="spin"></span> Ищу облачную копию…</p>
+  </section>
+
+  <!-- STEP 3: result -->
+  <section id="step-done" class="hidden result">
+    <div class="okmark">✓</div>
+    <div class="name" id="r-name"></div>
+    <div class="meta" id="r-meta"></div>
+    <button class="btn" id="btn-open">Открыть приложение</button>
+    <button class="btn ghost" id="btn-again">Восстановить ещё один профиль</button>
+  </section>
+
+  <p class="msg" id="msg"></p>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var CFG = {
+    apiKey: 'AIzaSyCP1QVC8TqhqU4_LSG1fxirClo8KHMS9rM',
+    authDomain: 'david-king-gym.firebaseapp.com',
+    projectId: 'david-king-gym',
+    appId: '1:755766426093:web:6ef22ee31139ff6175cfe4'
+  };
+  var FB_VER = '11.8.1';
+  var DB_NAME = 'fitness_crm_db';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var msgEl = $('msg');
+
+  function say(t, cls) { msgEl.textContent = t || ''; msgEl.className = 'msg' + (cls ? ' ' + cls : ''); }
+  function show(step) {
+    ['step-code', 'step-busy', 'step-done'].forEach(function (s) { $(s).classList.toggle('hidden', s !== step); });
+  }
+
+  /* ---- base64url ---- */
+  function b64uDecode(str) {
+    var b64 = str.replace(/-/g, '+').replace(/_/g, '/');
+    var pad = (4 - (b64.length % 4)) % 4;
+    var bin = atob(b64 + Array(pad + 1).join('='));
+    var out = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out;
+  }
+
+  /* ---- firebase loader ---- */
+  function loadScript(src) {
+    return new Promise(function (res, rej) {
+      var s = document.createElement('script');
+      s.src = src; s.async = true;
+      s.onload = function () { res(); };
+      s.onerror = function () { rej(new Error('load_failed')); };
+      document.head.appendChild(s);
+    });
+  }
+  var fbLoading = null;
+  function ensureFirebase() {
+    if (window.firebase && firebase.firestore) return Promise.resolve();
+    if (!fbLoading) fbLoading = loadScript('https://www.gstatic.com/firebasejs/' + FB_VER + '/firebase-app-compat.js')
+      .then(function () { return loadScript('https://www.gstatic.com/firebasejs/' + FB_VER + '/firebase-firestore-compat.js'); });
+    return fbLoading;
+  }
+
+  /* ---- fetch one share doc → blob bytes ---- */
+  function fetchShareBlob(id) {
+    return ensureFirebase().then(function () {
+      if (!firebase.apps.length) firebase.initializeApp(CFG);
+      return firebase.firestore().collection('portal_shares').doc(id).get({ source: 'server' });
+    }).then(function (snap) {
+      if (!snap || !snap.exists) return null;
+      var data = snap.data() || {};
+      if (!data.d) return null;
+      return b64uDecode(data.d);
+    });
+  }
+  /* ---- list all share ids ---- */
+  function listShareIds() {
+    return ensureFirebase().then(function () {
+      if (!firebase.apps.length) firebase.initializeApp(CFG);
+      return firebase.firestore().collection('portal_shares').get({ source: 'server' });
+    }).then(function (q) {
+      var ids = [];
+      q.forEach(function (d) { ids.push(d.id); });
+      /* biggest blobs last — richer payload takes priority on match attempt */
+      ids.sort(function (a, b) { return 0; });
+      return ids;
+    });
+  }
+
+  /* ---- decrypt ---- */
+  function decryptBlob(blob, code) {
+    var salt = blob.slice(0, 16), iv = blob.slice(16, 28), ct = blob.slice(28);
+    return crypto.subtle.importKey('raw', new TextEncoder().encode(code), 'PBKDF2', false, ['deriveKey'])
+      .then(function (km) {
+        return crypto.subtle.deriveKey(
+          { name: 'PBKDF2', salt: salt, iterations: 150000, hash: 'SHA-256' },
+          km, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+      })
+      .then(function (key) { return crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, key, ct); })
+      .then(function (pt) { return JSON.parse(new TextDecoder().decode(pt)); });
+  }
+
+  /* ---- idb helpers ---- */
+  function openDb() {
+    return new Promise(function (res, rej) {
+      var r = indexedDB.open(DB_NAME); /* no version → opens existing, never upgrades */
+      r.onsuccess = function () { res(r.result); };
+      r.onerror = function () { rej(r.error); };
+      r.onblocked = function () { rej(new Error('blocked')); };
+    });
+  }
+  function idbPutAll(idb, records) {
+    return new Promise(function (res, rej) {
+      var tx = idb.transaction(['clients', 'client_programs', 'nutrition_plans'], 'readwrite');
+      var stC = tx.objectStore('clients');
+      var stP = tx.objectStore('client_programs');
+      var stN = tx.objectStore('nutrition_plans');
+      stC.put(records.client);
+      records.programs.forEach(function (p) { stP.put(p); });
+      records.plans.forEach(function (p) { stN.put(p); });
+      tx.oncomplete = function () { res(); };
+      tx.onerror = function () { rej(tx.error); };
+      tx.onabort = function () { rej(tx.error); };
+    });
+  }
+  function idbAllClients(idb) {
+    return new Promise(function (res, rej) {
+      var tx = idb.transaction('clients', 'readonly');
+      var rq = tx.objectStore('clients').getAll();
+      rq.onsuccess = function () { res(rq.result || []); };
+      rq.onerror = function () { rej(rq.error); };
+    });
+  }
+
+  function uuid() {
+    if (crypto.randomUUID) return crypto.randomUUID();
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      var r = Math.random() * 16 | 0; var v = c === 'x' ? r : ((r & 0x3) | 0x8);
+      return v.toString(16);
+    });
+  }
+
+  /* ---- build records from payload ---- */
+  function buildRecords(payload) {
+    var cl = payload.client || {};
+    var fullName = String(cl.full_name || '').trim() || 'Клиент';
+    var now = Date.now();
+    var clientId = uuid();
+    var client = {
+      id: clientId,
+      full_name: fullName,
+      name_lower: fullName.toLowerCase(),
+      goal: cl.goal || '',
+      weight: (typeof cl.weight === 'number') ? cl.weight : (parseFloat(cl.weight) || null),
+      target_weight: (typeof cl.target_weight === 'number') ? cl.target_weight : (parseFloat(cl.target_weight) || null),
+      created_at: now, updated_at: now, last_active: now
+    };
+    var programs = (Array.isArray(payload.programs) && payload.programs.length)
+      ? payload.programs.slice(0)
+      : (payload.program ? [payload.program] : []);
+    programs = programs.map(function (p) {
+      if (!p) return null;
+      var rec = Object.assign({}, p);
+      rec.client_id = clientId;
+      if (!rec.id) rec.id = uuid();
+      return rec;
+    }).filter(Boolean);
+    var plans = (Array.isArray(payload.plans) && payload.plans.length)
+      ? payload.plans.slice(0)
+      : (payload.plan ? [payload.plan] : []);
+    plans = plans.map(function (p) {
+      if (!p) return null;
+      var rec = Object.assign({}, p);
+      rec.client_id = clientId;
+      if (!rec.id) rec.id = uuid();
+      return rec;
+    }).filter(Boolean);
+    return { client: client, programs: programs, plans: plans };
+  }
+
+  /* ---- main restore flow ---- */
+  var existingNamesCache = null;
+  function restoreWithCode(code, shareIds) {
+    show('step-busy');
+    $('busy-msg').innerHTML = '<span class="spin"></span> ' + (shareIds.length
+      ? 'Проверяю облачные копии (' + shareIds.length + ')…'
+      : 'Проверяю облачные копии…');
+    var chain = Promise.resolve();
+    var payload = null;
+    shareIds.forEach(function (id) {
+      chain = chain.then(function () {
+        if (payload) return;
+        return fetchShareBlob(id).then(function (blob) {
+          if (!blob) return;
+          return decryptBlob(blob, code).then(function (p) {
+            if (p && p.client) payload = p;
+          }).catch(function () { /* wrong code for this doc — try next */ });
+        });
+      });
+    });
+    return chain.then(function () {
+      if (!payload) throw { userMessage: true, text: 'Код не подошёл ни к одной облачной копии. Проверьте 6-значный код доступа.' };
+      return openDb().then(function (idb) {
+        var stores = Array.from(idb.objectStoreNames);
+        if (stores.indexOf('clients') === -1) throw { userMessage: true, text: 'База приложения ещё не создана — откройте приложение один раз и повторите восстановление.' };
+        return idbAllClients(idb).then(function (clients) {
+          var records = buildRecords(payload);
+          var nm = records.client.name_lower;
+          var dup = clients.some(function (c) { return (c.name_lower || '') === nm; });
+          if (dup && !forceRestore) {
+            return { dup: dup, records: records, payload: payload };
+          }
+          return idbPutAll(idb, records).then(function () {
+            try {
+              var done = JSON.parse(localStorage.getItem('dk_recovered_shares') || '[]');
+              done.push({ name: records.client.full_name, ts: Date.now() });
+              localStorage.setItem('dk_recovered_shares', JSON.stringify(done.slice(-20)));
+            } catch (e) {}
+            return { dup: false, records: records, payload: payload };
+          });
+        });
+      });
+    });
+  }
+
+  var forceRestore = false;
+  function finish(res) {
+    var r = res.records;
+    $('r-name').textContent = r.client.full_name;
+    $('r-meta').textContent = 'Программ тренировок: ' + r.programs.length + ' · Планов питания: ' + r.plans.length +
+      (res.dup ? ' · (создан второй клиент с таким именем — лишний можно удалить в приложении)' : '');
+    show('step-done');
+    say('');
+  }
+
+  function startRestore(code, ids) {
+    forceRestore = false;
+    restoreWithCode(code, ids).then(finish).catch(function (e) {
+      if (e && e.handled) return; /* duplicate-confirmation UI already shown */
+      if (e && e.userMessage) {
+        show('step-code');
+        say(e.text, 'err');
+      } else {
+        show('step-code');
+        var t = String((e && (e.code || e.message)) || e);
+        say('Ошибка: ' + (/permission|denied/i.test(t) ? 'нет доступа к облачной копии (правила Firestore)' :
+          /offline|network/i.test(t) ? 'нет соединения с сетью' :
+          /blocked/i.test(t) ? 'база занята — закройте вкладки приложения и повторите' : t), 'err');
+      }
+    });
+  }
+
+  /* ---- wire UI ---- */
+  var hashIds = [];
+  (function parseHash() {
+    var h = (window.location.hash || '').replace(/^#/, '');
+    if (!h) return;
+    var parts = h.split('&');
+    parts.forEach(function (kv) {
+      var i = kv.indexOf('=');
+      if (i < 0) return;
+      var k = kv.substring(0, i), v = kv.substring(i + 1);
+      if (k === 'r') hashIds = v.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+      if (k === 'p') { $('code').value = (v.replace(/\D/g, '') || '').slice(0, 6); }
+    });
+  })();
+
+  $('btn-go').addEventListener('click', function () {
+    var code = $('code').value.replace(/\D/g, '');
+    if (code.length !== 6) { say('Введите 6-значный код доступа', 'err'); return; }
+    if (!window.crypto || !crypto.subtle) { say('Браузер не поддерживает шифрование (нужен HTTPS)', 'err'); return; }
+    say('');
+    var idsPromise = hashIds.length ? Promise.resolve(hashIds) : listShareIds();
+    idsPromise.then(function (ids) {
+      if (!ids.length) throw { userMessage: true, text: 'В облаке нет ни одной копии — снапшот не найден.' };
+      startRestore(code, ids);
+    }).catch(function (e) {
+      show('step-code');
+      say(e && e.userMessage ? e.text : 'Не удалось получить список копий из облака', 'err');
+    });
+  });
+  $('code').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('btn-go').click(); });
+
+  $('btn-open').addEventListener('click', function () {
+    window.open('./fitness-crm.html', '_blank');
+  });
+  $('btn-again').addEventListener('click', function () {
+    $('code').value = '';
+    show('step-code');
+    say('');
+  });
+
+  /* duplicate → offer force */
+  var _origRestore = restoreWithCode;
+  restoreWithCode = function (code, ids) {
+    return _origRestore(code, ids).then(function (res) {
+      if (res && res.dup && !forceRestore) {
+        show('step-done');
+        $('r-name').textContent = res.records.client.full_name;
+        $('r-meta').textContent = 'Профиль с таким именем уже существует в приложении. Нажмите «Восстановить всё равно», чтобы создать копию.';
+        $('btn-again').textContent = 'Восстановить всё равно';
+        var again = $('btn-again');
+        var handler = function () {
+          again.removeEventListener('click', handler);
+          again.textContent = 'Восстановить ещё один профиль';
+          forceRestore = true;
+          startRestore(code, ids);
+        };
+        again.addEventListener('click', handler);
+        throw { handled: true };
+      }
+      return res;
+    });
+  };
+})();
+</script>
+</body>
+</html>
