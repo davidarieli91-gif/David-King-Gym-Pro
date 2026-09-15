@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c92" />
+<meta name="dk-build" content="c93" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2595,7 +2595,7 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c92</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c93</p>
             </div>
           </div>
 
@@ -11577,11 +11577,28 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const workouts = await db.find('workout_history', 'by_clientId', _clientId);
       const nutrition = await db.find('nutrition_history', 'by_clientId', _clientId);
 
+      /* c93: merge the trainee portal's cloud history (portal_shares/ps_hist_*)
+         so the trainer analytics and the trainee's personal analytics show
+         the SAME workouts — identical & interconnected. Remote records are
+         normalized to the CRM shape in-memory (NOT persisted to IndexedDB);
+         a 5s race guard keeps analytics usable when the cloud is offline. */
+      let workoutsAll = workouts;
+      try {
+        if (typeof window.dkFetchClientHistory === 'function') {
+          const remote = await window.dkFetchClientHistory(_clientId);
+          if (remote && remote.length) {
+            const seen = new Set(workouts.map(w => Number(w.date || w.created_at) || 0));
+            const extra = remote.filter(r => !seen.has(Number(r.date) || 0));
+            if (extra.length) workoutsAll = workouts.concat(extra);
+          }
+        }
+      } catch (_) {}
+
       // Compute metrics
-      const metrics = computeMetrics(workouts, nutrition);
+      const metrics = computeMetrics(workoutsAll, nutrition);
       renderMetrics(metrics);
-      renderCalendar(workouts, nutrition);
-      renderVolume(workouts);
+      renderCalendar(workoutsAll, nutrition);
+      renderVolume(workoutsAll);
     }
 
     /** Compute all key metrics from raw history arrays. */
@@ -14763,6 +14780,29 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       ov.addEventListener('click', (e) => { if (e.target === ov) closeLiveReportModal(); });
       document.getElementById('live-report-save').addEventListener('click', async () => {
         await db.put('workout_history', record);
+        /* c93: mirror the finished workout into the shared cloud history doc
+           so the trainee's portal analytics shows this session too */
+        try {
+          if (typeof window.dkPushClientHistory === 'function') {
+            const doneSets = record.exercises.reduce((s, ex) => s + (ex.sets || []).filter(x => x.done).length, 0);
+            const totSets = record.exercises.reduce((s, ex) => s + (ex.sets || []).length, 0);
+            window.dkPushClientHistory(record.client_id, {
+              ts: record.date,
+              date: new Date(record.date).toISOString().slice(0, 10),
+              program: record.name || '',
+              day_letter: '', day_index: -1,
+              duration_sec: record.duration || 0,
+              volume: record.total_volume || 0,
+              done_sets: doneSets, total_sets: totSets,
+              exercises: record.exercises.map(ex => ({
+                key: ex.exercise_id,
+                name: ex.name,
+                group: ex.group || ex.muscle_group || '',
+                sets: (ex.sets || []).map(s => ({ weight: s.weight || 0, reps: s.reps || 0, time: s.time != null ? s.time : null, dist: s.dist != null ? s.dist : null, rpe: s.rpe || null, type: s.type || 'normal', done: !!s.done }))
+              }))
+            });
+          }
+        } catch (_) {}
         const client = await db.get('clients', record.client_id);
         if (client) {
           client.last_active = Date.now();
@@ -23411,6 +23451,74 @@ async function boot() {
       await firebase.firestore().collection('portal_shares').doc(id).set({ d: blobB64, v: 1, ts: Date.now() });
     }
 
+    /* ===== c93: shared workout-history doc (CRM ↔ trainee portal) =====
+     * ONE cloud doc per client: portal_shares/ps_hist_<16hex> (16hex = the
+     * same SHA-256 derivative as the portal share id). The trainer CRM and
+     * the trainee portal both read/write it, so «Объём по группам мышц» in
+     * the trainer analytics and in the trainee's personal analytics shows
+     * the SAME workouts — identical and interconnected. Records use the
+     * portal schema (ts/program/exercises[key,…]); merge dedupes by ts;
+     * last 60 kept. Exposed on window: the live-workout module and the
+     * analytics module live in different closures. */
+    async function portalHistoryDocId(clientId) {
+      const shareId = await portalShareId(clientId);
+      return 'ps_hist_' + String(shareId).slice(2);
+    }
+    window.dkPushClientHistory = async function (clientId, rec) {
+      try {
+        if (!clientId || !rec) return false;
+        const docId = await portalHistoryDocId(clientId);
+        await ensurePortalFirebase();
+        if (!firebase.apps.length) firebase.initializeApp(PORTAL_SHARE_CFG);
+        const ref = firebase.firestore().collection('portal_shares').doc(docId);
+        let recs = [];
+        try {
+          const snap = await ref.get({ source: 'server' });
+          const data = snap && snap.exists ? snap.data() : null;
+          if (data && data.d) { const p = JSON.parse(data.d); if (Array.isArray(p.recs)) recs = p.recs; }
+        } catch (_) {}
+        recs = recs.filter(r => r && Number(r.ts) !== Number(rec.ts));
+        recs.push(rec);
+        recs.sort((a, b) => (a.ts || 0) - (b.ts || 0));
+        await ref.set({ d: JSON.stringify({ recs: recs.slice(-60) }), v: 2, ts: Date.now() });
+        return true;
+      } catch (e) { console.warn('[hist-sync] CRM push failed', e); return false; }
+    };
+    window.dkFetchClientHistory = async function (clientId) {
+      try {
+        if (!clientId) return [];
+        const docId = await portalHistoryDocId(clientId);
+        await ensurePortalFirebase();
+        if (!firebase.apps.length) firebase.initializeApp(PORTAL_SHARE_CFG);
+        const snap = await Promise.race([
+          firebase.firestore().collection('portal_shares').doc(docId).get({ source: 'server' }),
+          new Promise(res => setTimeout(() => res(null), 5000))
+        ]);
+        if (!snap || !snap.exists) return [];
+        const data = snap.data() || {};
+        if (!data.d) return [];
+        const p = JSON.parse(data.d);
+        const recs = Array.isArray(p.recs) ? p.recs : [];
+        /* portal-shaped → CRM-shaped (in-memory only, NOT persisted) */
+        return recs.filter(r => r && (Number(r.ts) > 0 || Date.parse(r.date) > 0)).map(r => {
+          const ts = Number(r.ts) || Date.parse(r.date) || 0;
+          const exs = r.exercises || [];
+          return {
+            date: ts, created_at: ts,
+            duration: Number(r.duration_sec) || 0,
+            total_volume: exs.reduce((s, ex) => s + (ex.sets || []).reduce((ss, st) => ss + (Number(st.weight) || 0) * (Number(st.reps) || 0), 0), 0),
+            name: r.program || '', _remote: true,
+            exercises: exs.map(ex => ({
+              exercise_id: ex.key || ex.exercise_id || '',
+              name: ex.name || '',
+              group: ex.group || '', muscle_group: ex.group || '',
+              sets: ex.sets || []
+            }))
+          };
+        }).filter(w => w.date > 0);
+      } catch (e) { console.warn('[hist-sync] CRM fetch failed', e); return []; }
+    };
+
     async function derivePortalKey(code, salt, usages) {
       const keyMaterial = await crypto.subtle.importKey('raw', new TextEncoder().encode(code), 'PBKDF2', false, ['deriveKey']);
       return crypto.subtle.deriveKey(
@@ -27640,7 +27748,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 92; /* numeric part of dk-build c92 */
+  var RUNNING = 93; /* numeric part of dk-build c93 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

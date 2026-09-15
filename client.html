@@ -2602,6 +2602,8 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
     sessions = {};
     renderAll();
     checkDraft();
+    /* c93: two-way history sync with the trainer CRM (cloud doc per share) */
+    try { dkHistStart(); } catch (e) {}
   }
   function applyDemo() {
     currentClient = { full_name:'Демо Клиент', goal:'hypertrophy', weight:78.4, target_weight:84 };
@@ -2927,7 +2929,26 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
         if (de && de.group) { const k = mgKeyOf(de.group); if (k) return k; }
       }
     }
+    /* c93: records synced from the trainer CRM carry the exercise's group
+       string (localized at log time) — map it before the name fallback and
+       pass unknown strings through as their own bar (exactly what the CRM
+       renderVolume does), so nothing silently merges into «Other». */
+    if (ex.group != null && String(ex.group).trim() !== '') {
+      const k = mgKeyOf(ex.group);
+      if (k) return k;
+      return String(ex.group).trim();
+    }
     return mgKeyOf(ex.name) || 'other';
+  }
+  /* c93: analytics volume = ALL sets × weight×reps — the EXACT trainer CRM
+     formula (fitness-crm.html renderVolume), so identical data always
+     produces identical numbers on both sides («kg·reps»). */
+  function aRecVolume(r) {
+    let v = 0;
+    ((r && r.exercises) || []).forEach(ex => {
+      (ex.sets || []).forEach(s => { v += (Number(s.weight) || 0) * (Number(s.reps) || 0); });
+    });
+    return Math.round(v);
   }
   function aAnalytics() {
     const hist = loadHistory();
@@ -2935,11 +2956,10 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
     const days = aRangeDays();
     const fromTs = analyticsRange === 'all' ? 0 : Date.now() - days * 86400000;
     const wf = hist.filter(r => (r.ts || Date.parse(r.date) || 0) >= fromTs);
+    /* c93: same formula as the trainer CRM (ALL sets × weight×reps) */
     let volume = 0, minutes = 0;
     wf.forEach(r => {
-      let v = Number(r.volume) || 0;
-      if (!v) (r.exercises || []).forEach(ex => { v += exDoneVolume(ex.sets).v; });
-      volume += v;
+      volume += aRecVolume(r);
       minutes += (Number(r.duration_sec) || 0) / 60;
     });
     const allDates = new Set();
@@ -3004,7 +3024,8 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
     const box = document.getElementById('analytics-muscles'); if (!box) return;
     const byGroup = new Map();
     a.wf.forEach(r => (r.exercises || []).forEach(ex => {
-      const v = exDoneVolume(ex.sets).v;
+      /* c93: ALL sets × weight×reps — identical to the trainer CRM bars */
+      const v = (ex.sets || []).reduce((sum, s) => sum + (Number(s.weight) || 0) * (Number(s.reps) || 0), 0);
       if (!v) return;
       const g = aGroupOf(ex);
       byGroup.set(g, (byGroup.get(g) || 0) + v);
@@ -3016,7 +3037,7 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
       <div>
         <div class="flex justify-between text-[11px] mb-1">
           <span class="font-semibold text-text">${esc(mgLabel(g))}</span>
-          <span class="font-mono text-muted">${aNum(v)} ${esc(t('volumeKg'))}</span>
+          <span class="font-mono text-muted">${aNum(v)} kg·reps</span>
         </div>
         <div class="h-2 bg-[rgb(var(--c-surface-2))] rounded-full overflow-hidden">
           <div class="h-full rounded-full" style="width:${Math.max(3, Math.round(v / max * 100))}%;background:linear-gradient(90deg,#6366f1,#22d3ee)"></div>
@@ -3068,7 +3089,7 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
     const list = loadHistory().slice(-5).reverse();
     if (!list.length) { box.innerHTML = '<p class="text-xs text-muted text-center py-4">' + esc(t('aNoWorkouts')) + '</p>'; return; }
     box.innerHTML = list.map(r => {
-      let v = Number(r.volume) || 0; if (!v) (r.exercises || []).forEach(ex => { v += exDoneVolume(ex.sets).v; });
+      const v = aRecVolume(r); /* c93: CRM formula (ALL sets × weight×reps) */
       const mins = Math.round((Number(r.duration_sec) || 0) / 60);
       const done = r.done_sets != null ? r.done_sets : (r.exercises || []).reduce((s, ex) => s + exDoneVolume(ex.sets).d, 0);
       const tot = r.total_sets != null ? r.total_sets : (r.exercises || []).reduce((s, ex) => s + (ex.sets || []).length, 0);
@@ -3077,10 +3098,97 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
           <div class="text-text font-semibold truncate">${esc((r.program || '') + (r.day_letter ? ' · ' + r.day_letter : ''))}</div>
           <div class="text-[10px] text-muted mt-0.5">${esc(fmtDay(r.ts || r.date))}</div>
         </div>
-        <span class="font-mono text-muted shrink-0 text-end">${aNum(v)} ${esc(t('volumeKg'))} · ${done}/${tot} · ${mins} ${esc(t('aMinutes'))}</span>
+        <span class="font-mono text-muted shrink-0 text-end">${aNum(v)} kg·reps · ${done}/${tot} · ${mins} ${esc(t('aMinutes'))}</span>
       </div>`;
     }).join('');
   }
+
+  /* ============ c93: TWO-WAY WORKOUT-HISTORY SYNC (CRM ↔ portal) ============
+   * ONE cloud doc per client: portal_shares/ps_hist_<16hex> — the SAME
+   * SHA-256 derivative the portal share link uses, so both apps derive it
+   * independently (CRM from clientId, portal from its share id).
+   * Trainer-logged workouts land in the portal, portal workouts land in the
+   * trainer analytics — both «Объём по группам мышц» panels are fed by the
+   * SAME data with the SAME formula (ALL sets × weight×reps, kg·reps).
+   * Records use the portal schema; merge dedupes by ts; last 60 kept.
+   * No share id (legacy #e= links, demo mode) → sync silently skipped. */
+  function dkHistDocId() {
+    try {
+      const sh = JSON.parse(localStorage.getItem('dk_client_share') || 'null');
+      if (sh && sh.id && String(sh.id).indexOf('ps') === 0 && String(sh.id).length > 6) return 'ps_hist_' + String(sh.id).slice(2);
+    } catch (e) {}
+    return '';
+  }
+  function dkHistMergeRemote(recs) {
+    if (!Array.isArray(recs) || !recs.length) return false;
+    const hist = loadHistory();
+    const seen = new Set(hist.map(r => Number(r.ts) || 0));
+    let added = 0;
+    recs.forEach(r => {
+      if (!r || r.ts == null) return;
+      if (seen.has(Number(r.ts))) return;
+      hist.push(r); seen.add(Number(r.ts)); added++;
+    });
+    if (!added) return false;
+    hist.sort((a, b) => (a.ts || 0) - (b.ts || 0));
+    saveHistory(hist);
+    renderAnalytics();
+    console.info('[hist-sync] merged ' + added + ' workout(s) from the trainer');
+    return true;
+  }
+  function dkHistRef(docId) {
+    return ensureFirebaseLite().then(function () {
+      if (!firebase.apps.length) firebase.initializeApp(CLOUD_CFG);
+      return firebase.firestore().collection('portal_shares').doc(docId);
+    });
+  }
+  function dkHistFetch() {
+    const docId = dkHistDocId();
+    if (!docId) return Promise.resolve(null);
+    return dkHistRef(docId).then(function (ref) {
+      return ref.get({ source: 'server' });
+    }).then(function (snap) {
+      if (!snap || !snap.exists) return [];
+      const data = snap.data() || {};
+      if (!data.d) return [];
+      const p = JSON.parse(data.d);
+      return Array.isArray(p.recs) ? p.recs : [];
+    }).catch(function () { return null; });
+  }
+  function dkHistPush(rec) {
+    const docId = dkHistDocId();
+    if (!docId || !rec) return Promise.resolve(false);
+    return dkHistFetch().then(function (remote) {
+      const recs = (Array.isArray(remote) ? remote : []).filter(r => r && Number(r.ts) !== Number(rec.ts));
+      recs.push(rec);
+      recs.sort((a, b) => (a.ts || 0) - (b.ts || 0));
+      return dkHistRef(docId).then(function (ref) {
+        return ref.set({ d: JSON.stringify({ recs: recs.slice(-60) }), v: 2, ts: Date.now() });
+      });
+    }).then(function () { return true; }).catch(function (e) { console.warn('[hist-sync] push failed', e); return false; });
+  }
+  function dkHistWatch() {
+    const docId = dkHistDocId();
+    if (!docId) return;
+    dkHistRef(docId).then(function (ref) {
+      if (ref.onSnapshot) {
+        ref.onSnapshot(function (snap) {
+          try {
+            const data = snap && snap.exists ? snap.data() : null;
+            if (!data || !data.d) return;
+            const p = JSON.parse(data.d);
+            dkHistMergeRemote(p.recs);
+          } catch (e) {}
+        }, function () {
+          /* listener error → fall back to a one-time read */
+          dkHistFetch().then(function (recs) { if (recs) dkHistMergeRemote(recs); }).catch(function () {});
+        });
+      } else {
+        dkHistFetch().then(function (recs) { if (recs) dkHistMergeRemote(recs); }).catch(function () {});
+      }
+    }).catch(function () {});
+  }
+  function dkHistStart() { if (dkHistDocId()) dkHistWatch(); }
 
   /* ============ CHECK-IN ============ */
   function todayKey() { return new Date().toISOString().slice(0,10); }
@@ -3789,6 +3897,8 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
     document.getElementById('report-modal').classList.remove('hidden');
     document.getElementById('report-save').addEventListener('click', () => {
       const hist = loadHistory(); hist.push(rec); saveHistory(hist);
+      /* c93: mirror the finished workout into the shared cloud history doc */
+      try { dkHistPush(rec); } catch (e) {}
       delete sessions[rec.day_index];
       saveDraft(true);
       stopRest();
