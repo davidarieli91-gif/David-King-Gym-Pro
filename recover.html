@@ -146,8 +146,9 @@
     }).then(function (snap) {
       if (!snap || !snap.exists) return null;
       var data = snap.data() || {};
-      if (!data.d) return null;
-      return b64uDecode(data.d);
+      /* c88: skip service docs (units sync) — only real encrypted share blobs */
+      if (!data.d || typeof data.d !== 'string' || data.d.length < 64) return null;
+      try { return b64uDecode(data.d); } catch (e) { return null; }
     });
   }
   /* ---- list all share ids ---- */

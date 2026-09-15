@@ -4,7 +4,18 @@
     "kg": "קילוגרמים",
     "lb": "פאונד",
     "kgShort": "ק״ג",
-    "lbShort": "lb"
+    "lbShort": "lb",
+    "time": "יחידת זמן",
+    "min": "דקות",
+    "sec": "שניות",
+    "minShort": "דק׳",
+    "secShort": "שנ׳",
+    "dist": "יחידת מרחק",
+    "m": "מטרים",
+    "km": "קילומטרים",
+    "mShort": "מט",
+    "kmShort": "ק״מ",
+    "cardioTitle": "יחידות קרדיו"
   },
   "aria": {
     "toggleTheme": "החלף ערכת נושא",
@@ -551,7 +562,9 @@
     "scrollToNext": "התרגיל הבא",
     "allSetsDone": "כל הסטים הושלמו!",
     "noExerciseSelected": "הוסף תרגיל תחילה",
-    "perExerciseRest": "מנוחה:"
+    "perExerciseRest": "מנוחה:",
+    "time": "זמן",
+    "dist": "מרחק"
   },
   "exercise": {
     "title": "מאגר תרגילים",
@@ -617,7 +630,9 @@
     "sourceGymVisual": "Gym Visual",
     "sourceGymImpulse": "GymImpulse",
     "bulkHint": "הקישו להוספה",
-    "addedCheck": "✓ נוסף"
+    "addedCheck": "✓ נוסף",
+    "category": "קטגוריה",
+    "categoryCardio": "קרדיו"
   },
   "nutrition": {
     "title": "תזונה",

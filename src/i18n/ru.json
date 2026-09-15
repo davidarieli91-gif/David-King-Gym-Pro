@@ -4,7 +4,18 @@
     "kg": "Килограммы",
     "lb": "Фунты",
     "kgShort": "кг",
-    "lbShort": "фт"
+    "lbShort": "фт",
+    "time": "Единица времени",
+    "min": "Минуты",
+    "sec": "Секунды",
+    "minShort": "мин",
+    "secShort": "сек",
+    "dist": "Единица расстояния",
+    "m": "Метры",
+    "km": "Километры",
+    "mShort": "м",
+    "kmShort": "км",
+    "cardioTitle": "Единицы кардио"
   },
   "aria": {
     "toggleTheme": "Сменить тему",
@@ -551,7 +562,9 @@
     "scrollToNext": "Следующее упражнение",
     "allSetsDone": "Все подходы выполнены!",
     "noExerciseSelected": "Сначала добавьте упражнение",
-    "perExerciseRest": "Отдых:"
+    "perExerciseRest": "Отдых:",
+    "time": "Время",
+    "dist": "Дистанция"
   },
   "exercise": {
     "title": "База упражнений",
@@ -617,7 +630,9 @@
     "sourceGymVisual": "Gym Visual",
     "sourceGymImpulse": "GymImpulse",
     "bulkHint": "Нажимайте для добавления",
-    "addedCheck": "✓ Добавлено"
+    "addedCheck": "✓ Добавлено",
+    "category": "Категория",
+    "categoryCardio": "Кардио"
   },
   "nutrition": {
     "title": "Питание",

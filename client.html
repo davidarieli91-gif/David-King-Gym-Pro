@@ -2385,7 +2385,7 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
       noExercises:'Нет упражнений',noMeals:'План питания не назначен',technique:'Техника',
       targetMuscle:'Целевые',auxMuscle:'Вспомогательные',rest:'Отдых',
       liveBadge:'Идёт тренировка',statEx:'Упражнения',statSets:'Подходы',statVol:'Объём',
-      prevLabel:'Пред.',weightLabel:'Вес',repsLabel:'Повт.',rpeLabel:'RPE',
+      prevLabel:'Пред.',weightLabel:'Вес',repsLabel:'Повт.',rpeLabel:'RPE',timeLabel:'Время',distLabel:'Дистанция',distShortLabel:'Дист',
       addSet:'+ подход',setWarmup:'Разминка',setDrop:'Дроп',setFailure:'Отказ',setAmrap:'AMRAP',
       restDone:'Отдых окончен!',skipRest:'Пропустить',restPerEx:'Отдых, с',
       finishConfirm:'Завершить тренировку?',draftFound:'Найдена незавершённая тренировка. Продолжить?',
@@ -2415,7 +2415,7 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
       noExercises:'No exercises',noMeals:'No nutrition plan',technique:'Technique',
       targetMuscle:'Target',auxMuscle:'Auxiliary',rest:'Rest',
       liveBadge:'Workout in progress',statEx:'Exercises',statSets:'Sets',statVol:'Volume',
-      prevLabel:'Prev.',weightLabel:'Weight',repsLabel:'Reps',rpeLabel:'RPE',
+      prevLabel:'Prev.',weightLabel:'Weight',repsLabel:'Reps',rpeLabel:'RPE',timeLabel:'Time',distLabel:'Distance',distShortLabel:'Dist',
       addSet:'+ set',setWarmup:'Warmup',setDrop:'Drop',setFailure:'Failure',setAmrap:'AMRAP',
       restDone:'Rest is over!',skipRest:'Skip',restPerEx:'Rest, s',
       finishConfirm:'Finish workout?',draftFound:'Unfinished workout found. Resume?',
@@ -2445,7 +2445,7 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
       noExercises:'אין תרגילים',noMeals:'אין תפריט',technique:'טכניקה',
       targetMuscle:'יעד',auxMuscle:'עזר',rest:'מנוחה',
       liveBadge:'אימון מתבצע',statEx:'תרגילים',statSets:'סטים',statVol:'נפח',
-      prevLabel:'קודם',weightLabel:'משקל',repsLabel:'חזרות',rpeLabel:'RPE',
+      prevLabel:'קודם',weightLabel:'משקל',repsLabel:'חזרות',rpeLabel:'RPE',timeLabel:'זמן',distLabel:'מרחק',distShortLabel:'מרחק',
       addSet:'+ סט',setWarmup:'חימום',setDrop:'דרופ',setFailure:'כשל',setAmrap:'AMRAP',
       restDone:'המנוחה נגמרה!',skipRest:'דלג',restPerEx:'מנוחה, שנ׳',
       finishConfirm:'לסיים את האימון?',draftFound:'נמצא אימון שלא הושלם. להמשיך?',
@@ -3127,6 +3127,7 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
       const technique = exData ? (exData['technique_'+lang] || exData.technique_en || '') : '';
       const equipment = exData ? (exData['equipment_'+lang] || exData.equipment_en || exData.equipment || '') : '';
       const groupLabel = exData ? (exData['group_'+lang] || exData.group_en || ex.group || '') : (ex.group || '');
+      const isCardioEx = (ex.cardio === true) || !!(exData && exData.category === 'cardio'); /* c88 */
       const liveEx = sess ? (sess.exercises||[])[ei] : null;
       const restSec = liveEx ? liveEx.rest_sec : (parseInt(ex.rest_sec,10) || 90);
       const thumbHtml = (() => {
@@ -3155,7 +3156,7 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
           : '—';
         const dis = editable ? '' : 'disabled';
         const repsPh = s.type === 'amrap' ? '∞' : (Number(s.reps)||'');
-        const setVol = Math.round((Number(s.weight)||0) * (Number(s.reps)||0));
+        const setVol = isCardioEx ? '—' : Math.round((Number(s.weight)||0) * (Number(s.reps)||0));
         const rpeBtns = RPE_COLORS.map((c, i) => {
           const v = i + 1;
           const sel = s.rpe === v ? ' sel' : '';
@@ -3167,9 +3168,13 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
             ${typeBadge(s.type)}
           </div>
           <div class="font-mono text-[10px] text-muted text-center truncate" data-prev-cell>${esc(pw)}</div>
-          <input type="number" step="0.5" inputmode="decimal" value="${s.weight!=null?Number(s.weight):''}" ${dis} data-field="weight" data-ex="${ei}" data-si="${si}" class="set-input" placeholder="0" />
+          ${isCardioEx
+            ? `<input type="number" step="0.5" inputmode="decimal" value="${s.time!=null?Number(s.time):''}" ${dis} data-field="time" data-ex="${ei}" data-si="${si}" class="set-input" placeholder="0" />
+          <span class="text-[9px] text-muted text-center">/</span>
+          <input type="number" step="0.5" inputmode="decimal" value="${s.dist!=null?Number(s.dist):''}" ${dis} data-field="dist" data-ex="${ei}" data-si="${si}" class="set-input" placeholder="0" />`
+            : `<input type="number" step="0.5" inputmode="decimal" value="${s.weight!=null?Number(s.weight):''}" ${dis} data-field="weight" data-ex="${ei}" data-si="${si}" class="set-input" placeholder="0" />
           <span class="text-[9px] text-muted text-center">×</span>
-          <input type="number" step="1" inputmode="numeric" value="${s.type==='amrap'?'':(s.reps!=null?Number(s.reps):'')}" ${dis} data-field="reps" data-ex="${ei}" data-si="${si}" class="set-input" placeholder="${s.type==='amrap'?'∞':'0'}" />
+          <input type="number" step="1" inputmode="numeric" value="${s.type==='amrap'?'':(s.reps!=null?Number(s.reps):'')}" ${dis} data-field="reps" data-ex="${ei}" data-si="${si}" class="set-input" placeholder="${s.type==='amrap'?'∞':'0'}" />`}
           <button class="set-check w-7 h-7 rounded-lg bg-surface-2 border border-border hover:border-emerald-400 hover:bg-emerald-400/15 text-muted hover:text-emerald-400 grid place-items-center transition ${done?'':''}"
             data-toggle-set data-ex="${ei}" data-si="${si}" ${editable?'':'disabled'}>✓</button>
           <button class="w-6 h-7 grid place-items-center rounded-lg text-muted hover:text-cyan-300 transition" data-cycle-type data-ex="${ei}" data-si="${si}" title="type" ${editable?'':'disabled'}>
@@ -3206,7 +3211,7 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
         </div>
         ${ex.notes?`<div class="text-[11px] text-amber-300/80 bg-amber-500/8 border border-amber-500/15 rounded-lg p-2 leading-relaxed">💡 ${esc(ex.notes)}</div>`:''}
         <div class="set-grid px-2 text-[8px] uppercase tracking-wide text-muted font-bold">
-          <span>#</span><span class="text-center">${esc(t('prevLabel'))}</span><span class="text-center" data-wunit-col data-wunit-base="${esc(t('weightLabel'))}">${esc(t('weightLabel'))}</span><span></span><span class="text-center">${esc(t('repsLabel'))}</span><span class="text-center">✓</span><span></span><span></span>
+          <span>#</span><span class="text-center">${esc(t('prevLabel'))}</span>${isCardioEx ? `<span class="text-center" data-tunit-col data-tunit-base="${esc(t('timeLabel'))}">${esc(t('timeLabel'))}</span><span></span><span class="text-center" data-dunit-col data-dunit-base="${esc(t('distShortLabel'))}">${esc(t('distShortLabel'))}</span>` : `<span class="text-center" data-wunit-col data-wunit-base="${esc(t('weightLabel'))}">${esc(t('weightLabel'))}</span><span></span><span class="text-center">${esc(t('repsLabel'))}</span>`}<span class="text-center">✓</span><span></span><span></span>
         </div>
         <div class="space-y-1.5">${setsRows}</div>
         ${addSetBtn}
@@ -3233,6 +3238,8 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
         const v = inp.value.trim();
         if (f === 'weight') set.weight = v === '' ? null : parseFloat(v);
         else if (f === 'reps') set.reps = v === '' ? null : parseInt(v,10);
+        else if (f === 'time') set.time = v === '' ? null : parseFloat(v);
+        else if (f === 'dist') set.dist = v === '' ? null : parseFloat(v);
         else set.rpe = v === '' ? null : parseFloat(v);
         // live-update the set volume readout next to the RPE buttons
         const card = inp.closest('[data-exercise-card]');
@@ -3896,7 +3903,7 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
          * card. Report: tapping «Вес» opened the card first (z-[110] above
          * the z-[95] sheet), and the unit dialog only showed up after the
          * card was closed. */
-        if(e.target.closest('[data-wunit-col],[data-wunit-chip]')) return;
+        if(e.target.closest('[data-wunit-col],[data-wunit-chip],[data-tunit-col],[data-dunit-col]')) return;
         const idx=+card.dataset.exerciseCard;
         const day=dayInfo(activeDayIndex);
         const ex=(day&&day.exercises||[])[idx];
@@ -3929,9 +3936,9 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
 
     /* ---- local strings (ru / en / he) ---- */
     var L = {
-      ru: { dumbbellAria:'Вернуться к тренировке', setTitle:'Настройки', themes:'Темы', darkThemes:'Тёмные темы', lightThemes:'Светлые темы', textures:'Текстуры', texHint:'Текстурные наложения поверх любой темы — те же, что в основном приложении. Выберите эффект и настройте насыщенность.', opacity:'Насыщенность', reset:'Сброс', resetDone:'Возврат к стандартной насыщенности', applied:'Текстура применена', share:'Поделиться отчётом', themeChanged:'Тема изменена', wunitTitle:'Единица веса', wunitKg:'Килограммы', wunitLb:'Фунты', wunitKgShort:'кг', wunitLbShort:'фт' },
-      en: { dumbbellAria:'Back to workout', setTitle:'Settings', themes:'Themes', darkThemes:'Dark themes', lightThemes:'Light themes', textures:'Textures', texHint:'Texture overlays on top of any theme — the same as in the main app. Pick an effect and fine-tune its opacity.', opacity:'Opacity', reset:'Reset', resetDone:'Returned to the effect default', applied:'Texture applied', share:'Share report', themeChanged:'Theme changed', wunitTitle:'Unit of weight', wunitKg:'Kilograms', wunitLb:'Pounds', wunitKgShort:'kg', wunitLbShort:'lb' },
-      he: { dumbbellAria:'חזרה לאימון', setTitle:'הגדרות', themes:'ערכות נושא', darkThemes:'ערכות כהות', lightThemes:'ערכות בהירות', textures:'טקסטורות', texHint:'שכבות מרקף מעל כל ערכת נושא — אותן טקסטורות כמו באפליקציה הראשית. בחרו אפקט וכוונו את העוצמה.', opacity:'עוצמה', reset:'איפוס', resetDone:'חזרה לעוצמת ברירת המחדל', applied:'הטקסטורה הוחלה', share:'שתף דוח', themeChanged:'ערכת הנושא הוחלפה', wunitTitle:'יחידת משקל', wunitKg:'קילוגרמים', wunitLb:'פאונד', wunitKgShort:'ק״ג', wunitLbShort:'lb' }
+      ru: { dumbbellAria:'Вернуться к тренировке', setTitle:'Настройки', themes:'Темы', darkThemes:'Тёмные темы', lightThemes:'Светлые темы', textures:'Текстуры', texHint:'Текстурные наложения поверх любой темы — те же, что в основном приложении. Выберите эффект и настройте насыщенность.', opacity:'Насыщенность', reset:'Сброс', resetDone:'Возврат к стандартной насыщенности', applied:'Текстура применена', share:'Поделиться отчётом', themeChanged:'Тема изменена', wunitTitle:'Единица веса', wunitKg:'Килограммы', wunitLb:'Фунты', wunitKgShort:'кг', wunitLbShort:'фт', wunitTime:'Единица времени', wunitMin:'Минуты', wunitSec:'Секунды', wunitMinShort:'мин', wunitSecShort:'сек', wunitDist:'Единица расстояния', wunitM:'Метры', wunitKm:'Километры', wunitMShort:'м', wunitKmShort:'км', wunitCardioTitle:'Единицы кардио', timeLabel:'Время', distLabel:'Дистанция', distShortLabel:'Дист' },
+      en: { dumbbellAria:'Back to workout', setTitle:'Settings', themes:'Themes', darkThemes:'Dark themes', lightThemes:'Light themes', textures:'Textures', texHint:'Texture overlays on top of any theme — the same as in the main app. Pick an effect and fine-tune its opacity.', opacity:'Opacity', reset:'Reset', resetDone:'Returned to the effect default', applied:'Texture applied', share:'Share report', themeChanged:'Theme changed', wunitTitle:'Unit of weight', wunitKg:'Kilograms', wunitLb:'Pounds', wunitKgShort:'kg', wunitLbShort:'lb', wunitTime:'Time unit', wunitMin:'Minutes', wunitSec:'Seconds', wunitMinShort:'min', wunitSecShort:'sec', wunitDist:'Distance unit', wunitM:'Meters', wunitKm:'Kilometers', wunitMShort:'m', wunitKmShort:'km', wunitCardioTitle:'Cardio units', timeLabel:'Time', distLabel:'Distance', distShortLabel:'Dist' },
+      he: { dumbbellAria:'חזרה לאימון', setTitle:'הגדרות', themes:'ערכות נושא', darkThemes:'ערכות כהות', lightThemes:'ערכות בהירות', textures:'טקסטורות', texHint:'שכבות מרקף מעל כל ערכת נושא — אותן טקסטורות כמו באפליקציה הראשית. בחרו אפקט וכוונו את העוצמה.', opacity:'עוצמה', reset:'איפוס', resetDone:'חזרה לעוצמת ברירת המחדל', applied:'הטקסטורה הוחלה', share:'שתף דוח', themeChanged:'ערכת הנושא הוחלפה', wunitTitle:'יחידת משקל', wunitKg:'קילוגרמים', wunitLb:'פאונד', wunitKgShort:'ק״ג', wunitLbShort:'lb', wunitTime:'יחידת זמן', wunitMin:'דקות', wunitSec:'שניות', wunitMinShort:'דק׳', wunitSecShort:'שנ׳', wunitDist:'יחידת מרחק', wunitM:'מטרים', wunitKm:'קילומטרים', wunitMShort:'מט', wunitKmShort:'ק״מ', wunitCardioTitle:'יחידות קרדיו', timeLabel:'זמן', distLabel:'מרחק', distShortLabel:'מרחק' }
     };
     function T(k) { var l = curLang(); return (L[l] && L[l][k]) || L.ru[k] || k; }
 
@@ -4178,6 +4185,7 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
         el.textContent = (base && base.toLowerCase() !== sh.toLowerCase()) ? base + ' · ' + sh : base;
         el.title = wTitle;
       });
+      try { cuApply(); } catch (e) {}
     }
     var _wSrc = null;
     function wEnsureSheet() {
@@ -4233,8 +4241,136 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
       try { localStorage.setItem(WKEY, u); } catch (e) {}
       wApply();
       wClose();
+      cuPush();
     }
     window.dkWUnitApply = wApply;
+
+    /* ===== c88: time & distance units for cardio + ONE cloud-synced units doc ===== */
+    var CU_TKEY = 'dk_tunit', CU_DKEY = 'dk_dunit', CU_TSKEY = 'dk_units_ts', CU_DOC = 'ps_units_global_v1';
+    function cuTGet() { try { return localStorage.getItem(CU_TKEY) === 'sec' ? 'sec' : 'min'; } catch (e) { return 'min'; } }
+    function cuDGet() { try { return localStorage.getItem(CU_DKEY) === 'km' ? 'km' : 'm'; } catch (e) { return 'm'; } }
+    function cuTShort(u) { if (u == null) u = cuTGet(); return T(u === 'sec' ? 'wunitSecShort' : 'wunitMinShort') || (u === 'sec' ? 'сек' : 'мин'); }
+    function cuDShort(u) { if (u == null) u = cuDGet(); return T(u === 'km' ? 'wunitKmShort' : 'wunitMShort') || (u === 'km' ? 'км' : 'м'); }
+    function cuApply() {
+      var tTitle = T('wunitTime') || 'Time unit', dTitle = T('wunitDist') || 'Distance unit';
+      document.querySelectorAll('[data-tunit-col]').forEach(function (el) {
+        el.textContent = (el.getAttribute('data-tunit-base') || '') + ' · ' + cuTShort();
+        el.title = tTitle;
+      });
+      document.querySelectorAll('[data-dunit-col]').forEach(function (el) {
+        el.textContent = (el.getAttribute('data-dunit-base') || '') + ' · ' + cuDShort();
+        el.title = dTitle;
+      });
+    }
+    function cuEnsureSheet() {
+      if (document.getElementById('dk-cunit-sheet')) return;
+      var wrap = document.createElement('div');
+      wrap.id = 'dk-cunit-sheet';
+      wrap.className = 'hidden fixed inset-0 z-[95] flex items-center justify-center p-4';
+      wrap.innerHTML =
+        '<div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-cunit-backdrop></div>' +
+        '<div class="relative w-full max-w-xs rounded-2xl border border-border bg-[rgb(var(--c-surface))] shadow-float p-4 space-y-3" role="dialog" aria-modal="true">' +
+          '<div class="text-[10px] font-bold uppercase tracking-wider text-muted" data-cunit-title></div>' +
+          '<div class="text-[10px] font-semibold text-muted" data-cunit-sub="t"></div>' +
+          '<div class="grid grid-cols-2 gap-2">' +
+            '<button type="button" data-cunit-t="min" class="wunit-opt rounded-xl border border-border bg-surface-2 px-3 py-2.5 text-sm font-bold text-text transition"><span data-cunit-t-label="min"></span></button>' +
+            '<button type="button" data-cunit-t="sec" class="wunit-opt rounded-xl border border-border bg-surface-2 px-3 py-2.5 text-sm font-bold text-text transition"><span data-cunit-t-label="sec"></span></button>' +
+          '</div>' +
+          '<div class="text-[10px] font-semibold text-muted" data-cunit-sub="d"></div>' +
+          '<div class="grid grid-cols-2 gap-2">' +
+            '<button type="button" data-cunit-d="m" class="wunit-opt rounded-xl border border-border bg-surface-2 px-3 py-2.5 text-sm font-bold text-text transition"><span data-cunit-d-label="m"></span></button>' +
+            '<button type="button" data-cunit-d="km" class="wunit-opt rounded-xl border border-border bg-surface-2 px-3 py-2.5 text-sm font-bold text-text transition"><span data-cunit-d-label="km"></span></button>' +
+          '</div>' +
+        '</div>';
+      document.body.appendChild(wrap);
+    }
+    function cuRefreshSheet() {
+      var sheet = document.getElementById('dk-cunit-sheet');
+      if (!sheet) return;
+      var tt = sheet.querySelector('[data-cunit-title]');
+      if (tt) tt.textContent = T('wunitCardioTitle') || 'Cardio units';
+      var st = sheet.querySelector('[data-cunit-sub="t"]');
+      if (st) st.textContent = T('wunitTime') || 'Time';
+      var sd = sheet.querySelector('[data-cunit-sub="d"]');
+      if (sd) sd.textContent = T('wunitDist') || 'Distance';
+      [['t', 'min'], ['t', 'sec'], ['d', 'm'], ['d', 'km']].forEach(function (pair) {
+        var k = pair[0], u = pair[1];
+        var btn = sheet.querySelector('[data-cunit-' + k + '="' + u + '"]');
+        if (!btn) return;
+        var lab = btn.querySelector('[data-cunit-' + k + '-label="' + u + '"]');
+        if (lab) lab.textContent = (k === 't' ? cuTShort(u) : cuDShort(u));
+        var on = (k === 't' ? cuTGet() : cuDGet()) === u;
+        btn.classList.toggle('wunit-opt-active', on);
+      });
+    }
+    function cuOpen() {
+      cuEnsureSheet();
+      cuRefreshSheet();
+      document.getElementById('dk-cunit-sheet').classList.remove('hidden');
+    }
+    function cuClose() {
+      var sh = document.getElementById('dk-cunit-sheet');
+      if (sh) sh.classList.add('hidden');
+    }
+    function cuTSet(u) {
+      try { localStorage.setItem(CU_TKEY, u === 'sec' ? 'sec' : 'min'); } catch (e) {}
+      wApply();
+      cuRefreshSheet();
+      cuPush();
+    }
+    function cuDSet(u) {
+      try { localStorage.setItem(CU_DKEY, u === 'km' ? 'km' : 'm'); } catch (e) {}
+      wApply();
+      cuRefreshSheet();
+      cuPush();
+    }
+    /* one cloud doc for BOTH apps: write on change, watch for live propagation */
+    function cuPush() {
+      try {
+        var ts = Date.now();
+        try { localStorage.setItem(CU_TSKEY, String(ts)); } catch (e) {}
+        var payload = JSON.stringify({ w: wGet(), t: cuTGet(), d: cuDGet() });
+        ensureFirebaseLite().then(function () {
+          if (!firebase.apps.length) firebase.initializeApp(CLOUD_CFG);
+          return firebase.firestore().collection('portal_shares').doc(CU_DOC).set({ d: payload, v: 2, ts: ts });
+        }).catch(function (e) {});
+      } catch (e) {}
+    }
+    function cuApplyRemote(data) {
+      if (!data || !data.d || !data.ts) return;
+      var local = 0;
+      try { local = Number(localStorage.getItem(CU_TSKEY) || 0); } catch (e) {}
+      if (Number(data.ts) <= local) return;
+      try {
+        var u = JSON.parse(data.d);
+        if (u.w) { try { localStorage.setItem(WKEY, u.w === 'lb' ? 'lb' : 'kg'); } catch (e) {} }
+        if (u.t) { try { localStorage.setItem(CU_TKEY, u.t === 'sec' ? 'sec' : 'min'); } catch (e) {} }
+        if (u.d) { try { localStorage.setItem(CU_DKEY, u.d === 'km' ? 'km' : 'm'); } catch (e) {} }
+        try { localStorage.setItem(CU_TSKEY, String(Number(data.ts))); } catch (e) {}
+        wApply();
+      } catch (e) {}
+    }
+    function cuSync(watch) {
+      ensureFirebaseLite().then(function () {
+        if (!firebase.apps.length) firebase.initializeApp(CLOUD_CFG);
+        var ref = firebase.firestore().collection('portal_shares').doc(CU_DOC);
+        if (watch && ref.onSnapshot) {
+          ref.onSnapshot(function (snap) { try { cuApplyRemote(snap && snap.exists ? snap.data() : null); } catch (e) {} }, function (e) {});
+        } else {
+          ref.get({ source: 'server' }).then(function (snap) { cuApplyRemote(snap && snap.exists ? snap.data() : null); }).catch(function (e) {});
+        }
+      }).catch(function (e) {});
+    }
+    try { cuSync(true); } catch (e) {}
+    document.addEventListener('click', function (e) {
+      if (e.target.closest('[data-cunit-backdrop]')) { cuClose(); return; }
+      var tp = e.target.closest('[data-cunit-t]');
+      if (tp) { cuTSet(tp.getAttribute('data-cunit-t')); return; }
+      var dp = e.target.closest('[data-cunit-d]');
+      if (dp) { cuDSet(dp.getAttribute('data-cunit-d')); return; }
+      if (e.target.closest('[data-tunit-col],[data-dunit-col]')) { cuOpen(); return; }
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') cuClose(); });
 
     /* ---- dumbbell: one-tap return to the workout (portal variant of c83) ---- */
     function sessionActive() {

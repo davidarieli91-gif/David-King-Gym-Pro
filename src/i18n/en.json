@@ -4,7 +4,18 @@
     "kg": "Kilograms",
     "lb": "Pounds",
     "kgShort": "kg",
-    "lbShort": "lb"
+    "lbShort": "lb",
+    "time": "Time unit",
+    "min": "Minutes",
+    "sec": "Seconds",
+    "minShort": "min",
+    "secShort": "sec",
+    "dist": "Distance unit",
+    "m": "Meters",
+    "km": "Kilometers",
+    "mShort": "m",
+    "kmShort": "km",
+    "cardioTitle": "Cardio units"
   },
   "aria": {
     "toggleTheme": "Toggle theme",
@@ -551,7 +562,9 @@
     "scrollToNext": "Next exercise",
     "allSetsDone": "All sets done!",
     "noExerciseSelected": "Add an exercise first",
-    "perExerciseRest": "Rest:"
+    "perExerciseRest": "Rest:",
+    "time": "Time",
+    "dist": "Distance"
   },
   "exercise": {
     "title": "Exercise database",
@@ -617,7 +630,9 @@
     "sourceGymVisual": "Gym Visual",
     "sourceGymImpulse": "GymImpulse",
     "bulkHint": "Tap to add",
-    "addedCheck": "✓ Added"
+    "addedCheck": "✓ Added",
+    "category": "Category",
+    "categoryCardio": "Cardio"
   },
   "nutrition": {
     "title": "Nutrition",
