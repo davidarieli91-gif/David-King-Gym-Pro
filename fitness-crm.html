@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c88" />
+<meta name="dk-build" content="c89" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2593,7 +2593,7 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c88</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c89</p>
             </div>
           </div>
 
@@ -7184,30 +7184,48 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
     dkCUnitRefreshSheet();
     dkUnitsCloudPush();
   }
-  /* c88: cloud sync — ONE units doc shared by the trainer app and every portal.
-     Self-contained Firebase compat loader (the portal-share loader lives in
-     another module scope). Write on every local change; pull on boot; live watch. */
-  var DK_UNITS_FB_VER = '11.8.1';
-  var DK_UNITS_FB_CFG = { apiKey: 'AIzaSyCP1QVC8TqhqU4_LSG1fxirClo8KHMS9rM', authDomain: 'david-king-gym.firebaseapp.com', projectId: 'david-king-gym', appId: '1:755766426093:web:6ef22ee31139ff6175cfe4' };
-  var _dkUnitsFbP = null;
-  function dkUnitsEnsureFb() {
-    if (window.firebase && firebase.firestore) return Promise.resolve();
-    if (!_dkUnitsFbP) {
-      _dkUnitsFbP = new Promise(function (res, rej) {
-        var s1 = document.createElement('script');
-        s1.src = 'https://www.gstatic.com/firebasejs/' + DK_UNITS_FB_VER + '/firebase-app-compat.js';
-        s1.onload = function () {
-          var s2 = document.createElement('script');
-          s2.src = 'https://www.gstatic.com/firebasejs/' + DK_UNITS_FB_VER + '/firebase-firestore-compat.js';
-          s2.onload = function () { res(); };
-          s2.onerror = function () { _dkUnitsFbP = null; rej(new Error('fb-firestore')); };
-          document.head.appendChild(s2);
-        };
-        s1.onerror = function () { _dkUnitsFbP = null; rej(new Error('fb-app')); };
-        document.head.appendChild(s1);
-      });
+  /* c89: ONE shared Firebase-compat loader for the whole app (window.dkFbEnsure).
+     Three modules used to bring their own scripts: units sync (eager at boot),
+     portal shares and the cloud account. The units loader fetches ONLY
+     app+firestore; when it finished first, the cloud loader's early check
+     «window.firebase exists» skipped its own chain — including
+     firebase-auth-compat — and firebase.auth() threw
+     «firebase.auth is not a function» on every boot (cloud account dead).
+     The coordinator loads each script at most once across ALL loaders and
+     re-checks at execution time what is actually missing; every caller waits
+     only until ITS pieces exist. */
+  window.dkFbEnsure = (function () {
+    var FBV = '11.8.1';
+    var _once = {};
+    function loadOnce(name) {
+      var src = 'https://www.gstatic.com/firebasejs/' + FBV + '/firebase-' + name + '-compat.js';
+      if (!_once[src]) {
+        _once[src] = new Promise(function (res, rej) {
+          var s = document.createElement('script');
+          s.src = src; s.async = true;
+          s.onload = function () { res(); };
+          s.onerror = function () { delete _once[src]; rej(new Error('load_failed:' + src)); };
+          document.head.appendChild(s);
+        });
+      }
+      return _once[src];
     }
-    return _dkUnitsFbP;
+    return function (want) {
+      var steps = [
+        function () { if (!window.firebase) return loadOnce('app'); }
+      ];
+      if (want && want.auth) {
+        steps.push(function () { if (!(window.firebase && firebase.auth)) return loadOnce('auth'); });
+      }
+      steps.push(function () { if (!(window.firebase && firebase.firestore)) return loadOnce('firestore'); });
+      return steps.reduce(function (p, st) { return p.then(st); }, Promise.resolve());
+    };
+  })();
+  /* c88: cloud sync — ONE units doc shared by the trainer app and every portal.
+     Write on every local change; pull on boot; live watch. */
+  var DK_UNITS_FB_CFG = { apiKey: 'AIzaSyCP1QVC8TqhqU4_LSG1fxirClo8KHMS9rM', authDomain: 'david-king-gym.firebaseapp.com', projectId: 'david-king-gym', appId: '1:755766426093:web:6ef22ee31139ff6175cfe4' };
+  function dkUnitsEnsureFb() {
+    return window.dkFbEnsure({ firestore: true });
   }
   function dkUnitsCloudPush() {
     try {
@@ -23184,28 +23202,17 @@ async function boot() {
      * SHA-256 derivative of the clientId, so re-generating the portal REFRESHES
      * the plan behind the SAME link — the trainee never gets a new URL.
      * Legacy long #e= link stays as a fallback when the cloud is unreachable. */
-    const PORTAL_SHARE_FB_VER = '11.8.1';
     const PORTAL_SHARE_CFG = {
       apiKey: 'AIzaSyCP1QVC8TqhqU4_LSG1fxirClo8KHMS9rM',
       authDomain: 'david-king-gym.firebaseapp.com',
       projectId: 'david-king-gym',
       appId: '1:755766426093:web:6ef22ee31139ff6175cfe4'
     };
-    let _portalFbLoading = null;
-    function loadPortalScript(src) {
-      return new Promise((res, rej) => {
-        const s = document.createElement('script');
-        s.src = src; s.async = true;
-        s.onload = () => res(); s.onerror = () => rej(new Error('load_failed:' + src));
-        document.head.appendChild(s);
-      });
-    }
+    /* c89: delegates to the shared Firebase loader (window.dkFbEnsure) — the
+       private loader used to race the units/cloud loaders and could leave
+       pieces (notably firebase-auth-compat for the cloud account) unloaded. */
     async function ensurePortalFirebase() {
-      if (window.firebase && firebase.firestore) return;
-      if (_portalFbLoading) return _portalFbLoading;
-      _portalFbLoading = loadPortalScript('https://www.gstatic.com/firebasejs/' + PORTAL_SHARE_FB_VER + '/firebase-app-compat.js')
-        .then(() => loadPortalScript('https://www.gstatic.com/firebasejs/' + PORTAL_SHARE_FB_VER + '/firebase-firestore-compat.js'));
-      return _portalFbLoading;
+      await window.dkFbEnsure({ firestore: true });
     }
     async function portalShareId(clientId) {
       try {
@@ -26221,14 +26228,13 @@ document.addEventListener('DOMContentLoaded', function () {
         document.head.appendChild(s);
       });
     }
+    /* c89: delegates to the shared Firebase loader and explicitly requires
+       firebase.auth — the units-sync loader boots app+firestore WITHOUT auth,
+       so the old «firebase exists» early-return skipped firebase-auth-compat
+       and firebase.auth() threw on every boot («firebase.auth is not a
+       function» on the lock screen). */
     function loadFirebase() {
-      if (window.firebase && firebase.firestore) return Promise.resolve();
-      if (_fbLoading) return _fbLoading;
-      _fbLoading = loadScript('https://www.gstatic.com/firebasejs/' + FB_VER + '/firebase-app-compat.js')
-        .then(function () { return loadScript('https://www.gstatic.com/firebasejs/' + FB_VER + '/firebase-auth-compat.js'); })
-        .then(function () { return loadScript('https://www.gstatic.com/firebasejs/' + FB_VER + '/firebase-firestore-compat.js'); })
-        .catch(function (e) { _fbLoading = null; throw e; });
-      return _fbLoading;
+      return window.dkFbEnsure({ auth: true, firestore: true });
     }
 
     /* ---------- config ---------- */
@@ -27453,7 +27459,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 88; /* numeric part of dk-build c88 */
+  var RUNNING = 89; /* numeric part of dk-build c89 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
