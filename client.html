@@ -2943,7 +2943,7 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
       started_at: withStart ? Date.now() : null,
       exercises: (day.exercises||[]).map(ex => ({
         exercise_id: exKey(ex),
-        rest_sec: parseInt(ex.rest_sec,10) || 90,
+        rest_sec: (function(){ const rv = parseInt(ex.rest_sec,10); return (!isNaN(rv) && rv >= 0) ? rv : 90; })(),
         sets: (ex.sets||[]).map((s, si) => {
           const hist = findPrev(progName, letter, exKey(ex), si);
           const pw = hist ? hist.weight : (Number(s.weight)||null);
