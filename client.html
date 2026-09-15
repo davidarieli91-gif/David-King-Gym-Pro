@@ -2038,6 +2038,8 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
     .rpe-btn.sel { opacity: 1; outline-color: #fff; transform: scale(1.18); }
     .rpe-btn:disabled { cursor: default; }
     .rpe-vol { margin-inline-start: auto; font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: rgb(var(--c-muted)); white-space: nowrap; }
+    /* c90: previous-workout effort badge inside the Prev cell */
+    .prev-rpe { display: inline-block; margin-inline-start: 3px; width: 12px; height: 12px; line-height: 12px; border-radius: 9999px; color: #fff; font-size: 8px; font-weight: 800; text-align: center; vertical-align: middle; }
     .set-input { width: 100%; background: rgb(var(--c-surface-2)); text-align: center; border-radius: 8px; border: 1px solid rgb(var(--c-border)); padding: 5px 2px; font-family: var(--font-mono); font-weight: 700; font-size: 12px; color: rgb(var(--c-text)); outline: none; }
     .set-input:focus { border-color: rgb(var(--c-primary)); box-shadow: 0 0 0 2px rgb(var(--c-primary) / 0.25); }
     .set-input[disabled] { opacity: .55; }
@@ -2385,7 +2387,7 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
       noExercises:'Нет упражнений',noMeals:'План питания не назначен',technique:'Техника',
       targetMuscle:'Целевые',auxMuscle:'Вспомогательные',rest:'Отдых',
       liveBadge:'Идёт тренировка',statEx:'Упражнения',statSets:'Подходы',statVol:'Объём',
-      prevLabel:'Пред.',weightLabel:'Вес',repsLabel:'Повт.',rpeLabel:'RPE',timeLabel:'Время',distLabel:'Дистанция',distShortLabel:'Дист',
+      doneAllBtn:'Сделал всё',prevLabel:'Пред.',weightLabel:'Вес',repsLabel:'Повт.',rpeLabel:'RPE',timeLabel:'Время',distLabel:'Дистанция',distShortLabel:'Дист',
       addSet:'+ подход',setWarmup:'Разминка',setDrop:'Дроп',setFailure:'Отказ',setAmrap:'AMRAP',
       restDone:'Отдых окончен!',skipRest:'Пропустить',restPerEx:'Отдых, с',
       finishConfirm:'Завершить тренировку?',draftFound:'Найдена незавершённая тренировка. Продолжить?',
@@ -2415,7 +2417,7 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
       noExercises:'No exercises',noMeals:'No nutrition plan',technique:'Technique',
       targetMuscle:'Target',auxMuscle:'Auxiliary',rest:'Rest',
       liveBadge:'Workout in progress',statEx:'Exercises',statSets:'Sets',statVol:'Volume',
-      prevLabel:'Prev.',weightLabel:'Weight',repsLabel:'Reps',rpeLabel:'RPE',timeLabel:'Time',distLabel:'Distance',distShortLabel:'Dist',
+      doneAllBtn:'Done all',prevLabel:'Prev.',weightLabel:'Weight',repsLabel:'Reps',rpeLabel:'RPE',timeLabel:'Time',distLabel:'Distance',distShortLabel:'Dist',
       addSet:'+ set',setWarmup:'Warmup',setDrop:'Drop',setFailure:'Failure',setAmrap:'AMRAP',
       restDone:'Rest is over!',skipRest:'Skip',restPerEx:'Rest, s',
       finishConfirm:'Finish workout?',draftFound:'Unfinished workout found. Resume?',
@@ -2445,7 +2447,7 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
       noExercises:'אין תרגילים',noMeals:'אין תפריט',technique:'טכניקה',
       targetMuscle:'יעד',auxMuscle:'עזר',rest:'מנוחה',
       liveBadge:'אימון מתבצע',statEx:'תרגילים',statSets:'סטים',statVol:'נפח',
-      prevLabel:'קודם',weightLabel:'משקל',repsLabel:'חזרות',rpeLabel:'RPE',timeLabel:'זמן',distLabel:'מרחק',distShortLabel:'מרחק',
+      doneAllBtn:'בוצע הכל',prevLabel:'קודם',weightLabel:'משקל',repsLabel:'חזרות',rpeLabel:'RPE',timeLabel:'זמן',distLabel:'מרחק',distShortLabel:'מרחק',
       addSet:'+ סט',setWarmup:'חימום',setDrop:'דרופ',setFailure:'כשל',setAmrap:'AMRAP',
       restDone:'המנוחה נגמרה!',skipRest:'דלג',restPerEx:'מנוחה, שנ׳',
       finishConfirm:'לסיים את האימון?',draftFound:'נמצא אימון שלא הושלם. להמשיך?',
@@ -2871,7 +2873,7 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
       const ex = (r.exercises||[]).find(e => e.key === key);
       if (!ex || !ex.sets || !ex.sets.length) continue;
       const s = ex.sets[Math.min(setIndex, ex.sets.length-1)];
-      return { weight: s.weight, reps: s.reps };
+      return { weight: s.weight, reps: s.reps, rpe: s.rpe, time: s.time, dist: s.dist };
     }
     return null;
   }
@@ -2946,7 +2948,12 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
           const hist = findPrev(progName, letter, exKey(ex), si);
           const pw = hist ? hist.weight : (Number(s.weight)||null);
           const pr = hist ? hist.reps : (Number(s.reps)||null);
-          return { weight:null, reps:null, rpe:null, type:'normal', done:false, prev_weight:pw, prev_reps:pr };
+          /* c90: also carry the last workout's effort + cardio time/dist */
+          return { weight:null, reps:null, time:null, dist:null, rpe:null, type:'normal', done:false,
+                   prev_weight:pw, prev_reps:pr,
+                   prev_rpe: hist && hist.rpe != null ? hist.rpe : null,
+                   prev_time: hist && hist.time != null ? hist.time : null,
+                   prev_dist: hist && hist.dist != null ? hist.dist : null };
         })
       }))
     };
@@ -2955,7 +2962,7 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
     if (sessions[dayIdx]) return sessions[dayIdx];
     const s = buildSession(dayIdx, false);
     if (!s) return null;
-    s.exercises.forEach(ex=>{ if(!ex.sets.length) ex.sets.push({weight:null,reps:null,rpe:null,type:'normal',done:false,prev_weight:null,prev_reps:null}); });
+    s.exercises.forEach(ex=>{ if(!ex.sets.length) ex.sets.push({weight:null,reps:null,time:null,dist:null,rpe:null,type:'normal',done:false,prev_weight:null,prev_reps:null,prev_rpe:null,prev_time:null,prev_dist:null}); });
     sessions[dayIdx]=s;
     saveDraft(true);
     return s;
@@ -3151,9 +3158,12 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
       const setsRows = (liveEx ? liveEx.sets : (ex.sets||[])).map((s, si)=>{
         const sn = si + 1;
         const done = !!(s.done);
-        const pw = (s.prev_weight != null || s.prev_reps != null)
-          ? `${s.prev_weight!=null?Number(s.prev_weight):'—'}×${s.prev_reps!=null?Number(s.prev_reps):'—'}`
-          : '—';
+        const hasPrev = (s.prev_weight != null || s.prev_reps != null || s.prev_time != null || s.prev_dist != null);
+        const pw = !hasPrev ? '—' : (isCardioEx
+          ? `${s.prev_time!=null?Number(s.prev_time):'—'}×${s.prev_dist!=null?Number(s.prev_dist):'—'}`
+          : `${s.prev_weight!=null?Number(s.prev_weight):'—'}×${s.prev_reps!=null?Number(s.prev_reps):'—'}`);
+        /* c90: last workout's effort (1-10) as a colored mini badge */
+        const prevRpeBadge = (s.prev_rpe != null) ? `<span class="prev-rpe" style="background:${RPE_COLORS[s.prev_rpe-1]||'#666'}" title="RPE ${s.prev_rpe}">${s.prev_rpe}</span>` : '';
         const dis = editable ? '' : 'disabled';
         const repsPh = s.type === 'amrap' ? '∞' : (Number(s.reps)||'');
         const setVol = isCardioEx ? '—' : Math.round((Number(s.weight)||0) * (Number(s.reps)||0));
@@ -3167,7 +3177,7 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
             <div class="font-mono text-[11px] font-bold text-muted">#${sn}</div>
             ${typeBadge(s.type)}
           </div>
-          <div class="font-mono text-[10px] text-muted text-center truncate" data-prev-cell>${esc(pw)}</div>
+          <div class="font-mono text-[10px] text-muted text-center truncate" data-prev-cell>${esc(pw)}${prevRpeBadge}</div>
           ${isCardioEx
             ? `<input type="number" step="0.5" inputmode="decimal" value="${s.time!=null?Number(s.time):''}" ${dis} data-field="time" data-ex="${ei}" data-si="${si}" class="set-input" placeholder="0" />
           <span class="text-[9px] text-muted text-center">/</span>
@@ -3185,8 +3195,12 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
         <div class="rpe-row" data-rpe-row="${ei}-${si}">${rpeBtns}<span class="rpe-vol">${setVol}</span></div>`;
       }).join('');
 
-      const addSetBtn = editable ? `<button class="w-full mt-1.5 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/25 text-[11px] font-bold py-1.5 rounded-xl transition" data-add-set data-ex="${ei}">
+      const addSetBtn = editable ? `<button class="w-full bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/25 text-[11px] font-bold py-1.5 rounded-xl transition" data-add-set data-ex="${ei}">
           <span class="inline-flex items-center gap-1"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 5v14M5 12h14"/></svg>${esc(t('addSet'))}</span>
+        </button>` : '';
+      /* c90: «Сделал всё» — mark every set of the exercise done */
+      const doneAllBtn = editable ? `<button class="w-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/25 text-[11px] font-bold py-1.5 rounded-xl transition" data-done-all data-ex="${ei}">
+          <span class="inline-flex items-center gap-1"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>${esc(t('doneAllBtn'))}</span>
         </button>` : '';
 
       const techniqueHtml = technique ? `<details class="group"><summary class="text-[11px] font-semibold text-indigo-300 cursor-pointer select-none flex items-center gap-1">
@@ -3214,7 +3228,7 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
           <span>#</span><span class="text-center">${esc(t('prevLabel'))}</span>${isCardioEx ? `<span class="text-center" data-tunit-col data-tunit-base="${esc(t('timeLabel'))}">${esc(t('timeLabel'))}</span><span></span><span class="text-center" data-dunit-col data-dunit-base="${esc(t('distShortLabel'))}">${esc(t('distShortLabel'))}</span>` : `<span class="text-center" data-wunit-col data-wunit-base="${esc(t('weightLabel'))}">${esc(t('weightLabel'))}</span><span></span><span class="text-center">${esc(t('repsLabel'))}</span>`}<span class="text-center">✓</span><span></span><span></span>
         </div>
         <div class="space-y-1.5">${setsRows}</div>
-        ${addSetBtn}
+        ${addSetBtn || doneAllBtn ? `<div class="grid grid-cols-2 gap-1.5 mt-1.5">${addSetBtn}${doneAllBtn}</div>` : ''}
         ${techniqueHtml}
       </div>`;
     }).join('');
@@ -3277,8 +3291,21 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
           if (next) {
             next.prev_weight = set.weight != null ? set.weight : next.prev_weight;
             next.prev_reps = set.reps != null ? set.reps : next.prev_reps;
+            next.prev_rpe = set.rpe != null ? set.rpe : next.prev_rpe; /* c90 */
+            const dayExC = ((dayInfo(activeDayIndex)||{}).exercises||[])[ei] || {};
+            const exDataC = getExData(dayExC);
+            const cardioC = (dayExC.cardio === true) || !!(exDataC && exDataC.category === 'cardio');
+            if (cardioC) {
+              next.prev_time = set.time != null ? set.time : next.prev_time;
+              next.prev_dist = set.dist != null ? set.dist : next.prev_dist;
+            }
             const row = btn.closest('[data-exercise-card]').querySelector(`.set-row[data-si="${si+1}"] [data-prev-cell]`);
-            if (row) row.textContent = `${set.weight!=null?set.weight:'—'}×${set.reps!=null?set.reps:'—'}`;
+            if (row) {
+              const txt = cardioC
+                ? `${set.time!=null?set.time:'—'}×${set.dist!=null?set.dist:'—'}`
+                : `${set.weight!=null?set.weight:'—'}×${set.reps!=null?set.reps:'—'}`;
+              row.innerHTML = esc(txt) + (set.rpe != null ? `<span class="prev-rpe" style="background:${RPE_COLORS[set.rpe-1]||'#666'}" title="RPE ${set.rpe}">${set.rpe}</span>` : '');
+            }
           }
           startRest(ex.rest_sec || 90);
         }
@@ -3326,9 +3353,14 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
         ex.sets.push({
           weight: last ? last.weight : null,
           reps: last ? last.reps : null,
+          time: last && last.time != null ? last.time : null,
+          dist: last && last.dist != null ? last.dist : null,
           rpe: null, type: last ? last.type : 'normal', done: false,
           prev_weight: last ? last.weight : null,
-          prev_reps: last ? last.reps : null
+          prev_reps: last ? last.reps : null,
+          prev_rpe: null,
+          prev_time: last && last.time != null ? last.time : null,
+          prev_dist: last && last.dist != null ? last.dist : null
         });
         ensureStarted(sess0); saveDraft(); renderExercises();
         const rows = document.querySelectorAll(`[data-exercise-card="${ei}"] .set-row`);
@@ -3336,6 +3368,18 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
           rows[rows.length-1].scrollIntoView({behavior:'smooth',block:'center'});
           rows[rows.length-1].querySelector('[data-field="weight"]')?.focus();
         }
+      });
+    });
+
+    // c90: «Сделал всё» — mark every set of the exercise done
+    list.querySelectorAll('[data-done-all]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sess0 = getSess(); if(!sess0) return;
+        const ei = +btn.dataset.ex;
+        const ex = (sess0.exercises||[])[ei]; if (!ex) return;
+        (ex.sets||[]).forEach(s => { s.done = true; });
+        ensureStarted(sess0); saveDraft(); renderExercises();
+        startRest(ex.rest_sec || 90);
       });
     });
 
@@ -3492,7 +3536,7 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
         return {
           key: lex.exercise_id,
           name: exData ? (exData['name_' + currentLang] || exData.name_en || dayEx.name) : (dayEx['name_' + currentLang] || dayEx.name_en || dayEx.name || lex.exercise_id),
-          sets: (lex.sets || []).map(s => ({ weight: s.weight, reps: s.reps, rpe: s.rpe, type: s.type, done: !!s.done }))
+          sets: (lex.sets || []).map(s => ({ weight: s.weight, reps: s.reps, time: s.time != null ? s.time : null, dist: s.dist != null ? s.dist : null, rpe: s.rpe, type: s.type, done: !!s.done }))
         };
       })
     };
@@ -3530,7 +3574,9 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
       const mm = Math.floor(wr.duration_sec/60), sec = wr.duration_sec%60;
       lines.push(`⏱ ${mm}:${String(sec).padStart(2,'0')} · 🏋️ ${wr.volume.toLocaleString('ru-RU')} ${t('volumeKg')} · ✔ ${wr.done_sets}/${wr.total_sets}`);
       (wr.exercises||[]).forEach(ex => {
-        const parts = (ex.sets||[]).map(s => `${s.weight!=null?s.weight:'—'}×${s.reps!=null?s.reps:'—'}${s.done?'✓':''}`);
+        const parts = (ex.sets||[]).map(s => (s.time != null || s.dist != null)
+          ? `${s.time!=null?s.time:'—'}×${s.dist!=null?s.dist:'—'}${s.done?'✓':''}`
+          : `${s.weight!=null?s.weight:'—'}×${s.reps!=null?s.reps:'—'}${s.done?'✓':''}`);
         if (parts.length) lines.push(`• ${ex.name}: ${parts.join(', ')}`);
       });
     } else if (sess) {

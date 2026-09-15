@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c89" />
+<meta name="dk-build" content="c90" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2072,6 +2072,8 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
     .lw-rpe-btn { width: 22px; height: 22px; border-radius: 9999px; font-size: 9px; font-weight: 800; color: #fff; display: grid; place-items: center; opacity: .5; transition: transform .12s, opacity .12s; outline: 2px solid transparent; outline-offset: 1px; border: none; cursor: pointer; padding: 0; flex-shrink: 0; }
     .lw-rpe-btn.sel { opacity: 1; outline-color: #fff; transform: scale(1.18); }
     .lw-rpe-vol { margin-inline-start: auto; font-family: monospace; font-size: 10px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+    /* c90: previous-workout RPE badge shown inside the Prev cell */
+    .lw-prev-rpe { display: inline-block; margin-inline-start: 4px; width: 14px; height: 14px; line-height: 14px; border-radius: 9999px; color: #fff; font-size: 8px; font-weight: 800; text-align: center; vertical-align: middle; }
 
     /* ===== c61 MOBILE RESPONSIVE FIXES =====
        1) Live set table must fit the card: number inputs shrink, columns compact. */
@@ -2593,7 +2595,7 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c89</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c90</p>
             </div>
           </div>
 
@@ -13773,6 +13775,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       render();
       router.show('live-workout');
       startDurationTimer();
+      ensureLastRef(); /* c90: prefill prev weights/reps/RPE from the last workout */
     }
 
     async function loadExerciseCache() {
@@ -13789,6 +13792,68 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           return `<option value="${escapeAttr(c.id)}">${escapeHTML(name)}</option>`;
         }).join('');
       if (_workout && _workout.client_id) sel.value = _workout.client_id;
+    }
+
+    /* ===== c90: last-workout reference — «рабочие веса прошлого раза» =====
+       Fetch the most recent history records and map exercise_id → its sets,
+       so every set row shows what the trainee did LAST TIME (weight×reps,
+       cardio time×dist and the 1–10 effort he rated). If the client has no
+       history under his id (a profile restored under a new UUID), fall back
+       to ORPHAN records (client_id matching no existing client) so previous
+       working weights still show up. */
+    let _lastRefMap = null;
+    async function fetchLastRef(clientId) {
+      let rows = [];
+      try { rows = (await db.find('workout_history', 'by_clientId', clientId)) || []; } catch (_) { rows = []; }
+      if (!rows.length) {
+        try {
+          const all = (await db.all('workout_history')) || [];
+          const known = {};
+          (await db.all('clients')).forEach(c => { known[c.id] = 1; });
+          rows = all.filter(h => h.client_id && !known[h.client_id]);
+        } catch (_) { rows = []; }
+      }
+      const sorted = rows.slice().sort((a, b) => (b.date || 0) - (a.date || 0));
+      const map = {};
+      sorted.forEach(rec => {
+        (rec.exercises || []).forEach(ex => {
+          const key = String(ex.exercise_id || ex.name || '');
+          if (key && !map[key] && ex.sets && ex.sets.length) map[key] = ex.sets;
+        });
+      });
+      return map;
+    }
+    /* Fill prev_* (last workout) into every set that has no prev yet.
+       Sets already chain-filled from a just-completed set keep their values. */
+    function applyLastRef() {
+      if (!_workout || !_lastRefMap) return;
+      let touched = false;
+      _workout.exercises.forEach(ex => {
+        const ref = _lastRefMap[String(ex.exercise_id || ex.name || '')];
+        if (!ref) return;
+        (ex.sets || []).forEach((s, si) => {
+          const r = ref[Math.min(si, ref.length - 1)];
+          if (!r) return;
+          if (s.prev_weight == null && s.prev_reps == null && (r.weight != null || r.reps != null)) {
+            s.prev_weight = r.weight;
+            s.prev_reps = r.reps;
+            touched = true;
+          }
+          if (s.prev_rpe == null && r.rpe != null) { s.prev_rpe = r.rpe; touched = true; }
+          if (s.prev_time == null && r.time != null) { s.prev_time = r.time; touched = true; }
+          if (s.prev_dist == null && r.dist != null) { s.prev_dist = r.dist; touched = true; }
+        });
+      });
+      if (touched) render();
+    }
+    function ensureLastRef() {
+      if (!_workout || !_workout.client_id) return;
+      if (_lastRefMap) { applyLastRef(); return; }
+      fetchLastRef(_workout.client_id).then(m => { _lastRefMap = m; applyLastRef(); }).catch(() => {});
+    }
+    /* c90: mini badge «intensity of the previous set» inside the Prev cell */
+    function prevRpeBadgeHTML(v) {
+      return `<span class="lw-prev-rpe" style="background:${RPE_COLORS[v - 1] || '#666'}" title="RPE ${v}">${v}</span>`;
     }
 
     function startDurationTimer() {
@@ -13877,7 +13942,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       }
       const clientSel = document.getElementById('live-workout-client');
       if (clientSel && !clientSel.dataset.wired) {
-        clientSel.addEventListener('change', (e) => { _workout.client_id = e.target.value; });
+        clientSel.addEventListener('change', async (e) => {
+          _workout.client_id = e.target.value;
+          /* c90: client switched → refetch his last-workout reference */
+          _lastRefMap = null;
+          ensureLastRef();
+        });
         clientSel.dataset.wired = '1';
       }
 
@@ -13960,11 +14030,15 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             </table>
           </div>
 
-          <!-- Add set + notes -->
+          <!-- Add set + done all + notes -->
           <div class="p-2 border-t border-border flex items-center gap-2">
             <button data-add-set="${idx}" class="text-xs font-semibold text-primary-2 hover:bg-primary/10 rounded-lg px-2.5 py-1.5 transition inline-flex items-center gap-1">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
               ${t('workouts.addSet')}
+            </button>
+            <button data-done-all="${idx}" class="ms-auto text-xs font-semibold text-success hover:bg-success/10 rounded-lg px-2.5 py-1.5 transition inline-flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+              ${t('workouts.doneAll')}
             </button>
           </div>
         </div>
@@ -13991,7 +14065,18 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
     /** Build HTML for a single set row. */
     function setRowHTML(exIdx, setIdx, set) {
-      const prev = setIdx > 0 ? (set.prev_weight && set.prev_reps ? `${set.prev_weight}×${set.prev_reps}` : '—') : '—';
+      /* c90: prev column = last workout's values (prefilled on start / client
+         pick from workout_history), then the chain value of the set just done
+         (Hevy parity). The colored badge shows the 1–10 effort of that set. */
+      const isC = exIsCardio(_workout && _workout.exercises[exIdx]);
+      const hasPrev = set.prev_weight != null || set.prev_reps != null || set.prev_time != null || set.prev_dist != null;
+      let prev = '—';
+      if (hasPrev) {
+        prev = isC
+          ? `${set.prev_time != null ? set.prev_time : '—'}×${set.prev_dist != null ? set.prev_dist : '—'}`
+          : `${set.prev_weight != null ? set.prev_weight : '—'}×${set.prev_reps != null ? set.prev_reps : '—'}`;
+      }
+      const prevBadge = set.prev_rpe != null ? prevRpeBadgeHTML(set.prev_rpe) : '';
       const done = set.done ? 'checked' : '';
       const doneClass = set.done ? 'bg-success/15' : '';
       const setType = set.type || 'normal';
@@ -14006,7 +14091,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         amrap: 'bg-primary/15 text-primary-2'
       };
       const typeBadge = setType !== 'normal' ? `<span class="text-[8px] font-bold px-1 py-0.5 rounded ${typeColors[setType] || ''}">${t('workouts.' + setTypeLabelKey) || setType}</span>` : '';
-      const isCardioSet = exIsCardio(_workout && _workout.exercises[exIdx]);
+      const isCardioSet = isC;
       const setVol = isCardioSet ? '—' : Math.round((Number(set.weight) || 0) * (Number(set.reps) || 0));
       const rpeBtns = RPE_COLORS.map((c, i) => {
         const v = i + 1;
@@ -14021,7 +14106,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               ${typeBadge}
             </div>
           </td>
-          <td class="px-2 py-2 text-center text-muted text-xs">${escapeHTML(prev)}</td>
+          <td class="px-2 py-2 text-center text-muted text-xs">${escapeHTML(prev)}${prevBadge}</td>
           ${isCardioSet ? `
           <td class="px-2 py-1.5">
             <input type="number" step="0.5" min="0" value="${set.time != null ? set.time : ''}" data-set-input="${exIdx}.${setIdx}.time" class="w-full bg-surface-2 border border-border rounded-md px-1.5 py-1 text-sm text-center focus:outline-none focus:ring-1 focus:ring-primary/60" placeholder="—" />
@@ -14107,11 +14192,20 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
                 const curr = ex.sets[si];
                 ex.sets[si + 1].prev_weight = curr.weight;
                 ex.sets[si + 1].prev_reps = curr.reps;
+                ex.sets[si + 1].prev_rpe = curr.rpe; /* c90: chain the effort too */
+                const cEx = exIsCardio(ex);
+                if (cEx) {
+                  ex.sets[si + 1].prev_time = curr.time;
+                  ex.sets[si + 1].prev_dist = curr.dist;
+                }
                 const nextRow = document.querySelector(`[data-set-row="${exIdx}.${si + 1}"]`);
                 if (nextRow) {
                   const prevCell = nextRow.querySelector('td:nth-child(2)');
-                  if (prevCell && curr.weight && curr.reps) {
-                    prevCell.textContent = `${curr.weight}×${curr.reps}`;
+                  if (prevCell) {
+                    const txt = cEx
+                      ? `${curr.time != null ? curr.time : '—'}×${curr.dist != null ? curr.dist : '—'}`
+                      : `${curr.weight != null ? curr.weight : '—'}×${curr.reps != null ? curr.reps : '—'}`;
+                    prevCell.innerHTML = escapeHTML(txt) + (curr.rpe != null ? prevRpeBadgeHTML(curr.rpe) : '');
                   }
                 }
               }
@@ -14199,6 +14293,21 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             });
             render();
           }
+        });
+      });
+
+      // c90: «Сделал всё» — mark every set of the exercise done
+      document.querySelectorAll('[data-done-all]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.getAttribute('data-done-all'), 10);
+          if (!_workout || !_workout.exercises[idx]) return;
+          const ex = _workout.exercises[idx];
+          ex.sets.forEach(s => { s.done = true; });
+          saveDraft();
+          render();
+          restTimer.start(ex.rest_sec || 90);
+          updateStats();
+          updateProgressBar();
         });
       });
 
@@ -14442,10 +14551,14 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           rpe: null,
           done: false,
           prev_weight: null,
-          prev_reps: null
+          prev_reps: null,
+          prev_rpe: null,
+          prev_time: null,
+          prev_dist: null
         }]
       });
       render();
+      ensureLastRef(); /* c90: show last workout's values for the new exercise */
     }
 
     /** Finish workout → log to workout_history. */
@@ -14478,7 +14591,10 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           sets: ex.sets.map(s => ({
             weight: s.weight || 0,
             reps: s.reps || 0,
+            time: s.time != null ? s.time : null,
+            dist: s.dist != null ? s.dist : null,
             rpe: s.rpe || null,
+            type: s.type || 'normal',
             done: !!s.done
           }))
         }))
@@ -14609,7 +14725,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       document.getElementById('live-report-wa').addEventListener('click', () => {
         const lines = [`🏋️ ${record.name || ''}`, `⏱ ${Math.floor(record.duration / 60)}:${String(record.duration % 60).padStart(2, '0')} · 🏋️ ${Number(vol).toLocaleString(localeString())} · ✔ ${done}/${total}`];
         record.exercises.forEach(ex => {
-          const parts = (ex.sets || []).map(s => `${s.weight != null ? s.weight : '—'}×${s.reps != null ? s.reps : '—'}${s.done ? '✓' : ''}`);
+          const parts = (ex.sets || []).map(s => (s.time != null || s.dist != null)
+            ? `${s.time != null ? s.time : '—'}×${s.dist != null ? s.dist : '—'}${s.done ? '✓' : ''}`
+            : `${s.weight != null ? s.weight : '—'}×${s.reps != null ? s.reps : '—'}${s.done ? '✓' : ''}`);
           if (parts.length) lines.push(`• ${globalExName(ex)}: ${parts.join(', ')}`);
         });
         window.open('https://wa.me/?text=' + encodeURIComponent(lines.join('\n')), '_blank');
@@ -27459,7 +27577,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 89; /* numeric part of dk-build c89 */
+  var RUNNING = 90; /* numeric part of dk-build c90 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

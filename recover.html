@@ -224,6 +224,11 @@
     var fullName = String(cl.full_name || '').trim() || 'Клиент';
     var now = Date.now();
     var clientId = uuid();
+    /* c90: remember the ids the profile had BEFORE the restore, so history
+       records saved under the old id can be re-linked to the new one. */
+    var seen = {}; var oldIds = [];
+    function addOld(id) { if (!id) return; var s = String(id); if (!seen[s]) { seen[s] = 1; oldIds.push(s); } }
+    addOld(cl.id);
     var client = {
       id: clientId,
       full_name: fullName,
@@ -238,6 +243,7 @@
       : (payload.program ? [payload.program] : []);
     programs = programs.map(function (p) {
       if (!p) return null;
+      addOld(p.client_id);
       var rec = Object.assign({}, p);
       rec.client_id = clientId;
       if (!rec.id) rec.id = uuid();
@@ -248,12 +254,45 @@
       : (payload.plan ? [payload.plan] : []);
     plans = plans.map(function (p) {
       if (!p) return null;
+      addOld(p.client_id);
       var rec = Object.assign({}, p);
       rec.client_id = clientId;
       if (!rec.id) rec.id = uuid();
       return rec;
     }).filter(Boolean);
-    return { client: client, programs: programs, plans: plans };
+    return { client: client, programs: programs, plans: plans, oldIds: oldIds };
+  }
+
+  /* c90: re-link history rows saved under the pre-restore client id(s) to
+     the freshly created client id — otherwise the trainer's live workout
+     and analytics find no previous workouts for the restored profile. */
+  function idbRelinkHistory(idb, oldIds, newId) {
+    return new Promise(function (res) {
+      try {
+        var names = Array.from(idb.objectStoreNames);
+        var targets = ['workout_history', 'nutrition_history'].filter(function (n) { return names.indexOf(n) !== -1; });
+        if (!targets.length || !oldIds.length) return res(0);
+        var tx = idb.transaction(targets, 'readwrite');
+        var fixed = 0;
+        targets.forEach(function (n) {
+          var rq = tx.objectStore(n).openCursor();
+          rq.onsuccess = function () {
+            var cur = rq.result;
+            if (!cur) return;
+            var row = cur.value;
+            if (row && row.client_id && oldIds.indexOf(String(row.client_id)) !== -1) {
+              row.client_id = newId;
+              cur.update(row);
+              fixed++;
+            }
+            cur.continue();
+          };
+        });
+        tx.oncomplete = function () { res(fixed); };
+        tx.onerror = function () { res(-1); };
+        tx.onabort = function () { res(-1); };
+      } catch (e) { res(-1); }
+    });
   }
 
   /* ---- main restore flow ---- */
@@ -289,12 +328,14 @@
             return { dup: dup, records: records, payload: payload };
           }
           return idbPutAll(idb, records).then(function () {
-            try {
-              var done = JSON.parse(localStorage.getItem('dk_recovered_shares') || '[]');
-              done.push({ name: records.client.full_name, ts: Date.now() });
-              localStorage.setItem('dk_recovered_shares', JSON.stringify(done.slice(-20)));
-            } catch (e) {}
-            return { dup: false, records: records, payload: payload };
+            return idbRelinkHistory(idb, records.oldIds, records.client.id).then(function (relinked) {
+              try {
+                var done = JSON.parse(localStorage.getItem('dk_recovered_shares') || '[]');
+                done.push({ name: records.client.full_name, ts: Date.now() });
+                localStorage.setItem('dk_recovered_shares', JSON.stringify(done.slice(-20)));
+              } catch (e) {}
+              return { dup: false, records: records, payload: payload, relinked: relinked };
+            });
           });
         });
       });
@@ -304,8 +345,9 @@
   var forceRestore = false;
   function finish(res) {
     var r = res.records;
+    var rel = (typeof res.relinked === 'number' && res.relinked > 0) ? ' · История привязана: ' + res.relinked + ' зап.' : '';
     $('r-name').textContent = r.client.full_name;
-    $('r-meta').textContent = 'Программ тренировок: ' + r.programs.length + ' · Планов питания: ' + r.plans.length +
+    $('r-meta').textContent = 'Программ тренировок: ' + r.programs.length + ' · Планов питания: ' + r.plans.length + rel +
       (res.dup ? ' · (создан второй клиент с таким именем — лишний можно удалить в приложении)' : '');
     show('step-done');
     say('');
