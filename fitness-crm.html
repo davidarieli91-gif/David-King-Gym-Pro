@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c96" />
+<meta name="dk-build" content="c97" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2390,12 +2390,9 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
 .wunit-check { visibility: hidden; color: rgb(var(--c-primary-2)); font-weight: 800; }
 .wunit-opt-active { border-color: rgb(var(--c-primary) / .6) !important; background: rgb(var(--c-primary) / .12) !important; color: rgb(var(--c-primary-2)); }
 #lw-unit-chip { max-width: 9.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-/* c86: the weight column header is a top label — it opens the unit picker too */
-[data-wunit-col] { cursor: pointer; transition: color .15s ease; }
-[data-wunit-col]:hover { color: rgb(var(--c-accent)); }
-/* c96: per-exercise weight column header = unit toggle for THAT exercise */
-[data-wunit-col-ex] { cursor: pointer; transition: color .15s ease; }
-[data-wunit-col-ex]:hover { color: rgb(var(--c-accent)); }
+/* c86/c97: the unit column headers are REAL buttons now — accent on hover, accent-ish border */
+[data-wunit-col], [data-wunit-col-ex], [data-tunit-col], [data-dunit-col] { cursor: pointer; transition: color .15s ease, border-color .15s ease; }
+[data-wunit-col]:hover, [data-wunit-col-ex]:hover, [data-tunit-col]:hover, [data-dunit-col]:hover { color: rgb(var(--c-accent)); border-color: rgb(var(--c-accent) / .55); }
 /* ===== c84: Quick Pick panel mounted inline in Workouts ▸ База упражнений ===== */
 #bm-root.bm-inline { max-width: none; height: min(74vh, 960px); }
 .bm-inline #bm-close { display: none; }
@@ -2600,7 +2597,7 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c96</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c97</p>
             </div>
           </div>
 
@@ -7063,7 +7060,7 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
       try { if (typeof screens !== 'undefined' && screens.liveWorkout && screens.liveWorkout.exUnit) eu = screens.liveWorkout.exUnit(idx); } catch (_e) {}
       var esh = dkWUnitShort(eu);
       el.textContent = (base && base.toLowerCase() !== esh.toLowerCase()) ? base + ' · ' + esh : base;
-      el.title = wTitle;
+      el.title = t('wunit.exTitle') || wTitle; /* c97: «unit of THIS exercise» */
     });
     try { dkCardioApply(); } catch (_e) {}
   }
@@ -14188,8 +14185,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
                 <tr class="text-[10px] uppercase tracking-wider text-muted border-b border-border">
                   <th class="px-2 py-2 text-center w-8">${t('workouts.set')}</th>
                   <th class="px-2 py-2 text-center">${t('workouts.prevWeight')}</th>
-                  ${exIsCardio(ex) ? `<th class="px-2 py-2 text-center" data-tunit-col data-tunit-base="${t('workouts.time')}">${t('workouts.time')} · ${dkTUnitShort()}</th>
-                  <th class="px-2 py-2 text-center" data-dunit-col data-dunit-base="${t('workouts.dist')}">${t('workouts.dist')} · ${dkDUnitShort()}</th>` : `<th class="px-2 py-2 text-center" data-wunit-col-ex="${idx}" data-wunit-base="${t('workouts.weight')}" title="${t('wunit.title') || 'Weight unit'}">${t('workouts.weight')} · ${dkWUnitShort(exUnit)}</th>
+                  ${exIsCardio(ex) ? `<th class="px-1 py-2 text-center"><button type="button" class="w-full px-1 py-1 rounded-lg border border-border bg-surface-2 text-[10px] uppercase tracking-wider font-bold text-muted leading-tight cursor-pointer transition" data-tunit-col data-tunit-base="${t('workouts.time')}">${t('workouts.time')} · ${dkTUnitShort()}</button></th>
+                  <th class="px-1 py-2 text-center"><button type="button" class="w-full px-1 py-1 rounded-lg border border-border bg-surface-2 text-[10px] uppercase tracking-wider font-bold text-muted leading-tight cursor-pointer transition" data-dunit-col data-dunit-base="${t('workouts.dist')}">${t('workouts.dist')} · ${dkDUnitShort()}</button></th>` : `<th class="px-1 py-2 text-center"><button type="button" class="w-full px-1 py-1 rounded-lg border border-border bg-surface-2 text-[10px] uppercase tracking-wider font-bold text-muted leading-tight cursor-pointer transition" data-wunit-col-ex="${idx}" data-wunit-base="${t('workouts.weight')}" title="${t('wunit.title') || 'Weight unit'}">${t('workouts.weight')} · ${dkWUnitShort(exUnit)}</button></th>
                   <th class="px-2 py-2 text-center">${t('workouts.reps')}</th>`}
                   <th class="px-2 py-2 text-center w-10">${t('workouts.done')}</th>
                   <th class="px-1 py-2 w-8"></th>
@@ -28380,7 +28377,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 96; /* numeric part of dk-build c96 */
+  var RUNNING = 97; /* numeric part of dk-build c97 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

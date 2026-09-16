@@ -2004,8 +2004,9 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
     .wunit-opt-active { border-color: rgb(var(--c-primary) / .6) !important; background: rgb(var(--c-primary) / .12) !important; color: rgb(var(--c-primary-2)); }
     [data-wunit-chip] { max-width: 9.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     /* c86: the weight column header is a top label — it opens the unit picker too */
-    [data-wunit-col] { cursor: pointer; transition: color .15s ease; }
-    [data-wunit-col]:hover { color: rgb(var(--c-accent)); }
+    /* c97: these headers are real buttons now — accent on hover, accent-ish border */
+    [data-wunit-col], [data-wunit-col-ex], [data-tunit-col], [data-dunit-col] { cursor: pointer; transition: color .15s ease, border-color .15s ease; }
+    [data-wunit-col]:hover, [data-wunit-col-ex]:hover, [data-tunit-col]:hover, [data-dunit-col]:hover { color: rgb(var(--c-accent)); border-color: rgb(var(--c-accent) / .55); }
     /* c85 parity: on light themes the portal's hardcoded white text follows the theme
        text color (the trainer app uses text-text; gradient buttons keep white) */
     [data-mode="light"] #banner-prog-name,
@@ -2845,6 +2846,7 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
     document.getElementById('lang-select').value = l;
     localStorage.setItem('dk_client_lang', l);
     updateLabels(); renderAll();
+    try { renderRecovery(); } catch(e) {} /* c97: the 10 slot rows are dynamic — re-render them in the new language RIGHT NOW (updateLabels only re-translated the static title/subtitle, the rows kept the old language until the tab was re-opened) */
     try { if (window.dkPortalSync) window.dkPortalSync(); } catch(e) {}
   }
   /* ============ THEME ============ */
@@ -3930,10 +3932,15 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
           <span class="inline-flex items-center gap-1"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>${esc(t('doneAllBtn'))}</span>
         </button>` : '';
 
-      const techniqueHtml = technique ? `<details class="group"><summary class="text-[11px] font-semibold text-indigo-300 cursor-pointer select-none flex items-center gap-1">
-          <svg class="w-3 h-3 transition-transform group-open:rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-          ${esc(t('technique'))}</summary>
-          <div class="mt-1.5 space-y-1 pl-1">${technique.split(' | ').map(st=>`<p class="text-[11px] text-muted leading-relaxed">• ${esc(st.trim())}</p>`).join('')}</div></details>` : '';
+      /* c97: «Техника» is now a REAL button — it expands the technique right
+         here and never opens the whole exercise card (it used to be a
+         <details><summary>, whose tap bubbled to the card handler: the card
+         modal opened first and the technique only appeared after close). */
+      const techniqueHtml = technique ? `<div>
+          <button type="button" data-tech-toggle="${ei}" aria-expanded="false" class="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/25 transition select-none cursor-pointer">
+          <svg data-tech-chevron="${ei}" class="w-3 h-3 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          ${esc(t('technique'))}</button>
+          <div class="hidden mt-1.5 space-y-1 pl-1" data-tech-body="${ei}">${technique.split(' | ').map(st=>`<p class="text-[11px] text-muted leading-relaxed">• ${esc(st.trim())}</p>`).join('')}</div></div>` : '';
 
       return `<div class="glass rounded-2xl p-4 space-y-3 fade-in" data-exercise-card="${ei}">
         <div class="flex items-start justify-between gap-2">
@@ -3952,7 +3959,7 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
         </div>
         ${ex.notes?`<div class="text-[11px] text-amber-300/80 bg-amber-500/8 border border-amber-500/15 rounded-lg p-2 leading-relaxed">💡 ${esc(ex.notes)}</div>`:''}
         <div class="set-grid px-2 text-[8px] uppercase tracking-wide text-muted font-bold">
-          <span>#</span><span class="text-center">${esc(t('prevLabel'))}</span>${isCardioEx ? `<span class="text-center" data-tunit-col data-tunit-base="${esc(t('timeLabel'))}">${esc(t('timeLabel'))}</span><span></span><span class="text-center" data-dunit-col data-dunit-base="${esc(t('distShortLabel'))}">${esc(t('distShortLabel'))}</span>` : `<span class="text-center cursor-pointer" data-wunit-col-ex="${ei}" data-wunit-base="${esc(t('weightLabel'))}" title="${esc(t('wunitExTitle') || 'Weight unit')}">${esc(t('weightLabel'))}${exUnitShort ? ' · ' + esc(exUnitShort) : ''}</span><span></span><span class="text-center">${esc(t('repsLabel'))}</span>`}<span class="text-center">✓</span><span></span><span></span>
+          <span>#</span><span class="text-center">${esc(t('prevLabel'))}</span>${isCardioEx ? `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-tunit-col data-tunit-base="${esc(t('timeLabel'))}">${esc(t('timeLabel'))}</button><span></span><button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-dunit-col data-dunit-base="${esc(t('distShortLabel'))}">${esc(t('distShortLabel'))}</button>` : `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-wunit-col-ex="${ei}" data-wunit-base="${esc(t('weightLabel'))}" title="${esc(t('wunitExTitle') || 'Weight unit')}">${esc(t('weightLabel'))}${exUnitShort ? ' · ' + esc(exUnitShort) : ''}</button><span></span><span class="text-center">${esc(t('repsLabel'))}</span>`}<span class="text-center">✓</span><span></span><span></span>
         </div>
         <div class="space-y-1.5">${setsRows}</div>
         ${addSetBtn || doneAllBtn ? `<div class="grid grid-cols-2 gap-1.5 mt-1.5">${addSetBtn}${doneAllBtn}</div>` : ''}
@@ -4132,6 +4139,21 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
         ex.rest_sec = (v && v >= 5) ? v : 90;
         inp.value = ex.rest_sec;
         ensureStarted(sess0); saveDraft();
+      });
+    });
+
+    // c97: «Техника» toggle — expand/collapse WITHOUT opening the exercise card
+    list.querySelectorAll('[data-tech-toggle]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const ei = +btn.dataset.techToggle;
+        const card = btn.closest('[data-exercise-card]');
+        const body = card && card.querySelector('[data-tech-body="' + ei + '"]');
+        if (!body) return;
+        const open = !body.classList.toggle('hidden');
+        const chev = card.querySelector('[data-tech-chevron="' + ei + '"]');
+        if (chev) chev.style.transform = open ? 'rotate(90deg)' : '';
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
       });
     });
   }
@@ -4696,7 +4718,10 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
          * card. Report: tapping «Вес» opened the card first (z-[110] above
          * the z-[95] sheet), and the unit dialog only showed up after the
          * card was closed. */
-        if(e.target.closest('[data-wunit-col],[data-wunit-chip],[data-tunit-col],[data-dunit-col]')) return;
+        /* c97: the c96 PER-EXERCISE unit header (data-wunit-col-ex) and the
+         * «Техника» toggle are standalone controls too — tapping them must
+         * never open the exercise card (the span/summary used to bubble). */
+        if(e.target.closest('[data-wunit-col],[data-wunit-chip],[data-wunit-col-ex],[data-tunit-col],[data-dunit-col],[data-tech-toggle]')) return;
         const idx=+card.dataset.exerciseCard;
         const day=dayInfo(activeDayIndex);
         const ex=(day&&day.exercises||[])[idx];
@@ -4986,7 +5011,7 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
         try { if (window.dkPortalExUnit) eu = window.dkPortalExUnit(idx); } catch (e) {}
         var esh = wShort(eu);
         el.textContent = (base && base.toLowerCase() !== esh.toLowerCase()) ? base + ' · ' + esh : base;
-        el.title = wTitle;
+        el.title = T('wunitExTitle') || wTitle; /* c97: «unit of THIS exercise», not the generic title */
       });
       try { cuApply(); } catch (e) {}
     }
