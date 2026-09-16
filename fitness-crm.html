@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c94" />
+<meta name="dk-build" content="c95" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2595,7 +2595,7 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c94</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c95</p>
             </div>
           </div>
 
@@ -4348,6 +4348,13 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
               </div>
               <div class="settings-panel-body p-5 pt-0">
               <p class="text-xs text-muted mb-3 leading-relaxed" data-i18n="settings.backupDesc">Export the entire database (clients, photos, documents, exercises, settings) into a single JSON file. Restore on any device.</p>
+              <button id="settings-btn-slots" class="w-full mb-3 flex items-center gap-3 bg-accent/15 hover:bg-accent/25 text-accent border border-accent/30 rounded-xl px-3.5 py-3 text-start transition" aria-label="Save slots">
+                <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+                <span class="min-w-0">
+                  <span class="block text-sm font-semibold" data-i18n="settings.snapshots.open">Save slots (10)</span>
+                  <span class="block text-[11px] opacity-80 leading-snug" data-i18n="settings.snapshots.openDesc">Like game saves: 10 slots with a date. #1 auto · #2–10 manual.</span>
+                </span>
+              </button>
               <div class="flex flex-wrap gap-2">
                 <button id="settings-btn-export" class="bg-primary/15 hover:bg-primary/25 text-primary-2 border border-primary/30 text-sm font-medium px-3.5 py-2 rounded-lg transition inline-flex items-center gap-1.5">
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
@@ -6034,7 +6041,7 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
      Adding a store or index later means bumping DB_VERSION and editing here.
      ===================================================================== */
   const DB_NAME    = 'fitness_crm_db';
-  const DB_VERSION = 9;
+  const DB_VERSION = 10; /* c95: + snapshots store (save slots) */
 
   /** @typedef {{name:string,keyPath:string,indexes:Array<{name:string,unique?:boolean}>}} StoreDef */
   const DB_SCHEMA = [
@@ -6135,6 +6142,12 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
       indexes: [
         { name: 'by_name', keyPath: 'name', unique: false }
       ]
+    },
+    {
+      /* c95 SAVE SLOTS: one record per slot (slot: 1..10) holding a full
+       * user-data snapshot: { slot, ts, auto, counts, total_bytes, data } */
+      name: 'snapshots',
+      keyPath: 'slot'
     }
   ];
 
@@ -25583,7 +25596,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* Move full-screen modals to body to escape stacking contexts (#app has z-index:1).
      Append order matters as a paint-order fallback: picker < exercise card < image viewer. */
-  ['bodymap-picker-modal', 'exercise-modal', 'viewer-modal'].forEach((mid) => {
+  ['bodymap-picker-modal', 'exercise-modal', 'viewer-modal', 'snapshots-modal'].forEach((mid) => {
     const m = document.getElementById(mid);
     if (m) document.body.appendChild(m);
   });
@@ -27025,6 +27038,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (forceFull) { try { await db.del('settings', FORCE_FULL_KEY); } catch (e4) {} }
         _lastMeta = meta; _lastSync = gen; _dirty = {};
+        /* c95: refresh the AUTO save slot after every completed cloud save */
+        try { if (typeof snapAutoSave === 'function') snapAutoSave(false); } catch (eSnap95) {}
         try { await db.put('settings', { key: LASTSYNC_KEY, value: gen }); } catch (e) {}
         return { ok: true, meta: meta, changed: changed };
       })();
@@ -27553,6 +27568,391 @@ document.addEventListener('DOMContentLoaded', function () {
       };
     }
 
+
+    /* ===================================================================
+       c95 SAVE SLOTS (dkSlots) — 10 numbered «game save» slots over ALL
+       user data. Slot 1 = AUTO-only (boot + 25 s, every 15 min, on every
+       cloud saveNow success, and FORCED before every slot restore);
+       slots 2–10 = manual. Local in IndexedDB 'snapshots' (DB v10) and
+       mirrored to Firestore users/{uid}/snapshots/slot_{n} (+ parts
+       subcollection, content-addressed chunks like the cloud dump), so a
+       slot saved on the desktop can be loaded on the phone.
+       Restore replaces ONLY user stores; settings + reference stores are
+       untouched, and the CURRENT state is force-saved into the AUTO slot
+       first — restoring can never lose the present data. Built after the
+       second profile clobber («אסי בורג», 2026-09-16): even if everything
+       is lost again, the trainer reloads any slot like a game save. */
+    var SNAP_SLOTS = 10;
+    var SNAP_AUTO_MIN_MS = 30 * 60 * 1000; /* AUTO slot throttle */
+    var SNAP_UPLOAD_MAX_OPS = 400, SNAP_UPLOAD_MAX_CHARS = 600000;
+    var _snapBusy = false;
+
+    function snapUserStores() { return USER_STORES.slice(); }
+    function snapHasData(data) {
+      if (!data) return false;
+      var k = Object.keys(data), t = 0;
+      for (var i = 0; i < k.length; i++) t += (data[k[i]] || []).length;
+      return t > 0;
+    }
+    function snapFmtDate(ts) {
+      try { return new Date(ts).toLocaleString(); } catch (e) { return String(ts); }
+    }
+    function snapEsc(s) {
+      return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    async function snapCapture() {
+      var names = snapUserStores(), data = {}, counts = {}, total = 0;
+      for (var i = 0; i < names.length; i++) {
+        var recs = [];
+        try { recs = await db.all(names[i]); } catch (e) { recs = []; }
+        data[names[i]] = recs;
+        counts[names[i]] = recs.length;
+        try { total += JSON.stringify(recs).length; } catch (e2) {}
+      }
+      return { slot: 0, ts: Date.now(), auto: false, counts: counts, total_bytes: total, data: data };
+    }
+    async function snapSaveSlot(n, opts) {
+      opts = opts || {};
+      if (_snapBusy) return { ok: false, error: 'busy' };
+      if (_busy && !opts.auto) return { ok: false, error: 'cloud_busy' };
+      _snapBusy = true;
+      try {
+        var rec = await snapCapture();
+        rec.slot = n; rec.auto = !!opts.auto;
+        var empty = !snapHasData(rec.data);
+        var prev = null;
+        try { prev = await db.get('snapshots', n); } catch (e0) {}
+        /* empty-device guard: never let an empty DB overwrite a filled slot */
+        if (empty && prev && snapHasData(prev.data) && !opts.force) {
+          log('snap empty-guard: slot', n, 'kept (local db is empty)');
+          return { ok: false, error: 'empty_local' };
+        }
+        await db.put('snapshots', rec);
+        var cloud = false;
+        if (_user && _fs) {
+          try { await snapCloudUpload(n, rec); cloud = true; }
+          catch (eC) { log('snap cloud upload failed (slot kept locally):', eC); }
+        }
+        return { ok: true, ts: rec.ts, cloud: cloud, empty: empty };
+      } finally { _snapBusy = false; }
+    }
+    async function snapAutoSave(force) {
+      try {
+        var prev = await db.get('snapshots', 1);
+        if (!force && prev && prev.ts && (Date.now() - prev.ts) < SNAP_AUTO_MIN_MS) return { ok: false, error: 'fresh' };
+        var r = await snapSaveSlot(1, { auto: true, force: !!force });
+        if (r.ok) log('AUTO slot refreshed:', new Date(r.ts).toLocaleString(), r.cloud ? '(local+cloud)' : '(local)');
+        return r;
+      } catch (e) { log('snap autoSave failed', e); return { ok: false, error: String(e) }; }
+    }
+    async function snapCloudUpload(n, rec) {
+      var sRef = _fs.collection('users').doc(_user.uid).collection('snapshots').doc('slot_' + n);
+      var pCol = sRef.collection('parts');
+      var parts = {}, hashes = {}, total = 0;
+      var names = snapUserStores();
+      /* old parts out first — keeps dead chunks from piling up */
+      try {
+        var old = await pCol.get();
+        if (!old.empty) {
+          var delB = _fs.batch(), delOps = 0;
+          old.forEach(function (d) { delB.delete(d.ref); delOps++; });
+          if (delOps) await delB.commit();
+        }
+      } catch (eDel) { log('snap old-parts cleanup (non-fatal)', eDel); }
+      var batch = _fs.batch(), ops = 0, chars = 0, batches = [batch];
+      for (var i = 0; i < names.length; i++) {
+        var name = names[i];
+        var s = JSON.stringify(rec.data[name] || []);
+        total += s.length;
+        var h = await sha256Hex(s);
+        hashes[name] = h;
+        var nn = Math.max(1, Math.ceil(s.length / CHUNK_CHARS));
+        parts[name] = { h: h, n: nn };
+        for (var p = 0; p < nn; p++) {
+          var chunk = s.slice(p * CHUNK_CHARS, (p + 1) * CHUNK_CHARS);
+          batch.set(pCol.doc(name + '__' + h.slice(0, 24) + '_' + p), { h: h, i: p, d: chunk });
+          ops++; chars += chunk.length;
+          if (ops >= SNAP_UPLOAD_MAX_OPS || chars >= SNAP_UPLOAD_MAX_CHARS) {
+            batch = _fs.batch(); batches.push(batch); ops = 0; chars = 0;
+          }
+        }
+      }
+      for (var bi = 0; bi < batches.length; bi++) await batches[bi].commit();
+      await sRef.set({
+        slot: n, app: 'dk-gym-pro', fmt: 1, ts: rec.ts, auto: !!rec.auto,
+        counts: rec.counts || {}, total_bytes: total,
+        store_hashes: hashes, store_parts: parts,
+        email: _user.email || ''
+      });
+      return true;
+    }
+    async function snapCloudFetch(n) {
+      if (!_user || !_fs) return null;
+      var sRef = _fs.collection('users').doc(_user.uid).collection('snapshots').doc('slot_' + n);
+      var snap = await sRef.get();
+      if (!snap.exists) return null;
+      var meta = snap.data() || {};
+      var pCol = sRef.collection('parts');
+      var data = {};
+      var names = Object.keys(meta.store_parts || {});
+      for (var i = 0; i < names.length; i++) {
+        var name = names[i];
+        var pi = meta.store_parts[name] || {};
+        var q = await pCol.where('h', '==', pi.h).get();
+        var chunks = [];
+        q.forEach(function (d) { chunks.push(d.data()); });
+        chunks.sort(function (a, b) { return (a.i || 0) - (b.i || 0); });
+        var text = '';
+        for (var c = 0; c < chunks.length; c++) text += chunks[c].d || '';
+        try { data[name] = text ? JSON.parse(text) : []; }
+        catch (e) { throw new Error('slot_part_corrupt:' + name); }
+      }
+      return { meta: meta, data: data };
+    }
+    async function snapCloudDelete(n) {
+      if (!_user || !_fs) return false;
+      var sRef = _fs.collection('users').doc(_user.uid).collection('snapshots').doc('slot_' + n);
+      try {
+        var parts = await sRef.collection('parts').get();
+        if (!parts.empty) {
+          var b = _fs.batch(), ops = 0;
+          parts.forEach(function (d) { b.delete(d.ref); ops++; });
+          if (ops) await b.commit();
+        }
+        await sRef.delete();
+      } catch (e) { log('snap cloud delete (non-fatal)', e); }
+      return true;
+    }
+    async function snapLoadSlot(n) {
+      var rec = null;
+      try { rec = await db.get('snapshots', n); } catch (e0) {}
+      var haveLocal = !!(rec && snapHasData(rec.data));
+      var when = (rec && rec.ts) || 0;
+      if (!haveLocal && _user && _fs) {
+        try {
+          var cloud = await snapCloudFetch(n);
+          if (cloud && snapHasData(cloud.data)) {
+            rec = { slot: n, ts: cloud.meta.ts || Date.now(), auto: !!cloud.meta.auto, counts: cloud.meta.counts || {}, data: cloud.data };
+            haveLocal = true; when = rec.ts;
+          }
+        } catch (eC) { log('snap cloud fetch failed', eC); }
+      }
+      if (!haveLocal) return { ok: false, error: 'empty' };
+      var msg = (T('settings.snapshots.loadConfirm') || 'Load data from slot {n}? Current data will be REPLACED.')
+        .replace('{n}', String(n)).replace('{d}', snapFmtDate(when));
+      if (!confirm(msg)) return { ok: false, error: 'cancelled' };
+      await snapAutoSave(true); /* safety: current state -> AUTO slot first */
+      var prevBusy = _busy; _busy = true;
+      var imported = 0;
+      try { imported = await applyPayload({ data: rec.data }); }
+      finally { _busy = prevBusy; }
+      toastMsg((T('settings.snapshots.loadDone') || 'Data restored from slot {n}').replace('{n}', String(n)), 'success', 3500);
+      setTimeout(function () { location.reload(); }, 900);
+      return { ok: true, imported: imported };
+    }
+    async function snapClearSlot(n) {
+      var msg = (T('settings.snapshots.clearConfirm') || 'Clear slot {n}?').replace('{n}', String(n));
+      if (!confirm(msg)) return { ok: false, error: 'cancelled' };
+      await db.del('snapshots', n);
+      await snapCloudDelete(n);
+      toastMsg((T('settings.snapshots.cleared') || 'Slot {n} cleared').replace('{n}', String(n)), 'info', 2500);
+      return { ok: true };
+    }
+    /* Orphan scan: user records whose client_id is gone from the clients store —
+     * the exact signature of the «אסי בורג» clobber (the client record is
+     * replaced by a stale dump, but its programs/history/plans survive in
+     * IndexedDB). One click revives the client under the ORIGINAL id, so
+     * programs, history and the portal share link all stay connected. */
+    async function snapScanOrphans() {
+      var clients = [], progs = [], hist = [], plans = [], nhist = [];
+      try { clients = await db.all('clients'); } catch (e) {}
+      try { progs = await db.all('client_programs'); } catch (e1) {}
+      try { hist = await db.all('workout_history'); } catch (e2) {}
+      try { plans = await db.all('nutrition_plans'); } catch (e3) {}
+      try { nhist = await db.all('nutrition_history'); } catch (e4) {}
+      var alive = {};
+      clients.forEach(function (c) { if (c && c.id) alive[c.id] = true; });
+      var out = {};
+      function note(key, rec) {
+        var cid = rec && rec.client_id;
+        if (!cid || alive[cid]) return;
+        var o = out[cid] = out[cid] || { id: cid, programs: 0, history: 0, plans: 0, nhistory: 0, name: '', ts: 0 };
+        o[key]++;
+        if (!o.name && (rec.client_name || rec.clientName)) o.name = rec.client_name || rec.clientName;
+        var t = rec.updated_at || rec.created_at || rec.ts || rec.date || 0;
+        if (typeof t === 'number' && t > o.ts) o.ts = t;
+      }
+      progs.forEach(function (r) { note('programs', r); });
+      hist.forEach(function (r) { note('history', r); });
+      plans.forEach(function (r) { note('plans', r); });
+      nhist.forEach(function (r) { note('nhistory', r); });
+      return Object.keys(out).map(function (k) { return out[k]; });
+    }
+    async function snapRestoreOrphan(id, name) {
+      if (!id) return { ok: false };
+      var exists = null;
+      try { exists = await db.get('clients', id); } catch (e) {}
+      if (exists) return { ok: true, existing: true };
+      await db.put('clients', {
+        id: id,
+        full_name: name || (T('settings.snapshots.orphanDefaultName') || 'Restored client'),
+        last_active: Date.now()
+      });
+      return { ok: true, created: true };
+    }
+
+    /* ---------- slots modal UI ---------- */
+    async function dkSnapRender() {
+      var rowsEl = document.getElementById('snapshots-rows');
+      if (!rowsEl) return;
+      var local = {};
+      var recs = [];
+      try { recs = await db.all('snapshots'); } catch (e) {}
+      recs.forEach(function (r) { if (r && r.slot) local[r.slot] = r; });
+      var html = '';
+      for (var n = 1; n <= SNAP_SLOTS; n++) {
+        var loc = local[n] || null;
+        var isAuto = n === 1;
+        var when = (loc && loc.ts) ? snapEsc(snapFmtDate(loc.ts)) : snapEsc(T('settings.snapshots.empty') || 'empty');
+        var c = (loc && loc.counts) || {};
+        var counts = (T('settings.snapshots.counts') || 'Clients {c} · Programs {p} · History {h}')
+          .replace('{c}', String(c.clients || 0))
+          .replace('{p}', String(c.client_programs || 0))
+          .replace('{pl}', String(c.nutrition_plans || 0))
+          .replace('{h}', String(c.workout_history || 0));
+        var badge = isAuto
+          ? '<div class="w-10 h-10 shrink-0 rounded-lg grid place-items-center text-[10px] font-bold bg-accent/20 text-accent border border-accent/40">' + snapEsc(T('settings.snapshots.auto') || 'AUTO') + '</div>'
+          : '<div class="w-10 h-10 shrink-0 rounded-lg grid place-items-center text-sm font-bold bg-surface border border-border text-muted">' + n + '</div>';
+        html += '<div class="flex items-center gap-2.5 bg-surface-2 border border-border rounded-xl p-2.5" data-slot-row="' + n + '">' +
+          badge +
+          '<div class="flex-1 min-w-0">' +
+            '<div class="text-[13px] font-semibold truncate">' + when + '<span data-cloud class="hidden ml-1.5 text-[10px] text-success font-normal"></span></div>' +
+            '<div class="text-[11px] text-muted truncate">' + snapEsc(counts) + '</div>' +
+          '</div>' +
+          '<div class="flex gap-1.5 shrink-0">' +
+            (isAuto ? '' : '<button data-act="save" data-slot="' + n + '" class="bg-primary/15 hover:bg-primary/25 text-primary-2 border border-primary/30 text-[11px] font-semibold px-2.5 py-1.5 rounded-lg transition">' + snapEsc(T('settings.snapshots.save') || 'Save') + '</button>') +
+            '<button data-act="load" data-slot="' + n + '" class="bg-success/15 hover:bg-success/25 text-success border border-success/30 text-[11px] font-semibold px-2.5 py-1.5 rounded-lg transition">' + snapEsc(T('settings.snapshots.load') || 'Load') + '</button>' +
+            (isAuto ? '' : '<button data-act="clear" data-slot="' + n + '" title="✕" aria-label="✕" class="bg-danger/10 hover:bg-danger/20 text-danger border border-danger/30 text-[11px] font-semibold px-2 py-1.5 rounded-lg transition">✕</button>') +
+          '</div>' +
+        '</div>';
+      }
+      rowsEl.innerHTML = html;
+    }
+    function dkSnapWire() {
+      var rowsEl = document.getElementById('snapshots-rows');
+      if (rowsEl && !rowsEl.dataset.dkSnapWired) {
+        rowsEl.dataset.dkSnapWired = '1';
+        rowsEl.addEventListener('click', async function (e) {
+          var b = e.target && e.target.closest ? e.target.closest('button[data-act]') : null;
+          if (!b) return;
+          var n = parseInt(b.getAttribute('data-slot'), 10);
+          var act = b.getAttribute('data-act');
+          if (act === 'save') {
+            var prev = null;
+            try { prev = await db.get('snapshots', n); } catch (eP) {}
+            if (prev && prev.ts) {
+              var om = (T('settings.snapshots.overwriteConfirm') || 'Slot {n} already holds a save from {d}. Overwrite?')
+                .replace('{n}', String(n)).replace('{d}', snapFmtDate(prev.ts));
+              if (!confirm(om)) return;
+            }
+            b.disabled = true;
+            var r = await snapSaveSlot(n, {});
+            b.disabled = false;
+            if (r.ok) {
+              var tail = r.cloud ? (T('settings.snapshots.savedCloud') || '') : (T('settings.snapshots.savedLocal') || '');
+              toastMsg((T('settings.snapshots.savedOk') || 'Slot {n} saved').replace('{n}', String(n)) + tail, 'success', r.cloud ? 3500 : 7000);
+            } else if (r.error !== 'empty_local') {
+              toastMsg((T('settings.snapshots.saveFail') || 'Save failed') + (r.error ? ': ' + r.error : ''), 'danger', 5000);
+            }
+            await dkSnapRender();
+            dkSnapCloudBadges();
+          } else if (act === 'load') {
+            b.disabled = true;
+            var lr = await snapLoadSlot(n);
+            b.disabled = false;
+            if (!lr.ok && lr.error !== 'cancelled') {
+              toastMsg(T('settings.snapshots.emptyRefuse') || 'Slot is empty', 'warning', 3000);
+            }
+          } else if (act === 'clear') {
+            var cr = await snapClearSlot(n);
+            if (cr.ok) { await dkSnapRender(); dkSnapCloudBadges(); }
+          }
+        });
+      }
+      var box = document.getElementById('snapshots-orphan');
+      if (box && !box.dataset.dkSnapWired) {
+        box.dataset.dkSnapWired = '1';
+        box.addEventListener('click', async function (e) {
+          var b = e.target && e.target.closest ? e.target.closest('button[data-orphan]') : null;
+          if (!b) return;
+          b.disabled = true;
+          var r = await snapRestoreOrphan(b.getAttribute('data-orphan'), b.getAttribute('data-orphan-name'));
+          if (r.ok) {
+            toastMsg(T('settings.snapshots.orphanRestored') || 'Client restored', 'success', 5000);
+            setTimeout(function () { location.reload(); }, 1100);
+          } else { b.disabled = false; }
+        });
+      }
+    }
+    async function dkSnapCloudBadges() {
+      if (!_user || !_fs) return;
+      try {
+        var q = await _fs.collection('users').doc(_user.uid).collection('snapshots').get();
+        q.forEach(function (d) {
+          var meta = d.data() || {};
+          var n = Number(meta.slot);
+          if (!n) return;
+          var row = document.querySelector('[data-slot-row="' + n + '"] [data-cloud]');
+          if (!row) return;
+          row.textContent = '☁ ' + snapFmtDate(meta.ts);
+          row.classList.remove('hidden');
+        });
+      } catch (e) { log('snap cloud badges (non-fatal)', e); }
+    }
+    async function dkSnapOrphansRender() {
+      var box = document.getElementById('snapshots-orphan');
+      if (!box) return;
+      var list = [];
+      try { list = await snapScanOrphans(); } catch (e) { list = []; }
+      if (!list.length) { box.classList.add('hidden'); box.innerHTML = ''; return; }
+      var html = '<div class="text-[11px] font-bold text-warning mb-1.5">' + snapEsc(T('settings.snapshots.orphanTitle') || 'Found data of lost clients') + '</div>';
+      list.forEach(function (o) {
+        var nm = o.name || (T('settings.snapshots.orphanDefaultName') || 'Restored client');
+        var line = (T('settings.snapshots.orphanItem') || '{name}: programs {p} · workouts {h} · plans {pl}')
+          .replace('{name}', nm).replace('{p}', String(o.programs)).replace('{h}', String(o.history)).replace('{pl}', String(o.plans));
+        html += '<div class="flex items-center gap-2 bg-warning/10 border border-warning/30 rounded-lg p-2 mb-1.5">' +
+          '<div class="flex-1 min-w-0 text-[11px] leading-snug">' + snapEsc(line) + '</div>' +
+          '<button data-orphan="' + snapEsc(o.id) + '" data-orphan-name="' + snapEsc(o.name || '') + '" class="shrink-0 bg-warning/20 hover:bg-warning/30 text-warning border border-warning/40 text-[11px] font-semibold px-2.5 py-1.5 rounded-lg transition">' + snapEsc(T('settings.snapshots.orphanRestore') || 'Restore client') + '</button></div>';
+      });
+      box.classList.remove('hidden');
+      box.innerHTML = html;
+    }
+    async function dkSnapOpen() {
+      var m = document.getElementById('snapshots-modal');
+      if (!m) return;
+      m.classList.remove('hidden');
+      dkSnapWire();
+      await dkSnapRender();
+      var noteEl = document.getElementById('snapshots-cloud-note');
+      if (noteEl) {
+        noteEl.textContent = (_user && _user.email)
+          ? (T('settings.snapshots.cloudNoteIn') || '').replace('{email}', _user.email)
+          : (T('settings.snapshots.cloudNoteOut') || '');
+      }
+      dkSnapCloudBadges();
+      dkSnapOrphansRender();
+    }
+    window.dkSlots = {
+      open: dkSnapOpen,
+      save: snapSaveSlot, load: snapLoadSlot, clear: snapClearSlot,
+      autoSave: snapAutoSave, orphans: snapScanOrphans, restoreOrphan: snapRestoreOrphan,
+      version: 1
+    };
+    /* AUTO slot cadence: 25 s after boot, then every 15 min while open */
+    setTimeout(function () { snapAutoSave(false); }, 25000);
+    setInterval(function () { snapAutoSave(false); }, 15 * 60 * 1000);
+
     window.cloudSync = { save: saveNow, restore: restoreFromCloud, signIn: signIn, signInGsi: signInGsi, ready: _ready, getState: getState, version: 1 };
   })();
   </script>
@@ -27782,6 +28182,47 @@ document.addEventListener('input', function (e) {
 
 </script>
 
+
+  <!-- c95 Save slots modal (global) -->
+  <div id="snapshots-modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-label="Save slots">
+    <div class="bg-surface w-full sm:max-w-lg max-h-[92vh] overflow-y-auto rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
+      <div class="sticky top-0 bg-surface border-b border-border p-4 flex items-center gap-3 z-10">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 grid place-items-center text-white">💾</div>
+        <div class="flex-1 min-w-0">
+          <h3 class="font-display font-bold text-sm" data-i18n="settings.snapshots.title">Save slots</h3>
+          <p class="text-xs text-muted" data-i18n="settings.snapshots.subtitle">#1 — AUTO · #2–10 — manual</p>
+        </div>
+        <button id="snapshots-close" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-surface-2 text-muted" aria-label="Close"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      </div>
+      <div class="p-4 space-y-3">
+        <div class="text-[11px] text-warning bg-warning/10 border border-warning/30 rounded-lg p-2.5 leading-relaxed" data-i18n="settings.snapshots.hint">Loading a slot REPLACES current data. The current state is auto-saved into slot #1 first.</div>
+        <div id="snapshots-orphan" class="hidden bg-surface-2 border border-border rounded-xl p-2.5"></div>
+        <div id="snapshots-rows" class="space-y-2"></div>
+        <p id="snapshots-cloud-note" class="text-[11px] text-muted leading-relaxed"></p>
+      </div>
+    </div>
+  </div>
+  <script>
+  (function () {
+    function wire95() {
+      var btn = document.getElementById('settings-btn-slots');
+      if (btn && !btn.dataset.dkSnapWired) {
+        btn.dataset.dkSnapWired = '1';
+        btn.addEventListener('click', function () { if (window.dkSlots) window.dkSlots.open(); });
+      }
+      var m = document.getElementById('snapshots-modal');
+      if (m && !m.dataset.dkSnapWired) {
+        m.dataset.dkSnapWired = '1';
+        m.addEventListener('click', function (e) { if (e.target === m) m.classList.add('hidden'); });
+        var c = document.getElementById('snapshots-close');
+        if (c) c.addEventListener('click', function () { m.classList.add('hidden'); });
+      }
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire95);
+    else wire95();
+  })();
+  </script>
+
   <!-- AI Brain Settings Modal (global) -->
   <div id="ai-settings-modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
     <div class="bg-surface w-full sm:max-w-lg max-h-[92vh] overflow-y-auto rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
@@ -27834,7 +28275,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 94; /* numeric part of dk-build c94 */
+  var RUNNING = 95; /* numeric part of dk-build c95 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
