@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c97" />
+<meta name="dk-build" content="c99" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -17351,7 +17351,23 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     async function computeForClient(clientId) {
       if (!clientId) return null;
       // Load all workouts for this client
-      const workouts = await db.find('workout_history', 'by_clientId', clientId);
+      let workouts = await db.find('workout_history', 'by_clientId', clientId);
+      /* c98: merge the trainee portal's cloud history (ps_hist_<hash>) so the
+         trainer's map includes portal-logged sessions — identical &
+         interconnected with the portal's own map (4s offline guard,
+         in-memory only, dedupe by date ts — the analytics pattern) */
+      try {
+        if (typeof window.dkFetchClientHistory === 'function') {
+          const remote98 = await Promise.race([
+            window.dkFetchClientHistory(clientId),
+            new Promise(res => setTimeout(res, 4000))
+          ]);
+          if (remote98 && remote98.length) {
+            const seen98 = new Set((workouts || []).map(w => Number(w.date || w.created_at) || 0));
+            workouts = (workouts || []).concat(remote98.filter(r => !seen98.has(Number(r.date) || 0)));
+          }
+        }
+      } catch (_) {}
       if (!workouts || workouts.length === 0) {
         // Return empty state for all muscles
         const empty = {};
@@ -23577,6 +23593,13 @@ async function boot() {
       const shareId = await portalShareId(clientId);
       return 'ps_hist_' + String(shareId).slice(2);
     }
+    /* c98: synergist string → canonical group (alias map from muscle-map.js) */
+    function synCanonical98(s) {
+      const k = String(s || '').trim().toLowerCase();
+      if (!k) return '';
+      try { const SC = window.SYNERGIST_CANONICAL; if (SC && SC[k]) return SC[k]; } catch (_) {}
+      return ['chest', 'back', 'shoulders', 'elbow_flexors', 'triceps', 'forearms', 'abdominals', 'legs', 'stretching', 'warmup', 'calisthenics'].indexOf(k) !== -1 ? k : '';
+    }
     window.dkPushClientHistory = async function (clientId, rec) {
       try {
         if (!clientId || !rec) return false;
@@ -23589,6 +23612,21 @@ async function boot() {
           const snap = await ref.get({ source: 'server' });
           const data = snap && snap.exists ? snap.data() : null;
           if (data && data.d) { const p = JSON.parse(data.d); if (Array.isArray(p.recs)) recs = p.recs; }
+        } catch (_) {}
+        /* c98: enrich the mirrored workout with canonical group + synergists
+           (the portal's recovery map uses them for the 30% synergist credit) */
+        try {
+          const _ids98 = new Set();
+          (rec.exercises || []).forEach(ex => { if (ex && ex.key) _ids98.add(ex.key); });
+          for (const id98 of _ids98) {
+            if (!id98) continue;
+            let ex98 = null;
+            try { ex98 = await db.get('exercise_base', id98); } catch (_) {}
+            if (!ex98) continue;
+            const g98 = ex98.group_canonical || ex98.group_en || '';
+            const syn98 = (ex98.synergist_muscles || []).map(synCanonical98).filter(Boolean);
+            (rec.exercises || []).forEach(ex => { if (ex && ex.key === id98) { ex.g = g98; ex.syn = syn98; } });
+          }
         } catch (_) {}
         recs = recs.filter(r => r && Number(r.ts) !== Number(rec.ts));
         recs.push(rec);
@@ -23632,8 +23670,11 @@ async function boot() {
       } catch (e) { console.warn('[hist-sync] CRM fetch failed', e); return []; }
     };
 
-    /* c94: convert a CRM workout_history record to the portal schema */
-    function crmToPortalRec94(record) {
+    /* c94: convert a CRM workout_history record to the portal schema
+       (c98: exInfo = { exercise_id → {g, syn} } — canonical group +
+       synergists so the portal's recovery map computes EXACTLY like the
+       trainer's, including the 30% synergist credit) */
+    function crmToPortalRec94(record, exInfo) {
       try {
         if (!record) return null;
         const ts = Number(record.date || record.created_at || 0);
@@ -23653,6 +23694,8 @@ async function boot() {
             key: ex.exercise_id,
             name: ex.name,
             group: ex.group || ex.muscle_group || '',
+            g: (exInfo && exInfo[ex.exercise_id] && exInfo[ex.exercise_id].g) || '',
+            syn: (exInfo && exInfo[ex.exercise_id] && exInfo[ex.exercise_id].syn) || [],
             unit: ex.unit === 'lb' ? 'lb' : 'kg',
             sets: (ex.sets || []).map(s => ({ weight: s.weight || 0, reps: s.reps || 0, time: s.time != null ? s.time : null, dist: s.dist != null ? s.dist : null, rpe: s.rpe || null, type: s.type || 'normal', done: !!s.done }))
           }))
@@ -23667,7 +23710,18 @@ async function boot() {
     window.dkSyncClientHistory = async function (clientId, crmRecs) {
       try {
         if (!clientId || !Array.isArray(crmRecs) || !crmRecs.length) return false;
-        const recs = crmRecs.map(crmToPortalRec94).filter(Boolean);
+        /* c98: attach canonical group + synergists (from exercise_base) so the
+           portal's recovery map credits synergists EXACTLY like the trainer's */
+        const _ids98 = new Set();
+        crmRecs.forEach(r => (r.exercises || []).forEach(ex => { if (ex && ex.exercise_id) _ids98.add(ex.exercise_id); }));
+        const _exInfo98 = {};
+        await Promise.all(Array.from(_ids98).map(async id => {
+          try {
+            const ex = await db.get('exercise_base', id);
+            if (ex) _exInfo98[id] = { g: ex.group_canonical || ex.group_en || '', syn: (ex.synergist_muscles || []).map(synCanonical98).filter(Boolean) };
+          } catch (_) {}
+        }));
+        const recs = crmRecs.map(r => crmToPortalRec94(r, _exInfo98)).filter(Boolean);
         if (!recs.length) return false;
         const docId = await portalHistoryDocId(clientId);
         await ensurePortalFirebase();
@@ -28377,7 +28431,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 97; /* numeric part of dk-build c97 */
+  var RUNNING = 99; /* numeric part of dk-build c99 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
