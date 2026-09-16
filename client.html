@@ -7,6 +7,29 @@
   <meta name="description" content="David King Gym — Персональный кабинет подопечного" />
   <title>David King Gym — Мой Портал</title>
   <link rel="manifest" href="manifest.json" />
+  <script>
+  /* c94: the trainer app's service worker precaches this page too — when a
+     new version activates, pick it up: auto-reload when no workout is in
+     progress, otherwise offer a button (never destroy a live session). */
+  (function () {
+    try {
+      if (!('serviceWorker' in navigator) || !navigator.serviceWorker.controller) return;
+      var done = false;
+      navigator.serviceWorker.addEventListener('controllerchange', function () {
+        if (done) return; done = true;
+        var draft = null;
+        try { draft = localStorage.getItem('dk_live_draft'); } catch (e) {}
+        var active = draft && draft !== 'null' && draft !== '{}' && draft !== '[]';
+        if (!active) { try { if (!sessionStorage.getItem('dk_sw_rld')) { sessionStorage.setItem('dk_sw_rld', '1'); location.reload(); } } catch (e) {} return; }
+        var b = document.createElement('button');
+        b.textContent = '🔄 Доступна новая версия — обновить';
+        b.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:9999;background:#6366f1;color:#fff;border:0;border-radius:999px;padding:10px 18px;font:600 13px Inter,system-ui;box-shadow:0 8px 24px rgba(0,0,0,.4)';
+        b.onclick = function () { location.reload(); };
+        document.body.appendChild(b);
+      });
+    } catch (e) {}
+  })();
+  </script>
   <link rel="icon" type="image/png" href="icon-512.png" />
   <link rel="apple-touch-icon" href="icon-512.png" />
   <link rel="stylesheet" href="src/input.css" />
@@ -3163,7 +3186,7 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
       recs.push(rec);
       recs.sort((a, b) => (a.ts || 0) - (b.ts || 0));
       return dkHistRef(docId).then(function (ref) {
-        return ref.set({ d: JSON.stringify({ recs: recs.slice(-60) }), v: 2, ts: Date.now() });
+        return ref.set({ d: JSON.stringify({ recs: recs.slice(-200) }), v: 2, ts: Date.now() });
       });
     }).then(function () { return true; }).catch(function (e) { console.warn('[hist-sync] push failed', e); return false; });
   }
@@ -3261,7 +3284,7 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
 
   /* --- history (prev values source) --- */
   function loadHistory() { try { return JSON.parse(localStorage.getItem('dk_workout_history')||'[]'); } catch(e){ return []; } }
-  function saveHistory(list) { localStorage.setItem('dk_workout_history', JSON.stringify(list.slice(-60))); }
+  function saveHistory(list) { localStorage.setItem('dk_workout_history', JSON.stringify(list.slice(-200))); }
   function findPrev(programName, dayLetter, key, setIndex) {
     const list = loadHistory();
     for (let i = list.length - 1; i >= 0; i--) {

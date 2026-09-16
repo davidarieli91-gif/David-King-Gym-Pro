@@ -52,6 +52,16 @@
   .spin { display: inline-block; width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.25);
     border-top-color: #f5b942; border-radius: 50%; animation: sp 1s linear infinite; vertical-align: -3px; }
   @keyframes sp { to { transform: rotate(360deg); } }
+  .chk { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #9aa7b5; margin-top: 12px; }
+  .chk input { accent-color: #f5b942; width: 15px; height: 15px; }
+  .cloud-list { margin-top: 10px; max-height: 46vh; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; text-align: start; }
+  .cloud-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.12); border-radius: 12px; padding: 10px 12px; }
+  .cloud-item .ci-info { display: flex; flex-direction: column; min-width: 0; }
+  .cloud-item .ci-info b { font-size: 14.5px; }
+  .cloud-item .ci-info span { font-size: 11.5px; color: #9aa7b5; }
+  .ci-btn { flex-shrink: 0; border: 0; border-radius: 10px; padding: 8px 12px; font-size: 12.5px; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, #f5b942, #e08b1d); color: #1a1206; }
+  .cloud-item.done { opacity: .65; }
+  .cloud-item.done .ci-btn { background: rgba(127,227,160,.15); color: #7fe3a0; cursor: default; }
 </style>
 </head>
 <body>
@@ -67,6 +77,8 @@
     <input id="code" type="tel" inputmode="numeric" maxlength="6" placeholder="••••••" autocomplete="one-time-code" aria-label="Код доступа" />
     <button class="btn" id="btn-go">Восстановить</button>
     <p class="msg err" id="err-code"></p>
+    <button class="btn ghost" id="btn-cloud-mode" style="margin-top:10px">☁️ Восстановить из облачного аккаунта</button>
+    <div class="steps">Если профиль сохранялся в облачный аккаунт (Настройки → Online account), войдите через Google — здесь появятся все клиенты из облака, и любого можно вернуть вместе с историей.</div>
     <div class="steps">
       <b>Где взять код?</b> Это 6-значный «Код доступа», который вы отправляли клиенту в WhatsApp
       вместе со ссылкой («🔑 Код доступа: XXXXXX»). Если ссылку открывали с чужого кода — восстановление не сработает.
@@ -85,6 +97,15 @@
     <div class="meta" id="r-meta"></div>
     <button class="btn" id="btn-open">Открыть приложение</button>
     <button class="btn ghost" id="btn-again">Восстановить ещё один профиль</button>
+  </section>
+
+  <!-- c94: restore from the trainer's own cloud account dump -->
+  <section id="step-cloud" class="hidden">
+    <button class="btn" id="btn-cloud-signin">Войти через Google</button>
+    <p class="msg" id="cloud-msg"></p>
+    <label class="chk" id="cloud-hist-row"><input type="checkbox" id="cloud-hist" checked /> <span>включая историю тренировок и питания</span></label>
+    <div id="cloud-list" class="cloud-list"></div>
+    <button class="btn ghost hidden" id="btn-cloud-back" style="margin-top:10px">← К восстановлению по коду</button>
   </section>
 
   <p class="msg" id="msg"></p>
@@ -107,7 +128,7 @@
 
   function say(t, cls) { msgEl.textContent = t || ''; msgEl.className = 'msg' + (cls ? ' ' + cls : ''); }
   function show(step) {
-    ['step-code', 'step-busy', 'step-done'].forEach(function (s) { $(s).classList.toggle('hidden', s !== step); });
+    ['step-code', 'step-busy', 'step-done', 'step-cloud'].forEach(function (s) { $(s).classList.toggle('hidden', s !== step); });
   }
 
   /* ---- base64url ---- */
@@ -163,6 +184,17 @@
       ids.sort(function (a, b) { return 0; });
       return ids;
     });
+  }
+
+  /* c94: portal sessions cached on THIS device (client.html keeps the last
+   * encrypted share blob in localStorage) — try them before the cloud docs */
+  function listLocalBlobs() {
+    var out = [];
+    try {
+      var cd = JSON.parse(localStorage.getItem('dk_client_data') || 'null');
+      if (cd && cd.blob && typeof cd.blob === 'string' && cd.blob.length > 64) out.push(b64uDecode(cd.blob));
+    } catch (e) {}
+    return out;
   }
 
   /* ---- decrypt ---- */
@@ -297,22 +329,26 @@
 
   /* ---- main restore flow ---- */
   var existingNamesCache = null;
-  function restoreWithCode(code, shareIds) {
+  function restoreWithCode(code, shareIds, localBlobs) {
     show('step-busy');
     $('busy-msg').innerHTML = '<span class="spin"></span> ' + (shareIds.length
       ? 'Проверяю облачные копии (' + shareIds.length + ')…'
       : 'Проверяю облачные копии…');
     var chain = Promise.resolve();
     var payload = null;
+    function tryDecryptBlob94(blob, label) {
+      chain = chain.then(function () {
+        if (payload || !blob) return;
+        return decryptBlob(blob, code).then(function (p) {
+          if (p && p.client) { payload = p; console.info('[recover] matched', label); }
+        }).catch(function () { /* wrong code for this blob — try next */ });
+      });
+    }
+    (localBlobs || []).forEach(function (b) { tryDecryptBlob94(b, 'local portal session'); });
     shareIds.forEach(function (id) {
       chain = chain.then(function () {
         if (payload) return;
-        return fetchShareBlob(id).then(function (blob) {
-          if (!blob) return;
-          return decryptBlob(blob, code).then(function (p) {
-            if (p && p.client) payload = p;
-          }).catch(function () { /* wrong code for this doc — try next */ });
-        });
+        return fetchShareBlob(id).then(function (blob) { tryDecryptBlob94(blob, id); });
       });
     });
     return chain.then(function () {
@@ -353,9 +389,9 @@
     say('');
   }
 
-  function startRestore(code, ids) {
+  function startRestore(code, ids, localBlobs) {
     forceRestore = false;
-    restoreWithCode(code, ids).then(finish).catch(function (e) {
+    restoreWithCode(code, ids, localBlobs).then(finish).catch(function (e) {
       if (e && e.handled) return; /* duplicate-confirmation UI already shown */
       if (e && e.userMessage) {
         show('step-code');
@@ -393,7 +429,7 @@
     var idsPromise = hashIds.length ? Promise.resolve(hashIds) : listShareIds();
     idsPromise.then(function (ids) {
       if (!ids.length) throw { userMessage: true, text: 'В облаке нет ни одной копии — снапшот не найден.' };
-      startRestore(code, ids);
+      startRestore(code, ids, listLocalBlobs());
     }).catch(function (e) {
       show('step-code');
       say(e && e.userMessage ? e.text : 'Не удалось получить список копий из облака', 'err');
@@ -410,10 +446,183 @@
     say('');
   });
 
+  /* ===== c94: restore from the trainer's own cloud account dump ===== */
+  var REF_STORES94 = ['exercise_base', 'food_database'];
+  var _cloudDump = null;
+
+  function ensureFirebaseAuth() {
+    if (window.firebase && firebase.auth && firebase.firestore) return Promise.resolve();
+    return ensureFirebase().then(function () {
+      return loadScript('https://www.gstatic.com/firebasejs/' + FB_VER + '/firebase-auth-compat.js');
+    });
+  }
+  function cloudSignIn() {
+    return ensureFirebaseAuth().then(function () {
+      if (!firebase.apps.length) firebase.initializeApp(CFG);
+      var auth = firebase.auth();
+      if (auth.currentUser) return auth.currentUser;
+      return auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(function (cred) {
+        return cred && cred.user ? cred.user : auth.currentUser;
+      }).catch(function (e) {
+        /* popup blocked / standalone PWA → redirect fallback */
+        try { auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider()); } catch (e2) {}
+        throw e;
+      });
+    });
+  }
+  /* redirect return → auto-open the list */
+  (function () {
+    try {
+      ensureFirebaseAuth().then(function () {
+        if (!firebase.apps.length) firebase.initializeApp(CFG);
+        return firebase.auth().getRedirectResult();
+      }).then(function (r) {
+        if (r && r.user) { show('step-cloud'); openCloudList(r.user); }
+      }).catch(function () {});
+    } catch (e) {}
+  })();
+
+  function fetchCloudDump(user) {
+    var fs94 = firebase.firestore();
+    var uRef = fs94.collection('users').doc(user.uid);
+    return uRef.get().then(function (snap) {
+      if (!snap || !snap.exists) throw { userMessage: true, text: 'Облачный аккаунт пуст — сначала сохраните данные в облаке из приложения (Настройки → «Save to cloud»).' };
+      var meta = snap.data() || {};
+      var parts = meta.store_parts || {};
+      var stores = Object.keys(parts).filter(function (s) { return REF_STORES94.indexOf(s) === -1; });
+      var out = {};
+      return stores.reduce(function (pr, name) {
+        return pr.then(function () {
+          var info = parts[name] || {};
+          var n = Number(info.n) || 0, h = info.h || '';
+          if (!n || !h) { out[name] = []; return; }
+          var col = uRef.collection('stores').doc(name).collection('parts');
+          var gets = [];
+          for (var p = 0; p < n; p++) gets.push(col.doc(h.slice(0, 24) + '_' + p).get());
+          return Promise.all(gets).then(function (snaps) {
+            var text = '';
+            snaps.forEach(function (s) { if (s && s.exists) text += (s.data() || {}).data || ''; });
+            try { out[name] = JSON.parse(text) || []; } catch (e) { out[name] = []; }
+          });
+        });
+      }, Promise.resolve()).then(function () { return out; });
+    });
+  }
+
+  function esc94(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function openCloudList(user) {
+    var m = $('cloud-msg');
+    m.className = 'msg';
+    m.innerHTML = '<span class="spin"></span> Читаю облачную копию…';
+    $('btn-cloud-signin').classList.add('hidden');
+    fetchCloudDump(user).then(function (dump) {
+      _cloudDump = dump;
+      var clients = dump.clients || [];
+      if (!clients.length) throw { userMessage: true, text: 'В облаке нет клиентов. Профиль, вероятно, не успел попасть в облако — попробуйте восстановление по коду доступа или сохранение с устройства, где он ещё есть.' };
+      var programs = dump.client_programs || [];
+      var plans = dump.nutrition_plans || [];
+      var histN = (dump.workout_history || []).length + (dump.nutrition_history || []).length;
+      var html = clients.map(function (c, i) {
+        var np = programs.filter(function (p) { return p && p.client_id === c.id; }).length;
+        var nn = plans.filter(function (p) { return p && p.client_id === c.id; }).length;
+        var d = c.created_at ? new Date(c.created_at).toLocaleDateString() : '';
+        return '<div class="cloud-item"><div class="ci-info"><b>' + esc94(c.full_name || 'Клиент') + '</b>' +
+          '<span>' + (d ? esc94(d) + ' · ' : '') + 'программ: ' + np + ' · планов: ' + nn + '</span></div>' +
+          '<button class="ci-btn" data-i="' + i + '">Вернуть</button></div>';
+      }).join('');
+      $('cloud-list').innerHTML = html;
+      m.textContent = 'Найдено клиентов: ' + clients.length + (histN ? ' · записей истории в облаке: ' + histN : '');
+      $('btn-cloud-back').classList.remove('hidden');
+      Array.prototype.forEach.call(document.querySelectorAll('.cloud-item .ci-btn'), function (b) {
+        b.addEventListener('click', function () { restoreFromDump94(Number(b.getAttribute('data-i')), b); });
+      });
+    }).catch(function (e) {
+      m.className = 'msg err';
+      m.textContent = (e && e.userMessage) ? e.text : 'Не удалось прочитать облако: ' + String((e && (e.code || e.message)) || e);
+      $('btn-cloud-signin').classList.remove('hidden');
+    });
+  }
+
+  function restoreFromDump94(i, btn) {
+    if (!_cloudDump) return;
+    var c = (_cloudDump.clients || [])[i];
+    if (!c || !c.id) return;
+    var m = $('cloud-msg');
+    m.className = 'msg';
+    m.innerHTML = '<span class="spin"></span> Возвращаю «' + esc94(c.full_name || 'Клиент') + '»…';
+    var withHist = $('cloud-hist').checked;
+    openDb().then(function (idb) {
+      var names = ['clients', 'client_programs', 'nutrition_plans', 'workout_history', 'nutrition_history'];
+      var stores = Array.from(idb.objectStoreNames);
+      var use = names.filter(function (n) { return stores.indexOf(n) !== -1; });
+      return new Promise(function (res, rej) {
+        var tx = idb.transaction(use, 'readwrite');
+        var st = {};
+        use.forEach(function (n) { st[n] = tx.objectStore(n); });
+        st.clients.put(c); /* ORIGINAL id — history links survive */
+        var np = 0, nn = 0, nh = 0;
+        (_cloudDump.client_programs || []).forEach(function (p) {
+          if (p && p.client_id === c.id) { st.client_programs.put(p); np++; }
+        });
+        (_cloudDump.nutrition_plans || []).forEach(function (p) {
+          if (p && p.client_id === c.id) { st.nutrition_plans.put(p); nn++; }
+        });
+        if (withHist) {
+          ['workout_history', 'nutrition_history'].forEach(function (hn) {
+            if (st[hn] && _cloudDump[hn]) {
+              _cloudDump[hn].forEach(function (r) {
+                if (r && r.client_id === c.id) { st[hn].put(r); nh++; }
+              });
+            }
+          });
+        }
+        tx.oncomplete = function () { res({ np: np, nn: nn, nh: nh }); };
+        tx.onerror = function () { rej(tx.error); };
+        tx.onabort = function () { rej(tx.error || new Error('aborted')); };
+      });
+    }).then(function (r) {
+      m.className = 'msg ok';
+      m.textContent = '✓ «' + (c.full_name || 'Клиент') + '» возвращён: программ ' + r.np + ', планов ' + r.nn + (withHist ? ', записей истории ' + r.nh : '') + '. Откройте приложение — профиль на месте.';
+      if (btn) { btn.textContent = '✓ Вернул'; var item = btn.closest('.cloud-item'); if (item) item.classList.add('done'); }
+    }).catch(function (e) {
+      m.className = 'msg err';
+      m.textContent = 'Ошибка восстановления: ' + String((e && (e.code || e.message)) || e);
+    });
+  }
+
+  $('btn-cloud-mode').addEventListener('click', function () { show('step-cloud'); say(''); });
+  $('btn-cloud-back').addEventListener('click', function () {
+    show('step-code');
+    $('cloud-msg').textContent = '';
+    $('cloud-list').innerHTML = '';
+    $('btn-cloud-back').classList.add('hidden');
+    $('btn-cloud-signin').classList.remove('hidden');
+  });
+  $('btn-cloud-signin').addEventListener('click', function () {
+    var m = $('cloud-msg');
+    m.className = 'msg';
+    m.innerHTML = '<span class="spin"></span> Открываю окно Google…';
+    cloudSignIn().then(function (u) {
+      if (u) openCloudList(u);
+    }).catch(function (e) {
+      m.className = 'msg err';
+      var s = String((e && (e.code || e.message)) || e);
+      m.textContent = /popup|blocked/i.test(s) ? 'Окно Google заблокировано — разрешите всплывающие окна и повторите.' :
+        /cancelled|closed/i.test(s) ? 'Вход отменён.' :
+        /redirect/i.test(s) ? 'Перенаправляю на Google… после входа список появится автоматически.' :
+        'Не удалось войти: ' + s;
+    });
+  });
+
   /* duplicate → offer force */
   var _origRestore = restoreWithCode;
-  restoreWithCode = function (code, ids) {
-    return _origRestore(code, ids).then(function (res) {
+  restoreWithCode = function (code, ids, lb) {
+    return _origRestore(code, ids, lb).then(function (res) {
       if (res && res.dup && !forceRestore) {
         show('step-done');
         $('r-name').textContent = res.records.client.full_name;
@@ -424,7 +633,7 @@
           again.removeEventListener('click', handler);
           again.textContent = 'Восстановить ещё один профиль';
           forceRestore = true;
-          startRestore(code, ids);
+          startRestore(code, ids, lb);
         };
         again.addEventListener('click', handler);
         throw { handled: true };
