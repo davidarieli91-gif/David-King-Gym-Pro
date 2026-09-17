@@ -2056,6 +2056,24 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
     /* ===== Professional workout engine ===== */
     .set-grid { display: grid; grid-template-columns: 34px minmax(44px,1fr) 56px 14px 50px 32px 26px 24px; gap: 4px; align-items: center; }
     @media (max-width: 379px) { .set-grid { grid-template-columns: 28px minmax(38px,1fr) 50px 12px 44px 30px 24px 20px; gap: 3px; } }
+    /* c102: stretching sets — THREE inputs (time first, then weight, then reps),
+       no separator glyphs so the row still fits a 320px phone */
+    .set-grid-stretch { grid-template-columns: 34px minmax(34px,1fr) 50px 48px 46px 32px 26px 24px; }
+    @media (max-width: 379px) { .set-grid-stretch { grid-template-columns: 28px minmax(28px,1fr) 44px 44px 42px 28px 22px 18px; } }
+    .set-grid-stretch .stretch-time { border-color: rgb(var(--c-primary) / .5); font-weight: 700; }
+    /* c102: every modal close (X) button is a VISIBLE framed button — the user
+       could not tell the ✕ of the exercise card was a button */
+    button[id$="-close"], button[data-cps-close] {
+      border: 1.5px solid rgb(var(--c-border)) !important;
+      background: rgb(var(--c-surface-2)) !important;
+      box-shadow: 0 1px 2px rgb(0 0 0 / .18);
+      transition: color .15s ease, border-color .15s ease, background .15s ease;
+    }
+    button[id$="-close"]:hover, button[data-cps-close]:hover {
+      border-color: rgb(var(--c-accent) / .6) !important;
+      color: rgb(var(--c-text)) !important;
+    }
+    button[id$="-close"]:active, button[data-cps-close]:active { transform: scale(.92); }
     /* RPE intensity buttons 1(green)→10(maroon) under each set row */
     .rpe-row { display: flex; align-items: center; gap: 3px; margin-top: 2px; padding-inline-start: 2px; }
     .rpe-btn { width: 22px; height: 22px; border-radius: 9999px; font-size: 9px; font-weight: 800; color: #fff; display: grid; place-items: center; opacity: .5; transition: transform .12s, opacity .12s; outline: 2px solid transparent; outline-offset: 1px; border: none; cursor: pointer; padding: 0; flex-shrink: 0; }
@@ -3787,8 +3805,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
           return { weight:null, reps:null, time:null, dist:null, rpe:null, type:'normal', done:false,
                    prev_weight:pw, prev_reps:pr,
                    prev_rpe: hist && hist.rpe != null ? hist.rpe : null,
-                   prev_time: hist && hist.time != null ? hist.time : null,
-                   prev_dist: hist && hist.dist != null ? hist.dist : null };
+                   prev_time: hist && hist.time != null ? hist.time : (Number(s.time)||null), /* c102: stretch programs prescribe a hold time */
+                   prev_dist: hist && hist.dist != null ? hist.dist : (Number(s.dist)||null) };
         })
         };
       })
@@ -3971,6 +3989,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       const equipment = exData ? (exData['equipment_'+lang] || exData.equipment_en || exData.equipment || '') : '';
       const groupLabel = exData ? (exData['group_'+lang] || exData.group_en || ex.group || '') : (ex.group || '');
       const isCardioEx = (ex.cardio === true) || !!(exData && exData.category === 'cardio'); /* c88 */
+      const isStretchEx = !!(exData && (exData.category === 'stretching' || exData.group === 'stretching')); /* c102: time-first sets */
       const liveEx = sess ? (sess.exercises||[])[ei] : null;
       const restSec = liveEx ? liveEx.rest_sec : (parseInt(ex.rest_sec,10) || 90);
       /* c96: this exercise's own weight unit label (for the weight column header) */
@@ -3999,6 +4018,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         const hasPrev = (s.prev_weight != null || s.prev_reps != null || s.prev_time != null || s.prev_dist != null);
         const pw = !hasPrev ? '—' : (isCardioEx
           ? `${s.prev_time!=null?Number(s.prev_time):'—'}×${s.prev_dist!=null?Number(s.prev_dist):'—'}`
+          : isStretchEx
+          ? `${s.prev_time!=null?Number(s.prev_time):'—'}×${s.prev_weight!=null?Number(s.prev_weight):'—'}×${s.prev_reps!=null?Number(s.prev_reps):'—'}`
           : `${s.prev_weight!=null?Number(s.prev_weight):'—'}×${s.prev_reps!=null?Number(s.prev_reps):'—'}`);
         /* c90: last workout's effort (1-10) as a colored mini badge */
         const prevRpeBadge = (s.prev_rpe != null) ? `<span class="prev-rpe" style="background:${RPE_COLORS[s.prev_rpe-1]||'#666'}" title="RPE ${s.prev_rpe}">${s.prev_rpe}</span>` : '';
@@ -4010,7 +4031,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
           const sel = s.rpe === v ? ' sel' : '';
           return `<button class="rpe-btn${sel}" data-rpe-btn data-ex="${ei}" data-si="${si}" data-v="${v}" style="background:${c}" title="RPE ${v}" ${dis ? 'disabled' : ''}>${v}</button>`;
         }).join('');
-        return `<div class="set-row set-grid bg-surface-2/60 px-2 py-1.5 rounded-xl ${done?'set-row-done':''}" data-si="${si}">
+        return `<div class="set-row set-grid ${isStretchEx ? 'set-grid-stretch' : ''} bg-surface-2/60 px-2 py-1.5 rounded-xl ${done?'set-row-done':''}" data-si="${si}">
           <div class="text-center leading-tight">
             <div class="font-mono text-[11px] font-bold text-muted">#${sn}</div>
             ${typeBadge(s.type)}
@@ -4020,6 +4041,10 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
             ? `<input type="number" step="0.5" inputmode="decimal" value="${s.time!=null?Number(s.time):''}" ${dis} data-field="time" data-ex="${ei}" data-si="${si}" class="set-input" placeholder="0" />
           <span class="text-[9px] text-muted text-center">/</span>
           <input type="number" step="0.5" inputmode="decimal" value="${s.dist!=null?Number(s.dist):''}" ${dis} data-field="dist" data-ex="${ei}" data-si="${si}" class="set-input" placeholder="0" />`
+            : isStretchEx
+            ? `<input type="number" step="1" inputmode="numeric" value="${s.time!=null?Number(s.time):''}" ${dis} data-field="time" data-ex="${ei}" data-si="${si}" class="set-input stretch-time" title="${esc(t('timeLabel'))}" placeholder="0" />
+          <input type="number" step="0.5" inputmode="decimal" value="${s.weight!=null?Number(s.weight):''}" ${dis} data-field="weight" data-ex="${ei}" data-si="${si}" class="set-input" placeholder="0" />
+          <input type="number" step="1" inputmode="numeric" value="${s.type==='amrap'?'':(s.reps!=null?Number(s.reps):'')}" ${dis} data-field="reps" data-ex="${ei}" data-si="${si}" class="set-input" placeholder="${s.type==='amrap'?'∞':'0'}" />`
             : `<input type="number" step="0.5" inputmode="decimal" value="${s.weight!=null?Number(s.weight):''}" ${dis} data-field="weight" data-ex="${ei}" data-si="${si}" class="set-input" placeholder="0" />
           <span class="text-[9px] text-muted text-center">×</span>
           <input type="number" step="1" inputmode="numeric" value="${s.type==='amrap'?'':(s.reps!=null?Number(s.reps):'')}" ${dis} data-field="reps" data-ex="${ei}" data-si="${si}" class="set-input" placeholder="${s.type==='amrap'?'∞':'0'}" />`}
@@ -4067,8 +4092,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
           </div>
         </div>
         ${ex.notes?`<div class="text-[11px] text-amber-300/80 bg-amber-500/8 border border-amber-500/15 rounded-lg p-2 leading-relaxed">💡 ${esc(ex.notes)}</div>`:''}
-        <div class="set-grid px-2 text-[8px] uppercase tracking-wide text-muted font-bold">
-          <span>#</span><span class="text-center">${esc(t('prevLabel'))}</span>${isCardioEx ? `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-tunit-col data-tunit-base="${esc(t('timeLabel'))}">${esc(t('timeLabel'))}</button><span></span><button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-dunit-col data-dunit-base="${esc(t('distShortLabel'))}">${esc(t('distShortLabel'))}</button>` : `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-wunit-col-ex="${ei}" data-wunit-base="${esc(t('weightLabel'))}" title="${esc(t('wunitExTitle') || 'Weight unit')}">${esc(t('weightLabel'))}${exUnitShort ? ' · ' + esc(exUnitShort) : ''}</button><span></span><span class="text-center">${esc(t('repsLabel'))}</span>`}<span class="text-center">✓</span><span></span><span></span>
+        <div class="set-grid ${isStretchEx ? 'set-grid-stretch' : ''} px-2 text-[8px] uppercase tracking-wide text-muted font-bold">
+          <span>#</span><span class="text-center">${esc(t('prevLabel'))}</span>${isCardioEx ? `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-tunit-col data-tunit-base="${esc(t('timeLabel'))}">${esc(t('timeLabel'))}</button><span></span><button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-dunit-col data-dunit-base="${esc(t('distShortLabel'))}">${esc(t('distShortLabel'))}</button>` : isStretchEx ? `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-primary/40 bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-tunit-col data-tunit-base="${esc(t('timeLabel'))}">${esc(t('timeLabel'))}</button><button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-wunit-col-ex="${ei}" data-wunit-base="${esc(t('weightLabel'))}" title="${esc(t('wunitExTitle') || 'Weight unit')}">${esc(t('weightLabel'))}${exUnitShort ? ' · ' + esc(exUnitShort) : ''}</button><span class="text-center">${esc(t('repsLabel'))}</span>` : `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-wunit-col-ex="${ei}" data-wunit-base="${esc(t('weightLabel'))}" title="${esc(t('wunitExTitle') || 'Weight unit')}">${esc(t('weightLabel'))}${exUnitShort ? ' · ' + esc(exUnitShort) : ''}</button><span></span><span class="text-center">${esc(t('repsLabel'))}</span>`}<span class="text-center">✓</span><span></span><span></span>
         </div>
         <div class="space-y-1.5">${setsRows}</div>
         ${addSetBtn || doneAllBtn ? `<div class="grid grid-cols-2 gap-1.5 mt-1.5">${addSetBtn}${doneAllBtn}</div>` : ''}
@@ -4138,14 +4163,19 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
             const dayExC = ((dayInfo(activeDayIndex)||{}).exercises||[])[ei] || {};
             const exDataC = getExData(dayExC);
             const cardioC = (dayExC.cardio === true) || !!(exDataC && exDataC.category === 'cardio');
-            if (cardioC) {
+            const stretchC = !!(exDataC && (exDataC.category === 'stretching' || exDataC.group === 'stretching')); /* c102 */
+            if (cardioC || stretchC) {
               next.prev_time = set.time != null ? set.time : next.prev_time;
+            }
+            if (cardioC) {
               next.prev_dist = set.dist != null ? set.dist : next.prev_dist;
             }
             const row = btn.closest('[data-exercise-card]').querySelector(`.set-row[data-si="${si+1}"] [data-prev-cell]`);
             if (row) {
               const txt = cardioC
                 ? `${set.time!=null?set.time:'—'}×${set.dist!=null?set.dist:'—'}`
+                : stretchC
+                ? `${set.time!=null?set.time:'—'}×${set.weight!=null?set.weight:'—'}×${set.reps!=null?set.reps:'—'}`
                 : `${set.weight!=null?set.weight:'—'}×${set.reps!=null?set.reps:'—'}`;
               row.innerHTML = esc(txt) + (set.rpe != null ? `<span class="prev-rpe" style="background:${RPE_COLORS[set.rpe-1]||'#666'}" title="RPE ${set.rpe}">${set.rpe}</span>` : '');
             }
@@ -5501,11 +5531,40 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       try { if (typeof t === 'function') { var m = t('closeGuard'); if (m && m !== 'closeGuard') return m; } } catch (e) {}
       return 'Закрыть портал? / Close the portal?';
     }
+    /* c102: a back-swipe must close the TOPMOST open card (exercise card,
+       image viewer, settings sheet, unit sheets, report) — and NEVER offer
+       to close the whole portal while any card is still open. The list is
+       ordered top-most first (matches the z-index ladder). */
+    var OVERLAYS = [
+      { id: 'report-modal',           z: 130 },
+      { id: 'viewer-modal',           z: 120, hide: function () { try { closeViewer(); } catch (e) { var m = document.getElementById('viewer-modal'); if (m) m.classList.add('hidden'); } } },
+      { id: 'exercise-modal',         z: 110, hide: function () { try { closeExerciseModal(); } catch (e) { var m = document.getElementById('exercise-modal'); if (m) m.classList.add('hidden'); } } },
+      { id: 'portal-settings-sheet',  z: 96 }, /* closeSettingsSheet is IIFE-scoped — hide the root directly */
+      { id: 'dk-wunit-sheet',         z: 95 },
+      { id: 'dk-cunit-sheet',         z: 95 }
+    ];
+    function topOverlay() {
+      var best = null;
+      OVERLAYS.forEach(function (o) {
+        var el = document.getElementById(o.id);
+        if (el && !el.classList.contains('hidden')) {
+          if (!best || o.z > best.z) best = o;
+        }
+      });
+      return best;
+    }
     try {
       history.replaceState({ dkRoot: 1 }, '');
       history.pushState({ dkGuard: 1 }, '');
       window.addEventListener('popstate', function () {
         if (allow) return; /* a programmatic leave is in flight */
+        var ov = topOverlay();
+        if (ov) {
+          /* close ONLY this overlay, keep the portal open */
+          try { if (ov.hide) { ov.hide(); } else { var el = document.getElementById(ov.id); if (el) el.classList.add('hidden'); } } catch (e) {}
+          history.pushState({ dkGuard: 1 }, ''); /* re-arm the sentinel */
+          return;
+        }
         if (window.confirm(guardMsg())) {
           window.dkAllowClose();
           if (history.length > 1) history.back();
