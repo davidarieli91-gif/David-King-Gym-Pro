@@ -3995,10 +3995,12 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       /* c96: this exercise's own weight unit label (for the weight column header) */
       const exUnitShort = (() => { try { return (window.dkWUnitShortPortal && window.dkWUnitShortPortal(exUnitOf(liveEx))) || ''; } catch (e) { return ''; } })();
       const thumbHtml = (() => {
-        if (imgs.length >= 2) return `<div class="ex-anim-container w-16 h-16 sm:w-20 sm:h-20 shrink-0 cursor-pointer" data-open-exercise><img src="${escapeAttr(imgs[0])}" alt="" class="ex-anim-frame-1" loading="lazy" /><img src="${escapeAttr(imgs[1])}" alt="" class="ex-anim-frame-2" loading="lazy" /></div>`;
-        if (img) return `<div class="relative w-16 h-16 sm:w-20 sm:h-20 shrink-0 cursor-pointer" data-open-exercise><img src="${escapeAttr(img)}" alt="" class="ex-img w-full h-full object-cover" loading="lazy" />${exData && exData.gif ? '<span class="absolute bottom-0.5 end-0.5 text-[8px] font-bold px-1 py-0.5 rounded bg-black/60 text-white">▶</span>' : ''}</div>`;
-        const v = (typeof window.exerciseVectorIllustration==='function') ? window.exerciseVectorIllustration(exData||ex,{both:false,size:80}) : '';
-        return v ? `<div class="w-16 h-16 sm:w-20 sm:h-20 shrink-0 grid place-items-center cursor-pointer" data-open-exercise>${v}</div>` : '';
+        /* c103: slightly bigger thumbnail (w-20 h-20 / sm:w-24 sm:h-24) — the live
+           workout card now renders the EXACT same size for full parity */
+        if (imgs.length >= 2) return `<div class="ex-anim-container w-20 h-20 sm:w-24 sm:h-24 shrink-0 cursor-pointer" data-open-exercise><img src="${escapeAttr(imgs[0])}" alt="" class="ex-anim-frame-1" loading="lazy" /><img src="${escapeAttr(imgs[1])}" alt="" class="ex-anim-frame-2" loading="lazy" /></div>`;
+        if (img) return `<div class="relative w-20 h-20 sm:w-24 sm:h-24 shrink-0 cursor-pointer" data-open-exercise><img src="${escapeAttr(img)}" alt="" class="ex-img w-full h-full object-cover" loading="lazy" />${exData && exData.gif ? '<span class="absolute bottom-0.5 end-0.5 text-[8px] font-bold px-1 py-0.5 rounded bg-black/60 text-white">▶</span>' : ''}</div>`;
+        const v = (typeof window.exerciseVectorIllustration==='function') ? window.exerciseVectorIllustration(exData||ex,{both:false,size:96}) : '';
+        return v ? `<div class="w-20 h-20 sm:w-24 sm:h-24 shrink-0 grid place-items-center cursor-pointer" data-open-exercise>${v}</div>` : '';
       })();
 
       // per-exercise mini progress

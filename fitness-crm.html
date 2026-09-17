@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c102" />
+<meta name="dk-build" content="c103" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2090,12 +2090,8 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
     .lw-prev-rpe { display: inline-block; margin-inline-start: 4px; width: 14px; height: 14px; line-height: 14px; border-radius: 9999px; color: #fff; font-size: 8px; font-weight: 800; text-align: center; vertical-align: middle; }
 
     /* ===== c61 MOBILE RESPONSIVE FIXES =====
-       1) Live set table must fit the card: number inputs shrink, columns compact. */
-    #live-workout-exercises th, #live-workout-exercises td { padding-left: 4px; padding-right: 4px; }
-    #live-workout-exercises td:first-child { padding-left: 6px; }
-    /* c96: min-width so a 2–3-digit working weight ("30", "102.5") is always visible —
-       the auto table layout used to squeeze the weight column until only 1 digit fit */
-    #live-workout-exercises input[type="number"] { min-width: 3rem; width: 100%; }
+       1) c103: live sets are a CSS GRID now (portal parity) — the old table
+          padding rules are gone; the grid template handles narrow phones. */
     /* 2) Bottom actions: two buttons share the row, Finish gets a full row (mobile only). */
     #live-bottom-actions { flex-wrap: wrap; }
     @media (max-width: 640px) {
@@ -2439,6 +2435,47 @@ button[id$="-close"]:hover, button[data-cps-close]:hover {
 button[id$="-close"]:active, button[data-cps-close]:active {
   transform: scale(.92);
 }
+/* ===== c103: live-workout exercise cards are now IDENTICAL to the client
+   portal's cards (the portal design is the base — the user approved it).
+   Same glass card, same CSS-grid set rows (no more <table>), same set-input /
+   set-check / type-badge / mini-progress styling, same footer buttons. ===== */
+#live-workout-exercises .glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+}
+@keyframes lw-fade-slide { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+#live-workout-exercises .fade-in { animation: lw-fade-slide .3s ease both; }
+#live-workout-exercises .set-grid { display: grid; grid-template-columns: 34px minmax(44px,1fr) 56px 14px 50px 32px 26px 24px; gap: 4px; align-items: center; }
+@media (max-width: 379px) { #live-workout-exercises .set-grid { grid-template-columns: 28px minmax(38px,1fr) 50px 12px 44px 30px 24px 20px; gap: 3px; } }
+/* stretching: time first, then weight, then reps — no separator glyphs */
+#live-workout-exercises .set-grid-stretch { grid-template-columns: 34px minmax(34px,1fr) 50px 48px 46px 32px 26px 24px; }
+@media (max-width: 379px) { #live-workout-exercises .set-grid-stretch { grid-template-columns: 28px minmax(28px,1fr) 44px 44px 42px 28px 22px 18px; } }
+#live-workout-exercises .set-grid-stretch .stretch-time { border-color: rgb(var(--c-primary) / .5); font-weight: 700; }
+#live-workout-exercises .set-input {
+  width: 100%; background: rgb(var(--c-surface-2)); text-align: center; border-radius: 8px;
+  border: 1px solid rgb(var(--c-border)); padding: 5px 2px; font-family: var(--font-mono, monospace);
+  font-weight: 700; font-size: 12px; color: rgb(var(--c-text)); outline: none;
+}
+#live-workout-exercises .set-input:focus { border-color: rgb(var(--c-primary)); box-shadow: 0 0 0 2px rgb(var(--c-primary) / 0.25); }
+#live-workout-exercises .set-input::placeholder { color: rgb(var(--c-muted) / 0.60); font-weight: 600; }
+#live-workout-exercises input[type=number].set-input::-webkit-outer-spin-button,
+#live-workout-exercises input[type=number].set-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+#live-workout-exercises input[type=number].set-input { -moz-appearance: textfield; appearance: textfield; }
+#live-workout-exercises .set-row-done { opacity: .5; }
+#live-workout-exercises .set-row-done .set-check { background: rgb(var(--c-success)) !important; border-color: rgb(var(--c-success)) !important; color: #fff !important; }
+#live-workout-exercises .type-badge { font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; border-radius: 4px; padding: 1px 4px; display: inline-block; margin-top: 2px; }
+#live-workout-exercises .tb-warmup { background: rgba(245,158,11,.15); color: #fbbf24; }
+#live-workout-exercises .tb-drop { background: rgba(6,182,212,.15); color: #22d3ee; }
+#live-workout-exercises .tb-failure { background: rgba(239,68,68,.15); color: #f87171; }
+#live-workout-exercises .tb-amrap { background: rgba(99,102,241,.18); color: #818cf8; }
+#live-workout-exercises .mini-prog { height: 4px; border-radius: 999px; background: rgb(var(--c-border) / 0.35); overflow: hidden; }
+#live-workout-exercises .mini-prog > div { height: 100%; background: rgb(var(--c-success)); border-radius: 999px; transition: width .4s ease; }
+@keyframes lw-ex-flash { 0%,100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } 30% { box-shadow: 0 0 0 3px rgba(16,185,129,.55); } }
+#live-workout-exercises .ex-flash { animation: lw-ex-flash 1.2s ease; }
+/* RPE strip: portal spacing (margin-top + leading padding) */
+.lw-rpe-row { display: flex; align-items: center; gap: 3px; margin-top: 2px; padding-inline-start: 2px; }
 </style>
 </head>
 
@@ -2640,7 +2677,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c102</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c103</p>
             </div>
           </div>
 
@@ -4734,9 +4771,11 @@ button[id$="-close"]:active, button[data-cps-close]:active {
       <img id="viewer-img" src="" alt="" class="max-w-full max-h-full object-contain rounded-lg" />
     </div>
 
-    <!-- ============= EXERCISE CARD MODAL (Steps 17-18) ============= -->
+    <!-- ============= EXERCISE CARD MODAL (Steps 17-18) — c103: PORTAL-IDENTICAL
+         size & structure (compact sm:max-w-lg bottom-sheet, sticky header,
+         single-column scrollable body; the 960px 2-col layout is gone) ============= -->
     <div id="exercise-modal" class="hidden fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
-      <div class="bg-surface w-full sm:max-w-lg lg:max-w-[min(96vw,960px)] max-h-[92vh] overflow-y-auto rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
+      <div class="bg-surface w-full sm:max-w-lg max-h-[92vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float overflow-hidden">
         <!-- Header -->
         <div class="sticky top-0 z-10 bg-surface border-b border-border p-4 flex items-center gap-3">
           <h3 id="exercise-modal-title" class="font-display font-bold text-base flex-1 min-w-0 truncate">Exercise</h3>
@@ -4748,8 +4787,8 @@ button[id$="-close"]:active, button[data-cps-close]:active {
           </button>
         </div>
 
-        <!-- View mode (photos + video + technique) -->
-        <div id="exercise-view" class="p-4 space-y-4 em2col">
+        <!-- View mode (photos + video + technique) — single column, scrolls under the sticky header -->
+        <div id="exercise-view" class="p-4 space-y-4 overflow-y-auto">
           <div class="em-media space-y-4">
           <!-- Photos slot (2 images + animate button) -->
           <div id="exercise-gif-slot" class="aspect-video rounded-xl bg-surface-2 border border-border grid place-items-center overflow-hidden relative">
@@ -4794,7 +4833,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
         </div>
 
         <!-- Edit mode (form) -->
-        <form id="exercise-form" class="hidden p-4 space-y-4" autocomplete="off">
+        <form id="exercise-form" class="hidden p-4 space-y-4 overflow-y-auto" autocomplete="off">
           <!-- 3-language name fields -->
           <fieldset class="space-y-2">
             <legend class="text-[11px] uppercase tracking-wider text-muted font-semibold mb-1" data-i18n="exercise.name">Name (3 languages)</legend>
@@ -14208,7 +14247,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       updateProgressBar();
     }
 
-    /** Build HTML for a single exercise block with set table. */
+    /** Build HTML for a single exercise block — c103: PORTAL-IDENTICAL card.
+       The portal (client.html) card design is the base the user approved:
+       glass card, big animated thumbnail (w-20/24), equipment chip, per-exercise
+       mini progress, CSS-grid set rows, framed footer buttons. Trainer-only
+       controls (view / remove / replace) are added on top. */
     function exerciseHTML(ex, idx) {
       const name = globalExName(ex);
       const group = globalExGroup(ex);
@@ -14222,71 +14265,91 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       }
       const fullEx = _exMap.get(ex.exercise_id);
       const exImgs = fullEx ? (fullEx.images || fullEx.i || []) : [];
-      const exImg = exImgs[0] || '';
-      const thumbHtml = exImg
-        ? `<div class="w-10 h-10 rounded-lg shrink-0 overflow-hidden bg-surface border border-border grid place-items-center cursor-pointer" data-view-exercise="${ex.exercise_id || ''}">
-            <img src="${escapeAttr(exImg)}" alt="" class="w-full h-full object-contain" loading="lazy" onerror="this.style.display='none'" />
-          </div>`
-        : '';
+      const lang = currentLang();
+      const technique = fullEx ? (fullEx['technique_' + lang] || fullEx.t || fullEx.tRu || fullEx.tHe || '') : '';
+      const equipment = fullEx ? (fullEx['equipment_' + lang] || fullEx.equipment_en || fullEx.eE || '') : '';
+      /* c103: portal-size animated thumbnail (two frames crossfade, like the portal) */
+      const thumbHtml = (() => {
+        if (exImgs.length >= 2) return `<div class="ex-anim-container w-20 h-20 sm:w-24 sm:h-24 shrink-0 cursor-pointer" data-view-exercise="${escapeAttr(ex.exercise_id || '')}"><img src="${escapeAttr(exImgs[0])}" alt="" class="ex-anim-frame-1" loading="lazy" /><img src="${escapeAttr(exImgs[1])}" alt="" class="ex-anim-frame-2" loading="lazy" /></div>`;
+        if (exImgs.length === 1) return `<div class="relative w-20 h-20 sm:w-24 sm:h-24 shrink-0 cursor-pointer" data-view-exercise="${escapeAttr(ex.exercise_id || '')}"><img src="${escapeAttr(exImgs[0])}" alt="" class="w-full h-full object-cover rounded-xl bg-surface-2" loading="lazy" onerror="this.style.display='none'" /></div>`;
+        const v = (typeof window.exerciseVectorIllustration === 'function') ? window.exerciseVectorIllustration(fullEx || ex, { both: false, size: 96 }) : '';
+        return v ? `<div class="w-20 h-20 sm:w-24 sm:h-24 shrink-0 grid place-items-center cursor-pointer" data-view-exercise="${escapeAttr(ex.exercise_id || '')}">${v}</div>` : '';
+      })();
+
+      /* c103: per-exercise mini progress (portal parity) */
+      const tot = sets.length;
+      const dn = sets.filter(s => s.done).length;
+      const mini = `<div class="flex items-center gap-2 mt-1.5">
+          <div class="mini-prog flex-1" data-mini-bar="${idx}"><div style="width:${tot ? Math.round(dn / tot * 100) : 0}%"></div></div>
+          <span class="font-mono text-[9px] text-muted shrink-0" data-mini-count="${idx}">${dn}/${tot}</span>
+        </div>`;
+
+      /* c103: inline technique toggle (portal parity — a real button, never opens the card) */
+      const techniqueHtml = technique ? `<div>
+          <button type="button" data-tech-toggle="${idx}" aria-expanded="false" class="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/25 transition select-none cursor-pointer">
+          <svg data-tech-chevron="${idx}" class="w-3 h-3 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          ${t('exercise.technique')}</button>
+          <div class="hidden mt-1.5 space-y-1 pl-1" data-tech-body="${idx}">${(technique.indexOf(' | ') !== -1 ? technique.split(' | ') : technique.split('|')).map(st => `<p class="text-[11px] text-muted leading-relaxed">• ${escapeHTML(st.trim())}</p>`).join('')}</div></div>` : '';
+
+      /* c103: trainer-only «Заменить упражнение» — swaps the exercise in place */
+      const replaceBtn = `<button type="button" data-replace-exercise="${idx}" class="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1.5 rounded-lg bg-accent/10 hover:bg-accent/20 text-accent border border-accent/25 transition select-none cursor-pointer" title="${t('programs.replaceExercise') || 'Replace exercise'}">
+          <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          ${t('programs.replaceExercise') || 'Replace exercise'}
+        </button>`;
 
       return `
-        <div class="bg-surface border border-border rounded-2xl overflow-hidden" data-exercise-idx="${idx}">
-          <!-- Exercise header -->
-          <div class="p-3 bg-surface-2 border-b border-border flex items-center gap-2">
+        <div class="glass rounded-2xl p-4 space-y-3 fade-in" data-exercise-idx="${idx}">
+          <!-- Exercise header (portal layout) -->
+          <div class="flex items-start justify-between gap-2">
             ${thumbHtml}
-            <div class="flex-1 min-w-0 cursor-pointer" data-view-exercise="${ex.exercise_id || ''}">
-              <div class="font-semibold truncate">${escapeHTML(name)}</div>
-              <div class="flex items-center gap-2 mt-0.5">
-                ${group ? `<span class="text-[11px] text-muted">${escapeHTML(group)}</span>` : ''}
-                <span class="text-[10px] text-muted flex items-center gap-1">
-                  <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                  ${t('workouts.perExerciseRest')} <input type="number" min="0" max="600" step="15" value="${ex.rest_sec != null ? ex.rest_sec : 90}" data-exercise-rest="${idx}" class="w-12 bg-surface border border-border rounded px-1 py-0.5 text-[10px] text-center" /> ${t('workouts.restSeconds')}
-                </span>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start gap-2">
+                <h4 class="font-display font-bold text-sm leading-snug flex-1 min-w-0 cursor-pointer hover:text-[rgb(var(--c-primary-2))] transition truncate" data-view-exercise="${escapeAttr(ex.exercise_id || '')}">${escapeHTML(name)}</h4>
+                <div class="flex items-center gap-1 shrink-0">
+                  ${ex.exercise_id ? `<button class="w-7 h-7 grid place-items-center rounded-lg bg-surface-2 border border-border text-muted hover:text-[rgb(var(--c-primary-2))] hover:border-[rgb(var(--c-primary)/0.5)] transition" data-view-exercise-btn="${escapeAttr(ex.exercise_id)}" title="${t('aria.view')}" aria-label="${t('aria.view')}">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>` : ''}
+                  <button data-remove-exercise="${idx}" class="w-7 h-7 grid place-items-center rounded-lg bg-surface-2 border border-border text-muted hover:text-red-400 hover:border-red-400/50 transition" aria-label="${t('aria.removeExercise')}" title="${t('aria.removeExercise')}">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                  </button>
+                </div>
               </div>
+              <div class="text-[11px] text-muted flex items-center gap-2 mt-0.5 flex-wrap">
+                ${group ? `<span class="text-cyan-300">${escapeHTML(group)}</span><span>·</span>` : ''}
+                <label class="flex items-center gap-1">${t('workouts.perExerciseRest')}
+                  <input type="number" min="0" max="600" step="15" value="${ex.rest_sec != null ? ex.rest_sec : 90}" data-exercise-rest="${idx}" class="w-12 bg-surface-2 text-center rounded border border-border py-0.5 text-[10px] font-mono" />
+                </label>
+              </div>
+              ${equipment ? `<span class="inline-block text-[9px] bg-surface-2 px-1.5 py-0.5 rounded text-muted mt-1">${escapeHTML(equipment)}</span>` : ''}
+              ${mini}
             </div>
-            ${ex.exercise_id ? `<button class="w-7 h-7 grid place-items-center rounded-lg hover:bg-primary/15 hover:text-primary-2 text-muted transition shrink-0" data-view-exercise-btn="${ex.exercise_id}" title="${t('aria.view')}">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>` : ''}
-            <button data-remove-exercise="${idx}" class="w-7 h-7 grid place-items-center rounded-lg hover:bg-danger/15 hover:text-danger text-muted transition" aria-label="${t('aria.removeExercise')}">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </div>
+          ${ex.notes ? `<div class="text-[11px] text-amber-300/80 bg-amber-500/8 border border-amber-500/15 rounded-lg p-2 leading-relaxed">💡 ${escapeHTML(ex.notes)}</div>` : ''}
+
+          <!-- Set grid header (portal parity — unit columns are real buttons) -->
+          <div class="set-grid ${exIsStretch(ex) ? 'set-grid-stretch' : ''} px-2 text-[8px] uppercase tracking-wide text-muted font-bold">
+            <span>#</span><span class="text-center">${t('workouts.prevWeight')}</span>
+            ${exIsCardio(ex) ? `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-tunit-col data-tunit-base="${t('workouts.time')}">${t('workouts.time')} · ${dkTUnitShort()}</button><span></span><button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-dunit-col data-dunit-base="${t('workouts.dist')}">${t('workouts.dist')} · ${dkDUnitShort()}</button>`
+            : exIsStretch(ex) ? `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-primary/40 bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-tunit-col data-tunit-base="${t('workouts.time')}">${t('workouts.time')} · ${dkTUnitShort()}</button><button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-wunit-col-ex="${idx}" data-wunit-base="${t('workouts.weight')}" title="${t('wunit.title') || 'Weight unit'}">${t('workouts.weight')} · ${dkWUnitShort(exUnit)}</button><span class="text-center">${t('workouts.reps')}</span>`
+            : `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-wunit-col-ex="${idx}" data-wunit-base="${t('workouts.weight')}" title="${t('wunit.title') || 'Weight unit'}">${t('workouts.weight')} · ${dkWUnitShort(exUnit)}</button><span></span><span class="text-center">${t('workouts.reps')}</span>`}
+            <span class="text-center">✓</span><span></span><span></span>
+          </div>
+
+          <!-- Set rows (CSS grid, portal parity) -->
+          <div class="space-y-1.5">${sets.map((s, si) => setRowHTML(idx, si, s)).join('')}</div>
+
+          <!-- Add set + done all (portal-style framed buttons) -->
+          <div class="grid grid-cols-2 gap-1.5 mt-1.5">
+            <button data-add-set="${idx}" class="w-full bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/25 text-[11px] font-bold py-1.5 rounded-xl transition">
+              <span class="inline-flex items-center gap-1"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 5v14M5 12h14"/></svg>${t('workouts.addSet')}</span>
+            </button>
+            <button data-done-all="${idx}" class="w-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/25 text-[11px] font-bold py-1.5 rounded-xl transition">
+              <span class="inline-flex items-center gap-1"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>${t('workouts.doneAll')}</span>
             </button>
           </div>
 
-          <!-- Set table -->
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-              <thead>
-                <tr class="text-[10px] uppercase tracking-wider text-muted border-b border-border">
-                  <th class="px-2 py-2 text-center w-8">${t('workouts.set')}</th>
-                  <th class="px-2 py-2 text-center">${t('workouts.prevWeight')}</th>
-                  ${exIsCardio(ex) ? `<th class="px-1 py-2 text-center"><button type="button" class="w-full px-1 py-1 rounded-lg border border-border bg-surface-2 text-[10px] uppercase tracking-wider font-bold text-muted leading-tight cursor-pointer transition" data-tunit-col data-tunit-base="${t('workouts.time')}">${t('workouts.time')} · ${dkTUnitShort()}</button></th>
-                  <th class="px-1 py-2 text-center"><button type="button" class="w-full px-1 py-1 rounded-lg border border-border bg-surface-2 text-[10px] uppercase tracking-wider font-bold text-muted leading-tight cursor-pointer transition" data-dunit-col data-dunit-base="${t('workouts.dist')}">${t('workouts.dist')} · ${dkDUnitShort()}</button></th>`
-                  : exIsStretch(ex) ? `<th class="px-1 py-2 text-center"><button type="button" class="w-full px-1 py-1 rounded-lg border border-border bg-surface-2 text-[10px] uppercase tracking-wider font-bold text-muted leading-tight cursor-pointer transition" data-tunit-col data-tunit-base="${t('workouts.time')}">${t('workouts.time')} · ${dkTUnitShort()}</button></th>
-                  <th class="px-1 py-2 text-center"><button type="button" class="w-full px-1 py-1 rounded-lg border border-border bg-surface-2 text-[10px] uppercase tracking-wider font-bold text-muted leading-tight cursor-pointer transition" data-wunit-col-ex="${idx}" data-wunit-base="${t('workouts.weight')}" title="${t('wunit.title') || 'Weight unit'}">${t('workouts.weight')} · ${dkWUnitShort(exUnit)}</button></th>
-                  <th class="px-2 py-2 text-center">${t('workouts.reps')}</th>`
-                  : `<th class="px-1 py-2 text-center"><button type="button" class="w-full px-1 py-1 rounded-lg border border-border bg-surface-2 text-[10px] uppercase tracking-wider font-bold text-muted leading-tight cursor-pointer transition" data-wunit-col-ex="${idx}" data-wunit-base="${t('workouts.weight')}" title="${t('wunit.title') || 'Weight unit'}">${t('workouts.weight')} · ${dkWUnitShort(exUnit)}</button></th>
-                  <th class="px-2 py-2 text-center">${t('workouts.reps')}</th>`}
-                  <th class="px-2 py-2 text-center w-10">${t('workouts.done')}</th>
-                  <th class="px-1 py-2 w-8"></th>
-                </tr>
-              </thead>
-              <tbody>
-                ${sets.map((s, si) => setRowHTML(idx, si, s)).join('')}
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Add set + done all + notes -->
-          <div class="p-2 border-t border-border flex items-center gap-2">
-            <button data-add-set="${idx}" class="text-xs font-semibold text-primary-2 hover:bg-primary/10 rounded-lg px-2.5 py-1.5 transition inline-flex items-center gap-1">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-              ${t('workouts.addSet')}
-            </button>
-            <button data-done-all="${idx}" class="ms-auto text-xs font-semibold text-success hover:bg-success/10 rounded-lg px-2.5 py-1.5 transition inline-flex items-center gap-1">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
-              ${t('workouts.doneAll')}
-            </button>
-          </div>
+          <!-- Replace exercise (trainer-only) + technique -->
+          ${(replaceBtn || techniqueHtml) ? `<div class="flex flex-wrap items-start gap-1.5 mt-0.5">${replaceBtn}${techniqueHtml}</div>` : ''}
         </div>
       `;
     }
@@ -14345,80 +14408,53 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           : `${set.prev_weight != null ? set.prev_weight : '—'}×${set.prev_reps != null ? set.prev_reps : '—'}`;
       }
       const prevBadge = set.prev_rpe != null ? prevRpeBadgeHTML(set.prev_rpe) : '';
-      const done = set.done ? 'checked' : '';
-      const doneClass = set.done ? 'bg-success/15' : '';
+      const done = !!set.done;
       const setType = set.type || 'normal';
       // Compute label key — 'amrap' maps to 'setAMRAP' (all-caps), others to 'set' + Capitalized
       const setTypeLabelKey = setType === 'amrap' ? 'setAMRAP' : 'set' + setType.charAt(0).toUpperCase() + setType.slice(1);
-      // Set type badge colors
-      const typeColors = {
-        warmup: 'bg-warning/15 text-warning',
-        normal: '',
-        drop: 'bg-accent/15 text-accent',
-        failure: 'bg-danger/15 text-danger',
-        amrap: 'bg-primary/15 text-primary-2'
-      };
-      const typeBadge = setType !== 'normal' ? `<span class="text-[8px] font-bold px-1 py-0.5 rounded ${typeColors[setType] || ''}">${t('workouts.' + setTypeLabelKey) || setType}</span>` : '';
-      const isCardioSet = isC;
-      const setVol = isCardioSet ? '—' : Math.round((Number(set.weight) || 0) * (Number(set.reps) || 0));
+      // c103: portal badge classes (type-badge + tb-*)
+      const typeCls = { warmup: 'tb-warmup', drop: 'tb-drop', failure: 'tb-failure', amrap: 'tb-amrap' }[setType] || '';
+      const typeBadge = setType !== 'normal' ? `<span class="type-badge ${typeCls}">${t('workouts.' + setTypeLabelKey) || setType}</span>` : '';
+      const setVol = isC ? '—' : Math.round((Number(set.weight) || 0) * (Number(set.reps) || 0));
       const rpeBtns = RPE_COLORS.map((c, i) => {
         const v = i + 1;
         return `<button class="lw-rpe-btn${set.rpe === v ? ' sel' : ''}" data-lw-rpe="${exIdx}.${setIdx}" data-v="${v}" style="background:${c}" title="RPE ${v}">${v}</button>`;
       }).join('');
 
+      /* c103: portal-style cells — framed ✓ check button, sun type-cycler, × remove */
+      const checkBtn = `<button class="set-check w-7 h-7 rounded-lg bg-surface-2 border border-border hover:border-emerald-400 hover:bg-emerald-400/15 text-muted hover:text-emerald-400 grid place-items-center transition" data-toggle-set="${exIdx}.${setIdx}" aria-label="${t('workouts.done')}">✓</button>`;
+      const typeBtn = `<button class="w-6 h-7 grid place-items-center rounded-lg text-muted hover:text-cyan-300 transition" data-set-type="${exIdx}.${setIdx}" title="${t('workouts.setType')}" aria-label="${t('workouts.setType')}">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          </button>`;
+      const removeBtn = setIdx > 0
+        ? `<button class="w-5 h-7 grid place-items-center rounded-lg text-muted hover:text-red-400 transition" data-remove-set="${exIdx}.${setIdx}" aria-label="${t('aria.removeSet')}">×</button>`
+        : `<button class="w-5 h-7 grid place-items-center rounded-lg text-muted" disabled style="opacity:.25" aria-label="${t('aria.removeSet')}">×</button>`;
+      const weightInput = `<input type="number" step="0.5" inputmode="decimal" min="0" value="${set.weight != null ? set.weight : ''}" data-set-input="${exIdx}.${setIdx}.weight" class="set-input" placeholder="0" />`;
+      const repsInput = `<input type="number" step="1" inputmode="numeric" min="0" value="${setType === 'amrap' ? '' : (set.reps != null ? set.reps : '')}" data-set-input="${exIdx}.${setIdx}.reps" class="set-input" placeholder="${setType === 'amrap' ? '∞' : '0'}" />`;
+      const timeInput = `<input type="number" step="${isS ? 1 : 0.5}" inputmode="decimal" min="0" value="${set.time != null ? set.time : ''}" data-set-input="${exIdx}.${setIdx}.time" class="set-input${isS ? ' stretch-time' : ''}" placeholder="0" title="${t('workouts.time')}" />`;
+      const distInput = `<input type="number" step="0.5" inputmode="decimal" min="0" value="${set.dist != null ? set.dist : ''}" data-set-input="${exIdx}.${setIdx}.dist" class="set-input" placeholder="0" />`;
+
       return `
-        <tr class="border-b border-border/50 ${doneClass}" data-set-row="${exIdx}.${setIdx}">
-          <td class="px-2 py-2 text-center font-mono font-bold text-muted">
-            <div class="flex flex-col items-center gap-0.5">
-              <span>${setIdx + 1}</span>
-              ${typeBadge}
-            </div>
-          </td>
-          <td class="px-2 py-2 text-center text-muted text-xs">${escapeHTML(prev)}${prevBadge}</td>
-          ${isCardioSet ? `
-          <td class="px-2 py-1.5">
-            <input type="number" step="0.5" min="0" value="${set.time != null ? set.time : ''}" data-set-input="${exIdx}.${setIdx}.time" class="w-full bg-surface-2 border border-border rounded-md px-1.5 py-1 text-sm text-center focus:outline-none focus:ring-1 focus:ring-primary/60" placeholder="—" />
-          </td>
-          <td class="px-2 py-1.5">
-            <input type="number" step="0.5" min="0" value="${set.dist != null ? set.dist : ''}" data-set-input="${exIdx}.${setIdx}.dist" class="w-full bg-surface-2 border border-border rounded-md px-1.5 py-1 text-sm text-center focus:outline-none focus:ring-1 focus:ring-primary/60" placeholder="—" />
-          </td>
-          ` : isS ? `
-          <td class="px-2 py-1.5">
-            <input type="number" step="1" min="0" value="${set.time != null ? set.time : ''}" data-set-input="${exIdx}.${setIdx}.time" class="w-full bg-surface-2 border border-primary/50 rounded-md px-1.5 py-1 text-sm text-center font-bold focus:outline-none focus:ring-1 focus:ring-primary/60" placeholder="—" title="${t('workouts.time')}" />
-          </td>
-          <td class="px-2 py-1.5">
-            <input type="number" step="0.5" min="0" value="${set.weight || ''}" data-set-input="${exIdx}.${setIdx}.weight" class="w-full bg-surface-2 border border-border rounded-md px-1.5 py-1 text-sm text-center focus:outline-none focus:ring-1 focus:ring-primary/60" placeholder="—" />
-          </td>
-          <td class="px-2 py-1.5">
-            <input type="number" min="0" value="${set.reps || ''}" data-set-input="${exIdx}.${setIdx}.reps" class="w-full bg-surface-2 border border-border rounded-md px-1.5 py-1 text-sm text-center focus:outline-none focus:ring-1 focus:ring-primary/60" placeholder="${setType === 'amrap' ? '∞' : '—'}" />
-          </td>
-          ` : `
-          <td class="px-2 py-1.5">
-            <input type="number" step="0.5" min="0" value="${set.weight || ''}" data-set-input="${exIdx}.${setIdx}.weight" class="w-full bg-surface-2 border border-border rounded-md px-1.5 py-1 text-sm text-center focus:outline-none focus:ring-1 focus:ring-primary/60" placeholder="—" />
-          </td>
-          <td class="px-2 py-1.5">
-            <input type="number" min="0" value="${set.reps || ''}" data-set-input="${exIdx}.${setIdx}.reps" class="w-full bg-surface-2 border border-border rounded-md px-1.5 py-1 text-sm text-center focus:outline-none focus:ring-1 focus:ring-primary/60" placeholder="${setType === 'amrap' ? '∞' : '—'}" />
-          </td>
-          `}
-          <td class="px-2 py-2 text-center">
-            <input type="checkbox" ${done} data-set-done="${exIdx}.${setIdx}" class="w-5 h-5 accent-success cursor-pointer" />
-          </td>
-          <td class="px-1 py-2 text-center">
-            <button data-set-type="${exIdx}.${setIdx}" class="text-muted hover:text-primary-2 transition w-6 h-6 grid place-items-center" aria-label="${t('workouts.setType')}" title="${t('workouts.setType')}">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m7.07 7.07l4.24 4.24M1 12h6m6 0h6M4.22 19.78l4.24-4.24m7.07-7.07l4.24-4.24"/></svg>
-            </button>
-          </td>
-          <td class="px-1 py-2 text-center">
-            ${setIdx > 0 ? `<button data-remove-set="${exIdx}.${setIdx}" class="text-muted hover:text-danger transition w-6 h-6 grid place-items-center" aria-label="${t('aria.removeSet')}">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-            </button>` : ''}
-          </td>
-        </tr>
-        <tr class="border-b border-border/50" data-rpe-strip="${exIdx}.${setIdx}">
-          <td colspan="${isS ? 8 : 7}" class="px-2 pt-0.5 pb-2">
-            <div class="lw-rpe-row">${rpeBtns}<span class="lw-rpe-vol">${setVol}</span></div>
-          </td>
-        </tr>
+        <div class="set-row set-grid ${isS ? 'set-grid-stretch' : ''} bg-surface-2/60 px-2 py-1.5 rounded-xl ${done ? 'set-row-done' : ''}" data-set-row="${exIdx}.${setIdx}">
+          <div class="text-center leading-tight">
+            <div class="font-mono text-[11px] font-bold text-muted">${setIdx + 1}</div>
+            ${typeBadge}
+          </div>
+          <div class="font-mono text-[10px] text-muted text-center truncate" data-prev-cell>${escapeHTML(prev)}${prevBadge}</div>
+          ${isC ? `${timeInput}
+          <span class="text-[9px] text-muted text-center">/</span>
+          ${distInput}`
+          : isS ? `${timeInput}
+          ${weightInput}
+          ${repsInput}`
+          : `${weightInput}
+          <span class="text-[9px] text-muted text-center">×</span>
+          ${repsInput}`}
+          ${checkBtn}
+          ${typeBtn}
+          ${removeBtn}
+        </div>
+        <div class="lw-rpe-row" data-rpe-strip="${exIdx}.${setIdx}">${rpeBtns}<span class="lw-rpe-vol">${setVol}</span></div>
       `;
     }
 
@@ -14456,15 +14492,20 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         });
       });
 
-      // Set done checkbox → trigger rest timer + auto-scroll
-      document.querySelectorAll('[data-set-done]').forEach(cb => {
-        cb.addEventListener('change', (e) => {
-          const [exIdx, setIdx] = e.target.getAttribute('data-set-done').split('.');
+      // c103: Set done toggle (portal-style ✓ button, replaces the old checkbox)
+      // → trigger rest timer + chain prev values + auto-scroll
+      document.querySelectorAll('[data-toggle-set]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const [exIdx, setIdx] = btn.getAttribute('data-toggle-set').split('.');
           if (_workout && _workout.exercises[exIdx] && _workout.exercises[exIdx].sets[setIdx]) {
-            _workout.exercises[exIdx].sets[setIdx].done = e.target.checked;
+            const set = _workout.exercises[exIdx].sets[setIdx];
+            set.done = !set.done;
             const ex = _workout.exercises[exIdx];
             const si = parseInt(setIdx);
-            if (e.target.checked) {
+            const row = btn.closest('.set-row');
+            if (row) row.classList.toggle('set-row-done', set.done);
+            updateMiniProgress(parseInt(exIdx, 10));
+            if (set.done) {
               // Auto-fill previous values for next set if exists
               if (si + 1 < ex.sets.length) {
                 const curr = ex.sets[si];
@@ -14481,7 +14522,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
                 }
                 const nextRow = document.querySelector(`[data-set-row="${exIdx}.${si + 1}"]`);
                 if (nextRow) {
-                  const prevCell = nextRow.querySelector('td:nth-child(2)');
+                  const prevCell = nextRow.querySelector('[data-prev-cell]');
                   if (prevCell) {
                     const txt = cEx
                       ? `${curr.time != null ? curr.time : '—'}×${curr.dist != null ? curr.dist : '—'}`
@@ -14492,20 +14533,21 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
                   }
                 }
               }
-              // Highlight the row
-              const row = e.target.closest('tr');
-              if (row) row.classList.add('bg-success/15');
               // Start rest timer — use per-exercise rest if set, else 90
               const restSec = ex.rest_sec != null ? ex.rest_sec : 90;
               restTimer.start(restSec);
               // Update stats
               updateStats();
               updateProgressBar();
+              saveDraft();
               // Auto-scroll: if this was the LAST set of this exercise, scroll to next exercise
               if (si + 1 >= ex.sets.length) {
                 // Check if all sets are done
                 const allDone = ex.sets.every(s => s.done);
                 if (allDone) {
+                  // Flash the finished card (portal parity)
+                  const card = btn.closest('[data-exercise-idx]');
+                  if (card) card.classList.add('ex-flash');
                   // Find next exercise block and scroll to it
                   const nextIdx = parseInt(exIdx) + 1;
                   const nextBlock = document.querySelector(`[data-exercise-idx="${nextIdx}"]`);
@@ -14522,14 +14564,25 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
                 }
               }
             } else {
-              const row = e.target.closest('tr');
-              if (row) row.classList.remove('bg-success/15');
               updateStats();
               updateProgressBar();
+              saveDraft();
             }
           }
         });
       });
+
+      // c103: per-exercise mini progress (portal parity)
+      function updateMiniProgress(idx) {
+        if (!_workout || !_workout.exercises[idx]) return;
+        const sets = _workout.exercises[idx].sets || [];
+        const tot = sets.length;
+        const dn = sets.filter(s => s.done).length;
+        const bar = document.querySelector(`[data-mini-bar="${idx}"] > div`);
+        if (bar) bar.style.width = (tot ? Math.round(dn / tot * 100) : 0) + '%';
+        const cnt = document.querySelector(`[data-mini-count="${idx}"]`);
+        if (cnt) cnt.textContent = dn + '/' + tot;
+      }
 
       // Set type button → cycle through types (normal → warmup → drop → failure → amrap → normal)
       document.querySelectorAll('[data-set-type]').forEach(btn => {
@@ -14559,7 +14612,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         input.addEventListener('click', (e) => { e.stopPropagation(); });
       });
 
-      // Add set button
+      // Add set button — c103: portal parity (the new set carries the last set's
+      // values as its «prev» reference immediately, exactly like the portal)
       document.querySelectorAll('[data-add-set]').forEach(btn => {
         btn.addEventListener('click', () => {
           const exIdx = parseInt(btn.getAttribute('data-add-set'), 10);
@@ -14573,7 +14627,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               dist: lastSet && lastSet.dist != null ? lastSet.dist : null,
               rpe: null,
               type: lastSet ? lastSet.type : 'normal',
-              done: false
+              done: false,
+              prev_weight: lastSet ? lastSet.weight : null,
+              prev_reps: lastSet ? lastSet.reps : null,
+              prev_time: lastSet && lastSet.time != null ? lastSet.time : null,
+              prev_dist: lastSet && lastSet.dist != null ? lastSet.dist : null,
+              prev_rpe: null
             });
             render();
           }
@@ -14625,6 +14684,55 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           if (exId && typeof openExerciseModal === 'function') {
             openExerciseModal(exId);
           }
+        });
+      });
+
+      // c103: «Заменить упражнение» — open the body-map picker; the picked
+      // exercise REPLACES this one in place (same slot). Trainer-only: the
+      // portal has no such button. Single pick → picker closes automatically.
+      document.querySelectorAll('[data-replace-exercise]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const idx = parseInt(btn.getAttribute('data-replace-exercise'), 10);
+          const oldEx = _workout && _workout.exercises[idx];
+          if (!oldEx) return;
+          bodyMapPicker.open((pickedEx) => {
+            const lang2 = currentLang();
+            oldEx.exercise_id = pickedEx.id;
+            oldEx.name = pickedEx['name_' + lang2] || pickedEx.name_en || oldEx.name;
+            oldEx.group = pickedEx['group_' + lang2] || pickedEx.group_en || '';
+            oldEx.cardio = pickedEx.category === 'cardio';
+            oldEx.unit = dkWUnitGet();
+            /* The old set values belonged to ANOTHER exercise — keep the set
+               count but reset the content; prev is refilled from the client's
+               own history of the NEW exercise by ensureLastRef(). */
+            const n = Math.max(1, (oldEx.sets || []).length);
+            oldEx.sets = Array.from({ length: n }, () => ({
+              weight: null, reps: null, time: null, dist: null,
+              rpe: null, type: 'normal', done: false,
+              prev_weight: null, prev_reps: null, prev_rpe: null,
+              prev_time: null, prev_dist: null
+            }));
+            render();
+            ensureLastRef(); /* c103: prefill prev from the last workout of the NEW exercise */
+            toast(t('programs.exerciseReplaced') || 'Exercise replaced', 'success', 2000);
+            try { bodyMapPicker.close(); } catch (_e) {}
+          }, _exerciseCache);
+        });
+      });
+
+      // c103: «Техника» toggle — expand/collapse inline WITHOUT opening the card (portal parity)
+      document.querySelectorAll('[data-tech-toggle]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const idx = btn.getAttribute('data-tech-toggle');
+          const body = document.querySelector(`[data-tech-body="${idx}"]`);
+          const chev = document.querySelector(`[data-tech-chevron="${idx}"]`);
+          if (!body) return;
+          const willShow = body.classList.contains('hidden');
+          body.classList.toggle('hidden');
+          btn.setAttribute('aria-expanded', willShow ? 'true' : 'false');
+          if (chev) chev.style.transform = willShow ? 'rotate(90deg)' : '';
         });
       });
     }
@@ -28563,7 +28671,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 102; /* numeric part of dk-build c102 */
+  var RUNNING = 103; /* numeric part of dk-build c103 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
