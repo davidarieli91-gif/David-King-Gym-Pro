@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c103" />
+<meta name="dk-build" content="c104" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -928,6 +928,14 @@
       border-color: rgb(var(--c-primary)) !important;
       box-shadow: 0 3px 0 0 rgb(var(--c-primary)), 0 0 0 1px rgb(var(--c-primary));
     }
+    /* c104: superset pair highlight — amber frame so the linked exercises stand out */
+    .dk-superset-hl {
+      border-color: rgb(var(--c-accent)) !important;
+      background: rgb(var(--c-accent) / .07) !important;
+      box-shadow: 0 0 0 1px rgb(var(--c-accent) / .45), 0 0 14px rgb(var(--c-accent) / .12) inset;
+    }
+    /* c104: day letter becomes a drop target while dragging an exercise across days */
+    .pb-tab-drop { outline: 2px dashed rgb(var(--c-accent)); outline-offset: 1px; color: rgb(var(--c-accent)) !important; }
     .pb-grip:hover svg { transform: scale(1.1); }
     .pb-grip svg { transition: transform .12s; }
     /* Recovery map: muscle fill override + rec-muscle bars */
@@ -2677,7 +2685,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c103</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c104</p>
             </div>
           </div>
 
@@ -9689,6 +9697,9 @@ button[id$="-close"]:active, button[data-cps-close]:active {
             name: ex.name,
             group: ex.group,
             cardio: ex.cardio === true,
+            unit: ex.unit === 'lb' || ex.unit === 'kg' ? ex.unit : null, /* c104 */
+            tunit: ex.tunit === 'min' || ex.tunit === 'sec' ? ex.tunit : null, /* c104 */
+            is_superset: ex.is_superset === true, /* c104 */
             rest_sec: ex.rest_sec != null ? ex.rest_sec : 90,
             sets: (ex.sets || []).map(s => ({
               weight: s.weight || null,
@@ -9820,6 +9831,8 @@ button[id$="-close"]:active, button[data-cps-close]:active {
             group: ex.group,
             cardio: ex.cardio === true,
             is_superset: ex.is_superset || false,
+            unit: ex.unit === 'lb' || ex.unit === 'kg' ? ex.unit : null, /* c104: per-exercise weight unit travels with the template */
+            tunit: ex.tunit === 'min' || ex.tunit === 'sec' ? ex.tunit : null, /* c104 */
             rest_sec: ex.rest_sec != null ? ex.rest_sec : 90,
             sets: (ex.sets || []).map(s => ({ weight: s.weight, reps: s.reps, rpe: s.rpe, type: s.type || 'normal', time: s.time != null ? s.time : null, dist: s.dist != null ? s.dist : null }))
           }))
@@ -10408,6 +10421,23 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       }
     }
 
+    /* ==== c104: per-exercise units in the builder — weight kg/lb + time min/sec ==== */
+    function pbExBaseRec(ex) {
+      try {
+        if (!_pb._exMap || _pb._exMapSize !== _pb.exerciseCache.length) {
+          _pb._exMap = buildExerciseIndex(_pb.exerciseCache);
+          _pb._exMapSize = _pb.exerciseCache.length;
+        }
+        return ex.exercise_id ? _pb._exMap.get(ex.exercise_id) : null;
+      } catch (_e) { return null; }
+    }
+    function pbWUnitOf(ex) { return ex.unit === 'lb' ? 'lb' : (ex.unit === 'kg' ? 'kg' : dkWUnitGet()); }
+    function pbTUnitOf(ex) { return (ex.tunit === 'min' || ex.tunit === 'sec') ? ex.tunit : (dkTUnitGet() === 'sec' ? 'sec' : 'min'); }
+    function pbTUnitShortOf(ex) {
+      const u = pbTUnitOf(ex);
+      return t('wunit.' + (u === 'sec' ? 'secShort' : 'minShort')) || (u === 'sec' ? 'сек' : 'мин');
+    }
+
     function renderBuilder() {
       window.__refreshBuilder = function () { renderBuilder(); }; /* c63: live lang refresh */
       const freqHint = document.getElementById('pb-freq-hint');
@@ -10433,6 +10463,27 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const tabAdd = document.getElementById('pb-tab-add');
       if (tabAdd) tabAdd.addEventListener('click', () => pbOpenExercisePicker());
 
+      /* c104: day letters A–E are drop targets — drag an exercise onto a letter
+         to move it to that day (it lands at the end of the target day) */
+      tabsEl.querySelectorAll('[data-day]').forEach(btn => {
+        btn.addEventListener('dragover', (e) => {
+          if (_pb._dragFrom == null) return;
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          btn.classList.add('pb-tab-drop');
+        });
+        btn.addEventListener('dragleave', () => btn.classList.remove('pb-tab-drop'));
+        btn.addEventListener('drop', (e) => {
+          e.preventDefault();
+          btn.classList.remove('pb-tab-drop');
+          if (_pb._dragFrom == null) return;
+          const from = _pb._dragFrom;
+          _pb._dragFrom = null;
+          const toDay = parseInt(btn.getAttribute('data-day'), 10);
+          if (!isNaN(toDay)) pbMoveExerciseToDay(from.exIdx, toDay);
+        });
+      });
+
       // Day content
       const contentEl = document.getElementById('pb-day-content');
       const day = _pb.days[_pb.activeDay];
@@ -10446,20 +10497,22 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           <p class="text-sm text-muted">${t('programs.dayEmptyHint', { day: day.day_letter })}</p>
         </div>`;
       } else {
-        contentEl.innerHTML = day.exercises.map((ex, ei) => {
+        /* c104: bulk rest — one value for EVERY exercise of the program */
+        const firstRestB = (day.exercises[0] && day.exercises[0].rest_sec != null) ? day.exercises[0].rest_sec : 90;
+        const bulkRestB = `<div class="flex items-center gap-2 mb-3 bg-surface rounded-xl border border-border px-3 py-2">
+          <span class="text-xs font-semibold text-muted flex-1 min-w-0 truncate">${t('programs.restForAll') || 'Rest for all exercises'}</span>
+          <input type="number" min="0" max="600" step="15" value="${firstRestB}" data-pb-rest-all class="w-16 bg-surface-2 border border-border rounded-lg px-2 py-1 text-xs text-center font-bold focus:outline-none focus:ring-1 focus:ring-primary/60" />
+          <span class="text-[10px] text-muted shrink-0">${(typeof currentLang === 'function' && currentLang() === 'en') ? 's' : (currentLang() === 'he' ? 'ש׳' : 'с')}</span>
+          <button data-pb-rest-all-apply class="text-[11px] font-bold px-3 py-1.5 rounded-lg bg-primary/15 text-primary-2 border border-primary/30 hover:bg-primary/25 transition shrink-0">${t('wunit.applyAll') || 'Apply to all'}</button>
+        </div>`;
+        contentEl.innerHTML = bulkRestB + day.exercises.map((ex, ei) => {
           const sets = ex.sets || [];
           /* c102: stretching sets are TIME-first — a dedicated time input sits
              before the weight/reps cells (hold duration is the primary metric) */
-          const isStretchEx = (() => {
-            try {
-              if (!_pb._exMap || _pb._exMapSize !== _pb.exerciseCache.length) {
-                _pb._exMap = buildExerciseIndex(_pb.exerciseCache);
-                _pb._exMapSize = _pb.exerciseCache.length;
-              }
-              const base = ex.exercise_id ? _pb._exMap.get(ex.exercise_id) : null;
-              return !!(base && (base.category === 'stretching' || base.group_canonical === 'stretching'));
-            } catch (_e) { return false; }
-          })();
+          const exBase = pbExBaseRec(ex);
+          const isStretchEx = !!(exBase && (exBase.category === 'stretching' || exBase.group_canonical === 'stretching'));
+          /* c104: cardio machines get time/distance cells in the builder too */
+          const isCardioB = ex.cardio === true || !!(exBase && exBase.category === 'cardio');
           // Set type colors (matches live workout's palette for consistency)
           const setTypeColors = {
             warmup: 'bg-warning/15 text-warning border-warning/30',
@@ -10474,6 +10527,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             const key = type === 'amrap' ? 'setAMRAP' : 'set' + type.charAt(0).toUpperCase() + type.slice(1);
             return t('workouts.' + key) || type;
           }
+          const wShortB = (typeof dkWUnitShort === 'function') ? dkWUnitShort(pbWUnitOf(ex)) : '';
+          const tShortB = pbTUnitShortOf(ex);
           let setsHtml = '';
           sets.forEach((s, si) => {
             const setType = s.type || 'normal';
@@ -10484,10 +10539,13 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             setsHtml += `<div class="flex items-center gap-2 bg-surface rounded-lg p-1.5 ${setRowBg}">
               <span class="text-[10px] font-mono font-bold text-muted w-5 shrink-0">${si + 1}</span>
               ${typeBadge}
-              ${isStretchEx ? `<input type="number" step="1" min="0" placeholder="${t('workouts.time')}" value="${s.time != null ? s.time : ''}" data-pb-set="${ei}.${si}.time" title="${t('workouts.time')}" class="w-14 bg-surface-2 border border-primary/50 rounded px-1.5 py-1 text-xs text-center font-bold focus:outline-none focus:ring-1 focus:ring-primary/60" />
-              ` : ''}<input type="number" step="0.5" placeholder="${t('workouts.kg')}" value="${s.weight || ''}" data-pb-set="${ei}.${si}.weight" class="w-16 bg-surface-2 border border-border rounded px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-1 focus:ring-primary/60" />
+              ${isStretchEx ? `<input type="number" step="1" min="0" placeholder="${t('workouts.time')}" value="${s.time != null ? s.time : ''}" data-pb-set="${ei}.${si}.time" title="${t('workouts.time')} · ${tShortB}" class="w-14 bg-surface-2 border border-primary/50 rounded px-1.5 py-1 text-xs text-center font-bold focus:outline-none focus:ring-1 focus:ring-primary/60" />
+              ` : ''}${isCardioB ? `<input type="number" step="0.5" min="0" placeholder="${t('workouts.time')}" value="${s.time != null ? s.time : ''}" data-pb-set="${ei}.${si}.time" title="${t('workouts.time')} · ${tShortB}" class="w-14 bg-surface-2 border border-primary/50 rounded px-1.5 py-1 text-xs text-center font-bold focus:outline-none focus:ring-1 focus:ring-primary/60" />
+              <span class="text-[10px] text-muted">/</span>
+              <input type="number" step="0.5" min="0" placeholder="${t('workouts.dist')}" value="${s.dist != null ? s.dist : ''}" data-pb-set="${ei}.${si}.dist" title="${t('workouts.dist')}" class="w-14 bg-surface-2 border border-border rounded px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-1 focus:ring-primary/60" />
+              ` : `<input type="number" step="0.5" placeholder="${t('workouts.kg')}" title="${t('workouts.weight')} · ${wShortB}" value="${s.weight || ''}" data-pb-set="${ei}.${si}.weight" class="w-16 bg-surface-2 border border-border rounded px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-1 focus:ring-primary/60" />
               <span class="text-[10px] text-muted">×</span>
-              <input type="text" inputmode="numeric" pattern="[0-9\\-\\s]*" placeholder="${t('workouts.reps')}" value="${s.reps != null ? s.reps : ''}" data-pb-set="${ei}.${si}.reps" class="w-14 bg-surface-2 border border-border rounded px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-1 focus:ring-primary/60" />
+              <input type="text" inputmode="numeric" pattern="[0-9\\-\\s]*" placeholder="${t('workouts.reps')}" value="${s.reps != null ? s.reps : ''}" data-pb-set="${ei}.${si}.reps" class="w-14 bg-surface-2 border border-border rounded px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-1 focus:ring-primary/60" />`}
               <input type="text" inputmode="numeric" pattern="[0-9\\-]*" placeholder="${t('workouts.effortScale')}" value="${s.rpe != null ? s.rpe : ''}" data-pb-set="${ei}.${si}.rpe" class="w-12 bg-surface-2 border border-border rounded px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-1 focus:ring-primary/60 hidden sm:block" />
               <button data-pb-set-type="${ei}.${si}" class="text-muted hover:text-primary-2 transition w-5 h-5 grid place-items-center shrink-0" title="${t('workouts.setType') || 'Set type'}" aria-label="${t('workouts.setType') || 'Set type'}">
                 <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m7.07 7.07l4.24 4.24M1 12h6m6 0h6M4.22 19.78l4.24-4.24m7.07-7.07l4.24-4.24"/></svg>
@@ -10497,7 +10555,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               </button>
             </div>`;
           });
-          return `<div class="bg-surface-2 border border-border rounded-xl p-3 pb-draggable" data-pb-ex-index="${ei}">
+          return `<div class="bg-surface-2 border border-border rounded-xl p-3 pb-draggable ${ex.is_superset ? 'dk-superset-hl' : ''}" data-pb-ex-index="${ei}">
             <div class="flex items-center gap-2 mb-2 pb-drag-handle" draggable="true" data-pb-drag-handle="${ei}">
               <div class="pb-grip text-muted/60 hover:text-muted transition cursor-grab active:cursor-grabbing shrink-0" title="${t('programs.dragToReorder') || 'Drag to reorder'}">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>
@@ -10524,6 +10582,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
                 <div class="text-sm font-medium truncate hover:text-primary-2 transition">${escapeHTML(getLocalizedExName(ex))}</div>
                 ${ex.group ? `<div class="text-[10px] text-muted truncate">${escapeHTML(getLocalizedExGroup(ex))}</div>` : ''}
               </div>
+              ${isCardioB ? '' : `<button data-pb-wunit="${ei}" class="text-[10px] font-bold text-muted hover:text-primary-2 bg-surface border border-border rounded-lg px-1.5 py-1 transition shrink-0" title="${t('wunit.exTitle') || 'Weight unit of this exercise'}">${wShortB}</button>`}
+              ${(isCardioB || isStretchEx) ? `<button data-pb-tunit="${ei}" class="text-[10px] font-bold text-muted hover:text-primary-2 bg-surface border border-primary/40 rounded-lg px-1.5 py-1 transition shrink-0" title="${t('wunit.time') || 'Time unit'}">${tShortB}</button>` : ''}
+              <select data-pb-move-day="${ei}" title="${t('programs.moveToDay') || 'Move to day'}" aria-label="${t('programs.moveToDay') || 'Move to day'}" class="bg-surface-2 border border-border rounded-lg text-[10px] text-muted px-1 py-1 focus:outline-none shrink-0">
+                <option value="" selected>⇄</option>
+                ${_pb.days.map((d2, di2) => (di2 === _pb.activeDay || d2.is_rest_day) ? '' : `<option value="${di2}">→ ${d2.day_letter}</option>`).join('')}
+              </select>
               <label class="flex items-center gap-1 text-xs text-muted shrink-0" title="${t('workouts.perExerciseRest') || 'Rest after each set'}"><span class="text-[10px] hidden sm:inline">${t('workouts.rest') || 'Rest'}</span><input type="number" min="0" max="600" step="15" value="${ex.rest_sec != null ? ex.rest_sec : 90}" data-pb-rest="${ei}" class="w-12 bg-surface-2 border border-border rounded px-1 py-0.5 text-xs text-center focus:outline-none focus:ring-1 focus:ring-primary/60"><span class="text-[10px]">${(typeof currentLang === 'function' && currentLang() === 'en') ? 's' : (currentLang() === 'he' ? 'ש׳' : 'с')}</span></label>
               <button data-pb-superset="${ei}" class="text-xs font-semibold text-accent hover:bg-accent/10 rounded-lg px-2 py-1 transition shrink-0" title="${t('programs.toggleSuperset') || 'Toggle superset (⚡)'}">⚡</button>
               <button data-pb-add-set="${ei}" class="text-xs font-semibold text-primary-2 hover:bg-primary/10 rounded-lg px-2 py-1 transition shrink-0">${t('workouts.addSet')}</button>
@@ -10554,7 +10618,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             if (ex && ex.sets[parseInt(si, 10)]) {
               if (val === '') {
                 ex.sets[parseInt(si, 10)][field] = null;
-              } else if (field === 'weight' || field === 'time') {
+              } else if (field === 'weight' || field === 'time' || field === 'dist') {
                 ex.sets[parseInt(si, 10)][field] = parseFloat(val);
               } else {
                 // reps and rpe are now text fields — allow ranges like "8-12", "AMRAP", "7-8"
@@ -10669,6 +10733,54 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           });
         });
 
+        /* c104: per-exercise weight unit chip (kg⇄lb — converts the set values) */
+        contentEl.querySelectorAll('[data-pb-wunit]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const ei = parseInt(btn.getAttribute('data-pb-wunit'), 10);
+            const ex = day.exercises[ei];
+            if (!ex) return;
+            const cur = pbWUnitOf(ex);
+            const nu = cur === 'kg' ? 'lb' : 'kg';
+            (ex.sets || []).forEach(s => { if (s.weight != null) s.weight = dkWConv(s.weight, cur, nu); });
+            ex.unit = nu;
+            renderBuilder();
+          });
+        });
+        /* c104: per-exercise time unit chip (min⇄sec — converts the hold times) */
+        contentEl.querySelectorAll('[data-pb-tunit]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const ei = parseInt(btn.getAttribute('data-pb-tunit'), 10);
+            const ex = day.exercises[ei];
+            if (!ex) return;
+            const cur = pbTUnitOf(ex);
+            const nu = cur === 'min' ? 'sec' : 'min';
+            const conv = v => nu === 'sec' ? Math.round(v * 60 * 10) / 10 : Math.round(v / 60 * 10) / 10;
+            (ex.sets || []).forEach(s => { if (s.time != null) s.time = conv(s.time); });
+            ex.tunit = nu;
+            renderBuilder();
+          });
+        });
+        /* c104: ⇄ move this exercise to another day (A–E) */
+        contentEl.querySelectorAll('[data-pb-move-day]').forEach(sel => {
+          sel.addEventListener('change', () => {
+            const to = parseInt(sel.value, 10);
+            const ei = parseInt(sel.getAttribute('data-pb-move-day'), 10);
+            sel.value = '';
+            if (!isNaN(to)) pbMoveExerciseToDay(ei, to);
+          });
+        });
+        /* c104: bulk rest — apply one value to every exercise of the program */
+        contentEl.querySelectorAll('[data-pb-rest-all-apply]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const inp = contentEl.querySelector('[data-pb-rest-all]');
+            const v = parseInt(inp && inp.value, 10);
+            if (isNaN(v) || v < 0 || v > 600) { toast(t('programs.restForAll'), 'warning', 2000); return; }
+            _pb.days.forEach(d => (d.exercises || []).forEach(ex => { ex.rest_sec = v; }));
+            renderBuilder();
+            toast(t('programs.restAppliedAll'), 'success', 2000);
+          });
+        });
+
         // === Drag-and-drop reordering (Tier 2 #3) ===
         // Only one exercise can be dragged at a time. On drop, the exercise moves
         // to the target index; the rest shift accordingly.
@@ -10676,6 +10788,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         contentEl.querySelectorAll('[data-pb-drag-handle]').forEach(handle => {
           handle.addEventListener('dragstart', (e) => {
             dragFromIdx = parseInt(handle.getAttribute('data-pb-drag-handle'), 10);
+            _pb._dragFrom = { dayIdx: _pb.activeDay, exIdx: dragFromIdx }; /* c104: cross-day drop on day letters */
             e.dataTransfer.effectAllowed = 'move';
             e.dataTransfer.setData('text/plain', String(dragFromIdx));
             // Visually mark the dragged card
@@ -10692,6 +10805,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               c.classList.remove('pb-dragging', 'pb-drag-over-top', 'pb-drag-over-bottom');
             });
             dragFromIdx = null;
+            _pb._dragFrom = null;
           });
         });
         // Drop targets: each exercise card
@@ -11156,6 +11270,29 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       return true;
     }
 
+    /* c104: move an exercise ACROSS days (A–E) — drop it on a day letter or use
+       the ⇄ selector on the card. It lands at the END of the target day; stale
+       superset links in the source day are cleared (the partner stays behind). */
+    function pbMoveExerciseToDay(exIdx, toDayIdx) {
+      const srcDay = _pb.days[_pb.activeDay];
+      const dstDay = _pb.days[toDayIdx];
+      if (!srcDay || !dstDay || toDayIdx === _pb.activeDay || dstDay.is_rest_day) return false;
+      const ex = srcDay.exercises && srcDay.exercises[exIdx];
+      if (!ex) return false;
+      srcDay.exercises.forEach(o => {
+        if (o !== ex && (o.is_superset || o.superset_partner !== undefined)) { o.is_superset = false; delete o.superset_partner; }
+      });
+      srcDay.exercises.splice(exIdx, 1);
+      ex.is_superset = false;
+      delete ex.superset_partner;
+      if (!dstDay.exercises) dstDay.exercises = [];
+      dstDay.exercises.push(ex);
+      _pb.activeDay = toDayIdx;
+      renderBuilder();
+      toast(t('programs.movedToDay', { day: dstDay.day_letter }) || ('→ ' + dstDay.day_letter), 'success', 2000);
+      return true;
+    }
+
     async function pbSave() {
       const name = document.getElementById('pb-name').value.trim();
       if (!name) { toast(t('programs.nameRequired'), 'warning'); return; }
@@ -11218,6 +11355,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             group: ex.group,
             cardio: ex.cardio === true,
             is_superset: ex.is_superset || false,
+            unit: ex.unit === 'lb' || ex.unit === 'kg' ? ex.unit : null, /* c104: per-exercise weight unit survives the edit round-trip */
+            tunit: ex.tunit === 'min' || ex.tunit === 'sec' ? ex.tunit : null, /* c104: per-exercise time unit survives too */
             rest_sec: ex.rest_sec != null ? ex.rest_sec : 90,
             sets: (ex.sets || []).map(s => ({ weight: s.weight, reps: s.reps, rpe: s.rpe, type: s.type || 'normal', time: s.time != null ? s.time : null, dist: s.dist != null ? s.dist : null }))
           }))
@@ -14026,7 +14165,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           name: ex.name,
           group: ex.group,
           cardio: ex.cardio === true,
-          unit: dkWUnitGet(),
+          unit: ex.unit === 'lb' || ex.unit === 'kg' ? ex.unit : dkWUnitGet(), /* c104: the prescribed unit wins over the default */
+          tunit: ex.tunit === 'min' || ex.tunit === 'sec' ? ex.tunit : null, /* c104 */
+          is_superset: ex.is_superset === true, /* c104 */
           sets: (ex.sets || []).map(s => ({
             weight: s.weight || null,
             reps: s.reps || null,
@@ -14297,14 +14438,21 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           ${t('programs.replaceExercise') || 'Replace exercise'}
         </button>`;
 
+      /* c104: per-exercise time unit — a prescribed min/sec (from the program)
+         overrides the global cardio unit; the column button cycles THIS exercise */
+      const perT = ex.tunit === 'min' || ex.tunit === 'sec';
+      const tColBtn = perT
+        ? `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-primary/40 bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-tunit-col-ex="${idx}" title="${t('wunit.time') || 'Time unit'}">${t('workouts.time')} · ${exTUnitShort(idx)}</button>`
+        : `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-tunit-col data-tunit-base="${t('workouts.time')}">${t('workouts.time')} · ${dkTUnitShort()}</button>`;
+
       return `
-        <div class="glass rounded-2xl p-4 space-y-3 fade-in" data-exercise-idx="${idx}">
+        <div class="glass rounded-2xl p-4 space-y-3 fade-in ${ex.is_superset ? 'dk-superset-hl' : ''}" data-exercise-idx="${idx}">
           <!-- Exercise header (portal layout) -->
           <div class="flex items-start justify-between gap-2">
             ${thumbHtml}
             <div class="flex-1 min-w-0">
               <div class="flex items-start gap-2">
-                <h4 class="font-display font-bold text-sm leading-snug flex-1 min-w-0 cursor-pointer hover:text-[rgb(var(--c-primary-2))] transition truncate" data-view-exercise="${escapeAttr(ex.exercise_id || '')}">${escapeHTML(name)}</h4>
+                <h4 class="font-display font-bold text-sm leading-snug flex-1 min-w-0 cursor-pointer hover:text-[rgb(var(--c-primary-2))] transition truncate" data-view-exercise="${escapeAttr(ex.exercise_id || '')}">${ex.is_superset ? '<span class="text-accent font-bold shrink-0" title="Superset">⚡ </span>' : ''}${escapeHTML(name)}</h4>
                 <div class="flex items-center gap-1 shrink-0">
                   ${ex.exercise_id ? `<button class="w-7 h-7 grid place-items-center rounded-lg bg-surface-2 border border-border text-muted hover:text-[rgb(var(--c-primary-2))] hover:border-[rgb(var(--c-primary)/0.5)] transition" data-view-exercise-btn="${escapeAttr(ex.exercise_id)}" title="${t('aria.view')}" aria-label="${t('aria.view')}">
                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -14329,8 +14477,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           <!-- Set grid header (portal parity — unit columns are real buttons) -->
           <div class="set-grid ${exIsStretch(ex) ? 'set-grid-stretch' : ''} px-2 text-[8px] uppercase tracking-wide text-muted font-bold">
             <span>#</span><span class="text-center">${t('workouts.prevWeight')}</span>
-            ${exIsCardio(ex) ? `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-tunit-col data-tunit-base="${t('workouts.time')}">${t('workouts.time')} · ${dkTUnitShort()}</button><span></span><button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-dunit-col data-dunit-base="${t('workouts.dist')}">${t('workouts.dist')} · ${dkDUnitShort()}</button>`
-            : exIsStretch(ex) ? `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-primary/40 bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-tunit-col data-tunit-base="${t('workouts.time')}">${t('workouts.time')} · ${dkTUnitShort()}</button><button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-wunit-col-ex="${idx}" data-wunit-base="${t('workouts.weight')}" title="${t('wunit.title') || 'Weight unit'}">${t('workouts.weight')} · ${dkWUnitShort(exUnit)}</button><span class="text-center">${t('workouts.reps')}</span>`
+            ${exIsCardio(ex) ? `${tColBtn}<span></span><button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-dunit-col data-dunit-base="${t('workouts.dist')}">${t('workouts.dist')} · ${dkDUnitShort()}</button>`
+            : exIsStretch(ex) ? `${tColBtn}<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-wunit-col-ex="${idx}" data-wunit-base="${t('workouts.weight')}" title="${t('wunit.title') || 'Weight unit'}">${t('workouts.weight')} · ${dkWUnitShort(exUnit)}</button><span class="text-center">${t('workouts.reps')}</span>`
             : `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-wunit-col-ex="${idx}" data-wunit-base="${t('workouts.weight')}" title="${t('wunit.title') || 'Weight unit'}">${t('workouts.weight')} · ${dkWUnitShort(exUnit)}</button><span></span><span class="text-center">${t('workouts.reps')}</span>`}
             <span class="text-center">✓</span><span></span><span></span>
           </div>
@@ -14431,7 +14579,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         : `<button class="w-5 h-7 grid place-items-center rounded-lg text-muted" disabled style="opacity:.25" aria-label="${t('aria.removeSet')}">×</button>`;
       const weightInput = `<input type="number" step="0.5" inputmode="decimal" min="0" value="${set.weight != null ? set.weight : ''}" data-set-input="${exIdx}.${setIdx}.weight" class="set-input" placeholder="0" />`;
       const repsInput = `<input type="number" step="1" inputmode="numeric" min="0" value="${setType === 'amrap' ? '' : (set.reps != null ? set.reps : '')}" data-set-input="${exIdx}.${setIdx}.reps" class="set-input" placeholder="${setType === 'amrap' ? '∞' : '0'}" />`;
-      const timeInput = `<input type="number" step="${isS ? 1 : 0.5}" inputmode="decimal" min="0" value="${set.time != null ? set.time : ''}" data-set-input="${exIdx}.${setIdx}.time" class="set-input${isS ? ' stretch-time' : ''}" placeholder="0" title="${t('workouts.time')}" />`;
+      const timeInput = `<input type="number" step="${isS ? 1 : 0.5}" inputmode="decimal" min="0" value="${set.time != null ? set.time : ''}" data-set-input="${exIdx}.${setIdx}.time" class="set-input${isS ? ' stretch-time' : ''}" placeholder="0" title="${t('workouts.time')} · ${exTUnitShort(exIdx)}" />`;
       const distInput = `<input type="number" step="0.5" inputmode="decimal" min="0" value="${set.dist != null ? set.dist : ''}" data-set-input="${exIdx}.${setIdx}.dist" class="set-input" placeholder="0" />`;
 
       return `
@@ -14473,6 +14621,17 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             const strip = document.querySelector('[data-rpe-strip="' + exIdx + '.' + setIdx + '"] .lw-rpe-vol');
             if (strip) strip.textContent = exIsCardio(_workout.exercises[exIdx]) ? '—' : Math.round((Number(st.weight) || 0) * (Number(st.reps) || 0));
           }
+        });
+      });
+
+      /* c104: per-exercise time unit (min⇄sec) — cycles THIS exercise, converts its hold times */
+      document.querySelectorAll('[data-tunit-col-ex]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.getAttribute('data-tunit-col-ex'), 10);
+          const ex = _workout && _workout.exercises[idx];
+          if (!ex) return;
+          const cur = (ex.tunit === 'min' || ex.tunit === 'sec') ? ex.tunit : dkTUnitGet();
+          exTUnitSet(idx, cur === 'min' ? 'sec' : 'min');
         });
       });
 
@@ -15318,7 +15477,35 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       saveDraft();
       render();
     }
-    return { start, startFromTemplate, startFromProgram, openPicker, finish, cancel, back, saveAsTemplate, applyTemplateToClient, checkDraft, render, returnToPosition, exUnit, exUnitSet, get _workout() { return _workout; } };
+    /* ===== c104: per-exercise TIME unit (min/sec) — prescribed in the program
+       builder for cardio machines & stretches; falls back to the global cardio
+       unit. Switching converts the entered times and prev-times (×60 / ÷60). ===== */
+    function exTUnit(idx) {
+      const ex = _workout && _workout.exercises[idx];
+      if (ex && (ex.tunit === 'min' || ex.tunit === 'sec')) return ex.tunit;
+      return dkTUnitGet();
+    }
+    function exTUnitShort(idx) {
+      const u = exTUnit(idx);
+      return t('wunit.' + (u === 'sec' ? 'secShort' : 'minShort')) || (u === 'sec' ? 'сек' : 'мин');
+    }
+    function exTUnitSet(idx, u) {
+      if (!_workout || (u !== 'min' && u !== 'sec')) return;
+      const ex = _workout.exercises[idx];
+      if (!ex) return;
+      const old = (ex.tunit === 'min' || ex.tunit === 'sec') ? ex.tunit : dkTUnitGet();
+      if (old !== u) {
+        const conv = v => u === 'sec' ? Math.round(v * 60 * 10) / 10 : Math.round(v / 60 * 10) / 10;
+        (ex.sets || []).forEach(s => {
+          if (s.time != null) s.time = conv(s.time);
+          if (s.prev_time != null) s.prev_time = conv(s.prev_time);
+        });
+      }
+      ex.tunit = u;
+      saveDraft();
+      render();
+    }
+    return { start, startFromTemplate, startFromProgram, openPicker, finish, cancel, back, saveAsTemplate, applyTemplateToClient, checkDraft, render, returnToPosition, exUnit, exUnitSet, exTUnit, exTUnitShort, exTUnitSet, get _workout() { return _workout; } };
   })();
 
   /* =====================================================================
@@ -28671,7 +28858,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 103; /* numeric part of dk-build c103 */
+  var RUNNING = 104; /* numeric part of dk-build c104 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

@@ -2046,6 +2046,8 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
     .ex-img { aspect-ratio: 4/3; object-fit: cover; border-radius: 12px; width: 100%; background: rgb(var(--c-surface-2)); }
     .set-row-done { opacity: .5; }
     .set-row-done .set-check { background: rgb(var(--c-success)) !important; border-color: rgb(var(--c-success)) !important; color: #fff !important; }
+    /* c104: superset pair highlight (portal parity with the CRM builder/live) */
+    .dk-superset-hl { border-color: rgb(var(--c-accent)) !important; background: rgb(var(--c-accent) / .07) !important; box-shadow: 0 0 0 1px rgb(var(--c-accent) / .45), 0 0 14px rgb(var(--c-accent) / .12) inset; }
     .tab-btn { transition: all .2s cubic-bezier(.4,0,.2,1); }
     .tab-btn.active { color: rgb(var(--c-primary)); }
     .tab-btn.active .tab-icon { stroke: rgb(var(--c-primary)); }
@@ -2545,7 +2547,7 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       chooseProgram:'Выберите программу',choosePlan:'Выберите план питания',
       noProgram:'Нет активных программ',noPlan:'Нет активных планов питания',
       diaryTitle:'Дневник питания',diaryAdd:'+ Добавить в дневник',diaryNeedName:'Укажите продукт',diaryAdded:'Добавлено в дневник ✓',diaryEmpty:'Дневник пуст. Добавьте первый продукт выше.',diaryKcal:'ккал',
-      video:'Видео', searchOnYouTube:'Искать на YouTube', noImage:'Нет изображения', noTechnique:'Описание техники пока нет'
+      video:'Видео', searchOnYouTube:'Искать на YouTube', noImage:'Нет изображения', noTechnique:'Описание техники пока нет', minShort:'мин', secShort:'сек'
     },
     en: {
       portalTitle:'My Portal',coachBadge:'David King Gym',closeGuard:'Close the client portal?',startBtn:'Start',resumeBtn:'Resume',finishWorkout:'Finish Workout',
@@ -2585,7 +2587,7 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       chooseProgram:'Choose program',choosePlan:'Choose nutrition plan',
       noProgram:'No active programs',noPlan:'No active nutrition plans',
       diaryTitle:'Food Diary',diaryAdd:'+ Add to diary',diaryNeedName:'Enter a food name',diaryAdded:'Added to diary ✓',diaryEmpty:'Diary is empty. Add your first food above.',diaryKcal:'kcal',
-      video:'Video', searchOnYouTube:'Search on YouTube', noImage:'No image', noTechnique:'No technique description yet'
+      video:'Video', searchOnYouTube:'Search on YouTube', noImage:'No image', noTechnique:'No technique description yet', minShort:'min', secShort:'sec'
     },
     he: {
       portalTitle:'הפורטל שלי',coachBadge:'David King Gym',closeGuard:'לסגור את פורטל המתאמן?',startBtn:'התחל',resumeBtn:'המשך',finishWorkout:'סיים אימון',
@@ -2625,7 +2627,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       chooseProgram:'בחר תוכנית',choosePlan:'בחר תוכנית תזונה',
       noProgram:'אין תוכניות פעילות',noPlan:'אין תוכניות תזונה פעילות',
       diaryTitle:'יומן תזונה',diaryAdd:'+ הוסף ליומן',diaryNeedName:'הזן שם מזון',diaryAdded:'נוסף ליומן ✓',diaryEmpty:'היומן ריק. הוסף מזון למעלה.',diaryKcal:'קק״ל',
-      video:'וידאו', searchOnYouTube:'חפש ביוטיוב', noImage:'אין תמונה', noTechnique:'אין תיאור טכניקה'
+      video:'וידאו', searchOnYouTube:'חפש ביוטיוב', noImage:'אין תמונה', noTechnique:'אין תיאור טכניקה', minShort:'דק׳', secShort:'שנ׳'
     }
   };
   const t = k => (I18N[currentLang] && I18N[currentLang][k]) || I18N.ru[k] || k;
@@ -3792,11 +3794,14 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     return {
       started_at: withStart ? Date.now() : null,
       exercises: (day.exercises||[]).map(ex => {
-        const exUnit0 = dkPDefaultUnit(); /* c96: new sessions start in the default unit */
+        /* c104: the program's prescribed weight unit wins over the default */
+        const exUnit0 = (ex.unit === 'lb' || ex.unit === 'kg') ? ex.unit : dkPDefaultUnit();
         return {
         exercise_id: exKey(ex),
         rest_sec: (function(){ const rv = parseInt(ex.rest_sec,10); return (!isNaN(rv) && rv >= 0) ? rv : 90; })(),
         unit: exUnit0,
+        tunit: (ex.tunit === 'min' || ex.tunit === 'sec') ? ex.tunit : null, /* c104: prescribed min/sec for cardio/stretch */
+        is_superset: ex.is_superset === true, /* c104: superset pair highlight */
         sets: (ex.sets||[]).map((s, si) => {
           const hist = findPrev(progName, letter, exKey(ex), si);
           const pw = hist ? dkPConv(hist.weight, hist.unit || 'kg', exUnit0) : (Number(s.weight)||null); /* c96: prev converts into the session unit */
@@ -3994,6 +3999,13 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       const restSec = liveEx ? liveEx.rest_sec : (parseInt(ex.rest_sec,10) || 90);
       /* c96: this exercise's own weight unit label (for the weight column header) */
       const exUnitShort = (() => { try { return (window.dkWUnitShortPortal && window.dkWUnitShortPortal(exUnitOf(liveEx))) || ''; } catch (e) { return ''; } })();
+      /* c104: prescribed time unit (min/sec) + superset pair highlight */
+      const perT = !!(liveEx && (liveEx.tunit === 'min' || liveEx.tunit === 'sec'));
+      const tShortP = perT ? esc(t(liveEx.tunit === 'sec' ? 'secShort' : 'minShort')) : '';
+      const supHl = ((liveEx && liveEx.is_superset) || ex.is_superset === true);
+      const tColBtnP = perT
+        ? `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-primary/40 bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-tunit-col-ex="${ei}" title="min ⇄ sec">${esc(t('timeLabel'))}${tShortP ? ' · ' + tShortP : ''}</button>`
+        : `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-tunit-col data-tunit-base="${esc(t('timeLabel'))}">${esc(t('timeLabel'))}</button>`;
       const thumbHtml = (() => {
         /* c103: slightly bigger thumbnail (w-20 h-20 / sm:w-24 sm:h-24) — the live
            workout card now renders the EXACT same size for full parity */
@@ -4078,11 +4090,11 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
           ${esc(t('technique'))}</button>
           <div class="hidden mt-1.5 space-y-1 pl-1" data-tech-body="${ei}">${technique.split(' | ').map(st=>`<p class="text-[11px] text-muted leading-relaxed">• ${esc(st.trim())}</p>`).join('')}</div></div>` : '';
 
-      return `<div class="glass rounded-2xl p-4 space-y-3 fade-in" data-exercise-card="${ei}">
+      return `<div class="glass rounded-2xl p-4 space-y-3 fade-in${supHl ? ' dk-superset-hl' : ''}" data-exercise-card="${ei}">
         <div class="flex items-start justify-between gap-2">
           ${thumbHtml}
           <div class="flex-1 min-w-0">
-            <h4 class="font-display font-bold text-sm text-white leading-snug cursor-pointer hover:text-[rgb(var(--c-primary))] transition" data-open-exercise>${esc(exName)}</h4>
+            <h4 class="font-display font-bold text-sm text-white leading-snug cursor-pointer hover:text-[rgb(var(--c-primary))] transition" data-open-exercise>${supHl ? '<span style="color:rgb(var(--c-accent))" title="Superset">⚡ </span>' : ''}${esc(exName)}</h4>
             <div class="text-[11px] text-muted flex items-center gap-2 mt-0.5 flex-wrap">
               ${groupLabel?`<span class="text-cyan-300">${esc(groupLabel)}</span><span>·</span>`:''}
               <label class="flex items-center gap-1">${esc(t('restPerEx'))}
@@ -4095,7 +4107,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         </div>
         ${ex.notes?`<div class="text-[11px] text-amber-300/80 bg-amber-500/8 border border-amber-500/15 rounded-lg p-2 leading-relaxed">💡 ${esc(ex.notes)}</div>`:''}
         <div class="set-grid ${isStretchEx ? 'set-grid-stretch' : ''} px-2 text-[8px] uppercase tracking-wide text-muted font-bold">
-          <span>#</span><span class="text-center">${esc(t('prevLabel'))}</span>${isCardioEx ? `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-tunit-col data-tunit-base="${esc(t('timeLabel'))}">${esc(t('timeLabel'))}</button><span></span><button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-dunit-col data-dunit-base="${esc(t('distShortLabel'))}">${esc(t('distShortLabel'))}</button>` : isStretchEx ? `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-primary/40 bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-tunit-col data-tunit-base="${esc(t('timeLabel'))}">${esc(t('timeLabel'))}</button><button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-wunit-col-ex="${ei}" data-wunit-base="${esc(t('weightLabel'))}" title="${esc(t('wunitExTitle') || 'Weight unit')}">${esc(t('weightLabel'))}${exUnitShort ? ' · ' + esc(exUnitShort) : ''}</button><span class="text-center">${esc(t('repsLabel'))}</span>` : `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-wunit-col-ex="${ei}" data-wunit-base="${esc(t('weightLabel'))}" title="${esc(t('wunitExTitle') || 'Weight unit')}">${esc(t('weightLabel'))}${exUnitShort ? ' · ' + esc(exUnitShort) : ''}</button><span></span><span class="text-center">${esc(t('repsLabel'))}</span>`}<span class="text-center">✓</span><span></span><span></span>
+          <span>#</span><span class="text-center">${esc(t('prevLabel'))}</span>${isCardioEx ? `${tColBtnP}<span></span><button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-dunit-col data-dunit-base="${esc(t('distShortLabel'))}">${esc(t('distShortLabel'))}</button>` : isStretchEx ? `${tColBtnP}<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-wunit-col-ex="${ei}" data-wunit-base="${esc(t('weightLabel'))}" title="${esc(t('wunitExTitle') || 'Weight unit')}">${esc(t('weightLabel'))}${exUnitShort ? ' · ' + esc(exUnitShort) : ''}</button><span class="text-center">${esc(t('repsLabel'))}</span>` : `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-wunit-col-ex="${ei}" data-wunit-base="${esc(t('weightLabel'))}" title="${esc(t('wunitExTitle') || 'Weight unit')}">${esc(t('weightLabel'))}${exUnitShort ? ' · ' + esc(exUnitShort) : ''}</button><span></span><span class="text-center">${esc(t('repsLabel'))}</span>`}<span class="text-center">✓</span><span></span><span></span>
         </div>
         <div class="space-y-1.5">${setsRows}</div>
         ${addSetBtn || doneAllBtn ? `<div class="grid grid-cols-2 gap-1.5 mt-1.5">${addSetBtn}${doneAllBtn}</div>` : ''}
@@ -4130,6 +4142,23 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         const vr = card && card.querySelector('[data-rpe-row="' + ei + '-' + si + '"] .rpe-vol');
         if (vr) vr.textContent = Math.round((Number(set.weight)||0) * (Number(set.reps)||0));
         ensureStarted(sess0); saveDraft(); updateLiveUI();
+      });
+    });
+
+    // c104: per-exercise time unit (min⇄sec) — cycles THIS exercise, converts its hold times
+    list.querySelectorAll('[data-tunit-col-ex]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sess0 = getSess(); if(!sess0) return;
+        const lex = (sess0.exercises||[])[+btn.dataset.tunitColEx]; if(!lex) return;
+        const cur = (lex.tunit === 'min' || lex.tunit === 'sec') ? lex.tunit : 'min';
+        const nu = cur === 'min' ? 'sec' : 'min';
+        const conv = v => nu === 'sec' ? Math.round(v * 60 * 10) / 10 : Math.round(v / 60 * 10) / 10;
+        (lex.sets||[]).forEach(s => {
+          if (s.time != null) s.time = conv(s.time);
+          if (s.prev_time != null) s.prev_time = conv(s.prev_time);
+        });
+        lex.tunit = nu;
+        saveDraft(); renderExercises();
       });
     });
 
