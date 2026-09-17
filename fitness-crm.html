@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c99" />
+<meta name="dk-build" content="c100" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -1402,6 +1402,10 @@
     /* c75: picker map column follows the Body map SVG size slider */
     .picker-map-col { width: calc(clamp(200px, 20cqw, 320px) * var(--ui-bodymap, 1)); }
     /* c75: Body map SVG size works again — width-based (SVG hit-testing stays exact, no transform) */
+    /* c100: the SVG container spans the full column so the SVG body and the
+       embedded 3D body (#bm-3d-container is w-full) resolve to the SAME width
+       — at custom bodymap sliders the two figures stay pixel-equal */
+    #bm-svg-container { width: 100%; }
     #bm-svg-container .bm-body-svg { width: 100%; max-width: calc(400px * var(--ui-bodymap, 1)); height: auto; }
     #exercise-bodymap-svg .bm-body-svg { width: calc(160px * var(--ui-bodymap, 1)); max-width: none; height: auto; }
 
@@ -2236,9 +2240,13 @@ body.auth-locked nav.fixed.bottom-0 { pointer-events: none !important; }
 body.auth-locked aside nav, body.auth-locked nav.bottom-nav, body.auth-locked nav.fixed.bottom-0 { opacity: .45; }
 body.auth-locked #main [data-screen="login"] { pointer-events: auto !important; }
 body.auth-locked #app > .fixed.inset-0:not(.hidden) { pointer-events: none !important; }
-/* c75: 3D atlas widgets scale with --ui-atlas (Settings ▸ UI element sizes ▸ 3D atlas size) */
-#exercise-bodymap-3d { width: calc(190px * var(--ui-atlas, 1.5)); height: calc(310px * var(--ui-atlas, 1.5)); }
-#bm-3d-container { height: calc(360px * var(--ui-atlas, 1.5)); }
+/* c100: embedded 3D body renders at the SAME box as the SVG body next to it
+   (same width source + the SVG's 160:360 viewBox ratio) so «Both» mode shows
+two equal figures. Before c100 the 3D box answered to a DIFFERENT slider
+(--ui-atlas) and, having no intrinsic content height, was flex-crushed to a
+sliver inside the picker modal's map column (measured 142px vs SVG 488px). */
+#exercise-bodymap-3d { width: calc(160px * var(--ui-bodymap, 1)); height: auto; aspect-ratio: 160 / 360; }
+#bm-3d-container { width: 100%; height: auto; aspect-ratio: 160 / 360; flex: none; }
 /* c75: Exercise DB browse — picker-style 3-column layout */
 [data-workout-panel="exercises"]:not(.exb-manage) #exercise-tree,
 [data-workout-panel="exercises"]:not(.exb-manage) #exercise-empty { display: none !important; }
@@ -2273,7 +2281,8 @@ body.auth-locked #app > .fixed.inset-0:not(.hidden) { pointer-events: none !impo
   /* c82: the embedded 3D widget never exceeds its column on phones
      (190px * atlas 2.5 = 475px used to overflow a 412px viewport) */
   #exercise-bodymap-panel > div:first-child { width: 100%; }
-  #exercise-bodymap-3d { width: min(calc(190px * var(--ui-atlas, 1.5)), 100%); height: auto; aspect-ratio: 19 / 31; }
+  /* c100: same box as the SVG body (160:360) — was 19:31 driven by --ui-atlas */
+  #exercise-bodymap-3d { width: min(calc(160px * var(--ui-bodymap, 1)), 100%); height: auto; aspect-ratio: 160 / 360; }
 }
 /* c74: DKBody3D embedded widget */
 .b3d-box { position: relative; }
@@ -2597,7 +2606,7 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c97</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c100</p>
             </div>
           </div>
 
@@ -28431,7 +28440,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 99; /* numeric part of dk-build c99 */
+  var RUNNING = 100; /* numeric part of dk-build c100 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
@@ -29615,7 +29624,15 @@ document.addEventListener('input', function (e) {
     controls.minDistance = 0.4; controls.maxDistance = 8;
     controls.enablePan = false;
     function fit() {
-      var dist = (size.y / 2) / Math.tan((camera.fov * Math.PI / 180) / 2) * 1.18 / dkAtlasScale();
+      /* c100: fit BOTH dimensions of the box and ignore --ui-atlas — the CSS
+         box size alone decides how big the figure looks (the box is 160:360,
+         the same ratio as the SVG body, so «Both» mode shows equal figures).
+         The old 1.18/dkAtlasScale() shrank the figure via the atlas slider and
+         cropped it whenever the slider exceeded 1.18x. 1.06 = ~6% margin. */
+      var bw = box.clientWidth || 0, bh = box.clientHeight || 0;
+      var vAspect = (bw && bh) ? (bw / bh) : (160 / 360);
+      var halfH = Math.max(size.y, size.x / vAspect) / 2;
+      var dist = halfH / Math.tan((camera.fov * Math.PI / 180) / 2) * 1.06;
       camera.position.set(c.x, c.y + size.y * 0.02, c.z + dist);
       camera.lookAt(c);
       controls.target.set(c.x, c.y, c.z);
