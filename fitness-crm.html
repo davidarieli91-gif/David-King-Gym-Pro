@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c100" />
+<meta name="dk-build" content="c101" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -1402,12 +1402,22 @@
     /* c75: picker map column follows the Body map SVG size slider */
     .picker-map-col { width: calc(clamp(200px, 20cqw, 320px) * var(--ui-bodymap, 1)); }
     /* c75: Body map SVG size works again — width-based (SVG hit-testing stays exact, no transform) */
-    /* c100: the SVG container spans the full column so the SVG body and the
-       embedded 3D body (#bm-3d-container is w-full) resolve to the SAME width
-       — at custom bodymap sliders the two figures stay pixel-equal */
-    #bm-svg-container { width: 100%; }
-    #bm-svg-container .bm-body-svg { width: 100%; max-width: calc(400px * var(--ui-bodymap, 1)); height: auto; }
-    #exercise-bodymap-svg .bm-body-svg { width: calc(160px * var(--ui-bodymap, 1)); max-width: none; height: auto; }
+    /* c101: the two body cards SHARE the picker column's visible height
+       (50/50, 4px column gap): each box keeps the SVG's 160:360 ratio with its
+       width derived from the height, is capped at the bodymap-slider size and
+       never exceeds the column — both figures are ALWAYS fully on screen, no
+       scrolling and no empty gap between them («подвинь карточки вплотную —
+       обе должны влезать в экран»). c100 made them equal-width; the column
+       still grows with the slider (line above). */
+    #bm-svg-container {
+      flex: 1 1 0; min-height: 0; width: auto; max-width: 100%;
+      aspect-ratio: 160 / 360;
+      max-height: calc(clamp(200px, 20cqw, 320px) * var(--ui-bodymap, 1) * 2.25);
+    }
+    #bm-svg-container .bm-body-svg { width: 100%; max-width: 100%; height: 100%; }
+    /* c101: Exercise DB panel — the same «both fit the screen» rule: each body
+       is height-capped at 44vh (160:360 kept) instead of slider-width only */
+    #exercise-bodymap-svg .bm-body-svg { display: block; margin: 0 auto; width: auto; max-width: 100%; height: min(calc(160px * var(--ui-bodymap, 1) * 2.25), 44vh); }
 
     /* c77: exercise card size — zoom instead of transform:scale(top left).
        transform left the layout box untouched, so cards at >1x overlapped the
@@ -2245,8 +2255,16 @@ body.auth-locked #app > .fixed.inset-0:not(.hidden) { pointer-events: none !impo
 two equal figures. Before c100 the 3D box answered to a DIFFERENT slider
 (--ui-atlas) and, having no intrinsic content height, was flex-crushed to a
 sliver inside the picker modal's map column (measured 142px vs SVG 488px). */
-#exercise-bodymap-3d { width: calc(160px * var(--ui-bodymap, 1)); height: auto; aspect-ratio: 160 / 360; }
-#bm-3d-container { width: 100%; height: auto; aspect-ratio: 160 / 360; flex: none; }
+/* c101: both body boxes are HEIGHT-driven now so both cards are always fully
+   visible together. Panel: each body capped at 44vh (160:360 kept, width from
+   height). Picker modal: #bm-3d-container splits the map column 50/50 with the
+   SVG body (flex:1 1 0 + the column's 4px gap, width from height via the
+   160:360 ratio) and both are capped at the bodymap-slider size — no
+   scrolling, no empty gap. c100 made the two boxes equal-width; before c100
+   the 3D box answered to a DIFFERENT slider (--ui-atlas) and was flex-crushed
+   to a 142px sliver inside the picker modal's map column. */
+#exercise-bodymap-3d { width: auto; max-width: 100%; height: min(calc(160px * var(--ui-bodymap, 1) * 2.25), 44vh); aspect-ratio: 160 / 360; }
+#bm-3d-container { width: auto; max-width: 100%; height: auto; aspect-ratio: 160 / 360; flex: 1 1 0; min-height: 0; max-height: calc(clamp(200px, 20cqw, 320px) * var(--ui-bodymap, 1) * 2.25); }
 /* c75: Exercise DB browse — picker-style 3-column layout */
 [data-workout-panel="exercises"]:not(.exb-manage) #exercise-tree,
 [data-workout-panel="exercises"]:not(.exb-manage) #exercise-empty { display: none !important; }
@@ -2606,7 +2624,7 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c100</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c101</p>
             </div>
           </div>
 
@@ -16461,6 +16479,16 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const container = document.getElementById('bm-svg-container');
       if (container) {
         container.innerHTML = _view === 'front' ? window.BM_SVG_FRONT : _view === 'back' ? window.BM_SVG_BACK : window.BM_SVG_SIDE;
+        /* c101: crop the viewBox to the figure — the raw «0 0 160 360» carries
+           ~23% of empty space below the feet, so the SVG figure looked smaller
+           than the 3D body inside an equal box. The windows keep the box's
+           160:360 ratio, so the figure now fills its box like the 3D one. */
+        try {
+          if (!window.BM_VIEW_CROP) window.BM_VIEW_CROP = { front: '17.8 0 124.4 280', back: '10.7 -4 138.7 312', side: '8 0 133.3 300' };
+          const _sv101 = container.querySelector('svg');
+          const _cr101 = window.BM_VIEW_CROP[_view];
+          if (_sv101 && _cr101) _sv101.setAttribute('viewBox', _cr101);
+        } catch (_e101) {}
         // Fix: explicitly set fill + pointer-events on all muscle paths to ensure
         // they're visible and clickable regardless of gradient/CSS context.
         // The gradient uses CSS variables that may not resolve in all contexts.
@@ -25138,7 +25166,14 @@ loadTexture();
                                         (window.BM_SVG_SIDE  || '');
       bmSvgContainer.innerHTML = svgStr;
       const svg = bmSvgContainer.querySelector('svg');
-      if (svg) { svg.style.maxWidth = 'calc(160px * var(--ui-bodymap, 1))'; svg.style.height = 'auto'; }
+      /* c101: the inline size override is gone — CSS drives the box now
+         (height-capped at 44vh so both bodies fit the screen together); the
+         viewBox is cropped to the figure like in the Quick Pick modal */
+      try {
+        if (!window.BM_VIEW_CROP) window.BM_VIEW_CROP = { front: '17.8 0 124.4 280', back: '10.7 -4 138.7 312', side: '8 0 133.3 300' };
+        const _cr101 = window.BM_VIEW_CROP[view];
+        if (svg && _cr101) svg.setAttribute('viewBox', _cr101);
+      } catch (_e101) {}
       // Wire muscle clicks
       bmSvgContainer.querySelectorAll('.bm-muscle').forEach(el => {
         el.style.cursor = 'pointer';
@@ -28440,7 +28475,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 100; /* numeric part of dk-build c100 */
+  var RUNNING = 101; /* numeric part of dk-build c101 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
@@ -29659,6 +29694,7 @@ document.addEventListener('input', function (e) {
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
+      fit(); /* c101: the box height now depends on the column layout (50/50 split) — re-frame the figure whenever the box resizes */
     }
     st.ro = new ResizeObserver(resize);
     st.ro.observe(box);
