@@ -278,7 +278,19 @@
     "copyCodeTip": "Copy code",
     "photoUploaded": "Photo uploaded",
     "photoError": "Photo upload failed",
-    "notFound": "Client not found"
+    "notFound": "Client not found",
+    "grpGym": "Gym",
+    "grpFriends": "Friends",
+    "grpFamily": "Family",
+    "groupsManager": "Client groups",
+    "groupsHint": "Press + to add a new group. Rename inline or delete with the trash icon. Move clients with the folder button on each card, or drag a card onto a group chip.",
+    "groupsAdd": "Add",
+    "groupsAddPh": "Group name",
+    "groupsMinOne": "At least one group is required",
+    "movedToGroup": "Moved to {g}",
+    "groupDeleted": "Group deleted — {n} client(s) moved to {g}",
+    "moveToGroup": "Move to group",
+    "sortGroup": "Group"
   },
   "client": {
     "openInjuryList": "Open conditions list",

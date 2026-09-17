@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c104" />
+<meta name="dk-build" content="c105" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2685,7 +2685,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c104</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c105</p>
             </div>
           </div>
 
@@ -2722,19 +2722,12 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 <option value="created" data-i18n="clients.sortCreated">Date added</option>
                 <option value="name" data-i18n="clients.sortName">Name</option>
                 <option value="lastActive" data-i18n="clients.sortLastActive">Last active</option>
-                <option value="goal" data-i18n="clients.sortGoal">Goal</option>
+                <option value="cgroup" data-i18n="clients.sortGroup">Group</option>
               </select>
             </div>
 
-            <!-- Goal filter chips -->
-            <div class="flex gap-1.5 overflow-x-auto no-scrollbar mb-4 pb-1" id="dash-filters">
-              <button data-goal="all" class="filter-chip active whitespace-nowrap text-xs font-semibold px-3 py-1.5 rounded-full border border-border bg-surface-2" data-i18n="common.all">All</button>
-              <button data-goal="hypertrophy" class="filter-chip whitespace-nowrap text-xs font-semibold px-3 py-1.5 rounded-full border border-border bg-surface-2" data-i18n="client.goalHypertrophy">Hypertrophy</button>
-              <button data-goal="strength" class="filter-chip whitespace-nowrap text-xs font-semibold px-3 py-1.5 rounded-full border border-border bg-surface-2" data-i18n="client.goalStrength">Strength</button>
-              <button data-goal="fat_loss" class="filter-chip whitespace-nowrap text-xs font-semibold px-3 py-1.5 rounded-full border border-border bg-surface-2" data-i18n="client.goalFatLoss">Fat loss</button>
-              <button data-goal="endurance" class="filter-chip whitespace-nowrap text-xs font-semibold px-3 py-1.5 rounded-full border border-border bg-surface-2" data-i18n="client.goalEndurance">Endurance</button>
-              <button data-goal="rehab" class="filter-chip whitespace-nowrap text-xs font-semibold px-3 py-1.5 rounded-full border border-border bg-surface-2" data-i18n="client.goalRehab">Rehabilitation</button>
-            </div>
+            <!-- c105: client group chips (replaces the old goal filter) — rendered dynamically -->
+            <div class="flex gap-1.5 overflow-x-auto no-scrollbar mb-4 pb-1 items-center" id="dash-filters"></div>
 
             <!-- Client list -->
             <div id="dash-list" class="space-y-2"></div>
@@ -5436,6 +5429,30 @@ button[id$="-close"]:active, button[data-cps-close]:active {
       </div>
     </div>
 
+    <!-- ============= CLIENT GROUPS MANAGER (c105) ============= -->
+    <div id="cgroups-modal" class="hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
+      <div class="bg-surface border border-border w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-card max-h-[85vh] flex flex-col" style="transform: scale(var(--modal-scale, 1));">
+        <div class="flex items-center justify-between gap-2 px-4 py-3 border-b border-border shrink-0">
+          <h3 class="font-display font-bold text-base" data-i18n="clients.groupsManager">Client groups</h3>
+          <button type="button" id="cgroups-close" class="w-8 h-8 grid place-items-center rounded-lg bg-surface-2 border border-border text-muted hover:text-primary-2 transition" aria-label="Close">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="px-4 py-3 text-xs text-muted border-b border-border" data-i18n="clients.groupsHint">Tap + to add a group, rename or delete existing ones. Clients are moved with the folder button on each card or by dragging the card onto a group.</div>
+        <div id="cgroups-list" class="px-4 py-3 space-y-2 overflow-y-auto flex-1 min-h-0"></div>
+        <div class="px-4 py-3 border-t border-border space-y-2 shrink-0">
+          <div class="flex gap-2">
+            <input type="text" id="cgroups-new-name" data-i18n-ph="clients.groupsAddPh" class="flex-1 bg-surface-2 border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" placeholder="Group name" maxlength="40" />
+            <button type="button" id="cgroups-add-btn" class="inline-flex items-center gap-1 bg-primary hover:bg-primary-2 text-white text-sm font-semibold px-3 py-2 rounded-xl transition shadow-card shrink-0">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+              <span data-i18n="clients.groupsAdd">Add</span>
+            </button>
+          </div>
+          <button type="button" id="cgroups-done-btn" class="w-full bg-surface-2 hover:bg-border/40 border border-border text-sm font-semibold py-2.5 rounded-xl transition" data-i18n="common.done">Done</button>
+        </div>
+      </div>
+    </div>
+
     <!-- ============= BOTTOM NAV (mobile only) ============= -->
     <nav id="bottom-nav"
          class="lg:hidden fixed bottom-0 inset-x-0 z-30 glass safe-bottom" style="border-top: 1px solid var(--glass-border);">
@@ -5603,7 +5620,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
       let _exerciseDbLoaded = false;
       // Bump EXERCISE_DB_BUST when exercise-db.json changes — defeats SW/browser
       // cache-first staleness so reseed always unpacks the deployed dataset.
-      const EXERCISE_DB_BUST = 'v51';
+      const EXERCISE_DB_BUST = 'v52';
       async function loadExerciseDbExternal() {
         try {
           const resp = await fetch('exercise-db.json?v=' + EXERCISE_DB_BUST);
@@ -5977,6 +5994,8 @@ button[id$="-close"]:active, button[data-cps-close]:active {
     'fullbody':      { en: 'Full Body',   ru: 'Фулбоди',       he: 'גוף מלא' },
     'stretching':    { en: 'Stretching',  ru: 'Растяжка',      he: 'מתיחות' },
     'warmup':        { en: 'Warm-up',     ru: 'Разминка',      he: 'חימום' },
+    'cardio':        { en: 'Cardio',      ru: 'Кардио',        he: 'אירובי' },
+    'balance':       { en: 'Stability & Balance', ru: 'Устойчивость и баланс', he: 'יציבות ואיזון' },
     'calisthenics':  { en: 'Calisthenics',ru: 'Калистеника',   he: 'משקל גוף' },
   };
 
@@ -6017,7 +6036,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
   const MUSCLE_GROUP_EMOJI = {
     chest: '🫁', back: '🔙', shoulders: '💆', elbow_flexors: '💪', triceps: '🦾',
     forearms: '✊', abdominals: '🎯', legs: '🦵', fullbody: '🏋️', calisthenics: '🤸',
-    stretching: '🧘', warmup: '🔥'
+    stretching: '🧘', warmup: '🔥', cardio: '🏃', balance: '⚖️'
   };
 
   /** Подгруппы-«движения» (Row/Pullover/Seated/…) → файл иконки ближайшей мышцы. */
@@ -6632,6 +6651,77 @@ button[id$="-close"]:active, button[data-cps-close]:active {
     }
   }
   window.__dkHealExerciseImages = healExerciseImagePaths;
+
+  /* =====================================================================
+     GROUP MIGRATION (c105) — 2026-09
+     The exercise-db.json now ships two NEW canonical groups:
+       • cardio   — running / cardio machines / jump rope / treadmill /
+                    bike / rowing / elliptical / swimming (pulled OUT of
+                    the old warm-up group + cat:'cardio' flag)
+       • balance  — «Устойчивость и баланс»: handstands, planches, balance
+                    boards, single-leg stands, bosu stands (gathered from
+                    shoulders/back/chest/abdominals/legs/stretching)
+     Devices that seeded exercise_base earlier keep the OLD groups, so on
+     boot we re-map ONLY the group fields in place (group_canonical +
+     group_en/ru/he + folder_path[0]) from the shipped JSON. Names,
+     technique, images and trainer edits (custom gifs, custom exercises)
+     are never touched. Runs once per device (settings flag), and again
+     automatically whenever the flag name is bumped in a future release.
+     ===================================================================== */
+  async function migrateExerciseGroups() {
+    try {
+      const FLAG = 'migrated_groups_c105';
+      const done = await db.get('settings', FLAG);
+      if (done && done.value) return 0;
+      if (typeof _exerciseDbLoaded !== 'undefined' && !_exerciseDbLoaded) {
+        await loadExerciseDbExternal();
+      }
+      let shipped = null;
+      try {
+        const raw = unpackExerciseDB();
+        if (raw && raw.length) {
+          shipped = Object.create(null);
+          for (let i = 0; i < raw.length; i++) shipped[raw[i].id] = raw[i];
+        }
+      } catch (_) { return 0; }
+      if (!shipped) return 0;
+      const all = await db.all('exercise_base');
+      if (!all.length) { await db.put('settings', { key: FLAG, value: true }); return 0; }
+      const changed = [];
+      for (let i = 0; i < all.length; i++) {
+        const r = all[i];
+        const sh = r && shipped[r.id];
+        if (!sh || !sh.group_canonical) continue;
+        if (r.group_canonical !== sh.group_canonical) {
+          r.group_canonical = sh.group_canonical;
+          r.group_en = sh.group_en;
+          r.group_ru = sh.group_ru;
+          r.group_he = sh.group_he;
+          if (sh.category != null) r.category = sh.category;
+          if (Array.isArray(r.folder_path) && r.folder_path.length) r.folder_path[0] = sh.group_canonical;
+          else r.folder_path = [sh.group_canonical, 'general', r.equipment_type || 'other'];
+          r.updated_at = Date.now();
+          changed.push(r);
+        } else if (sh.category === 'cardio' && r.category !== 'cardio') {
+          // same group but the cardio flag is new (warm-up leftovers keep group)
+          r.category = 'cardio';
+          r.updated_at = Date.now();
+          changed.push(r);
+        }
+      }
+      if (changed.length) {
+        await db.bulkPut('exercise_base', changed);
+        console.info('[group-migr] re-mapped exercise groups:', changed.length, '(cardio/balance c105)');
+      }
+      await db.put('settings', { key: FLAG, value: true });
+      return changed.length;
+    } catch (e) {
+      console.warn('[group-migr] failed:', e);
+      return 0;
+    }
+  }
+  window.__dkMigrateExerciseGroups = migrateExerciseGroups;
+
 
   /* =====================================================================
      DEFAULT SETTINGS — written on first boot if missing.
@@ -8568,26 +8658,315 @@ button[id$="-close"]:active, button[data-cps-close]:active {
     let _filtered = [];
     let _search = '';
     let _sortBy = 'created';
-    let _goalFilter = 'all';
+    let _groupFilter = 'all';   /* c105: was _goalFilter — now a client-GROUP id (or 'all') */
     let _pendingClientPhoto = null;  // Sprint 3+: compressed photo dataURL, set on file select
+
+    /* === c105: CLIENT GROUPS (Спортзал / Друзья / Семья + custom CRUD) ===
+       Built-in groups get i18n labels; custom groups are trainer-created and
+       stored in the settings store (key 'client_groups') so they survive
+       backup/restore + cloud snapshots. Every client carries a `cgroup` id —
+       legacy clients are auto-assigned to the default group on load. */
+    const CG_DEFAULT = 'gym';
+    const CG_BUILTIN = [
+      { id: 'gym',     key: 'clients.grpGym',     en: 'Gym',     ru: 'Спортзал', he: 'חדר כושר' },
+      { id: 'friends', key: 'clients.grpFriends', en: 'Friends', ru: 'Друзья',   he: 'חברים' },
+      { id: 'family',  key: 'clients.grpFamily',  en: 'Family',  ru: 'Семья',    he: 'משפחה' }
+    ];
+    let _cgConfig = { custom: [], overrides: {}, deleted: [] };
+
+    async function loadGroupConfig() {
+      try {
+        const row = await db.get('settings', 'client_groups');
+        if (row && row.value && Array.isArray(row.value.custom)) {
+          _cgConfig = {
+            custom: row.value.custom,
+            overrides: row.value.overrides || {},
+            deleted: Array.isArray(row.value.deleted) ? row.value.deleted : []
+          };
+        }
+      } catch (_e) { /* defaults stay */ }
+    }
+    function saveGroupConfig() {
+      return db.put('settings', { key: 'client_groups', value: _cgConfig });
+    }
+    /** Merged group list: built-ins (localized, renameable via overrides,
+        deletable via the `deleted` tombstones) + custom trainer groups. */
+    function groupsList() {
+      const lang = (typeof currentLang === 'function') ? currentLang() : 'en';
+      const builtins = CG_BUILTIN
+        .filter(g => (_cgConfig.deleted || []).indexOf(g.id) === -1)
+        .map(g => ({
+          id: g.id,
+          name: _cgConfig.overrides[g.id] || ((typeof t === 'function' && t(g.key)) || g[lang] || g.en),
+          builtin: true
+        }));
+      const custom = _cgConfig.custom.map(g => ({ id: g.id, name: g.name, builtin: false }));
+      return builtins.concat(custom);
+    }
+    function groupNameOf(id) {
+      const g = groupsList().find(x => x.id === id);
+      return g ? g.name : '';
+    }
+    /** Deterministic pleasant color per group id (chip dot / badge). */
+    function cgColor(id) {
+      let h = 0;
+      const s = String(id || '');
+      for (let i = 0; i < s.length; i++) h = s.charCodeAt(i) + ((h << 5) - h);
+      return `hsl(${Math.abs(h) % 360}, 70%, 55%)`;
+    }
+    /** Legacy clients (pre-c105) and clients whose group no longer exists
+        (deleted here or on another device) — assign the first live group. */
+    async function ensureClientCgroups() {
+      const live = groupsList();
+      if (!live.length) return;
+      const firstId = live[0].id;
+      const missing = _clients.filter(c => !c.cgroup || !live.some(g => g.id === c.cgroup));
+      if (!missing.length) return;
+      missing.forEach(c => { c.cgroup = firstId; });
+      try { await db.bulkPut('clients', missing); } catch (_e) {}
+    }
+
+    /** Count clients per group id (uses the default for legacy clients). */
+    function cgCounts() {
+      const counts = {};
+      _clients.forEach(c => { const g = c.cgroup || CG_DEFAULT; counts[g] = (counts[g] || 0) + 1; });
+      return counts;
+    }
+
+    /** Render the group chip row (replaces the old static goal filter chips). */
+    function renderGroupChips() {
+      const wrap = document.getElementById('dash-filters');
+      if (!wrap) return;
+      const groups = groupsList();
+      const counts = cgCounts();
+      const chipCls = (active) => `filter-chip whitespace-nowrap text-xs font-semibold px-3 py-1.5 rounded-full border transition ${active ? 'border-primary/60 bg-primary/15 text-primary-2' : 'border-border bg-surface-2'}`;
+      let html = `<button type="button" data-cgroup="all" class="${chipCls(_groupFilter === 'all')}">${escapeHTML(t('common.all'))} <span class="opacity-60">${_clients.length}</span></button>`;
+      groups.forEach(g => {
+        html += `<button type="button" data-cgroup="${escapeAttr(g.id)}" class="${chipCls(_groupFilter === g.id)}" draggable="false"><span class="inline-block w-2 h-2 rounded-full align-middle me-1 shrink-0" style="background:${cgColor(g.id)}"></span>${escapeHTML(g.name)} <span class="opacity-60">${counts[g.id] || 0}</span></button>`;
+      });
+      html += `<button type="button" data-cg-add class="whitespace-nowrap text-xs font-bold w-7 h-7 grid place-items-center rounded-full border border-dashed border-primary/50 text-primary-2 bg-primary/10 hover:bg-primary/25 transition shrink-0" title="${escapeAttr(t('clients.groupsManager') || 'Groups')}" aria-label="${escapeAttr(t('clients.groupsManager') || 'Groups')}">+</button>`;
+      wrap.innerHTML = html;
+      wireGroupChips();
+    }
+
+    /** One-time delegated wiring for the group chip row (click + drag&drop). */
+    function wireGroupChips() {
+      const wrap = document.getElementById('dash-filters');
+      if (!wrap || wrap.dataset.cgWired) return;
+      wrap.dataset.cgWired = '1';
+      wrap.addEventListener('click', (e) => {
+        if (e.target.closest('[data-cg-add]')) { openCgroupsModal(); return; }
+        const chipEl = e.target.closest('[data-cgroup]');
+        if (chipEl) {
+          _groupFilter = chipEl.getAttribute('data-cgroup');
+          renderGroupChips();
+          applyFilters();
+        }
+      });
+      // Drag & drop: drop a client card onto a group chip to move it there
+      wrap.addEventListener('dragover', (e) => {
+        const chipEl = e.target.closest('[data-cgroup]');
+        if (chipEl && chipEl.getAttribute('data-cgroup') !== 'all') { e.preventDefault(); chipEl.classList.add('cg-drop'); }
+      });
+      wrap.addEventListener('dragleave', (e) => {
+        const chipEl = e.target.closest('[data-cgroup]');
+        if (chipEl) chipEl.classList.remove('cg-drop');
+      });
+      wrap.addEventListener('drop', (e) => {
+        const chipEl = e.target.closest('[data-cgroup]');
+        if (!chipEl) return;
+        e.preventDefault();
+        chipEl.classList.remove('cg-drop');
+        const id = e.dataTransfer ? e.dataTransfer.getData('text/plain') : '';
+        const gid = chipEl.getAttribute('data-cgroup');
+        if (id && gid && gid !== 'all') moveClientToGroup(id, gid);
+      });
+    }
+
+    /** Move a client to another group (persist + toast + re-render). */
+    async function moveClientToGroup(id, gid) {
+      const c = _clients.find(x => x.id === id);
+      if (!c || !gid) return;
+      if ((c.cgroup || CG_DEFAULT) === gid) return;
+      c.cgroup = gid;
+      try {
+        await db.put('clients', c);
+        toast(t('clients.movedToGroup', { g: groupNameOf(gid) }) || ('→ ' + groupNameOf(gid)), 'success');
+      } catch (e) {
+        toast(e.message || String(e), 'error');
+        return;
+      }
+      renderGroupChips();
+      applyFilters();
+    }
+
+    /* === Move-to-group popover (small floating menu near the folder button) === */
+    function closeMoveMenu() {
+      const m = document.getElementById('cg-move-menu');
+      if (m) m.remove();
+      document.removeEventListener('click', _cgMenuOutside, true);
+    }
+    function _cgMenuOutside(e) {
+      const m = document.getElementById('cg-move-menu');
+      if (m && !m.contains(e.target)) closeMoveMenu();
+    }
+    function openMoveMenu(btn) {
+      closeMoveMenu();
+      const id = btn.getAttribute('data-move-client');
+      const c = _clients.find(x => x.id === id);
+      if (!c) return;
+      const cur = c.cgroup || CG_DEFAULT;
+      const menu = document.createElement('div');
+      menu.id = 'cg-move-menu';
+      menu.className = 'fixed z-50 bg-surface border border-border rounded-xl shadow-card p-1.5 space-y-0.5 min-w-[11rem] max-h-[60vh] overflow-y-auto';
+      menu.setAttribute('role', 'menu');
+      menu.innerHTML = `<div class="text-[10px] font-bold text-muted uppercase tracking-wide px-2 py-1">${escapeHTML(t('clients.moveToGroup') || 'Move to group')}</div>` +
+        groupsList().map(g => `
+          <button type="button" role="menuitem" data-cg-move-to="${escapeAttr(g.id)}" class="w-full text-start text-xs font-semibold px-2.5 py-2 rounded-lg hover:bg-surface-2 transition flex items-center gap-2 ${g.id === cur ? 'text-primary-2 bg-primary/10' : 'text-muted'}">
+            <span class="w-2 h-2 rounded-full shrink-0" style="background:${cgColor(g.id)}"></span>
+            <span class="truncate">${escapeHTML(g.name)}</span>
+            ${g.id === cur ? '<span class="ms-auto shrink-0">✓</span>' : ''}
+          </button>`).join('');
+      document.body.appendChild(menu);
+      const r = btn.getBoundingClientRect();
+      const mw = menu.offsetWidth, mh = menu.offsetHeight;
+      let left = Math.min(Math.max(8, r.left + r.width / 2 - mw / 2), window.innerWidth - mw - 8);
+      let top = r.bottom + 6;
+      if (top + mh > window.innerHeight - 8) top = Math.max(8, r.top - mh - 6);
+      menu.style.left = left + 'px';
+      menu.style.top = top + 'px';
+      menu.addEventListener('click', (e) => {
+        const target = e.target.closest('[data-cg-move-to]');
+        if (target) {
+          moveClientToGroup(id, target.getAttribute('data-cg-move-to'));
+          closeMoveMenu();
+        }
+      });
+      setTimeout(() => document.addEventListener('click', _cgMenuOutside, true), 0);
+    }
+
+    /* === Groups manager modal (add / rename / delete) === */
+    function openCgroupsModal() {
+      renderCgroupsList();
+      const modal = document.getElementById('cgroups-modal');
+      if (modal) modal.classList.remove('hidden');
+    }
+    function closeCgroupsModal() {
+      const modal = document.getElementById('cgroups-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+    function renderCgroupsList() {
+      const wrap = document.getElementById('cgroups-list');
+      if (!wrap) return;
+      const counts = cgCounts();
+      wrap.innerHTML = groupsList().map(g => `
+        <div class="flex items-center gap-2 bg-surface-2 border border-border rounded-xl px-2.5 py-2" data-cg-row="${escapeAttr(g.id)}">
+          <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:${cgColor(g.id)}"></span>
+          <input type="text" value="${escapeAttr(g.name)}" maxlength="40" data-cg-name="${escapeAttr(g.id)}" class="flex-1 min-w-0 bg-transparent border-0 focus:outline-none text-sm font-semibold p-0" />
+          <span class="text-[10px] text-muted shrink-0 tabular-nums">${counts[g.id] || 0}</span>
+          <button type="button" data-cg-del="${escapeAttr(g.id)}" class="w-7 h-7 grid place-items-center rounded-lg text-muted hover:text-danger hover:bg-danger/10 transition shrink-0" title="${escapeAttr(t('common.delete') || 'Delete')}" aria-label="${escapeAttr(t('common.delete') || 'Delete')}">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+        </div>`).join('');
+    }
+    async function renameGroup(gid, name) {
+      const clean = String(name || '').trim();
+      if (!clean) { renderCgroupsList(); return; }
+      const g = groupsList().find(x => x.id === gid);
+      if (g && g.name === clean) return;
+      if (gid.startsWith('g_')) {
+        const cg = _cgConfig.custom.find(x => x.id === gid);
+        if (cg) cg.name = clean;
+      } else {
+        _cgConfig.overrides[gid] = clean;
+      }
+      await saveGroupConfig();
+      renderGroupChips();
+    }
+    async function deleteGroup(gid) {
+      const groups = groupsList();
+      if (groups.length <= 1) { toast(t('clients.groupsMinOne') || 'At least one group is required', 'warning'); return; }
+      const gone = groups.find(x => x.id === gid);
+      const fallback = (groups.find(g => g.id !== gid) || {}).id;
+      const affected = _clients.filter(c => (c.cgroup || CG_DEFAULT) === gid);
+      for (const c of affected) {
+        c.cgroup = fallback;
+        try { await db.put('clients', c); } catch (_e) {}
+      }
+      if (gone && gone.builtin) {
+        /* built-in groups are deletable too — tombstoned so they never come back */
+        if ((_cgConfig.deleted || []).indexOf(gid) === -1) _cgConfig.deleted.push(gid);
+      } else {
+        _cgConfig.custom = _cgConfig.custom.filter(g => g.id !== gid);
+      }
+      delete _cgConfig.overrides[gid];
+      await saveGroupConfig();
+      if (_groupFilter === gid) _groupFilter = 'all';
+      const fbName = groupNameOf(fallback);
+      toast(t('clients.groupDeleted', { n: affected.length, g: fbName || fallback }) || 'Group deleted', 'warning');
+      renderGroupChips();
+      renderCgroupsList();
+      applyFilters();
+    }
+    async function addGroup() {
+      const input = document.getElementById('cgroups-new-name');
+      if (!input) return;
+      const name = input.value.trim();
+      if (!name) return;
+      _cgConfig.custom.push({ id: 'g_' + Date.now().toString(36), name });
+      await saveGroupConfig();
+      input.value = '';
+      renderGroupChips();
+      renderCgroupsList();
+    }
+    function wireCgroupsModal() {
+      const modal = document.getElementById('cgroups-modal');
+      if (!modal || modal.dataset.cgWired) return;
+      modal.dataset.cgWired = '1';
+      const closeBtn = document.getElementById('cgroups-close');
+      if (closeBtn) closeBtn.addEventListener('click', closeCgroupsModal);
+      const doneBtn = document.getElementById('cgroups-done-btn');
+      if (doneBtn) doneBtn.addEventListener('click', closeCgroupsModal);
+      const addBtn = document.getElementById('cgroups-add-btn');
+      if (addBtn) addBtn.addEventListener('click', addGroup);
+      const nameInput = document.getElementById('cgroups-new-name');
+      if (nameInput) nameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') addGroup(); });
+      const list = document.getElementById('cgroups-list');
+      if (list) {
+        list.addEventListener('change', (e) => {
+          const inp = e.target.closest('[data-cg-name]');
+          if (inp) renameGroup(inp.getAttribute('data-cg-name'), inp.value);
+        });
+        list.addEventListener('click', (e) => {
+          const del = e.target.closest('[data-cg-del]');
+          if (del) deleteGroup(del.getAttribute('data-cg-del'));
+        });
+      }
+      modal.addEventListener('click', (e) => { if (e.target === modal) closeCgroupsModal(); });
+    }
 
     /** Load all clients from IndexedDB and re-apply filters. */
     async function load() {
       _clients = await db.all('clients');
+      await loadGroupConfig();
+      await ensureClientCgroups();
+      renderGroupChips();
+      wireCgroupsModal();
       applyFilters();
     }
 
-    /** Re-apply search + goal filter + sort, then re-render. */
+    /** Re-apply search + group filter + sort, then re-render. */
     function applyFilters() {
       _filtered = _clients.filter(c => {
-        // Goal filter
-        if (_goalFilter !== 'all' && c.goal !== _goalFilter) return false;
-        // Search (case-insensitive, matches name + goal + notes + injuries)
+        // c105: client-group filter (legacy clients live in the default group)
+        if (_groupFilter !== 'all' && (c.cgroup || CG_DEFAULT) !== _groupFilter) return false;
+        // Search (case-insensitive, matches name + goal + group + notes + injuries)
         if (_search) {
           const q = _search.toLowerCase();
           const haystack = [
             c.full_name || c.name || '',
             c.goal || '',
+            groupNameOf(c.cgroup || CG_DEFAULT),
             c.notes || '',
             c.injuries || ''
           ].join(' ').toLowerCase();
@@ -8600,7 +8979,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
       const sorters = {
         name:       (a, b) => (a.full_name || a.name || '').localeCompare(b.full_name || b.name || '', localeString()),
         lastActive: (a, b) => (b.last_active || 0) - (a.last_active || 0),
-        goal:       (a, b) => (a.goal || '').localeCompare(b.goal || '', localeString()),
+        cgroup:     (a, b) => groupNameOf(a.cgroup || CG_DEFAULT).localeCompare(groupNameOf(b.cgroup || CG_DEFAULT), localeString()),
         created:    (a, b) => (b.created_at || 0) - (a.created_at || 0)
       };
       _filtered.sort(sorters[_sortBy] || sorters.created);
@@ -8627,7 +9006,9 @@ button[id$="-close"]:active, button[data-cps-close]:active {
 
       // Wire click handlers — open profile view (not edit form)
       list.querySelectorAll('[data-client-id]').forEach(el => {
-        el.addEventListener('click', () => {
+        el.addEventListener('click', (e) => {
+          /* c105: the folder button opens the move-to-group menu instead */
+          if (e.target.closest('[data-move-client]')) return;
           const id = el.getAttribute('data-client-id');
           if (screens.profile) {
             screens.profile.load(id);
@@ -8635,6 +9016,13 @@ button[id$="-close"]:active, button[data-cps-close]:active {
           } else {
             openEdit(id);
           }
+        });
+      });
+      // c105: move-to-group buttons on each card
+      list.querySelectorAll('[data-move-client]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openMoveMenu(btn);
         });
       });
     }
@@ -8653,9 +9041,13 @@ button[id$="-close"]:active, button[data-cps-close]:active {
         c.weight ? c.weight + 'kg' : null,
         c.height ? c.height + 'cm' : null
       ].filter(Boolean).join(' · ');
+      /* c105: client group badge (colored dot + localized/custom name) */
+      const cGrp = c.cgroup || 'gym';
+      const cGrpName = groupNameOf(cGrp);
+      const groupBadge = cGrpName ? `<span class="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-surface-2 border border-border text-muted"><span class="w-1.5 h-1.5 rounded-full shrink-0" style="background:${cgColor(cGrp)}"></span>${escapeHTML(cGrpName)}</span>` : '';
 
       return `
-        <div data-client-id="${escapeAttr(c.id)}" class="client-card flex items-center gap-3 bg-surface border border-border rounded-2xl p-3.5 hover:bg-surface-2 hover:border-primary/30 transition cursor-pointer">
+        <div data-client-id="${escapeAttr(c.id)}" draggable="true" class="client-card flex items-center gap-3 bg-surface border border-border rounded-2xl p-3.5 hover:bg-surface-2 hover:border-primary/30 transition cursor-pointer">
           <div class="w-11 h-11 rounded-xl grid place-items-center font-display font-bold text-white shrink-0 shadow-card overflow-hidden" style="${c.photo_url ? '' : 'background: ' + avatarGradient(name)}">
             ${c.photo_url ? `<img src="${escapeAttr(c.photo_url)}" alt="" class="w-full h-full object-cover" />` : escapeHTML(initials(name))}
           </div>
@@ -8663,11 +9055,15 @@ button[id$="-close"]:active, button[data-cps-close]:active {
             <div class="flex items-center gap-2 flex-wrap">
               <span class="font-semibold truncate">${escapeHTML(name)}</span>
               ${c.goal ? `<span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${goalBadgeClass(c.goal)}">${escapeHTML(goalLabel)}</span>` : ''}
+              ${groupBadge}
             </div>
             <div class="text-xs text-muted truncate">
               ${stats ? escapeHTML(stats) + ' · ' : ''}${escapeHTML(lastActive)}
             </div>
           </div>
+          <button type="button" data-move-client="${escapeAttr(c.id)}" class="w-8 h-8 grid place-items-center rounded-lg bg-surface-2 border border-border text-muted hover:text-primary-2 hover:border-primary/40 transition shrink-0" title="${escapeAttr(t('clients.moveToGroup') || 'Move to group')}" aria-label="${escapeAttr(t('clients.moveToGroup') || 'Move to group')}">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><path d="M12 11v6M9 14h6"/></svg>
+          </button>
           <svg class="w-4 h-4 text-muted shrink-0 flip-rtl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
         </div>
       `;
@@ -8883,7 +9279,9 @@ button[id$="-close"]:active, button[data-cps-close]:active {
 
     function setSearch(v)   { _search = v;     applyFilters(); }
     function setSort(v)     { _sortBy = v;     applyFilters(); }
-    function setGoalFilter(v) { _goalFilter = v; applyFilters(); }
+    /* c105: group filter setter (setGoalFilter kept as alias for old callers) */
+    function setGroupFilter(v) { _groupFilter = v; applyFilters(); }
+    function setGoalFilter(v)  { setGroupFilter(v); }
     function refresh()      { return load(); }
     /** Open edit form by id (used by profile screen). Loads client if missing. */
     async function openEditById(id) {
@@ -8914,7 +9312,8 @@ button[id$="-close"]:active, button[data-cps-close]:active {
     if (tabA) tabA.addEventListener('click', function() { switchMicroTab('amino'); });
     
     return { load, refresh, applyFilters, openCreate, openEdit, openEditById, closeModal,
-             saveFromForm, deleteFromForm, setSearch, setSort, setGoalFilter };
+             saveFromForm, deleteFromForm, setSearch, setSort, setGoalFilter, setGroupFilter,
+             renderGroupChips, moveClientToGroup, openCgroupsModal };
   })();
 
   /* =====================================================================
@@ -10511,6 +10910,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
              before the weight/reps cells (hold duration is the primary metric) */
           const exBase = pbExBaseRec(ex);
           const isStretchEx = !!(exBase && (exBase.category === 'stretching' || exBase.group_canonical === 'stretching'));
+          /* c105: warm-up drills are TIME-first too (user request: «упражнение
+             разминки... должны учитывать время работы») — same 3-input row as
+             stretching: время · вес · повторы */
+          const isWarmupEx = !!(exBase && exBase.group_canonical === 'warmup' && !isStretchEx);
+          const isTimeFirstB = isStretchEx || isWarmupEx;
           /* c104: cardio machines get time/distance cells in the builder too */
           const isCardioB = ex.cardio === true || !!(exBase && exBase.category === 'cardio');
           // Set type colors (matches live workout's palette for consistency)
@@ -10539,7 +10943,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             setsHtml += `<div class="flex items-center gap-2 bg-surface rounded-lg p-1.5 ${setRowBg}">
               <span class="text-[10px] font-mono font-bold text-muted w-5 shrink-0">${si + 1}</span>
               ${typeBadge}
-              ${isStretchEx ? `<input type="number" step="1" min="0" placeholder="${t('workouts.time')}" value="${s.time != null ? s.time : ''}" data-pb-set="${ei}.${si}.time" title="${t('workouts.time')} · ${tShortB}" class="w-14 bg-surface-2 border border-primary/50 rounded px-1.5 py-1 text-xs text-center font-bold focus:outline-none focus:ring-1 focus:ring-primary/60" />
+              ${(isStretchEx || isWarmupEx) ? `<input type="number" step="1" min="0" placeholder="${t('workouts.time')}" value="${s.time != null ? s.time : ''}" data-pb-set="${ei}.${si}.time" title="${t('workouts.time')} · ${tShortB}" class="w-14 bg-surface-2 border border-primary/50 rounded px-1.5 py-1 text-xs text-center font-bold focus:outline-none focus:ring-1 focus:ring-primary/60" />
               ` : ''}${isCardioB ? `<input type="number" step="0.5" min="0" placeholder="${t('workouts.time')}" value="${s.time != null ? s.time : ''}" data-pb-set="${ei}.${si}.time" title="${t('workouts.time')} · ${tShortB}" class="w-14 bg-surface-2 border border-primary/50 rounded px-1.5 py-1 text-xs text-center font-bold focus:outline-none focus:ring-1 focus:ring-primary/60" />
               <span class="text-[10px] text-muted">/</span>
               <input type="number" step="0.5" min="0" placeholder="${t('workouts.dist')}" value="${s.dist != null ? s.dist : ''}" data-pb-set="${ei}.${si}.dist" title="${t('workouts.dist')}" class="w-14 bg-surface-2 border border-border rounded px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-1 focus:ring-primary/60" />
@@ -10583,7 +10987,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
                 ${ex.group ? `<div class="text-[10px] text-muted truncate">${escapeHTML(getLocalizedExGroup(ex))}</div>` : ''}
               </div>
               ${isCardioB ? '' : `<button data-pb-wunit="${ei}" class="text-[10px] font-bold text-muted hover:text-primary-2 bg-surface border border-border rounded-lg px-1.5 py-1 transition shrink-0" title="${t('wunit.exTitle') || 'Weight unit of this exercise'}">${wShortB}</button>`}
-              ${(isCardioB || isStretchEx) ? `<button data-pb-tunit="${ei}" class="text-[10px] font-bold text-muted hover:text-primary-2 bg-surface border border-primary/40 rounded-lg px-1.5 py-1 transition shrink-0" title="${t('wunit.time') || 'Time unit'}">${tShortB}</button>` : ''}
+              ${(isCardioB || isTimeFirstB) ? `<button data-pb-tunit="${ei}" class="text-[10px] font-bold text-muted hover:text-primary-2 bg-surface border border-primary/40 rounded-lg px-1.5 py-1 transition shrink-0" title="${t('wunit.time') || 'Time unit'}">${tShortB}</button>` : ''}
               <select data-pb-move-day="${ei}" title="${t('programs.moveToDay') || 'Move to day'}" aria-label="${t('programs.moveToDay') || 'Move to day'}" class="bg-surface-2 border border-border rounded-lg text-[10px] text-muted px-1 py-1 focus:outline-none shrink-0">
                 <option value="" selected>⇄</option>
                 ${_pb.days.map((d2, di2) => (di2 === _pb.activeDay || d2.is_rest_day) ? '' : `<option value="${di2}">→ ${d2.day_letter}</option>`).join('')}
@@ -12162,7 +12566,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       shoulders:     { en: 'Shoulders',     ru: 'Плечи',             he: 'כתפיים' },
       stretching:    { en: 'Stretching',    ru: 'Растяжка',          he: 'מתיחות' },
       triceps:       { en: 'Triceps',       ru: 'Разгибатели локтя', he: 'פושטי מרפק' },
-      warmup:        { en: 'Warmup',        ru: 'Разминка',          he: 'חימום' }
+      warmup:        { en: 'Warmup',        ru: 'Разминка',          he: 'חימום' },
+      cardio:        { en: 'Cardio',        ru: 'Кардио',            he: 'אירובי' },
+      balance:       { en: 'Stability & Balance', ru: 'Устойчивость и баланс', he: 'יציבות ואיזון' }
     };
     const DK_MG_REVERSE = (function () {
       const map = {};
@@ -12357,7 +12763,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
     /** Move a group up or down in the custom order. */
     async function moveGroup(groupKey, direction) {
-      const DEFAULT_ORDER = ['legs','chest','back','shoulders','elbow_flexors','triceps','forearms','abdominals','stretching','warmup','calisthenics','other'];
+      const DEFAULT_ORDER = ['legs','chest','back','shoulders','elbow_flexors','triceps','forearms','abdominals','stretching','warmup','cardio','balance','calisthenics','other'];
       if (!_customGroupOrder) {
         // Build from current tree + defaults
         const root = { children: {} };
@@ -12526,7 +12932,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       // Render recursively
       let html = '';
       // Sort by custom order (if defined), otherwise by label
-      const GROUP_ORDER = ['legs','chest','back','shoulders','elbow_flexors','triceps','forearms','abdominals','stretching','warmup','calisthenics','other'];
+      const GROUP_ORDER = ['legs','chest','back','shoulders','elbow_flexors','triceps','forearms','abdominals','stretching','warmup','cardio','balance','calisthenics','other'];
       // Check if user has custom order in settings
       const customOrder = _customGroupOrder || GROUP_ORDER;
       const sortedChildren = Object.values(root.children).sort((a, b) => {
@@ -13116,7 +13522,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         triceps: '#06b6d4', forearms: '#10b981', abdominals: '#a855f7', legs: '#ec4899',
         quadriceps: '#f97316', hamstrings: '#14b8a6', calves: '#6366f1', glutes: '#e11d48',
         lats: '#0ea5e9', lower_back: '#84cc16', middle_back: '#22c55e',
-        stretching: '#d946ef', warmup: '#fbbf24', calisthenics: '#64748b',
+        stretching: '#d946ef', warmup: '#fbbf24', cardio: '#f97316', balance: '#14b8a6', calisthenics: '#64748b',
         trapezius: '#7c3aed', neck: '#0891b2', abductors: '#be185d', adductors: '#059669'
       };
       return colors[gKey] || '#64748b';
@@ -14475,10 +14881,10 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           ${ex.notes ? `<div class="text-[11px] text-amber-300/80 bg-amber-500/8 border border-amber-500/15 rounded-lg p-2 leading-relaxed">💡 ${escapeHTML(ex.notes)}</div>` : ''}
 
           <!-- Set grid header (portal parity — unit columns are real buttons) -->
-          <div class="set-grid ${exIsStretch(ex) ? 'set-grid-stretch' : ''} px-2 text-[8px] uppercase tracking-wide text-muted font-bold">
+          <div class="set-grid ${(exIsStretch(ex) || exIsWarmup(ex)) ? 'set-grid-stretch' : ''} px-2 text-[8px] uppercase tracking-wide text-muted font-bold">
             <span>#</span><span class="text-center">${t('workouts.prevWeight')}</span>
             ${exIsCardio(ex) ? `${tColBtn}<span></span><button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-dunit-col data-dunit-base="${t('workouts.dist')}">${t('workouts.dist')} · ${dkDUnitShort()}</button>`
-            : exIsStretch(ex) ? `${tColBtn}<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-wunit-col-ex="${idx}" data-wunit-base="${t('workouts.weight')}" title="${t('wunit.title') || 'Weight unit'}">${t('workouts.weight')} · ${dkWUnitShort(exUnit)}</button><span class="text-center">${t('workouts.reps')}</span>`
+            : (exIsStretch(ex) || exIsWarmup(ex)) ? `${tColBtn}<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-wunit-col-ex="${idx}" data-wunit-base="${t('workouts.weight')}" title="${t('wunit.title') || 'Weight unit'}">${t('workouts.weight')} · ${dkWUnitShort(exUnit)}</button><span class="text-center">${t('workouts.reps')}</span>`
             : `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-wunit-col-ex="${idx}" data-wunit-base="${t('workouts.weight')}" title="${t('wunit.title') || 'Weight unit'}">${t('workouts.weight')} · ${dkWUnitShort(exUnit)}</button><span></span><span class="text-center">${t('workouts.reps')}</span>`}
             <span class="text-center">✓</span><span></span><span></span>
           </div>
@@ -14538,6 +14944,23 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       return rec.category === 'stretching';
     }
 
+    /* c105: is this live-workout exercise a WARM-UP drill? User request:
+       «упражнение разминки ... должны учитывать время работы» — warm-up rows
+       render time-first (the same 3-input layout as stretching: время · вес ·
+       повторы). The base record's group_canonical is the signal. */
+    function exIsWarmup(rec) {
+      if (!rec) return false;
+      try {
+        if (!_exMap || _exMapSize !== _exerciseCache.length) {
+          _exMap = buildExerciseIndex(_exerciseCache);
+          _exMapSize = _exerciseCache.length;
+        }
+        var baseEx = rec.exercise_id ? _exMap.get(rec.exercise_id) : null;
+        if (baseEx) return baseEx.group_canonical === 'warmup';
+      } catch (_e) {}
+      return false;
+    }
+
     /** Build HTML for a single set row. */
     function setRowHTML(exIdx, setIdx, set) {
       /* c90: prev column = last workout's values (prefilled on start / client
@@ -14546,12 +14969,15 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const isC = exIsCardio(_workout && _workout.exercises[exIdx]);
       /* c102: stretching = THREE optional measures, time has priority */
       const isS = exIsStretch(_workout && _workout.exercises[exIdx]);
+      /* c105: warm-up drills are time-first too (same 3-input row as stretch) */
+      const isW = !isS && exIsWarmup(_workout && _workout.exercises[exIdx]);
+      const isT = isS || isW;
       const hasPrev = set.prev_weight != null || set.prev_reps != null || set.prev_time != null || set.prev_dist != null;
       let prev = '—';
       if (hasPrev) {
         prev = isC
           ? `${set.prev_time != null ? set.prev_time : '—'}×${set.prev_dist != null ? set.prev_dist : '—'}`
-          : isS
+          : isT
           ? `${set.prev_time != null ? set.prev_time : '—'}×${set.prev_weight != null ? set.prev_weight : '—'}×${set.prev_reps != null ? set.prev_reps : '—'}`
           : `${set.prev_weight != null ? set.prev_weight : '—'}×${set.prev_reps != null ? set.prev_reps : '—'}`;
       }
@@ -14579,11 +15005,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         : `<button class="w-5 h-7 grid place-items-center rounded-lg text-muted" disabled style="opacity:.25" aria-label="${t('aria.removeSet')}">×</button>`;
       const weightInput = `<input type="number" step="0.5" inputmode="decimal" min="0" value="${set.weight != null ? set.weight : ''}" data-set-input="${exIdx}.${setIdx}.weight" class="set-input" placeholder="0" />`;
       const repsInput = `<input type="number" step="1" inputmode="numeric" min="0" value="${setType === 'amrap' ? '' : (set.reps != null ? set.reps : '')}" data-set-input="${exIdx}.${setIdx}.reps" class="set-input" placeholder="${setType === 'amrap' ? '∞' : '0'}" />`;
-      const timeInput = `<input type="number" step="${isS ? 1 : 0.5}" inputmode="decimal" min="0" value="${set.time != null ? set.time : ''}" data-set-input="${exIdx}.${setIdx}.time" class="set-input${isS ? ' stretch-time' : ''}" placeholder="0" title="${t('workouts.time')} · ${exTUnitShort(exIdx)}" />`;
+      const timeInput = `<input type="number" step="${isT ? 1 : 0.5}" inputmode="decimal" min="0" value="${set.time != null ? set.time : ''}" data-set-input="${exIdx}.${setIdx}.time" class="set-input${isT ? ' stretch-time' : ''}" placeholder="0" title="${t('workouts.time')} · ${exTUnitShort(exIdx)}" />`;
       const distInput = `<input type="number" step="0.5" inputmode="decimal" min="0" value="${set.dist != null ? set.dist : ''}" data-set-input="${exIdx}.${setIdx}.dist" class="set-input" placeholder="0" />`;
 
       return `
-        <div class="set-row set-grid ${isS ? 'set-grid-stretch' : ''} bg-surface-2/60 px-2 py-1.5 rounded-xl ${done ? 'set-row-done' : ''}" data-set-row="${exIdx}.${setIdx}">
+        <div class="set-row set-grid ${isT ? 'set-grid-stretch' : ''} bg-surface-2/60 px-2 py-1.5 rounded-xl ${done ? 'set-row-done' : ''}" data-set-row="${exIdx}.${setIdx}">
           <div class="text-center leading-tight">
             <div class="font-mono text-[11px] font-bold text-muted">${setIdx + 1}</div>
             ${typeBadge}
@@ -14592,7 +15018,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           ${isC ? `${timeInput}
           <span class="text-[9px] text-muted text-center">/</span>
           ${distInput}`
-          : isS ? `${timeInput}
+          : isT ? `${timeInput}
           ${weightInput}
           ${repsInput}`
           : `${weightInput}
@@ -14672,7 +15098,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
                 ex.sets[si + 1].prev_reps = curr.reps;
                 ex.sets[si + 1].prev_rpe = curr.rpe; /* c90: chain the effort too */
                 const cEx = exIsCardio(ex);
-                const sEx = exIsStretch(ex); /* c102: stretch chains its hold time too */
+                const sEx = exIsStretch(ex) || exIsWarmup(ex); /* c102+c105: stretch/warm-up chain their hold time too */
                 if (cEx || sEx) {
                   ex.sets[si + 1].prev_time = curr.time;
                 }
@@ -17019,7 +17445,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const groups = getGroupsWithSubgroups();
       // Display order for groups
       const GROUP_ORDER = ['chest', 'back', 'shoulders', 'elbow_flexors', 'triceps', 'forearms',
-                           'abdominals', 'legs', 'fullbody', 'calisthenics', 'stretching', 'warmup'];
+                           'abdominals', 'legs', 'fullbody', 'calisthenics', 'stretching', 'warmup', 'cardio', 'balance'];
       const orderedGroups = Object.keys(groups).sort((a, b) => {
         const ia = GROUP_ORDER.indexOf(a);
         const ib = GROUP_ORDER.indexOf(b);
@@ -17689,7 +18115,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
     // All canonical muscle groups (matches GROUP_I18N keys)
     const ALL_GROUPS = ['chest', 'back', 'shoulders', 'elbow_flexors', 'triceps', 'forearms',
-                        'abdominals', 'legs', 'stretching', 'warmup', 'calisthenics'];
+                        'abdominals', 'legs', 'stretching', 'warmup', 'cardio', 'balance', 'calisthenics'];
 
     // 3-language labels (matches GROUP_I18N but localized to recovery context)
     const GROUP_LABELS = {
@@ -17703,6 +18129,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       legs:           { en: 'Legs',        ru: 'Ноги',        he: 'רגליים' },
       stretching:     { en: 'Stretching',  ru: 'Растяжка',    he: 'מתיחות' },
       warmup:         { en: 'Warm-up',     ru: 'Разминка',    he: 'חימום' },
+      cardio:         { en: 'Cardio',      ru: 'Кардио',      he: 'אירובי' },
+      balance:        { en: 'Stability & Balance', ru: 'Устойчивость и баланс', he: 'יציבות ואיזון' },
       calisthenics:   { en: 'Calisthenics',ru: 'Калистеника', he: 'משקל גוף' }
     };
 
@@ -23000,6 +23428,8 @@ async function boot() {
       await seedFoodDatabase(false);
       // c16: heal stale image paths (old bf_*.gif seeds → webp) in place
       try { await healExerciseImagePaths(); } catch (_) {}
+      // c105: re-map canonical groups in place (cardio split from warm-up + balance)
+      try { await migrateExerciseGroups(); } catch (_) {}
       // Shared exercise cache for localized name/group/image lookups in ANY
       // screen (preview modal, live workout, history) — independent of the
       // program builder being open.
@@ -23489,14 +23919,25 @@ async function boot() {
       screens.dashboard.setSort(e.target.value);
     });
 
-    // Goal filter chips
-    document.querySelectorAll('#dash-filters .filter-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        document.querySelectorAll('#dash-filters .filter-chip').forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        screens.dashboard.setGoalFilter(chip.getAttribute('data-goal'));
+    /* c105: group chips are wired INSIDE screens.dashboard (delegation on
+       #dash-filters: click / dragover / drop). What remains here is the
+       dragstart side of the drag-a-card-onto-a-chip interaction. */
+    const dashListEl = document.getElementById('dash-list');
+    if (dashListEl) {
+      dashListEl.addEventListener('dragstart', (e) => {
+        const card = e.target.closest('[data-client-id]');
+        if (card && e.dataTransfer) {
+          e.dataTransfer.setData('text/plain', card.getAttribute('data-client-id'));
+          e.dataTransfer.effectAllowed = 'move';
+          card.classList.add('opacity-50');
+        }
       });
-    });
+      dashListEl.addEventListener('dragend', (e) => {
+        const card = e.target.closest('[data-client-id]');
+        if (card) card.classList.remove('opacity-50');
+        document.querySelectorAll('#dash-filters .cg-drop').forEach(el => el.classList.remove('cg-drop'));
+      });
+    }
 
     // Add client buttons (dashboard, empty state, aside)
     const addBtns = ['dash-add-btn', 'dash-empty-add', 'aside-add-client'];
@@ -24018,7 +24459,7 @@ async function boot() {
       const k = String(s || '').trim().toLowerCase();
       if (!k) return '';
       try { const SC = window.SYNERGIST_CANONICAL; if (SC && SC[k]) return SC[k]; } catch (_) {}
-      return ['chest', 'back', 'shoulders', 'elbow_flexors', 'triceps', 'forearms', 'abdominals', 'legs', 'stretching', 'warmup', 'calisthenics'].indexOf(k) !== -1 ? k : '';
+      return ['chest', 'back', 'shoulders', 'elbow_flexors', 'triceps', 'forearms', 'abdominals', 'legs', 'stretching', 'warmup', 'cardio', 'balance', 'calisthenics'].indexOf(k) !== -1 ? k : '';
     }
     window.dkPushClientHistory = async function (clientId, rec) {
       try {
@@ -28858,7 +29299,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 104; /* numeric part of dk-build c104 */
+  var RUNNING = 105; /* numeric part of dk-build c105 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
@@ -30288,7 +30729,7 @@ document.addEventListener('input', function (e) {
     var HINT = { en: 'Tap a muscle to filter', ru: 'Нажмите на мышцу для фильтра', he: 'הקש על שריר לסינון' };
     var UNIT = { en: 'exercises', ru: 'упр.', he: 'תרגילים' };
     var ORDER = ['chest', 'back', 'shoulders', 'elbow_flexors', 'triceps', 'forearms', 'abdominals',
-                 'legs', 'fullbody', 'calisthenics', 'stretching', 'warmup', 'other'];
+                 'legs', 'fullbody', 'calisthenics', 'stretching', 'warmup', 'cardio', 'balance', 'other'];
     var EQUIP = {
       dumbbell: { en: 'Dumbbells', ru: 'Гантели', he: 'משקולות' },
       dumbbells: { en: 'Dumbbells', ru: 'Гантели', he: 'משקולות' },
