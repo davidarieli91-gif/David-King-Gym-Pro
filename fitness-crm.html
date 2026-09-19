@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c105" />
+<meta name="dk-build" content="c106" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2685,7 +2685,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c105</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c106</p>
             </div>
           </div>
 
@@ -8264,7 +8264,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
         ctx.fillRect(40, y, W - 80, 44);
         ctx.fillStyle = '#fff';
         ctx.font = 'bold 22px "Plus Jakarta Sans", Inter, sans-serif';
-        const dayTitle = (t('programs.day') || 'Day') + ' ' + (day.day_letter || (di + 1)) + ' — ' + (day.name || '');
+        const dayTitle = (t('programs.day') || 'Day') + ' ' + (day.day_letter || (di + 1)) + ' — ' + (defaultDayNameT(day.name, day.day_letter || (di + 1)) || '');
         ctx.fillText(dayTitle.substring(0, 50), 56, y + 30);
         y += 56;
 
@@ -9898,7 +9898,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                     <select class="text-[10px] font-semibold bg-surface-2 border border-border rounded px-1 py-0.5 shrink-0" data-day-of-week="${prog.id}.${i}">
                       ${[null,0,1,2,3,4,5,6].map(d => `<option value="${d === null ? '' : d}" ${dow === d ? 'selected' : ''}>${d === null ? t('client.noDay') : t('client.' + DAY_KEYS[d])}</option>`).join('')}
                     </select>
-                    <div class="flex-1 min-w-0"><div class="text-sm font-medium truncate">${dow != null ? t('client.' + ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'][dow]) : escapeHTML(day.name || t('programs.day') + ' ' + (day.day_letter || (i+1)))}</div><div class="text-[11px] text-muted truncate">${exCount} ${t('exercise.exercises')}</div></div>
+                    <div class="flex-1 min-w-0"><div class="text-sm font-medium truncate">${dow != null ? t('client.' + ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'][dow]) : escapeHTML(defaultDayNameT(day.name, day.day_letter || (i+1)) || t('programs.day') + ' ' + (day.day_letter || (i+1)))}</div><div class="text-[11px] text-muted truncate">${exCount} ${t('exercise.exercises')}</div></div>
                     <div class="flex items-center gap-1.5 min-w-0 max-w-full overflow-x-auto no-scrollbar">
                       ${(day.exercises || []).slice(0, 4).map(ex => {
                         const img = globalExImage(ex);
@@ -10042,7 +10042,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                     return `<div class="flex items-center gap-2 bg-surface rounded-lg p-1.5">
                       <span class="w-6 h-6 rounded-lg bg-muted/15 text-muted grid place-items-center font-mono font-bold text-[10px] shrink-0">${day.day_letter || (i+1)}</span>
                       <span class="text-[10px] font-semibold text-muted w-6 text-center shrink-0">${dLabel}</span>
-                      <div class="flex-1 min-w-0"><div class="text-xs font-medium truncate">${day.day_of_week != null ? t('client.' + ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'][day.day_of_week]) : escapeHTML(day.name || t('programs.day') + ' ' + (day.day_letter || (i+1)))}</div></div>
+                      <div class="flex-1 min-w-0"><div class="text-xs font-medium truncate">${day.day_of_week != null ? t('client.' + ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'][day.day_of_week]) : escapeHTML(defaultDayNameT(day.name, day.day_letter || (i+1)) || t('programs.day') + ' ' + (day.day_letter || (i+1)))}</div></div>
                       <span class="text-[10px] text-muted shrink-0">${exCount}ex</span>
                     </div>`;
                   }).join('')}
@@ -10142,7 +10142,12 @@ button[id$="-close"]:active, button[data-cps-close]:active {
         if (!modal || !bodyEl) return;
 
         // Set title
-        if (titleEl) titleEl.textContent = (day.name || 'Workout') + ' ' + (day.day_letter || (dayIdx + 1));
+        if (titleEl) {
+          const _dn106 = defaultDayNameT(day.name, day.day_letter || (dayIdx + 1));
+          const _def106 = (t('programs.day') || 'Day') + ' ' + (day.day_letter || (dayIdx + 1));
+          /* c106: a default name («Day A») already contains the letter — don't append it twice */
+          titleEl.textContent = (_dn106 === _def106) ? _def106 : ((_dn106 || 'Workout') + ' ' + (day.day_letter || (dayIdx + 1)));
+        }
         if (subtitleEl) subtitleEl.textContent = prog.name + ' · ' + (day.exercises || []).length + ' ' + t('exercise.exercises');
 
         // Build exercise list
@@ -14528,6 +14533,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         exercises: [],
         started_at: Date.now()
       };
+      _lastRefMap = null; /* c106: never reuse the previous workout's client prev-map */
       await loadExerciseCache();  // Fix: await before render() so thumbnails appear on first render
       loadClientList();
       render();
@@ -14537,6 +14543,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
     /** Start from a template (prefill exercises). */
     async function startFromTemplate(tpl) {
+      _lastRefMap = null; /* c106 */
       _workout = {
         name: tpl.name || '',
         client_id: '',
@@ -14563,6 +14570,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
      *  This is the SAME pattern as startFromTemplate — set _workout with
      *  exercises BEFORE calling render() so the first render shows them. */
     async function startFromProgram(prefill) {
+      _lastRefMap = null; /* c106: fresh client → fresh prev-map (the refetch in ensureLastRef picks the NEW client's history) */
       _workout = {
         name: prefill.name || '',
         client_id: prefill.client_id || '',
@@ -14628,6 +14636,25 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     async function fetchLastRef(clientId) {
       let rows = [];
       try { rows = (await db.find('workout_history', 'by_clientId', clientId)) || []; } catch (_) { rows = []; }
+      /* c106: merge the trainee portal's cloud history (portal_shares/ps_hist)
+         — sessions the CLIENT logged on his phone never reach this device's
+         IndexedDB (c93/c94 are in-memory only), which is exactly why the
+         portal showed «Пред. 15×30 RPE7» while the trainer's live «ПРЕД.»
+         column stayed empty for the same technique seconds later. Same
+         source the portal itself reads + same 4s offline race guard and
+         dedupe-by-ts pattern as computeForClient (recovery map, c98). */
+      try {
+        if (typeof window.dkFetchClientHistory === 'function') {
+          const remote106 = await Promise.race([
+            window.dkFetchClientHistory(clientId),
+            new Promise(res => setTimeout(res, 4000))
+          ]);
+          if (remote106 && remote106.length) {
+            const seen106 = new Set((rows || []).map(w => Number(w.date || w.created_at) || 0));
+            rows = (rows || []).concat(remote106.filter(r => !seen106.has(Number(r.date) || 0)));
+          }
+        }
+      } catch (_) {}
       if (!rows.length) {
         try {
           const all = (await db.all('workout_history')) || [];
@@ -24524,6 +24551,7 @@ async function boot() {
               exercise_id: ex.key || ex.exercise_id || '',
               name: ex.name || '',
               group: ex.group || '', muscle_group: ex.group || '',
+              unit: ex.unit === 'lb' ? 'lb' : 'kg', /* c106: prev conversion needs the history exercise's unit */
               sets: ex.sets || []
             }))
           };
@@ -26629,6 +26657,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /** Current active language (defaults to 'en' until applyLang is called). */
   let _lang = 'en';
+
+  /* c106: default day names («День A»/«Day A»/«יום A») were STORED in program
+     data at creation time in the trainer's then-active UI language — so the
+     portal and older render sites showed e.g. Russian «День A» on a Hebrew
+     UI. Recognize the default pattern in ANY language and translate it live;
+     custom names («Push», «Моя 9/9/26») are user data and stay untouched. */
+  function defaultDayNameT(name, letter) {
+    const nm = String(name || '').trim();
+    const L = String(letter == null ? '' : letter);
+    if (nm && L) {
+      const m = nm.match(/^(День|Day|יום)\s+(.+)$/);
+      if (m && m[2] === L) return (t('programs.day') || 'Day') + ' ' + L;
+    }
+    return nm;
+  }
 
   /**
    * Resolve a dotted key path against a nested object.
@@ -29299,7 +29342,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 105; /* numeric part of dk-build c105 */
+  var RUNNING = 106; /* numeric part of dk-build c106 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

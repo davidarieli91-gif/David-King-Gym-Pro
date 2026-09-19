@@ -100,9 +100,19 @@ const _mmEsc = (v) => String(v == null ? '' : v)
       warmup: { en: 'Warm-up', ru: 'Разминка', he: 'חימום' },
       calisthenics: { en: 'Calisthenics', ru: 'Калистеника', he: 'משקל גוף' },
       stretching: { en: 'Stretching', ru: 'Растяжка', he: 'מתיחות' },
+      cardio: { en: 'Cardio', ru: 'Кардио', he: 'אירובי' },
+      balance: { en: 'Stability & Balance', ru: 'Устойчивость и баланс', he: 'יציבות ואיזון' },
       fullbody: { en: 'Full Body', ru: 'Всё тело', he: 'כל הגוף' },
       other: { en: 'Other', ru: 'Другое', he: 'אחר' }
     };
+    /* c106: live language for illustration chips — the old code hardcoded RU
+       («Грудь») on every UI. Reads <html lang> which BOTH apps set on switch. */
+    function mmGroupLabel3(key) {
+      let lang = 'he';
+      try { lang = (document.documentElement.getAttribute('lang') || 'en').slice(0, 2); } catch (_e) {}
+      const g = GROUP_NAMES_3[String(key || '').toLowerCase()];
+      return g ? (g[lang] || g.en) : (key || '');
+    }
     // Card chips: every working muscle, target highlighted in group color (◉),
     // secondaries neutral (○). ex = any exercise shape; lang = 'en'|'ru'|'he'.
     function getExerciseMuscleChips(ex, lang, opts) {
@@ -675,12 +685,14 @@ const _mmEsc = (v) => String(v == null ? '' : v)
       }
 
       const RU_GROUP = { chest: 'Грудь', back: 'Спина', shoulders: 'Плечи', elbow_flexors: 'Бицепс', triceps: 'Трицепс', forearms: 'Предплечья', abdominals: 'Пресс', legs: 'Ноги', stretching: 'Растяжка', warmup: 'Разминка', calisthenics: 'Калистеника', other: 'Другое' };
+      /* c106: RU_GROUP kept for compatibility; chips now use the live language */
+      function _glabel(key) { return mmGroupLabel3(key) || RU_GROUP[key] || key; }
 
       function chipsInner(ex) {
         const { primary, aux } = getExerciseMuscleGroups(ex);
         const pc = GROUP_COLORS[primary] || '#ef4444';
-        const pl = RU_GROUP[primary] || primary;
-        const auxChips = aux.slice(0, 3).map(a => `<span style="background:${AUX_HIGHLIGHT_COLOR};color:#062a30;padding:1px 5px;border-radius:999px;font-weight:700;font-size:9px;white-space:nowrap;">+ ${_mmEsc(RU_GROUP[a] || a)}</span>`).join('');
+        const pl = _glabel(primary);
+        const auxChips = aux.slice(0, 3).map(a => `<span style="background:${AUX_HIGHLIGHT_COLOR};color:#062a30;padding:1px 5px;border-radius:999px;font-weight:700;font-size:9px;white-space:nowrap;">+ ${_mmEsc(_glabel(a))}</span>`).join('');
         return `<span style="background:${pc};color:#fff;padding:1px 6px;border-radius:999px;font-weight:800;font-size:10px;box-shadow:0 0 6px ${pc};">${_mmEsc(pl)}</span>${auxChips}`;
       }
       function chips(ex) {
@@ -741,8 +753,8 @@ const _mmEsc = (v) => String(v == null ? '' : v)
       function muscleChips(ex) {
         const { primary, aux } = getExerciseMuscleGroups(ex);
         const pc = GROUP_COLORS[primary] || '#ef4444';
-        const pl = RU_GROUP[primary] || primary;
-        const auxChips = aux.slice(0, 2).map(a => `<span style="background:${AUX_HIGHLIGHT_COLOR};color:#062a30;padding:0 4px;border-radius:999px;font-weight:700;font-size:9px;white-space:nowrap;">+ ${_mmEsc(RU_GROUP[a] || a)}</span>`).join('');
+        const pl = _glabel(primary);
+        const auxChips = aux.slice(0, 2).map(a => `<span style="background:${AUX_HIGHLIGHT_COLOR};color:#062a30;padding:0 4px;border-radius:999px;font-weight:700;font-size:9px;white-space:nowrap;">+ ${_mmEsc(_glabel(a))}</span>`).join('');
         return `<div style="display:flex;gap:3px;align-items:center;flex-wrap:wrap;margin-top:2px;overflow:hidden;">
           <span style="background:${pc};color:#fff;padding:0 5px;border-radius:999px;font-weight:800;font-size:10px;white-space:nowrap;">${_mmEsc(pl)}</span>${auxChips}</div>`;
       }
