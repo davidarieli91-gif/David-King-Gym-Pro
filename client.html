@@ -1985,6 +1985,96 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
 .tex-check { position:absolute; top:5px; inset-inline-end:5px; width:17px; height:17px; border-radius:9999px; background:rgb(var(--c-accent)); color:rgb(var(--c-surface)); font-size:11px; font-weight:800; line-height:17px; text-align:center; opacity:0; transform:scale(.4); transition:opacity .15s ease, transform .15s ease; pointer-events:none; }
 #tex-active-badge { font-size:10px; font-weight:800; padding:2px 8px; border-radius:9999px; background:rgb(var(--c-accent) / .14); color:rgb(var(--c-accent)); border:1px solid rgb(var(--c-accent) / .35); text-transform:none; letter-spacing:0; white-space:nowrap; }
 #texture-opacity-val { font-size:10px; font-weight:800; padding:2px 6px; border-radius:6px; background:rgb(var(--c-accent) / .1); color:rgb(var(--c-accent)); border:1px solid rgb(var(--c-accent) / .25); font-variant-numeric:tabular-nums; }
+
+/* ===== PANEL TEXTURE (c113) — glass texture for ALL the portal's panels =====
+   Portal parity with the trainer app (c109→c112): the same JS-computed CSS vars
+   (ptexApply) drive two materials — «main» (denser glass + tinted rim) for the
+   modal / sheet roots and the settings preview tile, «inner» for the translucent
+   cards. The portal panel anatomy differs from the trainer's: big cards are
+   .glass / .glass-strong, chips and small tiles are .bg-surface-2, modal panels
+   are the bg-[rgb(var(--c-surface))] children of [id$='-modal'] / sheet roots.
+   Texture EFFECTS stay on the background overlay (#dk-tex-overlay) and keep
+   showing through the glass (c86 architecture) — the two systems stack, never
+   cancel. Exemptions: form controls (input/select/textarea) stay opaque so
+   typing stays readable, the fullscreen image viewer (#viewer-modal) keeps its
+   black stage. The «inner» material does not repaint border-color, so
+   functional borders survive under the glass. All visual values arrive as CSS
+   vars computed in JS, so any texture × color × transparency combination works
+   without a CSS matrix. */
+body[data-ptex]:not([data-ptex='off']) .glass,
+body[data-ptex]:not([data-ptex='off']) .glass-strong,
+body[data-ptex]:not([data-ptex='off']) .bg-surface-2:not(input):not(select):not(textarea),
+body[data-ptex]:not([data-ptex='off']) #theme-menu,
+body[data-ptex]:not([data-ptex='off']) [id$='-modal'] > div .sticky,
+body[data-ptex]:not([data-ptex='off']) #portal-settings-sheet div.sticky {
+  background-color: var(--ptex-inner-bg, rgb(var(--c-surface-2))) !important;
+  background-image: var(--ptex-inner-img, none) !important;
+  background-size: var(--ptex-inner-img-size, 100% 100%) !important;
+  background-repeat: var(--ptex-inner-img-repeat, no-repeat) !important;
+  background-blend-mode: normal !important;
+  backdrop-filter: var(--ptex-blur, none);
+  -webkit-backdrop-filter: var(--ptex-blur, none);
+}
+body[data-ptex]:not([data-ptex='off']) #exercise-modal > div,
+body[data-ptex]:not([data-ptex='off']) #report-modal > div,
+body[data-ptex]:not([data-ptex='off']) #portal-settings-sheet > div.relative,
+body[data-ptex]:not([data-ptex='off']) #dk-wunit-sheet > div.relative,
+body[data-ptex]:not([data-ptex='off']) #dk-cunit-sheet > div.relative,
+body[data-ptex]:not([data-ptex='off']) #ptex-preview {
+  background-color: var(--ptex-main-bg, rgb(var(--c-surface))) !important;
+  background-image: var(--ptex-main-img, none) !important;
+  background-size: var(--ptex-main-img-size, 100% 100%) !important;
+  background-repeat: var(--ptex-main-img-repeat, no-repeat) !important;
+  background-blend-mode: normal !important;
+  backdrop-filter: var(--ptex-blur, none);
+  -webkit-backdrop-filter: var(--ptex-blur, none);
+  border-color: var(--ptex-border, rgb(var(--c-border))) !important;
+}
+/* --- TEXT CONTRAST on glass — a halo of the page-background color around every
+   glyph inside textured panels (inherited through headings, labels, chips and
+   form controls); neutralizes busy mosaic cells and see-through bleed in BOTH
+   light and dark themes. Solid saturated buttons opt out. */
+body[data-ptex]:not([data-ptex='off']) :is(.glass, .glass-strong, .bg-surface-2, #theme-menu, #ptex-preview) {
+  text-shadow: 0 1px 2px rgb(var(--c-bg) / .55), 0 0 7px rgb(var(--c-bg) / .25);
+}
+body[data-ptex]:not([data-ptex='off']) :is(button, a, label):is(.bg-indigo-500, .bg-emerald-500, .bg-red-500, .bg-primary, .bg-success, .bg-danger, .bg-warning) {
+  text-shadow: none;
+}
+/* preview honesty: the demo chips follow the «inner» material exactly like real cards */
+body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
+  background-color: var(--ptex-inner-bg, rgb(var(--c-surface-2))) !important;
+  background-image: var(--ptex-inner-img, none) !important;
+  background-size: var(--ptex-inner-img-size, 100% 100%) !important;
+  background-repeat: var(--ptex-inner-img-repeat, no-repeat) !important;
+}
+/* --- tex × ptex COMBINE — texture effects painted ON .bg-surface-2 chips stack
+   UNDER the glass (ptex layers on top, tex pattern beneath). .glass/.glass-strong
+   never carried the tex pattern themselves (c86) — the #dk-tex-overlay shows
+   through their translucent glass anyway, so they need no extra stacking. */
+body[data-tex]:not([data-tex='none'])[data-ptex]:not([data-ptex='off']) .bg-surface-2:not(input):not(select):not(textarea) {
+  background-color: var(--ptex-inner-bg, rgb(var(--c-surface-2))) !important;
+  background-image: var(--ptex-inner-img, none), var(--texture, none) !important;
+  background-size: var(--ptex-inner-img-size, 100% 100%), var(--texture-size, auto) !important;
+  background-repeat: var(--ptex-inner-img-repeat, no-repeat), var(--texture-repeat, repeat) !important;
+  background-blend-mode: normal, normal, normal !important;
+  backdrop-filter: var(--ptex-blur, none);
+  -webkit-backdrop-filter: var(--ptex-blur, none);
+}
+/* --- Panel texture settings UI --- */
+.ptex-cbtn { position:relative; width:44px; height:44px; border-radius:12px; border:2px solid rgb(var(--c-border)); cursor:pointer; padding:0; transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease; background-clip:padding-box; }
+.ptex-cbtn:hover { transform:translateY(-1px); }
+.ptex-cbtn:active { transform:translateY(0) scale(.97); }
+.ptex-cbtn:focus-visible { outline:2px solid rgb(var(--c-accent)); outline-offset:2px; }
+.ptex-cbtn.active { border-color:rgb(var(--c-accent)); box-shadow:0 0 0 2px rgb(var(--c-accent) / .5); }
+.ptex-cbtn .ptex-ccheck { position:absolute; top:-7px; inset-inline-end:-7px; width:17px; height:17px; border-radius:9999px; background:rgb(var(--c-accent)); color:rgb(var(--c-surface)); font-size:11px; font-weight:800; line-height:17px; text-align:center; opacity:0; transform:scale(.4); transition:opacity .15s ease, transform .15s ease; pointer-events:none; }
+.ptex-cbtn.active .ptex-ccheck { opacity:1; transform:scale(1); }
+#ptex-active-badge { font-size:10px; font-weight:800; padding:2px 8px; border-radius:9999px; background:rgb(var(--c-accent) / .14); color:rgb(var(--c-accent)); border:1px solid rgb(var(--c-accent) / .35); text-transform:none; letter-spacing:0; white-space:nowrap; }
+#ptex-opacity-val { font-size:10px; font-weight:800; padding:2px 6px; border-radius:6px; background:rgb(var(--c-accent) / .1); color:rgb(var(--c-accent)); border:1px solid rgb(var(--c-accent) / .25); font-variant-numeric:tabular-nums; }
+#ptex-preview { position:relative; overflow:hidden; border-radius:14px; border:1px solid rgb(var(--c-border)); padding:14px; background:rgb(var(--c-surface)); }
+#ptex-preview .ptex-preview-row { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+#ptex-preview .ptex-preview-chip { flex:1 1 64px; min-height:30px; border-radius:9px; border:1px solid rgb(var(--c-border) / .8); background:rgb(var(--c-surface-2)); }
+#ptex-backdrop-demo { border-radius:16px; padding:12px; border:1px dashed rgb(var(--c-border) / .8); background: repeating-conic-gradient(rgb(var(--c-border) / .30) 0% 25%, transparent 0% 50%) 50% / 18px 18px, linear-gradient(135deg, rgb(var(--c-primary) / .30), rgb(var(--c-accent) / .22)); }
+
     /* ===== c85: font scale — the same 16-step system as the trainer app (A− / A+ in the header) ===== */
     :root { --font-scale: 1; }
     html { font-size: clamp(10px, calc(16px * var(--font-scale)), 60px); }
@@ -5069,9 +5159,9 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
 
     /* ---- local strings (ru / en / he) ---- */
     var L = {
-      ru: { dumbbellAria:'Вернуться к тренировке', setTitle:'Настройки', themes:'Темы', darkThemes:'Тёмные темы', lightThemes:'Светлые темы', textures:'Текстуры', texHint:'Текстурные наложения поверх любой темы — те же, что в основном приложении. Выберите эффект и настройте насыщенность.', opacity:'Насыщенность', reset:'Сброс', resetDone:'Возврат к стандартной насыщенности', applied:'Текстура применена', share:'Поделиться отчётом', themeChanged:'Тема изменена', wunitTitle:'Единица веса', wunitKg:'Килограммы', wunitLb:'Фунты', wunitKgShort:'кг', wunitLbShort:'фт', wunitTime:'Единица времени', wunitMin:'Минуты', wunitSec:'Секунды', wunitMinShort:'мин', wunitSecShort:'сек', wunitDist:'Единица расстояния', wunitM:'Метры', wunitKm:'Километры', wunitMShort:'м', wunitKmShort:'км', wunitCardioTitle:'Единицы кардио', wunitExTitle:'Единица веса упражнения', wunitApplyAll:'Применить ко всем упражнениям тренировки', wunitDefaultTitle:'Единица веса по умолчанию (для новых упражнений)', timeLabel:'Время', distLabel:'Дистанция', distShortLabel:'Дист' },
-      en: { dumbbellAria:'Back to workout', setTitle:'Settings', themes:'Themes', darkThemes:'Dark themes', lightThemes:'Light themes', textures:'Textures', texHint:'Texture overlays on top of any theme — the same as in the main app. Pick an effect and fine-tune its opacity.', opacity:'Opacity', reset:'Reset', resetDone:'Returned to the effect default', applied:'Texture applied', share:'Share report', themeChanged:'Theme changed', wunitTitle:'Unit of weight', wunitKg:'Kilograms', wunitLb:'Pounds', wunitKgShort:'kg', wunitLbShort:'lb', wunitTime:'Time unit', wunitMin:'Minutes', wunitSec:'Seconds', wunitMinShort:'min', wunitSecShort:'sec', wunitDist:'Distance unit', wunitM:'Meters', wunitKm:'Kilometers', wunitMShort:'m', wunitKmShort:'km', wunitCardioTitle:'Cardio units', wunitExTitle:'Weight unit of this exercise', wunitApplyAll:'Apply to all exercises of this workout', wunitDefaultTitle:'Default unit for new exercises', timeLabel:'Time', distLabel:'Distance', distShortLabel:'Dist' },
-      he: { dumbbellAria:'חזרה לאימון', setTitle:'הגדרות', themes:'ערכות נושא', darkThemes:'ערכות כהות', lightThemes:'ערכות בהירות', textures:'טקסטורות', texHint:'שכבות מרקף מעל כל ערכת נושא — אותן טקסטורות כמו באפליקציה הראשית. בחרו אפקט וכוונו את העוצמה.', opacity:'עוצמה', reset:'איפוס', resetDone:'חזרה לעוצמת ברירת המחדל', applied:'הטקסטורה הוחלה', share:'שתף דוח', themeChanged:'ערכת הנושא הוחלפה', wunitTitle:'יחידת משקל', wunitKg:'קילוגרמים', wunitLb:'פאונד', wunitKgShort:'ק״ג', wunitLbShort:'lb', wunitTime:'יחידת זמן', wunitMin:'דקות', wunitSec:'שניות', wunitMinShort:'דק׳', wunitSecShort:'שנ׳', wunitDist:'יחידת מרחק', wunitM:'מטרים', wunitKm:'קילומטרים', wunitMShort:'מט', wunitKmShort:'ק״מ', wunitCardioTitle:'יחידות קרדיו', wunitExTitle:'יחידת משקל לתרגיל זה', wunitApplyAll:'החל על כל התרגילים באימון', wunitDefaultTitle:'יחידת משקל כברירת מחדל (לתרגילים חדשים)', timeLabel:'זמן', distLabel:'מרחק', distShortLabel:'מרחק' }
+      ru: { dumbbellAria:'Вернуться к тренировке', setTitle:'Настройки', themes:'Темы', darkThemes:'Тёмные темы', lightThemes:'Светлые темы', textures:'Текстуры', texHint:'Текстурные наложения поверх любой темы — те же, что в основном приложении. Выберите эффект и настройте насыщенность.', opacity:'Насыщенность', reset:'Сброс', resetDone:'Возврат к стандартной насыщенности', applied:'Текстура применена', share:'Поделиться отчётом', themeChanged:'Тема изменена', wunitTitle:'Единица веса', wunitKg:'Килограммы', wunitLb:'Фунты', wunitKgShort:'кг', wunitLbShort:'фт', wunitTime:'Единица времени', wunitMin:'Минуты', wunitSec:'Секунды', wunitMinShort:'мин', wunitSecShort:'сек', wunitDist:'Единица расстояния', wunitM:'Метры', wunitKm:'Километры', wunitMShort:'м', wunitKmShort:'км', wunitCardioTitle:'Единицы кардио', wunitExTitle:'Единица веса упражнения', wunitApplyAll:'Применить ко всем упражнениям тренировки', wunitDefaultTitle:'Единица веса по умолчанию (для новых упражнений)', timeLabel:'Время', distLabel:'Дистанция', distShortLabel:'Дист', ptexTitle:'Текстура панели', ptexHint:'Стекло на всех панелях портала — карточки, шапка, меню и окна. Матовая, прозрачная, тонированная и разноцветная мозаичная текстуры. Слоится поверх текстурных эффектов — они работают вместе.', ptexOff:'Выкл.', ptexFrost:'Матовое стекло', ptexClear:'Прозрачное стекло', ptexTint:'Тонированное стекло', ptexMosaic:'Мозаичное стекло', ptexColor:'Оттенок', ptexPreview:'Живой предпросмотр', ptexPreviewHint:'Так будет выглядеть каждая панель портала — карточки, шапка и окна', ptexOpacity:'Прозрачность', ptexOpacityHint:'Выше — прозрачнее, ниже — плотнее', ptexOpSolid:'Плотнее', ptexOpSee:'Прозрачнее', ptexApplied:'Текстура панели применена', ptexResetDone:'Возвращена стандартная прозрачность', ptexCfrostMilk:'Молочный', ptexCfrostSmoke:'Дымчатый', ptexCfrostIce:'Ледяной голубой', ptexCfrostMint:'Мятный', ptexCfrostRose:'Розовый туман', ptexCfrostLav:'Лавандовый', ptexCclearCrystal:'Кристальный', ptexCclearAqua:'Аква', ptexCclearChamp:'Шампань', ptexCclearEmer:'Изумрудный лёд', ptexCclearSapph:'Сапфировый', ptexCtintGraph:'Графит', ptexCtintOcean:'Морской', ptexCtintEmer:'Изумруд', ptexCtintBronze:'Бронза', ptexCtintBord:'Бордо', ptexCtintSmoke:'Тёмный дым', ptexCmosStain:'Витраж', ptexCmosOcean:'Океан', ptexCmosSunset:'Закат', ptexCmosForest:'Лес', ptexCmosNeon:'Неон', ptexCmosPastel:'Пастель' },
+      en: { dumbbellAria:'Back to workout', setTitle:'Settings', themes:'Themes', darkThemes:'Dark themes', lightThemes:'Light themes', textures:'Textures', texHint:'Texture overlays on top of any theme — the same as in the main app. Pick an effect and fine-tune its opacity.', opacity:'Opacity', reset:'Reset', resetDone:'Returned to the effect default', applied:'Texture applied', share:'Share report', themeChanged:'Theme changed', wunitTitle:'Unit of weight', wunitKg:'Kilograms', wunitLb:'Pounds', wunitKgShort:'kg', wunitLbShort:'lb', wunitTime:'Time unit', wunitMin:'Minutes', wunitSec:'Seconds', wunitMinShort:'min', wunitSecShort:'sec', wunitDist:'Distance unit', wunitM:'Meters', wunitKm:'Kilometers', wunitMShort:'m', wunitKmShort:'km', wunitCardioTitle:'Cardio units', wunitExTitle:'Weight unit of this exercise', wunitApplyAll:'Apply to all exercises of this workout', wunitDefaultTitle:'Default unit for new exercises', timeLabel:'Time', distLabel:'Distance', distShortLabel:'Dist', ptexTitle:'Panel texture', ptexHint:'Glass for every portal panel — cards, header, menus and windows. Frosted, clear, tinted and multicolor mosaic. Stacks on top of texture effects — the two work together.', ptexOff:'Off', ptexFrost:'Frosted glass', ptexClear:'Clear glass', ptexTint:'Tinted glass', ptexMosaic:'Mosaic glass', ptexColor:'Shade', ptexPreview:'Live preview', ptexPreviewHint:'This is how every portal panel will look — cards, header and windows', ptexOpacity:'Transparency', ptexOpacityHint:'Higher — more see-through, lower — more solid', ptexOpSolid:'Solid', ptexOpSee:'See-through', ptexApplied:'Panel texture applied', ptexResetDone:'Returned to default transparency', ptexCfrostMilk:'Milk', ptexCfrostSmoke:'Smoke', ptexCfrostIce:'Ice blue', ptexCfrostMint:'Mint', ptexCfrostRose:'Rose mist', ptexCfrostLav:'Lavender', ptexCclearCrystal:'Crystal', ptexCclearAqua:'Aqua', ptexCclearChamp:'Champagne', ptexCclearEmer:'Emerald ice', ptexCclearSapph:'Sapphire', ptexCtintGraph:'Graphite', ptexCtintOcean:'Ocean', ptexCtintEmer:'Emerald', ptexCtintBronze:'Bronze', ptexCtintBord:'Bordeaux', ptexCtintSmoke:'Dark smoke', ptexCmosStain:'Stained glass', ptexCmosOcean:'Ocean', ptexCmosSunset:'Sunset', ptexCmosForest:'Forest', ptexCmosNeon:'Neon', ptexCmosPastel:'Pastel' },
+      he: { dumbbellAria:'חזרה לאימון', setTitle:'הגדרות', themes:'ערכות נושא', darkThemes:'ערכות כהות', lightThemes:'ערכות בהירות', textures:'טקסטורות', texHint:'שכבות מרקף מעל כל ערכת נושא — אותן טקסטורות כמו באפליקציה הראשית. בחרו אפקט וכוונו את העוצמה.', opacity:'עוצמה', reset:'איפוס', resetDone:'חזרה לעוצמת ברירת המחדל', applied:'הטקסטורה הוחלה', share:'שתף דוח', themeChanged:'ערכת הנושא הוחלפה', wunitTitle:'יחידת משקל', wunitKg:'קילוגרמים', wunitLb:'פאונד', wunitKgShort:'ק״ג', wunitLbShort:'lb', wunitTime:'יחידת זמן', wunitMin:'דקות', wunitSec:'שניות', wunitMinShort:'דק׳', wunitSecShort:'שנ׳', wunitDist:'יחידת מרחק', wunitM:'מטרים', wunitKm:'קילומטרים', wunitMShort:'מט', wunitKmShort:'ק״מ', wunitCardioTitle:'יחידות קרדיו', wunitExTitle:'יחידת משקל לתרגיל זה', wunitApplyAll:'החל על כל התרגילים באימון', wunitDefaultTitle:'יחידת משקל כברירת מחדל (לתרגילים חדשים)', timeLabel:'זמן', distLabel:'מרחק', distShortLabel:'מרחק', ptexTitle:'מרקם פאנל', ptexHint:'זכוכית על כל פאנל בפורטל — כרטיסים, כותרת, תפריטים וחלונות. זכוכית מעורפלת, שקופה, מוכהה ופסיפס צבעוני. מוערם מעל אפקטי מרקם — שתיהן פועלות יחד.', ptexOff:'כבוי', ptexFrost:'זכוכית מעורפלת', ptexClear:'זכוכית שקופה', ptexTint:'זכוכית מוכהה', ptexMosaic:'זכוכית פסיפס', ptexColor:'גוון', ptexPreview:'תצוגה מקדימה', ptexPreviewHint:'כך ייראה כל פאנל בפורטל — כרטיסים, כותרת וחלונות', ptexOpacity:'שקיפות', ptexOpacityHint:'גבוה יותר — שקוף יותר, נמוך יותר — אטום יותר', ptexOpSolid:'אטום יותר', ptexOpSee:'שקוף יותר', ptexApplied:'מרקם הפאנל הוחל', ptexResetDone:'חזרה לשקיפות ברירת המחדל', ptexCfrostMilk:'חלבי', ptexCfrostSmoke:'עשן', ptexCfrostIce:'כחול קרח', ptexCfrostMint:'מנטה', ptexCfrostRose:'אודם מעורפל', ptexCfrostLav:'לבנדר', ptexCclearCrystal:'קריסטל', ptexCclearAqua:'אקווה', ptexCclearChamp:'שמפניה', ptexCclearEmer:'קרח אזמרגד', ptexCclearSapph:'ספיר', ptexCtintGraph:'גרפיט', ptexCtintOcean:'אוקיינוס', ptexCtintEmer:'אזמרגד', ptexCtintBronze:'ארד', ptexCtintBord:'בורדו', ptexCtintSmoke:'עשן כהה', ptexCmosStain:'ויטראז', ptexCmosOcean:'אוקיינוס', ptexCmosSunset:'שקיעה', ptexCmosForest:'יער', ptexCmosNeon:'ניאון', ptexCmosPastel:'פסטל' }
     };
     function T(k) { var l = curLang(); return (L[l] && L[l][k]) || L.ru[k] || k; }
 
@@ -5212,7 +5302,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       if (slider) slider.value = String(shown);
       var val = document.getElementById('cps-tex-opacity-val');
       if (val) val.textContent = Math.round(shown * 100) + '%';
-      document.querySelectorAll('.texture-btn').forEach(function (btn) {
+      document.querySelectorAll('.texture-btn[data-tex]').forEach(function (btn) {
         var on = btn.getAttribute('data-tex') === texState.name;
         btn.classList.toggle('active', on);
         btn.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -5238,6 +5328,321 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       }).join('');
     }
 
+    /* ---- Panel Texture (c113) — glass texture for ALL the portal's panels ----
+       Same engine as the trainer app (c109→c112): body[data-ptex] + CSS vars
+       computed in JS (ptexBuildVars) → any texture × color × transparency combo.
+       Persisted in localStorage (dk_portal_ptex) like the other visual settings
+       of the portal. Texture effects keep running THROUGH the glass: the page
+       overlay shows through translucent panels, and .bg-surface-2 chips stack
+       the tex pattern beneath the ptex layers (combined CSS rule). */
+    const PTEX_DEFAULT_TAU = 0.55; /* 0 = solid … 1 = maximally see-through */
+    const PTEX_VARS = ['--ptex-main-bg','--ptex-main-img','--ptex-main-img-size','--ptex-main-img-repeat','--ptex-inner-bg','--ptex-inner-img','--ptex-inner-img-size','--ptex-inner-img-repeat','--ptex-blur','--ptex-border'];
+    function ptexClamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+    function ptexRGBA(rgbArr, a) { return 'rgba(' + rgbArr.map(function (n) { return Math.round(ptexClamp(n, 0, 255)); }).join(',') + ',' + (Math.round(a * 1000) / 1000) + ')'; }
+    function ptexMixRGB(a, b, k) { return a.map(function (n, i) { return n + (b[i] - n) * k; }); }
+    /* Deterministic stained-glass tile: jittered shared-corner grid → cells tile
+       without gaps; softened cells + light grout keep text readable on top. */
+    function ptexMosaicSVG(palette, size, seed, grout, fillOp) {
+      try {
+        var s = 0, str = String(seed || 'dk');
+        for (var i = 0; i < str.length; i++) s = (s * 31 + str.charCodeAt(i)) >>> 0;
+        var rnd = function () { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; };
+        var cols = 5, rows = 7, cw = size / cols, ch = size / rows;
+        var px = [], py = [];
+        for (var c = 0; c <= cols; c++) { px.push(c * cw + (c > 0 && c < cols ? (rnd() - 0.5) * cw * 0.3 : 0)); }
+        for (var r = 0; r <= rows; r++) { py.push(r * ch + (r > 0 && r < rows ? (rnd() - 0.5) * ch * 0.3 : 0)); }
+        var cells = '';
+        for (var rr = 0; rr < rows; rr++) {
+          for (var cc = 0; cc < cols; cc++) {
+            var col = palette[Math.floor(rnd() * palette.length) % palette.length];
+            var x1 = px[cc], y1 = py[rr], x2 = px[cc + 1], y2 = py[rr + 1];
+            cells += '<rect x="' + x1.toFixed(1) + '" y="' + y1.toFixed(1) + '" width="' + (x2 - x1).toFixed(1) + '" height="' + (y2 - y1).toFixed(1) + '" fill="' + col + '" fill-opacity="' + (fillOp || 0.55) + '"/>';
+            if (rnd() < 0.18) cells += '<path d="M' + (x1 + 3).toFixed(1) + ' ' + (y1 + 4).toFixed(1) + 'h9l-9 9z" fill="#ffffff" fill-opacity="0.22"/>';
+          }
+        }
+        var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '"><g stroke="' + (grout || '#151823') + '" stroke-opacity="0.5" stroke-width="2.2">' + cells + '</g></svg>';
+        return 'url("data:image/svg+xml,' + encodeURIComponent(svg) + '")';
+      } catch (e) { return 'none'; }
+    }
+    /* Fine white frost dust — the matte signature layer for «Frosted glass». */
+    function ptexFrostGrain(op) {
+      try {
+        var o = typeof op === 'number' && isFinite(op) ? Math.max(0.12, Math.min(0.6, op)) : 0.5;
+        var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="110" height="110"><filter id="f"><feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="2" seed="11" stitchTiles="stitch"/><feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0.55 0.55 0.55 0 -0.52"/></filter><rect width="110" height="110" filter="url(#f)" opacity="' + o.toFixed(2) + '"/></svg>';
+        return 'url("data:image/svg+xml,' + encodeURIComponent(svg) + '")';
+      } catch (e) { return 'none'; }
+    }
+    const PTEX = {
+      frost: {
+        /* alpha sweeps 0.97→0.42 with the slider, grain/washes fade as the glass
+           clears (k), blur follows the slider (18px→8px); inner +0.10 floor. */
+        solid: 0.97, min: 0.42, blurA: 18, blurB: 8, sat: 1.35,
+        colors: [
+          { id: 'milk', key: 'ptexCfrostMilk', rgb: '242 246 250', hex: '#F2F6FA' },
+          { id: 'smoke', key: 'ptexCfrostSmoke', rgb: '200 208 218', hex: '#C8D0DA' },
+          { id: 'ice', key: 'ptexCfrostIce', rgb: '186 220 242', hex: '#BADCF2' },
+          { id: 'mint', key: 'ptexCfrostMint', rgb: '190 232 214', hex: '#BEE8D6' },
+          { id: 'rose', key: 'ptexCfrostRose', rgb: '240 205 218', hex: '#F0CDDA' },
+          { id: 'lav', key: 'ptexCfrostLav', rgb: '216 205 242', hex: '#D8CDF2' }
+        ],
+        build: function (tint, tau, surf, surf2, forInner) {
+          var a = this.solid + (this.min - this.solid) * tau; if (forInner) a = Math.min(1, a + 0.10);
+          var base = ptexMixRGB(surf, tint, 0.22);
+          var k = (1 - (tau - 0.1) / 0.9 * 0.55) * (forInner ? 0.72 : 1);
+          return {
+            bg: ptexRGBA(base, a),
+            img: ptexFrostGrain(0.5 * (0.45 + 0.55 * k)) + ', linear-gradient(160deg, ' + ptexRGBA(tint, 0.40 * k) + ' 0%, ' + ptexRGBA(tint, 0.12 * k) + ' 45%, ' + ptexRGBA(tint, 0.32 * k) + ' 100%), linear-gradient(180deg, rgba(255,255,255,' + (0.30 * k).toFixed(3) + '), rgba(255,255,255,0) 30%)',
+            size: '110px 110px, 100% 100%, 100% 100%', repeat: 'repeat, no-repeat, no-repeat'
+          };
+        }
+      },
+      clear: {
+        /* sweep 0.40→0.08 — clearly more see-through than the default glass at
+           EVERY slider position; inner +0.20 readability floor. */
+        solid: 0.40, min: 0.08, blurA: 10, blurB: 4, sat: 1.15,
+        colors: [
+          { id: 'crystal', key: 'ptexCclearCrystal', rgb: '235 244 250', hex: '#EBF4FA' },
+          { id: 'aqua', key: 'ptexCclearAqua', rgb: '190 235 230', hex: '#BEEBE6' },
+          { id: 'champ', key: 'ptexCclearChamp', rgb: '245 236 210', hex: '#F5ECD2' },
+          { id: 'emer', key: 'ptexCclearEmer', rgb: '195 240 205', hex: '#C3F0CD' },
+          { id: 'sapph', key: 'ptexCclearSapph', rgb: '190 210 245', hex: '#BED2F5' }
+        ],
+        build: function (tint, tau, surf, surf2, forInner) {
+          var a = this.solid + (this.min - this.solid) * tau; if (forInner) a = Math.min(1, a + 0.20);
+          var k = (1 - (tau - 0.1) / 0.9 * 0.6) * (forInner ? 0.7 : 1);
+          return {
+            bg: ptexRGBA(surf, a),
+            img: 'linear-gradient(105deg, rgba(255,255,255,0) 18%, rgba(255,255,255,' + (0.34 * k).toFixed(3) + ') 30%, rgba(255,255,255,0.03) 38%, rgba(255,255,255,0) 52%, rgba(255,255,255,' + (0.22 * k).toFixed(3) + ') 66%, rgba(255,255,255,0) 78%), linear-gradient(0deg, ' + ptexRGBA(tint, 0.18 * k) + ', ' + ptexRGBA(tint, 0.06 * k) + ')',
+            size: '100% 100%, 100% 100%', repeat: 'no-repeat, no-repeat'
+          };
+        }
+      },
+      tint: {
+        /* a real tinted PANE: deep uniform color wash + two polished diagonal
+           sheens + crisp top gloss + soft bottom depth; sweep 0.98→0.45. */
+        solid: 0.98, min: 0.45, blurA: 14, blurB: 7, sat: 1.3,
+        colors: [
+          { id: 'graph', key: 'ptexCtintGraph', rgb: '70 76 86', hex: '#464C56' },
+          { id: 'ocean', key: 'ptexCtintOcean', rgb: '36 68 105', hex: '#244469' },
+          { id: 'emer', key: 'ptexCtintEmer', rgb: '26 82 60', hex: '#1A523C' },
+          { id: 'bronze', key: 'ptexCtintBronze', rgb: '122 78 34', hex: '#7A4E22' },
+          { id: 'bord', key: 'ptexCtintBord', rgb: '105 34 52', hex: '#692234' },
+          { id: 'smoke', key: 'ptexCtintSmoke', rgb: '52 52 58', hex: '#34343A' }
+        ],
+        build: function (tint, tau, surf, surf2, forInner) {
+          var a = this.solid + (this.min - this.solid) * tau; if (forInner) a = Math.min(1, a + 0.12);
+          /* c113: on a LIGHT theme a deep tinted pane (surf mixed 0.82 toward the
+             tint) turns mid-dark while the theme's text stays dark — unreadable.
+             Luminance-aware: light surfaces get a pastel tinted glass (low mix)
+             so the theme's own text/muted contrast keeps working; dark themes
+             keep the deep pane. */
+          var lum = 0.2126 * surf[0] + 0.7152 * surf[1] + 0.0722 * surf[2];
+          var light = lum > 140;
+          var mixK = light ? 0.34 : (forInner ? 0.62 : 0.82);
+          var base = ptexMixRGB(surf, tint, mixK);
+          var k = (1 - (tau - 0.1) / 0.9 * 0.55) * (forInner ? 0.75 : 1);
+          var depth = light ? 0.10 : 0.26;
+          return {
+            bg: ptexRGBA(base, a),
+            img: 'linear-gradient(115deg, rgba(255,255,255,0) 22%, rgba(255,255,255,' + (0.20 * k).toFixed(3) + ') 34%, rgba(255,255,255,0.04) 42%, rgba(255,255,255,0) 52%), linear-gradient(115deg, rgba(255,255,255,0) 58%, rgba(255,255,255,' + (0.13 * k).toFixed(3) + ') 66%, rgba(255,255,255,0) 74%), linear-gradient(180deg, rgba(255,255,255,' + (0.16 * k).toFixed(3) + ') 0%, rgba(255,255,255,0) 26%), linear-gradient(0deg, rgba(0,0,0,' + (depth * k).toFixed(3) + '), rgba(0,0,0,0) 45%)',
+            size: '100% 100%, 100% 100%, 100% 100%, 100% 100%', repeat: 'no-repeat, no-repeat, no-repeat, no-repeat'
+          };
+        }
+      },
+      mosaic: {
+        /* softened stained-glass cells under a surface-colored veil + extra blur
+           so labels stay readable; sweep 0.90→0.32; inner +0.18 floor. */
+        solid: 0.90, min: 0.32, blurA: 12, blurB: 6, sat: 1.25, border: 'rgba(22,24,34,0.6)',
+        colors: [
+          { id: 'stain', key: 'ptexCmosStain', hex: '#C43A47', rgb: '196 58 71', palette: ['#e63946', '#f4a261', '#e9c46a', '#2a9d8f', '#264653', '#8e44ad'] },
+          { id: 'ocean', key: 'ptexCmosOcean', hex: '#0077B6', rgb: '2 62 138', palette: ['#023e8a', '#0077b6', '#0096c7', '#48cae4', '#90e0ef', '#03045e'] },
+          { id: 'sunset', key: 'ptexCmosSunset', hex: '#F77F00', rgb: '246 127 0', palette: ['#d62828', '#f77f00', '#fcbf49', '#e63946', '#ff9f1c', '#c1121f'] },
+          { id: 'forest', key: 'ptexCmosForest', hex: '#40916C', rgb: '64 145 108', palette: ['#2d6a4f', '#40916c', '#52b788', '#74c69d', '#95d5b2', '#1b4332'] },
+          { id: 'neon', key: 'ptexCmosNeon', hex: '#B5179E', rgb: '181 23 158', palette: ['#f72585', '#b5179e', '#7209b7', '#4361ee', '#4cc9f0', '#3a0ca3'] },
+          { id: 'pastel', key: 'ptexCmosPastel', hex: '#BDE0FE', rgb: '189 224 254', palette: ['#ffc8dd', '#bde0fe', '#a2d2ff', '#caffbf', '#fdffb6', '#cdb4db'] }
+        ],
+        build: function (tint, tau, surf, surf2, forInner) {
+          var a = this.solid + (this.min - this.solid) * tau; if (forInner) a = Math.min(1, a + 0.18);
+          var tile = forInner ? 110 : 150;
+          var veilA = forInner ? 0.55 : 0.46;
+          return {
+            bg: ptexRGBA(surf, a),
+            img: ptexMosaicSVG(this.curPalette || this.colors[0].palette, tile, 'dk-' + (this.curId || 'stain') + '-' + tile) + ', linear-gradient(0deg, ' + ptexRGBA(surf, veilA) + ', ' + ptexRGBA(surf, veilA) + '), linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0) 40%)',
+            size: tile + 'px ' + tile + 'px, 100% 100%, 100% 100%',
+            repeat: 'repeat, no-repeat, no-repeat'
+          };
+        }
+      }
+    };
+    let ptexState = { name: 'off', color: null, tau: PTEX_DEFAULT_TAU };
+    function ptexPersist() {
+      try { localStorage.setItem('dk_portal_ptex', JSON.stringify({ name: ptexState.name, color: ptexState.color, tau: ptexState.tau })); } catch (e) {}
+    }
+    function ptexBadge() {
+      const b = document.getElementById('ptex-active-badge');
+      if (b) b.textContent = ptexState.name === 'off' ? T('ptexOff') : (T('ptex' + ptexState.name.charAt(0).toUpperCase() + ptexState.name.slice(1)) || ptexState.name);
+    }
+    function ptexSurfRGB(varName, fallback) {
+      try {
+        const raw = getComputedStyle(document.body).getPropertyValue(varName).trim();
+        const arr = raw.split(/\s+/).map(Number);
+        if (arr.length >= 3 && arr.every(n => isFinite(n))) return arr.slice(0, 3);
+      } catch (e) {}
+      return fallback;
+    }
+    /* Read colors from the ROOT element — ptex itself overrides --c-muted on
+       body, so the muted-contrast boost must never re-read its own output. */
+    function ptexRootRGB(varName, fallback) {
+      try {
+        const raw = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+        const arr = raw.split(/\s+/).map(Number);
+        if (arr.length >= 3 && arr.every(n => isFinite(n))) return arr.slice(0, 3);
+      } catch (e) {}
+      return fallback;
+    }
+    function ptexBuildVars(name, colorId, tau) {
+      const spec = PTEX[name]; if (!spec) return null;
+      const col = spec.colors.find(c => c.id === colorId) || spec.colors[0];
+      tau = ptexClamp(typeof tau === 'number' && isFinite(tau) ? tau : PTEX_DEFAULT_TAU, 0.1, 1);
+      const tint = col.rgb.split(/\s+/).map(Number);
+      const surf = ptexSurfRGB('--c-surface', [24, 24, 28]);
+      const surf2 = ptexSurfRGB('--c-surface-2', surf.map(n => Math.round(n * 1.25)));
+      if (name === 'mosaic') { spec.curPalette = col.palette; spec.curId = col.id; }
+      const main = spec.build(tint, tau, surf, surf2, false);
+      const inner = spec.build(tint, tau, surf, surf2, true);
+      /* blur FOLLOWS the slider — a more transparent pane is also a clearer one */
+      const t = ptexClamp((tau - 0.1) / 0.9, 0, 1);
+      const px = Math.round(spec.blurA + (spec.blurB - spec.blurA) * t);
+      return {
+        '--ptex-main-bg': main.bg, '--ptex-main-img': main.img, '--ptex-main-img-size': main.size, '--ptex-main-img-repeat': main.repeat,
+        '--ptex-inner-bg': inner.bg, '--ptex-inner-img': inner.img, '--ptex-inner-img-size': inner.size, '--ptex-inner-img-repeat': inner.repeat,
+        '--ptex-blur': 'blur(' + px + 'px) saturate(' + (spec.sat || 1.2) + ')',
+        /* a LIGHTENED tint edge reads as polished glass rim; mosaic keeps its dark grout */
+        '--ptex-border': spec.border || ptexRGBA(ptexMixRGB(tint, [255, 255, 255], 0.28), 0.55)
+      };
+    }
+    function ptexRenderColors() {
+      const wrap = document.getElementById('ptex-colors-wrap');
+      const holder = document.getElementById('ptex-colors');
+      if (!wrap || !holder) return;
+      const spec = PTEX[ptexState.name];
+      if (!spec) { wrap.classList.add('hidden'); holder.innerHTML = ''; return; }
+      wrap.classList.remove('hidden');
+      holder.innerHTML = '';
+      spec.colors.forEach(c => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'ptex-cbtn' + (ptexState.color === c.id ? ' active' : '');
+        btn.setAttribute('aria-pressed', ptexState.color === c.id ? 'true' : 'false');
+        const nm = T(c.key) || c.id;
+        btn.title = nm; btn.setAttribute('aria-label', nm);
+        if (spec === PTEX.mosaic) btn.style.backgroundImage = ptexMosaicSVG(c.palette, 44, 'dk-sw-' + c.id, '#151823', 0.9);
+        else btn.style.backgroundColor = c.hex;
+        const chk = document.createElement('span');
+        chk.className = 'ptex-ccheck'; chk.setAttribute('aria-hidden', 'true'); chk.textContent = '✓';
+        btn.appendChild(chk);
+        btn.addEventListener('click', () => {
+          ptexApply(ptexState.name, c.id, ptexState.tau);
+          ptexPersist();
+          try { toast(T('ptexApplied'), 'success'); } catch (e) {}
+        });
+        holder.appendChild(btn);
+      });
+    }
+    function ptexSyncUI() {
+      const slider = document.getElementById('ptex-opacity');
+      const valEl = document.getElementById('ptex-opacity-val');
+      if (slider) slider.value = String(ptexClamp(ptexState.tau, 0.1, 1));
+      if (valEl) valEl.textContent = Math.round(ptexClamp(ptexState.tau, 0.1, 1) * 100) + '%';
+      document.querySelectorAll('.texture-btn[data-ptex]').forEach(btn => {
+        const on = btn.getAttribute('data-ptex') === ptexState.name;
+        btn.classList.toggle('active', on);
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+      ptexRenderColors();
+      ptexBadge();
+    }
+    function ptexApply(name, colorId, tau) {
+      if (!PTEX[name]) name = 'off';
+      ptexState.name = name;
+      const spec = PTEX[name];
+      if (spec) {
+        const known = spec.colors.some(c => c.id === colorId);
+        ptexState.color = known ? colorId : spec.colors[0].id;
+      } else ptexState.color = null;
+      ptexState.tau = ptexClamp(typeof tau === 'number' && isFinite(tau) ? tau : PTEX_DEFAULT_TAU, 0.1, 1);
+      const bodyStyle = document.body.style;
+      if (name === 'off') {
+        PTEX_VARS.forEach(v => bodyStyle.removeProperty(v));
+        bodyStyle.removeProperty('--c-muted');
+      } else {
+        const vars = ptexBuildVars(name, ptexState.color, ptexState.tau);
+        if (vars) Object.keys(vars).forEach(k => bodyStyle.setProperty(k, vars[k]));
+        /* lift muted-text contrast app-wide while glass is on — muted gray on a
+           busy/transparent pane was the main readability complaint. Mixed toward
+           the theme's text color; recomputed on theme switch by the observer. */
+        try {
+          const muted = ptexRootRGB('--c-muted', [150, 150, 165]);
+          const txt = ptexRootRGB('--c-text', [240, 240, 245]);
+          bodyStyle.setProperty('--c-muted', ptexMixRGB(muted, txt, 0.45).map(n => Math.round(ptexClamp(n, 0, 255))).join(' '));
+        } catch (e) {}
+      }
+      document.body.setAttribute('data-ptex', name);
+      ptexSyncUI();
+    }
+    function ptexPaintSwatches() {
+      document.querySelectorAll('[data-ptex-swatch]').forEach(el => {
+        const id = el.getAttribute('data-ptex-swatch');
+        if (id === 'off') {
+          el.style.backgroundImage = 'repeating-linear-gradient(45deg, rgb(var(--c-border) / .55) 0 6px, transparent 6px 12px)';
+          el.style.backgroundColor = 'rgb(var(--c-surface-2))';
+        } else if (id === 'frost') {
+          el.style.backgroundImage = ptexFrostGrain() + ', linear-gradient(160deg, rgba(242,246,250,0.95), rgba(200,208,218,0.72) 55%, rgba(242,246,250,0.92))';
+          el.style.backgroundColor = 'rgb(var(--c-text) / .25)';
+        } else if (id === 'clear') {
+          el.style.backgroundImage = 'linear-gradient(105deg, rgba(255,255,255,0) 20%, rgba(255,255,255,0.85) 31%, rgba(255,255,255,0.05) 40%, rgba(255,255,255,0) 55%, rgba(255,255,255,0.5) 68%, rgba(255,255,255,0) 80%)';
+          el.style.backgroundColor = 'rgb(var(--c-text) / .16)';
+        } else if (id === 'tint') {
+          el.style.backgroundImage = 'linear-gradient(115deg, rgba(255,255,255,0) 22%, rgba(255,255,255,0.35) 34%, rgba(255,255,255,0.06) 42%, rgba(255,255,255,0) 52%), linear-gradient(115deg, rgba(255,255,255,0) 58%, rgba(255,255,255,0.22) 66%, rgba(255,255,255,0) 74%), linear-gradient(180deg, rgba(255,255,255,0.25), rgba(0,0,0,0.28) 78%), linear-gradient(90deg, #464C56, #244469)';
+          el.style.backgroundColor = '#464C56';
+        } else if (id === 'mosaic') {
+          el.style.backgroundImage = ptexMosaicSVG(PTEX.mosaic.colors[0].palette, 46, 'dk-sw-stain', '#151823', 0.9);
+          el.style.backgroundColor = 'rgb(var(--c-text) / .2)';
+          el.style.backgroundSize = 'auto';
+        }
+      });
+    }
+    function buildPtexButtons() {
+      var grid = document.getElementById('cps-ptex-grid');
+      if (!grid) return;
+      var items = [
+        { id: 'off', sw: 'off' },
+        { id: 'frost', sw: 'frost' },
+        { id: 'clear', sw: 'clear' },
+        { id: 'tint', sw: 'tint' },
+        { id: 'mosaic', sw: 'mosaic' }
+      ];
+      grid.innerHTML = items.map(function (it) {
+        var nm = it.id === 'off' ? T('ptexOff') : (T('ptex' + it.id.charAt(0).toUpperCase() + it.id.slice(1)) || it.id);
+        return '<button type="button" class="texture-btn text-center border border-border bg-surface-2 transition" data-ptex="' + it.id + '" aria-pressed="false">' +
+          '<span class="tex-swatch" data-ptex-swatch="' + it.sw + '" aria-hidden="true"></span>' +
+          '<span class="tex-name">' + nm + '</span>' +
+          '<span class="tex-check" aria-hidden="true">✓</span>' +
+          '</button>';
+      }).join('');
+      ptexPaintSwatches();
+    }
+    function loadPtex() {
+      var v = {};
+      try { v = JSON.parse(localStorage.getItem('dk_portal_ptex') || '{}') || {}; } catch (e) { v = {}; }
+      ptexApply(PTEX[v.name] ? v.name : 'off', v.color, (typeof v.tau === 'number' && isFinite(v.tau)) ? v.tau : PTEX_DEFAULT_TAU);
+    }
+    /* Theme switches change --c-surface → recompute the glass base so the texture stays readable */
+    try {
+      new MutationObserver(function () { if (ptexState.name !== 'off') ptexApply(ptexState.name, ptexState.color, ptexState.tau); })
+        .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    } catch (e) {}
+
     /* ---- settings sheet (gear in the header) ---- */
     function fillLabels() {
       var set = function (id, txt) { var el = document.getElementById(id); if (el) el.textContent = txt; };
@@ -5248,6 +5653,16 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       set('cps-texhint-label', T('texHint'));
       set('cps-opacity-label', T('opacity'));
       set('cps-reset-label', T('reset'));
+      set('cps-ptex-label', T('ptexTitle'));
+      set('cps-ptexhint-label', T('ptexHint'));
+      set('cps-ptex-color-label', T('ptexColor'));
+      set('cps-ptex-preview-label', T('ptexPreview'));
+      set('cps-ptex-previewhint-label', T('ptexPreviewHint'));
+      set('cps-ptex-opacity-label', T('ptexOpacity'));
+      set('cps-ptex-opsolid', T('ptexOpSolid'));
+      set('cps-ptex-ophint', T('ptexOpacityHint'));
+      set('cps-ptex-opsee', T('ptexOpSee'));
+      set('cps-ptex-reset-label', T('reset'));
       var db = document.getElementById('dk-dumbbell-btn');
       if (db) { db.setAttribute('aria-label', T('dumbbellAria')); db.setAttribute('title', T('dumbbellAria')); }
     }
@@ -5287,10 +5702,45 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
                 '</div>' +
               '</div>' +
             '</div>' +
+            '<div>' +
+              '<div class="flex items-center justify-between mb-2">' +
+                '<div id="cps-ptex-label" class="text-[10px] font-bold uppercase tracking-wider text-muted"></div>' +
+                '<span id="ptex-active-badge" class="shrink-0">Off</span>' +
+              '</div>' +
+              '<p id="cps-ptexhint-label" class="text-[11px] text-muted mb-2 leading-relaxed"></p>' +
+              '<div id="cps-ptex-grid" class="grid grid-cols-3 gap-2"></div>' +
+              '<div id="ptex-colors-wrap" class="hidden mt-2.5">' +
+                '<div id="cps-ptex-color-label" class="text-[10px] font-bold uppercase tracking-wider text-muted mb-1.5"></div>' +
+                '<div id="ptex-colors" class="flex flex-wrap gap-2.5 mb-1" role="group" aria-label="Shade"></div>' +
+              '</div>' +
+              '<div id="ptex-backdrop-demo" class="mt-3">' +
+                '<div id="ptex-preview">' +
+                  '<div id="cps-ptex-preview-label" class="text-xs font-bold"></div>' +
+                  '<div id="cps-ptex-previewhint-label" class="text-[11px] text-muted mt-0.5"></div>' +
+                  '<div class="ptex-preview-row" aria-hidden="true"><span class="ptex-preview-chip"></span><span class="ptex-preview-chip"></span><span class="ptex-preview-chip"></span></div>' +
+                '</div>' +
+              '</div>' +
+              '<div class="mt-3 pt-3 border-t border-border/60">' +
+                '<div class="flex items-center justify-between mb-1">' +
+                  '<label id="cps-ptex-opacity-label" class="text-xs font-semibold text-muted" for="ptex-opacity"></label>' +
+                  '<div class="flex items-center gap-2">' +
+                    '<span id="ptex-opacity-val">55%</span>' +
+                    '<button type="button" id="ptex-opacity-reset" class="text-[10px] font-semibold text-muted border border-border rounded-md px-2 py-0.5"><span id="cps-ptex-reset-label"></span></button>' +
+                  '</div>' +
+                '</div>' +
+                '<input type="range" id="ptex-opacity" min="0.1" max="1" step="0.05" value="0.55" class="w-full" style="accent-color:rgb(var(--c-accent))" />' +
+                '<div class="flex justify-between items-center text-[9px] text-muted mt-0.5 gap-2">' +
+                  '<span id="cps-ptex-opsolid"></span>' +
+                  '<span id="cps-ptex-ophint" class="text-center"></span>' +
+                  '<span id="cps-ptex-opsee"></span>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
           '</div>' +
         '</div>';
       document.body.appendChild(w);
       buildTexButtons();
+      buildPtexButtons();
     }
     function openSettingsSheet() {
       ensureSettingsSheet();
@@ -5298,6 +5748,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       renderThemeMenus();
       buildTexButtons();
       texApply(texState.name, texState.opacity);
+      buildPtexButtons();
+      ptexSyncUI();
       document.getElementById('portal-settings-sheet').classList.remove('hidden');
     }
     function closeSettingsSheet() {
@@ -5577,6 +6029,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       try { syncThemeIcon(); } catch (e) {}
       try { fillLabels(); } catch (e) {}
       try { buildTexButtons(); texApply(texState.name, texState.opacity); } catch (e) {}
+      try { buildPtexButtons(); ptexSyncUI(); } catch (e) {}
       try { wApply(); } catch (e) {}
     };
 
@@ -5597,7 +6050,17 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         if (m && m.classList.contains('hidden')) openThemeMenu(); else closeThemeMenu();
         return;
       }
-      var tb = e.target.closest('.texture-btn');
+      /* c113: panel-texture buttons BEFORE the generic tex branch — both kinds
+         share the .texture-btn class, so the scope MUST be explicit (c110 lesson:
+         an unscoped handler wiped the OTHER system's setting on every click). */
+      var pb = e.target.closest('.texture-btn[data-ptex]');
+      if (pb) {
+        ptexApply(pb.getAttribute('data-ptex'), ptexState.color, ptexState.tau);
+        ptexPersist();
+        try { if (pb.getAttribute('data-ptex') !== 'off') toast(T('ptexApplied'), 'success'); } catch (err) {}
+        return;
+      }
+      var tb = e.target.closest('.texture-btn[data-tex]');
       if (tb) {
         texApply(tb.getAttribute('data-tex'), texState.opacity);
         texPersist();
@@ -5648,6 +6111,30 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         try { toast(T('resetDone'), 'success', 1600); } catch (err) {}
       });
     }
+    var ptexSliderHooked = false;
+    function hookPtexSlider() {
+      var s = document.getElementById('ptex-opacity');
+      if (!s || ptexSliderHooked) return;
+      ptexSliderHooked = true;
+      s.addEventListener('input', function () {
+        var v = parseFloat(s.value);
+        if (!isFinite(v)) return;
+        ptexState.tau = v;
+        if (ptexState.name !== 'off') {
+          var vars = ptexBuildVars(ptexState.name, ptexState.color, v);
+          if (vars) Object.keys(vars).forEach(function (k) { document.body.style.setProperty(k, vars[k]); });
+        }
+        var valEl = document.getElementById('ptex-opacity-val');
+        if (valEl) valEl.textContent = Math.round(v * 100) + '%';
+        ptexPersist();
+      });
+      var r = document.getElementById('ptex-opacity-reset');
+      if (r) r.addEventListener('click', function () {
+        ptexApply(ptexState.name, ptexState.color, PTEX_DEFAULT_TAU);
+        ptexPersist();
+        try { toast(T('ptexResetDone'), 'success'); } catch (err) {}
+      });
+    }
 
     ready(function () {
       _menuBtn = document.getElementById('theme-toggle');
@@ -5679,7 +6166,10 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       if (isFinite(sf) && sf > 0) applyFontScale(sf);
       ensureSettingsSheet();
       hookSlider();
+      hookPtexSlider();
       loadTex();
+      ptexPaintSwatches();
+      loadPtex();
       syncThemeIcon();
       renderThemeMenus();
       wApply();

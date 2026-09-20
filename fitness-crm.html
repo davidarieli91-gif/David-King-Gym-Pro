@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c112" />
+<meta name="dk-build" content="c113" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2831,7 +2831,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c112</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c113</p>
             </div>
           </div>
 
@@ -25878,12 +25878,19 @@ const PTEX = {
     ],
     build: function (tint, tau, surf, surf2, forInner) {
       var a = this.solid + (this.min - this.solid) * tau; if (forInner) a = Math.min(1, a + 0.12);
-      var mixK = forInner ? 0.62 : 0.82;
+      /* c113 parity with the portal: on a LIGHT theme a deep tinted pane turned
+         mid-dark while the theme's text stayed dark — unreadable. Luminance-aware:
+         light surfaces get a pastel tinted glass (low mix) so the theme's own
+         text/muted contrast keeps working; dark themes keep the deep pane. */
+      var lum = 0.2126 * surf[0] + 0.7152 * surf[1] + 0.0722 * surf[2];
+      var light = lum > 140;
+      var mixK = light ? 0.34 : (forInner ? 0.62 : 0.82);
       var base = ptexMixRGB(surf, tint, mixK);
       var k = (1 - (tau - 0.1) / 0.9 * 0.55) * (forInner ? 0.75 : 1);
+      var depth = light ? 0.10 : 0.26;
       return {
         bg: ptexRGBA(base, a),
-        img: 'linear-gradient(115deg, rgba(255,255,255,0) 22%, rgba(255,255,255,' + (0.20 * k).toFixed(3) + ') 34%, rgba(255,255,255,0.04) 42%, rgba(255,255,255,0) 52%), linear-gradient(115deg, rgba(255,255,255,0) 58%, rgba(255,255,255,' + (0.13 * k).toFixed(3) + ') 66%, rgba(255,255,255,0) 74%), linear-gradient(180deg, rgba(255,255,255,' + (0.16 * k).toFixed(3) + ') 0%, rgba(255,255,255,0) 26%), linear-gradient(0deg, rgba(0,0,0,' + (0.26 * k).toFixed(3) + '), rgba(0,0,0,0) 45%)',
+        img: 'linear-gradient(115deg, rgba(255,255,255,0) 22%, rgba(255,255,255,' + (0.20 * k).toFixed(3) + ') 34%, rgba(255,255,255,0.04) 42%, rgba(255,255,255,0) 52%), linear-gradient(115deg, rgba(255,255,255,0) 58%, rgba(255,255,255,' + (0.13 * k).toFixed(3) + ') 66%, rgba(255,255,255,0) 74%), linear-gradient(180deg, rgba(255,255,255,' + (0.16 * k).toFixed(3) + ') 0%, rgba(255,255,255,0) 26%), linear-gradient(0deg, rgba(0,0,0,' + (depth * k).toFixed(3) + '), rgba(0,0,0,0) 45%)',
         size: '100% 100%, 100% 100%, 100% 100%, 100% 100%', repeat: 'no-repeat, no-repeat, no-repeat, no-repeat'
       };
     }
@@ -30112,7 +30119,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 112; /* numeric part of dk-build c111 */
+  var RUNNING = 113; /* numeric part of dk-build c113 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
