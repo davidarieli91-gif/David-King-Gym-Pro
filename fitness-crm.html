@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c107" />
+<meta name="dk-build" content="c108" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2722,7 +2722,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c107</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c108</p>
             </div>
           </div>
 
@@ -28893,19 +28893,110 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!snap.exists) return null;
       var meta = snap.data() || {};
       var pCol = sRef.collection('parts');
+      /* c108 FIX — read chunks by their DETERMINISTIC doc id, never by a
+       * where('h','==') query. All of a slot's stores share ONE parts
+       * collection, so stores whose content hashes EQUAL collide: two empty
+       * stores both serialize to '[]' → identical SHA-256 → the old query
+       * matched the OTHER stores' chunks too → text '[][][]' → JSON.parse
+       * threw slot_part_corrupt → snapLoadSlot swallowed it and reported
+       * «Ячейка пуста» — while the cloud copy was perfectly fine (report
+       * 2026-09-20: slots 2+4 saved on the desktop, the phone refused to
+       * load them as «empty»; ANY snapshot with «Планы 0» + empty templates
+       * hit this — that is, nearly every real one). Doc ids embed the store
+       * name (name__hash_p), so they cannot collide. A single full-parts
+       * scan stays as the self-heal fallback for holes and legacy metas —
+       * already-broken slots become loadable again WITHOUT re-saving. */
       var data = {};
-      var names = Object.keys(meta.store_parts || {});
-      for (var i = 0; i < names.length; i++) {
-        var name = names[i];
-        var pi = meta.store_parts[name] || {};
-        var q = await pCol.where('h', '==', pi.h).get();
-        var chunks = [];
-        q.forEach(function (d) { chunks.push(d.data()); });
-        chunks.sort(function (a, b) { return (a.i || 0) - (b.i || 0); });
+      var _scanP = null;
+      function scanGroups() {
+        if (_scanP) return _scanP;
+        _scanP = pCol.get().then(function (all) {
+          var groups = {}; /* name -> fullHash -> {i: chunk} */
+          all.forEach(function (d) {
+            var v = d.data() || {};
+            var h = String(v.h || '');
+            var id = String(d.id || '');
+            var sep = id.indexOf('__');
+            if (sep <= 0 || !h) return;
+            var nm = id.slice(0, sep);
+            var gi = groups[nm] || (groups[nm] = {});
+            var gg = gi[h] || (gi[h] = {});
+            var idx = (v.i != null) ? v.i : (parseInt(id.slice(id.lastIndexOf('_') + 1), 10) || 0);
+            if (!(idx in gg)) gg[idx] = String(v.d || '');
+          });
+          return groups;
+        });
+        return _scanP;
+      }
+      function joinGroup(g, need) {
+        if (!g) return null; /* no such hash group at all → incomplete */
+        if (!(need > 0)) return '';
         var text = '';
-        for (var c = 0; c < chunks.length; c++) text += chunks[c].d || '';
-        try { data[name] = text ? JSON.parse(text) : []; }
-        catch (e) { throw new Error('slot_part_corrupt:' + name); }
+        for (var p = 0; p < need; p++) {
+          if (!(p in g)) return null; /* hole → incomplete */
+          text += g[p];
+        }
+        return text;
+      }
+      async function storeText(name, pi) {
+        var h = String((pi && pi.h) || '');
+        var need = (pi && pi.n) || 0;
+        var text = '', hole = false;
+        for (var p = 0; p < need; p++) {
+          var d = null;
+          try { d = await pCol.doc(name + '__' + h.slice(0, 24) + '_' + p).get(); } catch (eG) { d = null; }
+          if (d && d.exists) text += String(((d.data() || {}).d) || '');
+          else { hole = true; break; }
+        }
+        if (!hole) return text;
+        log('slot', n, 'store', name, ': id-read hole → scanning parts');
+        var groups = await scanGroups();
+        var byH = groups[name] || {};
+        var healed = joinGroup(byH[h] || null, need);
+        if (healed != null) return healed;
+        /* Pointer dead (interrupted save: the cleanup deleted the pointed
+         * parts, the new parts committed, the meta set failed) → fall back
+         * to the LARGEST COMPLETE chunk group of this store — the same
+         * self-heal the main cloud dump's assembleStore uses. */
+        var bestTxt = null, bestN = 0;
+        Object.keys(byH).forEach(function (h2) {
+          var g = byH[h2], n2 = 0;
+          while (n2 in g) n2++;
+          if (n2 <= 0) return;
+          var t2 = joinGroup(g, n2);
+          if (t2 != null && n2 > bestN) { bestN = n2; bestTxt = t2; }
+        });
+        if (bestTxt != null) {
+          log('slot', n, 'store', name, ': healed via best complete group (' + bestN + ' chunks)');
+          return bestTxt;
+        }
+        throw new Error('slot_part_missing:' + name);
+      }
+      var names = Object.keys(meta.store_parts || {});
+      if (names.length) {
+        for (var i = 0; i < names.length; i++) {
+          var name = names[i];
+          var text = await storeText(name, meta.store_parts[name] || {});
+          try { data[name] = text ? JSON.parse(text) : []; }
+          catch (e) { throw new Error('slot_part_corrupt:' + name); }
+        }
+      } else if (meta.app === 'dk-gym-pro') {
+        /* meta without store_parts (interrupted/legacy save): rebuild every
+         * store from the parts themselves — best complete hash group. */
+        log('slot', n, ': meta without store_parts — reconstructing from parts');
+        var groups = await scanGroups();
+        Object.keys(groups).forEach(function (nm2) {
+          var hashes = groups[nm2], best = 0, bestH = null;
+          Object.keys(hashes).forEach(function (h2) {
+            var g = hashes[h2], n2 = 0;
+            while (n2 in g) n2++;
+            if (n2 > 0 && n2 > best) { best = n2; bestH = h2; }
+          });
+          if (bestH != null) {
+            var text2 = joinGroup(groups[nm2][bestH], best);
+            try { data[nm2] = text2 ? JSON.parse(text2) : []; } catch (e2) {}
+          }
+        });
       }
       return { meta: meta, data: data };
     }
@@ -28928,6 +29019,7 @@ document.addEventListener('DOMContentLoaded', function () {
       try { rec = await db.get('snapshots', n); } catch (e0) {}
       var haveLocal = !!(rec && snapHasData(rec.data));
       var when = (rec && rec.ts) || 0;
+      var fetchErr = null; /* c108: a failed cloud read must NOT masquerade as «empty» */
       if (!haveLocal && _user && _fs) {
         try {
           var cloud = await snapCloudFetch(n);
@@ -28935,9 +29027,15 @@ document.addEventListener('DOMContentLoaded', function () {
             rec = { slot: n, ts: cloud.meta.ts || Date.now(), auto: !!cloud.meta.auto, counts: cloud.meta.counts || {}, data: cloud.data };
             haveLocal = true; when = rec.ts;
           }
-        } catch (eC) { log('snap cloud fetch failed', eC); }
+        } catch (eC) { fetchErr = eC; log('snap cloud fetch failed', eC); }
       }
-      if (!haveLocal) return { ok: false, error: 'empty' };
+      if (!haveLocal) {
+        if (fetchErr) {
+          var fe = String((fetchErr && (fetchErr.code || fetchErr.message)) || fetchErr);
+          return { ok: false, error: 'fetch_failed:' + fe };
+        }
+        return { ok: false, error: 'empty' };
+      }
       var msg = (T('settings.snapshots.loadConfirm') || 'Load data from slot {n}? Current data will be REPLACED.')
         .replace('{n}', String(n)).replace('{d}', snapFmtDate(when));
       if (!confirm(msg)) return { ok: false, error: 'cancelled' };
@@ -28945,6 +29043,9 @@ document.addEventListener('DOMContentLoaded', function () {
       var prevBusy = _busy; _busy = true;
       var imported = 0;
       try { imported = await applyPayload({ data: rec.data }); }
+      catch (eA) {
+        return { ok: false, error: 'restore_failed:' + String((eA && (eA.code || eA.message)) || eA) };
+      }
       finally { _busy = prevBusy; }
       toastMsg((T('settings.snapshots.loadDone') || 'Data restored from slot {n}').replace('{n}', String(n)), 'success', 3500);
       setTimeout(function () { location.reload(); }, 900);
@@ -29068,10 +29169,25 @@ document.addEventListener('DOMContentLoaded', function () {
             dkSnapCloudBadges();
           } else if (act === 'load') {
             b.disabled = true;
-            var lr = await snapLoadSlot(n);
+            var lr = null;
+            try { lr = await snapLoadSlot(n); }
+            catch (eL) { lr = { ok: false, error: 'fetch_failed:' + String((eL && (eL.code || eL.message)) || eL) }; }
             b.disabled = false;
             if (!lr.ok && lr.error !== 'cancelled') {
-              toastMsg(T('settings.snapshots.emptyRefuse') || 'Slot is empty', 'warning', 3000);
+              /* c108: «Ячейка пуста» ONLY for a genuinely empty slot. Cloud
+               * fetch/restore failures used to get the same misleading toast
+               * (data-loss scare 2026-09-20: the phone called desktop saves
+               * «empty» because the parts query collided on empty stores). */
+              var le = String(lr.error || '');
+              if (le.indexOf('fetch_failed:') === 0) {
+                toastMsg((T('settings.snapshots.fetchFailed') || 'Could not read the cloud copy of slot {n}: {e}')
+                  .replace('{n}', String(n)).replace('{e}', le.slice(13)), 'danger', 9000);
+              } else if (le.indexOf('restore_failed:') === 0) {
+                toastMsg((T('settings.snapshots.restoreFailed') || 'Could not restore slot {n}: {e}')
+                  .replace('{n}', String(n)).replace('{e}', le.slice(15)), 'danger', 9000);
+              } else {
+                toastMsg(T('settings.snapshots.emptyRefuse') || 'Slot is empty', 'warning', 3000);
+              }
             }
           } else if (act === 'clear') {
             var cr = await snapClearSlot(n);
@@ -29474,7 +29590,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 107; /* numeric part of dk-build c107 */
+  var RUNNING = 108; /* numeric part of dk-build c108 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

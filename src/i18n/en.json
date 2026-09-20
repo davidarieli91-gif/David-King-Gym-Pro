@@ -1324,7 +1324,9 @@
       "orphanItem": "{name}: programs {p} · workouts {h} · plans {pl}",
       "orphanRestore": "Restore client",
       "orphanRestored": "Client is back in the list (rename them in their card).",
-      "orphanDefaultName": "Restored client"
+      "orphanDefaultName": "Restored client",
+      "fetchFailed": "Could not read the cloud copy of slot {n}: {e}. The cloud data is intact — check the connection and try again.",
+      "restoreFailed": "Could not restore slot {n}: {e}. The current state was auto-saved into slot #1 (AUTO) — nothing is lost."
     }
   },
   "backup": {
