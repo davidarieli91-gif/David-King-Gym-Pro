@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c110" />
+<meta name="dk-build" content="c111" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2091,16 +2091,24 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
 #tex-active-badge { font-size:10px; font-weight:800; padding:2px 8px; border-radius:9999px; background:rgb(var(--c-accent) / .14); color:rgb(var(--c-accent)); border:1px solid rgb(var(--c-accent) / .35); text-transform:none; letter-spacing:0; white-space:nowrap; }
 #texture-opacity-val { font-size:10px; font-weight:800; padding:2px 6px; border-radius:6px; background:rgb(var(--c-accent) / .1); color:rgb(var(--c-accent)); border:1px solid rgb(var(--c-accent) / .25); font-variant-numeric:tabular-nums; }
 
-/* ===== PANEL TEXTURE (c109) — glass textures for panels INSIDE modal windows =====
-   Scope (deliberate): the modal dialog panel ([id$='-modal'] > .bg-surface), every card /
-   inner panel inside modal roots (.bg-surface / .bg-surface-2 descendants — form controls
-   are excluded so typing stays readable), JS-built confirm dialogs (.bg-surface[role='dialog'])
-   and the live preview tile in Settings. The page-wide texture (data-tex) is overridden
-   inside modals while both are active — panel texture wins where it applies. All visual
-   values arrive as CSS vars computed in JS (ptexApply), so any texture × color ×
-   transparency combination works without a CSS matrix. */
-body[data-ptex]:not([data-ptex='off']) [id$='-modal'] .bg-surface:not(input):not(select):not(textarea),
-body[data-ptex]:not([data-ptex='off']) [id$='-modal'] .bg-surface-2:not(input):not(select):not(textarea) {
+/* ===== PANEL TEXTURE (c109/c111) — glass texture for ALL the app's panels =====
+   c111 scope upgrade (user report: «применяется только к панели предварительного
+   просмотра, но к самой программе не применяется»): the texture now covers every
+   panel IN THE PROGRAM — all .bg-surface / .bg-surface-2 cards on every screen
+   (clients, workouts, nutrition, settings…), panels inside modal windows,
+   JS-built confirm dialogs and the live preview tile. Deliberate exemptions:
+   form controls (input/select/textarea) stay opaque so typing stays readable,
+   the 3D atlas viewer keeps its clean dark stage (WebGL + backdrop-filter perf)
+   and .dk-superset-hl keeps its amber highlight. The «inner» material no longer
+   repaints border-color, so functional borders (muscle-group color coding,
+   superset frame, accent edges) survive under the glass; the tinted border
+   stays on the MAIN surfaces (modal dialog roots, confirm dialogs, preview).
+   :where() wrappers keep the exclusions specificity-free so the «main» rule
+   still outranks the «inner» one on modal roots. All visual values arrive as
+   CSS vars computed in JS (ptexApply), so any texture × color × transparency
+   combination works without a CSS matrix. */
+body[data-ptex]:not([data-ptex='off']) .bg-surface:not(input):not(select):not(textarea):not(:where(.dk-superset-hl)):not(:where(#atlas-modal, #atlas-modal *)),
+body[data-ptex]:not([data-ptex='off']) .bg-surface-2:not(input):not(select):not(textarea):not(:where(.dk-superset-hl)):not(:where(#atlas-modal *)) {
   background-color: var(--ptex-inner-bg, rgb(var(--c-surface-2))) !important;
   background-image: var(--ptex-inner-img, none) !important;
   background-size: var(--ptex-inner-img-size, 100% 100%) !important;
@@ -2108,7 +2116,6 @@ body[data-ptex]:not([data-ptex='off']) [id$='-modal'] .bg-surface-2:not(input):n
   background-blend-mode: normal !important;
   backdrop-filter: var(--ptex-blur, none);
   -webkit-backdrop-filter: var(--ptex-blur, none);
-  border-color: var(--ptex-border, rgb(var(--c-border))) !important;
 }
 body[data-ptex]:not([data-ptex='off']) [id$='-modal'] > .bg-surface,
 body[data-ptex]:not([data-ptex='off']) .bg-surface[role='dialog']:not(#atlas-modal),
@@ -2122,15 +2129,32 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview {
   -webkit-backdrop-filter: var(--ptex-blur, none);
   border-color: var(--ptex-border, rgb(var(--c-border))) !important;
 }
-/* --- c110: tex × ptex COMBINE — the two systems run TOGETHER, never canceling ---
-   When a page-wide texture effect AND a panel texture are both active, modal
-   panels stack BOTH materials: the glass gradients (ptex) render on top, the
-   material pattern (tex: wood/marble/mosaic/…) shows through beneath, and the
-   base stays the translucent glass color so the see-through character survives.
-   The Settings preview tile follows the same recipe so it always shows the real
-   combined result. Higher specificity than the single-system rules above. */
-body[data-tex]:not([data-tex='none'])[data-ptex]:not([data-ptex='off']) [id$='-modal'] .bg-surface:not(input):not(select):not(textarea),
-body[data-tex]:not([data-tex='none'])[data-ptex]:not([data-ptex='off']) [id$='-modal'] .bg-surface-2:not(input):not(select):not(textarea),
+/* preview honesty: the demo chips follow the «inner» material exactly like real inner cards */
+body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
+  background-color: var(--ptex-inner-bg, rgb(var(--c-surface-2))) !important;
+  background-image: var(--ptex-inner-img, none) !important;
+  background-size: var(--ptex-inner-img-size, 100% 100%) !important;
+  background-repeat: var(--ptex-inner-img-repeat, no-repeat) !important;
+}
+/* --- c110/c111: tex × ptex COMBINE — the two systems run TOGETHER, never canceling ---
+   When a page-wide texture effect AND a panel texture are both active, panels stack
+   BOTH materials: the glass gradients (ptex) render on top, the material pattern
+   (tex: wood/marble/mosaic/…) shows through beneath, and the base stays the
+   translucent glass color so the see-through character survives. Specificity is
+   higher than every single-system rule above, so the combined look always wins
+   while BOTH are on. The Settings preview tile follows the same recipe so it
+   always shows the real combined result. */
+body[data-tex]:not([data-tex='none'])[data-ptex]:not([data-ptex='off']) .bg-surface:not(input):not(select):not(textarea):not(:where(.dk-superset-hl)):not(:where(#atlas-modal, #atlas-modal *)),
+body[data-tex]:not([data-tex='none'])[data-ptex]:not([data-ptex='off']) .bg-surface-2:not(input):not(select):not(textarea):not(:where(.dk-superset-hl)):not(:where(#atlas-modal *)),
+body[data-tex]:not([data-tex='none'])[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
+  background-color: var(--ptex-inner-bg, rgb(var(--c-surface-2))) !important;
+  background-image: var(--ptex-inner-img, none), var(--texture, none) !important;
+  background-size: var(--ptex-inner-img-size, 100% 100%), var(--texture-size, auto) !important;
+  background-repeat: var(--ptex-inner-img-repeat, no-repeat), var(--texture-repeat, repeat) !important;
+  background-blend-mode: normal, normal, normal !important;
+  backdrop-filter: var(--ptex-blur, none);
+  -webkit-backdrop-filter: var(--ptex-blur, none);
+}
 body[data-tex]:not([data-tex='none'])[data-ptex]:not([data-ptex='off']) [id$='-modal'] > .bg-surface,
 body[data-tex]:not([data-tex='none'])[data-ptex]:not([data-ptex='off']) .bg-surface[role='dialog']:not(#atlas-modal),
 body[data-tex]:not([data-tex='none'])[data-ptex]:not([data-ptex='off']) #ptex-preview {
@@ -2789,7 +2813,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c110</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c111</p>
             </div>
           </div>
 
@@ -25727,9 +25751,11 @@ if (texResetBtn) texResetBtn.addEventListener('click', () => {
 document.addEventListener('dk-lang', texBadge);
 loadTexture();
 
-// ---- Panel Texture (c109) — glass textures for panels INSIDE modal windows ----
+// ---- Panel Texture (c109/c111) — glass texture for ALL the app's panels ----
 // Applied via body[data-ptex] + CSS vars; see the PANEL TEXTURE CSS block.
-// Scope: [id$='-modal'] panels + inner cards, .bg-surface[role=dialog] popups, preview tile.
+// Scope (c111): every .bg-surface / .bg-surface-2 card on every screen, modal
+// roots (main material + tinted border), inner cards, JS confirm popups,
+// preview tile. Inputs stay opaque; atlas viewer & superset highlight exempt.
 const PTEX_DEFAULT_TAU = 0.55; /* 0 = solid … 1 = maximally see-through */
 const PTEX_VARS = ['--ptex-main-bg','--ptex-main-img','--ptex-main-img-size','--ptex-main-img-repeat','--ptex-inner-bg','--ptex-inner-img','--ptex-inner-img-size','--ptex-inner-img-repeat','--ptex-blur','--ptex-border'];
 function ptexClamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
@@ -30023,7 +30049,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 110; /* numeric part of dk-build c110 */
+  var RUNNING = 111; /* numeric part of dk-build c111 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
