@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c106" />
+<meta name="dk-build" content="c107" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -549,6 +549,43 @@
     /* Apply font scale to root — clamped so values stay usable on tiny phones
        and on huge monitors. Upper bound 60px supports A10+ on a 100" TV. */
     html { font-size: clamp(10px, calc(16px * var(--font-scale)), 60px); }
+
+    /* ===== c107: font-scale adaptivity — panels must never overflow when
+       A+/A- grow or shrink --font-scale. Layer 1: flex/grid cells may shrink
+       below their content minimum (Tailwind's min-width:auto refused to
+       shrink, so inputs (~170px min-content) and nowrap rows pushed panels
+       past their borders). At normal scale nothing changes — shrinking only
+       happens when the row is genuinely too tight. ===== */
+    body .flex > *, body .grid > * { min-width: 0; }
+    /* horizontal scroll strips keep the old behavior — their children must
+       stay content-sized, that is what makes them scrollable */
+    .overflow-x-auto > *, .overflow-x-scroll > * { min-width: auto; }
+    /* Layer 2 (c107b: active from A3+ / scale ≥ 1.3 only — at smaller scales
+       the familiar single squeezed row stays exactly as it was): segment tab
+       bars wrap instead of overflowing (Отчёт / Калькулятор… were cut off
+       screen at big scales); children keep content-based min-width so the
+       bar wraps row-wise (min-content) instead of stacking letters */
+    html.dk-fs-big .flex:has(> .workout-tab-btn), html.dk-fs-big .flex:has(> .tools-tab),
+    html.dk-fs-big .flex:has(> .nutrition-tab-btn), html.dk-fs-big .flex:has(> .analytics-range-btn) { flex-wrap: wrap; }
+    html.dk-fs-big .workout-tab-btn, html.dk-fs-big .tools-tab, html.dk-fs-big .nutrition-tab-btn,
+    html.dk-fs-big .analytics-range-btn { white-space: normal; line-height: 1.2; }
+    html.dk-fs-big .flex:has(> .workout-tab-btn) > *, html.dk-fs-big .flex:has(> .tools-tab) > *,
+    html.dk-fs-big .flex:has(> .nutrition-tab-btn) > *, html.dk-fs-big .flex:has(> .analytics-range-btn) > * { min-width: auto; flex-basis: auto; }
+    /* Layer 3: screen header rows (title + action button) wrap when tight (A3+) */
+    html.dk-fs-big .flex.items-center:has(> h1) { flex-wrap: wrap; }
+    /* Layer 4: top bar (lang / A- A+ / theme / lock) wraps to a second line
+       instead of pushing the lock button off-screen */
+    html.dk-fs-big .dk-topbar-row, html.dk-fs-big .dk-topbar-row > div { flex-wrap: wrap; }
+    html .dk-topbar-row { height: auto; min-height: 2.5rem; }
+    /* Layer 5: at A3+ (scale ≥ 1.3) long one-word labels may break mid-word
+       instead of bleeding out of their chip; nowrap utilities are released */
+    html.dk-fs-big body { overflow-wrap: break-word; }
+    html.dk-fs-big .whitespace-nowrap:not(.dk-keep-nowrap) { white-space: normal; }
+    /* c107b: the quick-target numbers never break mid-digit — the font caps
+       at what a 1/3-wide cell can hold (identical at scale 1); the rem-scaled
+       px-2 button padding shrinks too or nothing fits at A4+ */
+    html.dk-fs-big .dk-quick3 div.font-extrabold { font-size: min(0.875rem, 4.6vw); overflow-wrap: normal; }
+    html.dk-fs-big .dk-quick3 > button { padding-inline: 2px; }
 
     /* ===== Apply modal scale — multiplies each Tailwind max-w-* breakpoint
        by --modal-scale. This makes "Compact" shrink ALL modals and "Wide"
@@ -2499,7 +2536,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
 
     <!-- ============= TOP HEADER (always visible) ============= -->
     <header class="sticky top-0 z-30 glass" style="border-bottom: 1px solid var(--glass-border);">
-      <div class="flex items-center gap-2 px-3 h-10">
+      <div class="dk-topbar-row flex items-center gap-2 px-3">
         <div class="ms-auto flex items-center gap-1.5">
           <!-- c83: dumbbell — one-tap return to the live workout at your current exercise -->
           <button id="dk-dumbbell-btn" class="shrink-0" aria-label="Back to workout" title="Back to workout" data-i18n-attr="aria-label:aria.dumbbell,title:aria.dumbbell">
@@ -2685,7 +2722,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c106</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c107</p>
             </div>
           </div>
 
@@ -3732,7 +3769,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                     </div>
                   </div>
                   <div class="bg-surface-2 border border-border rounded-xl px-4 py-3">
-                    <div class="flex items-center justify-between gap-2">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
                       <div class="text-[11px] uppercase tracking-wider text-muted font-bold" data-i18n="tools.maintenanceLabel">Maintenance</div>
                       <div class="flex items-baseline gap-1">
                         <span id="cal-tdee" class="text-xl font-extrabold">2 882</span>
@@ -3747,7 +3784,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                   </div>
                 </div>
 
-                <div class="grid grid-cols-3 gap-2 mt-3">
+                <div class="grid grid-cols-3 gap-2 mt-3 dk-quick3">
                   <button type="button" data-cal-quick="lose" class="bg-surface-2 hover:bg-border/40 border border-border rounded-xl px-2 py-2.5 text-center transition">
                     <div class="text-[10px] uppercase tracking-wide text-muted font-bold" data-i18n="tools.lose">Lose</div>
                     <div class="text-sm font-extrabold mt-0.5"><span id="cal-lose">2 594</span> <span class="text-[10px] text-muted font-semibold">kcal</span></div>
@@ -8247,9 +8284,9 @@ button[id$="-close"]:active, button[data-cps-close]:active {
       ctx.font = '600 24px Inter, system-ui, sans-serif';
       const clientName = (client && (client.full_name || client.name)) || '—';
       ctx.fillText((t('programs.clientLabel') || 'Client') + ': ' + clientName, 380, 130);
-      const goalLabel = (client && client.goal) || '';
+      /* c107: goal dropped from the exported PDF header (groupings are gone) */
       const durLabel = program.duration_months ? program.duration_months + ' ' + (t('programs.months') || 'months') : '';
-      const metaLine = [goalLabel, durLabel].filter(Boolean).join(' · ');
+      const metaLine = [durLabel].filter(Boolean).join(' · ');
       if (metaLine) ctx.fillText(metaLine, 380, 162);
 
       // Days
@@ -9030,11 +9067,8 @@ button[id$="-close"]:active, button[data-cps-close]:active {
     /** Build HTML for a single client card. */
     function cardHTML(c) {
       const name = c.full_name || c.name || '?';
-      // Bug fix (2026-08 QA #5): c.goal = "fat_loss" produced key "client.goalFat_loss" (with underscore)
-      // which doesn't match dict key "client.goalFatLoss" (camelCase). Strip underscores first.
-      const goalCamel = c.goal ? c.goal.split('_').map((p, i) => i === 0 ? p.charAt(0).toUpperCase() + p.slice(1) : p.charAt(0).toUpperCase() + p.slice(1)).join('') : null;
-      const goalKey = goalCamel ? 'client.goal' + goalCamel : null;
-      const goalLabel = goalKey ? (t(goalKey) || c.goal) : '';
+      /* c107: the old goal groupings are gone (c105 replaced them with
+         Спортзал/Друзья/Семья) — the «Гипертрофия» badge no longer renders */
       const lastActive = c.last_active ? fmtRelative(c.last_active) : t('client.lastActive') + ' —';
       const stats = [
         c.age ? c.age + 'y' : null,
@@ -9054,7 +9088,6 @@ button[id$="-close"]:active, button[data-cps-close]:active {
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 flex-wrap">
               <span class="font-semibold truncate">${escapeHTML(name)}</span>
-              ${c.goal ? `<span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${goalBadgeClass(c.goal)}">${escapeHTML(goalLabel)}</span>` : ''}
               ${groupBadge}
             </div>
             <div class="text-xs text-muted truncate">
@@ -9695,10 +9728,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
 
     /** Hero card with avatar + key stats. */
     function heroCard(c, name) {
-      // Bug fix (2026-08 QA #5): strip underscores from goal before building i18n key
-      const goalCamel = c.goal ? c.goal.split('_').map((p, i) => i === 0 ? p.charAt(0).toUpperCase() + p.slice(1) : p.charAt(0).toUpperCase() + p.slice(1)).join('') : null;
-      const goalKey = goalCamel ? 'client.goal' + goalCamel : null;
-      const goalLabel = goalKey ? (t(goalKey) || c.goal) : '';
+      /* c107: goal badge removed — groupings are Спортзал/Друзья/Семья now */
       const lastActive = c.last_active ? fmtRelative(c.last_active) : '—';
       const since = c.created_at ? fmtDate(c.created_at) : '—';
       const stats = [];
@@ -9721,7 +9751,6 @@ button[id$="-close"]:active, button[data-cps-close]:active {
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-2 flex-wrap">
                 <h2 class="font-display font-bold text-lg truncate">${escapeHTML(name)}</h2>
-                ${c.goal ? `<span class="text-[11px] font-semibold px-2 py-0.5 rounded-md ${goalBadgeClass(c.goal)}">${escapeHTML(goalLabel)}</span>` : ''}
               </div>
               <div class="text-xs text-muted mt-1">
                 ${t('client.since')}: ${escapeHTML(since)} · ${t('client.lastSeen')}: ${escapeHTML(lastActive)}
@@ -10225,6 +10254,10 @@ button[id$="-close"]:active, button[data-cps-close]:active {
         name: tplName.trim(),
         split_type: prog.split_type || 'ab',
         duration_months: prog.duration_months || 3,
+        /* c107: flattened exercise list so the card/picker/apply see them (the
+           card used to show «0 упражнения · 0 подходов» and applying started an
+           empty live workout) */
+        exercises: (prog.workout_days || []).filter(d => d && !d.is_rest_day).reduce((acc, d) => acc.concat(d.exercises || []), []),
         workout_days: (prog.workout_days || []).map(d => ({
           day_letter: d.day_letter,
           name: d.name,
@@ -14053,6 +14086,22 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
      Trainer preset templates — save any workout as a repeatable template,
      apply to any client in 1 click. Stored in workout_templates store.
      ===================================================================== */
+  /* c107: a template saved from a PROGRAM stores its days in workout_days —
+     flatten them (rest days skipped) so the card counter, the apply-picker
+     and startFromTemplate all see the exercises. Templates saved from the
+     live workout already carry a flat exercises array. Fixes the user report
+     «внутри сохранённого шаблона нет ни одного упражнения». */
+  function dkTplExercises(tpl) {
+    if (!tpl) return [];
+    if (Array.isArray(tpl.exercises) && tpl.exercises.length) return tpl.exercises;
+    const out = [];
+    (tpl.workout_days || []).forEach(d => {
+      if (!d || d.is_rest_day) return;
+      (d.exercises || []).forEach(ex => out.push(ex));
+    });
+    return out;
+  }
+
   screens.templates = (function () {
     let _all = [];
 
@@ -14095,8 +14144,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
     function cardHTML(tpl) {
       const name = tpl.name || '—';
-      const exerciseCount = (tpl.exercises || []).length;
-      const totalSets = (tpl.exercises || []).reduce((sum, ex) => sum + (ex.sets || []).length, 0);
+      const exerciseCount = dkTplExercises(tpl).length; /* c107 */
+      const totalSets = dkTplExercises(tpl).reduce((sum, ex) => sum + (ex.sets || []).length, 0); /* c107 */
       const date = tpl.created_at ? fmtDate(tpl.created_at) : '—';
 
       return `
@@ -14154,8 +14203,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         list.innerHTML = `<div class="text-center py-8 text-sm text-muted">${escapeHTML(t('workouts.noTemplatesAvailable'))}</div>`;
       } else {
         list.innerHTML = all.map(tpl => {
-          const exerciseCount = (tpl.exercises || []).length;
-          const totalSets = (tpl.exercises || []).reduce((sum, ex) => sum + (ex.sets || []).length, 0);
+          const exerciseCount = dkTplExercises(tpl).length; /* c107 */
+          const totalSets = dkTplExercises(tpl).reduce((sum, ex) => sum + (ex.sets || []).length, 0); /* c107 */
           return `
             <div data-apply-template="${escapeAttr(tpl.id)}" class="flex items-center gap-3 bg-surface-2 border border-border rounded-xl p-3 hover:bg-border/30 hover:border-primary/30 transition cursor-pointer">
               <div class="w-9 h-9 rounded-lg grid place-items-center bg-accent/15 text-accent shrink-0">
@@ -14554,10 +14603,13 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           cardio: ex.cardio === true || ex.category === 'cardio',
           rest_sec: ex.rest_sec != null ? ex.rest_sec : 90,
           unit: ex.unit === 'lb' ? 'lb' : (ex.unit === 'kg' ? 'kg' : dkWUnitGet()),
+          tunit: ex.tunit === 'min' || ex.tunit === 'sec' ? ex.tunit : null, /* c107 */
+          is_superset: ex.is_superset === true, /* c107: superset pairs survive template → live */
           sets: (ex.sets || []).map(s => ({ ...s, done: false }))
         })),
         started_at: Date.now()
       };
+      lwEqualizeSupersets(_workout.exercises); /* c107: partners start with equal set counts */
       await loadExerciseCache();  // Fix: await before render() so thumbnails appear
       loadClientList();
       render();
@@ -14595,6 +14647,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         })),
         started_at: Date.now()
       };
+      lwEqualizeSupersets(_workout.exercises); /* c107: partners start with equal set counts */
       await loadExerciseCache();  // Fix: await before render() so thumbnails appear
       loadClientList().then(() => {
         // Set the client dropdown after the list is loaded
@@ -14988,6 +15041,69 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       return false;
     }
 
+    /* ===== c107: superset set-sync — a ✓ on one exercise checks the SAME set
+       index on its superset partners; «Сделал всё», add-set and remove-set
+       keep every partner at the same set count, so the pair always finishes
+       together. A superset group = a maximal run of CONSECUTIVE is_superset
+       exercises (the builder always marks an exercise and its next one). ===== */
+    function lwSupersetGroup(idx) {
+      if (!_workout || !_workout.exercises[idx] || _workout.exercises[idx].is_superset !== true) return [];
+      const exs = _workout.exercises;
+      let a = idx; while (a - 1 >= 0 && exs[a - 1] && exs[a - 1].is_superset === true) a--;
+      let b = idx; while (b + 1 < exs.length && exs[b + 1] && exs[b + 1].is_superset === true) b++;
+      const out = [];
+      for (let i = a; i <= b; i++) if (i !== idx) out.push(i);
+      return out;
+    }
+    /* pad every member of a superset run to the same set count (last-set clone) */
+    function lwEqualizeSupersets(exs) {
+      if (!Array.isArray(exs)) return;
+      let i = 0;
+      while (i < exs.length) {
+        if (exs[i] && exs[i].is_superset === true) {
+          let j = i;
+          while (j + 1 < exs.length && exs[j + 1] && exs[j + 1].is_superset === true) j++;
+          let max = 0;
+          for (let k = i; k <= j; k++) max = Math.max(max, (exs[k].sets || []).length);
+          for (let k = i; k <= j; k++) {
+            const ex = exs[k];
+            while (ex.sets.length > 0 && ex.sets.length < max) {
+              const last = ex.sets[ex.sets.length - 1];
+              ex.sets.push(Object.assign({}, last, { done: false, rpe: null, prev_rpe: null }));
+            }
+          }
+          i = j + 1;
+        } else i++;
+      }
+    }
+    /* chain the just-done set's values into the next set's «prev» (shared by
+       the primary exercise and its superset partners) */
+    function lwChainPrev(exIdx, si) {
+      const ex = _workout && _workout.exercises[exIdx];
+      if (!ex || si + 1 >= ex.sets.length) return;
+      const curr = ex.sets[si];
+      const nxt = ex.sets[si + 1];
+      nxt.prev_weight = curr.weight;
+      nxt.prev_reps = curr.reps;
+      nxt.prev_rpe = curr.rpe; /* c90: chain the effort too */
+      const cEx = exIsCardio(ex);
+      const sEx = exIsStretch(ex) || exIsWarmup(ex); /* c102+c105 */
+      if (cEx || sEx) nxt.prev_time = curr.time;
+      if (cEx) nxt.prev_dist = curr.dist;
+      const nextRow = document.querySelector(`[data-set-row="${exIdx}.${si + 1}"]`);
+      if (nextRow) {
+        const prevCell = nextRow.querySelector('[data-prev-cell]');
+        if (prevCell) {
+          const txt = cEx
+            ? `${curr.time != null ? curr.time : '—'}×${curr.dist != null ? curr.dist : '—'}`
+            : sEx
+            ? `${curr.time != null ? curr.time : '—'}×${curr.weight != null ? curr.weight : '—'}×${curr.reps != null ? curr.reps : '—'}`
+            : `${curr.weight != null ? curr.weight : '—'}×${curr.reps != null ? curr.reps : '—'}`;
+          prevCell.innerHTML = escapeHTML(txt) + (curr.rpe != null ? prevRpeBadgeHTML(curr.rpe) : '');
+        }
+      }
+    }
+
     /** Build HTML for a single set row. */
     function setRowHTML(exIdx, setIdx, set) {
       /* c90: prev column = last workout's values (prefilled on start / client
@@ -15113,38 +15229,25 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             const set = _workout.exercises[exIdx].sets[setIdx];
             set.done = !set.done;
             const ex = _workout.exercises[exIdx];
+            const xi = parseInt(exIdx, 10);
             const si = parseInt(setIdx);
             const row = btn.closest('.set-row');
             if (row) row.classList.toggle('set-row-done', set.done);
-            updateMiniProgress(parseInt(exIdx, 10));
+            updateMiniProgress(xi);
             if (set.done) {
-              // Auto-fill previous values for next set if exists
-              if (si + 1 < ex.sets.length) {
-                const curr = ex.sets[si];
-                ex.sets[si + 1].prev_weight = curr.weight;
-                ex.sets[si + 1].prev_reps = curr.reps;
-                ex.sets[si + 1].prev_rpe = curr.rpe; /* c90: chain the effort too */
-                const cEx = exIsCardio(ex);
-                const sEx = exIsStretch(ex) || exIsWarmup(ex); /* c102+c105: stretch/warm-up chain their hold time too */
-                if (cEx || sEx) {
-                  ex.sets[si + 1].prev_time = curr.time;
-                }
-                if (cEx) {
-                  ex.sets[si + 1].prev_dist = curr.dist;
-                }
-                const nextRow = document.querySelector(`[data-set-row="${exIdx}.${si + 1}"]`);
-                if (nextRow) {
-                  const prevCell = nextRow.querySelector('[data-prev-cell]');
-                  if (prevCell) {
-                    const txt = cEx
-                      ? `${curr.time != null ? curr.time : '—'}×${curr.dist != null ? curr.dist : '—'}`
-                      : sEx
-                      ? `${curr.time != null ? curr.time : '—'}×${curr.weight != null ? curr.weight : '—'}×${curr.reps != null ? curr.reps : '—'}`
-                      : `${curr.weight != null ? curr.weight : '—'}×${curr.reps != null ? curr.reps : '—'}`;
-                    prevCell.innerHTML = escapeHTML(txt) + (curr.rpe != null ? prevRpeBadgeHTML(curr.rpe) : '');
-                  }
-                }
-              }
+              // c107: chain prev values (primary exercise)
+              lwChainPrev(xi, si);
+              // c107: superset sync — the ✓ lands on the SAME set of every partner
+              lwSupersetGroup(xi).forEach(p => {
+                const pEx = _workout.exercises[p];
+                const pSet = pEx && pEx.sets[si];
+                if (!pSet || pSet.done) return;
+                pSet.done = true;
+                const pRow = document.querySelector(`[data-set-row="${p}.${si}"]`);
+                if (pRow) pRow.classList.add('set-row-done');
+                updateMiniProgress(p);
+                lwChainPrev(p, si);
+              });
               // Start rest timer — use per-exercise rest if set, else 90
               const restSec = ex.rest_sec != null ? ex.rest_sec : 90;
               restTimer.start(restSec);
@@ -15176,6 +15279,16 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
                 }
               }
             } else {
+              // c107: unchecking mirrors to the superset partners too
+              lwSupersetGroup(xi).forEach(p => {
+                const pEx = _workout.exercises[p];
+                const pSet = pEx && pEx.sets[si];
+                if (!pSet || !pSet.done) return;
+                pSet.done = false;
+                const pRow = document.querySelector(`[data-set-row="${p}.${si}"]`);
+                if (pRow) pRow.classList.remove('set-row-done');
+                updateMiniProgress(p);
+              });
               updateStats();
               updateProgressBar();
               saveDraft();
@@ -15246,6 +15359,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               prev_dist: lastSet && lastSet.dist != null ? lastSet.dist : null,
               prev_rpe: null
             });
+            /* c107: superset sync — the new set lands on every partner too */
+            const ns = ex.sets[ex.sets.length - 1];
+            lwSupersetGroup(exIdx).forEach(p => {
+              const pEx = _workout.exercises[p];
+              if (pEx) pEx.sets.push(Object.assign({}, ns));
+            });
             render();
           }
         });
@@ -15258,6 +15377,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           if (!_workout || !_workout.exercises[idx]) return;
           const ex = _workout.exercises[idx];
           ex.sets.forEach(s => { s.done = true; });
+          /* c107: «Сделал всё» lands on the superset partners too */
+          lwSupersetGroup(idx).forEach(p => {
+            const pEx = _workout.exercises[p];
+            if (pEx) pEx.sets.forEach(s => { s.done = true; });
+          });
           saveDraft();
           render();
           restTimer.start(ex.rest_sec != null ? ex.rest_sec : 90);
@@ -15272,6 +15396,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           const [exIdx, setIdx] = btn.getAttribute('data-remove-set').split('.').map(Number);
           if (_workout && _workout.exercises[exIdx]) {
             _workout.exercises[exIdx].sets.splice(setIdx, 1);
+            /* c107: superset sync — partners keep the same set count */
+            lwSupersetGroup(exIdx).forEach(p => {
+              const pEx = _workout.exercises[p];
+              if (pEx && pEx.sets.length > 1 && pEx.sets[setIdx]) pEx.sets.splice(setIdx, 1);
+            });
             render();
           }
         });
@@ -15831,10 +15960,13 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           cardio: ex.cardio === true || ex.category === 'cardio',
           rest_sec: ex.rest_sec != null ? ex.rest_sec : 90,
           unit: ex.unit === 'lb' ? 'lb' : (ex.unit === 'kg' ? 'kg' : dkWUnitGet()),
+          tunit: ex.tunit === 'min' || ex.tunit === 'sec' ? ex.tunit : null, /* c107 */
+          is_superset: ex.is_superset === true, /* c107: superset pairs survive template → live */
           sets: (ex.sets || []).map(s => ({ ...s, done: false }))
         })),
         started_at: Date.now()
       };
+      lwEqualizeSupersets(_workout.exercises); /* c107: partners start with equal set counts */
       loadExerciseCache();
       loadClientList().then(() => {
         const sel = document.getElementById('live-workout-client');
@@ -19223,7 +19355,6 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         <div class="bg-surface-2 border border-border rounded-xl p-3">
           <div class="text-[10px] uppercase tracking-wider text-muted mb-2">${t('nutrition.basedOnClient') || 'Based on client profile'}</div>
           <div class="grid grid-cols-2 gap-2 text-xs">
-            <div><span class="text-muted">${t('generator.goalLabel')}:</span> <span class="font-semibold">${escapeHTML(client.goal || '—')}</span></div>
             <div><span class="text-muted">${t('generator.freqLabel')}:</span> <span class="font-semibold">${t('generator.perWeek', {n: client.frequency || '—'})}</span></div>
             <div><span class="text-muted">${t('generator.ageLabel')}:</span> <span class="font-semibold">${escapeHTML(String(client.age || '—'))}</span></div>
             <div><span class="text-muted">${t('generator.weightLabel')}:</span> <span class="font-semibold">${escapeHTML(String(client.weight || '—'))} kg</span></div>
@@ -20221,7 +20352,6 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           <div><span class="text-muted">${t('generator.weightLabel')}:</span> <span class="font-semibold">${escapeHTML(String(client.weight || '—'))} kg</span></div>
           <div><span class="text-muted">${t('nutrition.heightLabel') || 'Height'}:</span> <span class="font-semibold">${escapeHTML(String(client.height || '—'))} cm</span></div>
             <div><span class="text-muted">${t('generator.sexLabel')}:</span> <span class="font-semibold">${client.sex === 'f' ? (t('client.sexFemale') || 'F') : (t('client.sexMale') || 'M')}</span></div>
-            <div><span class="text-muted">${t('generator.goalLabel')}:</span> <span class="font-semibold">${escapeHTML(client.goal || '—')}</span></div>
             <div><span class="text-muted">${t('nutrition.bmrLabel')}:</span> <span class="font-semibold">${bmr} ${t('nutrition.kcalUnit')}</span></div>
             <div class="col-span-2"><span class="text-muted">${t('nutrition.suggestedTdee')}:</span> <span class="font-semibold">${tdee} ${t('nutrition.kcalPerDay')}</span></div>
           </div>
@@ -25152,6 +25282,8 @@ async function boot() {
       // Snap to nearest defined step so the highlight always lands on a button
       const snapped = _findClosestFontScale(scale);
       document.documentElement.style.setProperty('--font-scale', String(snapped));
+      /* c107: big-font tier — releases nowrap + allows mid-word breaks */
+      document.documentElement.classList.toggle('dk-fs-big', snapped >= 1.3);
       document.querySelectorAll('.fs-btn').forEach(btn => {
         const isActive = Math.abs(parseFloat(btn.getAttribute('data-font-size')) - snapped) < 0.001;
         btn.classList.toggle('bg-primary', isActive);
@@ -29342,7 +29474,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 106; /* numeric part of dk-build c106 */
+  var RUNNING = 107; /* numeric part of dk-build c107 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

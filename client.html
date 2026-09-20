@@ -3871,11 +3871,44 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       })
     };
   }
+  /* c107: superset helpers — a group is a maximal run of CONSECUTIVE
+     is_superset exercises; ✓ / add / remove / «Сделал всё» sync across it and
+     every partner carries the same set count. */
+  function psSupGroup(exs, idx) {
+    if (!exs || !exs[idx] || exs[idx].is_superset !== true) return [];
+    let a = idx; while (a - 1 >= 0 && exs[a - 1] && exs[a - 1].is_superset === true) a--;
+    let b = idx; while (b + 1 < exs.length && exs[b + 1] && exs[b + 1].is_superset === true) b++;
+    const out = [];
+    for (let i = a; i <= b; i++) if (i !== idx) out.push(i);
+    return out;
+  }
+  function psEqualizeSupersets(exs) {
+    if (!Array.isArray(exs)) return;
+    let i = 0;
+    while (i < exs.length) {
+      if (exs[i] && exs[i].is_superset === true) {
+        let j = i;
+        while (j + 1 < exs.length && exs[j + 1] && exs[j + 1].is_superset === true) j++;
+        let max = 0;
+        for (let k = i; k <= j; k++) max = Math.max(max, (exs[k].sets || []).length);
+        for (let k = i; k <= j; k++) {
+          const ex = exs[k];
+          while (ex.sets.length > 0 && ex.sets.length < max) {
+            const last = ex.sets[ex.sets.length - 1];
+            ex.sets.push(Object.assign({}, last, { done: false, rpe: null, prev_rpe: null }));
+          }
+        }
+        i = j + 1;
+      } else i++;
+    }
+  }
+
   function ensureSession(dayIdx){
     if (sessions[dayIdx]) return sessions[dayIdx];
     const s = buildSession(dayIdx, false);
     if (!s) return null;
     s.exercises.forEach(ex=>{ if(!ex.sets.length) ex.sets.push({weight:null,reps:null,time:null,dist:null,rpe:null,type:'normal',done:false,prev_weight:null,prev_reps:null,prev_rpe:null,prev_time:null,prev_dist:null}); });
+    psEqualizeSupersets(s.exercises); /* c107: partners start with equal set counts */
     sessions[dayIdx]=s;
     saveDraft(true);
     return s;
@@ -3890,6 +3923,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     if (!sess) {
       sess = buildSession(idx, true);
       if (!sess) return;
+      psEqualizeSupersets(sess.exercises); /* c107: partners start with equal set counts */
       sessions[idx]=sess;
       saveDraft(true);
     } else if (!sess.started_at) {
@@ -4245,6 +4279,40 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         const ex = (sess0.exercises||[])[ei]; const set = ex && ex.sets[si];
         if (!set) return;
         set.done = !set.done;
+        /* c107: superset sync — the ✓ lands on the SAME set of every partner */
+        psSupGroup(sess0.exercises, ei).forEach(p => {
+          const pEx = sess0.exercises[p];
+          const pSet = pEx && pEx.sets[si];
+          if (!pSet || pSet.done === set.done) return;
+          pSet.done = set.done;
+          const pRow = document.querySelector(`[data-exercise-card="${p}"] .set-row[data-si="${si}"]`);
+          if (pRow) pRow.classList.toggle('set-row-done', pSet.done);
+          updateMiniProgress(p);
+          if (pSet.done) {
+            /* chain the partner's next-set prev too (CRM parity) */
+            const pNext = pEx.sets[si+1];
+            if (pNext) {
+              pNext.prev_weight = pSet.weight != null ? pSet.weight : pNext.prev_weight;
+              pNext.prev_reps = pSet.reps != null ? pSet.reps : pNext.prev_reps;
+              pNext.prev_rpe = pSet.rpe != null ? pSet.rpe : pNext.prev_rpe;
+              const pExD = ((dayInfo(activeDayIndex)||{}).exercises||[])[p] || {};
+              const pExDataC = getExData(pExD);
+              const pCardio = (pExD.cardio === true) || !!(pExDataC && pExDataC.category === 'cardio');
+              const pStretch = !!((pExDataC && (pExDataC.category === 'stretching' || pExDataC.group === 'stretching')) || (pExDataC && pExDataC.group === 'warmup'));
+              if (pCardio || pStretch) pNext.prev_time = pSet.time != null ? pSet.time : pNext.prev_time;
+              if (pCardio) pNext.prev_dist = pSet.dist != null ? pSet.dist : pNext.prev_dist;
+              const pRow2 = document.querySelector(`[data-exercise-card="${p}"] .set-row[data-si="${si+1}"] [data-prev-cell]`);
+              if (pRow2) {
+                const ptxt = pCardio
+                  ? `${pSet.time!=null?pSet.time:'—'}×${pSet.dist!=null?pSet.dist:'—'}`
+                  : pStretch
+                  ? `${pSet.time!=null?pSet.time:'—'}×${pSet.weight!=null?pSet.weight:'—'}×${pSet.reps!=null?pSet.reps:'—'}`
+                  : `${pSet.weight!=null?pSet.weight:'—'}×${pSet.reps!=null?pSet.reps:'—'}`;
+                pRow2.innerHTML = esc(ptxt) + (pSet.rpe != null ? `<span class="prev-rpe" style="background:${RPE_COLORS[pSet.rpe-1]||'#666'}" title="RPE ${pSet.rpe}">${pSet.rpe}</span>` : '');
+              }
+            }
+          }
+        });
         if (set.done) {
           // copy current values into next set's prev (CRM parity)
           const next = ex.sets[si+1];
@@ -4327,6 +4395,11 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
           prev_time: last && last.time != null ? last.time : null,
           prev_dist: last && last.dist != null ? last.dist : null
         });
+        /* c107: superset sync — the new set lands on every partner too */
+        psSupGroup(sess0.exercises, ei).forEach(p => {
+          const pEx = sess0.exercises[p];
+          if (pEx) pEx.sets.push(Object.assign({}, ex.sets[ex.sets.length - 1]));
+        });
         ensureStarted(sess0); saveDraft(); renderExercises();
         const rows = document.querySelectorAll(`[data-exercise-card="${ei}"] .set-row`);
         if (rows.length) {
@@ -4343,6 +4416,11 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         const ei = +btn.dataset.ex;
         const ex = (sess0.exercises||[])[ei]; if (!ex) return;
         (ex.sets||[]).forEach(s => { s.done = true; });
+        /* c107: «Сделал всё» lands on the superset partners too */
+        psSupGroup(sess0.exercises, ei).forEach(p => {
+          const pEx = sess0.exercises[p];
+          if (pEx) (pEx.sets||[]).forEach(s => { s.done = true; });
+        });
         ensureStarted(sess0); saveDraft(); renderExercises();
         startRest(ex.rest_sec || 90);
       });
@@ -4356,6 +4434,11 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         const ex = (sess0.exercises||[])[ei];
         if (!ex || si === 0 || ex.sets.length <= 1) return;
         ex.sets.splice(si, 1);
+        /* c107: superset sync — partners keep the same set count */
+        psSupGroup(sess0.exercises, ei).forEach(p => {
+          const pEx = sess0.exercises[p];
+          if (pEx && pEx.sets.length > 1 && pEx.sets[si]) pEx.sets.splice(si, 1);
+        });
         saveDraft(); renderExercises();
       });
     });
@@ -4652,7 +4735,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     syncCurrentRefs();
     // Header
     document.getElementById('hdr-name').textContent = currentClient.full_name || t('portalTitle');
-    document.getElementById('hdr-goal').textContent = (currentClient.goal||'') + ' • David King Gym';
+    document.getElementById('hdr-goal').textContent = 'David King Gym'; /* c107: goal groupings are gone */
     // Banner
     if (currentProgram) {
       document.getElementById('banner-prog-name').textContent = currentProgram.name;
