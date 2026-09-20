@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c108" />
+<meta name="dk-build" content="c109" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2091,6 +2091,52 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
 #tex-active-badge { font-size:10px; font-weight:800; padding:2px 8px; border-radius:9999px; background:rgb(var(--c-accent) / .14); color:rgb(var(--c-accent)); border:1px solid rgb(var(--c-accent) / .35); text-transform:none; letter-spacing:0; white-space:nowrap; }
 #texture-opacity-val { font-size:10px; font-weight:800; padding:2px 6px; border-radius:6px; background:rgb(var(--c-accent) / .1); color:rgb(var(--c-accent)); border:1px solid rgb(var(--c-accent) / .25); font-variant-numeric:tabular-nums; }
 
+/* ===== PANEL TEXTURE (c109) — glass textures for panels INSIDE modal windows =====
+   Scope (deliberate): the modal dialog panel ([id$='-modal'] > .bg-surface), every card /
+   inner panel inside modal roots (.bg-surface / .bg-surface-2 descendants — form controls
+   are excluded so typing stays readable), JS-built confirm dialogs (.bg-surface[role='dialog'])
+   and the live preview tile in Settings. The page-wide texture (data-tex) is overridden
+   inside modals while both are active — panel texture wins where it applies. All visual
+   values arrive as CSS vars computed in JS (ptexApply), so any texture × color ×
+   transparency combination works without a CSS matrix. */
+body[data-ptex]:not([data-ptex='off']) [id$='-modal'] .bg-surface:not(input):not(select):not(textarea),
+body[data-ptex]:not([data-ptex='off']) [id$='-modal'] .bg-surface-2:not(input):not(select):not(textarea) {
+  background-color: var(--ptex-inner-bg, rgb(var(--c-surface-2))) !important;
+  background-image: var(--ptex-inner-img, none) !important;
+  background-size: var(--ptex-inner-img-size, 100% 100%) !important;
+  background-repeat: var(--ptex-inner-img-repeat, no-repeat) !important;
+  background-blend-mode: normal !important;
+  backdrop-filter: var(--ptex-blur, none);
+  -webkit-backdrop-filter: var(--ptex-blur, none);
+  border-color: var(--ptex-border, rgb(var(--c-border))) !important;
+}
+body[data-ptex]:not([data-ptex='off']) [id$='-modal'] > .bg-surface,
+body[data-ptex]:not([data-ptex='off']) .bg-surface[role='dialog']:not(#atlas-modal),
+body[data-ptex]:not([data-ptex='off']) #ptex-preview {
+  background-color: var(--ptex-main-bg, rgb(var(--c-surface))) !important;
+  background-image: var(--ptex-main-img, none) !important;
+  background-size: var(--ptex-main-img-size, 100% 100%) !important;
+  background-repeat: var(--ptex-main-img-repeat, no-repeat) !important;
+  background-blend-mode: normal !important;
+  backdrop-filter: var(--ptex-blur, none);
+  -webkit-backdrop-filter: var(--ptex-blur, none);
+  border-color: var(--ptex-border, rgb(var(--c-border))) !important;
+}
+/* --- Panel texture settings UI --- */
+.ptex-cbtn { position:relative; width:44px; height:44px; border-radius:12px; border:2px solid rgb(var(--c-border)); cursor:pointer; padding:0; transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease; background-clip:padding-box; }
+.ptex-cbtn:hover { transform:translateY(-1px); }
+.ptex-cbtn:active { transform:translateY(0) scale(.97); }
+.ptex-cbtn:focus-visible { outline:2px solid rgb(var(--c-accent)); outline-offset:2px; }
+.ptex-cbtn.active { border-color:rgb(var(--c-accent)); box-shadow:0 0 0 2px rgb(var(--c-accent) / .5); }
+.ptex-cbtn .ptex-ccheck { position:absolute; top:-7px; inset-inline-end:-7px; width:17px; height:17px; border-radius:9999px; background:rgb(var(--c-accent)); color:rgb(var(--c-surface)); font-size:11px; font-weight:800; line-height:17px; text-align:center; opacity:0; transform:scale(.4); transition:opacity .15s ease, transform .15s ease; pointer-events:none; }
+.ptex-cbtn.active .ptex-ccheck { opacity:1; transform:scale(1); }
+#ptex-active-badge { font-size:10px; font-weight:800; padding:2px 8px; border-radius:9999px; background:rgb(var(--c-accent) / .14); color:rgb(var(--c-accent)); border:1px solid rgb(var(--c-accent) / .35); text-transform:none; letter-spacing:0; white-space:nowrap; }
+#ptex-opacity-val { font-size:10px; font-weight:800; padding:2px 6px; border-radius:6px; background:rgb(var(--c-accent) / .1); color:rgb(var(--c-accent)); border:1px solid rgb(var(--c-accent) / .25); font-variant-numeric:tabular-nums; }
+#ptex-preview { position:relative; overflow:hidden; border-radius:14px; border:1px solid rgb(var(--c-border)); padding:14px; }
+#ptex-preview .ptex-preview-row { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+#ptex-preview .ptex-preview-chip { flex:1 1 64px; min-height:30px; border-radius:9px; border:1px solid rgb(var(--c-border) / .8); background:rgb(var(--c-surface-2)); }
+#ptex-backdrop-demo { border-radius:16px; padding:12px; border:1px dashed rgb(var(--c-border) / .8); background: repeating-conic-gradient(rgb(var(--c-border) / .30) 0% 25%, transparent 0% 50%) 50% / 18px 18px, linear-gradient(135deg, rgb(var(--c-primary) / .30), rgb(var(--c-accent) / .22)); }
+
 /* ===== COLLAPSIBLE SETTINGS PANELS ===== */
     .settings-panel { overflow: hidden; transition: max-height 0.3s ease; }
     .settings-panel-header { cursor: pointer; user-select: none; display: flex; align-items: center; justify-content: space-between; }
@@ -2722,7 +2768,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c108</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c109</p>
             </div>
           </div>
 
@@ -4416,6 +4462,78 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                     <span>5%</span>
                     <span class="text-center" data-i18n="settings.textureOpacityHint">Each effect has its own optimal level — Reset returns to it</span>
                     <span>100%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel Texture (c109) — glass textures for modal panels -->
+            <div class="bg-surface border border-accent/30 rounded-2xl shadow-card mb-4 settings-panel collapsed">
+              <div class="settings-panel-header p-5 pb-3">
+                <h3 class="font-display font-bold text-sm text-accent uppercase tracking-wider flex items-center gap-2 flex-1 min-w-0">
+                  <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="14" rx="3"/><path d="M3 9h18M8 4v5"/></svg>
+                  <span data-i18n="settings.panelTexture">Panel texture</span>
+                  <span id="ptex-active-badge" class="shrink-0">Off</span>
+                </h3>
+                <svg class="w-4 h-4 text-muted settings-panel-chevron shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+              </div>
+              <div class="settings-panel-body p-5 pt-0">
+                <p class="text-xs text-muted mb-4 leading-relaxed" data-i18n="settings.ptexHint">Glass textures for the panels inside modal windows — frosted, clear, tinted and multicolor mosaic. Pick a texture, choose a shade and fine-tune the transparency.</p>
+                <div class="grid grid-cols-3 sm:grid-cols-5 gap-2.5 mb-4">
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-ptex="off" aria-pressed="false">
+                    <span class="tex-swatch" data-ptex-swatch="off" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.ptexOff">Off</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
+                  </button>
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-ptex="frost" aria-pressed="false">
+                    <span class="tex-swatch" data-ptex-swatch="frost" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.ptexFrost">Frosted glass</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
+                  </button>
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-ptex="clear" aria-pressed="false">
+                    <span class="tex-swatch" data-ptex-swatch="clear" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.ptexClear">Clear glass</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
+                  </button>
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-ptex="tint" aria-pressed="false">
+                    <span class="tex-swatch" data-ptex-swatch="tint" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.ptexTint">Tinted glass</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
+                  </button>
+                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-ptex="mosaic" aria-pressed="false">
+                    <span class="tex-swatch" data-ptex-swatch="mosaic" aria-hidden="true"></span>
+                    <span class="tex-name" data-i18n="settings.ptexMosaic">Mosaic glass</span>
+                    <span class="tex-check" aria-hidden="true">✓</span>
+                  </button>
+                </div>
+                <div id="ptex-colors-wrap" class="hidden">
+                  <div class="tex-cat" data-i18n="settings.ptexColor">Shade</div>
+                  <div id="ptex-colors" class="flex flex-wrap gap-2.5 mb-4" role="group" aria-label="Shade"></div>
+                </div>
+                <div id="ptex-backdrop-demo" class="mb-4">
+                  <div id="ptex-preview" class="bg-surface">
+                    <div class="text-xs font-bold" data-i18n="settings.ptexPreview">Live preview</div>
+                    <div class="text-[11px] text-muted mt-0.5" data-i18n="settings.ptexPreviewHint">This is how panels inside modal windows will look</div>
+                    <div class="ptex-preview-row" aria-hidden="true">
+                      <span class="ptex-preview-chip"></span>
+                      <span class="ptex-preview-chip"></span>
+                      <span class="ptex-preview-chip"></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-1 pt-3 border-t border-border/60">
+                  <div class="flex items-center justify-between mb-1.5 gap-2 flex-wrap">
+                    <label class="text-xs font-semibold text-muted" for="ptex-opacity" data-i18n="settings.ptexOpacity">Transparency</label>
+                    <div class="flex items-center gap-2">
+                      <span id="ptex-opacity-val">55%</span>
+                      <button type="button" id="ptex-opacity-reset" class="text-[10px] font-semibold text-muted hover:text-accent border border-border rounded-md px-2 py-0.5 transition" data-i18n="settings.textureReset">Reset</button>
+                    </div>
+                  </div>
+                  <input type="range" id="ptex-opacity" min="0.1" max="1" step="0.05" value="0.55" class="w-full accent-accent" />
+                  <div class="flex justify-between items-center text-[9px] text-muted mt-0.5 gap-2">
+                    <span data-i18n="settings.ptexOpSolid">Solid</span>
+                    <span class="text-center" data-i18n="settings.ptexOpacityHint">Right — more see-through, left — more solid</span>
+                    <span data-i18n="settings.ptexOpSee">See-through</span>
                   </div>
                 </div>
               </div>
@@ -25584,6 +25702,284 @@ if (texResetBtn) texResetBtn.addEventListener('click', () => {
 document.addEventListener('dk-lang', texBadge);
 loadTexture();
 
+// ---- Panel Texture (c109) — glass textures for panels INSIDE modal windows ----
+// Applied via body[data-ptex] + CSS vars; see the PANEL TEXTURE CSS block.
+// Scope: [id$='-modal'] panels + inner cards, .bg-surface[role=dialog] popups, preview tile.
+const PTEX_DEFAULT_TAU = 0.55; /* 0 = solid … 1 = maximally see-through */
+const PTEX_VARS = ['--ptex-main-bg','--ptex-main-img','--ptex-main-img-size','--ptex-main-img-repeat','--ptex-inner-bg','--ptex-inner-img','--ptex-inner-img-size','--ptex-inner-img-repeat','--ptex-blur','--ptex-border'];
+function ptexClamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+function ptexRGBA(rgbArr, a) { return 'rgba(' + rgbArr.map(function (n) { return Math.round(ptexClamp(n, 0, 255)); }).join(',') + ',' + (Math.round(a * 1000) / 1000) + ')'; }
+function ptexMixRGB(a, b, k) { return a.map(function (n, i) { return n + (b[i] - n) * k; }); }
+/* Deterministic stained-glass tile: jittered shared-corner grid → cells tile without gaps. */
+function ptexMosaicSVG(palette, size, seed, grout, fillOp) {
+  try {
+    var s = 0, str = String(seed || 'dk');
+    for (var i = 0; i < str.length; i++) s = (s * 31 + str.charCodeAt(i)) >>> 0;
+    var rnd = function () { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; };
+    var cols = 5, rows = 7, cw = size / cols, ch = size / rows;
+    var px = [], py = [];
+    for (var c = 0; c <= cols; c++) { px.push(c * cw + (c > 0 && c < cols ? (rnd() - 0.5) * cw * 0.3 : 0)); }
+    for (var r = 0; r <= rows; r++) { py.push(r * ch + (r > 0 && r < rows ? (rnd() - 0.5) * ch * 0.3 : 0)); }
+    var cells = '';
+    for (var rr = 0; rr < rows; rr++) {
+      for (var cc = 0; cc < cols; cc++) {
+        var col = palette[Math.floor(rnd() * palette.length) % palette.length];
+        var x1 = px[cc], y1 = py[rr], x2 = px[cc + 1], y2 = py[rr + 1];
+        cells += '<rect x="' + x1.toFixed(1) + '" y="' + y1.toFixed(1) + '" width="' + (x2 - x1).toFixed(1) + '" height="' + (y2 - y1).toFixed(1) + '" fill="' + col + '" fill-opacity="' + (fillOp || 0.72) + '"/>';
+        if (rnd() < 0.3) cells += '<path d="M' + (x1 + 3).toFixed(1) + ' ' + (y1 + 4).toFixed(1) + 'h9l-9 9z" fill="#ffffff" fill-opacity="0.33"/>';
+      }
+    }
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '"><g stroke="' + (grout || '#151823') + '" stroke-opacity="0.6" stroke-width="2.2">' + cells + '</g></svg>';
+    return 'url("data:image/svg+xml,' + encodeURIComponent(svg) + '")';
+  } catch (e) { return 'none'; }
+}
+const PTEX = {
+  frost: {
+    solid: 0.95, min: 0.45, blur: 'blur(14px) saturate(1.3)',
+    colors: [
+      { id: 'milk', key: 'ptexCfrostMilk', rgb: '242 246 250', hex: '#F2F6FA' },
+      { id: 'smoke', key: 'ptexCfrostSmoke', rgb: '200 208 218', hex: '#C8D0DA' },
+      { id: 'ice', key: 'ptexCfrostIce', rgb: '186 220 242', hex: '#BADCF2' },
+      { id: 'mint', key: 'ptexCfrostMint', rgb: '190 232 214', hex: '#BEE8D6' },
+      { id: 'rose', key: 'ptexCfrostRose', rgb: '240 205 218', hex: '#F0CDDA' },
+      { id: 'lav', key: 'ptexCfrostLav', rgb: '216 205 242', hex: '#D8CDF2' }
+    ],
+    build: function (tint, tau, surf, surf2, forInner) {
+      var a = this.solid + (this.min - this.solid) * tau; if (forInner) a = Math.min(1, a + 0.1);
+      var base = ptexMixRGB(surf, tint, 0.18);
+      var k = forInner ? 0.72 : 1;
+      return {
+        bg: ptexRGBA(base, a),
+        img: 'linear-gradient(160deg, ' + ptexRGBA(tint, 0.42 * k) + ' 0%, ' + ptexRGBA(tint, 0.14 * k) + ' 45%, ' + ptexRGBA(tint, 0.34 * k) + ' 100%), linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0) 26%)',
+        size: '100% 100%', repeat: 'no-repeat'
+      };
+    }
+  },
+  clear: {
+    solid: 0.8, min: 0.26, blur: 'blur(3px) saturate(1.12)',
+    colors: [
+      { id: 'crystal', key: 'ptexCclearCrystal', rgb: '235 244 250', hex: '#EBF4FA' },
+      { id: 'aqua', key: 'ptexCclearAqua', rgb: '190 235 230', hex: '#BEEBE6' },
+      { id: 'champ', key: 'ptexCclearChamp', rgb: '245 236 210', hex: '#F5ECD2' },
+      { id: 'emer', key: 'ptexCclearEmer', rgb: '195 240 205', hex: '#C3F0CD' },
+      { id: 'sapph', key: 'ptexCclearSapph', rgb: '190 210 245', hex: '#BED2F5' }
+    ],
+    build: function (tint, tau, surf, surf2, forInner) {
+      var a = this.solid + (this.min - this.solid) * tau; if (forInner) a = Math.min(1, a + 0.12);
+      var k = forInner ? 0.7 : 1;
+      return {
+        bg: ptexRGBA(surf, a),
+        img: 'linear-gradient(115deg, rgba(255,255,255,' + (0.30 * k) + ') 0%, rgba(255,255,255,' + (0.05 * k) + ') 24%, rgba(255,255,255,0) 42%, ' + ptexRGBA(tint, 0.10 * k) + ' 70%, ' + ptexRGBA(tint, 0.26 * k) + ' 100%), linear-gradient(0deg, ' + ptexRGBA(tint, 0.12 * k) + ', ' + ptexRGBA(tint, 0.12 * k) + ')',
+        size: '100% 100%', repeat: 'no-repeat'
+      };
+    }
+  },
+  tint: {
+    solid: 1.0, min: 0.58, blur: 'blur(10px) saturate(1.2)',
+    colors: [
+      { id: 'graph', key: 'ptexCtintGraph', rgb: '70 76 86', hex: '#464C56' },
+      { id: 'ocean', key: 'ptexCtintOcean', rgb: '36 68 105', hex: '#244469' },
+      { id: 'emer', key: 'ptexCtintEmer', rgb: '26 82 60', hex: '#1A523C' },
+      { id: 'bronze', key: 'ptexCtintBronze', rgb: '122 78 34', hex: '#7A4E22' },
+      { id: 'bord', key: 'ptexCtintBord', rgb: '105 34 52', hex: '#692234' },
+      { id: 'smoke', key: 'ptexCtintSmoke', rgb: '52 52 58', hex: '#34343A' }
+    ],
+    build: function (tint, tau, surf, surf2, forInner) {
+      var a = this.solid + (this.min - this.solid) * tau; if (forInner) a = Math.min(1, a + 0.06);
+      var mixK = forInner ? 0.62 : 0.8;
+      var base = ptexMixRGB(surf, tint, mixK);
+      return {
+        bg: ptexRGBA(base, a),
+        img: 'linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 32%), linear-gradient(0deg, rgba(0,0,0,0.22), rgba(0,0,0,0) 55%)',
+        size: '100% 100%', repeat: 'no-repeat'
+      };
+    }
+  },
+  mosaic: {
+    solid: 0.92, min: 0.45, blur: 'blur(5px) saturate(1.25)', border: 'rgba(22,24,34,0.6)',
+    colors: [
+      { id: 'stain', key: 'ptexCmosStain', hex: '#C43A47', rgb: '196 58 71', palette: ['#e63946', '#f4a261', '#e9c46a', '#2a9d8f', '#264653', '#8e44ad'] },
+      { id: 'ocean', key: 'ptexCmosOcean', hex: '#0077B6', rgb: '2 62 138', palette: ['#023e8a', '#0077b6', '#0096c7', '#48cae4', '#90e0ef', '#03045e'] },
+      { id: 'sunset', key: 'ptexCmosSunset', hex: '#F77F00', rgb: '246 127 0', palette: ['#d62828', '#f77f00', '#fcbf49', '#e63946', '#ff9f1c', '#c1121f'] },
+      { id: 'forest', key: 'ptexCmosForest', hex: '#40916C', rgb: '64 145 108', palette: ['#2d6a4f', '#40916c', '#52b788', '#74c69d', '#95d5b2', '#1b4332'] },
+      { id: 'neon', key: 'ptexCmosNeon', hex: '#B5179E', rgb: '181 23 158', palette: ['#f72585', '#b5179e', '#7209b7', '#4361ee', '#4cc9f0', '#3a0ca3'] },
+      { id: 'pastel', key: 'ptexCmosPastel', hex: '#BDE0FE', rgb: '189 224 254', palette: ['#ffc8dd', '#bde0fe', '#a2d2ff', '#caffbf', '#fdffb6', '#cdb4db'] }
+    ],
+    build: function (tint, tau, surf, surf2, forInner) {
+      var a = this.solid + (this.min - this.solid) * tau; if (forInner) a = Math.min(1, a + 0.1);
+      var tile = forInner ? 100 : 140;
+      return {
+        bg: ptexRGBA(surf, a),
+        img: ptexMosaicSVG(this.curPalette || this.colors[0].palette, tile, 'dk-' + (this.curId || 'stain') + '-' + tile) + ', linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0) 40%)',
+        size: tile + 'px ' + tile + 'px, 100% 100%',
+        repeat: 'repeat, no-repeat'
+      };
+    }
+  }
+};
+let ptexState = { name: 'off', color: null, tau: PTEX_DEFAULT_TAU };
+let ptexSaveTimer = null;
+function ptexPersist() {
+  clearTimeout(ptexSaveTimer);
+  ptexSaveTimer = setTimeout(async () => {
+    try { await db.put('settings', { key: 'panelTexture', value: { name: ptexState.name, color: ptexState.color, tau: ptexState.tau } }); } catch (e) {}
+  }, 250);
+}
+function ptexBadge() {
+  const b = document.getElementById('ptex-active-badge');
+  if (b) b.textContent = ptexState.name === 'off' ? (t('settings.ptexOff') || 'Off') : (t('settings.ptex' + ptexState.name.charAt(0).toUpperCase() + ptexState.name.slice(1)) || ptexState.name);
+}
+function ptexSurfRGB(varName, fallback) {
+  try {
+    const raw = getComputedStyle(document.body).getPropertyValue(varName).trim();
+    const arr = raw.split(/\s+/).map(Number);
+    if (arr.length >= 3 && arr.every(n => isFinite(n))) return arr.slice(0, 3);
+  } catch (e) {}
+  return fallback;
+}
+function ptexBuildVars(name, colorId, tau) {
+  const spec = PTEX[name]; if (!spec) return null;
+  const col = spec.colors.find(c => c.id === colorId) || spec.colors[0];
+  tau = ptexClamp(typeof tau === 'number' && isFinite(tau) ? tau : PTEX_DEFAULT_TAU, 0.1, 1);
+  const tint = col.rgb.split(/\s+/).map(Number);
+  const surf = ptexSurfRGB('--c-surface', [24, 24, 28]);
+  const surf2 = ptexSurfRGB('--c-surface-2', surf.map(n => Math.round(n * 1.25)));
+  if (name === 'mosaic') { spec.curPalette = col.palette; spec.curId = col.id; }
+  const main = spec.build(tint, tau, surf, surf2, false);
+  const inner = spec.build(tint, tau, surf, surf2, true);
+  return {
+    '--ptex-main-bg': main.bg, '--ptex-main-img': main.img, '--ptex-main-img-size': main.size, '--ptex-main-img-repeat': main.repeat,
+    '--ptex-inner-bg': inner.bg, '--ptex-inner-img': inner.img, '--ptex-inner-img-size': inner.size, '--ptex-inner-img-repeat': inner.repeat,
+    '--ptex-blur': spec.blur, '--ptex-border': spec.border || ptexRGBA(tint, 0.5)
+  };
+}
+function ptexRenderColors() {
+  const wrap = document.getElementById('ptex-colors-wrap');
+  const holder = document.getElementById('ptex-colors');
+  if (!wrap || !holder) return;
+  const spec = PTEX[ptexState.name];
+  if (!spec) { wrap.classList.add('hidden'); holder.innerHTML = ''; return; }
+  wrap.classList.remove('hidden');
+  holder.innerHTML = '';
+  spec.colors.forEach(c => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'ptex-cbtn' + (ptexState.color === c.id ? ' active' : '');
+    btn.setAttribute('aria-pressed', ptexState.color === c.id ? 'true' : 'false');
+    const nm = t('settings.' + c.key) || c.id;
+    btn.title = nm; btn.setAttribute('aria-label', nm);
+    if (spec === PTEX.mosaic) btn.style.backgroundImage = ptexMosaicSVG(c.palette, 44, 'dk-sw-' + c.id, '#151823', 0.9);
+    else btn.style.backgroundColor = c.hex;
+    const chk = document.createElement('span');
+    chk.className = 'ptex-ccheck'; chk.setAttribute('aria-hidden', 'true'); chk.textContent = '✓';
+    btn.appendChild(chk);
+    btn.addEventListener('click', () => {
+      ptexApply(ptexState.name, c.id, ptexState.tau);
+      ptexPersist();
+      toast(t('settings.ptexApplied') || 'Panel texture applied', 'success', 1800);
+    });
+    holder.appendChild(btn);
+  });
+}
+function ptexSyncUI() {
+  const slider = document.getElementById('ptex-opacity');
+  const valEl = document.getElementById('ptex-opacity-val');
+  if (slider) slider.value = String(ptexClamp(ptexState.tau, 0.1, 1));
+  if (valEl) valEl.textContent = Math.round(ptexClamp(ptexState.tau, 0.1, 1) * 100) + '%';
+  document.querySelectorAll('.texture-btn[data-ptex]').forEach(btn => {
+    const on = btn.getAttribute('data-ptex') === ptexState.name;
+    btn.classList.toggle('active', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  ptexRenderColors();
+  ptexBadge();
+}
+function ptexApply(name, colorId, tau) {
+  if (!PTEX[name]) name = 'off';
+  ptexState.name = name;
+  const spec = PTEX[name];
+  if (spec) {
+    const known = spec.colors.some(c => c.id === colorId);
+    ptexState.color = known ? colorId : spec.colors[0].id;
+  } else ptexState.color = null;
+  ptexState.tau = ptexClamp(typeof tau === 'number' && isFinite(tau) ? tau : PTEX_DEFAULT_TAU, 0.1, 1);
+  const bodyStyle = document.body.style;
+  if (name === 'off') {
+    PTEX_VARS.forEach(v => bodyStyle.removeProperty(v));
+  } else {
+    const vars = ptexBuildVars(name, ptexState.color, ptexState.tau);
+    if (vars) Object.keys(vars).forEach(k => bodyStyle.setProperty(k, vars[k]));
+  }
+  document.body.setAttribute('data-ptex', name);
+  ptexSyncUI();
+}
+function ptexPaintSwatches() {
+  document.querySelectorAll('[data-ptex-swatch]').forEach(el => {
+    const id = el.getAttribute('data-ptex-swatch');
+    if (id === 'off') {
+      el.style.backgroundImage = 'repeating-linear-gradient(45deg, rgb(var(--c-border) / .55) 0 6px, transparent 6px 12px)';
+      el.style.backgroundColor = 'rgb(var(--c-surface-2))';
+    } else if (id === 'frost') {
+      el.style.backgroundImage = 'linear-gradient(160deg, rgba(242,246,250,0.9), rgba(200,208,218,0.55) 55%, rgba(242,246,250,0.85))';
+      el.style.backgroundColor = 'rgb(var(--c-text) / .25)';
+    } else if (id === 'clear') {
+      el.style.backgroundImage = 'linear-gradient(115deg, rgba(255,255,255,0.75), rgba(255,255,255,0.1) 35%, rgba(190,210,245,0.35) 75%, rgba(235,244,250,0.6))';
+      el.style.backgroundColor = 'rgb(var(--c-text) / .18)';
+    } else if (id === 'tint') {
+      el.style.backgroundImage = 'linear-gradient(180deg, rgba(255,255,255,0.22), rgba(0,0,0,0.25) 60%), linear-gradient(90deg, #464C56, #244469)';
+      el.style.backgroundColor = '#464C56';
+    } else if (id === 'mosaic') {
+      el.style.backgroundImage = ptexMosaicSVG(PTEX.mosaic.colors[0].palette, 46, 'dk-sw-stain', '#151823', 0.9);
+      el.style.backgroundColor = 'rgb(var(--c-text) / .2)';
+      el.style.backgroundSize = 'auto';
+    }
+  });
+}
+async function loadPanelTexture() {
+  try {
+    const row = await db.get('settings', 'panelTexture');
+    const v = row && row.value ? row.value : {};
+    ptexApply(PTEX[v.name] ? v.name : 'off', v.color, typeof v.tau === 'number' && isFinite(v.tau) ? v.tau : PTEX_DEFAULT_TAU);
+  } catch (e) { ptexApply('off', null, PTEX_DEFAULT_TAU); }
+}
+document.querySelectorAll('.texture-btn[data-ptex]').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    ptexApply(btn.getAttribute('data-ptex'), ptexState.color, ptexState.tau);
+    ptexPersist();
+    if (btn.getAttribute('data-ptex') !== 'off') toast(t('settings.ptexApplied') || 'Panel texture applied', 'success', 1800);
+  });
+});
+const ptexSlider = document.getElementById('ptex-opacity');
+if (ptexSlider) {
+  ptexSlider.addEventListener('input', () => {
+    const v = parseFloat(ptexSlider.value);
+    if (!isFinite(v)) return;
+    ptexState.tau = v;
+    if (ptexState.name !== 'off') {
+      const vars = ptexBuildVars(ptexState.name, ptexState.color, v);
+      if (vars) Object.keys(vars).forEach(k => document.body.style.setProperty(k, vars[k]));
+    }
+    const valEl = document.getElementById('ptex-opacity-val');
+    if (valEl) valEl.textContent = Math.round(v * 100) + '%';
+    ptexPersist();
+  });
+  ptexSlider.addEventListener('change', () => ptexPersist());
+}
+const ptexResetBtn = document.getElementById('ptex-opacity-reset');
+if (ptexResetBtn) ptexResetBtn.addEventListener('click', () => {
+  ptexApply(ptexState.name, ptexState.color, PTEX_DEFAULT_TAU);
+  ptexPersist();
+  toast(t('settings.ptexResetDone') || 'Returned to default transparency', 'success', 1600);
+});
+document.addEventListener('dk-lang', () => { ptexRenderColors(); ptexBadge(); });
+/* Theme switches change --c-surface → recompute the glass base so the texture stays readable */
+try {
+  new MutationObserver(() => { if (ptexState.name !== 'off') ptexApply(ptexState.name, ptexState.color, ptexState.tau); })
+    .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+} catch (e) {}
+ptexPaintSwatches();
+loadPanelTexture();
+
     // ---- Branding ----
     async function loadBranding() {
       try {
@@ -29590,7 +29986,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 108; /* numeric part of dk-build c108 */
+  var RUNNING = 109; /* numeric part of dk-build c109 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
