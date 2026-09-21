@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c114" />
+<meta name="dk-build" content="c115" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2085,8 +2085,19 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
 #tex-active-badge { font-size:10px; font-weight:800; padding:2px 8px; border-radius:9999px; background:rgb(var(--c-accent) / .14); color:rgb(var(--c-accent)); border:1px solid rgb(var(--c-accent) / .35); text-transform:none; letter-spacing:0; white-space:nowrap; }
 #texture-opacity-val { font-size:10px; font-weight:800; padding:2px 6px; border-radius:6px; background:rgb(var(--c-accent) / .1); color:rgb(var(--c-accent)); border:1px solid rgb(var(--c-accent) / .25); font-variant-numeric:tabular-nums; }
 
-/* ===== PANEL TEXTURE (c109→c114) — glass texture for ALL the app's panels =====
-   c114 — TWO SEPARATE SYSTEMS: panels carry ONLY the clean glass material from
+/* ===== PANEL TEXTURE (c109→c115) — glass texture for ALL the app's panels =====
+   c115 — live-workout parity (user report: «текстура панели не применяется в
+   live-тренировке в режиме тренера, хотя она применяется в портале
+   подопечного»): since c103 the live-workout exercise cards use the .glass
+   class (portal design base), but the ptex rules below only covered
+   .bg-surface / .bg-surface-2 / header.glass / #bottom-nav — so the biggest
+   panels of the live-workout screen stayed flat while the portal's identical
+   .glass cards got the texture. .glass / .glass-2 are now INNER-material
+   panels too (same as the portal's .glass / .glass-strong coverage). The
+   superset amber highlight (.dk-superset-hl) intentionally follows the
+   portal's behavior: glass applies over the faint 7% accent wash, while the
+   functional amber border + glow survive because the INNER material does not
+   repaint border-color. c114 — TWO SEPARATE SYSTEMS: panels carry ONLY the clean glass material from
    this block. The page-wide texture effects (wood/marble/church window…) live
    exclusively on #dk-tex-overlay and never render inside a panel — see the tex
    block above. c112 scope upgrade (user report 2026-09-21): the left
@@ -2107,6 +2118,8 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
    any texture × color × transparency combination works without a CSS matrix. */
 body[data-ptex]:not([data-ptex='off']) .bg-surface:not(input):not(select):not(textarea):not(:where(.dk-superset-hl)):not(:where(#atlas-modal, #atlas-modal *)),
 body[data-ptex]:not([data-ptex='off']) .bg-surface-2:not(input):not(select):not(textarea):not(:where(.dk-superset-hl)):not(:where(#atlas-modal *)),
+body[data-ptex]:not([data-ptex='off']) .glass,
+body[data-ptex]:not([data-ptex='off']) .glass-2,
 body[data-ptex]:not([data-ptex='off']) header.glass,
 body[data-ptex]:not([data-ptex='off']) #bottom-nav {
   background-color: var(--ptex-inner-bg, rgb(var(--c-surface-2))) !important;
@@ -2135,7 +2148,7 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview {
    paragraphs, labels, chips and form controls; it neutralizes busy mosaic cells
    and see-through bleed in BOTH light and dark themes. Solid saturated buttons
    opt out so their labels keep their clean press look. */
-body[data-ptex]:not([data-ptex='off']) :is(.bg-surface, .bg-surface-2, #aside, header.glass, #bottom-nav):not(:where(#atlas-modal, #atlas-modal *)) {
+body[data-ptex]:not([data-ptex='off']) :is(.bg-surface, .bg-surface-2, .glass, .glass-2, #aside, header.glass, #bottom-nav):not(:where(#atlas-modal, #atlas-modal *)) {
   text-shadow: 0 1px 2px rgb(var(--c-bg) / .55), 0 0 7px rgb(var(--c-bg) / .25);
 }
 body[data-ptex]:not([data-ptex='off']) :is(button.bg-primary, button.bg-success, button.bg-danger, button.bg-warning) {
@@ -2802,7 +2815,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c114</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c115</p>
             </div>
           </div>
 
@@ -30090,7 +30103,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 114; /* numeric part of dk-build c114 */
+  var RUNNING = 115; /* numeric part of dk-build c115 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
