@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c113" />
+<meta name="dk-build" content="c114" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -1903,19 +1903,13 @@ body {
   background-repeat: var(--texture-repeat, repeat);
 }
 body[data-tex='none'] #dk-tex-overlay { display: none; }
-/* Panel/card layer — textures also appear ON panels, not just behind them */
-body[data-tex]:not([data-tex='none']) .bg-surface {
-  background-image: var(--texture, none), linear-gradient(rgb(var(--c-surface)), rgb(var(--c-surface)));
-  background-size: var(--texture-size, auto), 100% 100%;
-  background-repeat: var(--texture-repeat, repeat), no-repeat;
-  background-blend-mode: overlay, normal;
-}
-body[data-tex]:not([data-tex='none']) .bg-surface-2 {
-  background-image: var(--texture, none), linear-gradient(rgb(var(--c-surface-2)), rgb(var(--c-surface-2)));
-  background-size: var(--texture-size, auto), 100% 100%;
-  background-repeat: var(--texture-repeat, repeat), no-repeat;
-  background-blend-mode: overlay, normal;
-}
+/* c114 — TWO SEPARATE SYSTEMS (user report 2026-09-21): texture effects live
+   ONLY on the page background (#dk-tex-overlay above). Panels (.bg-surface /
+   .bg-surface-2) are NOT painted with the effect pattern anymore — the old
+   «panel/card layer» that blended var(--texture) into every card is removed.
+   Panels get their material exclusively from the independent «Текстура
+   панели» system (body[data-ptex] → clean glass), so a wood/marble/church-
+   window effect on the page background never leaks INTO a panel again. */
 /* Glass */
 [data-tex='glass'] {
   --texture: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.03) 45%, rgba(255,255,255,0.18) 100%);
@@ -2091,10 +2085,13 @@ body[data-tex='gloss'] .bg-surface-2 { box-shadow: inset 0 2px 4px rgba(255,255,
 #tex-active-badge { font-size:10px; font-weight:800; padding:2px 8px; border-radius:9999px; background:rgb(var(--c-accent) / .14); color:rgb(var(--c-accent)); border:1px solid rgb(var(--c-accent) / .35); text-transform:none; letter-spacing:0; white-space:nowrap; }
 #texture-opacity-val { font-size:10px; font-weight:800; padding:2px 6px; border-radius:6px; background:rgb(var(--c-accent) / .1); color:rgb(var(--c-accent)); border:1px solid rgb(var(--c-accent) / .25); font-variant-numeric:tabular-nums; }
 
-/* ===== PANEL TEXTURE (c109→c112) — glass texture for ALL the app's panels =====
-   c112 scope upgrade (user report 2026-09-21): the left «Рабочая область» aside,
-   the top header and the mobile bottom nav are panels too — they now receive the
-   texture (aside = main material, header/bottom-nav = inner material). c112 also
+/* ===== PANEL TEXTURE (c109→c114) — glass texture for ALL the app's panels =====
+   c114 — TWO SEPARATE SYSTEMS: panels carry ONLY the clean glass material from
+   this block. The page-wide texture effects (wood/marble/church window…) live
+   exclusively on #dk-tex-overlay and never render inside a panel — see the tex
+   block above. c112 scope upgrade (user report 2026-09-21): the left
+   «Рабочая область» aside, the top header and the mobile bottom nav are panels
+   too — they now receive the texture (aside = main material, header/bottom-nav = inner material). c112 also
    adds a text-contrast halo (inherited text-shadow in the page-background color)
    so letters stay readable on see-through and mosaic glass, and lifts muted-text
    contrast app-wide while a texture is on (JS recomputes --c-muted).
@@ -2151,40 +2148,14 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
   background-size: var(--ptex-inner-img-size, 100% 100%) !important;
   background-repeat: var(--ptex-inner-img-repeat, no-repeat) !important;
 }
-/* --- c110/c111: tex × ptex COMBINE — the two systems run TOGETHER, never canceling ---
-   When a page-wide texture effect AND a panel texture are both active, panels stack
-   BOTH materials: the glass gradients (ptex) render on top, the material pattern
-   (tex: wood/marble/mosaic/…) shows through beneath, and the base stays the
-   translucent glass color so the see-through character survives. Specificity is
-   higher than every single-system rule above, so the combined look always wins
-   while BOTH are on. The Settings preview tile follows the same recipe so it
-   always shows the real combined result. */
-body[data-tex]:not([data-tex='none'])[data-ptex]:not([data-ptex='off']) .bg-surface:not(input):not(select):not(textarea):not(:where(.dk-superset-hl)):not(:where(#atlas-modal, #atlas-modal *)),
-body[data-tex]:not([data-tex='none'])[data-ptex]:not([data-ptex='off']) .bg-surface-2:not(input):not(select):not(textarea):not(:where(.dk-superset-hl)):not(:where(#atlas-modal *)),
-body[data-tex]:not([data-tex='none'])[data-ptex]:not([data-ptex='off']) header.glass,
-body[data-tex]:not([data-tex='none'])[data-ptex]:not([data-ptex='off']) #bottom-nav,
-body[data-tex]:not([data-tex='none'])[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
-  background-color: var(--ptex-inner-bg, rgb(var(--c-surface-2))) !important;
-  background-image: var(--ptex-inner-img, none), var(--texture, none) !important;
-  background-size: var(--ptex-inner-img-size, 100% 100%), var(--texture-size, auto) !important;
-  background-repeat: var(--ptex-inner-img-repeat, no-repeat), var(--texture-repeat, repeat) !important;
-  background-blend-mode: normal, normal, normal !important;
-  backdrop-filter: var(--ptex-blur, none);
-  -webkit-backdrop-filter: var(--ptex-blur, none);
-}
-body[data-tex]:not([data-tex='none'])[data-ptex]:not([data-ptex='off']) [id$='-modal'] > .bg-surface,
-body[data-tex]:not([data-tex='none'])[data-ptex]:not([data-ptex='off']) .bg-surface[role='dialog']:not(#atlas-modal),
-body[data-tex]:not([data-tex='none'])[data-ptex]:not([data-ptex='off']) #aside,
-body[data-tex]:not([data-tex='none'])[data-ptex]:not([data-ptex='off']) #ptex-preview {
-  background-color: var(--ptex-inner-bg, rgb(var(--c-surface-2))) !important;
-  background-image: var(--ptex-inner-img, none), var(--texture, none) !important;
-  background-size: var(--ptex-inner-img-size, 100% 100%), var(--texture-size, auto) !important;
-  background-repeat: var(--ptex-inner-img-repeat, no-repeat), var(--texture-repeat, repeat) !important;
-  background-blend-mode: normal, normal, normal !important;
-  backdrop-filter: var(--ptex-blur, none);
-  -webkit-backdrop-filter: var(--ptex-blur, none);
-  border-color: var(--ptex-border, rgb(var(--c-border))) !important;
-}
+/* --- c114: tex × ptex are TWO SEPARATE SYSTEMS (user report 2026-09-21:
+   «убрать текстурные эффекты из текстурных панелей… Это две отдельные системы»)
+   The old c110/c111 «combine» rules that stacked the page-effect pattern
+   (wood/marble/church window…) BENEATH the panel glass are removed. A panel
+   with a panel-texture is now PURE glass — frosted / clear / tinted / mosaic —
+   regardless of the page background effect. Texture effects render only on
+   #dk-tex-overlay (the page background behind the panels), panel texture only
+   on the panels; the two never mix inside one element. */
 /* --- Panel texture settings UI --- */
 .ptex-cbtn { position:relative; width:44px; height:44px; border-radius:12px; border:2px solid rgb(var(--c-border)); cursor:pointer; padding:0; transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease; background-clip:padding-box; }
 .ptex-cbtn:hover { transform:translateY(-1px); }
@@ -2831,7 +2802,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c113</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c114</p>
             </div>
           </div>
 
@@ -4541,7 +4512,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 <svg class="w-4 h-4 text-muted settings-panel-chevron shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
               </div>
               <div class="settings-panel-body p-5 pt-0">
-                <p class="text-xs text-muted mb-4 leading-relaxed" data-i18n="settings.ptexHint">Glass textures for the panels inside modal windows — frosted, clear, tinted and multicolor mosaic. Pick a texture, choose a shade and fine-tune the transparency. Stacks on top of texture effects — the two work together.</p>
+                <p class="text-xs text-muted mb-4 leading-relaxed" data-i18n="settings.ptexHint">Glass textures for the panels inside modal windows — frosted, clear, tinted and multicolor mosaic. Pick a texture, choose a shade and fine-tune the transparency. Panels stay pure glass — texture effects live only on the page background.</p>
                 <div class="grid grid-cols-3 sm:grid-cols-5 gap-2.5 mb-4">
                   <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-ptex="off" aria-pressed="false">
                     <span class="tex-swatch" data-ptex-swatch="off" aria-hidden="true"></span>
@@ -30119,7 +30090,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 113; /* numeric part of dk-build c113 */
+  var RUNNING = 114; /* numeric part of dk-build c114 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
