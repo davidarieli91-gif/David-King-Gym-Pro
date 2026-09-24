@@ -2130,7 +2130,13 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
     .tab-btn.active .tab-label { font-weight: 700; }
     .nutri-check:checked + .meal-label { opacity: .45; text-decoration: line-through; }
     .macro-ring { transition: stroke-dashoffset .8s cubic-bezier(.4,0,.2,1); }
-    #unlock-screen { z-index: 100; }
+    #unlock-screen { z-index: 150; } /* c118: above the exercise card (110) when the manual lock fires */
+    /* c118: bottom-sheet modals clear the iPhone home indicator (parity with the
+       trainer app). env() is 0 in browsers, so desktop layouts are untouched. */
+    @supports (padding: env(safe-area-inset-bottom)) {
+      #exercise-modal > div { padding-bottom: env(safe-area-inset-bottom); }
+      #report-modal > div { padding-bottom: calc(1rem + env(safe-area-inset-bottom)); }
+    }
     /* ===== Professional workout engine ===== */
     .set-grid { display: grid; grid-template-columns: 34px minmax(44px,1fr) 56px 14px 50px 32px 26px 24px; gap: 4px; align-items: center; }
     @media (max-width: 379px) { .set-grid { grid-template-columns: 28px minmax(38px,1fr) 50px 12px 44px 30px 24px 20px; gap: 3px; } }
@@ -2176,7 +2182,7 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
     .mini-prog { height: 4px; border-radius: 999px; background: rgb(var(--c-border) / 0.35); overflow: hidden; }
     .mini-prog > div { height: 100%; background: rgb(var(--c-success)); border-radius: 999px; transition: width .4s ease; }
     #rest-banner { z-index: 60; }
-    #toast-box { z-index: 90; }
+    #toast-box { z-index: 140; } /* c118: toasts stay visible above report (130) / exercise (110) / sheets (96) */
     /* Exercise animation + viewer */
     .ex-anim-container { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 12px; background: rgb(var(--c-surface-2)); }
     .ex-anim-container img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; transition: opacity 0.6s ease-in-out; }
@@ -2553,10 +2559,10 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
       <div id="exercise-view" class="p-4 space-y-4 overflow-y-auto">
         <div id="exercise-gif-slot" class="aspect-video rounded-xl bg-[rgb(var(--c-surface-2))] border border-border grid place-items-center overflow-hidden"></div>
         <div id="exercise-video-section" class="hidden"><div id="exercise-video-player" class="yt-player"></div></div>
-        <div id="exercise-youtube-search" class="hidden text-center"><a id="exercise-yt-link" href="#" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-sm font-semibold px-4 py-2 rounded-lg"><span data-i18n="exercise.searchOnYouTube">Search on YouTube</span></a></div>
+        <div id="exercise-youtube-search" class="hidden text-center"><a id="exercise-yt-link" href="#" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-sm font-semibold px-4 py-2 rounded-lg"><span id="exercise-yt-label">Search on YouTube</span></a></div>
         <div class="flex flex-wrap gap-1.5"><span id="badge-group" class="text-[11px] font-semibold px-2 py-1 rounded-md bg-indigo-500/15 text-indigo-300"></span><span id="badge-subgroup" class="text-[11px] font-semibold px-2 py-1 rounded-md bg-cyan-400/15 text-cyan-300"></span><span id="badge-equipment" class="text-[11px] font-semibold px-2 py-1 rounded-md bg-[rgb(var(--c-surface-2))] text-muted border border-border"></span></div>
         <div id="exercise-muscle-chips" class="flex flex-wrap gap-1.5"></div>
-        <div><h4 class="text-[11px] uppercase tracking-wider text-muted font-semibold mb-2" data-i18n="exercise.technique">Техника</h4><div id="exercise-technique" class="text-sm bg-[rgb(var(--c-surface-2))] border border-border rounded-xl p-3 leading-relaxed min-h-[60px] text-text"></div></div>
+        <div><h4 id="exercise-technique-h" class="text-[11px] uppercase tracking-wider text-muted font-semibold mb-2">Техника</h4><div id="exercise-technique" class="text-sm bg-[rgb(var(--c-surface-2))] border border-border rounded-xl p-3 leading-relaxed min-h-[60px] text-text"></div></div>
       </div>
     </div>
   </div>
@@ -2606,7 +2612,7 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       aActivity:'Активность',aCalWorkout:'тренировка',aCalCheckin:'чек-ин',
       aMuscles:'Объём по группам мышц',aWeightT:'Динамика веса',aWeightNeed:'Нужно ≥ 2 чек-ина с весом для графика',aTarget:'цель',
       aRecent:'Последние тренировки',aNoWorkouts:'Пока нет тренировок — завершите первую!',aNoData:'Нет данных за период',
-      aWaist:'Талия (см)',aHip:'Бёдра (см)',aNote:'Заметка тренеру',
+      aWaist:'Талия (см)',aHip:'Бёдра (см)',aNote:'Заметка тренеру',checkinNotePh:'Сон, восстановление, аппетит...',
       noExercises:'Нет упражнений',noMeals:'План питания не назначен',technique:'Техника',
       targetMuscle:'Целевые',auxMuscle:'Вспомогательные',rest:'Отдых',
       liveBadge:'Идёт тренировка',statEx:'Упражнения',statSets:'Подходы',statVol:'Объём',
@@ -2653,7 +2659,7 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       aActivity:'Activity',aCalWorkout:'workout',aCalCheckin:'check-in',
       aMuscles:'Volume by Muscle Group',aWeightT:'Body Weight Trend',aWeightNeed:'Need at least 2 weight check-ins for the chart',aTarget:'target',
       aRecent:'Recent Workouts',aNoWorkouts:'No workouts yet — finish your first one!',aNoData:'No data for this period',
-      aWaist:'Waist (cm)',aHip:'Hips (cm)',aNote:'Note to coach',
+      aWaist:'Waist (cm)',aHip:'Hips (cm)',aNote:'Note to coach',checkinNotePh:'Sleep, recovery, appetite…',
       noExercises:'No exercises',noMeals:'No nutrition plan',technique:'Technique',
       targetMuscle:'Target',auxMuscle:'Auxiliary',rest:'Rest',
       liveBadge:'Workout in progress',statEx:'Exercises',statSets:'Sets',statVol:'Volume',
@@ -2700,7 +2706,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       aActivity:'פעילות',aCalWorkout:'אימון',aCalCheckin:'צ׳ק-אין',
       aMuscles:'נפח לפי קבוצות שרירים',aWeightT:'מגמת משקל',aWeightNeed:'צריך לפחות 2 צ׳ק-אינים עם משקל לגרף',aTarget:'יעד',
       aRecent:'אימונים אחרונים',aNoWorkouts:'עדיין אין אימונים — סיימו את הראשון!',aNoData:'אין נתונים לתקופה',
-      aWaist:'מותן (ס״מ)',aHip:'ירכיים (ס״מ)',aNote:'פתק למאמן',
+      aWaist:'מותן (ס״מ)',aHip:'ירכיים (ס״מ)',aNote:'פתק למאמן',checkinNotePh:'שינה, התאוששות, תיאבון…',
       noExercises:'אין תרגילים',noMeals:'אין תפריט',technique:'טכניקה',
       targetMuscle:'יעד',auxMuscle:'עזר',rest:'מנוחה',
       liveBadge:'אימון מתבצע',statEx:'תרגילים',statSets:'סטים',statVol:'נפח',
@@ -3013,6 +3019,15 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     document.getElementById('diary-food-name').placeholder = t('diaryFoodPh');
     const h = document.getElementById('hdr-name');
     if (h && !currentClient) h.textContent = t('portalTitle');
+    /* c118: labels that used dead data-i18n attrs (the portal engine never
+       processed them) + the check-in placeholder — now wired like the rest */
+    const ytL = document.getElementById('exercise-yt-label');
+    if (ytL) ytL.textContent = t('searchOnYouTube');
+    const techH = document.getElementById('exercise-technique-h');
+    if (techH) techH.textContent = t('technique');
+    const notePh = document.getElementById('input-checkin-note');
+    if (notePh) notePh.placeholder = t('checkinNotePh');
+    document.title = 'David King Gym — ' + t('portalTitle'); /* c118: the tab title was RU-locked since forever */
   }
   function setLang(l) {
     currentLang = l;
@@ -4689,7 +4704,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
 
   /* ============ WORKOUT DONE ============ */
   function markDone() {
-    const done = JSON.parse(localStorage.getItem(nsKey('dk_done_days'))||'{}');
+    let done = {};
+    try { done = JSON.parse(localStorage.getItem(nsKey('dk_done_days')) || '{}') || {}; } catch (e) {} /* c118: corrupt storage must not kill the finish flow */
     done[todayKey()] = (currentProgram&&currentProgram.name)||'';
     localStorage.setItem(nsKey('dk_done_days'),JSON.stringify(done));
     refreshDone();
@@ -4697,7 +4713,9 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   function refreshDone() {
     const btn = document.getElementById('btn-finish-workout');
     if (!btn) return;
-    const isDone = JSON.parse(localStorage.getItem(nsKey('dk_done_days'))||'{}')[todayKey()];
+    let doneMap = {};
+    try { doneMap = JSON.parse(localStorage.getItem(nsKey('dk_done_days')) || '{}') || {}; } catch (e) {}
+    const isDone = doneMap[todayKey()];
     btn.classList.toggle('opacity-60',!!isDone); btn.classList.toggle('pointer-events-none',!!isDone);
     btn.querySelector('span').textContent = isDone ? t('doneToday') : t('finishWorkout');
   }
@@ -4716,7 +4734,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     const wr = opts && opts.workout;
     if (wr) {
       const mm = Math.floor(wr.duration_sec/60), sec = wr.duration_sec%60;
-      lines.push(`⏱ ${mm}:${String(sec).padStart(2,'0')} · 🏋️ ${wr.volume.toLocaleString('ru-RU')} ${t('volumeKg')} · ✔ ${wr.done_sets}/${wr.total_sets}`);
+      lines.push(`⏱ ${mm}:${String(sec).padStart(2,'0')} · 🏋️ ${wr.volume.toLocaleString(aLoc())} ${t('volumeKg')} · ✔ ${wr.done_sets}/${wr.total_sets}`);
       (wr.exercises||[]).forEach(ex => {
         const parts = (ex.sets||[]).map(s => (s.time != null || s.dist != null)
           ? `${s.time!=null?s.time:'—'}×${s.dist!=null?s.dist:'—'}${s.done?'✓':''}`
@@ -4724,7 +4742,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         if (parts.length) lines.push(`• ${ex.name}: ${parts.join(', ')}`);
       });
     } else if (sess) {
-      lines.push(`⏱ ${fmtDuration(Date.now()-sess.started_at)} · 🏋️ ${sessionVolume(sess).toLocaleString('ru-RU')} ${t('volumeKg')} · ✔ ${sessionSetCount(sess,true)}/${sessionSetCount(sess,false)}`);
+      lines.push(`⏱ ${fmtDuration(Date.now()-sess.started_at)} · 🏋️ ${sessionVolume(sess).toLocaleString(aLoc())} ${t('volumeKg')} · ✔ ${sessionSetCount(sess,true)}/${sessionSetCount(sess,false)}`);
     }
     lines.push(`💧 ${(waterGlasses*0.25).toFixed(1)} ${t('literShort')}`);
     // Food diary
@@ -4777,7 +4795,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     if (!plans.length){ c.classList.add('hidden'); c.innerHTML=''; return; }
     if (plans.length===1){
       const p=plans[0];
-      c.innerHTML=`<span class="text-[11px] text-muted">${esc(t('choosePlan'))}:</span><span class="text-xs font-bold text-white bg-emerald-500/20 border border-emerald-500/30 px-2.5 py-1 rounded-xl">${esc(p.name||'Plan')} · ${(p.target_calories||'—')} ккал</span>`;
+      c.innerHTML=`<span class="text-[11px] text-muted">${esc(t('choosePlan'))}:</span><span class="text-xs font-bold text-white bg-emerald-500/20 border border-emerald-500/30 px-2.5 py-1 rounded-xl">${esc(p.name||'Plan')} · ${(p.target_calories||'—')} ${t('diaryKcal')}</span>`;
       c.classList.remove('hidden');
       c.className='flex items-center gap-2 overflow-x-auto no-sb';
       return;
@@ -4786,7 +4804,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     c.className='flex items-center gap-1.5 overflow-x-auto no-sb';
     c.innerHTML=`<span class="text-[11px] text-muted shrink-0">${esc(t('choosePlan'))}:</span>`+plans.map((p,i)=>{
       const active=i===activePlanIdx;
-      return `<button data-plan-idx="${i}" class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition shrink-0 ${active?'bg-emerald-500 text-white shadow-md shadow-emerald-500/25':'bg-surface-2 text-muted hover:text-white'}">${esc(p.name||('Plan '+(i+1)))} <span class="opacity-60 text-[10px]">${p.target_calories||'—'}ккал</span></button>`;
+      return `<button data-plan-idx="${i}" class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition shrink-0 ${active?'bg-emerald-500 text-white shadow-md shadow-emerald-500/25':'bg-surface-2 text-muted hover:text-white'}">${esc(p.name||('Plan '+(i+1)))} <span class="opacity-60 text-[10px]">${p.target_calories||'—'} ${t('diaryKcal')}</span></button>`;
     }).join('');
     c.querySelectorAll('[data-plan-idx]').forEach(b=>b.addEventListener('click',()=>switchPlan(+b.dataset.planIdx)));
   }

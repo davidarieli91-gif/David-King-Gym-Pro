@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c117" />
+<meta name="dk-build" content="c118" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2223,7 +2223,7 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
     .lw-rpe-row { display: flex; align-items: center; gap: 3px; }
     .lw-rpe-btn { width: 22px; height: 22px; border-radius: 9999px; font-size: 9px; font-weight: 800; color: #fff; display: grid; place-items: center; opacity: .5; transition: transform .12s, opacity .12s; outline: 2px solid transparent; outline-offset: 1px; border: none; cursor: pointer; padding: 0; flex-shrink: 0; }
     .lw-rpe-btn.sel { opacity: 1; outline-color: #fff; transform: scale(1.18); }
-    .lw-rpe-vol { margin-inline-start: auto; font-family: monospace; font-size: 10px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+    .lw-rpe-vol { margin-inline-start: auto; font-family: monospace; font-size: 10px; font-weight: 700; color: rgb(var(--c-muted)); white-space: nowrap; }
     /* c90: previous-workout RPE badge shown inside the Prev cell */
     .lw-prev-rpe { display: inline-block; margin-inline-start: 4px; width: 14px; height: 14px; line-height: 14px; border-radius: 9999px; color: #fff; font-size: 8px; font-weight: 800; text-align: center; vertical-align: middle; }
 
@@ -2306,6 +2306,18 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
         padding-bottom: env(safe-area-inset-bottom);
       }
     }
+
+    /* --- c118: iOS standalone — top notch clearance + toasts above all modals ---
+       viewport-fit=cover + black-translucent painted the sticky header, the
+       offline banner and the toasts UNDER the status bar / Dynamic Island;
+       toasts (z-50) were also invisible above exercise-modal / viewer /
+       body-map / program-changes overlays. Env() resolves to 0 in browsers,
+       so desktop layouts are untouched. */
+    @supports (padding: env(safe-area-inset-top)) {
+      #app > header.sticky { padding-top: env(safe-area-inset-top); }
+      #toast-container { top: calc(1rem + env(safe-area-inset-top)) !important; }
+    }
+    #toast-container { z-index: 150 !important; }
 
     /* --- Landscape телефонов / низкие окна (<520px высоты):
           компактный режим — модалка занимает всю высоту,
@@ -2587,6 +2599,14 @@ button[id$="-close"]:active, button[data-cps-close]:active {
 #live-workout-exercises .fade-in { animation: lw-fade-slide .3s ease both; }
 #live-workout-exercises .set-grid { display: grid; grid-template-columns: 34px minmax(44px,1fr) 56px 14px 50px 32px 26px 24px; gap: 4px; align-items: center; }
 @media (max-width: 379px) { #live-workout-exercises .set-grid { grid-template-columns: 28px minmax(38px,1fr) 50px 12px 44px 30px 24px 20px; gap: 3px; } }
+/* c118: hit-slop — invisible +6px ring on the two smallest live-workout targets
+   (✓ done-check 28×28, × remove-set 20×28). The row's own padding/gap absorbs
+   the ring; no clickable neighbour is touched (the type-cycler's tap zone is
+   centered inside a wider cell, the volume cell is plain text). */
+#live-workout-exercises .set-check,
+#live-workout-exercises [data-remove-set] { position: relative; }
+#live-workout-exercises .set-check::after,
+#live-workout-exercises [data-remove-set]::after { content: ''; position: absolute; inset: -6px; border-radius: 14px; }
 /* stretching: time first, then weight, then reps — no separator glyphs */
 #live-workout-exercises .set-grid-stretch { grid-template-columns: 34px minmax(34px,1fr) 50px 48px 46px 32px 26px 24px; }
 @media (max-width: 379px) { #live-workout-exercises .set-grid-stretch { grid-template-columns: 28px minmax(28px,1fr) 44px 44px 42px 28px 22px 18px; } }
@@ -2815,7 +2835,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c117</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c118</p>
             </div>
           </div>
 
@@ -23489,7 +23509,7 @@ Select foods for each meal. Output as JSON only.`;
     const imgSlot = document.getElementById('food-detail-image-slot');
     if (imgSlot) {
       if (food.image_url) {
-        imgSlot.innerHTML = `<img src="${food.image_url}" alt="" class="w-full h-full object-contain bg-surface-2" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<svg class=\\'w-12 h-12 text-muted\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\'/></svg>'" />`;
+        imgSlot.innerHTML = `<img src="${esc(food.image_url)}" alt="" class="w-full h-full object-contain bg-surface-2" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<svg class=\\'w-12 h-12 text-muted\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\'/></svg>'" />`;
       } else {
         imgSlot.innerHTML = `<svg class="w-12 h-12 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`;
       }
@@ -24794,19 +24814,19 @@ async function boot() {
     if (aiSave) aiSave.addEventListener('click', ()=>{
       const cfg={ url: document.getElementById('ai-api-url').value.trim(), key: document.getElementById('ai-api-key').value.trim(), model: document.getElementById('ai-api-model').value.trim() };
       nutritionPlans.saveAiConfig(cfg);
-      document.getElementById('ai-status').textContent='Сохранено ✓';
+      document.getElementById('ai-status').textContent=t('nutrition.aiSaved');
       document.getElementById('ai-status').className='text-xs text-center text-success min-h-[1rem]';
       setTimeout(()=> nutritionPlans.closeAiSettings(), 800);
     });
     const aiTest = document.getElementById('ai-test-btn');
     if (aiTest) aiTest.addEventListener('click', async()=>{
       const st=document.getElementById('ai-status');
-      st.textContent='Проверка...'; st.className='text-xs text-center text-muted min-h-[1rem]';
+      st.textContent=t('nutrition.aiTesting'); st.className='text-xs text-center text-muted min-h-[1rem]';
       const cfg=nutritionPlans.getAiConfig();
-      if(!cfg.url || !cfg.key){ st.textContent='Укажите URL и ключ'; st.className='text-xs text-center text-danger min-h-[1rem]'; return; }
+      if(!cfg.url || !cfg.key){ st.textContent=t('nutrition.aiNeedUrlKey'); st.className='text-xs text-center text-danger min-h-[1rem]'; return; }
       const res=await nutritionPlans.callAiBrain('Привет! Ответь одним словом: ок');
-      if(res){ st.textContent='Связь OK: '+String(res).slice(0,80); st.className='text-xs text-center text-success min-h-[1rem]'; }
-      else { st.textContent='Нет ответа — проверьте URL/ключ'; st.className='text-xs text-center text-danger min-h-[1rem]'; }
+      if(res){ st.textContent=t('nutrition.aiOk')+' '+String(res).slice(0,80); st.className='text-xs text-center text-success min-h-[1rem]'; }
+      else { st.textContent=t('nutrition.aiNoResponse'); st.className='text-xs text-center text-danger min-h-[1rem]'; }
     });
     // Share nutrition plan as image
     const npShare = document.getElementById('np-share');
@@ -25360,7 +25380,7 @@ async function boot() {
               qrImg.classList.add('hidden');
               if (qrBox) qrBox.title = 'Payload too large for QR';
               const hint = document.getElementById('portal-qr-img') && document.querySelector('#client-portal-modal .text-\\[11px\\]');
-              if (hint) hint.textContent = 'QR недоступен (план слишком большой) — отправьте ссылку через WhatsApp';
+              if (hint) hint.textContent = t('nutrition.qrTooBig');
             }
           }
         } catch (qrErr) {
@@ -25386,7 +25406,7 @@ async function boot() {
         document.getElementById('btn-whatsapp-portal').onclick = () => {
           const phone = (client.phone || '').replace(/[^0-9]/g, '');
           const msg = encodeURIComponent(
-            `👋 Привет, ${client.full_name}!\n\nТвой персональный план тренировок и питания в David King Gym готов:\n👉 ${clientUrl}\n\n🔑 Код доступа: ${accessCode} — введи его при открытии ссылки\n\nОткрывай прямо на телефоне и сохраняй на главный экран!`
+            t('clients.waInvite', { name: client.full_name || '', url: clientUrl, code: accessCode })
           );
           const waUrl = phone ? `https://wa.me/${phone}?text=${msg}` : `https://wa.me/?text=${msg}`;
           window.open(waUrl, '_blank');
@@ -26528,7 +26548,6 @@ loadPanelTexture();
             });
             await db.put('settings', { key: 'ui_sizes', value: sizes });
             await db.put('settings', { key: 'ui_sizes_v78_clean', value: { done: true, at: Date.now() } });
-            console.log('[ui-sizes] c78 one-time sanitize done');
           }
         } catch (_e) { /* noop */ }
       } catch (e) { console.warn('[ui-sizes] load failed:', e); }
@@ -28127,10 +28146,10 @@ document.addEventListener('DOMContentLoaded', function () {
           'font:600 13px/1.3 system-ui,-apple-system,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.45);' +
           'max-width:calc(100vw - 24px);flex-wrap:wrap;';
         var span = document.createElement('span');
-        span.textContent = 'Доступна новая версия приложения · New version available';
+        span.textContent = 'Доступна новая версия приложения · New version available · מהדורה חדשה זמינה';
         var btn = document.createElement('button');
         btn.type = 'button';
-        btn.textContent = 'Обновить · Update';
+        btn.textContent = 'Обновить · Update · עדכן';
         btn.style.cssText = 'border:0;border-radius:10px;padding:7px 12px;cursor:pointer;' +
           'font:700 12px/1 system-ui,-apple-system,sans-serif;background:#f59e0b;color:#1c1917;';
         btn.addEventListener('click', function () {
@@ -28156,7 +28175,6 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       window.addEventListener('load', function() {
         navigator.serviceWorker.register('sw.js').then(function(reg) {
-          console.log('[PWA] Service Worker registered:', reg.scope);
           /* c81: never sit on a waiting update — activate it immediately so the
              new HTML cannot run for a whole release cycle against the old
              precache (that mixed state blanked every new screen's labels). */
@@ -28200,7 +28218,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     window.addEventListener('appinstalled', function() {
-      console.log('[PWA] App installed');
       hideInstallButton();
       deferredPrompt = null;
     });
@@ -28228,16 +28245,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function installApp() {
       if (!deferredPrompt) {
-        alert('Для установки приложения:\n\nChrome: Меню (⋮) → «Установить David King Gym»\n\nИли добавь на главный экран телефона.');
+        alert(t('settings.installHint'));
         return;
       }
       deferredPrompt.prompt();
-      deferredPrompt.userChoice.then(function(choice) {
-        if (choice.outcome === 'accepted') {
-          console.log('[PWA] User accepted install');
-        } else {
-          console.log('[PWA] User dismissed install');
-        }
+      deferredPrompt.userChoice.then(function() {
         deferredPrompt = null;
         hideInstallButton();
       });
@@ -28409,7 +28421,7 @@ document.addEventListener('DOMContentLoaded', function () {
       // Save to Google Drive
       save: async function() {
         if (!window.googleDriveBackup.isConfigured()) {
-          alert('Для сохранения на Google Drive:\n\n1. Создай OAuth Client ID в Google Cloud Console\n2. Вставь его в код (см. комментарий GOOGLE_CLIENT_ID)\n3. Включи Google Drive API\n\nПосле этого кнопка заработает.');
+          alert(t('settings.driveHint'));
           return { ok: false, error: 'Not configured' };
         }
         try {
@@ -30090,7 +30102,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Also clear any stale dk_ab data from previous versions:
     try { localStorage.removeItem('dk_ab'); } catch (e) {}
     // Offline banner (i18n fix 2026-08 QA #6)
-    var b=document.createElement("div");b.style.cssText="position:fixed;top:0;left:0;right:0;background:#ef4444;color:#fff;text-align:center;padding:6px;font-size:12px;z-index:9999;transform:translateY(-100%);transition:transform .3s";b.textContent=(typeof t==="function"?t("common.offline"):"")||"No internet";document.body.appendChild(b);
+    var b=document.createElement("div");b.style.cssText="position:fixed;top:env(safe-area-inset-top);left:0;right:0;background:#ef4444;color:#fff;text-align:center;padding:6px;font-size:12px;z-index:9999;transform:translateY(-100%);transition:transform .3s";b.textContent=(typeof t==="function"?t("common.offline"):"")||"No internet";document.body.appendChild(b);
     function u(){b.style.transform=navigator.onLine?"translateY(-100%)":"translateY(0)"}
     window.addEventListener("online",u);window.addEventListener("offline",u);
     // Esc closes modals
@@ -30138,7 +30150,7 @@ document.addEventListener('input', function (e) {
       var last = parseInt(localStorage.getItem("dk_last_backup") || "0", 10);
       var days = (Date.now() - last) / 86400000;
       var bmsg = (typeof t === "function") ? t("backup.reminderToast") : null;
-      if (!bmsg) bmsg = "⚠️ Сделайте резервную копию: Настройки → Export full backup";
+      if (!bmsg) bmsg = "⚠️ Make a backup: Settings → Export full backup"; /* EN fallback when the dict hasn't loaded yet */
       if (!last || days > 7 && typeof toast === "function") toast(bmsg, "warning", 8000);
     } catch (e) {}
   }, 2500);
@@ -30149,9 +30161,9 @@ document.addEventListener('input', function (e) {
 // Phase 5.4 progress report
 (function () {
   var STR = {
-    en: { btn: "📊 Report", title: "Progress Report", workouts: "Workouts", volume: "Total volume", avg: "Avg duration", streak: "Current streak", days: "d", top: "Top exercises", last30: "Last 30 days", prev30: "Previous 30 days", share: "Share via WhatsApp", noData: "No workouts yet for this client." },
-    ru: { btn: "📊 Отчёт", title: "Отчёт прогресса", workouts: "Тренировок", volume: "Общий объём", avg: "Средняя длительность", streak: "Текущая серия", days: "дн", top: "Топ упражнений", last30: "Последние 30 дней", prev30: "Предыдущие 30 дней", share: "В WhatsApp", noData: "У клиента пока нет тренировок." },
-    he: { btn: "📊 דוח", title: "דוח התקדמות", workouts: "אימונים", volume: "נפח כולל", avg: "משך ממוצע", streak: "רצף נוכחי", days: "ימים", top: "תרגילים מובילים", last30: "30 יום אחרונים", prev30: "30 יום קודמים", share: "וואטסאפ", noData: "אין עדיין אימונים ללקוח זה." }
+    en: { btn: "📊 Report", title: "Progress Report", workouts: "Workouts", volume: "Total volume", avg: "Avg duration", streak: "Current streak", days: "d", kg: "kg", min: "min", top: "Top exercises", last30: "Last 30 days", prev30: "Previous 30 days", share: "Share via WhatsApp", noData: "No workouts yet for this client." },
+    ru: { btn: "📊 Отчёт", title: "Отчёт прогресса", workouts: "Тренировок", volume: "Общий объём", avg: "Средняя длительность", streak: "Текущая серия", days: "дн", kg: "кг", min: "мин", top: "Топ упражнений", last30: "Последние 30 дней", prev30: "Предыдущие 30 дней", share: "В WhatsApp", noData: "У клиента пока нет тренировок." },
+    he: { btn: "📊 דוח", title: "דוח התקדמות", workouts: "אימונים", volume: "נפח כולל", avg: "משך ממוצע", streak: "רצף נוכחי", days: "ימים", kg: "ק״ג", min: "דק׳", top: "תרגילים מובילים", last30: "30 יום אחרונים", prev30: "30 יום קודמים", share: "וואטסאפ", noData: "אין עדיין אימונים ללקוח זה." }
   };
   function lang() { try { return currentLang(); } catch (e) { return "en"; } }
   function S() { return STR[lang()] || STR.en; }
@@ -30205,7 +30217,7 @@ document.addEventListener('input', function (e) {
   }
 
   function stat(label, value) {
-    return "<div style='flex:1;min-width:45%;padding:10px 16px'><div style='color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em'>" + label + "</div><div style='font-size:20px;font-weight:800;color:var(--text)'>" + value + "</div></div>";
+    return "<div style='flex:1;min-width:45%;padding:10px 16px'><div style='color:rgb(var(--c-muted));font-size:11px;text-transform:uppercase;letter-spacing:.05em'>" + label + "</div><div style='font-size:20px;font-weight:800;color:rgb(var(--c-text))'>" + value + "</div></div>";
   }
 
   function renderReport(hist) {
@@ -30231,17 +30243,17 @@ document.addEventListener('input', function (e) {
     var top = Object.keys(exCount).sort(function (a, b) { return exCount[b] - exCount[a]; }).slice(0, 5);
     var html = "";
     if (!hist.length) {
-      html = "<p style='padding:16px;color:var(--muted)'>" + s.noData + "</p>";
+      html = "<p style='padding:16px;color:rgb(var(--c-muted))'>" + s.noData + "</p>";
     } else {
       html += stat(s.workouts, hist.length);
       html += stat(s.volume, Math.round(totalVol).toLocaleString() + " " + s.kg);
       html += stat(s.avg, Math.round(totalDur / 60 / hist.length) + " " + s.min);
       html += stat(s.streak, computeStreak(hist) + " " + s.days);
-      html += "<div style='width:100%;padding:0 16px 8px'><div style='color:var(--muted);font-size:12px'>" + s.last30 + ": <b style='color:var(--text)'>" + last30 + "</b> · " + s.prev30 + ": <b style='color:var(--text)'>" + prev30 + "</b></div></div>";
+      html += "<div style='width:100%;padding:0 16px 8px'><div style='color:rgb(var(--c-muted));font-size:12px'>" + s.last30 + ": <b style='color:rgb(var(--c-text))'>" + last30 + "</b> · " + s.prev30 + ": <b style='color:rgb(var(--c-text))'>" + prev30 + "</b></div></div>";
       if (top.length) {
-        html += "<div style='width:100%;padding:0 16px 12px'><div style='color:var(--muted);font-size:12px;margin-bottom:6px'>" + s.top + "</div>";
+        html += "<div style='width:100%;padding:0 16px 12px'><div style='color:rgb(var(--c-muted));font-size:12px;margin-bottom:6px'>" + s.top + "</div>";
         top.forEach(function (n) {
-          html += "<div style='display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid var(--border)'><span>" + n + "</span><span style='color:var(--muted)'>" + exCount[n] + "x · max " + (exMax[n] || "-") + " " + s.kg + "</span></div>";
+          html += "<div style='display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid rgb(var(--c-border))'><span>" + n + "</span><span style='color:rgb(var(--c-muted))'>" + exCount[n] + "x · max " + (exMax[n] || "-") + " " + s.kg + "</span></div>";
         });
         html += "</div>";
       }
@@ -30258,13 +30270,13 @@ document.addEventListener('input', function (e) {
     modalEl = document.createElement("div");
     modalEl.style.cssText = "position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px";
     var panel = document.createElement("div");
-    panel.style.cssText = "background:var(--surface);border:1px solid var(--border);border-radius:16px;max-width:560px;width:100%;max-height:85vh;overflow:auto;padding:16px";
+    panel.style.cssText = "background:rgb(var(--c-surface));color:rgb(var(--c-text));border:1px solid rgb(var(--c-border));border-radius:16px;max-width:560px;width:100%;max-height:85vh;overflow:auto;padding:16px";
     var head = document.createElement("div");
     head.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:8px";
-    head.innerHTML = "<div style='font-weight:800;font-size:16px;color:var(--text)'>" + s.title + "</div>";
+    head.innerHTML = "<div style='font-weight:800;font-size:16px;color:rgb(var(--c-text))'>" + s.title + "</div>";
     var closeBtn = document.createElement("button");
     closeBtn.textContent = "✕";
-    closeBtn.style.cssText = "color:var(--muted);padding:6px 10px;border-radius:8px";
+    closeBtn.style.cssText = "color:rgb(var(--c-muted));padding:6px 10px;border-radius:8px";
     closeBtn.addEventListener("click", closeModal);
     head.appendChild(closeBtn);
     panel.appendChild(head);
@@ -30274,7 +30286,7 @@ document.addEventListener('input', function (e) {
     panel.appendChild(wrap);
     var share = document.createElement("button");
     share.textContent = s.share;
-    share.style.cssText = "width:100%;background:var(--success);color:#fff;font-weight:700;padding:10px;border-radius:12px;margin-top:8px";
+    share.style.cssText = "width:100%;background:rgb(var(--c-success));color:#fff;font-weight:700;padding:10px;border-radius:12px;margin-top:8px";
     share.addEventListener("click", function () { shareReport(hist); });
     panel.appendChild(share);
     modalEl.appendChild(panel);
@@ -30396,7 +30408,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 117; /* numeric part of dk-build c117 */
+  var RUNNING = 118; /* numeric part of dk-build c118 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
@@ -30406,7 +30418,7 @@ document.addEventListener('input', function (e) {
   }
 
   function showBanner() {
-    if (banner) return;
+    if (banner || document.getElementById('dk-sw-update-banner')) return; /* c118: never stack on the SW-update banner */
     banner = document.createElement('div');
     banner.setAttribute('role', 'alert');
     banner.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);' +
@@ -30416,10 +30428,10 @@ document.addEventListener('input', function (e) {
       'font:600 13px/1.3 system-ui,-apple-system,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.45);' +
       'max-width:calc(100vw - 24px);flex-wrap:wrap;';
     var span = document.createElement('span');
-    span.textContent = 'Доступна новая версия приложения · New version available';
+    span.textContent = 'Доступна новая версия приложения · New version available · מהדורה חדשה זמינה';
     var btn = document.createElement('button');
     btn.type = 'button';
-    btn.textContent = 'Обновить · Update';
+    btn.textContent = 'Обновить · Update · עדכן';
     btn.style.cssText = 'border:0;border-radius:10px;padding:7px 12px;cursor:pointer;' +
       'font:700 12px/1 system-ui,-apple-system,sans-serif;background:#f59e0b;color:#1c1917;';
     btn.addEventListener('click', function () {
