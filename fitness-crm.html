@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c115" />
+<meta name="dk-build" content="c116" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2815,7 +2815,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c115</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c116</p>
             </div>
           </div>
 
@@ -10557,6 +10557,77 @@ button[id$="-close"]:active, button[data-cps-close]:active {
       setTimeout(() => document.getElementById('pb-name').focus(), 100);
     }
 
+    /** c116: «Apply template» for a CLIENT now builds the client's PROGRAM.
+        Opens the program builder prefilled from the template so the trainer
+        reviews it and presses «Save program» (pbSave → client_programs).
+        Previously this flow only started a live workout session, so an
+        applied template could never become the client's working program
+        (user report 2026-09-21: «применить шаблон… открыть… но сохранить
+        как рабочую программу этого человека ты не можешь»).
+        Templates saved FROM a program carry workout_days + split_type +
+        duration_months (saveProgramAsTemplate) and are restored 1:1; flat
+        templates (saved from a live workout) land in Day A of a full-body
+        split. */
+    async function openProgramCreatorFromTemplate(clientId, tpl) {
+      if (!tpl) return;
+      const splitValid = ['full_body', 'ab', 'abc', 'abcd', 'abcde'];
+      _pb = {
+        clientId: clientId,
+        name: tpl.name || '',
+        splitType: splitValid.includes(tpl.split_type) ? tpl.split_type : 'full_body',
+        duration: parseInt(tpl.duration_months, 10) || 3,
+        activeDay: 0,
+        exerciseCache: [],
+        days: []
+      };
+      // Same cache-first discipline as openProgramCreator — the body-map
+      // picker must work the moment the builder is visible.
+      try {
+        _pb.exerciseCache = (await db.all('exercise_base')).filter(e => !e.is_archived);
+      } catch (e) {
+        console.error('[openProgramCreatorFromTemplate] cache load failed:', e);
+        toast(t('exercise.loadFailed'), 'danger');
+        return;
+      }
+      /* Canonical program-day exercise shape (mirrors openProgramEditor) */
+      const mapEx = (ex) => ({
+        exercise_id: ex.exercise_id,
+        name: ex.name,
+        group: ex.group,
+        cardio: ex.cardio === true,
+        is_superset: ex.is_superset || false,
+        unit: ex.unit === 'lb' || ex.unit === 'kg' ? ex.unit : null,
+        tunit: ex.tunit === 'min' || ex.tunit === 'sec' ? ex.tunit : null,
+        rest_sec: ex.rest_sec != null ? ex.rest_sec : 90,
+        sets: (ex.sets || []).map(s => ({ weight: s.weight, reps: s.reps, rpe: s.rpe, type: s.type || 'normal', time: s.time != null ? s.time : null, dist: s.dist != null ? s.dist : null }))
+      });
+      const tplDays = (Array.isArray(tpl.workout_days) ? tpl.workout_days : []).filter(d => d && !d.is_rest_day && (d.exercises || []).length > 0);
+      if (tplDays.length) {
+        // Program-derived template → restore the original day structure 1:1
+        // (letters, names, rest days, supersets, per-exercise units).
+        _pb.days = tpl.workout_days.map((d, i) => ({
+          day_letter: d.day_letter,
+          name: d.name,
+          is_rest_day: d.is_rest_day || false,
+          day_of_week: Array.isArray(d.day_of_week) ? d.day_of_week : defaultDaysOfWeek(i, _pb.splitType),
+          exercises: (d.exercises || []).map(mapEx)
+        }));
+        const letters = 'ABCDEFGHIJ';
+        _pb.days.forEach((d, i) => { if (!d.day_letter) d.day_letter = letters[i] || ('D' + (i + 1)); });
+      } else {
+        // Flat template (saved from a live workout) → all exercises into Day A.
+        rebuildDays(_pb.splitType);
+        if (_pb.days[0]) _pb.days[0].exercises = dkTplExercises(tpl).map(mapEx);
+      }
+      const modal = document.getElementById('program-builder-modal');
+      modal.classList.remove('hidden');
+      document.getElementById('pb-name').value = _pb.name;
+      document.getElementById('pb-split').value = _pb.splitType;
+      document.getElementById('pb-duration').value = String(_pb.duration);
+      renderBuilder();
+      toast(t('programs.fromTemplateLoaded') || 'Template loaded — review it and press «Save program»', 'success', 3500);
+    }
+
     function rebuildDays(splitType) {
       const splitDays = window.getSplitDays(splitType);
       const oldDays = _pb.days || [];
@@ -12437,7 +12508,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     // Now they live at the top-level scope alongside escapeHTML / setText.
 
     return { load, render, closeViewer, get clientId() { return _clientId; }, get _client() { return _client; },
-             openProgramCreator, openProgramEditor, createProgram, archiveProgram, deleteProgram, duplicateProgram, loadPrograms, startWorkoutFromProgram, openProgramDayPreview,
+             openProgramCreator, openProgramCreatorFromTemplate, openProgramEditor, createProgram, archiveProgram, deleteProgram, duplicateProgram, loadPrograms, startWorkoutFromProgram, openProgramDayPreview,
              pbOpenExercisePicker, pbSave, rebuildDays, renderBuilder, autoGenerateProgram, llmGenerateProgram, pbMakeEasier, pbMakeHarder, pbAutoArrange, pbMoveExercise,
              printProgram, printNutritionPlan,
              get _pb() { return _pb; } };
@@ -14390,8 +14461,16 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             const tpl = all.find(x => x.id === id);
             if (!tpl) return;
             modal.classList.add('hidden');
-            if (screens.liveWorkout) {
-              screens.liveWorkout.applyTemplateToClient(tpl, clientId, clientName);
+            /* c116: applying to a client now means «make it their working
+               program»: open the program builder prefilled from the template
+               so the trainer reviews and saves it (client_programs). The old
+               behavior — starting a live workout — never saved anything,
+               which is exactly the report: «открывает его, но сохранить как
+               рабочую программу этого человека ты не можешь». */
+            if (screens.profile && typeof screens.profile.openProgramCreatorFromTemplate === 'function') {
+              screens.profile.openProgramCreatorFromTemplate(clientId, tpl);
+            } else if (screens.liveWorkout) {
+              screens.liveWorkout.applyTemplateToClient(tpl, clientId, clientName); /* legacy fallback */
             }
           });
         });
@@ -30103,7 +30182,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 115; /* numeric part of dk-build c115 */
+  var RUNNING = 116; /* numeric part of dk-build c116 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
