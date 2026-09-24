@@ -2069,9 +2069,15 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
        The texture lives on the background (#dk-tex-overlay) and shows through the
        translucent glass — exactly how the trainer app renders it. ===== */
     /* ===== c85: header buttons (dumbbell / theme menu / settings) + weight unit picker ===== */
-    #dk-dumbbell-btn { position: relative; width: 2.25rem; height: 2.25rem; flex: none; display: grid; place-items: center; border-radius: .5rem; background: rgb(var(--c-surface-2)); border: 1px solid rgb(var(--c-border)); color: rgb(var(--c-text)); cursor: pointer; transition: background .15s ease, border-color .15s ease, color .15s ease; }
+    #dk-dumbbell-btn { position: relative; width: 2.25rem; height: 2.25rem; flex: none; display: grid; place-items: center; border-radius: .5rem; background: rgb(var(--c-surface-2)); border: 1px solid rgb(var(--c-border)); color: rgb(var(--c-text)); cursor: pointer; transition: background .15s ease, border-color .15s ease, color .15s ease, min-width .2s ease, padding .2s ease; }
+    #dk-dumbbell-btn svg { width: 1.125rem; height: 1.125rem; transition: width .2s ease, height .2s ease; }
     #dk-dumbbell-btn:hover { background: rgb(var(--c-border) / .4); }
-    #dk-dumbbell-btn.dk-dumbbell-active { background: rgb(var(--c-primary) / .18); color: rgb(var(--c-primary-2)); border-color: rgb(var(--c-primary) / .5); }
+    /* c119: active dumbbell — twice as wide (2.25→4.5rem), a bigger dumbbell and the
+       workout completion % (done sets / total sets, 1–100) right next to it */
+    #dk-dumbbell-btn.dk-dumbbell-active { width: auto; min-width: 4.5rem; padding-inline: .6rem; display: flex; align-items: center; justify-content: center; gap: .4rem; background: rgb(var(--c-primary) / .18); color: rgb(var(--c-primary-2)); border-color: rgb(var(--c-primary) / .5); }
+    #dk-dumbbell-btn.dk-dumbbell-active svg { width: 1.5rem; height: 1.5rem; }
+    #dk-dumbbell-pct { display: none; font-size: 12.5px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: .01em; }
+    #dk-dumbbell-btn.dk-dumbbell-active #dk-dumbbell-pct { display: inline-block; }
     #dk-dumbbell-dot { position: absolute; inset-inline-end: 5px; top: 5px; width: 8px; height: 8px; border-radius: 9999px; background: #22c55e; box-shadow: 0 0 0 2px rgb(var(--c-surface)); animation: dk-dot-pulse 1.6s ease infinite; }
     @keyframes dk-dot-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
     .dk-pos-flash { animation: dk-pos-flash-kf 2.4s ease; }
@@ -2223,6 +2229,7 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
       <button id="dk-dumbbell-btn" class="shrink-0" aria-label="Back to workout" title="Back to workout">
         <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z"/><path d="m21.5 21.5-1.4-1.4"/><path d="M3.9 3.9 2.5 2.5"/><path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z"/></svg>
         <span id="dk-dumbbell-dot" class="hidden" aria-hidden="true"></span>
+        <span id="dk-dumbbell-pct" aria-hidden="true">0%</span>
       </button>
       <select id="lang-select" class="bg-surface-2 border border-border text-xs rounded-lg px-2 py-1.5 text-text outline-none cursor-pointer">
         <option value="ru">RU</option><option value="en">EN</option><option value="he">HE</option>
@@ -6025,6 +6032,18 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       if (btn) btn.classList.toggle('dk-dumbbell-active', active);
       var dot = document.getElementById('dk-dumbbell-dot');
       if (dot) dot.classList.toggle('hidden', !active);
+      /* c119: workout completion % (done sets / total sets) — re-synced every second */
+      var pct = document.getElementById('dk-dumbbell-pct');
+      if (pct) pct.textContent = workoutPctNow() + '%';
+    }
+    function workoutPctNow() {
+      try {
+        var s = (typeof getSession === 'function') ? getSession(activeDayIndex) : null;
+        if (!s || !s.exercises) return 0;
+        var total = 0, done = 0;
+        s.exercises.forEach(function (ex) { (ex.sets || []).forEach(function (st) { total++; if (st.done) done++; }); });
+        return total ? Math.round(done / total * 100) : 0;
+      } catch (e) { return 0; }
     }
 
     /* ---- lang-change hook (called by setLang via window.dkPortalSync) ---- */

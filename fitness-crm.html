@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c118" />
+<meta name="dk-build" content="c119" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2537,14 +2537,23 @@ sliver inside the picker modal's map column (measured 142px vs SVG 488px). */
   border: 1px solid rgb(var(--c-border));
   color: rgb(var(--c-text));
   cursor: pointer;
-  transition: background .15s ease, border-color .15s ease, color .15s ease;
+  transition: background .15s ease, border-color .15s ease, color .15s ease, min-width .2s ease, padding .2s ease;
 }
+#dk-dumbbell-btn svg { width: 1.125rem; height: 1.125rem; transition: width .2s ease, height .2s ease; }
 #dk-dumbbell-btn:hover { background: rgb(var(--c-border) / .4); }
+/* c119: active dumbbell — twice as wide (2.25→4.5rem), a bigger dumbbell and the
+   workout completion % (done sets / total sets, 1–100) right next to it */
 #dk-dumbbell-btn.dk-dumbbell-active {
+  width: auto; min-width: 4.5rem;
+  padding-inline: .6rem;
+  display: flex; align-items: center; justify-content: center; gap: .4rem;
   background: rgb(var(--c-primary) / .18);
   color: rgb(var(--c-primary-2));
   border-color: rgb(var(--c-primary) / .5);
 }
+#dk-dumbbell-btn.dk-dumbbell-active svg { width: 1.5rem; height: 1.5rem; }
+#dk-dumbbell-pct { display: none; font-size: 12.5px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: .01em; }
+#dk-dumbbell-btn.dk-dumbbell-active #dk-dumbbell-pct { display: inline-block; }
 #dk-dumbbell-dot {
   position: absolute; inset-inline-end: 5px; top: 5px;
   width: 8px; height: 8px; border-radius: 9999px;
@@ -2655,6 +2664,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
           <button id="dk-dumbbell-btn" class="shrink-0" aria-label="Back to workout" title="Back to workout" data-i18n-attr="aria-label:aria.dumbbell,title:aria.dumbbell">
             <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z"/><path d="m21.5 21.5-1.4-1.4"/><path d="M3.9 3.9 2.5 2.5"/><path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z"/></svg>
             <span id="dk-dumbbell-dot" class="hidden" aria-hidden="true"></span>
+            <span id="dk-dumbbell-pct" aria-hidden="true">0%</span>
           </button>
           <!-- Language selector — populated by i18n engine in Step 3 -->
           <div class="relative">
@@ -2835,7 +2845,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c118</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c119</p>
             </div>
           </div>
 
@@ -7763,6 +7773,20 @@ button[id$="-close"]:active, button[data-cps-close]:active {
       return !!(typeof screens !== 'undefined' && screens.liveWorkout && screens.liveWorkout._workout);
     } catch (_e) { return false; }
   }
+  /* c119: workout completion % (done sets / total sets of the running live workout) */
+  function dkDumbbellPctOf() {
+    try {
+      var w = (typeof screens !== 'undefined' && screens.liveWorkout && screens.liveWorkout._workout) ? screens.liveWorkout._workout : null;
+      if (!w || !w.exercises) return 0;
+      var total = 0, done = 0;
+      w.exercises.forEach(function (ex) { (ex.sets || []).forEach(function (s) { total++; if (s.done) done++; }); });
+      return total ? Math.round((done / total) * 100) : 0;
+    } catch (_e) { return 0; }
+  }
+  function dkDumbbellPctSync() {
+    var el = document.getElementById('dk-dumbbell-pct');
+    if (el) el.textContent = dkDumbbellPctOf() + '%';
+  }
   function dkDumbbellSync() {
     var btn = document.getElementById('dk-dumbbell-btn');
     if (!btn) return;
@@ -7770,6 +7794,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
     btn.classList.toggle('dk-dumbbell-active', active);
     var dot = document.getElementById('dk-dumbbell-dot');
     if (dot) dot.classList.toggle('hidden', !active);
+    dkDumbbellPctSync();
   }
   function dkDumbbellGo() {
     if (dkDumbbellActive() && screens.liveWorkout.returnToPosition) {
@@ -11258,7 +11283,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             </div>`;
           });
           return `<div class="bg-surface-2 border border-border rounded-xl p-3 pb-draggable ${ex.is_superset ? 'dk-superset-hl' : ''}" data-pb-ex-index="${ei}">
-            <div class="flex items-center gap-2 mb-2 pb-drag-handle" draggable="true" data-pb-drag-handle="${ei}">
+            <!-- c119: flex-wrap so the ×3 thumbnail + controls reflow on narrow phones -->
+            <div class="flex flex-wrap items-center gap-2 mb-2 pb-drag-handle" draggable="true" data-pb-drag-handle="${ei}">
               <div class="pb-grip text-muted/60 hover:text-muted transition cursor-grab active:cursor-grabbing shrink-0" title="${t('programs.dragToReorder') || 'Drag to reorder'}">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>
               </div>
@@ -11272,8 +11298,18 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
                 const full = _pb._exMap.get(ex.exercise_id);
                 const imgs = full ? (full.images || full.i || []) : [];
                 const img1 = imgs[0] || '';
+                /* c119: thumbnail is 3× bigger (32→96px, the live-workout card size)
+                   and ANIMATED — same two-frame crossfade (.ex-anim-container) the
+                   live workout and the portal use; spacing around it comes from the
+                   row gap so it breathes from the start to the end of the row. */
+                if (imgs.length >= 2) {
+                  return `<div class="ex-anim-container w-24 h-24 shrink-0 cursor-pointer border border-border" data-pb-view-ex="${escapeAttr(ex.exercise_id || '')}">
+                    <img src="${escapeAttr(imgs[0])}" alt="" class="ex-anim-frame-1" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<svg class=\\'w-4 h-4 text-muted\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\'/></svg>'" />
+                    <img src="${escapeAttr(imgs[1])}" alt="" class="ex-anim-frame-2" loading="lazy" onerror="this.style.display='none'" />
+                  </div>`;
+                }
                 if (img1) {
-                  return `<div class="w-8 h-8 rounded-lg shrink-0 overflow-hidden bg-surface border border-border grid place-items-center" data-pb-view-ex="${escapeAttr(ex.exercise_id || '')}">
+                  return `<div class="w-24 h-24 rounded-xl shrink-0 overflow-hidden bg-surface border border-border grid place-items-center" data-pb-view-ex="${escapeAttr(ex.exercise_id || '')}">
                     <img src="${escapeAttr(img1)}" alt="" class="w-full h-full object-contain" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<svg class=\\'w-4 h-4 text-muted\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\'/></svg>'" />
                   </div>`;
                 }
@@ -15837,6 +15873,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const label = document.getElementById('workout-progress-label');
       if (bar) bar.style.width = pct + '%';
       if (label) label.textContent = t('workouts.setsCompleted', { done: doneSets, total: totalSets });
+      /* c119: mirror the completion % into the header dumbbell (runs on every set ✓/✕) */
+      try { if (typeof dkDumbbellPctSync === 'function') dkDumbbellPctSync(); } catch (_e) {}
     }
 
     /** Update the 3 stat cards (exercises / sets / volume). */
@@ -30408,7 +30446,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 118; /* numeric part of dk-build c118 */
+  var RUNNING = 119; /* numeric part of dk-build c119 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
