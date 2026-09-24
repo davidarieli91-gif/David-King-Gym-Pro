@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c116" />
+<meta name="dk-build" content="c117" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2815,7 +2815,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c116</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c117</p>
             </div>
           </div>
 
@@ -10281,10 +10281,14 @@ button[id$="-close"]:active, button[data-cps-close]:active {
           toast(t('programs.restDayNoExercises'), 'info', 2000);
           return;
         }
-        // Build a prefill object with the day's exercises
+        // Build a prefill object with the day's exercises.
+        // c117: program_id + day_idx travel with the session so the finish
+        // flow can offer to write structural changes back into THIS day.
         const prefill = {
           name: prog.name + ' — ' + t('programs.day') + ' ' + (day.day_letter || (dayIdx + 1)),
           client_id: prog.client_id || '',
+          program_id: programId,   /* c117 */
+          day_idx: dayIdx,         /* c117 */
           exercises: (day.exercises || []).map(ex => ({
             exercise_id: ex.exercise_id,
             name: ex.name,
@@ -14826,6 +14830,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         exercises: [],
         started_at: Date.now()
       };
+      /* c117: no program origin + fresh change counters (tracked for uniformity) */
+      _workout.src = null; _workout.orig_day = null;
+      _workout.struct = { changed: false, added: 0, removed: 0, replaced: 0, sets: 0, ss: 0 };
       _lastRefMap = null; /* c106: never reuse the previous workout's client prev-map */
       await loadExerciseCache();  // Fix: await before render() so thumbnails appear on first render
       loadClientList();
@@ -14853,6 +14860,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         })),
         started_at: Date.now()
       };
+      /* c117: template session — no program origin, but track structural edits */
+      _workout.src = null; _workout.orig_day = null;
+      _workout.struct = { changed: false, added: 0, removed: 0, replaced: 0, sets: 0, ss: 0 };
       lwEqualizeSupersets(_workout.exercises); /* c107: partners start with equal set counts */
       await loadExerciseCache();  // Fix: await before render() so thumbnails appear
       loadClientList();
@@ -14891,6 +14901,14 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         })),
         started_at: Date.now()
       };
+      /* c117: program provenance — where this session came from and what the
+         program looked like BEFORE the workout. If the trainer finishes with
+         structural changes (exercises/sets/supersets), the report offers to
+         write them back into THIS program day. */
+      _workout.src = prefill.program_id ? { program_id: prefill.program_id, day_idx: prefill.day_idx || 0 } : null;
+      _workout.orig_day = _workout.src ? JSON.parse(JSON.stringify(prefill.exercises || [])) : null;
+      _workout.struct = { changed: false, added: 0, removed: 0, replaced: 0, sets: 0, ss: 0 };
+      _workout.exercises.forEach((ex, i) => { ex._src = i; }); /* c117: position provenance (survives replace-in-place, dies on add) */
       lwEqualizeSupersets(_workout.exercises); /* c107: partners start with equal set counts */
       await loadExerciseCache();  // Fix: await before render() so thumbnails appear
       loadClientList().then(() => {
@@ -15053,6 +15071,10 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         const exCount = draft.value.exercises.length;
         if (confirm(t('workouts.draftRestoreConfirm', {n: exCount}))) {
           _workout = draft.value;
+          /* c117: old drafts predate the change tracker — migrate */
+          if (!_workout.struct) _workout.struct = { changed: false, added: 0, removed: 0, replaced: 0, sets: 0, ss: 0 };
+          if (_workout.src === undefined) _workout.src = null;
+          if (_workout.orig_day === undefined) _workout.orig_day = null;
           // Migrate old draft data — ensure each set has 'type' field and each exercise has 'rest_sec'
           _workout.exercises.forEach(ex => {
             if (ex.rest_sec == null) ex.rest_sec = 90;
@@ -15187,6 +15209,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
                   ${ex.exercise_id ? `<button class="w-7 h-7 grid place-items-center rounded-lg bg-surface-2 border border-border text-muted hover:text-[rgb(var(--c-primary-2))] hover:border-[rgb(var(--c-primary)/0.5)] transition" data-view-exercise-btn="${escapeAttr(ex.exercise_id)}" title="${t('aria.view')}" aria-label="${t('aria.view')}">
                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                   </button>` : ''}
+                  <!-- c117: superset apply/cancel (same semantics as the program builder) -->
+                  <button data-lw-superset="${idx}" aria-pressed="${ex.is_superset ? 'true' : 'false'}" title="${t('programs.toggleSuperset') || 'Toggle superset (⚡)'}" aria-label="${t('programs.toggleSuperset') || 'Toggle superset (⚡)'}" class="w-7 h-7 grid place-items-center rounded-lg border text-sm transition cursor-pointer ${ex.is_superset ? 'bg-accent/15 border-accent/50 text-accent' : 'bg-surface-2 border-border text-muted hover:text-accent hover:border-accent/50'}">⚡</button>
                   <button data-remove-exercise="${idx}" class="w-7 h-7 grid place-items-center rounded-lg bg-surface-2 border border-border text-muted hover:text-red-400 hover:border-red-400/50 transition" aria-label="${t('aria.removeExercise')}" title="${t('aria.removeExercise')}">
                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
                   </button>
@@ -15320,6 +15344,55 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         } else i++;
       }
     }
+
+    /* ===== c117: structural change tracker — the finish flow offers to write
+       structural edits (exercises added/removed/replaced, set counts,
+       supersets) back into the client's working program. Only STRUCTURE is
+       tracked: logged weights/reps/done/RPE belong to the workout history,
+       not to the program prescription. ===== */
+    function markStruct(kind) {
+      if (!_workout) return;
+      if (!_workout.struct) _workout.struct = { changed: false, added: 0, removed: 0, replaced: 0, sets: 0, ss: 0 };
+      const st = _workout.struct;
+      if (st[kind] != null) st[kind]++;
+      st.changed = true;
+      saveDraft();
+    }
+
+    /* ===== c117: apply / cancel a superset from the live workout (the same
+       semantics as the program builder: ⚡ marks THIS exercise and the NEXT
+       one as partners; toggling off clears both). Partners are re-equalized
+       to the same set count so the c107 ✓-sync keeps working. ===== */
+    function lwToggleSuperset(idx) {
+      if (!_workout) return;
+      const exs = _workout.exercises;
+      const ex = exs[idx];
+      if (!ex) return;
+      const next = exs[idx + 1];
+      if (!ex.is_superset && !next) {
+        /* A superset links an exercise with the NEXT one — nothing to link */
+        toast(t('workouts.ssNeedNext') || 'A superset links this exercise with the NEXT one — add it first', 'info', 3000);
+        return;
+      }
+      if (ex.is_superset) {
+        ex.is_superset = false;
+        delete ex.superset_partner;
+        if (next && next.is_superset) { next.is_superset = false; delete next.superset_partner; }
+        toast(t('programs.supersetOff') || 'Superset OFF', 'info', 2000);
+      } else {
+        ex.is_superset = true;
+        if (next) {
+          ex.superset_partner = next.name || '';
+          next.is_superset = true;
+          next.superset_partner = ex.name || '';
+        }
+        lwEqualizeSupersets(exs); /* partners must share the set count for the ✓-sync */
+        toast(t('programs.supersetOn') || 'Superset ON — exercises done back-to-back before rest', 'success', 3000);
+      }
+      markStruct('ss');
+      render();
+    }
+
     /* chain the just-done set's values into the next set's «prev» (shared by
        the primary exercise and its superset partners) */
     function lwChainPrev(exIdx, si) {
@@ -15609,6 +15682,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               const pEx = _workout.exercises[p];
               if (pEx) pEx.sets.push(Object.assign({}, ns));
             });
+            markStruct('sets'); /* c117: set count is program structure */
             render();
           }
         });
@@ -15645,8 +15719,17 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               const pEx = _workout.exercises[p];
               if (pEx && pEx.sets.length > 1 && pEx.sets[setIdx]) pEx.sets.splice(setIdx, 1);
             });
+            markStruct('sets'); /* c117: set count is program structure */
             render();
           }
+        });
+      });
+
+      // c117: superset apply/cancel (⚡) — same semantics as the program builder
+      document.querySelectorAll('[data-lw-superset]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          lwToggleSuperset(parseInt(btn.getAttribute('data-lw-superset'), 10));
         });
       });
 
@@ -15656,6 +15739,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           const idx = parseInt(btn.getAttribute('data-remove-exercise'), 10);
           if (_workout) {
             _workout.exercises.splice(idx, 1);
+            markStruct('removed'); /* c117 */
             render();
           }
         });
@@ -15700,6 +15784,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             }));
             render();
             ensureLastRef(); /* c103: prefill prev from the last workout of the NEW exercise */
+            markStruct('replaced'); /* c117: replacement is a program-level change */
             toast(t('programs.exerciseReplaced') || 'Exercise replaced', 'success', 2000);
             try { bodyMapPicker.close(); } catch (_e) {}
           }, _exerciseCache);
@@ -15935,6 +16020,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           prev_dist: null
         }]
       });
+      markStruct('added'); /* c117: a new exercise is a program-level change */
       render();
       ensureLastRef(); /* c90: show last workout's values for the new exercise */
     }
@@ -16081,6 +16167,19 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       document.body.appendChild(ov);
       ov.addEventListener('click', (e) => { if (e.target === ov) closeLiveReportModal(); });
       document.getElementById('live-report-save').addEventListener('click', async () => {
+        /* c117: the session came from a program day and its STRUCTURE was
+           edited (exercises/sets/supersets) → ask «Сохранить изменения?».
+           Yes → the new structure is written into the client's working
+           program; No → the program stays exactly as it was. The workout
+           itself is logged either way. */
+        if (_workout && _workout.src && _workout.src.program_id && _workout.struct && _workout.struct.changed && structDiffers()) {
+          const yes = await askProgramChanges();
+          if (yes) {
+            const ok = await applyProgramChanges();
+            if (ok) toast(t('workouts.progUpdated') || 'Program updated', 'success', 2500);
+            else toast(t('workouts.progUpdateFail') || 'Could not save program changes', 'warning', 3500);
+          }
+        }
         await db.put('workout_history', record);
         /* c94: backfill the FULL local history of this client into the shared
            cloud doc (subsumes the c93 single-record mirror) */
@@ -16125,6 +16224,119 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         });
         window.open('https://wa.me/?text=' + encodeURIComponent(lines.join('\n')), '_blank');
       });
+    }
+
+    /* ===== c117: does the live structure differ from the program day the
+       session started from? (guards the question — a change that was undone
+       must not trigger it). Compare ids+order, set counts, superset flags. */
+    function structDiffers() {
+      if (!_workout || !Array.isArray(_workout.orig_day)) return false;
+      const a = _workout.orig_day, b = _workout.exercises;
+      if (a.length !== b.length) return true;
+      return b.some((lx, i) => {
+        const o = a[i] || {};
+        return o.exercise_id !== lx.exercise_id
+          || ((o.sets || []).length !== (lx.sets || []).length)
+          || (!!o.is_superset) !== (!!lx.is_superset);
+      });
+    }
+
+    /* ===== c117: «Сохранить изменения упражнений?» — Да / Нет. Shown when the
+       trainer finishes a program-based workout with structural edits.
+       Resolves true (write changes) or false (program untouched). */
+    function askProgramChanges() {
+      return new Promise((resolve) => {
+        const st = (_workout && _workout.struct) || {};
+        const progName = (_workout && _workout.name) || '';
+        const chip = (txt) => `<span class="text-[11px] font-bold px-2 py-1 rounded-lg bg-surface-2 border border-border text-muted">${esc(txt)}</span>`;
+        const chips = [];
+        if (st.added) chips.push(chip('➕ ' + (t('workouts.chAdded') || 'Added: {n}').replace('{n}', st.added)));
+        if (st.removed) chips.push(chip('➖ ' + (t('workouts.chRemoved') || 'Removed: {n}').replace('{n}', st.removed)));
+        if (st.replaced) chips.push(chip('🔁 ' + (t('workouts.chReplaced') || 'Replaced: {n}').replace('{n}', st.replaced)));
+        if (st.sets) chips.push(chip('▦ ' + (t('workouts.chSets') || 'Set changes: {n}').replace('{n}', st.sets)));
+        if (st.ss) chips.push(chip('⚡ ' + (t('workouts.chSS') || 'Supersets: {n}').replace('{n}', st.ss)));
+        const ov = document.createElement('div');
+        ov.id = 'prog-changes-modal';
+        ov.setAttribute('role', 'dialog');
+        ov.setAttribute('aria-modal', 'true');
+        ov.className = 'fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4';
+        ov.style.zIndex = '140';
+        ov.innerHTML = `<div class="bg-surface border border-border w-full sm:max-w-sm rounded-t-3xl sm:rounded-2xl p-4">
+          <div class="text-center text-2xl mb-1">💾</div>
+          <h3 class="font-display font-extrabold text-base text-center leading-snug">${esc(t('workouts.progChangesQ') || 'Save the exercise changes to the program?')}</h3>
+          ${progName ? `<div class="text-center text-[11px] text-muted mt-1 px-2">${esc(progName)}</div>` : ''}
+          <div class="text-[11px] text-muted text-center mt-1.5 leading-relaxed px-2">${esc(t('workouts.progChangesHint') || 'Exercises, sets and supersets will be updated in the working program.')}</div>
+          ${chips.length ? `<div class="flex flex-wrap justify-center gap-1.5 mt-3">${chips.join('')}</div>` : ''}
+          <button id="prog-chg-yes" class="w-full mt-4 bg-success hover:bg-success/90 text-white text-sm font-extrabold py-3 rounded-2xl transition cursor-pointer">✔ ${esc(t('workouts.progChangesYes') || 'Yes, save')}</button>
+          <button id="prog-chg-no" class="w-full mt-2 bg-surface-2 hover:bg-border/40 border border-border text-sm font-semibold py-2.5 rounded-2xl transition cursor-pointer">${esc(t('workouts.progChangesNo') || 'No')}</button>
+        </div>`;
+        document.body.appendChild(ov);
+        const done = (v) => { try { ov.remove(); } catch (_) {} document.removeEventListener('keydown', onKey); resolve(v); };
+        const onKey = (e) => { if (e.key === 'Escape') done(false); };
+        document.addEventListener('keydown', onKey);
+        ov.addEventListener('click', (e) => { if (e.target === ov) done(false); });
+        ov.querySelector('#prog-chg-yes').addEventListener('click', () => done(true));
+        ov.querySelector('#prog-chg-no').addEventListener('click', () => done(false));
+      });
+    }
+
+    /* ===== c117: write the session's structure back into the program day the
+       workout was started from. The exercise list, its order, set counts and
+       superset flags come from the live session; prescriptions (weight/reps/
+       time/dist/RPE targets) SURVIVE 1:1 for exercises that kept their
+       identity, while new/replaced exercises get blank prescriptions with the
+       live set count. Only the day the workout started from is touched. */
+    async function applyProgramChanges() {
+      const src = _workout && _workout.src;
+      if (!src || !src.program_id) return false;
+      let prog = null;
+      try { prog = await db.get('client_programs', src.program_id); } catch (_) { prog = null; }
+      if (!prog || !Array.isArray(prog.workout_days) || !prog.workout_days[src.day_idx]) {
+        console.warn('[applyProgramChanges] program/day not found', src);
+        return false;
+      }
+      const day = prog.workout_days[src.day_idx];
+      const orig = Array.isArray(_workout.orig_day) ? _workout.orig_day : [];
+      const blankSet = (ty) => ({ weight: null, reps: null, time: null, dist: null, rpe: null, type: ty || 'normal' });
+      day.exercises = _workout.exercises.map(lx => {
+        const o = (lx._src != null && orig[lx._src]) ? orig[lx._src] : null;
+        const same = !!(o && o.exercise_id === lx.exercise_id); /* identity kept (was not replaced) */
+        const n = (lx.sets || []).length;
+        let sets;
+        if (same) {
+          sets = (o.sets || []).map(s => ({
+            weight: s.weight != null ? s.weight : null,
+            reps: s.reps != null ? s.reps : null,
+            time: s.time != null ? s.time : null,
+            dist: s.dist != null ? s.dist : null,
+            rpe: s.rpe != null ? s.rpe : null,
+            type: s.type || 'normal'
+          }));
+          if (sets.length > n) sets.length = n;
+          while (sets.length < n) sets.push(Object.assign({}, sets[sets.length - 1] || blankSet()));
+        } else {
+          /* added or replaced exercise — no prescription yet, count from live */
+          sets = Array.from({ length: n }, (_, i) => blankSet((lx.sets[i] && lx.sets[i].type) || 'normal'));
+        }
+        return {
+          exercise_id: lx.exercise_id,
+          name: same ? o.name : lx.name,
+          group: same ? o.group : lx.group,
+          cardio: same ? (o.cardio === true) : (lx.cardio === true),
+          is_superset: lx.is_superset === true,
+          unit: same ? (o.unit != null ? o.unit : null) : (lx.unit === 'lb' || lx.unit === 'kg' ? lx.unit : null),
+          tunit: same ? (o.tunit != null ? o.tunit : null) : (lx.tunit === 'min' || lx.tunit === 'sec' ? lx.tunit : null),
+          rest_sec: same ? (o.rest_sec != null ? o.rest_sec : 90) : (lx.rest_sec != null ? lx.rest_sec : 90),
+          sets
+        };
+      });
+      prog.updated_at = Date.now();
+      await db.put('client_programs', prog);
+      /* keep the profile's PROGRAMS section fresh if it is rendered */
+      try {
+        if (screens.profile && typeof screens.profile.loadPrograms === 'function') screens.profile.loadPrograms(prog.client_id);
+      } catch (_) {}
+      return true;
     }
 
     /** Cancel workout without saving. */
@@ -16197,6 +16409,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       _workout = {
         name: tpl.name || '',
         client_id: clientId,
+        src: null, orig_day: null, /* c117 */
+        struct: { changed: false, added: 0, removed: 0, replaced: 0, sets: 0, ss: 0 }, /* c117 */
         exercises: (tpl.exercises || []).map(ex => ({
           exercise_id: ex.exercise_id,
           name: ex.name,
@@ -30182,7 +30396,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 116; /* numeric part of dk-build c116 */
+  var RUNNING = 117; /* numeric part of dk-build c117 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
