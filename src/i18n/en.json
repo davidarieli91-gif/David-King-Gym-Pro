@@ -548,7 +548,6 @@
     "applyToClient": "Apply to {name}",
     "noTemplatesAvailable": "No templates available. Create one first.",
     "templateAppliedTo": "Template applied to {name}",
-    "templateAppliedTo": "Template applied to {name}",
     "ssNeedNext": "A superset links this exercise with the NEXT one — add the next exercise first",
     "progChangesQ": "Save the exercise changes to the program?",
     "progChangesHint": "Exercises, sets and supersets will be updated in the client's working program. The weights lifted are kept in the workout history only.",
@@ -1561,5 +1560,12 @@
     "copyChart": "Copy chart",
     "chartCopied": "Load chart copied",
     "brzyckiNote": "Brzycki formula · estimate only — use a spotter for heavy attempts."
+  },
+  "rot": {
+    "last": "Last time",
+    "now": "Up next",
+    "next": "Next",
+    "wasThis": "done last time",
+    "nowThis": "next in the rotation"
   }
 }

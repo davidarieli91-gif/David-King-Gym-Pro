@@ -2342,6 +2342,7 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
     <!-- ===== TAB: WORKOUTS ===== -->
     <section id="tab-workouts" class="space-y-3 fade-in">
       <div id="program-selector" class="hidden flex gap-1.5 overflow-x-auto no-sb pb-1"></div>
+      <div id="rotation-banner" class="hidden"></div>
       <div id="days-tabs-container" class="flex items-center gap-1.5 overflow-x-auto no-sb pb-1"></div>
       <div id="workout-exercises-list" class="space-y-3"></div>
       <div id="workout-finish-box" class="pt-1 space-y-2">
@@ -2639,6 +2640,7 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       video:'Видео', searchOnYouTube:'Искать на YouTube', noImage:'Нет изображения', noTechnique:'Описание техники пока нет', minShort:'мин', secShort:'сек',
       /* c106: leftover-RU sweep */
       dayWord:'День', planActive:'План активен', splitLabel:'Сплит', gramShort:'г', literShort:'л', cmShort:'см',
+      rotLast:'Прошлый раз', rotNow:'Сейчас', rotGo:'Перейти', rotWasLast:'выполнено в прошлый раз', rotIsNext:'следующая в ротации',
       mealFallback:'Приём', clientFallback:'Клиент', shareOfflineCached:'— показан сохранённый план',
       updateToast:'🔄 Доступна новая версия — обновить', waistShort:'талия', hipShort:'бёдра',
       macroPShort:'Б', macroFShort:'Ж', macroCShort:'У', macroKcal:'Ккал',
@@ -2686,6 +2688,7 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       video:'Video', searchOnYouTube:'Search on YouTube', noImage:'No image', noTechnique:'No technique description yet', minShort:'min', secShort:'sec',
       /* c106: leftover-RU sweep */
       dayWord:'Day', planActive:'Plan active', splitLabel:'Split', gramShort:'g', literShort:'L', cmShort:'cm',
+      rotLast:'Last time', rotNow:'Up next', rotGo:'Go', rotWasLast:'done last time', rotIsNext:'next in the rotation',
       mealFallback:'Meal', clientFallback:'Client', shareOfflineCached:'— showing the saved plan',
       updateToast:'🔄 New version available — refresh', waistShort:'waist', hipShort:'hips',
       macroPShort:'P', macroFShort:'F', macroCShort:'C', macroKcal:'kcal',
@@ -2733,6 +2736,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       video:'וידאו', searchOnYouTube:'חפש ביוטיוב', noImage:'אין תמונה', noTechnique:'אין תיאור טכניקה', minShort:'דק׳', secShort:'שנ׳',
       /* c106: leftover-RU sweep */
       dayWord:'יום', planActive:'תוכנית פעילה', splitLabel:'פיצול', gramShort:'ג׳', literShort:'ל׳', cmShort:'ס״מ',
+      rotLast:'בפעם שעברה', rotNow:'עכשיו', rotGo:'עבור', rotWasLast:'בוצע בפעם שעברה', rotIsNext:'הבא ברוטציה',
       mealFallback:'ארוחה', clientFallback:'מתאמן', shareOfflineCached:'— מוצגת התוכנית השמורה',
       updateToast:'🔄 גרסה חדשה זמינה — רענון', waistShort:'מותן', hipShort:'ירכיים',
       macroPShort:'ח׳', macroFShort:'ש׳', macroCShort:'פ׳', macroKcal:'קק״ל',
@@ -4137,15 +4141,86 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   function stopRest() { clearInterval(timerInterval); document.getElementById('rest-banner').classList.add('hidden'); }
 
   /* --- render: day tabs --- */
+  /* ===== c120: WORKOUT ROTATION — «what did we do last time, what's now?» =====
+     Reads the portal history (own records carry day_index + program name;
+     trainer-logged ones arrive through ps_hist with program_id + day_index
+     since c120), finds the most recent record of THIS program, then walks
+     the cyclic day order to suggest the next non-rest day. Read-only. */
+  function rotationInfo() {
+    const out = { lastIdx: -1, lastTs: 0, nextIdx: -1 };
+    try {
+      if (!currentProgram) return out;
+      const days = currentProgram.workout_days || currentProgram.days || [];
+      if (!days.length) return out;
+      const pid = currentProgram.id != null ? String(currentProgram.id) : null;
+      const pname = String(currentProgram.name || '');
+      const scored = [];
+      loadHistory().forEach(function (r) {
+        if (!r || typeof r.day_index !== 'number' || r.day_index < 0 || r.day_index >= days.length) return;
+        const byId = pid && r.program_id != null && String(r.program_id) === pid;
+        const byName = !!pname && r.program === pname;
+        if (!byId && !byName) return;
+        const ts = Number(r.ts || 0);
+        if (ts > 0) scored.push({ di: r.day_index, ts: ts });
+      });
+      if (!scored.length) return out;
+      scored.sort(function (a, b) { return b.ts - a.ts; });
+      out.lastIdx = scored[0].di; out.lastTs = scored[0].ts;
+      const seq = days.map(function (d, i) { return { d: d, i: i }; }).filter(function (x) { return x.d && !x.d.is_rest_day && (x.d.exercises || []).length; });
+      if (seq.length > 1) {
+        const pos = seq.findIndex(function (x) { return x.i === out.lastIdx; });
+        out.nextIdx = pos >= 0 ? seq[(pos + 1) % seq.length].i : seq[0].i;
+        if (out.nextIdx === out.lastIdx) out.nextIdx = -1;
+      }
+    } catch (e) {}
+    return out;
+  }
+  function dkRotDay(ts) {
+    const dt = new Date(ts), p = function (n) { return String(n).padStart(2, '0'); };
+    return p(dt.getDate()) + '.' + p(dt.getMonth() + 1) + '.' + dt.getFullYear();
+  }
+  function renderRotationBanner() {
+    const el = document.getElementById('rotation-banner');
+    if (!el) return;
+    const rot = rotationInfo();
+    if (rot.lastIdx < 0 && rot.nextIdx < 0) { el.classList.add('hidden'); el.innerHTML = ''; return; }
+    const days = currentProgram ? (currentProgram.workout_days || currentProgram.days || []) : [];
+    const nm = function (i) { const d = days[i]; return d ? dayLabel(i) : ''; };
+    let html = '<div class="glass rounded-xl px-3 py-2 flex items-center flex-wrap gap-x-1.5 gap-y-1 text-[11px]">' +
+      '<span class="shrink-0">🔁</span>';
+    if (rot.lastIdx >= 0) {
+      html += '<span class="text-muted shrink-0">' + esc(t('rotLast')) + ':</span>' +
+        '<span class="font-bold truncate">' + esc(nm(rot.lastIdx)) + ' · ' + dkRotDay(rot.lastTs) + '</span>';
+    }
+    if (rot.nextIdx >= 0) {
+      html += '<span class="text-muted shrink-0">→</span>' +
+        '<span class="text-muted shrink-0">' + esc(t('rotNow')) + ':</span>' +
+        '<span class="font-bold text-emerald-300 truncate">' + esc(nm(rot.nextIdx)) + '</span>' +
+        '<button id="rot-go-next" class="ms-auto shrink-0 text-[10px] font-bold px-2 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 transition active:scale-95">' + esc(t('rotGo')) + ' ▶</button>';
+    }
+    html += '</div>';
+    el.innerHTML = html;
+    el.classList.remove('hidden');
+    const btn = document.getElementById('rot-go-next');
+    if (btn) btn.addEventListener('click', function () {
+      activeDayIndex = rot.nextIdx;
+      renderAll();
+      try { const sec = document.getElementById('tab-workouts'); if (sec && !sec.classList.contains('hidden')) sec.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
+    });
+  }
   function renderDaysTabs() {
     const c = document.getElementById('days-tabs-container');
     const _wdays = currentProgram ? (currentProgram.workout_days || currentProgram.days || []) : [];
     if (!_wdays.length) { c.innerHTML=''; return; }
+    const rot = rotationInfo(); /* c120: per-tab rotation marks */
     c.innerHTML = _wdays.map((d,i)=>{
       const active = i===activeDayIndex;
       const live = !!sessions[i];
       const badge = live ? '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>' : '';
-      return `<button data-day="${i}" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-1.5 ${active?'bg-indigo-500 text-white shadow-md shadow-indigo-500/25':'bg-surface-2 text-muted hover:text-white'}">${badge}${esc(dayLabel(i))}</button>`;
+      const rotMark = rot.lastIdx === i
+        ? '<span class="text-[8px] font-bold bg-emerald-500/20 text-emerald-300 rounded px-1 leading-4" title="' + esc(t('rotWasLast')) + '">✓</span>'
+        : (rot.nextIdx === i ? '<span class="text-[8px] font-bold bg-amber-500/20 text-amber-300 rounded px-1 leading-4" title="' + esc(t('rotIsNext')) + '">▶</span>' : '');
+      return `<button data-day="${i}" class="px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-1.5 ${active?'bg-indigo-500 text-white shadow-md shadow-indigo-500/25':'bg-surface-2 text-muted hover:text-white'}">${badge}${rotMark}${esc(dayLabel(i))}</button>`;
     }).join('');
     c.querySelectorAll('[data-day]').forEach(b=>b.addEventListener('click',()=>{
       activeDayIndex = +b.dataset.day; renderAll();
@@ -4858,6 +4933,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       document.getElementById('macro-c').textContent = '—';
     }
     renderProgramSelector(); renderPlanSelector();
+    renderRotationBanner(); /* c120: «last time X → now Y» above the day tabs */
     renderDaysTabs(); renderExercises(); renderMeals();
     updateLabels(); updateWaterUI(); prefillCheckin(); renderHistory(); renderAnalytics(); refreshDone();
     renderDiary(); /* c106: re-translate the diary total/hint on language switch too */

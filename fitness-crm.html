@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c119" />
+<meta name="dk-build" content="c120" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2845,7 +2845,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c119</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c120</p>
             </div>
           </div>
 
@@ -10090,6 +10090,65 @@ button[id$="-close"]:active, button[data-cps-close]:active {
       return t('client.' + DAY_KEYS[dayOfWeek]);
     }
 
+    /* ===== c120: WORKOUT ROTATION — «what did we do last time, what's next?» =====
+       For a program, finds the most recent workout_history record that came
+       from one of ITS days (new records carry program_id + day_idx since c120;
+       legacy ones are matched by the «<program> — День A» name tail), then
+       walks the cyclic day order to suggest the NEXT non-rest day.
+       Pure read-only helper — no mechanic depends on it. */
+    async function dkRotationFor(program, clientId) {
+      const res = { lastIdx: -1, lastDate: 0, nextIdx: -1 };
+      try {
+        const days = (program && program.workout_days) || [];
+        if (!program || !days.length) return res;
+        let recs = [];
+        try { recs = (await db.find('workout_history', 'by_clientId', clientId || program.client_id)) || []; }
+        catch (_) { try { recs = (await db.all('workout_history')) || []; } catch (_e) { recs = []; } }
+        const progId = program.id;
+        const progName = String(program.name || '');
+        const scored = [];
+        (recs || []).forEach(r => {
+          if (!r) return;
+          let di = null;
+          if (progId != null && r.program_id === progId && typeof r.day_idx === 'number' && r.day_idx >= 0 && r.day_idx < days.length) {
+            di = r.day_idx; /* c120+ records: exact provenance */
+          } else if (r.client_id === (clientId || program.client_id) && progName && r.name && r.name.indexOf(progName + ' — ') === 0) {
+            /* legacy records: name = «<program> — День A» (any UI language) → tail letter */
+            const tail = r.name.slice(progName.length + 3).trim();
+            const m = tail.match(/^(День|Day|יום)\s+(.+)$/);
+            if (m) {
+              const letter = m[2].trim();
+              const li = days.findIndex(d => String(d && d.day_letter || '') === letter);
+              if (li >= 0) di = li;
+            }
+          }
+          if (di == null) return;
+          const dnum = Number(r.date || r.created_at || 0);
+          if (dnum > 0) scored.push({ di, dnum });
+        });
+        if (!scored.length) return res;
+        scored.sort((a, b) => b.dnum - a.dnum);
+        res.lastIdx = scored[0].di;
+        res.lastDate = scored[0].dnum;
+        /* cyclic «next»: the next non-rest day AFTER the last done one (A→B→C→A…) */
+        const seq = days.map((d, i) => ({ d, i })).filter(x => x.d && !x.d.is_rest_day && (x.d.exercises || []).length > 0);
+        if (seq.length > 1) {
+          const pos = seq.findIndex(x => x.i === res.lastIdx);
+          res.nextIdx = pos >= 0 ? seq[(pos + 1) % seq.length].i : seq[0].i;
+          if (res.nextIdx === res.lastIdx) res.nextIdx = -1; /* paranoia: single-day guard */
+        }
+      } catch (_) {}
+      return res;
+    }
+
+    /** Day display name for rotation UIs (letter fallback like everywhere else). */
+    function dkRotDayName(days, i) {
+      const d = days[i];
+      if (!d) return '';
+      const L = d.day_letter || String(i + 1);
+      return defaultDayNameT(d.name, L) || (t('programs.day') || 'Day') + ' ' + L;
+    }
+
     async function loadPrograms(clientId) {
       const all = await db.find('client_programs', 'by_clientId', clientId);
       // Load exercise cache for thumbnails in program list (Fix: _pb is null here)
@@ -10105,10 +10164,14 @@ button[id$="-close"]:active, button[data-cps-close]:active {
 
       if (activeSection) {
         if (actives.length > 0) {
+          /* c120: rotation info per program (parallel; read-only) */
+          const rotByProg = {};
+          await Promise.all(actives.map(async p => { try { rotByProg[p.id] = await dkRotationFor(p, clientId); } catch (_) { rotByProg[p.id] = { lastIdx: -1, lastDate: 0, nextIdx: -1 }; } }));
           activeSection.innerHTML = actives.map((prog, pi) => {
             const days = prog.workout_days || [];
             const totalEx = days.reduce((s, d) => s + (d.exercises || []).length, 0);
             const isActive = pi === 0; // First program is "current"
+            const rot = rotByProg[prog.id] || { lastIdx: -1, lastDate: 0, nextIdx: -1 }; /* c120 */
             return `<div class="bg-${isActive ? 'primary/5 border-primary/20' : 'surface-2 border-border'} border rounded-xl overflow-hidden">
               <!-- Program header (clickable to expand/collapse) -->
               <div class="flex items-center gap-2 p-3 cursor-pointer hover:bg-border/20 transition" data-toggle-program="${prog.id}">
@@ -10134,6 +10197,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                   }
                   return `<div class="flex flex-wrap items-center gap-x-2 gap-y-1 bg-surface rounded-lg p-2">
                     <span class="w-7 h-7 rounded-lg bg-primary/15 text-primary-2 grid place-items-center font-mono font-bold text-xs shrink-0">${day.day_letter || (i+1)}</span>
+                    ${rot.lastIdx === i ? `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-success/15 text-success shrink-0" title="${escapeAttr(t('rot.wasThis') || 'Done last time')}">✓ ${escapeHTML(t('rot.last') || 'Last time')} · ${escapeHTML(fmtDate(rot.lastDate))}</span>` : ''}${rot.nextIdx === i ? `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-accent/15 text-accent shrink-0" title="${escapeAttr(t('rot.nowThis') || 'Next in the rotation')}">▶ ${escapeHTML(t('rot.now') || 'Up next')}</span>` : ''}
                     <select class="text-[10px] font-semibold bg-surface-2 border border-border rounded px-1 py-0.5 shrink-0" data-day-of-week="${prog.id}.${i}">
                       ${[null,0,1,2,3,4,5,6].map(d => `<option value="${d === null ? '' : d}" ${dow === d ? 'selected' : ''}>${d === null ? t('client.noDay') : t('client.' + DAY_KEYS[d])}</option>`).join('')}
                     </select>
@@ -10334,6 +10398,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
           client_id: prog.client_id || '',
           program_id: programId,   /* c117 */
           day_idx: dayIdx,         /* c117 */
+          day_letter: day.day_letter || String(dayIdx + 1), /* c120: rotation provenance */
           exercises: (day.exercises || []).map(ex => ({
             exercise_id: ex.exercise_id,
             name: ex.name,
@@ -10369,9 +10434,9 @@ button[id$="-close"]:active, button[data-cps-close]:active {
     /** Open a preview modal showing the exercises in a program day.
      *  User reviews exercises, then clicks "Start workout" inside the
      *  modal to begin the live workout (timer starts only then). */
-    function openProgramDayPreview(programId, dayIdx) {
+    async function openProgramDayPreview(programId, dayIdx) {
       window.__refreshDayPreview = function () { openProgramDayPreview(programId, dayIdx); }; /* c63: live lang refresh */
-      db.get('client_programs', programId).then(prog => {
+      await db.get('client_programs', programId).then(async prog => {
         if (!prog || !prog.workout_days[dayIdx]) {
           toast(t('programs.notFoundToast'), 'danger');
           return;
@@ -10393,12 +10458,33 @@ button[id$="-close"]:active, button[data-cps-close]:active {
         }
         if (subtitleEl) subtitleEl.textContent = prog.name + ' · ' + (day.exercises || []).length + ' ' + t('exercise.exercises');
 
+        /* c120: rotation banner — «last time we did X → now do Y», with a
+           per-day verdict when THIS day is the last-done or the suggested one */
+        const rot = await dkRotationFor(prog, prog.client_id).catch(() => ({ lastIdx: -1, lastDate: 0, nextIdx: -1 }));
+        const rotDays = prog.workout_days || [];
+        let rotHtml = '';
+        if (rot.lastIdx >= 0 || rot.nextIdx >= 0) {
+          const lastNm = rot.lastIdx >= 0 ? escapeHTML(dkRotDayName(rotDays, rot.lastIdx)) : '';
+          const nextNm = rot.nextIdx >= 0 ? escapeHTML(dkRotDayName(rotDays, rot.nextIdx)) : '';
+          let line = '';
+          if (rot.lastIdx >= 0) {
+            line = `<span class="text-muted shrink-0">🔁 ${escapeHTML(t('rot.last') || 'Last time')}:</span><span class="font-bold truncate">${lastNm} · ${escapeHTML(fmtDate(rot.lastDate))}</span>`;
+            if (rot.lastIdx === dayIdx) line += `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-success/15 text-success shrink-0">✓ ${escapeHTML(t('rot.wasThis') || 'Done last time')}</span>`;
+          }
+          if (rot.nextIdx >= 0) {
+            if (line) line += `<span class="text-muted shrink-0">→</span>`;
+            line += `<span class="text-muted shrink-0">${escapeHTML(t('rot.now') || 'Up next')}:</span><span class="font-bold text-accent truncate">${nextNm}</span>`;
+            if (rot.nextIdx === dayIdx) line += `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-accent/15 text-accent shrink-0">▶ ${escapeHTML(t('rot.nowThis') || 'Next in the rotation')}</span>`;
+          }
+          rotHtml = `<div class="flex flex-wrap items-center gap-x-1.5 gap-y-1 bg-surface-2/60 border border-border rounded-xl px-3 py-2 text-[11px] mb-2">${line}</div>`;
+        }
+
         // Build exercise list
         const exercises = day.exercises || [];
         if (exercises.length === 0) {
-          bodyEl.innerHTML = `<div class="text-center py-8 text-sm text-muted">${t('programs.dayEmpty') || 'No exercises in this day'}</div>`;
+          bodyEl.innerHTML = rotHtml + `<div class="text-center py-8 text-sm text-muted">${t('programs.dayEmpty') || 'No exercises in this day'}</div>`;
         } else {
-          bodyEl.innerHTML = exercises.map((ex, i) => {
+          bodyEl.innerHTML = rotHtml + exercises.map((ex, i) => {
             const sets = ex.sets || [];
             const setCount = sets.length;
             const repsInfo = sets[0] ? (sets[0].reps || '—') : '—';
@@ -14961,7 +15047,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
          program looked like BEFORE the workout. If the trainer finishes with
          structural changes (exercises/sets/supersets), the report offers to
          write them back into THIS program day. */
-      _workout.src = prefill.program_id ? { program_id: prefill.program_id, day_idx: prefill.day_idx || 0 } : null;
+      _workout.src = prefill.program_id ? { program_id: prefill.program_id, day_idx: prefill.day_idx || 0, day_letter: prefill.day_letter || '' } : null; /* c120: + day_letter for rotation */
       _workout.orig_day = _workout.src ? JSON.parse(JSON.stringify(prefill.exercises || [])) : null;
       _workout.struct = { changed: false, added: 0, removed: 0, replaced: 0, sets: 0, ss: 0 };
       _workout.exercises.forEach((ex, i) => { ex._src = i; }); /* c117: position provenance (survives replace-in-place, dies on add) */
@@ -16105,6 +16191,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         date: Date.now(),
         duration: duration,
         total_volume: volume,
+        /* c120: program-day provenance → the rotation system («which workout
+           did we do last time, what's next») reads these; old records lack
+           them and fall back to the name-tail match in dkRotationFor */
+        program_id: _workout.src ? (_workout.src.program_id || null) : null,
+        day_idx: _workout.src && typeof _workout.src.day_idx === 'number' ? _workout.src.day_idx : null,
+        day_letter: _workout.src ? (_workout.src.day_letter || null) : null,
         exercises: _workout.exercises.map(ex => ({
           exercise_id: ex.exercise_id,
           name: ex.name,
@@ -25221,7 +25313,11 @@ async function boot() {
           ts: ts,
           date: new Date(ts).toISOString().slice(0, 10),
           program: record.name || '',
-          day_letter: '', day_index: -1,
+          /* c120: rotation provenance travels to the portal too — the portal's
+             «last time / up next» strip matches its own program by id */
+          program_id: record.program_id || null,
+          day_index: (typeof record.day_idx === 'number' && record.day_idx >= 0) ? record.day_idx : -1,
+          day_letter: record.day_letter || '',
           duration_sec: record.duration || 0,
           volume: record.total_volume || exs.reduce((s, ex) => s + (ex.sets || []).reduce((ss, st) => ss + (Number(st.weight) || 0) * (Number(st.reps) || 0), 0), 0),
           done_sets: doneSets, total_sets: totSets,
@@ -30446,7 +30542,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 119; /* numeric part of dk-build c119 */
+  var RUNNING = 120; /* numeric part of dk-build c120 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
