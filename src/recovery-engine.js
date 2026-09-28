@@ -144,10 +144,25 @@
            String((ex && ex.name) || '').trim().toLowerCase().replace(/\s+/g, ' ');
   }
 
+  /* ============================================================================
+     c124 — TREND («Тренд»): per-muscle daily series + sparkline renderer
+     ----------------------------------------------------------------------------
+     trend(cfg) returns, for EACH of the last N days (14/30), the day's load and
+     the recovery% as it stood at the END of that day — recomputed with the SAME
+     personal capacity / τ / formula as compute() (both share accumulate(),
+     so the sparkline and the map can never diverge):
+       recovery(d) = clamp(100 · (1 − Σ_b min(load_b/capacity, 1.5) · e^(−(d−b)/τ)))
+     sparkSVG(daily) renders that series as a tiny inline SVG — load BARS
+     (normalized to the window max) + a recovery LINE colored by the map's own
+     bands (green ≥85 / amber ≥50 / red below). No external chart library.
+     ============================================================================ */
   /**
+   * Shared accumulation core (passes A–C + the personal τ). Used by BOTH
+   * compute() and trend() — the single source for the per-(group, day) data.
    * @param {{workouts:Array, resolveEx:Function, bodyWeightKg:(number|null), now:number}} cfg
+   * @returns {{load:Object, vol:Object, sets:Object, dayNow:number, now:number, tau:number, bodyWeight:number}}
    */
-  function compute(cfg) {
+  function accumulate(cfg) {
     var workouts = (cfg && cfg.workouts) || [];
     var resolveEx = (cfg && typeof cfg.resolveEx === 'function') ? cfg.resolveEx : function () { return null; };
     var now = isNum(cfg && cfg.now) ? cfg.now : Date.now();
@@ -262,7 +277,6 @@
       });
     });
 
-    /* ---- PASS D: per-group summary (back-compatible + additive) ---- */
     /* personal τ from the last 28 days' real training frequency */
     var recentDays = 0;
     Object.keys(anyTrainingDays).forEach(function (b) {
@@ -271,6 +285,18 @@
     });
     var tau = clamp(3.4 - 0.2 * (recentDays / 4), 2.5, 3.5);
 
+    return { load: load, vol: vol, sets: sets, dayNow: dayNow, now: now, tau: tau, bodyWeight: bodyWeight };
+  }
+
+  /**
+   * @param {{workouts:Array, resolveEx:Function, bodyWeightKg:(number|null), now:number}} cfg
+   */
+  function compute(cfg) {
+    var acc = accumulate(cfg);
+    var now = acc.now, dayNow = acc.dayNow, tau = acc.tau, bodyWeight = acc.bodyWeight;
+    var load = acc.load, vol = acc.vol, sets = acc.sets;
+
+    /* ---- PASS D: per-group summary (back-compatible + additive) ---- */
     var capacitySource = 'default';
     var out = {};
     GROUPS.forEach(function (g) {
@@ -342,6 +368,103 @@
         groupsComputed: GROUPS.length
       }
     };
+  }
+
+  /**
+   * c124: per-muscle daily series for the «Тренд» sparklines.
+   * @param {{workouts:Array, resolveEx:Function, bodyWeightKg:(number|null), now:number, days:number}} cfg
+   * @returns {{groups:{g:{daily:Array<{t:number,load:number,sets:number,recovery:number}>, capacity:number}},
+   *            meta:{bodyWeightKg:number, tauDays:number, days:number}}}
+   */
+  function trend(cfg) {
+    var days = isNum(cfg && cfg.days) ? clamp(Math.round(cfg.days), 7, 60) : 14;
+    var acc = accumulate(cfg);
+    var out = {};
+    GROUPS.forEach(function (g) {
+      var lm = acc.load[g], sm = acc.sets[g];
+      var buckets = Object.keys(sm).map(Number).filter(function (b) { return (sm[b] || 0) > 0; });
+      /* personal capacity — the SAME p90-of-90d the map summary uses */
+      var dailyLoads90 = [];
+      buckets.forEach(function (b) {
+        var d = acc.dayNow - b;
+        if (d >= 0 && d < CAPACITY_WINDOW_DAYS && (lm[b] || 0) > 0) dailyLoads90.push(lm[b]);
+      });
+      dailyLoads90.sort(function (a, b2) { return a - b2; });
+      var capacity = DEFAULT_CAPACITY;
+      if (dailyLoads90.length >= CAPACITY_MIN_DAYS) capacity = percentile90(dailyLoads90);
+      if (!isFinite(capacity) || capacity <= 0) capacity = DEFAULT_CAPACITY;
+      var daily = [];
+      for (var i = days - 1; i >= 0; i--) {
+        var dNow = acc.dayNow - i;
+        var fatigue = 0;
+        for (var k = 0; k < buckets.length; k++) {
+          var dd = dNow - buckets[k];
+          if (dd < 0 || dd > FATIGUE_HORIZON_DAYS) continue;
+          fatigue += clamp((lm[buckets[k]] || 0) / capacity, 0, DAY_RATIO_CAP) * Math.exp(-dd / acc.tau);
+        }
+        daily.push({
+          t: dNow,
+          load: Math.round((lm[dNow] || 0) * 10) / 10,
+          sets: sm[dNow] || 0,
+          recovery: clamp(Math.round(100 * (1 - fatigue)), 0, 100)
+        });
+      }
+      out[g] = { daily: daily, capacity: Math.round(capacity * 10) / 10 };
+    });
+    return { groups: out, meta: { bodyWeightKg: acc.bodyWeight, tauDays: Math.round(acc.tau * 100) / 100, days: days } };
+  }
+
+  /**
+   * c124: tiny inline SVG sparkline — load bars + recovery line (no libs).
+   * The line is segment-colored with the map's own bands so the sparkline
+   * reads in the same language as the heat-map: green ≥85 / amber ≥50 / red.
+   * Stretched to the row width with preserveAspectRatio=none; strokes stay
+   * crisp via vector-effect=non-scaling-stroke.
+   * @param {Array<{load:number, recovery:number}>} daily — the trend() series
+   * @param {{w?:number, h?:number}} [opts]
+   * @returns {string} svg markup ('' when there is nothing to draw)
+   */
+  function sparkSVG(daily, opts) {
+    var W = (opts && isNum(opts.w)) ? opts.w : 120;
+    var H = (opts && isNum(opts.h)) ? opts.h : 32;
+    var arr = Array.isArray(daily) ? daily : [];
+    var n = arr.length;
+    if (!n || !W || !H) return '';
+    var maxLoad = 0;
+    arr.forEach(function (p) { if (p && p.load > maxLoad) maxLoad = p.load; });
+    var slot = W / n;
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" height="' + H + '" preserveAspectRatio="none" aria-hidden="true" focusable="false" style="display:block">';
+    /* baseline */
+    s += '<line x1="0" y1="' + (H - 0.5) + '" x2="' + W + '" y2="' + (H - 0.5) + '" stroke="rgba(128,128,128,0.25)" stroke-width="1" vector-effect="non-scaling-stroke"/>';
+    /* load bars (normalized to the window max) */
+    if (maxLoad > 0) {
+      var barW = Math.max(1.2, slot * 0.6);
+      for (var i = 0; i < n; i++) {
+        var p = arr[i];
+        if (!p || !(p.load > 0)) continue;
+        var bh = (p.load / maxLoad) * (H - 6);
+        var x = i * slot + (slot - barW) / 2;
+        s += '<rect x="' + x.toFixed(2) + '" y="' + (H - bh).toFixed(2) + '" width="' + barW.toFixed(2) + '" height="' + bh.toFixed(2) + '" fill="rgba(59,130,246,0.40)"/>';
+      }
+    }
+    /* 50% guide — the fresh/recovering boundary */
+    var gy = (H - 2 - 0.5 * (H - 6)).toFixed(2);
+    s += '<line x1="0" y1="' + gy + '" x2="' + W + '" y2="' + gy + '" stroke="rgba(128,128,128,0.25)" stroke-width="1" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/>';
+    /* recovery line, colored per segment by the map bands */
+    var prev = null;
+    for (var j = 0; j < n; j++) {
+      var pj = arr[j];
+      if (!pj || !isFinite(pj.recovery)) { prev = null; continue; }
+      var px = j * slot + slot / 2;
+      var py = H - 2 - (pj.recovery / 100) * (H - 6);
+      if (prev) {
+        var col = pj.recovery >= 85 ? 'rgba(34,197,94,0.95)' : pj.recovery >= 50 ? 'rgba(245,158,11,0.95)' : 'rgba(239,68,68,0.95)';
+        s += '<line x1="' + prev.x.toFixed(2) + '" y1="' + prev.y.toFixed(2) + '" x2="' + px.toFixed(2) + '" y2="' + py.toFixed(2) + '" stroke="' + col + '" stroke-width="1.6" stroke-linecap="round" vector-effect="non-scaling-stroke"/>';
+      }
+      prev = { x: px, y: py };
+    }
+    s += '</svg>';
+    return s;
   }
 
   var api = { compute: compute, GROUPS: GROUPS, KG_PER_LB: KG_PER_LB };
@@ -424,6 +547,9 @@
 
   api.advise = advise;
   api.MAIN_GROUPS = MAIN_GROUPS;
+  /* c124 exports */
+  api.trend = trend;
+  api.sparkSVG = sparkSVG;
   if (typeof window !== 'undefined') window.dkRecoveryEngine = api;
   else if (typeof globalThis !== 'undefined') globalThis.dkRecoveryEngine = api;
 })();

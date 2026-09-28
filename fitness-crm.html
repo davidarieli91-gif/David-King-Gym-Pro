@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c123" />
+<meta name="dk-build" content="c124" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2847,7 +2847,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c123</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c124</p>
             </div>
           </div>
 
@@ -3349,16 +3349,19 @@ button[id$="-close"]:active, button[data-cps-close]:active {
           <div id="recovery-map-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
             <div class="bg-surface w-full  lg:max-w-[min(96vw,1100px)] max-h-[92vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
               <!-- Header -->
-              <div class="rm-head-row p-4 border-b border-border flex items-center gap-3 shrink-0">
+              <div class="rm-head-row p-4 border-b border-border flex flex-wrap items-center gap-3 shrink-0">
                 <div class="flex-1 min-w-0">
                   <h3 class="font-display font-bold text-base" data-i18n="recovery.title">Recovery Map</h3>
                   <p id="recovery-subtitle" class="text-xs text-muted truncate"></p>
                 </div>
-                <!-- Mode tabs: Recovery | Volume(7d) | Volume(30d) -->
-                <div class="flex gap-1 bg-surface-2 border border-border rounded-lg p-0.5 shrink-0">
+                <!-- Mode tabs: Recovery | Volume(7d) | Volume(30d) | Trend(c124).
+                     c124: the tab strip drops to its own row < sm so the 4th tab
+                     never squeezes the title off-screen on phones -->
+                <div class="flex gap-1 bg-surface-2 border border-border rounded-lg p-0.5 shrink-0 order-last w-full sm:order-none sm:w-auto">
                   <button id="rec-mode-recovery" class="px-3 py-1.5 rounded-md text-xs font-semibold transition bg-primary text-white" data-i18n="recovery.modeRecovery">Recovery</button>
                   <button id="rec-mode-7d" class="px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted" data-i18n="recovery.mode7d">7d Vol</button>
                   <button id="rec-mode-30d" class="px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted" data-i18n="recovery.mode30d">30d Vol</button>
+                  <button id="rec-mode-trend" class="px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted" data-i18n="recovery.modeTrend">Trend</button>
                 </div>
                 <button id="recovery-close" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-surface-2 text-muted shrink-0" aria-label="Close" data-i18n-attr="aria-label:aria.close">
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -3368,8 +3371,8 @@ button[id$="-close"]:active, button[data-cps-close]:active {
               <div id="rec-insights" class="hidden px-4 py-2 border-b border-border shrink-0"></div>
               <!-- Body: SVG + muscle breakdown -->
               <div class="flex-1 overflow-y-auto p-3 flex flex-col md:flex-row gap-3">
-                <!-- Left: SVG body (front/back/side tabs) -->
-                <div class="shrink-0 flex flex-col items-center">
+                <!-- Left: SVG body (front/back/side tabs) — hidden in c124 trend mode -->
+                <div id="rec-svg-col" class="shrink-0 flex flex-col items-center">
                   <div class="flex gap-1 mb-2">
                     <button id="rec-view-front" class="px-2 py-1 rounded text-[10px] font-semibold transition bg-primary text-white">Front</button>
                     <button id="rec-view-back" class="px-2 py-1 rounded text-[10px] font-semibold transition text-muted">Back</button>
@@ -3381,6 +3384,14 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
                 <!-- Right: muscle list with bars -->
                 <div class="flex-1 min-w-0">
+                  <!-- c124: trend window switch + sparkline legend (trend mode only) -->
+                  <div id="rec-trend-head" class="hidden mb-2 flex items-center gap-2 flex-wrap">
+                    <div class="flex gap-1 bg-surface-2 border border-border rounded-lg p-0.5">
+                      <button id="rec-trend-14" class="px-2 py-1 rounded text-[10px] font-semibold transition bg-primary text-white" data-i18n="recovery.trend14">14d</button>
+                      <button id="rec-trend-30" class="px-2 py-1 rounded text-[10px] font-semibold transition text-muted" data-i18n="recovery.trend30">30d</button>
+                    </div>
+                    <span id="rec-trend-legend" class="text-[10px] text-muted"></span>
+                  </div>
                   <div id="rec-muscle-list" class="space-y-1.5"></div>
                 </div>
               </div>
@@ -19013,9 +19024,17 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
     // === Module state ===
     let _clientId = null;
-    let _mode = 'recovery';  // 'recovery' | '7d' | '30d'
+    let _mode = 'recovery';  // 'recovery' | '7d' | '30d' | 'trend' (c124)
     let _view = 'front';     // 'front' | 'back' | 'side'
     let _data = null;        // cached result of computeForClient
+    /* c124: trend state — 14/30-day window + per-days cache of engine.trend();
+       _ctx is ONE fetch/resolve context shared by computeForClient and
+       computeTrendForClient so workout_history is read from IndexedDB once
+       per modal open no matter how the modes flip (invalidated in open()) */
+    let _trendDays = 14;
+    let _trendCache = {};
+    let _trendLoading = false;
+    let _ctx = null;         // { clientId, workouts, exCache, bw }
 
     /** Look up an exercise in exercise_base by ID to get its canonical group + synergists. */
     async function lookupExercise(exerciseId) {
@@ -19073,8 +19092,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
      *  Walks workout_history, accumulates volume per (muscle, day), then
      *  applies decay + finds most-recent training day for recovery %.
      *  Returns { chest: {recovery, lastTrainedDaysAgo, lastTrainedMs, volume7d, volume30d, sets7d}, ... } */
-    async function computeForClient(clientId) {
-      if (!clientId) return null;
+    /* c124: buildCtx — ONE fetch/resolve context per client, shared by
+       computeForClient (map modes) and computeTrendForClient (trend mode).
+       The c98 portal-history merge, the exCache build and the body-weight
+       lookup all live HERE so the two consumers can never diverge. */
+    async function buildCtx(clientId) {
+      if (_ctx && _ctx.clientId === clientId) return _ctx;
       // Load all workouts for this client
       let workouts = await db.find('workout_history', 'by_clientId', clientId);
       /* c98: merge the trainee portal's cloud history (ps_hist_<hash>) so the
@@ -19093,15 +19116,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           }
         }
       } catch (_) {}
-      if (!workouts || workouts.length === 0) {
-        // Return empty state for all muscles
-        const empty = {};
-        ALL_GROUPS.forEach(g => {
-          empty[g] = { recovery: 100, lastTrainedDaysAgo: null, lastTrainedMs: null,
-                       volume7d: 0, volume30d: 0, sets7d: 0, sets30d: 0, status: 'untrained' };
-        });
-        return empty;
-      }
+      if (!workouts) workouts = [];
 
       // Build exercise_id → { group, synergists } cache (one lookup per unique exercise_id)
       const exCache = {};
@@ -19122,6 +19137,64 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           };
         }
       }));
+      /* c122: the client's body weight — bodyweight movements are valued
+         against it (profile weight → 75 kg default; c125 adds check-ins) */
+      let bw = 75;
+      try {
+        const cw = await db.get('clients', clientId);
+        const wv = parseFloat(cw && cw.weight);
+        if (wv > 30 && wv < 300) bw = wv;
+      } catch (_) {}
+      _ctx = { clientId: clientId, workouts: workouts, exCache: exCache, bw: bw };
+      return _ctx;
+    }
+
+    /** c124: shared engine resolver — the exact v1 group-resolution order
+     *  (exCache by exercise_id → canonicalGroup of the record's own group). */
+    function resolveExCtx(ex) {
+      const c = (_ctx && ex.exercise_id && _ctx.exCache[ex.exercise_id]) || null;
+      if (c && c.group) {
+        return { group: c.group, synergists: c.synergists,
+                 names: [ex.name, c.name_en], equipment: c.equipment_type };
+      }
+      const g = canonicalGroup(ex.muscle_group) || canonicalGroup(ex.group) || ex.group;
+      if (!g) return null;
+      return { group: g, synergists: [], names: [ex.name], equipment: ex.equipment };
+    }
+
+    /** c124: per-muscle daily series for the «Тренд» sparklines (14/30 days).
+     *  Returns { groups: { chest: { daily: [{t, load, sets, recovery}], capacity } }, meta } or null. */
+    async function computeTrendForClient(clientId, days) {
+      try {
+        if (!window.dkRecoveryEngine || typeof window.dkRecoveryEngine.trend !== 'function') return null;
+        const ctx = await buildCtx(clientId);
+        if (!ctx.workouts || !ctx.workouts.length) return null;
+        return window.dkRecoveryEngine.trend({
+          workouts: ctx.workouts,
+          bodyWeightKg: ctx.bw,
+          now: Date.now(),
+          days: days,
+          resolveEx: resolveExCtx
+        });
+      } catch (e) {
+        console.warn('[recovery] trend failed:', e);
+        return null;
+      }
+    }
+
+    async function computeForClient(clientId) {
+      if (!clientId) return null;
+      const ctx = await buildCtx(clientId);
+      const workouts = ctx.workouts;
+      if (!workouts || workouts.length === 0) {
+        // Return empty state for all muscles
+        const empty = {};
+        ALL_GROUPS.forEach(g => {
+          empty[g] = { recovery: 100, lastTrainedDaysAgo: null, lastTrainedMs: null,
+                       volume7d: 0, volume30d: 0, sets7d: 0, sets30d: 0, status: 'untrained' };
+        });
+        return empty;
+      }
 
       /* c122: RECOVERY ENGINE v2 — the shared model (src/recovery-engine.js):
          load = reps × weight (kg, lb converted) × intensity (per-set RPE or
@@ -19133,32 +19206,18 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
          FALLBACK for the rare case the engine module failed to load. */
       try {
         if (window.dkRecoveryEngine) {
-          let bw122 = 75;
-          try {
-            const cw122 = await db.get('clients', clientId);
-            const wv122 = parseFloat(cw122 && cw122.weight);
-            if (wv122 > 30 && wv122 < 300) bw122 = wv122;
-          } catch (_) {}
           const res122 = window.dkRecoveryEngine.compute({
             workouts: workouts,
-            bodyWeightKg: bw122,
+            bodyWeightKg: ctx.bw,
             now: Date.now(),
-            resolveEx: (ex) => {
-              const c122 = (ex.exercise_id && exCache[ex.exercise_id]) || null;
-              if (c122 && c122.group) {
-                return { group: c122.group, synergists: c122.synergists,
-                         names: [ex.name, c122.name_en], equipment: c122.equipment_type };
-              }
-              const g122 = canonicalGroup(ex.muscle_group) || canonicalGroup(ex.group) || ex.group;
-              if (!g122) return null;
-              return { group: g122, synergists: [], names: [ex.name], equipment: ex.equipment };
-            }
+            resolveEx: resolveExCtx
           });
           return res122.groups;
         }
       } catch (e122) {
         console.warn('[recovery] engine v2 failed → legacy time-based model:', e122);
       }
+      const exCache = ctx.exCache;
 
       // Accumulate volume per (muscle, day-bucket)
       // day bucket = floor(date / MS_PER_DAY) — so all workouts on the same calendar day merge
@@ -19434,7 +19493,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     /** Update tab styling based on current mode/view. */
     function updateTabStyling() {
       // Mode tabs
-      ['recovery', '7d', '30d'].forEach(m => {
+      ['recovery', '7d', '30d', 'trend'].forEach(m => {
         const btn = document.getElementById('rec-mode-' + m);
         if (!btn) return;
         if (_mode === m) { btn.classList.add('bg-primary','text-white'); btn.classList.remove('text-muted'); }
@@ -19474,9 +19533,112 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       el.innerHTML = ready;
     }
 
+    /* c124: trend mode chrome — hide the SVG column + insights strip, show
+       the 14/30 window strip; range tab styling is kept here too */
+    function renderTrendChrome() {
+      const trend = _mode === 'trend';
+      const col = document.getElementById('rec-svg-col');
+      if (col) col.classList.toggle('hidden', trend);
+      const head = document.getElementById('rec-trend-head');
+      if (head) head.classList.toggle('hidden', !trend);
+      const ins = document.getElementById('rec-insights');
+      if (ins && trend) { ins.classList.add('hidden'); ins.innerHTML = ''; }
+      [14, 30].forEach(d => {
+        const b = document.getElementById('rec-trend-' + d);
+        if (!b) return;
+        if (_trendDays === d) { b.classList.add('bg-primary','text-white'); b.classList.remove('text-muted'); }
+        else { b.classList.remove('bg-primary','text-white'); b.classList.add('text-muted'); }
+      });
+    }
+
+    /* c124: sparkline legend — a load swatch + a recovery line swatch */
+    function renderTrendLegend() {
+      const el = document.getElementById('rec-trend-legend');
+      if (!el) return;
+      el.innerHTML = '<span class="inline-block w-2 h-2 rounded-sm align-[-1px] me-1" style="background:rgba(59,130,246,0.5)"></span>' + esc(t('recovery.trendLegendLoad') || 'load/day') +
+        ' &nbsp;·&nbsp; <span class="inline-block w-3 h-0.5 rounded-full align-[-1px] mx-0.5" style="background:rgb(var(--c-success))"></span>' + esc(t('recovery.trendLegendRec') || 'recovery');
+    }
+
+    /* c124: compute (once per window) + re-render the trend list */
+    async function ensureTrend() {
+      if (_trendLoading) return;
+      if (_trendCache[_trendDays]) { renderTrendList(); return; }
+      _trendLoading = true;
+      try {
+        const res = await computeTrendForClient(_clientId, _trendDays);
+        /* cache the result — or an empty sentinel so a failed/empty compute
+           shows «нет данных» instead of looping */
+        _trendCache[_trendDays] = (res && res.groups) ? res : { groups: null, meta: { empty: true } };
+      } finally {
+        _trendLoading = false;
+      }
+      const modal = document.getElementById('recovery-map-modal');
+      if (_mode === 'trend' && modal && !modal.classList.contains('hidden')) renderTrendList();
+    }
+
+    /* c124: the «Тренд» list — one sparkline row per muscle (load bars +
+       recovery line rendered by the SHARED engine's sparkSVG, so the trainer
+       and the portal draw byte-identical charts) */
+    function renderTrendList() {
+      const listEl = document.getElementById('rec-muscle-list');
+      if (!listEl || !_data) return;
+      const trendRes = _trendCache[_trendDays];
+      if (!trendRes) {
+        if (!_trendLoading) ensureTrend();
+        listEl.innerHTML = '<div class="text-center text-xs text-muted py-8">' + esc(t('recovery.loading') || 'Loading...') + '</div>';
+        return;
+      }
+      const eng = window.dkRecoveryEngine;
+      if (!trendRes.groups || !eng || typeof eng.sparkSVG !== 'function') {
+        listEl.innerHTML = '<div class="text-center text-xs text-muted py-8">' + esc(t('recovery.trendNoData') || 'No trend data') + '</div>';
+        return;
+      }
+      const lang = currentLang();
+      // Same ordering as the other modes: trained first (most recent), untrained last
+      const sorted = ALL_GROUPS.slice().sort((a, b) => {
+        const da = _data[a].lastTrainedDaysAgo;
+        const db2 = _data[b].lastTrainedDaysAgo;
+        if (da == null && db2 == null) return 0;
+        if (da == null) return 1;
+        if (db2 == null) return -1;
+        return da - db2;
+      });
+      let html = '';
+      sorted.forEach(g => {
+        const info = _data[g];
+        const lbl = (GROUP_LABELS[g] && GROUP_LABELS[g][lang]) || g;
+        let lastTrainedStr;
+        if (info.lastTrainedDaysAgo === null) lastTrainedStr = t('recovery.untrained') || 'Not trained';
+        else if (info.lastTrainedDaysAgo < 1) lastTrainedStr = t('recovery.today') || 'Today';
+        else lastTrainedStr = Math.round(info.lastTrainedDaysAgo) + 'd ' + (t('recovery.ago') || 'ago');
+        const statusCls = 'rec-status-' + info.status;
+        const tr = trendRes.groups[g];
+        const daily = (tr && Array.isArray(tr.daily)) ? tr.daily : [];
+        const svg = eng.sparkSVG(daily);
+        /* tooltip: current recovery + the window's peak daily load */
+        let tip = lbl + ' · ' + t('recovery.recovery') + ': ' + info.recovery + '%';
+        if (daily.length) {
+          let peak = daily[0];
+          daily.forEach(p => { if (p.load > peak.load) peak = p; });
+          if (peak.load > 0) tip += '\n' + (t('recovery.trendLegendLoad') || 'load/day') + ' max: ' + Math.round(peak.load);
+        }
+        html += `<div class="rec-muscle-row ${statusCls}" title="${esc(tip)}">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs font-bold flex-1 truncate">${esc(lbl)}</span>
+            <span class="text-[10px] text-muted shrink-0">${esc(lastTrainedStr)}</span>
+            <span class="text-xs font-mono font-bold shrink-0" style="min-width:60px;text-align:end">${info.recovery}%</span>
+          </div>
+          <div class="rec-trend-spark">${svg}</div>
+        </div>`;
+      });
+      listEl.innerHTML = html;
+    }
+
     /** Re-render everything based on current state. */
     function renderAll() {
       updateTabStyling();
+      renderTrendChrome();
+      if (_mode === 'trend') { renderTrendList(); renderTrendLegend(); return; }
       renderBodySVG();
       renderMuscleList();
       renderLegend();
@@ -19488,6 +19650,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       _clientId = clientId;
       _mode = 'recovery';
       _view = 'front';
+      /* c124: fresh modal session — rebuild the fetch context + trend cache
+         so the map always reflects the latest saved sessions */
+      _ctx = null;
+      _trendCache = {};
+      _trendDays = 14;
       // Show modal immediately with loading state
       const modal = document.getElementById('recovery-map-modal');
       if (modal) modal.classList.remove('hidden');
@@ -19535,10 +19702,18 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const modal = document.getElementById('recovery-map-modal');
       if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
       // Mode tabs
-      ['recovery', '7d', '30d'].forEach(m => {
+      ['recovery', '7d', '30d', 'trend'].forEach(m => {
         const btn = document.getElementById('rec-mode-' + m);
         if (btn) btn.addEventListener('click', () => {
           _mode = m;
+          renderAll();
+        });
+      });
+      /* c124: trend window (14/30 days) — re-render reuses the per-days cache */
+      [14, 30].forEach(d => {
+        const btn = document.getElementById('rec-trend-' + d);
+        if (btn) btn.addEventListener('click', () => {
+          _trendDays = d;
           renderAll();
         });
       });
@@ -30745,7 +30920,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 123; /* numeric part of dk-build c123 */
+  var RUNNING = 124; /* numeric part of dk-build c124 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

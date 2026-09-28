@@ -2511,13 +2511,14 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
           <button data-recp-mode="recovery" class="recp-tab px-3 py-1.5 text-xs font-semibold transition">Восстановление</button>
           <button data-recp-mode="7d" class="recp-tab px-3 py-1.5 text-xs font-semibold transition">Объём 7д</button>
           <button data-recp-mode="30d" class="recp-tab px-3 py-1.5 text-xs font-semibold transition">Объём 30д</button>
+          <button data-recp-mode="trend" class="recp-tab px-3 py-1.5 text-xs font-semibold transition">Тренд</button>
         </div>
       </div>
       <p class="text-[11px] text-muted mt-1 leading-relaxed truncate" id="txt-recovery-sub"></p>
       <!-- c123: insights strip — readiness + advice chips (recovery mode only) -->
       <div id="recp-insights" class="hidden mt-2"></div>
       <div class="mt-2 flex flex-col sm:flex-row gap-3">
-        <div class="shrink-0 flex flex-col items-center mx-auto">
+        <div id="recp-svg-col" class="shrink-0 flex flex-col items-center mx-auto">
           <div class="flex gap-1 mb-2" id="recp-view-tabs">
             <button data-recp-view="front" class="recp-tab px-2 py-1 text-[10px] font-semibold transition">Спереди</button>
             <button data-recp-view="back" class="recp-tab px-2 py-1 text-[10px] font-semibold transition">Сзади</button>
@@ -2527,6 +2528,14 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
           <div id="recp-legend" class="mt-2 text-[10px] text-muted text-center leading-snug"></div>
         </div>
         <div class="flex-1 min-w-0">
+          <!-- c124: trend window switch + sparkline legend (trend mode only) -->
+          <div id="recp-trend-head" class="hidden mb-2 flex items-center gap-2 flex-wrap">
+            <div class="flex gap-1 bg-[rgb(var(--c-surface-2))] border border-border rounded-lg p-0.5">
+              <button data-recp-range="14" class="recp-tab px-2 py-1 text-[10px] font-semibold transition">14 дней</button>
+              <button data-recp-range="30" class="recp-tab px-2 py-1 text-[10px] font-semibold transition">30 дней</button>
+            </div>
+            <span id="recp-trend-legend" class="text-[10px] text-muted"></span>
+          </div>
           <div id="recp-muscle-list" class="space-y-1.5"></div>
         </div>
       </div>
@@ -2617,7 +2626,7 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
       navWorkouts:'Тренировки',navNutrition:'Питание',navAnalytics:'Аналитика',navRecovery:'Восстановление',
       wunitExTitle:'Единица веса упражнения',wunitApplyAll:'Применить ко всем упражнениям тренировки',wunitDefaultTitle:'Единица веса по умолчанию (для новых упражнений)',
       recTitle:'Карта восстановления',
-mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMode30d:'Объём 30д',mapViewFront:'Спереди',mapViewBack:'Сзади',mapViewSide:'Сбоку',mapRecLabel:'Восстановление',mapLastTrained:'Последняя тренировка',mapUntrained:'Не тренирован',mapToday:'Сегодня',mapAgo:'назад',mapWorkouts:'тренировок',mapMuscles:'мышц',mapLoading:'Загрузка…',mapLegendRec:'🟢 Восстановлен · 🟡 Восстанавливается · 🔴 Утомлён · ⚪ Не тренирован',mapLegend7d:'Объём за 7 дней (кг)',mapLegend30d:'Объём за 30 дней (кг)',mapHint:'Модель v2: усталость = повторы × вес (кг) × уровень тяжести (RPE) относительно вашего личного потолка. Нет веса — средний ваш или вес тела. Синергисты 30%. Спад ~3 дня (личный).',mapReadiness:'Готовность к тренировке',mapAdvTrain:'Можно грузить',mapAdvModerate:'Умеренно',mapAdvReduce:'Снизить объём',mapAdvRest:'Отдых',mapAdvDormant:'Включить в план',mapSetsWeek:'сет/нед',mapSetsLow:'ниже цели 10–20',mapSetsOk:'в цели 10–20',mapSetsHigh:'выше цели 10–20',daysShort:'д',
+mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMode30d:'Объём 30д',mapViewFront:'Спереди',mapViewBack:'Сзади',mapViewSide:'Сбоку',mapRecLabel:'Восстановление',mapLastTrained:'Последняя тренировка',mapUntrained:'Не тренирован',mapToday:'Сегодня',mapAgo:'назад',mapWorkouts:'тренировок',mapMuscles:'мышц',mapLoading:'Загрузка…',mapLegendRec:'🟢 Восстановлен · 🟡 Восстанавливается · 🔴 Утомлён · ⚪ Не тренирован',mapLegend7d:'Объём за 7 дней (кг)',mapLegend30d:'Объём за 30 дней (кг)',mapHint:'Модель v2: усталость = повторы × вес (кг) × уровень тяжести (RPE) относительно вашего личного потолка. Нет веса — средний ваш или вес тела. Синергисты 30%. Спад ~3 дня (личный).',mapReadiness:'Готовность к тренировке',mapAdvTrain:'Можно грузить',mapAdvModerate:'Умеренно',mapAdvReduce:'Снизить объём',mapAdvRest:'Отдых',mapAdvDormant:'Включить в план',mapSetsWeek:'сет/нед',mapSetsLow:'ниже цели 10–20',mapSetsOk:'в цели 10–20',mapSetsHigh:'выше цели 10–20',mapModeTrend:'Тренд',mapTrend14:'14 дней',mapTrend30:'30 дней',mapTrendLegendLoad:'нагрузка/день',mapTrendLegendRec:'восстановление',mapTrendNoData:'Нет данных за период',daysShort:'д',
       aTitle:'Личная аналитика',aRangeWeek:'Неделя',aRangeMonth:'Месяц',aRangeAll:'Всё',
       mWorkouts:'Тренировки',mActiveDays:'Активные дни',mStreak:'Серия',mVolume:'Объём',
       aTotal:'всего',aInRange:'за период',aDaysInRow:'дн. подряд',aNoStreak:'начните сегодня!',aMinutes:'мин',
@@ -2666,7 +2675,7 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       navWorkouts:'Workouts',navNutrition:'Nutrition',navAnalytics:'Analytics',navRecovery:'Recovery',
       wunitExTitle:'Weight unit of this exercise',wunitApplyAll:'Apply to all exercises of this workout',wunitDefaultTitle:'Default unit for new exercises',
       recTitle:'Recovery map',
-mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:'Front',mapViewBack:'Back',mapViewSide:'Side',mapRecLabel:'Recovery',mapLastTrained:'Last trained',mapUntrained:'Not trained yet',mapToday:'Today',mapAgo:'ago',mapWorkouts:'workouts',mapMuscles:'muscles',mapLoading:'Loading…',mapLegendRec:'🟢 Fresh · 🟡 Recovering · 🔴 Fatigued · ⚪ Untrained',mapLegend7d:'7-day volume (kg)',mapLegend30d:'30-day volume (kg)',mapHint:'v2 model: fatigue = reps × weight (kg) × effort (RPE) vs your personal capacity. No weight? Your exercise average or body weight is used. Synergists 30%. ~3-day personal decay.',mapReadiness:'Training readiness',mapAdvTrain:'Ready to train',mapAdvModerate:'Moderate',mapAdvReduce:'Reduce volume',mapAdvRest:'Rest',mapAdvDormant:'Add to plan',mapSetsWeek:'sets/wk',mapSetsLow:'below 10–20 target',mapSetsOk:'in 10–20 target',mapSetsHigh:'above 10–20 target',daysShort:'d',
+mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:'Front',mapViewBack:'Back',mapViewSide:'Side',mapRecLabel:'Recovery',mapLastTrained:'Last trained',mapUntrained:'Not trained yet',mapToday:'Today',mapAgo:'ago',mapWorkouts:'workouts',mapMuscles:'muscles',mapLoading:'Loading…',mapLegendRec:'🟢 Fresh · 🟡 Recovering · 🔴 Fatigued · ⚪ Untrained',mapLegend7d:'7-day volume (kg)',mapLegend30d:'30-day volume (kg)',mapHint:'v2 model: fatigue = reps × weight (kg) × effort (RPE) vs your personal capacity. No weight? Your exercise average or body weight is used. Synergists 30%. ~3-day personal decay.',mapReadiness:'Training readiness',mapAdvTrain:'Ready to train',mapAdvModerate:'Moderate',mapAdvReduce:'Reduce volume',mapAdvRest:'Rest',mapAdvDormant:'Add to plan',mapSetsWeek:'sets/wk',mapSetsLow:'below 10–20 target',mapSetsOk:'in 10–20 target',mapSetsHigh:'above 10–20 target',mapModeTrend:'Trend',mapTrend14:'14 days',mapTrend30:'30 days',mapTrendLegendLoad:'load/day',mapTrendLegendRec:'recovery',mapTrendNoData:'No data for this period',daysShort:'d',
       aTitle:'My Analytics',aRangeWeek:'Week',aRangeMonth:'Month',aRangeAll:'All',
       mWorkouts:'Workouts',mActiveDays:'Active days',mStreak:'Streak',mVolume:'Volume',
       aTotal:'total',aInRange:'in range',aDaysInRow:'days streak',aNoStreak:'start today!',aMinutes:'min',
@@ -2715,7 +2724,7 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       navWorkouts:'אימונים',navNutrition:'תזונה',navAnalytics:'אנליטיקה',navRecovery:'התאוששות', /* c99: physical recovery, not data restore */
       wunitExTitle:'יחידת משקל לתרגיל זה',wunitApplyAll:'החל על כל התרגילים באימון',wunitDefaultTitle:'יחידת משקל כברירת מחדל (לתרגילים חדשים)',
       recTitle:'מפת התאוששות',
-mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נפח 30 ימים',mapViewFront:'קדמי',mapViewBack:'אחורי',mapViewSide:'צד',mapRecLabel:'התאוששות',mapLastTrained:'אימון אחרון',mapUntrained:'טרם אומן',mapToday:'היום',mapAgo:'לפני',mapWorkouts:'אימונים',mapMuscles:'שרירים',mapLoading:'טוען…',mapLegendRec:'🟢 מחלים · 🟡 בהחלמה · 🔴 עייף · ⚪ לא מאומן',mapLegend7d:'נפח 7 ימים (ק״ג)',mapLegend30d:'נפח 30 ימים (ק״ג)',mapHint:'מודל v2: עייפות = חזרות × משקל (ק״ג) × מאמץ (RPE) מול הקיבולת האישית. אין משקל? הממוצע שלך בתרגיל או משקל גוף. שרירי עזר 30%. דעיכה אישית ~3 ימים.',mapReadiness:'מוכנות לאימון',mapAdvTrain:'מוכן לאימון',mapAdvModerate:'בינוני',mapAdvReduce:'הפחת נפח',mapAdvRest:'מנוחה',mapAdvDormant:'לשלב בתוכנית',mapSetsWeek:'סטים/שבוע',mapSetsLow:'מתחת ליעד 10–20',mapSetsOk:'ביעד 10–20',mapSetsHigh:'מעל היעד 10–20',daysShort:'ימ׳',
+mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נפח 30 ימים',mapViewFront:'קדמי',mapViewBack:'אחורי',mapViewSide:'צד',mapRecLabel:'התאוששות',mapLastTrained:'אימון אחרון',mapUntrained:'טרם אומן',mapToday:'היום',mapAgo:'לפני',mapWorkouts:'אימונים',mapMuscles:'שרירים',mapLoading:'טוען…',mapLegendRec:'🟢 מחלים · 🟡 בהחלמה · 🔴 עייף · ⚪ לא מאומן',mapLegend7d:'נפח 7 ימים (ק״ג)',mapLegend30d:'נפח 30 ימים (ק״ג)',mapHint:'מודל v2: עייפות = חזרות × משקל (ק״ג) × מאמץ (RPE) מול הקיבולת האישית. אין משקל? הממוצע שלך בתרגיל או משקל גוף. שרירי עזר 30%. דעיכה אישית ~3 ימים.',mapReadiness:'מוכנות לאימון',mapAdvTrain:'מוכן לאימון',mapAdvModerate:'בינוני',mapAdvReduce:'הפחת נפח',mapAdvRest:'מנוחה',mapAdvDormant:'לשלב בתוכנית',mapSetsWeek:'סטים/שבוע',mapSetsLow:'מתחת ליעד 10–20',mapSetsOk:'ביעד 10–20',mapSetsHigh:'מעל היעד 10–20',mapModeTrend:'מגמה',mapTrend14:'14 יום',mapTrend30:'30 יום',mapTrendLegendLoad:'עומס/יום',mapTrendLegendRec:'התאוששות',mapTrendNoData:'אין נתונים לתקופה',daysShort:'ימ׳',
       aTitle:'האנליטיקה שלי',aRangeWeek:'שבוע',aRangeMonth:'חודש',aRangeAll:'הכול',
       mWorkouts:'אימונים',mActiveDays:'ימים פעילים',mStreak:'רצף',mVolume:'נפח',
       aTotal:'בסך הכול',aInRange:'בתקופה',aDaysInRow:'ימים ברצף',aNoStreak:'התחילו היום!',aMinutes:'דק׳',
@@ -3682,6 +3691,9 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   };
   const RECP_TAU_DAYS = 3.0, RECP_SYN_CREDIT = 0.30, RECP_MS_DAY = 86400000;
   let _recpData = null, _recpCount = 0, _recpMode = 'recovery', _recpView = 'front';
+  /* c124: trend state — 14/30-day window + per-days cache of engine.trend() */
+  let _recpTrendDays = 14;
+  const _recpTrendCache = {};
   let _recpLastFetchTry = 0; /* c99: one-shot self-heal fetch throttle */
   function recpCanonical(name) {
     if (!name) return null;
@@ -3725,6 +3737,15 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
      body weight × pattern, missing weights via the client's own averages.
      Portal body weight: the latest check-in weight → 75 kg default.
      The legacy inline accumulator below stays as a FALLBACK only. */
+  /* c124: shared engine resolver — the exact recpExInfo order, used by BOTH
+     recpCompute (map modes) and recpTrendCompute (trend mode) */
+  function recpResolveEx(ex) {
+    const info = recpExInfo(ex.key, ex);
+    if (!info || !info.group || RECP_GROUPS.indexOf(info.group) === -1) return null;
+    const exd = exerciseDB[ex.key] || exerciseDB[String(ex.key)] || null;
+    return { group: info.group, synergists: info.synergists || [],
+             names: [ex.name, exd && exd.name], equipment: exd && exd.equipment };
+  }
   function recpCompute() {
     try {
       if (window.dkRecoveryEngine) {
@@ -3742,18 +3763,37 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
           workouts: hist,
           bodyWeightKg: bw,
           now: Date.now(),
-          resolveEx: function (ex) {
-            const info = recpExInfo(ex.key, ex);
-            if (!info || !info.group || RECP_GROUPS.indexOf(info.group) === -1) return null;
-            const exd = exerciseDB[ex.key] || exerciseDB[String(ex.key)] || null;
-            return { group: info.group, synergists: info.synergists || [],
-                     names: [ex.name, exd && exd.name], equipment: exd && exd.equipment };
-          }
+          resolveEx: recpResolveEx
         });
         return res.groups;
       }
     } catch (e) { console.warn('[recovery] portal engine v2 failed → legacy model:', e); }
     return recpComputeLegacy();
+  }
+  /* c124: per-muscle daily series for the «Тренд» sparklines (14/30 days).
+     Same engine call shape as recpCompute (same resolver, same check-in
+     body weight) → the sparkline can never disagree with the map. */
+  function recpTrendCompute(days) {
+    try {
+      if (!window.dkRecoveryEngine || typeof window.dkRecoveryEngine.trend !== 'function') return null;
+      const hist = loadHistory();
+      if (!hist || !hist.length) return null;
+      let bw = 75;
+      try {
+        const cks = (typeof loadCheckins === 'function' ? loadCheckins() : [])
+          .filter(function (c) { return Number(c && c.weight) > 0; })
+          .sort(function (a, b) { return (Number(b.ts) || 0) - (Number(a.ts) || 0); });
+        const w0 = cks.length ? Number(cks[0].weight) : 0;
+        if (w0 > 30 && w0 < 300) bw = w0;
+      } catch (e) {}
+      return window.dkRecoveryEngine.trend({
+        workouts: hist,
+        bodyWeightKg: bw,
+        now: Date.now(),
+        days: days,
+        resolveEx: recpResolveEx
+      });
+    } catch (e) { console.warn('[recovery] portal trend failed:', e); return null; }
   }
   function recpComputeLegacy() {
     const hist = loadHistory();
@@ -3821,7 +3861,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   }
   function recpRenderBody() {
     const box = document.getElementById('recp-svg-container');
-    if (!box) return;
+    if (!box || _recpMode === 'trend') return; /* c124: sparklines replace the body map */
     box.innerHTML = _recpView === 'front' ? (window.BM_SVG_FRONT || '') : _recpView === 'back' ? (window.BM_SVG_BACK || '') : (window.BM_SVG_SIDE || '');
     if (!_recpData) return;
     let maxV = 0;
@@ -3861,6 +3901,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   function recpRenderList() {
     const list = document.getElementById('recp-muscle-list');
     if (!list || !_recpData) return;
+    if (_recpMode === 'trend') { recpRenderTrendList(); return; } /* c124 */
     const sorted = RECP_GROUPS.slice().sort((a, b) => {
       const da = _recpData[a].lastTrainedDaysAgo, db = _recpData[b].lastTrainedDaysAgo;
       if (da == null && db == null) return 0;
@@ -3916,7 +3957,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   }
   function recpRenderLegend() {
     const el = document.getElementById('recp-legend');
-    if (el) el.innerHTML = esc(_recpMode === 'recovery' ? t('mapLegendRec') : _recpMode === '7d' ? t('mapLegend7d') : t('mapLegend30d'));
+    if (el) el.innerHTML = esc(_recpMode === 'recovery' ? t('mapLegendRec') : _recpMode === '7d' ? t('mapLegend7d') : _recpMode === '30d' ? t('mapLegend30d') : t('mapLegendRec'));
     const hint = document.getElementById('recp-hint');
     if (hint) hint.textContent = t('mapHint');
   }
@@ -3936,10 +3977,15 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
        (incl. setLang → renderRecMap(true)) — they used to be hardcoded RU and
        stayed Russian after a language switch, which read as “some parts
        translate later than others” */
-    const MT = { recovery: 'mapModeRecovery', '7d': 'mapMode7d', '30d': 'mapMode30d' };
+    const MT = { recovery: 'mapModeRecovery', '7d': 'mapMode7d', '30d': 'mapMode30d', trend: 'mapModeTrend' };
     document.querySelectorAll('#recp-mode-tabs [data-recp-mode]').forEach(b => {
       b.classList.toggle('recp-on', b.getAttribute('data-recp-mode') === _recpMode);
       const k = MT[b.getAttribute('data-recp-mode')]; if (k) b.textContent = t(k);
+    });
+    /* c124: trend window tabs (14/30) */
+    document.querySelectorAll('#recp-trend-head [data-recp-range]').forEach(b => {
+      b.classList.toggle('recp-on', +b.getAttribute('data-recp-range') === _recpTrendDays);
+      b.textContent = t(+b.getAttribute('data-recp-range') === 30 ? 'mapTrend30' : 'mapTrend14');
     });
     const VT = { front: 'mapViewFront', back: 'mapViewBack', side: 'mapViewSide' };
     document.querySelectorAll('#recp-view-tabs [data-recp-view]').forEach(b => {
@@ -4001,7 +4047,74 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     if (chips) ready += '<div class="flex items-center gap-1 flex-wrap">' + chips + '</div>';
     el.innerHTML = ready;
   }
-  function recpRenderAll() { recpUpdateTabs(); recpRenderBody(); recpRenderList(); recpRenderLegend(); recpRenderSub(); recpRenderInsights(); }
+  /* c124: trend window switch + sparkline legend (trend mode only) */
+  function recpRenderChrome() {
+    const trend = _recpMode === 'trend';
+    const col = document.getElementById('recp-svg-col');
+    if (col) col.classList.toggle('hidden', trend);
+    const head = document.getElementById('recp-trend-head');
+    if (head) head.classList.toggle('hidden', !trend);
+    const ins = document.getElementById('recp-insights');
+    if (ins && trend) { ins.classList.add('hidden'); ins.innerHTML = ''; }
+  }
+  function recpTrendLegendRender() {
+    const el = document.getElementById('recp-trend-legend');
+    if (!el) return;
+    el.innerHTML = '<span class="inline-block w-2 h-2 rounded-sm align-[-1px] me-1" style="background:rgba(59,130,246,0.5)"></span>' + esc(t('mapTrendLegendLoad')) +
+      ' &nbsp;·&nbsp; <span class="inline-block w-3 h-0.5 rounded-full align-[-1px] mx-0.5" style="background:rgb(var(--c-success))"></span>' + esc(t('mapTrendLegendRec'));
+  }
+  /* c124: the «Тренд» list — one sparkline row per muscle, drawn by the SAME
+     engine's sparkSVG as the trainer modal (byte-identical charts) */
+  function recpRenderTrendList() {
+    const list = document.getElementById('recp-muscle-list');
+    if (!list || !_recpData) return;
+    let trendRes = _recpTrendCache[_recpTrendDays];
+    if (!trendRes) {
+      trendRes = recpTrendCompute(_recpTrendDays);
+      _recpTrendCache[_recpTrendDays] = trendRes || { groups: null, meta: { empty: true } };
+      trendRes = _recpTrendCache[_recpTrendDays];
+    }
+    const eng = window.dkRecoveryEngine;
+    if (!trendRes.groups || !eng || typeof eng.sparkSVG !== 'function') {
+      list.innerHTML = '<div class="text-center text-xs text-muted py-8">' + esc(t('mapTrendNoData')) + '</div>';
+      return;
+    }
+    const sorted = RECP_GROUPS.slice().sort((a, b) => {
+      const da = _recpData[a].lastTrainedDaysAgo, db = _recpData[b].lastTrainedDaysAgo;
+      if (da == null && db == null) return 0;
+      if (da == null) return 1;
+      if (db == null) return -1;
+      return da - db;
+    });
+    let html = '';
+    sorted.forEach(g => {
+      const info = _recpData[g];
+      const lbl = (RECP_LABELS[g] && RECP_LABELS[g][currentLang]) || g;
+      let when;
+      if (info.lastTrainedDaysAgo === null) when = t('mapUntrained');
+      else if (info.lastTrainedDaysAgo < 1) when = t('mapToday');
+      else when = recpDaysStr(info.lastTrainedDaysAgo);
+      const tr = trendRes.groups[g];
+      const daily = (tr && Array.isArray(tr.daily)) ? tr.daily : [];
+      const svg = eng.sparkSVG(daily);
+      let tip = lbl + ' · ' + t('mapRecLabel') + ': ' + info.recovery + '%';
+      if (daily.length) {
+        let peak = daily[0];
+        daily.forEach(p => { if (p.load > peak.load) peak = p; });
+        if (peak.load > 0) tip += '\n' + t('mapTrendLegendLoad') + ' max: ' + Math.round(peak.load);
+      }
+      html += '<div class="recp-muscle-row recp-st-' + info.status + '" title="' + esc(tip) + '">' +
+        '<div class="flex items-center gap-2 mb-1">' +
+          '<span class="text-xs font-bold flex-1 truncate text-text">' + esc(lbl) + '</span>' +
+          '<span class="text-[10px] text-muted shrink-0">' + esc(when) + '</span>' +
+          '<span class="text-xs font-mono font-bold shrink-0 text-text" style="min-width:64px;text-align:end">' + info.recovery + '%</span>' +
+        '</div>' +
+        '<div class="recp-trend-spark">' + svg + '</div>' +
+      '</div>';
+    });
+    list.innerHTML = html;
+  }
+  function recpRenderAll() { recpUpdateTabs(); recpRenderChrome(); recpRenderBody(); recpRenderList(); recpRenderLegend(); recpRenderSub(); recpRenderInsights(); if (_recpMode === 'trend') recpTrendLegendRender(); }
   function renderRecMap(useCache) {
     const probe = document.getElementById('recp-muscle-list');
     if (!probe) return;
@@ -4022,6 +4135,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   (function recpWire() {
     document.querySelectorAll('#recp-mode-tabs [data-recp-mode]').forEach(b => b.addEventListener('click', () => { _recpMode = b.getAttribute('data-recp-mode'); recpRenderAll(); }));
     document.querySelectorAll('#recp-view-tabs [data-recp-view]').forEach(b => b.addEventListener('click', () => { _recpView = b.getAttribute('data-recp-view'); recpUpdateTabs(); recpRenderBody(); }));
+    /* c124: trend window (14/30 days) */
+    document.querySelectorAll('#recp-trend-head [data-recp-range]').forEach(b => b.addEventListener('click', () => { _recpTrendDays = +b.getAttribute('data-recp-range') || 14; recpRenderAll(); }));
   })();
   window.dkPortalRecMap = {
     render: renderRecMap,
