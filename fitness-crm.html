@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c121" />
+<meta name="dk-build" content="c122" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -54,6 +54,8 @@
   <link rel="stylesheet" href="src/input.css" />
   <!-- i18n dictionaries as bundled ES module (executes before DOMContentLoaded) -->
   <script type="module" src="src/i18n.js"></script>
+  <!-- c122: shared recovery engine v2 — ONE model for the trainer map AND the portal map -->
+  <script type="module" src="src/recovery-engine.js"></script>
   <!-- Local QR generation (privacy: no third-party QR services) -->
   <script src="vendor/qrcode.min.js"></script>
 
@@ -2845,7 +2847,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c121</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c122</p>
             </div>
           </div>
 
@@ -19074,10 +19076,50 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         if (ex) {
           exCache[id] = {
             group: ex.group_canonical || canonicalGroup(ex.group_en) || ex.group_en,
-            synergists: (ex.synergist_muscles || []).map(s => canonicalGroup(s) || s).filter(Boolean)
+            synergists: (ex.synergist_muscles || []).map(s => canonicalGroup(s) || s).filter(Boolean),
+            /* c122: for the engine's bodyweight-pattern detection */
+            name_en: ex.name_en || ex.name || '',
+            equipment_type: ex.equipment_type || ''
           };
         }
       }));
+
+      /* c122: RECOVERY ENGINE v2 — the shared model (src/recovery-engine.js):
+         load = reps × weight (kg, lb converted) × intensity (per-set RPE or
+         reps-estimated) relative to the client's own 90-day capacity;
+         bodyweight movements valued via body weight × pattern fraction;
+         missing weights fall back to the client's own exercise/group averages.
+         ONE engine for the trainer map AND the portal map — the two can no
+         longer diverge. The inline c98 accumulation below is now only a
+         FALLBACK for the rare case the engine module failed to load. */
+      try {
+        if (window.dkRecoveryEngine) {
+          let bw122 = 75;
+          try {
+            const cw122 = await db.get('clients', clientId);
+            const wv122 = parseFloat(cw122 && cw122.weight);
+            if (wv122 > 30 && wv122 < 300) bw122 = wv122;
+          } catch (_) {}
+          const res122 = window.dkRecoveryEngine.compute({
+            workouts: workouts,
+            bodyWeightKg: bw122,
+            now: Date.now(),
+            resolveEx: (ex) => {
+              const c122 = (ex.exercise_id && exCache[ex.exercise_id]) || null;
+              if (c122 && c122.group) {
+                return { group: c122.group, synergists: c122.synergists,
+                         names: [ex.name, c122.name_en], equipment: c122.equipment_type };
+              }
+              const g122 = canonicalGroup(ex.muscle_group) || canonicalGroup(ex.group) || ex.group;
+              if (!g122) return null;
+              return { group: g122, synergists: [], names: [ex.name], equipment: ex.equipment };
+            }
+          });
+          return res122.groups;
+        }
+      } catch (e122) {
+        console.warn('[recovery] engine v2 failed → legacy time-based model:', e122);
+      }
 
       // Accumulate volume per (muscle, day-bucket)
       // day bucket = floor(date / MS_PER_DAY) — so all workouts on the same calendar day merge
@@ -30611,7 +30653,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 121; /* numeric part of dk-build c121 */
+  var RUNNING = 122; /* numeric part of dk-build c122 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

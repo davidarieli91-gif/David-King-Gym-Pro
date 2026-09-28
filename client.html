@@ -37,6 +37,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
   <script type="module" src="src/muscle-map.js"></script>
+  <!-- c122: shared recovery engine v2 — ONE model for the portal map AND the trainer's map -->
+  <script type="module" src="src/recovery-engine.js"></script>
   <style>
     :root {
       --font-sans: 'Inter', system-ui, sans-serif;
@@ -2613,7 +2615,7 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
       navWorkouts:'Тренировки',navNutrition:'Питание',navAnalytics:'Аналитика',navRecovery:'Восстановление',
       wunitExTitle:'Единица веса упражнения',wunitApplyAll:'Применить ко всем упражнениям тренировки',wunitDefaultTitle:'Единица веса по умолчанию (для новых упражнений)',
       recTitle:'Карта восстановления',
-mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMode30d:'Объём 30д',mapViewFront:'Спереди',mapViewBack:'Сзади',mapViewSide:'Сбоку',mapRecLabel:'Восстановление',mapLastTrained:'Последняя тренировка',mapUntrained:'Не тренирован',mapToday:'Сегодня',mapAgo:'назад',mapWorkouts:'тренировок',mapMuscles:'мышц',mapLoading:'Загрузка…',mapLegendRec:'🟢 Восстановлен · 🟡 Восстанавливается · 🔴 Утомлён · ⚪ Не тренирован',mapLegend7d:'Объём за 7 дней (кг)',mapLegend30d:'Объём за 30 дней (кг)',mapHint:'Модель восстановления: экспоненциальное затухание ~6 дней. Синергисты получают 30% усталости. Объём = подходы × повторения × вес выполненных подходов.',daysShort:'д',
+mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMode30d:'Объём 30д',mapViewFront:'Спереди',mapViewBack:'Сзади',mapViewSide:'Сбоку',mapRecLabel:'Восстановление',mapLastTrained:'Последняя тренировка',mapUntrained:'Не тренирован',mapToday:'Сегодня',mapAgo:'назад',mapWorkouts:'тренировок',mapMuscles:'мышц',mapLoading:'Загрузка…',mapLegendRec:'🟢 Восстановлен · 🟡 Восстанавливается · 🔴 Утомлён · ⚪ Не тренирован',mapLegend7d:'Объём за 7 дней (кг)',mapLegend30d:'Объём за 30 дней (кг)',mapHint:'Модель v2: усталость = повторы × вес (кг) × уровень тяжести (RPE) относительно вашего личного потолка. Нет веса — средний ваш или вес тела. Синергисты 30%. Спад ~3 дня (личный).',daysShort:'д',
       aTitle:'Личная аналитика',aRangeWeek:'Неделя',aRangeMonth:'Месяц',aRangeAll:'Всё',
       mWorkouts:'Тренировки',mActiveDays:'Активные дни',mStreak:'Серия',mVolume:'Объём',
       aTotal:'всего',aInRange:'за период',aDaysInRow:'дн. подряд',aNoStreak:'начните сегодня!',aMinutes:'мин',
@@ -2662,7 +2664,7 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       navWorkouts:'Workouts',navNutrition:'Nutrition',navAnalytics:'Analytics',navRecovery:'Recovery',
       wunitExTitle:'Weight unit of this exercise',wunitApplyAll:'Apply to all exercises of this workout',wunitDefaultTitle:'Default unit for new exercises',
       recTitle:'Recovery map',
-mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:'Front',mapViewBack:'Back',mapViewSide:'Side',mapRecLabel:'Recovery',mapLastTrained:'Last trained',mapUntrained:'Not trained yet',mapToday:'Today',mapAgo:'ago',mapWorkouts:'workouts',mapMuscles:'muscles',mapLoading:'Loading…',mapLegendRec:'🟢 Fresh · 🟡 Recovering · 🔴 Fatigued · ⚪ Untrained',mapLegend7d:'7-day volume (kg)',mapLegend30d:'30-day volume (kg)',mapHint:'Recovery model: ~6-day exponential decay. Synergist muscles receive 30% fatigue credit. Volume = sets × reps × weight for done sets only.',daysShort:'d',
+mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:'Front',mapViewBack:'Back',mapViewSide:'Side',mapRecLabel:'Recovery',mapLastTrained:'Last trained',mapUntrained:'Not trained yet',mapToday:'Today',mapAgo:'ago',mapWorkouts:'workouts',mapMuscles:'muscles',mapLoading:'Loading…',mapLegendRec:'🟢 Fresh · 🟡 Recovering · 🔴 Fatigued · ⚪ Untrained',mapLegend7d:'7-day volume (kg)',mapLegend30d:'30-day volume (kg)',mapHint:'v2 model: fatigue = reps × weight (kg) × effort (RPE) vs your personal capacity. No weight? Your exercise average or body weight is used. Synergists 30%. ~3-day personal decay.',daysShort:'d',
       aTitle:'My Analytics',aRangeWeek:'Week',aRangeMonth:'Month',aRangeAll:'All',
       mWorkouts:'Workouts',mActiveDays:'Active days',mStreak:'Streak',mVolume:'Volume',
       aTotal:'total',aInRange:'in range',aDaysInRow:'days streak',aNoStreak:'start today!',aMinutes:'min',
@@ -2711,7 +2713,7 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       navWorkouts:'אימונים',navNutrition:'תזונה',navAnalytics:'אנליטיקה',navRecovery:'התאוששות', /* c99: physical recovery, not data restore */
       wunitExTitle:'יחידת משקל לתרגיל זה',wunitApplyAll:'החל על כל התרגילים באימון',wunitDefaultTitle:'יחידת משקל כברירת מחדל (לתרגילים חדשים)',
       recTitle:'מפת התאוששות',
-mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נפח 30 ימים',mapViewFront:'קדמי',mapViewBack:'אחורי',mapViewSide:'צד',mapRecLabel:'התאוששות',mapLastTrained:'אימון אחרון',mapUntrained:'טרם אומן',mapToday:'היום',mapAgo:'לפני',mapWorkouts:'אימונים',mapMuscles:'שרירים',mapLoading:'טוען…',mapLegendRec:'🟢 מחלים · 🟡 בהחלמה · 🔴 עייף · ⚪ לא מאומן',mapLegend7d:'נפח 7 ימים (ק״ג)',mapLegend30d:'נפח 30 ימים (ק״ג)',mapHint:'מודל ההתאוששות: דעיכה אקספוננציאלית של ~6 ימים. שרירי עזר מקבלים 30% מהעייפות. נפח = סטים × חזרות × משקל של סטים שבוצעו.',daysShort:'ימ׳',
+mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נפח 30 ימים',mapViewFront:'קדמי',mapViewBack:'אחורי',mapViewSide:'צד',mapRecLabel:'התאוששות',mapLastTrained:'אימון אחרון',mapUntrained:'טרם אומן',mapToday:'היום',mapAgo:'לפני',mapWorkouts:'אימונים',mapMuscles:'שרירים',mapLoading:'טוען…',mapLegendRec:'🟢 מחלים · 🟡 בהחלמה · 🔴 עייף · ⚪ לא מאומן',mapLegend7d:'נפח 7 ימים (ק״ג)',mapLegend30d:'נפח 30 ימים (ק״ג)',mapHint:'מודל v2: עייפות = חזרות × משקל (ק״ג) × מאמץ (RPE) מול הקיבולת האישית. אין משקל? הממוצע שלך בתרגיל או משקל גוף. שרירי עזר 30%. דעיכה אישית ~3 ימים.',daysShort:'ימ׳',
       aTitle:'האנליטיקה שלי',aRangeWeek:'שבוע',aRangeMonth:'חודש',aRangeAll:'הכול',
       mWorkouts:'אימונים',mActiveDays:'ימים פעילים',mStreak:'רצף',mVolume:'נפח',
       aTotal:'בסך הכול',aInRange:'בתקופה',aDaysInRow:'ימים ברצף',aNoStreak:'התחילו היום!',aMinutes:'דק׳',
@@ -3714,7 +3716,44 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     }
     return null;
   }
+  /* c122: the computation moved into the SHARED engine (src/recovery-engine.js)
+     — identical numbers to the trainer's «Карта восстановления», the two maps
+     can no longer diverge. Personal model: load = reps × weight(kg) × RPE
+     vs the client's own 90-day capacity, bodyweight movements valued via
+     body weight × pattern, missing weights via the client's own averages.
+     Portal body weight: the latest check-in weight → 75 kg default.
+     The legacy inline accumulator below stays as a FALLBACK only. */
   function recpCompute() {
+    try {
+      if (window.dkRecoveryEngine) {
+        const hist = loadHistory();
+        _recpCount = hist.length;
+        let bw = 75;
+        try {
+          const cks = (typeof loadCheckins === 'function' ? loadCheckins() : [])
+            .filter(function (c) { return Number(c && c.weight) > 0; })
+            .sort(function (a, b) { return (Number(b.ts) || 0) - (Number(a.ts) || 0); });
+          const w0 = cks.length ? Number(cks[0].weight) : 0;
+          if (w0 > 30 && w0 < 300) bw = w0;
+        } catch (e) {}
+        const res = window.dkRecoveryEngine.compute({
+          workouts: hist,
+          bodyWeightKg: bw,
+          now: Date.now(),
+          resolveEx: function (ex) {
+            const info = recpExInfo(ex.key, ex);
+            if (!info || !info.group || RECP_GROUPS.indexOf(info.group) === -1) return null;
+            const exd = exerciseDB[ex.key] || exerciseDB[String(ex.key)] || null;
+            return { group: info.group, synergists: info.synergists || [],
+                     names: [ex.name, exd && exd.name], equipment: exd && exd.equipment };
+          }
+        });
+        return res.groups;
+      }
+    } catch (e) { console.warn('[recovery] portal engine v2 failed → legacy model:', e); }
+    return recpComputeLegacy();
+  }
+  function recpComputeLegacy() {
     const hist = loadHistory();
     _recpCount = hist.length;
     const now = Date.now(), dayNow = Math.floor(now / RECP_MS_DAY);
