@@ -2517,6 +2517,8 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
       <p class="text-[11px] text-muted mt-1 leading-relaxed truncate" id="txt-recovery-sub"></p>
       <!-- c123: insights strip — readiness + advice chips (recovery mode only) -->
       <div id="recp-insights" class="hidden mt-2"></div>
+      <!-- c125: personal strip — check-in weight source + optional energy τ modifier (all modes) -->
+      <div id="recp-personal" class="hidden mt-2 flex items-center gap-3 flex-wrap text-[10px] text-muted"></div>
       <div class="mt-2 flex flex-col sm:flex-row gap-3">
         <div id="recp-svg-col" class="shrink-0 flex flex-col items-center mx-auto">
           <div class="flex gap-1 mb-2" id="recp-view-tabs">
@@ -2626,7 +2628,7 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
       navWorkouts:'Тренировки',navNutrition:'Питание',navAnalytics:'Аналитика',navRecovery:'Восстановление',
       wunitExTitle:'Единица веса упражнения',wunitApplyAll:'Применить ко всем упражнениям тренировки',wunitDefaultTitle:'Единица веса по умолчанию (для новых упражнений)',
       recTitle:'Карта восстановления',
-mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMode30d:'Объём 30д',mapViewFront:'Спереди',mapViewBack:'Сзади',mapViewSide:'Сбоку',mapRecLabel:'Восстановление',mapLastTrained:'Последняя тренировка',mapUntrained:'Не тренирован',mapToday:'Сегодня',mapAgo:'назад',mapWorkouts:'тренировок',mapMuscles:'мышц',mapLoading:'Загрузка…',mapLegendRec:'🟢 Восстановлен · 🟡 Восстанавливается · 🔴 Утомлён · ⚪ Не тренирован',mapLegend7d:'Объём за 7 дней (кг)',mapLegend30d:'Объём за 30 дней (кг)',mapHint:'Модель v2: усталость = повторы × вес (кг) × уровень тяжести (RPE) относительно вашего личного потолка. Нет веса — средний ваш или вес тела. Синергисты 30%. Спад ~3 дня (личный).',mapReadiness:'Готовность к тренировке',mapAdvTrain:'Можно грузить',mapAdvModerate:'Умеренно',mapAdvReduce:'Снизить объём',mapAdvRest:'Отдых',mapAdvDormant:'Включить в план',mapSetsWeek:'сет/нед',mapSetsLow:'ниже цели 10–20',mapSetsOk:'в цели 10–20',mapSetsHigh:'выше цели 10–20',mapModeTrend:'Тренд',mapTrend14:'14 дней',mapTrend30:'30 дней',mapTrendLegendLoad:'нагрузка/день',mapTrendLegendRec:'восстановление',mapTrendNoData:'Нет данных за период',daysShort:'д',
+mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMode30d:'Объём 30д',mapViewFront:'Спереди',mapViewBack:'Сзади',mapViewSide:'Сбоку',mapRecLabel:'Восстановление',mapLastTrained:'Последняя тренировка',mapUntrained:'Не тренирован',mapToday:'Сегодня',mapAgo:'назад',mapWorkouts:'тренировок',mapMuscles:'мышц',mapLoading:'Загрузка…',mapLegendRec:'🟢 Восстановлен · 🟡 Восстанавливается · 🔴 Утомлён · ⚪ Не тренирован',mapLegend7d:'Объём за 7 дней (кг)',mapLegend30d:'Объём за 30 дней (кг)',mapHint:'Модель v2: усталость = повторы × вес (кг) × уровень тяжести (RPE) относительно вашего личного потолка. Нет веса — средний ваш или вес тела. Синергисты 30%. Спад ~3 дня (личный).',mapReadiness:'Готовность к тренировке',mapAdvTrain:'Можно грузить',mapAdvModerate:'Умеренно',mapAdvReduce:'Снизить объём',mapAdvRest:'Отдых',mapAdvDormant:'Включить в план',mapSetsWeek:'сет/нед',mapSetsLow:'ниже цели 10–20',mapSetsOk:'в цели 10–20',mapSetsHigh:'выше цели 10–20',mapModeTrend:'Тренд',mapTrend14:'14 дней',mapTrend30:'30 дней',mapTrendLegendLoad:'нагрузка/день',mapTrendLegendRec:'восстановление',mapTrendNoData:'Нет данных за период',mapBwCheckin:'чек-ин',mapBwProfile:'профиль',mapEnergyToggle:'Энергия',daysShort:'д',
       aTitle:'Личная аналитика',aRangeWeek:'Неделя',aRangeMonth:'Месяц',aRangeAll:'Всё',
       mWorkouts:'Тренировки',mActiveDays:'Активные дни',mStreak:'Серия',mVolume:'Объём',
       aTotal:'всего',aInRange:'за период',aDaysInRow:'дн. подряд',aNoStreak:'начните сегодня!',aMinutes:'мин',
@@ -2675,7 +2677,7 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       navWorkouts:'Workouts',navNutrition:'Nutrition',navAnalytics:'Analytics',navRecovery:'Recovery',
       wunitExTitle:'Weight unit of this exercise',wunitApplyAll:'Apply to all exercises of this workout',wunitDefaultTitle:'Default unit for new exercises',
       recTitle:'Recovery map',
-mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:'Front',mapViewBack:'Back',mapViewSide:'Side',mapRecLabel:'Recovery',mapLastTrained:'Last trained',mapUntrained:'Not trained yet',mapToday:'Today',mapAgo:'ago',mapWorkouts:'workouts',mapMuscles:'muscles',mapLoading:'Loading…',mapLegendRec:'🟢 Fresh · 🟡 Recovering · 🔴 Fatigued · ⚪ Untrained',mapLegend7d:'7-day volume (kg)',mapLegend30d:'30-day volume (kg)',mapHint:'v2 model: fatigue = reps × weight (kg) × effort (RPE) vs your personal capacity. No weight? Your exercise average or body weight is used. Synergists 30%. ~3-day personal decay.',mapReadiness:'Training readiness',mapAdvTrain:'Ready to train',mapAdvModerate:'Moderate',mapAdvReduce:'Reduce volume',mapAdvRest:'Rest',mapAdvDormant:'Add to plan',mapSetsWeek:'sets/wk',mapSetsLow:'below 10–20 target',mapSetsOk:'in 10–20 target',mapSetsHigh:'above 10–20 target',mapModeTrend:'Trend',mapTrend14:'14 days',mapTrend30:'30 days',mapTrendLegendLoad:'load/day',mapTrendLegendRec:'recovery',mapTrendNoData:'No data for this period',daysShort:'d',
+mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:'Front',mapViewBack:'Back',mapViewSide:'Side',mapRecLabel:'Recovery',mapLastTrained:'Last trained',mapUntrained:'Not trained yet',mapToday:'Today',mapAgo:'ago',mapWorkouts:'workouts',mapMuscles:'muscles',mapLoading:'Loading…',mapLegendRec:'🟢 Fresh · 🟡 Recovering · 🔴 Fatigued · ⚪ Untrained',mapLegend7d:'7-day volume (kg)',mapLegend30d:'30-day volume (kg)',mapHint:'v2 model: fatigue = reps × weight (kg) × effort (RPE) vs your personal capacity. No weight? Your exercise average or body weight is used. Synergists 30%. ~3-day personal decay.',mapReadiness:'Training readiness',mapAdvTrain:'Ready to train',mapAdvModerate:'Moderate',mapAdvReduce:'Reduce volume',mapAdvRest:'Rest',mapAdvDormant:'Add to plan',mapSetsWeek:'sets/wk',mapSetsLow:'below 10–20 target',mapSetsOk:'in 10–20 target',mapSetsHigh:'above 10–20 target',mapModeTrend:'Trend',mapTrend14:'14 days',mapTrend30:'30 days',mapTrendLegendLoad:'load/day',mapTrendLegendRec:'recovery',mapTrendNoData:'No data for this period',mapBwCheckin:'check-in',mapBwProfile:'profile',mapEnergyToggle:'Energy',daysShort:'d',
       aTitle:'My Analytics',aRangeWeek:'Week',aRangeMonth:'Month',aRangeAll:'All',
       mWorkouts:'Workouts',mActiveDays:'Active days',mStreak:'Streak',mVolume:'Volume',
       aTotal:'total',aInRange:'in range',aDaysInRow:'days streak',aNoStreak:'start today!',aMinutes:'min',
@@ -2724,7 +2726,7 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       navWorkouts:'אימונים',navNutrition:'תזונה',navAnalytics:'אנליטיקה',navRecovery:'התאוששות', /* c99: physical recovery, not data restore */
       wunitExTitle:'יחידת משקל לתרגיל זה',wunitApplyAll:'החל על כל התרגילים באימון',wunitDefaultTitle:'יחידת משקל כברירת מחדל (לתרגילים חדשים)',
       recTitle:'מפת התאוששות',
-mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נפח 30 ימים',mapViewFront:'קדמי',mapViewBack:'אחורי',mapViewSide:'צד',mapRecLabel:'התאוששות',mapLastTrained:'אימון אחרון',mapUntrained:'טרם אומן',mapToday:'היום',mapAgo:'לפני',mapWorkouts:'אימונים',mapMuscles:'שרירים',mapLoading:'טוען…',mapLegendRec:'🟢 מחלים · 🟡 בהחלמה · 🔴 עייף · ⚪ לא מאומן',mapLegend7d:'נפח 7 ימים (ק״ג)',mapLegend30d:'נפח 30 ימים (ק״ג)',mapHint:'מודל v2: עייפות = חזרות × משקל (ק״ג) × מאמץ (RPE) מול הקיבולת האישית. אין משקל? הממוצע שלך בתרגיל או משקל גוף. שרירי עזר 30%. דעיכה אישית ~3 ימים.',mapReadiness:'מוכנות לאימון',mapAdvTrain:'מוכן לאימון',mapAdvModerate:'בינוני',mapAdvReduce:'הפחת נפח',mapAdvRest:'מנוחה',mapAdvDormant:'לשלב בתוכנית',mapSetsWeek:'סטים/שבוע',mapSetsLow:'מתחת ליעד 10–20',mapSetsOk:'ביעד 10–20',mapSetsHigh:'מעל היעד 10–20',mapModeTrend:'מגמה',mapTrend14:'14 יום',mapTrend30:'30 יום',mapTrendLegendLoad:'עומס/יום',mapTrendLegendRec:'התאוששות',mapTrendNoData:'אין נתונים לתקופה',daysShort:'ימ׳',
+mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נפח 30 ימים',mapViewFront:'קדמי',mapViewBack:'אחורי',mapViewSide:'צד',mapRecLabel:'התאוששות',mapLastTrained:'אימון אחרון',mapUntrained:'טרם אומן',mapToday:'היום',mapAgo:'לפני',mapWorkouts:'אימונים',mapMuscles:'שרירים',mapLoading:'טוען…',mapLegendRec:'🟢 מחלים · 🟡 בהחלמה · 🔴 עייף · ⚪ לא מאומן',mapLegend7d:'נפח 7 ימים (ק״ג)',mapLegend30d:'נפח 30 ימים (ק״ג)',mapHint:'מודל v2: עייפות = חזרות × משקל (ק״ג) × מאמץ (RPE) מול הקיבולת האישית. אין משקל? הממוצע שלך בתרגיל או משקל גוף. שרירי עזר 30%. דעיכה אישית ~3 ימים.',mapReadiness:'מוכנות לאימון',mapAdvTrain:'מוכן לאימון',mapAdvModerate:'בינוני',mapAdvReduce:'הפחת נפח',mapAdvRest:'מנוחה',mapAdvDormant:'לשלב בתוכנית',mapSetsWeek:'סטים/שבוע',mapSetsLow:'מתחת ליעד 10–20',mapSetsOk:'ביעד 10–20',mapSetsHigh:'מעל היעד 10–20',mapModeTrend:'מגמה',mapTrend14:'14 יום',mapTrend30:'30 יום',mapTrendLegendLoad:'עומס/יום',mapTrendLegendRec:'התאוששות',mapTrendNoData:'אין נתונים לתקופה',mapBwCheckin:'צ׳ק-אין',mapBwProfile:'פרופיל',mapEnergyToggle:'אנרגיה',daysShort:'ימ׳',
       aTitle:'האנליטיקה שלי',aRangeWeek:'שבוע',aRangeMonth:'חודש',aRangeAll:'הכול',
       mWorkouts:'אימונים',mActiveDays:'ימים פעילים',mStreak:'רצף',mVolume:'נפח',
       aTotal:'בסך הכול',aInRange:'בתקופה',aDaysInRow:'ימים ברצף',aNoStreak:'התחילו היום!',aMinutes:'דק׳',
@@ -2842,6 +2844,9 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     checkDraft();
     /* c93: two-way history sync with the trainer CRM (cloud doc per share) */
     try { dkHistStart(); } catch (e) {}
+    /* c125: push local check-ins into the shared doc (additive `checks`:
+       ts/weight/energy ONLY) — idempotent, writes only what's missing */
+    try { dkPushChecks(); } catch (e) {}
   }
   function applyDemo() {
     currentClient = { full_name:'Демо Клиент', goal:'hypertrophy', weight:78.4, target_weight:84 };
@@ -3423,18 +3428,61 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       return Array.isArray(p.recs) ? p.recs : [];
     }).catch(function () { return null; });
   }
+  /* c125: raw payload read — recs AND the additive checks field. The trainer
+     preserves checks when IT writes workouts; the portal preserves recs when
+     IT writes checks — neither side can drop the other's data. */
+  function dkHistFetchPayload() {
+    const docId = dkHistDocId();
+    if (!docId) return Promise.resolve({ recs: [], checks: [] });
+    return dkHistRef(docId).then(function (ref) {
+      return ref.get({ source: 'server' });
+    }).then(function (snap) {
+      if (!snap || !snap.exists) return { recs: [], checks: [] };
+      const data = snap.data() || {};
+      if (!data.d) return { recs: [], checks: [] };
+      const p = JSON.parse(data.d);
+      return { recs: Array.isArray(p.recs) ? p.recs : [], checks: Array.isArray(p.checks) ? p.checks : [] };
+    }).catch(function () { return { recs: [], checks: [] }; });
+  }
   function dkHistPush(rec) {
     const docId = dkHistDocId();
     if (!docId || !rec) return Promise.resolve(false);
-    return dkHistFetch().then(function (remote) {
-      const recs = (Array.isArray(remote) ? remote : []).filter(r => r && Number(r.ts) !== Number(rec.ts));
+    return dkHistFetchPayload().then(function (pay) {
+      const recs = (pay.recs || []).filter(r => r && Number(r.ts) !== Number(rec.ts));
       recs.push(rec);
       recs.sort((a, b) => (a.ts || 0) - (b.ts || 0));
       return dkHistRef(docId).then(function (ref) {
-        return ref.set({ d: JSON.stringify({ recs: recs.slice(-200) }), v: 2, ts: Date.now() });
+        /* c125: recs + the untouched checks — additive, never dropped */
+        return ref.set({ d: JSON.stringify({ recs: recs.slice(-200), checks: pay.checks || [] }), v: 2, ts: Date.now() });
       });
     }).then(function () { return true; }).catch(function (e) { console.warn('[hist-sync] push failed', e); return false; });
   }
+  /* c125: push LOCAL check-ins into the shared doc's additive `checks` field.
+     ts/weight/energy ONLY — waist/hip/note never leave the portal. Merge by
+     ts, cap 90, write ONLY when something is actually missing (a cheap boot
+     no-op once everything is on the cloud). */
+  function dkPushChecks() {
+    const docId = dkHistDocId();
+    if (!docId) return Promise.resolve(false);
+    const mine = loadCheckins()
+      .filter(c => c && Number(c.ts) > 0 && Number(c.weight) > 0)
+      .map(c => ({ ts: Number(c.ts), date: c.date || '', weight: Number(c.weight),
+                   energy: isFinite(parseInt(c.energy, 10)) ? parseInt(c.energy, 10) : null }))
+      .sort((a, b) => a.ts - b.ts).slice(-90);
+    if (!mine.length) return Promise.resolve(false);
+    return dkHistFetchPayload().then(function (pay) {
+      const seen = new Set((pay.checks || []).map(c => Number(c && c.ts) || 0));
+      const add = mine.filter(c => !seen.has(c.ts));
+      if (!add.length) return true; /* cloud already has every check-in */
+      const checks = (pay.checks || []).concat(add).sort((a, b) => (a.ts || 0) - (b.ts || 0)).slice(-90);
+      return dkHistRef(docId).then(function (ref) {
+        return ref.set({ d: JSON.stringify({ recs: pay.recs || [], checks: checks }), v: 2, ts: Date.now() });
+      }).then(function () { console.info('[hist-sync] ' + add.length + ' check-in(s) synced to the shared doc'); return true; });
+    }).catch(function (e) { console.warn('[hist-sync] checks push failed', e); return false; });
+  }
+  /* c125: exposed like the trainer's dkPushClientHistory/dkSyncClientHistory —
+     one shared debug/integration surface for the check-in mirror */
+  window.dkPushChecks = dkPushChecks;
   function dkHistWatch() {
     const docId = dkHistDocId();
     if (!docId) return;
@@ -3473,6 +3521,9 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       note:document.getElementById('input-checkin-note').value.trim().slice(0,500) };
     const list = loadCheckins().filter(r=>r.date!==rec.date); list.push(rec);
     localStorage.setItem(nsKey('dk_checkins'), JSON.stringify(list.slice(-365)));
+    /* c125: mirror the check-in into the shared doc (weight+energy only) so
+       the trainer's recovery map uses the real body weight */
+    try { dkPushChecks(); } catch (e) {}
     st.textContent = t('checkinSaved'); st.className = 'text-[11px] text-center text-emerald-400 min-h-[1rem]';
     renderHistory();
     renderAnalytics();
@@ -3691,6 +3742,9 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   };
   const RECP_TAU_DAYS = 3.0, RECP_SYN_CREDIT = 0.30, RECP_MS_DAY = 86400000;
   let _recpData = null, _recpCount = 0, _recpMode = 'recovery', _recpView = 'front';
+  /* c125: personal context for the strip — body weight {bw,source,date,energy}
+     + the τ modifier the last engine run actually applied */
+  let _recpPers = null, _recpTauMod = null;
   /* c124: trend state — 14/30-day window + per-days cache of engine.trend() */
   let _recpTrendDays = 14;
   const _recpTrendCache = {};
@@ -3746,25 +3800,50 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     return { group: info.group, synergists: info.synergists || [],
              names: [ex.name, exd && exd.name], equipment: exd && exd.equipment };
   }
+  /* c125: the portal's body weight — the latest valid check-in (30..300 kg)
+     → 75 kg default. ONE helper for the map, the trend AND the strip so all
+     three can never disagree. energy = the latest check-in that HAS one. */
+  function recpBodyWeight() {
+    let bw = 75, source = 'default', date = '', energy = null;
+    try {
+      const cks = (typeof loadCheckins === 'function' ? loadCheckins() : [])
+        .filter(function (c) { return c && Number(c.ts) > 0 && Number(c.weight) > 0; })
+        .sort(function (a, b) { return (Number(a.ts) || 0) - (Number(b.ts) || 0); });
+      const last = cks.length ? cks[cks.length - 1] : null;
+      if (last && Number(last.weight) > 30 && Number(last.weight) < 300) {
+        bw = Number(last.weight); source = 'checkin'; date = last.date || '';
+      }
+      for (let i = cks.length - 1; i >= 0; i--) {
+        const ev = cks[i] && cks[i].energy;
+        if (ev != null && isFinite(ev)) { energy = ev; break; }
+      }
+    } catch (e) {}
+    return { bw: bw, source: source, date: date, energy: energy };
+  }
+  /* c125: the shared opt-in for the check-in-energy τ modifier — same
+     localStorage key as the trainer (a device-wide preference) */
+  function recpEnergyModOn() {
+    try { return localStorage.getItem('dk_rec_energy_mod') === '1'; } catch (e) { return false; }
+  }
+  function recpSetEnergyMod(v) {
+    try { if (v) localStorage.setItem('dk_rec_energy_mod', '1'); else localStorage.removeItem('dk_rec_energy_mod'); } catch (e) {}
+  }
   function recpCompute() {
     try {
       if (window.dkRecoveryEngine) {
         const hist = loadHistory();
         _recpCount = hist.length;
-        let bw = 75;
-        try {
-          const cks = (typeof loadCheckins === 'function' ? loadCheckins() : [])
-            .filter(function (c) { return Number(c && c.weight) > 0; })
-            .sort(function (a, b) { return (Number(b.ts) || 0) - (Number(a.ts) || 0); });
-          const w0 = cks.length ? Number(cks[0].weight) : 0;
-          if (w0 > 30 && w0 < 300) bw = w0;
-        } catch (e) {}
+        const pers125 = recpBodyWeight();
+        _recpPers = pers125;
         const res = window.dkRecoveryEngine.compute({
           workouts: hist,
-          bodyWeightKg: bw,
+          bodyWeightKg: pers125.bw,
           now: Date.now(),
+          energy: pers125.energy,             /* c125: latest check-in energy */
+          energyTauMod: recpEnergyModOn(),    /* c125: opt-in τ modifier */
           resolveEx: recpResolveEx
         });
+        _recpTauMod = res.meta.tauMod;
         return res.groups;
       }
     } catch (e) { console.warn('[recovery] portal engine v2 failed → legacy model:', e); }
@@ -3778,21 +3857,19 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       if (!window.dkRecoveryEngine || typeof window.dkRecoveryEngine.trend !== 'function') return null;
       const hist = loadHistory();
       if (!hist || !hist.length) return null;
-      let bw = 75;
-      try {
-        const cks = (typeof loadCheckins === 'function' ? loadCheckins() : [])
-          .filter(function (c) { return Number(c && c.weight) > 0; })
-          .sort(function (a, b) { return (Number(b.ts) || 0) - (Number(a.ts) || 0); });
-        const w0 = cks.length ? Number(cks[0].weight) : 0;
-        if (w0 > 30 && w0 < 300) bw = w0;
-      } catch (e) {}
-      return window.dkRecoveryEngine.trend({
+      const pers125 = recpBodyWeight();
+      _recpPers = pers125;
+      const res = window.dkRecoveryEngine.trend({
         workouts: hist,
-        bodyWeightKg: bw,
+        bodyWeightKg: pers125.bw,
         now: Date.now(),
         days: days,
+        energy: pers125.energy,             /* c125 */
+        energyTauMod: recpEnergyModOn(),    /* c125: opt-in τ modifier */
         resolveEx: recpResolveEx
       });
+      _recpTauMod = res.meta.tauMod;
+      return res;
     } catch (e) { console.warn('[recovery] portal trend failed:', e); return null; }
   }
   function recpComputeLegacy() {
@@ -4114,7 +4191,26 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     });
     list.innerHTML = html;
   }
-  function recpRenderAll() { recpUpdateTabs(); recpRenderChrome(); recpRenderBody(); recpRenderList(); recpRenderLegend(); recpRenderSub(); recpRenderInsights(); if (_recpMode === 'trend') recpTrendLegendRender(); }
+  /* c125: personal strip — the body-weight source (the portal always uses its
+     own check-ins) + the opt-in energy τ modifier toggle. All modes. */
+  function recpRenderPersonal() {
+    const el = document.getElementById('recp-personal');
+    if (!el) return;
+    const p = _recpPers || recpBodyWeight();
+    let html = '';
+    html += '<span>⚖️ <b class="text-text">' + p.bw + ' kg</b>' +
+      (p.source === 'checkin' ? ' · ' + esc(t('mapBwCheckin')) + (p.date ? ' ' + String(p.date).slice(5).replace('-', '.') : '') : '') + '</span>';
+    if (p.energy != null && isFinite(p.energy)) {
+      const on = recpEnergyModOn();
+      html += '<label class="inline-flex items-center gap-1.5 cursor-pointer select-none" style="margin-inline-start:auto" title="' + esc(t('mapEnergyToggle')) + '">' +
+        '<input type="checkbox" id="recp-energy-toggle" class="w-3.5 h-3.5 cursor-pointer" style="accent-color:rgb(var(--c-primary))"' + (on ? ' checked' : '') + '/>' +
+        '<span>⚡ ' + esc(t('mapEnergyToggle')) + ' ' + Math.round(p.energy) + '/10' +
+        (on && _recpTauMod ? ' · τ×' + _recpTauMod.toFixed(2) : '') + '</span></label>';
+    }
+    el.innerHTML = html;
+    el.classList.toggle('hidden', !html);
+  }
+  function recpRenderAll() { recpUpdateTabs(); recpRenderChrome(); recpRenderBody(); recpRenderList(); recpRenderLegend(); recpRenderSub(); recpRenderInsights(); recpRenderPersonal(); if (_recpMode === 'trend') recpTrendLegendRender(); }
   function renderRecMap(useCache) {
     const probe = document.getElementById('recp-muscle-list');
     if (!probe) return;
@@ -4137,6 +4233,17 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     document.querySelectorAll('#recp-view-tabs [data-recp-view]').forEach(b => b.addEventListener('click', () => { _recpView = b.getAttribute('data-recp-view'); recpUpdateTabs(); recpRenderBody(); }));
     /* c124: trend window (14/30 days) */
     document.querySelectorAll('#recp-trend-head [data-recp-range]').forEach(b => b.addEventListener('click', () => { _recpTrendDays = +b.getAttribute('data-recp-range') || 14; recpRenderAll(); }));
+    /* c125: the energy τ modifier toggle — delegated to the strip container
+       (the checkbox is rebuilt on every render); recompute is instant (local
+       history) and both the map and the trend cache refresh */
+    const persEl = document.getElementById('recp-personal');
+    if (persEl) persEl.addEventListener('change', (e) => {
+      if (!e.target || e.target.id !== 'recp-energy-toggle') return;
+      recpSetEnergyMod(!!e.target.checked);
+      _recpData = null;
+      Object.keys(_recpTrendCache).forEach(k => delete _recpTrendCache[k]);
+      renderRecMap();
+    });
   })();
   window.dkPortalRecMap = {
     render: renderRecMap,

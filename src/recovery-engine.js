@@ -44,10 +44,20 @@
    tauDays / fatigueNow. The legacy inline accumulators stay in both apps
    as a fallback for the (unlikely) case this module failed to load.
 
+   c125 — CHECK-IN WEIGHT + ENERGY: the trainer's map now uses the client's
+   latest portal check-in weight (synced additively through the shared ps_hist
+   cloud doc — ts/weight/energy ONLY, waist/hip/note stay local) and, when the
+   user opts in («⚡ Энергия», default OFF), the latest check-in energy 1–10
+   modulates the personal decay τ by ±10%: exhausted (1) → τ×1.1 (slower
+   recovery), fresh (10) → τ×0.9 (faster). cfg.energy + cfg.energyTauMod;
+   meta gains energy / tauMod (null when the modifier is off or unavailable).
+
    Public API:
-     dkRecoveryEngine.compute({ workouts, resolveEx, bodyWeightKg, now })
+     dkRecoveryEngine.compute({ workouts, resolveEx, bodyWeightKg, now,
+                                energy, energyTauMod })
        → { groups: { chest: {...}, ... },
-           meta: { bodyWeightKg, tauDays, capacitySource, groupsComputed } }
+           meta: { bodyWeightKg, tauDays, capacitySource, groupsComputed,
+                   energy, tauMod } }
        resolveEx(ex, workout) →
          { group, synergists[], names[], equipment? } | null   (sync)
    ============================================================================ */
@@ -63,6 +73,20 @@
   var CAPACITY_MIN_DAYS = 3;        // distinct load days before the personal capacity is trusted
   var FATIGUE_HORIZON_DAYS = 60;    // older days contribute ~0 (e^-20)
   var DAY_RATIO_CAP = 1.5;          // one day can never exceed 1.5 × capacity of fatigue
+  var ENERGY_TAU_SPAN = 0.2;        // c125: energy 1→10 shifts τ by +10%…−10%
+
+  /** c125: optional energy → τ modifier (default OFF — apps opt in).
+   *  energy 1 (exhausted) → ×1.1 (slower decay), 10 (fresh) → ×0.9.
+   *  @param {(number|null)} energy  check-in energy 1–10
+   *  @param {boolean} enabled        the user's opt-in flag
+   *  @returns {(number|null)} multiplier or null when disabled/unknown */
+  function energyTauMod(energy, enabled) {
+    if (!enabled) return null;
+    var e = parseFloat(energy);
+    if (!isFinite(e)) return null;
+    e = clamp(e, 1, 10);
+    return clamp(1.1 - (e - 1) * (ENERGY_TAU_SPAN / 9), 0.9, 1.1);
+  }
 
   // All canonical muscle groups — MUST match the trainer's ALL_GROUPS and
   // the portal's RECP_GROUPS (13 entries, same keys).
@@ -277,15 +301,20 @@
       });
     });
 
-    /* personal τ from the last 28 days' real training frequency */
+    /* personal τ from the last 28 days' real training frequency
+       (c125: × the optional check-in-energy modifier, default OFF) */
     var recentDays = 0;
     Object.keys(anyTrainingDays).forEach(function (b) {
       var d = dayNow - Number(b);
       if (d >= 0 && d < 28) recentDays++;
     });
     var tau = clamp(3.4 - 0.2 * (recentDays / 4), 2.5, 3.5);
+    var tauMod125 = energyTauMod(cfg && cfg.energy, cfg && cfg.energyTauMod);
+    if (tauMod125) tau = clamp(tau * tauMod125, 2.25, 3.85);
 
-    return { load: load, vol: vol, sets: sets, dayNow: dayNow, now: now, tau: tau, bodyWeight: bodyWeight };
+    return { load: load, vol: vol, sets: sets, dayNow: dayNow, now: now, tau: tau, bodyWeight: bodyWeight,
+             energy: (tauMod125 && isFinite(parseFloat(cfg.energy))) ? clamp(parseFloat(cfg.energy), 1, 10) : null,
+             tauMod: tauMod125 };
   }
 
   /**
@@ -365,7 +394,10 @@
         bodyWeightKg: bodyWeight,
         tauDays: Math.round(tau * 100) / 100,
         capacitySource: capacitySource,
-        groupsComputed: GROUPS.length
+        groupsComputed: GROUPS.length,
+        /* c125 additive */
+        energy: acc.energy,
+        tauMod: acc.tauMod
       }
     };
   }
@@ -411,7 +443,8 @@
       }
       out[g] = { daily: daily, capacity: Math.round(capacity * 10) / 10 };
     });
-    return { groups: out, meta: { bodyWeightKg: acc.bodyWeight, tauDays: Math.round(acc.tau * 100) / 100, days: days } };
+    return { groups: out, meta: { bodyWeightKg: acc.bodyWeight, tauDays: Math.round(acc.tau * 100) / 100, days: days,
+                                  energy: acc.energy, tauMod: acc.tauMod } };
   }
 
   /**

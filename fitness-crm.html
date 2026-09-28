@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c124" />
+<meta name="dk-build" content="c125" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2847,7 +2847,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c124</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c125</p>
             </div>
           </div>
 
@@ -3369,6 +3369,8 @@ button[id$="-close"]:active, button[data-cps-close]:active {
               </div>
               <!-- c123: Insights strip — readiness bar + advice chips (recovery mode only) -->
               <div id="rec-insights" class="hidden px-4 py-2 border-b border-border shrink-0"></div>
+              <!-- c125: personal strip — check-in weight source + optional energy τ modifier (all modes) -->
+              <div id="rec-personal" class="hidden px-4 py-1.5 border-b border-border shrink-0 flex items-center gap-3 flex-wrap text-[10px] text-muted"></div>
               <!-- Body: SVG + muscle breakdown -->
               <div class="flex-1 overflow-y-auto p-3 flex flex-col md:flex-row gap-3">
                 <!-- Left: SVG body (front/back/side tabs) — hidden in c124 trend mode -->
@@ -19034,7 +19036,16 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     let _trendDays = 14;
     let _trendCache = {};
     let _trendLoading = false;
-    let _ctx = null;         // { clientId, workouts, exCache, bw }
+    let _ctx = null;         // { clientId, workouts, exCache, bw, bwSource, energy } (c125)
+
+    /* c125: the optional check-in-energy τ modifier — a device-wide opt-in
+       (default OFF), shared by BOTH apps under one localStorage key */
+    function recEnergyModOn() {
+      try { return localStorage.getItem('dk_rec_energy_mod') === '1'; } catch (e) { return false; }
+    }
+    function recSetEnergyMod(v) {
+      try { if (v) localStorage.setItem('dk_rec_energy_mod', '1'); else localStorage.removeItem('dk_rec_energy_mod'); } catch (e) {}
+    }
 
     /** Look up an exercise in exercise_base by ID to get its canonical group + synergists. */
     async function lookupExercise(exerciseId) {
@@ -19100,20 +19111,35 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       if (_ctx && _ctx.clientId === clientId) return _ctx;
       // Load all workouts for this client
       let workouts = await db.find('workout_history', 'by_clientId', clientId);
+      /* c125: the profile body weight FIRST (fast IndexedDB read) — the
+         check-in weight fetched below overrides it when present */
+      let bw = 75, bwSource = 'default';
+      try {
+        const cw = await db.get('clients', clientId);
+        const wv = parseFloat(cw && cw.weight);
+        if (wv > 30 && wv < 300) { bw = wv; bwSource = 'profile'; }
+      } catch (_) {}
       /* c98: merge the trainee portal's cloud history (ps_hist_<hash>) so the
          trainer's map includes portal-logged sessions — identical &
          interconnected with the portal's own map (4s offline guard,
-         in-memory only, dedupe by date ts — the analytics pattern) */
+         in-memory only, dedupe by date ts — the analytics pattern).
+         c125: the portal's check-ins are fetched from the SAME doc IN
+         PARALLEL — one shared 4s guard for both reads. */
+      let checks = [];
       try {
-        if (typeof window.dkFetchClientHistory === 'function') {
-          const remote98 = await Promise.race([
-            window.dkFetchClientHistory(clientId),
-            new Promise(res => setTimeout(res, 4000))
-          ]);
-          if (remote98 && remote98.length) {
-            const seen98 = new Set((workouts || []).map(w => Number(w.date || w.created_at) || 0));
-            workouts = (workouts || []).concat(remote98.filter(r => !seen98.has(Number(r.date) || 0)));
-          }
+        const jobs = [
+          (typeof window.dkFetchClientHistory === 'function') ? window.dkFetchClientHistory(clientId) : Promise.resolve(null),
+          (typeof window.dkFetchClientChecks === 'function') ? window.dkFetchClientChecks(clientId) : Promise.resolve([])
+        ];
+        const got = await Promise.race([
+          Promise.all(jobs),
+          new Promise(res => setTimeout(() => res([null, null]), 4000))
+        ]);
+        const remote98 = got && got[0];
+        checks = (got && got[1]) || [];
+        if (remote98 && remote98.length) {
+          const seen98 = new Set((workouts || []).map(w => Number(w.date || w.created_at) || 0));
+          workouts = (workouts || []).concat(remote98.filter(r => !seen98.has(Number(r.date) || 0)));
         }
       } catch (_) {}
       if (!workouts) workouts = [];
@@ -19138,14 +19164,25 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         }
       }));
       /* c122: the client's body weight — bodyweight movements are valued
-         against it (profile weight → 75 kg default; c125 adds check-ins) */
-      let bw = 75;
-      try {
-        const cw = await db.get('clients', clientId);
-        const wv = parseFloat(cw && cw.weight);
-        if (wv > 30 && wv < 300) bw = wv;
-      } catch (_) {}
-      _ctx = { clientId: clientId, workouts: workouts, exCache: exCache, bw: bw };
+         against it. c125: the LATEST portal check-in weight wins over the
+         profile — it is the client's real, current weight (30..300 sanity
+         band); profile weight → 75 kg default when neither exists. */
+      if (checks.length) {
+        const lastCheck = checks[checks.length - 1];
+        if (lastCheck && lastCheck.weight > 30 && lastCheck.weight < 300) {
+          bw = lastCheck.weight; bwSource = 'checkin';
+        }
+      }
+      /* c125: the latest check-in that HAS an energy value (1–10) — feeds
+         the optional τ modifier (default OFF) */
+      let energy = null;
+      for (let i = checks.length - 1; i >= 0; i--) {
+        const ev = checks[i] && checks[i].energy;
+        if (ev != null && isFinite(ev)) { energy = ev; break; }
+      }
+      _ctx = { clientId: clientId, workouts: workouts, exCache: exCache, bw: bw,
+               bwSource: bwSource, bwDate: (checks.length ? (checks[checks.length - 1].date || '') : ''),
+               energy: energy, tauMod: null };
       return _ctx;
     }
 
@@ -19174,6 +19211,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           bodyWeightKg: ctx.bw,
           now: Date.now(),
           days: days,
+          energy: ctx.energy,            /* c125 */
+          energyTauMod: recEnergyModOn(),/* c125: opt-in modifier */
           resolveEx: resolveExCtx
         });
       } catch (e) {
@@ -19210,8 +19249,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             workouts: workouts,
             bodyWeightKg: ctx.bw,
             now: Date.now(),
+            energy: ctx.energy,            /* c125: latest check-in energy */
+            energyTauMod: recEnergyModOn(),/* c125: opt-in τ modifier */
             resolveEx: resolveExCtx
           });
+          ctx.tauMod = res122.meta.tauMod;  /* c125: for the personal strip */
           return res122.groups;
         }
       } catch (e122) {
@@ -19634,10 +19676,36 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       listEl.innerHTML = html;
     }
 
+    /* c125: personal strip — where the body weight comes from (check-in /
+       profile) + the opt-in energy τ modifier toggle. Shown in ALL modes:
+       the weight feeds the engine in recovery, 7d/30d AND trend. */
+    function renderPersonal() {
+      const el = document.getElementById('rec-personal');
+      if (!el) return;
+      let html = '';
+      if (_ctx && isFinite(_ctx.bw)) {
+        const src = _ctx.bwSource === 'checkin'
+          ? t('recovery.bwCheckin') + (_ctx.bwDate ? ' ' + String(_ctx.bwDate).slice(5).replace('-', '.') : '')
+          : (_ctx.bwSource === 'profile' ? t('recovery.bwProfile') : '');
+        html += '<span title="' + esc(src) + '">⚖️ <b class="text-text">' + _ctx.bw + ' kg</b>' + (src ? ' · ' + esc(src) : '') + '</span>';
+      }
+      if (_ctx && _ctx.energy != null && isFinite(_ctx.energy)) {
+        const on = recEnergyModOn();
+        html += '<label class="inline-flex items-center gap-1.5 cursor-pointer select-none" style="margin-inline-start:auto" title="' + esc(t('recovery.energyToggle')) + '">' +
+          '<input type="checkbox" id="rec-energy-toggle" class="w-3.5 h-3.5 cursor-pointer" style="accent-color:rgb(var(--c-primary))"' + (on ? ' checked' : '') + '/>' +
+          '<span>⚡ ' + esc(t('recovery.energyToggle')) + ' ' + Math.round(_ctx.energy) + '/10' +
+          (on && _ctx.tauMod ? ' · τ×' + _ctx.tauMod.toFixed(2) : '') + '</span></label>';
+      }
+      if (!html) { el.classList.add('hidden'); el.innerHTML = ''; return; }
+      el.classList.remove('hidden');
+      el.innerHTML = html;
+    }
+
     /** Re-render everything based on current state. */
     function renderAll() {
       updateTabStyling();
       renderTrendChrome();
+      renderPersonal();   /* c125: weight source + energy toggle — all modes */
       if (_mode === 'trend') { renderTrendList(); renderTrendLegend(); return; }
       renderBodySVG();
       renderMuscleList();
@@ -19716,6 +19784,19 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           _trendDays = d;
           renderAll();
         });
+      });
+      /* c125: the energy τ modifier toggle — re-render is delegated to the
+         strip container (the checkbox is rebuilt on every renderAll); the
+         recompute reuses the cached fetch context (no refetch), only the
+         engine calls re-run with the new flag */
+      const pers125 = document.getElementById('rec-personal');
+      if (pers125) pers125.addEventListener('change', async (e) => {
+        if (!e.target || e.target.id !== 'rec-energy-toggle') return;
+        recSetEnergyMod(!!e.target.checked);
+        _trendCache = {};
+        try { _data = await computeForClient(_clientId); } catch (e125) { console.warn('[recovery] recompute failed:', e125); }
+        renderAll();
+        if (_mode === 'trend') ensureTrend();
       });
       // View tabs
       ['front', 'back', 'side'].forEach(v => {
@@ -25611,11 +25692,11 @@ async function boot() {
         await ensurePortalFirebase();
         if (!firebase.apps.length) firebase.initializeApp(PORTAL_SHARE_CFG);
         const ref = firebase.firestore().collection('portal_shares').doc(docId);
-        let recs = [];
+        let recs = [], checks = [];   /* c125: checks preserved — additive field, the portal owns it */
         try {
           const snap = await ref.get({ source: 'server' });
           const data = snap && snap.exists ? snap.data() : null;
-          if (data && data.d) { const p = JSON.parse(data.d); if (Array.isArray(p.recs)) recs = p.recs; }
+          if (data && data.d) { const p = JSON.parse(data.d); if (Array.isArray(p.recs)) recs = p.recs; if (Array.isArray(p.checks)) checks = p.checks; }
         } catch (_) {}
         /* c98: enrich the mirrored workout with canonical group + synergists
            (the portal's recovery map uses them for the 30% synergist credit) */
@@ -25635,7 +25716,8 @@ async function boot() {
         recs = recs.filter(r => r && Number(r.ts) !== Number(rec.ts));
         recs.push(rec);
         recs.sort((a, b) => (a.ts || 0) - (b.ts || 0));
-        await ref.set({ d: JSON.stringify({ recs: recs.slice(-200) }), v: 2, ts: Date.now() });
+        /* c125: write recs AND the untouched checks — never drop the portal's check-ins */
+        await ref.set({ d: JSON.stringify({ recs: recs.slice(-200), checks: checks }), v: 2, ts: Date.now() });
         return true;
       } catch (e) { console.warn('[hist-sync] CRM push failed', e); return false; }
     };
@@ -25673,6 +25755,37 @@ async function boot() {
           };
         }).filter(w => w.date > 0);
       } catch (e) { console.warn('[hist-sync] CRM fetch failed', e); return []; }
+    };
+
+    /* c125: read the portal's check-ins from the SAME shared doc (additive
+       `checks` field: [{ts, date, weight, energy}] — ts/weight/energy ONLY,
+       waist/hip/note never leave the portal). Read-only: never creates the
+       doc. The trainer's recovery map uses the latest weight as the body
+       weight and the latest energy for the optional τ modifier. */
+    window.dkFetchClientChecks = async function (clientId) {
+      try {
+        if (!clientId) return [];
+        const docId = await portalHistoryDocId(clientId);
+        await ensurePortalFirebase();
+        if (!firebase.apps.length) firebase.initializeApp(PORTAL_SHARE_CFG);
+        const snap = await Promise.race([
+          firebase.firestore().collection('portal_shares').doc(docId).get({ source: 'server' }),
+          new Promise(res => setTimeout(() => res(null), 5000))
+        ]);
+        if (!snap || !snap.exists) return [];
+        const data = snap.data() || {};
+        if (!data.d) return [];
+        const p = JSON.parse(data.d);
+        return (Array.isArray(p.checks) ? p.checks : [])
+          .filter(c => c && Number(c.ts) > 0 && Number(c.weight) > 0)
+          .map(c => ({
+            ts: Number(c.ts),
+            date: String(c.date || new Date(Number(c.ts)).toISOString().slice(0, 10)),
+            weight: Number(c.weight),
+            energy: isFinite(parseFloat(c.energy)) ? parseFloat(c.energy) : null
+          }))
+          .sort((a, b) => a.ts - b.ts);
+      } catch (e) { console.warn('[hist-sync] CRM checks fetch failed', e); return []; }
     };
 
     /* c94: convert a CRM workout_history record to the portal schema
@@ -25736,7 +25849,7 @@ async function boot() {
         await ensurePortalFirebase();
         if (!firebase.apps.length) firebase.initializeApp(PORTAL_SHARE_CFG);
         const ref = firebase.firestore().collection('portal_shares').doc(docId);
-        let remote = [];
+        let remote = [], remoteChecks = [];   /* c125: preserve the portal's checks on backfill */
         try {
           const snap = await Promise.race([
             ref.get({ source: 'server' }),
@@ -25744,14 +25857,15 @@ async function boot() {
           ]);
           if (snap && snap.exists) {
             const data = snap.data() || {};
-            if (data.d) { const p = JSON.parse(data.d); if (Array.isArray(p.recs)) remote = p.recs; }
+            if (data.d) { const p = JSON.parse(data.d); if (Array.isArray(p.recs)) remote = p.recs; if (Array.isArray(p.checks)) remoteChecks = p.checks; }
           }
         } catch (_) {}
         const seen = new Set(remote.map(r => Number(r && r.ts) || 0));
         const add = recs.filter(r => !seen.has(Number(r.ts) || 0));
         if (!add.length) return true; /* cloud already has everything */
         const merged = remote.concat(add).sort((a, b) => (a.ts || 0) - (b.ts || 0));
-        await ref.set({ d: JSON.stringify({ recs: merged.slice(-200) }), v: 2, ts: Date.now() });
+        /* c125: recs + the untouched checks — additive, never dropped */
+        await ref.set({ d: JSON.stringify({ recs: merged.slice(-200), checks: remoteChecks }), v: 2, ts: Date.now() });
         console.info('[hist-sync] backfilled ' + add.length + '/' + recs.length + ' workout(s) for client ' + clientId);
         return true;
       } catch (e) { console.warn('[hist-sync] CRM backfill failed', e); return false; }
@@ -30920,7 +31034,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 124; /* numeric part of dk-build c124 */
+  var RUNNING = 125; /* numeric part of dk-build c125 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
