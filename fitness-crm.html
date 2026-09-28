@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c122" />
+<meta name="dk-build" content="c123" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2847,7 +2847,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c122</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c123</p>
             </div>
           </div>
 
@@ -3364,6 +3364,8 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
                 </button>
               </div>
+              <!-- c123: Insights strip — readiness bar + advice chips (recovery mode only) -->
+              <div id="rec-insights" class="hidden px-4 py-2 border-b border-border shrink-0"></div>
               <!-- Body: SVG + muscle breakdown -->
               <div class="flex-1 overflow-y-auto p-3 flex flex-col md:flex-row gap-3">
                 <!-- Left: SVG body (front/back/side tabs) -->
@@ -18972,6 +18974,43 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       calisthenics:   { en: 'Calisthenics',ru: 'Калистеника', he: 'משקל גוף' }
     };
 
+    // c123: advice chips (engine.advise) — icon + i18n key per advice kind
+    const ADVICE_UI = {
+      train:    { icon: '🟢', key: 'recovery.advTrain' },
+      moderate: { icon: '🔵', key: 'recovery.advModerate' },
+      reduce:   { icon: '🟠', key: 'recovery.advReduce' },
+      rest:     { icon: '🔴', key: 'recovery.advRest' },
+      dormant:  { icon: '⚪', key: 'recovery.advDormant' }
+    };
+    const ADVICE_ORDER = ['train', 'moderate', 'reduce', 'rest', 'dormant'];
+
+    /** c123: advice for the whole map — single source window.dkRecoveryEngine.advise(). */
+    function computeAdvice() {
+      try {
+        if (_data && window.dkRecoveryEngine && typeof window.dkRecoveryEngine.advise === 'function') {
+          return window.dkRecoveryEngine.advise({ groups: _data });
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    function adviceLabel(kind) {
+      const a = ADVICE_UI[kind];
+      return a ? ((t(a.key) || kind) + '') : kind;
+    }
+
+    function setsBandLabel(band) {
+      if (band === 'ok') return t('recovery.setsOk') || 'in 10–20 target';
+      if (band === 'high') return t('recovery.setsHigh') || 'above target';
+      return t('recovery.setsLow') || 'below target';
+    }
+
+    function setsBandColor(band) {
+      if (band === 'ok') return 'rgb(var(--c-success))';
+      if (band === 'high') return 'rgb(var(--c-warning))';
+      return 'rgb(var(--c-muted))';
+    }
+
     // === Module state ===
     let _clientId = null;
     let _mode = 'recovery';  // 'recovery' | '7d' | '30d'
@@ -19248,6 +19287,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       }
 
       // Apply fills to each .bm-muscle path
+      const adv123 = (_mode === 'recovery') ? computeAdvice() : null;
       const paths = container.querySelectorAll('.bm-muscle');
       paths.forEach(path => {
         const g = path.getAttribute('data-group');
@@ -19274,6 +19314,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             tip += '\n' + (t('recovery.lastTrained') || 'Last trained') + ': ' + Math.round(info.lastTrainedDaysAgo) + 'd ago';
           } else {
             tip += '\n' + (t('recovery.untrained') || 'Not trained yet');
+          }
+          /* c123: advice line in the SVG tooltip */
+          if (adv123 && adv123.per && adv123.per[g]) {
+            const a123 = adv123.per[g];
+            tip += '\n' + ADVICE_UI[a123.advice].icon + ' ' + adviceLabel(a123.advice);
+            if (a123.setsBand) tip += ' · ' + info.sets7d + ' ' + (t('recovery.setsWeek') || 'sets/wk') + ' — ' + setsBandLabel(a123.setsBand);
           }
         } else if (_mode === '7d') {
           tip += '\n' + (t('recovery.volume7d') || '7d volume') + ': ' + info.volume7d + 'kg\n' + info.sets7d + ' sets';
@@ -19309,6 +19355,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         if (v > maxVal) maxVal = v;
       });
 
+      // c123: advice per muscle (recovery mode) — computed once for the whole list
+      const advList123 = (_mode === 'recovery') ? computeAdvice() : null;
+
       let html = '';
       sorted.forEach(g => {
         const info = _data[g];
@@ -19342,6 +19391,13 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           lastTrainedStr = Math.round(info.lastTrainedDaysAgo) + 'd ' + (t('recovery.ago') || 'ago');
         }
         const statusCls = 'rec-status-' + info.status;
+        /* c123: the «что делать» line — advice chip + weekly sets band (recovery mode) */
+        let adviceLine = '';
+        if (advList123 && advList123.per && advList123.per[g]) {
+          const a = advList123.per[g];
+          const bandStyle = a.setsBand ? ` · <span style="color:${setsBandColor(a.setsBand)}">${info.sets7d} ${esc(t('recovery.setsWeek') || 'sets/wk')} — ${esc(setsBandLabel(a.setsBand))}</span>` : '';
+          adviceLine = `<div class="mt-1 text-[10px] leading-tight text-muted">${ADVICE_UI[a.advice].icon} ${esc(adviceLabel(a.advice))}${bandStyle}</div>`;
+        }
         html += `<div class="rec-muscle-row ${statusCls}">
           <div class="flex items-center gap-2 mb-1">
             <span class="text-xs font-bold flex-1 truncate">${esc(lbl)}</span>
@@ -19349,6 +19405,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             <span class="text-xs font-mono font-bold shrink-0" style="min-width:60px;text-align:end">${esc(valLabel)}</span>
           </div>
           <div class="rec-bar"><div class="rec-bar-fill" style="width:${barPct}%;background:${barColor}"></div></div>
+          ${adviceLine}
         </div>`;
       });
       listEl.innerHTML = html;
@@ -19392,12 +19449,38 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       });
     }
 
+    /** c123: readiness bar + advice chip counts (recovery mode only). */
+    function renderInsights() {
+      const el = document.getElementById('rec-insights');
+      if (!el) return;
+      const adv = (_mode === 'recovery') ? computeAdvice() : null;
+      if (!adv) { el.classList.add('hidden'); el.innerHTML = ''; return; }
+      el.classList.remove('hidden');
+      let ready = '';
+      if (adv.readiness !== null && isFinite(adv.readiness)) {
+        const rc = adv.readiness >= 75 ? 'rgb(var(--c-success))' : adv.readiness >= 50 ? 'rgb(var(--c-warning))' : 'rgb(var(--c-danger))';
+        ready += `<div class="flex items-center gap-2 ${ADVICE_ORDER.some(k => adv.counts[k]) ? 'mb-1' : ''}">` +
+          `<span class="text-[10px] text-muted shrink-0">🎯 ${esc(t('recovery.readiness') || 'Readiness')}</span>` +
+          `<div class="rec-bar flex-1"><div class="rec-bar-fill" style="width:${adv.readiness}%;background:${rc}"></div></div>` +
+          `<span class="text-xs font-mono font-bold shrink-0">${adv.readiness}%</span></div>`;
+      }
+      let chips = '';
+      ADVICE_ORDER.forEach(k => {
+        const n = adv.counts[k] || 0;
+        if (!n) return;
+        chips += `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-surface-2 border border-border text-[10px] font-semibold" title="${esc(adviceLabel(k))}">${ADVICE_UI[k].icon} ${n}</span>`;
+      });
+      if (chips) ready += `<div class="flex items-center gap-1 flex-wrap">${chips}</div>`;
+      el.innerHTML = ready;
+    }
+
     /** Re-render everything based on current state. */
     function renderAll() {
       updateTabStyling();
       renderBodySVG();
       renderMuscleList();
       renderLegend();
+      renderInsights();
     }
 
     /** Open the modal for a given client. */
@@ -19468,6 +19551,15 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           renderBodySVG();
         });
       });
+      /* c123: the dynamic texts (list rows, insights strip, legend) are built
+         with t() at render time — re-render when the language changes while
+         the modal is open (dk-lang is dispatched by switchAppLanguage) */
+      try {
+        document.addEventListener('dk-lang', () => {
+          const m = document.getElementById('recovery-map-modal');
+          if (m && !m.classList.contains('hidden') && _data) renderAll();
+        });
+      } catch (e) {}
     }
 
     return { open, close, wire, computeForClient };
@@ -30653,7 +30745,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 122; /* numeric part of dk-build c122 */
+  var RUNNING = 123; /* numeric part of dk-build c123 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

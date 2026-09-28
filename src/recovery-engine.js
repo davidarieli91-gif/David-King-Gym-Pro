@@ -345,6 +345,85 @@
   }
 
   var api = { compute: compute, GROUPS: GROUPS, KG_PER_LB: KG_PER_LB };
+
+  /* ============================================================================
+     c123 — ADVICE LAYER («что больше / что меньше включать»)
+     ----------------------------------------------------------------------------
+     Pure function over a compute() result — BOTH apps render the same
+     recommendations from this single source (no divergence possible).
+
+     Advice per muscle group (priority order):
+       dormant  ⚪ — not trained for 14+ days (or ever) → «включи в план»
+       rest     🔴 — recovery < 30% → «отдых»
+       reduce   🟠 — this week's load ≥ 1.3 × the month's weekly average
+                       (user spec: 7д ≥ 1.3× месячной средней) OR recovery < 45%
+                       → «снизить объём»
+       train    🟢 — recovery ≥ 75% → «можно грузить»
+       moderate 🔵 — everything in between
+
+     Weekly hard-set target band: 10–20 sets/week (evidence-based volume
+     landmarks). setsBand per group: 'low' (<10) | 'ok' (10–20) | 'high' (>20),
+     null when the muscle has no 30-day activity (the dormant chip covers it).
+
+     readiness — one number for «как человек в целом»: average recovery of the
+     8 MAIN muscle groups trained within the last 7 days (fallback: all trained
+     main groups; null when nothing was trained at all).
+     ============================================================================ */
+  var DORMANT_DAYS = 14;
+  var REST_RECOVERY = 30;
+  var REDUCE_RECOVERY = 45;
+  var TRAIN_RECOVERY = 75;
+  var OVERLOAD_RATIO = 1.3;
+  var OVERLOAD_MIN_MONTH = 30;   // load units — a 30d sum below this is too small to judge
+  var SETS_LOW = 10;
+  var SETS_HIGH = 20;
+  var READINESS_WINDOW_DAYS = 7;
+  var MAIN_GROUPS = ['chest', 'back', 'shoulders', 'elbow_flexors', 'triceps', 'forearms', 'abdominals', 'legs'];
+
+  function adviceFor(r) {
+    var days = r.lastTrainedDaysAgo;
+    if (days === null || days === undefined || !isFinite(days) || days >= DORMANT_DAYS) return 'dormant';
+    if (r.recovery < REST_RECOVERY) return 'rest';
+    var weeklyAvg30 = ((r.load30d || 0) * 7) / 30;
+    if ((r.load30d || 0) >= OVERLOAD_MIN_MONTH && (r.load7d || 0) >= OVERLOAD_RATIO * weeklyAvg30) return 'reduce';
+    if (r.recovery < REDUCE_RECOVERY) return 'reduce';
+    if (r.recovery >= TRAIN_RECOVERY) return 'train';
+    return 'moderate';
+  }
+
+  function setsBandFor(r, advice) {
+    if (advice === 'dormant' || !(r.sets30d > 0)) return null;
+    var s7 = r.sets7d || 0;
+    if (s7 < SETS_LOW) return 'low';
+    if (s7 > SETS_HIGH) return 'high';
+    return 'ok';
+  }
+
+  /** @param {{groups:Object}} result — the output of compute() (or {groups:_data}) */
+  function advise(result) {
+    var groups = (result && result.groups) || {};
+    var per = {};
+    var counts = { train: 0, moderate: 0, reduce: 0, rest: 0, dormant: 0 };
+    var ready7 = [], readyAll = [];
+    Object.keys(groups).forEach(function (g) {
+      var r = groups[g];
+      var a = adviceFor(r);
+      per[g] = { advice: a, setsBand: setsBandFor(r, a) };
+      counts[a]++;
+      if (MAIN_GROUPS.indexOf(g) !== -1 && r.lastTrainedDaysAgo != null && isFinite(r.lastTrainedDaysAgo)) {
+        readyAll.push(r.recovery);
+        if (r.lastTrainedDaysAgo <= READINESS_WINDOW_DAYS) ready7.push(r.recovery);
+      }
+    });
+    var vals = ready7.length ? ready7 : readyAll;
+    var readiness = vals.length
+      ? Math.round(vals.reduce(function (s, v) { return s + v; }, 0) / vals.length)
+      : null;
+    return { per: per, counts: counts, readiness: readiness };
+  }
+
+  api.advise = advise;
+  api.MAIN_GROUPS = MAIN_GROUPS;
   if (typeof window !== 'undefined') window.dkRecoveryEngine = api;
   else if (typeof globalThis !== 'undefined') globalThis.dkRecoveryEngine = api;
 })();

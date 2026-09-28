@@ -2514,6 +2514,8 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
         </div>
       </div>
       <p class="text-[11px] text-muted mt-1 leading-relaxed truncate" id="txt-recovery-sub"></p>
+      <!-- c123: insights strip — readiness + advice chips (recovery mode only) -->
+      <div id="recp-insights" class="hidden mt-2"></div>
       <div class="mt-2 flex flex-col sm:flex-row gap-3">
         <div class="shrink-0 flex flex-col items-center mx-auto">
           <div class="flex gap-1 mb-2" id="recp-view-tabs">
@@ -2615,7 +2617,7 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
       navWorkouts:'Тренировки',navNutrition:'Питание',navAnalytics:'Аналитика',navRecovery:'Восстановление',
       wunitExTitle:'Единица веса упражнения',wunitApplyAll:'Применить ко всем упражнениям тренировки',wunitDefaultTitle:'Единица веса по умолчанию (для новых упражнений)',
       recTitle:'Карта восстановления',
-mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMode30d:'Объём 30д',mapViewFront:'Спереди',mapViewBack:'Сзади',mapViewSide:'Сбоку',mapRecLabel:'Восстановление',mapLastTrained:'Последняя тренировка',mapUntrained:'Не тренирован',mapToday:'Сегодня',mapAgo:'назад',mapWorkouts:'тренировок',mapMuscles:'мышц',mapLoading:'Загрузка…',mapLegendRec:'🟢 Восстановлен · 🟡 Восстанавливается · 🔴 Утомлён · ⚪ Не тренирован',mapLegend7d:'Объём за 7 дней (кг)',mapLegend30d:'Объём за 30 дней (кг)',mapHint:'Модель v2: усталость = повторы × вес (кг) × уровень тяжести (RPE) относительно вашего личного потолка. Нет веса — средний ваш или вес тела. Синергисты 30%. Спад ~3 дня (личный).',daysShort:'д',
+mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMode30d:'Объём 30д',mapViewFront:'Спереди',mapViewBack:'Сзади',mapViewSide:'Сбоку',mapRecLabel:'Восстановление',mapLastTrained:'Последняя тренировка',mapUntrained:'Не тренирован',mapToday:'Сегодня',mapAgo:'назад',mapWorkouts:'тренировок',mapMuscles:'мышц',mapLoading:'Загрузка…',mapLegendRec:'🟢 Восстановлен · 🟡 Восстанавливается · 🔴 Утомлён · ⚪ Не тренирован',mapLegend7d:'Объём за 7 дней (кг)',mapLegend30d:'Объём за 30 дней (кг)',mapHint:'Модель v2: усталость = повторы × вес (кг) × уровень тяжести (RPE) относительно вашего личного потолка. Нет веса — средний ваш или вес тела. Синергисты 30%. Спад ~3 дня (личный).',mapReadiness:'Готовность к тренировке',mapAdvTrain:'Можно грузить',mapAdvModerate:'Умеренно',mapAdvReduce:'Снизить объём',mapAdvRest:'Отдых',mapAdvDormant:'Включить в план',mapSetsWeek:'сет/нед',mapSetsLow:'ниже цели 10–20',mapSetsOk:'в цели 10–20',mapSetsHigh:'выше цели 10–20',daysShort:'д',
       aTitle:'Личная аналитика',aRangeWeek:'Неделя',aRangeMonth:'Месяц',aRangeAll:'Всё',
       mWorkouts:'Тренировки',mActiveDays:'Активные дни',mStreak:'Серия',mVolume:'Объём',
       aTotal:'всего',aInRange:'за период',aDaysInRow:'дн. подряд',aNoStreak:'начните сегодня!',aMinutes:'мин',
@@ -2664,7 +2666,7 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       navWorkouts:'Workouts',navNutrition:'Nutrition',navAnalytics:'Analytics',navRecovery:'Recovery',
       wunitExTitle:'Weight unit of this exercise',wunitApplyAll:'Apply to all exercises of this workout',wunitDefaultTitle:'Default unit for new exercises',
       recTitle:'Recovery map',
-mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:'Front',mapViewBack:'Back',mapViewSide:'Side',mapRecLabel:'Recovery',mapLastTrained:'Last trained',mapUntrained:'Not trained yet',mapToday:'Today',mapAgo:'ago',mapWorkouts:'workouts',mapMuscles:'muscles',mapLoading:'Loading…',mapLegendRec:'🟢 Fresh · 🟡 Recovering · 🔴 Fatigued · ⚪ Untrained',mapLegend7d:'7-day volume (kg)',mapLegend30d:'30-day volume (kg)',mapHint:'v2 model: fatigue = reps × weight (kg) × effort (RPE) vs your personal capacity. No weight? Your exercise average or body weight is used. Synergists 30%. ~3-day personal decay.',daysShort:'d',
+mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:'Front',mapViewBack:'Back',mapViewSide:'Side',mapRecLabel:'Recovery',mapLastTrained:'Last trained',mapUntrained:'Not trained yet',mapToday:'Today',mapAgo:'ago',mapWorkouts:'workouts',mapMuscles:'muscles',mapLoading:'Loading…',mapLegendRec:'🟢 Fresh · 🟡 Recovering · 🔴 Fatigued · ⚪ Untrained',mapLegend7d:'7-day volume (kg)',mapLegend30d:'30-day volume (kg)',mapHint:'v2 model: fatigue = reps × weight (kg) × effort (RPE) vs your personal capacity. No weight? Your exercise average or body weight is used. Synergists 30%. ~3-day personal decay.',mapReadiness:'Training readiness',mapAdvTrain:'Ready to train',mapAdvModerate:'Moderate',mapAdvReduce:'Reduce volume',mapAdvRest:'Rest',mapAdvDormant:'Add to plan',mapSetsWeek:'sets/wk',mapSetsLow:'below 10–20 target',mapSetsOk:'in 10–20 target',mapSetsHigh:'above 10–20 target',daysShort:'d',
       aTitle:'My Analytics',aRangeWeek:'Week',aRangeMonth:'Month',aRangeAll:'All',
       mWorkouts:'Workouts',mActiveDays:'Active days',mStreak:'Streak',mVolume:'Volume',
       aTotal:'total',aInRange:'in range',aDaysInRow:'days streak',aNoStreak:'start today!',aMinutes:'min',
@@ -2713,7 +2715,7 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       navWorkouts:'אימונים',navNutrition:'תזונה',navAnalytics:'אנליטיקה',navRecovery:'התאוששות', /* c99: physical recovery, not data restore */
       wunitExTitle:'יחידת משקל לתרגיל זה',wunitApplyAll:'החל על כל התרגילים באימון',wunitDefaultTitle:'יחידת משקל כברירת מחדל (לתרגילים חדשים)',
       recTitle:'מפת התאוששות',
-mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נפח 30 ימים',mapViewFront:'קדמי',mapViewBack:'אחורי',mapViewSide:'צד',mapRecLabel:'התאוששות',mapLastTrained:'אימון אחרון',mapUntrained:'טרם אומן',mapToday:'היום',mapAgo:'לפני',mapWorkouts:'אימונים',mapMuscles:'שרירים',mapLoading:'טוען…',mapLegendRec:'🟢 מחלים · 🟡 בהחלמה · 🔴 עייף · ⚪ לא מאומן',mapLegend7d:'נפח 7 ימים (ק״ג)',mapLegend30d:'נפח 30 ימים (ק״ג)',mapHint:'מודל v2: עייפות = חזרות × משקל (ק״ג) × מאמץ (RPE) מול הקיבולת האישית. אין משקל? הממוצע שלך בתרגיל או משקל גוף. שרירי עזר 30%. דעיכה אישית ~3 ימים.',daysShort:'ימ׳',
+mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נפח 30 ימים',mapViewFront:'קדמי',mapViewBack:'אחורי',mapViewSide:'צד',mapRecLabel:'התאוששות',mapLastTrained:'אימון אחרון',mapUntrained:'טרם אומן',mapToday:'היום',mapAgo:'לפני',mapWorkouts:'אימונים',mapMuscles:'שרירים',mapLoading:'טוען…',mapLegendRec:'🟢 מחלים · 🟡 בהחלמה · 🔴 עייף · ⚪ לא מאומן',mapLegend7d:'נפח 7 ימים (ק״ג)',mapLegend30d:'נפח 30 ימים (ק״ג)',mapHint:'מודל v2: עייפות = חזרות × משקל (ק״ג) × מאמץ (RPE) מול הקיבולת האישית. אין משקל? הממוצע שלך בתרגיל או משקל גוף. שרירי עזר 30%. דעיכה אישית ~3 ימים.',mapReadiness:'מוכנות לאימון',mapAdvTrain:'מוכן לאימון',mapAdvModerate:'בינוני',mapAdvReduce:'הפחת נפח',mapAdvRest:'מנוחה',mapAdvDormant:'לשלב בתוכנית',mapSetsWeek:'סטים/שבוע',mapSetsLow:'מתחת ליעד 10–20',mapSetsOk:'ביעד 10–20',mapSetsHigh:'מעל היעד 10–20',daysShort:'ימ׳',
       aTitle:'האנליטיקה שלי',aRangeWeek:'שבוע',aRangeMonth:'חודש',aRangeAll:'הכול',
       mWorkouts:'אימונים',mActiveDays:'ימים פעילים',mStreak:'רצף',mVolume:'נפח',
       aTotal:'בסך הכול',aInRange:'בתקופה',aDaysInRow:'ימים ברצף',aNoStreak:'התחילו היום!',aMinutes:'דק׳',
@@ -3825,6 +3827,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     let maxV = 0;
     if (_recpMode === '7d') RECP_GROUPS.forEach(g => { if (_recpData[g].volume7d > maxV) maxV = _recpData[g].volume7d; });
     else if (_recpMode === '30d') RECP_GROUPS.forEach(g => { if (_recpData[g].volume30d > maxV) maxV = _recpData[g].volume30d; });
+    /* c123: advice per muscle (recovery mode) — for the SVG tooltip */
+    const advT123 = (_recpMode === 'recovery') ? recpAdvice() : null;
     box.querySelectorAll('.bm-muscle').forEach(path => {
       const g = path.getAttribute('data-group');
       if (!g || !_recpData[g]) return;
@@ -3841,6 +3845,12 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       if (_recpMode === 'recovery') {
         tip += '\n' + t('mapRecLabel') + ': ' + info.recovery + '%';
         tip += '\n' + (info.lastTrainedDaysAgo !== null ? t('mapLastTrained') + ': ' + recpDaysStr(info.lastTrainedDaysAgo) : t('mapUntrained'));
+        /* c123: advice line in the tooltip */
+        if (advT123 && advT123.per && advT123.per[g]) {
+          const aT = advT123.per[g];
+          tip += '\n' + RECP_ADVICE_UI[aT.advice].icon + ' ' + recpAdviceLabel(aT.advice);
+          if (aT.setsBand) tip += ' · ' + info.sets7d + ' ' + t('mapSetsWeek') + ' — ' + recpSetsBandLabel(aT.setsBand);
+        }
       } else if (_recpMode === '7d') tip += '\n' + t('mapLegend7d') + ': ' + info.volume7d + ' · ' + info.sets7d;
       else tip += '\n' + t('mapLegend30d') + ': ' + info.volume30d + ' · ' + info.sets30d;
       const ti = document.createElementNS('http://www.w3.org/2000/svg', 'title');
@@ -3863,6 +3873,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       const v = _recpMode === 'recovery' ? _recpData[g].recovery : _recpMode === '7d' ? _recpData[g].volume7d : _recpData[g].volume30d;
       if (v > maxVal) maxVal = v;
     });
+    /* c123: advice per muscle (recovery mode) — computed once for the whole list */
+    const advL123 = (_recpMode === 'recovery') ? recpAdvice() : null;
     let html = '';
     sorted.forEach(g => {
       const info = _recpData[g];
@@ -3883,6 +3895,13 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       if (info.lastTrainedDaysAgo === null) when = t('mapUntrained');
       else if (info.lastTrainedDaysAgo < 1) when = t('mapToday');
       else when = recpDaysStr(info.lastTrainedDaysAgo);
+      /* c123: the «что делать» line — advice chip + weekly sets band (recovery mode) */
+      let adviceLine = '';
+      if (advL123 && advL123.per && advL123.per[g]) {
+        const a = advL123.per[g];
+        const bandHtml = a.setsBand ? ' · <span style="color:' + recpSetsBandColor(a.setsBand) + '">' + info.sets7d + ' ' + esc(t('mapSetsWeek')) + ' — ' + esc(recpSetsBandLabel(a.setsBand)) + '</span>' : '';
+        adviceLine = '<div class="mt-1 text-[10px] leading-tight text-muted">' + RECP_ADVICE_UI[a.advice].icon + ' ' + esc(recpAdviceLabel(a.advice)) + bandHtml + '</div>';
+      }
       html += '<div class="recp-muscle-row recp-st-' + info.status + '">' +
         '<div class="flex items-center gap-2 mb-1">' +
           '<span class="text-xs font-bold flex-1 truncate text-text">' + esc(lbl) + '</span>' +
@@ -3890,6 +3909,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
           '<span class="text-xs font-mono font-bold shrink-0 text-text" style="min-width:64px;text-align:end">' + esc(valLabel) + '</span>' +
         '</div>' +
         '<div class="recp-bar"><div class="recp-bar-fill" style="width:' + barPct + '%;background:' + barColor + '"></div></div>' +
+        adviceLine +
       '</div>';
     });
     list.innerHTML = html;
@@ -3927,7 +3947,61 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       const k = VT[b.getAttribute('data-recp-view')]; if (k) b.textContent = t(k);
     });
   }
-  function recpRenderAll() { recpUpdateTabs(); recpRenderBody(); recpRenderList(); recpRenderLegend(); recpRenderSub(); }
+  /* c123: advice layer — same single source as the trainer (window.dkRecoveryEngine.advise) */
+  const RECP_ADVICE_UI = {
+    train:    { icon: '🟢', key: 'mapAdvTrain' },
+    moderate: { icon: '🔵', key: 'mapAdvModerate' },
+    reduce:   { icon: '🟠', key: 'mapAdvReduce' },
+    rest:     { icon: '🔴', key: 'mapAdvRest' },
+    dormant:  { icon: '⚪', key: 'mapAdvDormant' }
+  };
+  const RECP_ADVICE_ORDER = ['train', 'moderate', 'reduce', 'rest', 'dormant'];
+  function recpAdvice() {
+    try {
+      if (_recpData && window.dkRecoveryEngine && typeof window.dkRecoveryEngine.advise === 'function') {
+        return window.dkRecoveryEngine.advise({ groups: _recpData });
+      }
+    } catch (e) {}
+    return null;
+  }
+  function recpAdviceLabel(kind) {
+    const a = RECP_ADVICE_UI[kind];
+    return a ? t(a.key) : kind;
+  }
+  function recpSetsBandLabel(band) {
+    if (band === 'ok') return t('mapSetsOk');
+    if (band === 'high') return t('mapSetsHigh');
+    return t('mapSetsLow');
+  }
+  function recpSetsBandColor(band) {
+    if (band === 'ok') return 'rgb(var(--c-success))';
+    if (band === 'high') return 'rgb(var(--c-warning))';
+    return 'rgb(var(--c-muted))';
+  }
+  function recpRenderInsights() {
+    const el = document.getElementById('recp-insights');
+    if (!el) return;
+    const adv = (_recpMode === 'recovery') ? recpAdvice() : null;
+    if (!adv) { el.classList.add('hidden'); el.innerHTML = ''; return; }
+    el.classList.remove('hidden');
+    let ready = '';
+    if (adv.readiness !== null && isFinite(adv.readiness)) {
+      const rc = adv.readiness >= 75 ? 'rgb(var(--c-success))' : adv.readiness >= 50 ? 'rgb(var(--c-warning))' : 'rgb(var(--c-danger))';
+      ready += '<div class="flex items-center gap-2 mb-1">' +
+        '<span class="text-[10px] text-muted shrink-0">🎯 ' + esc(t('mapReadiness')) + '</span>' +
+        '<div class="recp-bar flex-1"><div class="recp-bar-fill" style="width:' + adv.readiness + '%;background:' + rc + '"></div></div>' +
+        '<span class="text-xs font-mono font-bold shrink-0 text-text">' + adv.readiness + '%</span></div>';
+    }
+    let chips = '';
+    RECP_ADVICE_ORDER.forEach(k => {
+      const n = adv.counts[k] || 0;
+      if (!n) return;
+      chips += '<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-[rgb(var(--c-surface-2))] border border-border text-[10px] font-semibold text-text" title="' + esc(recpAdviceLabel(k)) + '">' + RECP_ADVICE_UI[k].icon + ' ' + n + '</span>';
+    });
+    if (chips) ready += '<div class="flex items-center gap-1 flex-wrap">' + chips + '</div>';
+    el.innerHTML = ready;
+  }
+  function recpRenderAll() { recpUpdateTabs(); recpRenderBody(); recpRenderList(); recpRenderLegend(); recpRenderSub(); recpRenderInsights(); }
   function renderRecMap(useCache) {
     const probe = document.getElementById('recp-muscle-list');
     if (!probe) return;

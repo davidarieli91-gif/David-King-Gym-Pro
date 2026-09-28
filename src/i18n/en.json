@@ -227,7 +227,17 @@
     "volume7d": "7d volume",
     "volume30d": "30d volume",
     "openProfileFirst": "Open a client profile first",
-    "hint": "v2 model: fatigue = reps × weight (kg) × effort (RPE) vs your personal capacity. No weight? Your average for the exercise or body weight is used. Synergists 30%. ~3-day personal decay."
+    "hint": "v2 model: fatigue = reps × weight (kg) × effort (RPE) vs your personal capacity. No weight? Your average for the exercise or body weight is used. Synergists 30%. ~3-day personal decay.",
+    "readiness": "Training readiness",
+    "advTrain": "Ready to train",
+    "advModerate": "Moderate",
+    "advReduce": "Reduce volume",
+    "advRest": "Rest",
+    "advDormant": "Add to plan",
+    "setsWeek": "sets/wk",
+    "setsLow": "below 10–20 target",
+    "setsOk": "in 10–20 target",
+    "setsHigh": "above 10–20 target"
   },
   "auth": {
     "login": "Sign In",
