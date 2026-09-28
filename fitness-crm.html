@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c120" />
+<meta name="dk-build" content="c121" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2845,7 +2845,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c120</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c121</p>
             </div>
           </div>
 
@@ -14996,6 +14996,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           cardio: ex.cardio === true || ex.category === 'cardio',
           rest_sec: ex.rest_sec != null ? ex.rest_sec : 90,
           unit: ex.unit === 'lb' ? 'lb' : (ex.unit === 'kg' ? 'kg' : dkWUnitGet()),
+          unit_src: ex.unit === 'lb' || ex.unit === 'kg' ? 'program' : 'default', /* c121: history may override non-prescribed units */
           tunit: ex.tunit === 'min' || ex.tunit === 'sec' ? ex.tunit : null, /* c107 */
           is_superset: ex.is_superset === true, /* c107: superset pairs survive template → live */
           sets: (ex.sets || []).map(s => ({ ...s, done: false }))
@@ -15028,6 +15029,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           group: ex.group,
           cardio: ex.cardio === true,
           unit: ex.unit === 'lb' || ex.unit === 'kg' ? ex.unit : dkWUnitGet(), /* c104: the prescribed unit wins over the default */
+          unit_src: ex.unit === 'lb' || ex.unit === 'kg' ? 'program' : 'default', /* c121: history may override non-prescribed units */
           tunit: ex.tunit === 'min' || ex.tunit === 'sec' ? ex.tunit : null, /* c104 */
           is_superset: ex.is_superset === true, /* c104 */
           sets: (ex.sets || []).map(s => ({
@@ -15122,10 +15124,18 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       }
       const sorted = rows.slice().sort((a, b) => (b.date || 0) - (a.date || 0));
       const map = {};
+      /* c121: register each occurrence under BOTH its exercise_id and its
+         normalized name, so live exercises without a matching id still find
+         their last-time values (same fallback the report uses) */
+      const _norm121 = s => String(s == null ? '' : s).trim().toLowerCase().replace(/\s+/g, ' ');
       sorted.forEach(rec => {
         (rec.exercises || []).forEach(ex => {
-          const key = String(ex.exercise_id || ex.name || '');
-          if (key && !map[key] && ex.sets && ex.sets.length) map[key] = { unit: ex.unit === 'lb' ? 'lb' : 'kg', sets: ex.sets };
+          if (!ex.sets || !ex.sets.length) return;
+          const payload = { unit: ex.unit === 'lb' ? 'lb' : 'kg', sets: ex.sets };
+          const idKey = String(ex.exercise_id || '');
+          if (idKey && !map['id:' + idKey]) map['id:' + idKey] = payload;
+          const nmKey = _norm121(ex.name);
+          if (nmKey && !map['nm:' + nmKey]) map['nm:' + nmKey] = payload;
         });
       });
       return map;
@@ -15136,9 +15146,25 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       if (!_workout || !_lastRefMap) return;
       let touched = false;
       _workout.exercises.forEach(ex => {
-        const refEx = _lastRefMap[String(ex.exercise_id || ex.name || '')];
+        const _key121 = String(ex.exercise_id || '');
+        const _nm121 = String(ex.name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+        const refEx = _lastRefMap[_key121 ? 'id:' + _key121 : ''] || _lastRefMap[_nm121 ? 'nm:' + _nm121 : ''] || null;
         if (!refEx) return;
         const ref = refEx.sets;
+        /* c121: unit persistence — an exercise WITHOUT a program-prescribed
+           unit adopts the unit the trainee actually worked in last time
+           (kg stays kg, lb stays lb, even when half the workout is in lb).
+           Already-present values (program prescriptions, prev values) are
+           converted the same way the manual unit switcher does. */
+        const oldUnit = ex.unit === 'lb' ? 'lb' : (ex.unit === 'kg' ? 'kg' : dkWUnitGet());
+        if (ex.unit_src !== 'program' && refEx.unit && refEx.unit !== oldUnit) {
+          (ex.sets || []).forEach(s => {
+            if (s.weight != null) s.weight = dkWConv(s.weight, oldUnit, refEx.unit);
+            if (s.prev_weight != null) s.prev_weight = dkWConv(s.prev_weight, oldUnit, refEx.unit);
+          });
+          ex.unit = refEx.unit;
+          touched = true;
+        }
         const exUnit = ex.unit === 'lb' ? 'lb' : (ex.unit === 'kg' ? 'kg' : dkWUnitGet());
         (ex.sets || []).forEach((s, si) => {
           const r = ref[Math.min(si, ref.length - 1)];
@@ -16150,6 +16176,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         group: ex['group_' + lang] || ex.group_en,
         cardio: ex.category === 'cardio',
         unit: dkWUnitGet(),
+        unit_src: 'default', /* c121: history may override with the last-worked unit */
         sets: [{
           weight: null,
           reps: null,
@@ -16220,13 +16247,32 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       // Previous workout of the same client (for the comparison section).
       // Computed BEFORE saving so the current record is excluded.
       let prev = null;
+      let lastMap = null; /* c121: per-exercise last occurrence across the WHOLE history */
       try {
         const all = await db.all('workout_history');
         const cands = (all || []).filter(h => h.client_id === record.client_id && h.date < record.date);
         cands.sort((a, b) => b.date - a.date);
         prev = cands[0] || null;
+        /* c121: the report compares each exercise against the LAST TIME THAT
+           EXERCISE was done — not against one fixed previous workout. With
+           alternating days (A/B/C) the previous workout rarely contains this
+           day's exercises, which is why almost everything used to be «новое».
+           Each occurrence is indexed under BOTH its exercise_id and its
+           normalized name; the newest record wins (cands is newest-first). */
+        lastMap = {};
+        const _norm121 = s => String(s == null ? '' : s).trim().toLowerCase().replace(/\s+/g, ' ');
+        cands.forEach(h => {
+          (h.exercises || []).forEach(ex => {
+            if (!ex || !ex.sets || !ex.sets.length) return;
+            const payload = { unit: ex.unit === 'lb' ? 'lb' : 'kg', sets: ex.sets };
+            const idKey = String(ex.exercise_id || '');
+            if (idKey && !lastMap['id:' + idKey]) lastMap['id:' + idKey] = payload;
+            const nmKey = _norm121(ex.name);
+            if (nmKey && !lastMap['nm:' + nmKey]) lastMap['nm:' + nmKey] = payload;
+          });
+        });
       } catch (_) {}
-      openLiveReportModal(record, prev);
+      openLiveReportModal(record, prev, lastMap);
     }
 
     function liveDoneVolume(exSets) {
@@ -16248,7 +16294,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
     /** Post-workout report (same as client portal): tiles, per-exercise volume
      *  bars, comparison vs previous workout. Save persists, Continue resumes. */
-    function openLiveReportModal(record, prev) {
+    function openLiveReportModal(record, prev, lastMap) {
       closeLiveReportModal();
       const total = record.exercises.reduce((s, ex) => s + (ex.sets || []).length, 0);
       const done = record.exercises.reduce((s, ex) => s + liveDoneVolume(ex.sets).d, 0);
@@ -16257,8 +16303,6 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const mins = Math.round(record.duration / 60);
       const partial = done < total;
       const maxV = Math.max(1, ...record.exercises.map(ex => liveDoneVolume(ex.sets).v));
-      const prevByKey = {};
-      (prev ? prev.exercises || [] : []).forEach(ex => { prevByKey[ex.exercise_id || ex.key] = liveDoneVolume(ex.sets).v; });
       const tile = (v, l) => `<div class="bg-surface-2 border border-border rounded-2xl py-3 px-1 text-center"><div class="font-mono font-extrabold text-lg">${esc(String(v))}</div><div class="text-[10px] text-muted mt-0.5">${esc(l)}</div></div>`;
       const rows = record.exercises.map(ex => {
         const ev = liveDoneVolume(ex.sets).v;
@@ -16274,16 +16318,40 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       if (!prev) {
         cmp = `<div class="text-[12px] leading-relaxed">🌱 ${esc(t('report.baseline'))}</div>`;
       } else {
+        /* c121: per-exercise «last time» lookup over the whole history —
+           alternating days no longer fake «новое» everywhere. Found rows
+           show the last-time working sets (weight × reps in the unit the
+           trainee worked in, converted into this exercise's current unit)
+           and the RPE he rated. */
+        const _norm121 = s => String(s == null ? '' : s).trim().toLowerCase().replace(/\s+/g, ' ');
         cmp = record.exercises.map(ex => {
           const ev = liveDoneVolume(ex.sets).v;
-          const pv = prevByKey[ex.exercise_id];
+          const _idK = String(ex.exercise_id || '');
+          const _nmK = _norm121(ex.name);
+          const occ = (lastMap && ((_idK && lastMap['id:' + _idK]) || (_nmK && lastMap['nm:' + _nmK]))) || null;
+          const pv = occ ? liveDoneVolume(occ.sets).v : null;
           let chip;
           if (pv == null) chip = `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-accent/15 text-accent shrink-0">${esc(t('report.newBadge'))}</span>`;
           else if (ev > pv) chip = `<span class="font-mono text-[11px] font-bold text-success shrink-0">▲ +${ev - pv}</span>`;
           else if (ev < pv) chip = `<span class="font-mono text-[11px] font-bold text-danger shrink-0">▼ ${ev - pv}</span>`;
           else chip = `<span class="font-mono text-[11px] font-bold text-muted shrink-0">=</span>`;
-          return `<div class="flex items-center gap-2 py-1">
-            <span class="text-[11px] truncate flex-1 min-w-0">${esc(globalExName(ex))}</span>${chip}
+          let prevLine = '';
+          if (occ) {
+            const curUnit = ex.unit === 'lb' ? 'lb' : 'kg';
+            const ds = (occ.sets || []).filter(s => s && s.done);
+            const parts = ds.slice(0, 3).map(s => (s.time != null || s.dist != null)
+              ? `${s.time != null ? s.time : '—'}×${s.dist != null ? s.dist : '—'}`
+              : `${dkWConv(s.weight, occ.unit, curUnit) != null ? dkWConv(s.weight, occ.unit, curUnit) : '—'}×${s.reps != null ? s.reps : '—'}`);
+            if (ds.length > 3) parts.push('…');
+            const rpeS = ds.find(s => s.rpe != null);
+            const uShort = curUnit === 'lb' ? dkWUnitShort('lb') : dkWUnitShort('kg');
+            const wPart = ds.length && ds.some(s => s.time == null && s.dist == null) ? ` ${uShort}` : '';
+            prevLine = `<div class="text-[10px] text-muted mt-0.5 truncate">${esc(t('report.lastTime'))} ${esc(parts.join(' · ') || '—')}${wPart}${rpeS ? ` · RPE ${esc(String(rpeS.rpe))}` : ''}</div>`;
+          }
+          return `<div class="py-1 min-w-0">
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] truncate flex-1 min-w-0">${esc(globalExName(ex))}</span>${chip}
+            </div>${prevLine}
           </div>`;
         }).join('');
       }
@@ -16568,6 +16636,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           cardio: ex.cardio === true || ex.category === 'cardio',
           rest_sec: ex.rest_sec != null ? ex.rest_sec : 90,
           unit: ex.unit === 'lb' ? 'lb' : (ex.unit === 'kg' ? 'kg' : dkWUnitGet()),
+          unit_src: ex.unit === 'lb' || ex.unit === 'kg' ? 'program' : 'default', /* c121: history may override non-prescribed units */
           tunit: ex.tunit === 'min' || ex.tunit === 'sec' ? ex.tunit : null, /* c107 */
           is_superset: ex.is_superset === true, /* c107: superset pairs survive template → live */
           sets: (ex.sets || []).map(s => ({ ...s, done: false }))
@@ -30542,7 +30611,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 120; /* numeric part of dk-build c120 */
+  var RUNNING = 121; /* numeric part of dk-build c121 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

@@ -2632,6 +2632,7 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       reportTitle:'Отчёт о тренировке',reportPartial:'Частичная тренировка',tileSets:'Подходы',tileReps:'Повторы',tileVol:'Объём кг',tileMin:'мин',
       volPerEx:'Объём по упражнениям',compareTitle:'Сравнение с прошлой тренировкой',baselineNote:'Это первая записанная тренировка — она станет базой для прогресса!',
       btnSave:'Сохранить',btnContinue:'Продолжить тренировку',btnWA:'Поделиться в WhatsApp',badgeNew:'новое',
+      repLast:'Прошлый раз:',wunitKgShort:'кг',wunitLbShort:'фт',
       startHint:'Нажмите «В зал», чтобы заполнять подходы',volumeKg:'кг',
       sumDuration:'Длительность',sumVolume:'Объём',sumDone:'Подходы',
       chooseProgram:'Выберите программу',choosePlan:'Выберите план питания',
@@ -2680,6 +2681,7 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       reportTitle:'Workout Report',reportPartial:'Partial workout',tileSets:'Sets',tileReps:'Reps',tileVol:'Volume kg',tileMin:'min',
       volPerEx:'Volume per exercise',compareTitle:'vs previous workout',baselineNote:'First recorded workout — it becomes your progress baseline!',
       btnSave:'Save',btnContinue:'Continue workout',btnWA:'Share via WhatsApp',badgeNew:'new',
+      repLast:'Last time:',wunitKgShort:'kg',wunitLbShort:'lb',
       startHint:'Tap "Start" to fill in your sets',volumeKg:'kg',
       sumDuration:'Duration',sumVolume:'Volume',sumDone:'Sets',
       chooseProgram:'Choose program',choosePlan:'Choose nutrition plan',
@@ -2728,6 +2730,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       reportTitle:'דו״ח אימון',reportPartial:'אימון חלקי',tileSets:'סטים',tileReps:'חזרות',tileVol:'נפח ק״ג',tileMin:'דק׳',
       volPerEx:'נפח לפי תרגילים',compareTitle:'השוואה לאימון קודם',baselineNote:'זהו האימון המתועד הראשון — הוא יהווה בסיס להתקדמות!',
       btnSave:'שמור',btnContinue:'המשך אימון',btnWA:'שתף בוואטסאפ',badgeNew:'חדש',
+      repLast:'פעם קודמת:',wunitKgShort:'ק״ג',wunitLbShort:'lb',
       startHint:'לחץ "התחל" כדי למלא את הסטים',volumeKg:'ק״ג',
       sumDuration:'משך',sumVolume:'נפח',sumDone:'סטים',
       chooseProgram:'בחר תוכנית',choosePlan:'בחר תוכנית תזונה',
@@ -3564,17 +3567,44 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   }
   function loadHistory() { try { return JSON.parse(localStorage.getItem(nsKey('dk_workout_history'))||'[]'); } catch(e){ return []; } }
   function saveHistory(list) { localStorage.setItem(nsKey('dk_workout_history'), JSON.stringify(list.slice(-200))); }
-  function findPrev(programName, dayLetter, key, setIndex) {
+  /* ===== c121: per-exercise history lookup — «what did I lift last time?» =====
+   * The old findPrev required an EXACT program-name + day-letter match, so
+   * trainer-mirrored records («Программа — День A» names, legacy records
+   * without day_letter) never matched and working weights/reps were lost —
+   * and units fell back to the GLOBAL default instead of the unit the trainee
+   * actually worked in (kg stayed kg, lb stayed lb). Now: newest-first scan
+   * with 3 passes — (1) same program + same day, (2) same program any day,
+   * (3) any record — matching by exercise key OR normalized name. */
+  function dkPHistNorm(s) { return String(s == null ? '' : s).trim().toLowerCase().replace(/\s+/g, ' '); }
+  function dkPHistExMatch(he, key, curName) {
+    if (!he) return false;
+    if (key && String(he.key || '') === String(key)) return true;
+    const n = dkPHistNorm(curName);
+    if (n && (dkPHistNorm(he.name) === n || dkPHistNorm(he.key) === n)) return true;
+    return false;
+  }
+  function dkPFindLastEx(progName, letter, key, curName) {
     const list = loadHistory();
-    for (let i = list.length - 1; i >= 0; i--) {
-      const r = list[i];
-      if (r.program !== programName || r.day_letter !== dayLetter) continue;
-      const ex = (r.exercises||[]).find(e => e.key === key);
-      if (!ex || !ex.sets || !ex.sets.length) continue;
-      const s = ex.sets[Math.min(setIndex, ex.sets.length-1)];
-      return { weight: s.weight, reps: s.reps, rpe: s.rpe, time: s.time, dist: s.dist, unit: ex.unit === 'lb' ? 'lb' : 'kg' }; /* c96: unit of the history exercise */
+    for (let pass = 0; pass < 3; pass++) {
+      for (let i = list.length - 1; i >= 0; i--) {
+        const r = list[i];
+        if (!r || !Array.isArray(r.exercises)) continue;
+        if (pass === 0 && !(r.program === progName && (!letter || r.day_letter === letter))) continue;
+        if (pass === 1 && r.program !== progName) continue;
+        const he = r.exercises.find(e => dkPHistExMatch(e, key, curName));
+        if (he && he.sets && he.sets.length) {
+          return { unit: he.unit === 'lb' ? 'lb' : 'kg', sets: he.sets, ts: Number(r.ts) || 0 };
+        }
+      }
     }
     return null;
+  }
+  function findPrev(programName, dayLetter, key, setIndex, curName) {
+    const hit = dkPFindLastEx(programName, dayLetter, key, curName);
+    if (!hit) return null;
+    const s = hit.sets[Math.min(setIndex, hit.sets.length - 1)];
+    if (!s) return null;
+    return { weight: s.weight, reps: s.reps, rpe: s.rpe, time: s.time, dist: s.dist, unit: hit.unit }; /* c96: unit of the history exercise */
   }
 
   /* ===== c96: per-exercise weight unit (Hevy parity with the trainer app) =====
@@ -3951,7 +3981,14 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       started_at: withStart ? Date.now() : null,
       exercises: (day.exercises||[]).map(ex => {
         /* c104: the program's prescribed weight unit wins over the default */
-        const exUnit0 = (ex.unit === 'lb' || ex.unit === 'kg') ? ex.unit : dkPDefaultUnit();
+        /* c121: no prescribed unit → the unit the trainee ACTUALLY worked in
+           last time (per exercise, across history) → only then the global default */
+        const _key121 = exKey(ex);
+        const _name121 = ex['name_' + currentLang] || ex.name_en || ex.name || '';
+        const _lastEx121 = dkPFindLastEx(progName, letter, _key121, _name121);
+        const exUnit0 = (ex.unit === 'lb' || ex.unit === 'kg') ? ex.unit
+          : (_lastEx121 && _lastEx121.unit) ? _lastEx121.unit
+          : dkPDefaultUnit();
         return {
         exercise_id: exKey(ex),
         rest_sec: (function(){ const rv = parseInt(ex.rest_sec,10); return (!isNaN(rv) && rv >= 0) ? rv : 90; })(),
@@ -3959,7 +3996,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         tunit: (ex.tunit === 'min' || ex.tunit === 'sec') ? ex.tunit : null, /* c104: prescribed min/sec for cardio/stretch */
         is_superset: ex.is_superset === true, /* c104: superset pair highlight */
         sets: (ex.sets||[]).map((s, si) => {
-          const hist = findPrev(progName, letter, exKey(ex), si);
+          const hist = findPrev(progName, letter, exKey(ex), si, _name121);
           const pw = hist ? dkPConv(hist.weight, hist.unit || 'kg', exUnit0) : (Number(s.weight)||null); /* c96: prev converts into the session unit */
           const pr = hist ? hist.reps : (Number(s.reps)||null);
           /* c90: also carry the last workout's effort + cardio time/dist */
@@ -4683,8 +4720,6 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     const mins = Math.round(rec.duration_sec / 60);
     const partial = done < total;
     const maxV = Math.max(1, ...rec.exercises.map(ex => exDoneVolume(ex.sets).v));
-    const prevByKey = {};
-    (prev ? prev.exercises || [] : []).forEach(ex => { prevByKey[ex.key] = exDoneVolume(ex.sets).v; });
     const tiles = [
       [`${done}/${total}`, t('tileSets')],
       [`${reps}`, t('tileReps')],
@@ -4705,16 +4740,49 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     if (!prev) {
       cmp = `<div class="text-[12px] text-text leading-relaxed">🌱 ${esc(t('baselineNote'))}</div>`;
     } else {
+      /* c121: compare each exercise against the LAST time THIS exercise was
+         done (whole history, key → normalized-name fallback), not just the
+         previous workout — alternating days no longer fake «новое» everywhere.
+         The row also shows what the trainee actually lifted last time
+         (working weight × reps in the unit he worked in, + RPE). */
+      const lastMap121 = {};
+      /* newest-first: storage order is ascending, the LAST occurrence must win */
+      loadHistory().filter(h => h.ts < rec.ts).sort((a, b) => (b.ts || 0) - (a.ts || 0)).forEach(h => {
+        (h.exercises || []).forEach(he => {
+          if (!he || !he.sets || !he.sets.length) return;
+          const ids = [];
+          if (he.key != null && he.key !== '') ids.push('id:' + String(he.key));
+          const nn = dkPHistNorm(he.name);
+          if (nn) ids.push('nm:' + nn);
+          ids.forEach(id => { if (!lastMap121[id]) lastMap121[id] = { unit: he.unit === 'lb' ? 'lb' : 'kg', sets: he.sets }; });
+        });
+      });
       cmp = rec.exercises.map(ex => {
         const ev = exDoneVolume(ex.sets).v;
-        const pv = prevByKey[ex.key];
+        const occ = lastMap121['id:' + String(ex.key == null ? '' : ex.key)] || lastMap121['nm:' + dkPHistNorm(ex.name)] || null;
+        const pv = occ ? exDoneVolume(occ.sets).v : null;
         let chip;
         if (pv == null) chip = `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-cyan-400/15 text-cyan-300 shrink-0">${esc(t('badgeNew'))}</span>`;
         else if (ev > pv) chip = `<span class="font-mono text-[11px] font-bold text-emerald-400 shrink-0">▲ +${ev - pv}</span>`;
         else if (ev < pv) chip = `<span class="font-mono text-[11px] font-bold text-red-400 shrink-0">▼ ${ev - pv}</span>`;
         else chip = `<span class="font-mono text-[11px] font-bold text-muted shrink-0">=</span>`;
-        return `<div class="flex items-center gap-2 py-1">
-          <span class="text-[11px] text-text truncate flex-1 min-w-0">${esc(ex.name)}</span>${chip}
+        let prevLine = '';
+        if (occ) {
+          const curUnit = ex.unit === 'lb' ? 'lb' : 'kg';
+          const ds = (occ.sets || []).filter(s => s && s.done);
+          const parts = ds.slice(0, 3).map(s => (s.time != null || s.dist != null)
+            ? `${s.time != null ? s.time : '—'}×${s.dist != null ? s.dist : '—'}`
+            : `${dkPConv(s.weight, occ.unit, curUnit) != null ? dkPConv(s.weight, occ.unit, curUnit) : '—'}×${s.reps != null ? s.reps : '—'}`);
+          if (ds.length > 3) parts.push('…');
+          const rpeS = ds.find(s => s.rpe != null);
+          const uShort = curUnit === 'lb' ? t('wunitLbShort') : t('wunitKgShort');
+          const wPart = ds.length && ds.some(s => s.time == null && s.dist == null) ? ` ${uShort}` : '';
+          prevLine = `<div class="text-[10px] text-muted mt-0.5 truncate">${esc(t('repLast'))} ${esc(parts.join(' · ') || '—')}${wPart}${rpeS ? ` · RPE ${esc(String(rpeS.rpe))}` : ''}</div>`;
+        }
+        return `<div class="py-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[11px] text-text truncate flex-1 min-w-0">${esc(ex.name)}</span>${chip}
+          </div>${prevLine}
         </div>`;
       }).join('');
     }
