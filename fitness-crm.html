@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c127" />
+<meta name="dk-build" content="c128" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2849,7 +2849,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c127</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c128</p>
             </div>
           </div>
 
@@ -4228,12 +4228,19 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                   </div>
                 </div>
                 <div id="analytics-calendar" class="space-y-3"></div>
+                <p class="text-[11px] text-muted mt-2" data-i18n="analytics.tapDay">Tap a workout day to open its analytics.</p>
               </div>
+
+              <!-- c128: DAY drill-down panel — filled when the trainer taps a
+                   workout day in the calendar above -->
+              <div id="analytics-day-detail" class="hidden bg-surface border border-amber-500/30 rounded-2xl shadow-card p-5"></div>
 
               <!-- Volume per muscle group — c127: honest engine (done-only, kg, synergists 30%) -->
               <div class="bg-surface border border-border rounded-2xl shadow-card p-5">
                 <h3 class="font-display font-bold text-sm mb-1" data-i18n="analytics.volumePerMuscle">Volume per muscle group</h3>
-                <p class="text-[10px] text-muted mb-3" data-i18n="analytics.doneOnlyHint">Completed sets only · kg (lb converted) · synergists 30%</p>
+                <p class="text-[10px] text-muted mb-2" data-i18n="analytics.doneOnlyHint">Completed sets only · kg (lb converted) · synergists 30%</p>
+                <!-- c128: honest total for the SELECTED range (day/week/month) -->
+                <p id="analytics-volume-total" class="text-[11px] text-muted mb-3"></p>
                 <div id="analytics-volume" class="space-y-2">
                   <div class="text-center py-6 text-sm text-muted" data-i18n="analytics.noData">No workout history yet. Volume charts will appear after the first logged workout (Phase 3).</div>
                 </div>
@@ -12695,6 +12702,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
   screens.analytics = (function () {
     let _clientId = null;
     let _range = 'week';   // day | week | month
+    /* c128: drill-down state — the tapped calendar day (YYYY-MM-DD) + the
+       last fetched data cache so day panels render without refetching */
+    let _daySel = null;
+    let _lastWorkouts = [];
+    let _lastNutrition = [];
     let _clients = [];
 
     /** Populate the client selector dropdown. */
@@ -12716,12 +12728,16 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     /** Load analytics for a specific client. */
     async function loadClient(clientId) {
       _clientId = clientId || null;
+      _daySel = null; /* c128: client switch closes the day drill-down */
+      hideDayDetail();
       render();
     }
 
     /** Change the date range (day/week/month). */
     function setRange(r) {
       _range = r;
+      _daySel = null; /* c128: range switch closes the day drill-down */
+      hideDayDetail();
       // Update active button styling
       document.querySelectorAll('.analytics-range-btn').forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('data-range') === r);
@@ -12776,10 +12792,24 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       } catch (_) {}
 
       // Compute metrics
+      /* c128: cache for the day drill-down (no refetch on a day tap) */
+      _lastWorkouts = workoutsAll || [];
+      _lastNutrition = nutrition || [];
       const metrics = computeMetrics(workoutsAll, nutrition);
       renderMetrics(metrics);
       renderCalendar(workoutsAll, nutrition);
-      renderVolume(workoutsAll);
+      /* c128: the volume panel now RESPECTS the Day/Week/Month selector —
+         it used to render the WHOLE history no matter the range, which made
+         the three buttons cosmetically identical */
+      const rangeDays128 = _range === 'day' ? 1 : _range === 'week' ? 7 : 30;
+      const start128 = new Date();
+      start128.setHours(0, 0, 0, 0);
+      start128.setDate(start128.getDate() - rangeDays128 + 1);
+      const startTs128 = start128.getTime();
+      const inRange128 = (workoutsAll || []).filter(w => (Number(w.date) || Number(w.created_at) || 0) >= startTs128);
+      renderVolume(inRange128);
+      if (_daySel) renderDayDetail(_daySel);
+      else hideDayDetail();
     }
 
     /** Compute all key metrics from raw history arrays. */
@@ -12967,14 +12997,18 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
                       : intensity === 1 ? 'bg-primary/30 text-primary-2'
                       : 'bg-surface-2 text-muted';
         const todayRing = isToday ? 'ring-2 ring-accent ring-offset-2 ring-offset-surface' : '';
+        /* c128: workout days are REAL buttons — tap opens that day's analytics
+           (drill-down panel). Nutrition-only / empty days stay static. */
+        const selRing128 = (info.workout && _daySel === key) ? ' ring-2 ring-warning ring-offset-2 ring-offset-surface' : '';
+        const cell128 = info.workout
+          ? `<button type="button" data-day-key="${key}" class="w-10 h-10 rounded-lg ${bgClass} ${todayRing}${selRing128} grid place-items-center font-mono font-bold text-xs transition cursor-pointer hover:opacity-90" title="${escapeHTML(t('analytics.tapDay'))}" aria-label="${escapeHTML(key)}">${intensity === 2 ? '✓' : intensity === 1 ? '·' : ''}</button>`
+          : `<div class="w-10 h-10 rounded-lg ${bgClass} ${todayRing} grid place-items-center font-mono font-bold text-xs transition" title="${escapeHTML(weekday + ' ' + dayNum + ' ' + monthShort)}">${intensity === 2 ? '✓' : intensity === 1 ? '·' : ''}</div>`;
 
         days.push(`
           <div class="flex flex-col items-center gap-1">
             <div class="text-[10px] font-semibold text-muted uppercase">${escapeHTML(weekday)}</div>
             <div class="text-[10px] text-muted">${escapeHTML(String(dayNum))} ${escapeHTML(monthShort)}</div>
-            <div class="w-10 h-10 rounded-lg ${bgClass} ${todayRing} grid place-items-center font-mono font-bold text-xs transition" title="${escapeHTML(weekday + ' ' + dayNum + ' ' + monthShort)}">
-              ${intensity === 2 ? '✓' : intensity === 1 ? '·' : ''}
-            </div>
+            ${cell128}
           </div>
         `);
       }
@@ -13036,12 +13070,106 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       if (!lbl) return key || '';
       return lbl[lang] || lbl.en;
     }
+    /* c128: shared group/synergist resolver — ONE source for the volume panel
+       AND the day drill-down (was inline in renderVolume only) */
+    function resolveExCrm(ex) {
+      const rawGroup = ex.muscle_group || ex.group || '';
+      const cachedEx = (ex.exercise_id && typeof lookupExerciseGlobal === 'function') ? lookupExerciseGlobal(ex.exercise_id) : null;
+      const group = (cachedEx && cachedEx.group_canonical) || (ex.g && dkMuscleGroupKey(ex.g)) || dkMuscleGroupKey(rawGroup) || rawGroup || 'Unknown';
+      const syn = (cachedEx && Array.isArray(cachedEx.synergists)) ? cachedEx.synergists.map(s => dkMuscleGroupKey(s) || s) : (Array.isArray(ex.syn) ? ex.syn.map(s => dkMuscleGroupKey(s) || s) : []);
+      return { group: group, synergists: syn };
+    }
+
+    /* c128: DAY drill-down — the trainer taps a workout day in the activity
+       calendar and gets THAT day's honest analytics: summary, per-muscle
+       bars (same engine, same credit as the range panel) and every exercise
+       of the day with done/total sets and what was actually lifted. */
+    function hideDayDetail() {
+      const el = document.getElementById('analytics-day-detail');
+      if (el) el.classList.add('hidden');
+    }
+    function renderDayDetail(key) {
+      const el = document.getElementById('analytics-day-detail');
+      if (!el) return;
+      const recs = (_lastWorkouts || []).filter(w => {
+        const d = new Date(w.date || w.created_at);
+        return !isNaN(d) && dateKey(d) === key;
+      });
+      const doneAny = recs.some(w => (w.exercises || []).some(ex => (ex.sets || []).some(s => s && s.done !== false)));
+      if (!recs.length || !doneAny) { el.classList.add('hidden'); return; }
+      const eng = window.dkAnalyticsEngine;
+      let totalKg = 0, totalSets = 0, bars = '';
+      if (eng && typeof eng.volumeByMuscle === 'function') {
+        try {
+          const res = eng.volumeByMuscle(recs, { resolveEx: resolveExCrm });
+          totalKg = res.totalKg; totalSets = res.totalSets;
+          const sorted = Object.keys(res.byGroup).map(g => [g, res.byGroup[g].volumeKg, res.byGroup[g].sets]).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1]);
+          const max = sorted.length ? sorted[0][1] : 1;
+          bars = sorted.map(([g, v, sets]) => `
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="font-semibold">${escapeHTML(dkLocalizeMuscleGroup(g))}</span>
+                <span class="font-mono text-muted">${fmtNumber(Math.round(v))} kg · ${sets} ${escapeHTML(t('analytics.setsShort') || 'sets')}</span>
+              </div>
+              <div class="h-2 bg-surface-2 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-primary to-accent rounded-full" style="width: ${Math.max(3, Math.round(v / max * 100))}%"></div>
+              </div>
+            </div>`).join('');
+        } catch (e128) { console.warn('[analytics] day volume failed:', e128); }
+      }
+      const totalMin = recs.reduce((s, w) => s + Math.round((Number(w.duration_sec) || 0) / 60), 0);
+      const rows = recs.map(w => (w.exercises || []).map(ex => {
+        const sets = ex.sets || [];
+        const ds = sets.filter(s => s && s.done !== false);
+        const parts = ds.slice(0, 4).map(s => (s.time != null || s.dist != null)
+          ? `${s.time != null ? s.time : '—'}×${s.dist != null ? s.dist : '—'}`
+          : `${s.weight != null ? s.weight : '—'}×${s.reps != null ? s.reps : '—'}`);
+        if (ds.length > 4) parts.push('…');
+        return `<div class="flex items-center gap-2 bg-surface-2/60 px-2.5 py-1.5 rounded-xl text-[11px]">
+          <span class="font-semibold truncate flex-1 min-w-0">${escapeHTML(ex.name || '?')}</span>
+          <span class="font-mono text-muted shrink-0">${ds.length}/${sets.length}</span>
+          <span class="font-mono text-muted shrink-0 truncate max-w-[38%] text-end">${parts.length ? escapeHTML(parts.join(' · ')) : '—'}</span>
+        </div>`;
+      }).join('')).join('');
+      const d0 = new Date(recs[0].date || recs[0].created_at);
+      const dateLbl = !isNaN(d0) ? d0.toLocaleDateString(localeString(), { day: '2-digit', month: '2-digit' }) : key;
+      el.innerHTML = `
+        <div class="flex items-center gap-2 mb-1">
+          <h3 class="font-display font-bold text-sm">📅 ${escapeHTML(t('analytics.dayTitle'))} · ${escapeHTML(dateLbl)}</h3>
+          <button id="analytics-day-close" class="ms-auto text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-surface-2 border border-border text-muted hover:text-text transition shrink-0">✕ ${escapeHTML(t('analytics.closeDay'))}</button>
+        </div>
+        <p class="text-[11px] text-muted mb-3">${recs.length} ${escapeHTML(t('analytics.workoutsShort') || '')} · <span class="font-mono">${fmtNumber(Math.round(totalKg))} kg</span> · ${totalSets} ${escapeHTML(t('analytics.setsShort') || 'sets')}${totalMin ? ' · ' + totalMin + ' ' + escapeHTML(t('analytics.minShort') || 'min') : ''}</p>
+        <div class="space-y-2">${bars || `<div class="text-center py-3 text-xs text-muted">${escapeHTML(t('analytics.noData'))}</div>`}</div>
+        <div class="mt-3 text-[12px] font-extrabold">${escapeHTML(t('analytics.dayExs'))}</div>
+        <div class="mt-1 space-y-1 max-h-64 overflow-y-auto">${rows}</div>`;
+      el.classList.remove('hidden');
+      const close = document.getElementById('analytics-day-close');
+      if (close) close.addEventListener('click', () => {
+        _daySel = null;
+        hideDayDetail();
+        renderCalendar(_lastWorkouts, _lastNutrition);
+      });
+      try { el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (_) {}
+    }
+
+    /* c128: wire the day drill-down ONCE (the calendar element is static) */
+    const calEl128 = document.getElementById('analytics-calendar');
+    if (calEl128) calEl128.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-day-key]');
+      if (!b) return;
+      _daySel = b.getAttribute('data-day-key');
+      renderCalendar(_lastWorkouts, _lastNutrition);
+      renderDayDetail(_daySel);
+    });
+
     /** Render volume per muscle group (placeholder until Phase 3 logs data). */
     function renderVolume(workouts) {
       const vol = document.getElementById('analytics-volume');
       if (!vol) return;
+      const totEl = document.getElementById('analytics-volume-total');
       if (workouts.length === 0) {
         vol.innerHTML = `<div class="text-center py-6 text-sm text-muted">${escapeHTML(t('analytics.noData'))}</div>`;
+        if (totEl) totEl.textContent = '';
         return;
       }
       /* c127: the SHARED analytics engine (src/analytics-engine.js) — DONE
@@ -13052,22 +13180,16 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
          formula kept only as a fallback when the module failed to load. */
       let groupVolumes = new Map();
       let setsByGroup = new Map();
+      let totalKg128 = 0, totalSets128 = 0;
       const eng = window.dkAnalyticsEngine;
       if (eng && typeof eng.volumeByMuscle === 'function') {
         try {
-          const res = eng.volumeByMuscle(workouts, {
-            resolveEx: function (ex) {
-              const rawGroup = ex.muscle_group || ex.group || '';
-              const cachedEx = (ex.exercise_id && typeof lookupExerciseGlobal === 'function') ? lookupExerciseGlobal(ex.exercise_id) : null;
-              const group = (cachedEx && cachedEx.group_canonical) || (ex.g && dkMuscleGroupKey(ex.g)) || dkMuscleGroupKey(rawGroup) || rawGroup || 'Unknown';
-              const syn = (cachedEx && Array.isArray(cachedEx.synergists)) ? cachedEx.synergists.map(s => dkMuscleGroupKey(s) || s) : (Array.isArray(ex.syn) ? ex.syn.map(s => dkMuscleGroupKey(s) || s) : []);
-              return { group: group, synergists: syn };
-            }
-          });
+          const res = eng.volumeByMuscle(workouts, { resolveEx: resolveExCrm });
           Object.keys(res.byGroup).forEach(g => {
             groupVolumes.set(g, res.byGroup[g].volumeKg);
             setsByGroup.set(g, res.byGroup[g].sets);
           });
+          totalKg128 = res.totalKg; totalSets128 = res.totalSets;
         } catch (e127) { console.warn('[analytics] engine volumeByMuscle failed → legacy:', e127); }
       }
       if (!groupVolumes.size) {
@@ -13082,13 +13204,19 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             const vol = sets.reduce((sum, s) => sum + (s.weight || 0) * (s.reps || 0), 0);
             groupVolumes.set(group, (groupVolumes.get(group) || 0) + vol);
             setsByGroup.set(group, 0);
+            totalKg128 += vol;
+            totalSets128 += sets.filter(s => s && s.done !== false).length;
           });
         });
       }
       if (groupVolumes.size === 0) {
         vol.innerHTML = `<div class="text-center py-6 text-sm text-muted">${escapeHTML(t('analytics.noData'))}</div>`;
+        if (totEl) totEl.textContent = '';
         return;
       }
+      /* c128: the honest TOTAL for the selected range (the «общий объём работы
+         за неделю/месяц» line) above the per-muscle distribution */
+      if (totEl) totEl.innerHTML = `${escapeHTML(t('analytics.rangeTotal'))}: <span class="font-mono">${fmtNumber(Math.round(totalKg128))} kg</span> · ${totalSets128} ${escapeHTML(t('analytics.setsShort') || 'sets')}`;
       const sorted = [...groupVolumes.entries()].sort((a, b) => b[1] - a[1]);
       const max = sorted[0][1] || 1;
       vol.innerHTML = sorted.map(([group, v]) => {
@@ -31098,7 +31226,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 127; /* numeric part of dk-build c127 */
+  var RUNNING = 128; /* numeric part of dk-build c128 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
