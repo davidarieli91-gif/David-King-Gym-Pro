@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c125" />
+<meta name="dk-build" content="c126" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2847,7 +2847,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c125</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c126</p>
             </div>
           </div>
 
@@ -15144,11 +15144,20 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       /* c121: register each occurrence under BOTH its exercise_id and its
          normalized name, so live exercises without a matching id still find
          their last-time values (same fallback the report uses) */
+      /* c126: DONE-ONLY — the history saves every set with its done flag,
+         including never-touched sets that still carry the program's
+         PRESCRIBED weight/reps (startFromProgram prefills them, finish()
+         stores them). Those prescriptions used to surface in the ПРЕД.
+         column as if the trainee had lifted them whenever his real sets ran
+         out first or he skipped the tail of the exercise. Same rule the
+         recovery engine uses: skip only EXPLICIT done === false — legacy
+         records without the flag still count, so old history keeps working. */
       const _norm121 = s => String(s == null ? '' : s).trim().toLowerCase().replace(/\s+/g, ' ');
       sorted.forEach(rec => {
         (rec.exercises || []).forEach(ex => {
-          if (!ex.sets || !ex.sets.length) return;
-          const payload = { unit: ex.unit === 'lb' ? 'lb' : 'kg', sets: ex.sets };
+          const ds126 = (ex.sets || []).filter(s => s && s.done !== false);
+          if (!ds126.length) return; /* prescription-only / fully skipped → no fake prev from it */
+          const payload = { unit: ex.unit === 'lb' ? 'lb' : 'kg', sets: ds126 };
           const idKey = String(ex.exercise_id || '');
           if (idKey && !map['id:' + idKey]) map['id:' + idKey] = payload;
           const nmKey = _norm121(ex.name);
@@ -16278,10 +16287,14 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
            normalized name; the newest record wins (cands is newest-first). */
         lastMap = {};
         const _norm121 = s => String(s == null ? '' : s).trim().toLowerCase().replace(/\s+/g, ' ');
+        /* c126: done-only payload (see fetchLastRef) — the report's diff and
+           «Прошлый раз» line must describe what was actually LIFTED, never
+           the prescriptions sitting in skipped sets */
         cands.forEach(h => {
           (h.exercises || []).forEach(ex => {
-            if (!ex || !ex.sets || !ex.sets.length) return;
-            const payload = { unit: ex.unit === 'lb' ? 'lb' : 'kg', sets: ex.sets };
+            const ds126 = ex && ex.sets ? ex.sets.filter(s => s && s.done !== false) : [];
+            if (!ds126.length) return;
+            const payload = { unit: ex.unit === 'lb' ? 'lb' : 'kg', sets: ds126 };
             const idKey = String(ex.exercise_id || '');
             if (idKey && !lastMap['id:' + idKey]) lastMap['id:' + idKey] = payload;
             const nmKey = _norm121(ex.name);
@@ -16294,7 +16307,10 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
     function liveDoneVolume(exSets) {
       let v = 0, r = 0, d = 0;
-      (exSets || []).forEach(s => { if (s.done) { v += (Number(s.weight) || 0) * (Number(s.reps) || 0); r += (Number(s.reps) || 0); d++; } });
+      /* c126: done !== false — current sessions always carry explicit flags
+         (behavior identical), legacy history rows without the flag count
+         instead of vanishing into a fake «новое» / «▲ full volume» diff */
+      (exSets || []).forEach(s => { if (s && s.done !== false) { v += (Number(s.weight) || 0) * (Number(s.reps) || 0); r += (Number(s.reps) || 0); d++; } });
       return { v: Math.round(v), r, d };
     }
 
@@ -16355,7 +16371,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           let prevLine = '';
           if (occ) {
             const curUnit = ex.unit === 'lb' ? 'lb' : 'kg';
-            const ds = (occ.sets || []).filter(s => s && s.done);
+            const ds = (occ.sets || []).filter(s => s && s.done !== false); /* c126: tolerant — payload is pre-filtered, legacy rows without flags stay visible */
             const parts = ds.slice(0, 3).map(s => (s.time != null || s.dist != null)
               ? `${s.time != null ? s.time : '—'}×${s.dist != null ? s.dist : '—'}`
               : `${dkWConv(s.weight, occ.unit, curUnit) != null ? dkWConv(s.weight, occ.unit, curUnit) : '—'}×${s.reps != null ? s.reps : '—'}`);
@@ -31034,7 +31050,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 125; /* numeric part of dk-build c125 */
+  var RUNNING = 126; /* numeric part of dk-build c126 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

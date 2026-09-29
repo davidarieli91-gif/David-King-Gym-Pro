@@ -3656,8 +3656,15 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         if (pass === 0 && !(r.program === progName && (!letter || r.day_letter === letter))) continue;
         if (pass === 1 && r.program !== progName) continue;
         const he = r.exercises.find(e => dkPHistExMatch(e, key, curName));
-        if (he && he.sets && he.sets.length) {
-          return { unit: he.unit === 'lb' ? 'lb' : 'kg', sets: he.sets, ts: Number(r.ts) || 0 };
+        /* c126: DONE-ONLY — history stores every set with its done flag,
+           including never-touched sets that still carry the PROGRAM'S
+           PRESCRIBED weight/reps. Those prescriptions used to surface in the
+           «Пред.» hints as if the trainee had lifted them. Same rule the
+           recovery engine uses: skip only EXPLICIT done === false, so legacy
+           records without the flag still count. */
+        const ds126 = he && he.sets ? he.sets.filter(s => s && s.done !== false) : [];
+        if (he && ds126.length) {
+          return { unit: he.unit === 'lb' ? 'lb' : 'kg', sets: ds126, ts: Number(r.ts) || 0 };
         }
       }
     }
@@ -5031,7 +5038,10 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   /* --- finish workout --- */
   function exDoneVolume(exSets) {
     let v = 0, r = 0, d = 0;
-    (exSets || []).forEach(s => { if (s.done) { v += (Number(s.weight) || 0) * (Number(s.reps) || 0); r += (Number(s.reps) || 0); d++; } });
+    /* c126: done !== false — current sessions always carry explicit flags
+       (behavior identical), legacy history rows without the flag count
+       instead of producing a fake «новое» / «▲ full volume» diff */
+    (exSets || []).forEach(s => { if (s && s.done !== false) { v += (Number(s.weight) || 0) * (Number(s.reps) || 0); r += (Number(s.reps) || 0); d++; } });
     return { v: Math.round(v), r, d };
   }
   function fmtDay(d) {
@@ -5082,14 +5092,19 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
          (working weight × reps in the unit he worked in, + RPE). */
       const lastMap121 = {};
       /* newest-first: storage order is ascending, the LAST occurrence must win */
+      /* c126: done-only payload (same rule as dkPFindLastEx / the recovery
+         engine) — never describe prescriptions from skipped sets as
+         «прошлый раз» */
       loadHistory().filter(h => h.ts < rec.ts).sort((a, b) => (b.ts || 0) - (a.ts || 0)).forEach(h => {
         (h.exercises || []).forEach(he => {
           if (!he || !he.sets || !he.sets.length) return;
+          const ds126 = he.sets.filter(s => s && s.done !== false);
+          if (!ds126.length) return;
           const ids = [];
           if (he.key != null && he.key !== '') ids.push('id:' + String(he.key));
           const nn = dkPHistNorm(he.name);
           if (nn) ids.push('nm:' + nn);
-          ids.forEach(id => { if (!lastMap121[id]) lastMap121[id] = { unit: he.unit === 'lb' ? 'lb' : 'kg', sets: he.sets }; });
+          ids.forEach(id => { if (!lastMap121[id]) lastMap121[id] = { unit: he.unit === 'lb' ? 'lb' : 'kg', sets: ds126 }; });
         });
       });
       cmp = rec.exercises.map(ex => {
@@ -5104,7 +5119,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         let prevLine = '';
         if (occ) {
           const curUnit = ex.unit === 'lb' ? 'lb' : 'kg';
-          const ds = (occ.sets || []).filter(s => s && s.done);
+          const ds = (occ.sets || []).filter(s => s && s.done !== false); /* c126: tolerant — payload is pre-filtered, legacy rows without flags stay visible */
           const parts = ds.slice(0, 3).map(s => (s.time != null || s.dist != null)
             ? `${s.time != null ? s.time : '—'}×${s.dist != null ? s.dist : '—'}`
             : `${dkPConv(s.weight, occ.unit, curUnit) != null ? dkPConv(s.weight, occ.unit, curUnit) : '—'}×${s.reps != null ? s.reps : '—'}`);
