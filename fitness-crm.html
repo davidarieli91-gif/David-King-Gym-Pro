@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c126" />
+<meta name="dk-build" content="c127" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -56,6 +56,8 @@
   <script type="module" src="src/i18n.js"></script>
   <!-- c122: shared recovery engine v2 — ONE model for the trainer map AND the portal map -->
   <script type="module" src="src/recovery-engine.js"></script>
+  <!-- c127: shared analytics engine — ONE honest analytics core for BOTH apps (done-only, kg-normalized, e1RM, PRs) -->
+  <script type="module" src="src/analytics-engine.js"></script>
   <!-- Local QR generation (privacy: no third-party QR services) -->
   <script src="vendor/qrcode.min.js"></script>
 
@@ -2847,7 +2849,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c126</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c127</p>
             </div>
           </div>
 
@@ -4228,9 +4230,10 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 <div id="analytics-calendar" class="space-y-3"></div>
               </div>
 
-              <!-- Volume per muscle group (placeholder until Phase 3 logs workout history) -->
+              <!-- Volume per muscle group — c127: honest engine (done-only, kg, synergists 30%) -->
               <div class="bg-surface border border-border rounded-2xl shadow-card p-5">
-                <h3 class="font-display font-bold text-sm mb-3" data-i18n="analytics.volumePerMuscle">Volume per muscle group</h3>
+                <h3 class="font-display font-bold text-sm mb-1" data-i18n="analytics.volumePerMuscle">Volume per muscle group</h3>
+                <p class="text-[10px] text-muted mb-3" data-i18n="analytics.doneOnlyHint">Completed sets only · kg (lb converted) · synergists 30%</p>
                 <div id="analytics-volume" class="space-y-2">
                   <div class="text-center py-6 text-sm text-muted" data-i18n="analytics.noData">No workout history yet. Volume charts will appear after the first logged workout (Phase 3).</div>
                 </div>
@@ -13041,23 +13044,47 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         vol.innerHTML = `<div class="text-center py-6 text-sm text-muted">${escapeHTML(t('analytics.noData'))}</div>`;
         return;
       }
-      // Phase 3 will fill this with real volume data. For now show a count.
-      // Aggregate by muscle group from workout.exercises[].muscle_group
-      // c91: group strings were frozen in the build-time UI language —
-      // aggregate by CANONICAL key (cache group_canonical → reverse map) so
-      // records built under different UI languages merge into one bar.
-      const groupVolumes = new Map();
-      workouts.forEach(w => {
-        const exercises = w.exercises || [];
-        exercises.forEach(ex => {
-          const rawGroup = ex.muscle_group || ex.group || '';
-          const cachedEx = (ex.exercise_id && typeof lookupExerciseGlobal === 'function') ? lookupExerciseGlobal(ex.exercise_id) : null;
-          const group = (cachedEx && cachedEx.group_canonical) || dkMuscleGroupKey(rawGroup) || rawGroup || 'Unknown';
-          const sets = ex.sets || [];
-          const vol = sets.reduce((sum, s) => sum + (s.weight || 0) * (s.reps || 0), 0);
-          groupVolumes.set(group, (groupVolumes.get(group) || 0) + vol);
+      /* c127: the SHARED analytics engine (src/analytics-engine.js) — DONE
+         sets only (prescriptions from skipped sets never pose as lifted
+         work), lb → kg via each exercise's recorded unit, warmups visible,
+         synergists +30% (the SAME credit the recovery map uses, so the bars
+         and the map's 7d/30d volumes can no longer disagree). Legacy inline
+         formula kept only as a fallback when the module failed to load. */
+      let groupVolumes = new Map();
+      let setsByGroup = new Map();
+      const eng = window.dkAnalyticsEngine;
+      if (eng && typeof eng.volumeByMuscle === 'function') {
+        try {
+          const res = eng.volumeByMuscle(workouts, {
+            resolveEx: function (ex) {
+              const rawGroup = ex.muscle_group || ex.group || '';
+              const cachedEx = (ex.exercise_id && typeof lookupExerciseGlobal === 'function') ? lookupExerciseGlobal(ex.exercise_id) : null;
+              const group = (cachedEx && cachedEx.group_canonical) || (ex.g && dkMuscleGroupKey(ex.g)) || dkMuscleGroupKey(rawGroup) || rawGroup || 'Unknown';
+              const syn = (cachedEx && Array.isArray(cachedEx.synergists)) ? cachedEx.synergists.map(s => dkMuscleGroupKey(s) || s) : (Array.isArray(ex.syn) ? ex.syn.map(s => dkMuscleGroupKey(s) || s) : []);
+              return { group: group, synergists: syn };
+            }
+          });
+          Object.keys(res.byGroup).forEach(g => {
+            groupVolumes.set(g, res.byGroup[g].volumeKg);
+            setsByGroup.set(g, res.byGroup[g].sets);
+          });
+        } catch (e127) { console.warn('[analytics] engine volumeByMuscle failed → legacy:', e127); }
+      }
+      if (!groupVolumes.size) {
+        /* legacy fallback (pre-c127 formula) — only when the engine module is missing */
+        workouts.forEach(w => {
+          const exercises = w.exercises || [];
+          exercises.forEach(ex => {
+            const rawGroup = ex.muscle_group || ex.group || '';
+            const cachedEx = (ex.exercise_id && typeof lookupExerciseGlobal === 'function') ? lookupExerciseGlobal(ex.exercise_id) : null;
+            const group = (cachedEx && cachedEx.group_canonical) || dkMuscleGroupKey(rawGroup) || rawGroup || 'Unknown';
+            const sets = ex.sets || [];
+            const vol = sets.reduce((sum, s) => sum + (s.weight || 0) * (s.reps || 0), 0);
+            groupVolumes.set(group, (groupVolumes.get(group) || 0) + vol);
+            setsByGroup.set(group, 0);
+          });
         });
-      });
+      }
       if (groupVolumes.size === 0) {
         vol.innerHTML = `<div class="text-center py-6 text-sm text-muted">${escapeHTML(t('analytics.noData'))}</div>`;
         return;
@@ -13065,12 +13092,13 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const sorted = [...groupVolumes.entries()].sort((a, b) => b[1] - a[1]);
       const max = sorted[0][1] || 1;
       vol.innerHTML = sorted.map(([group, v]) => {
-        const pct = Math.round((v / max) * 100);
+        const pct = Math.max(3, Math.round((v / max) * 100));
+        const sets = setsByGroup.get(group) || 0;
         return `
           <div>
             <div class="flex justify-between text-xs mb-1">
               <span class="font-semibold">${escapeHTML(dkLocalizeMuscleGroup(group))}</span>
-              <span class="font-mono text-muted">${fmtNumber(v)} kg·reps</span>
+              <span class="font-mono text-muted">${fmtNumber(Math.round(v))} kg · ${sets} ${escapeHTML(t('analytics.setsShort') || 'sets')}</span>
             </div>
             <div class="h-2 bg-surface-2 rounded-full overflow-hidden">
               <div class="h-full bg-gradient-to-r from-primary to-accent rounded-full transition-all" style="width: ${pct}%"></div>
@@ -13097,6 +13125,15 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
     return { loadClientList, loadClient, setRange, refresh, get clientId() { return _clientId; } };
   })();
+
+  /* c127: the analytics panels localize at render time (volume bars, metric
+     subs) — re-render on a language switch so the screen follows the UI
+     language live instead of waiting for the next navigation */
+  document.addEventListener('dk-lang', () => {
+    try {
+      if (screens.analytics && screens.analytics.clientId) screens.analytics.loadClient(screens.analytics.clientId);
+    } catch (_) {}
+  });
 
   /* =====================================================================
      STEPS 16-18 — EXERCISE DATABASE SCREEN
@@ -16235,8 +16272,14 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       }
 
       const duration = Math.floor((Date.now() - _workout.started_at) / 1000);
-      const volume = _workout.exercises.reduce((s, ex) =>
-        s + (ex.sets || []).reduce((ss, set) => ss + (set.weight || 0) * (set.reps || 0), 0), 0);
+      /* c127: honest stored volume — DONE sets only, lb → kg via the
+         exercise's recorded unit (prescriptions sitting in skipped sets no
+         longer inflate total_volume; the shared analytics engine recomputes
+         from the sets anyway) */
+      const volume = (window.dkAnalyticsEngine && typeof window.dkAnalyticsEngine.recVolumeKg === 'function')
+        ? window.dkAnalyticsEngine.recVolumeKg({ exercises: _workout.exercises })
+        : _workout.exercises.reduce((s, ex) =>
+            s + (ex.sets || []).reduce((ss, set) => ss + (set.done === false ? 0 : (set.weight || 0) * (set.reps || 0)), 0), 0);
 
       const record = {
         client_id: _workout.client_id,
@@ -25759,12 +25802,16 @@ async function boot() {
           return {
             date: ts, created_at: ts,
             duration: Number(r.duration_sec) || 0,
-            total_volume: exs.reduce((s, ex) => s + (ex.sets || []).reduce((ss, st) => ss + (Number(st.weight) || 0) * (Number(st.reps) || 0), 0), 0),
+            /* c127: done-only, kg-normalized (engine) — honest stored volume for remote records too */
+            total_volume: (window.dkAnalyticsEngine && typeof window.dkAnalyticsEngine.recVolumeKg === 'function')
+              ? window.dkAnalyticsEngine.recVolumeKg({ exercises: exs })
+              : exs.reduce((s, ex) => s + (ex.sets || []).reduce((ss, st) => ss + (st.done === false ? 0 : (Number(st.weight) || 0) * (Number(st.reps) || 0)), 0), 0),
             name: r.program || '', _remote: true,
             exercises: exs.map(ex => ({
               exercise_id: ex.key || ex.exercise_id || '',
               name: ex.name || '',
-              group: ex.group || '', muscle_group: ex.group || '',
+              g: ex.g || '', /* c127: canonical group from portal records survives the mapping */
+              group: ex.g || ex.group || '', muscle_group: ex.g || ex.group || '',
               unit: ex.unit === 'lb' ? 'lb' : 'kg', /* c106: prev conversion needs the history exercise's unit */
               sets: ex.sets || []
             }))
@@ -30877,6 +30924,7 @@ document.addEventListener('input', function (e) {
         var n = (typeof globalExName === 'function') ? globalExName(ex) : (ex.name || "?");
         exCount[n] = (exCount[n] || 0) + 1;
         (ex.sets || []).forEach(function (st) {
+          if (st && st.done === false) return; /* c127: prescriptions from skipped sets are not achievements */
           var w = parseFloat(st.weight);
           if (w > (exMax[n] || 0)) exMax[n] = w;
         });
@@ -31050,7 +31098,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 126; /* numeric part of dk-build c126 */
+  var RUNNING = 127; /* numeric part of dk-build c127 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

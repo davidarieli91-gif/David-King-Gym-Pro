@@ -39,6 +39,8 @@
   <script type="module" src="src/muscle-map.js"></script>
   <!-- c122: shared recovery engine v2 — ONE model for the portal map AND the trainer's map -->
   <script type="module" src="src/recovery-engine.js"></script>
+  <!-- c127: shared analytics engine — ONE honest analytics core for BOTH apps (done-only, kg-normalized, e1RM, PRs) -->
+  <script type="module" src="src/analytics-engine.js"></script>
   <style>
     :root {
       --font-sans: 'Inter', system-ui, sans-serif;
@@ -2445,6 +2447,7 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
       </div>
       <div class="glass rounded-2xl p-4 space-y-2">
         <h3 class="font-display font-bold text-sm text-text" id="txt-analytics-muscles">Объём по группам мышц</h3>
+        <p class="text-[10px] text-muted" id="txt-analytics-doneonly">Выполненные подходы · кг (фунты пересчитаны) · синергисты 30%</p>
         <div id="analytics-muscles" class="space-y-2.5"></div>
       </div>
       <div class="glass rounded-2xl p-4 space-y-2">
@@ -2633,7 +2636,7 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       mWorkouts:'Тренировки',mActiveDays:'Активные дни',mStreak:'Серия',mVolume:'Объём',
       aTotal:'всего',aInRange:'за период',aDaysInRow:'дн. подряд',aNoStreak:'начните сегодня!',aMinutes:'мин',
       aActivity:'Активность',aCalWorkout:'тренировка',aCalCheckin:'чек-ин',
-      aMuscles:'Объём по группам мышц',aWeightT:'Динамика веса',aWeightNeed:'Нужно ≥ 2 чек-ина с весом для графика',aTarget:'цель',
+      aDoneOnly:'Выполненные подходы · кг (фунты пересчитаны) · синергисты 30%',aSetsWord:'сет.',aMuscles:'Объём по группам мышц',aWeightT:'Динамика веса',aWeightNeed:'Нужно ≥ 2 чек-ина с весом для графика',aTarget:'цель',
       aRecent:'Последние тренировки',aNoWorkouts:'Пока нет тренировок — завершите первую!',aNoData:'Нет данных за период',
       aWaist:'Талия (см)',aHip:'Бёдра (см)',aNote:'Заметка тренеру',checkinNotePh:'Сон, восстановление, аппетит...',
       noExercises:'Нет упражнений',noMeals:'План питания не назначен',technique:'Техника',
@@ -2682,7 +2685,7 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       mWorkouts:'Workouts',mActiveDays:'Active days',mStreak:'Streak',mVolume:'Volume',
       aTotal:'total',aInRange:'in range',aDaysInRow:'days streak',aNoStreak:'start today!',aMinutes:'min',
       aActivity:'Activity',aCalWorkout:'workout',aCalCheckin:'check-in',
-      aMuscles:'Volume by Muscle Group',aWeightT:'Body Weight Trend',aWeightNeed:'Need at least 2 weight check-ins for the chart',aTarget:'target',
+      aDoneOnly:'Completed sets only · kg (lb converted) · synergists 30%',aSetsWord:'sets',aMuscles:'Volume by Muscle Group',aWeightT:'Body Weight Trend',aWeightNeed:'Need at least 2 weight check-ins for the chart',aTarget:'target',
       aRecent:'Recent Workouts',aNoWorkouts:'No workouts yet — finish your first one!',aNoData:'No data for this period',
       aWaist:'Waist (cm)',aHip:'Hips (cm)',aNote:'Note to coach',checkinNotePh:'Sleep, recovery, appetite…',
       noExercises:'No exercises',noMeals:'No nutrition plan',technique:'Technique',
@@ -2731,7 +2734,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       mWorkouts:'אימונים',mActiveDays:'ימים פעילים',mStreak:'רצף',mVolume:'נפח',
       aTotal:'בסך הכול',aInRange:'בתקופה',aDaysInRow:'ימים ברצף',aNoStreak:'התחילו היום!',aMinutes:'דק׳',
       aActivity:'פעילות',aCalWorkout:'אימון',aCalCheckin:'צ׳ק-אין',
-      aMuscles:'נפח לפי קבוצות שרירים',aWeightT:'מגמת משקל',aWeightNeed:'צריך לפחות 2 צ׳ק-אינים עם משקל לגרף',aTarget:'יעד',
+      aDoneOnly:'סטים שבוצעו בלבד · ק״ג (lb הומר) · שרירי עזר 30%',aSetsWord:'סטים',aMuscles:'נפח לפי קבוצות שרירים',aWeightT:'מגמת משקל',aWeightNeed:'צריך לפחות 2 צ׳ק-אינים עם משקל לגרף',aTarget:'יעד',
       aRecent:'אימונים אחרונים',aNoWorkouts:'עדיין אין אימונים — סיימו את הראשון!',aNoData:'אין נתונים לתקופה',
       aWaist:'מותן (ס״מ)',aHip:'ירכיים (ס״מ)',aNote:'פתק למאמן',checkinNotePh:'שינה, התאוששות, תיאבון…',
       noExercises:'אין תרגילים',noMeals:'אין תפריט',technique:'טכניקה',
@@ -3026,6 +3029,9 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     document.getElementById('a-lg-workout').textContent = t('aCalWorkout');
     document.getElementById('a-lg-checkin').textContent = t('aCalCheckin');
     document.getElementById('txt-analytics-muscles').textContent = t('aMuscles');
+    /* c127: honesty hint under the volume panel title */
+    const _doneOnly127 = document.getElementById('txt-analytics-doneonly');
+    if (_doneOnly127) _doneOnly127.textContent = t('aDoneOnly');
     document.getElementById('txt-analytics-weight').textContent = t('aWeightT');
     document.getElementById('txt-analytics-recent').textContent = t('aRecent');
     document.getElementById('lbl-waist').textContent = t('aWaist');
@@ -3189,6 +3195,10 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
      from other programs stuck in the «Other» bucket) →
      reverse map over the exercise name → other */
   function aGroupOf(ex) {
+    /* c127: the canonical group snapshot saved at log time (ex.g) wins — it
+       survives without any DB/program dependency, exactly like the trainer's
+       own group snapshot */
+    if (ex.g != null && String(ex.g).trim() !== '') { const gk = mgKeyOf(ex.g) || String(ex.g).trim(); if (gk) return gk; }
     const exd = exerciseDB[ex.key] || exerciseDB[String(ex.key)] || null;
     if (exd && exd.group) { const k = mgKeyOf(exd.group); if (k) return k; }
     const progList = [];
@@ -3212,13 +3222,17 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     }
     return mgKeyOf(ex.name) || 'other';
   }
-  /* c93: analytics volume = ALL sets × weight×reps — the EXACT trainer CRM
-     formula (fitness-crm.html renderVolume), so identical data always
-     produces identical numbers on both sides («kg·reps»). */
+  /* c127: analytics volume = the SHARED engine's honest recVolumeKg — DONE
+     sets only (prescriptions from skipped sets never pose as lifted work)
+     and lb → kg via each exercise's recorded unit. Same numbers as the
+     trainer CRM (identical engine), legacy formula only as a fallback. */
   function aRecVolume(r) {
+    if (window.dkAnalyticsEngine && typeof window.dkAnalyticsEngine.recVolumeKg === 'function') {
+      try { return window.dkAnalyticsEngine.recVolumeKg(r); } catch (e127) { console.warn('[analytics] recVolumeKg failed → legacy:', e127); }
+    }
     let v = 0;
     ((r && r.exercises) || []).forEach(ex => {
-      (ex.sets || []).forEach(s => { v += (Number(s.weight) || 0) * (Number(s.reps) || 0); });
+      (ex.sets || []).forEach(s => { if (s && s.done === false) return; v += (Number(s.weight) || 0) * (Number(s.reps) || 0); });
     });
     return Math.round(v);
   }
@@ -3294,27 +3308,50 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   }
   function renderAMuscles(a) {
     const box = document.getElementById('analytics-muscles'); if (!box) return;
+    /* c127: the SHARED engine — done-only, kg-normalized, synergists 30%
+       (map parity). The old ALL-sets formula (which counted prescriptions
+       from skipped sets and lb as kg) only stays as a fallback. */
     const byGroup = new Map();
-    a.wf.forEach(r => (r.exercises || []).forEach(ex => {
-      /* c93: ALL sets × weight×reps — identical to the trainer CRM bars */
-      const v = (ex.sets || []).reduce((sum, s) => sum + (Number(s.weight) || 0) * (Number(s.reps) || 0), 0);
-      if (!v) return;
-      const g = aGroupOf(ex);
-      byGroup.set(g, (byGroup.get(g) || 0) + v);
-    }));
+    const setsByGroup = new Map();
+    let engOk = false;
+    if (window.dkAnalyticsEngine && typeof window.dkAnalyticsEngine.volumeByMuscle === 'function') {
+      try {
+        const res = window.dkAnalyticsEngine.volumeByMuscle(a.wf, {
+          resolveEx: ex => ({ group: aGroupOf(ex), synergists: Array.isArray(ex.syn) ? ex.syn.map(s => mgKeyOf(s) || s) : [] })
+        });
+        Object.keys(res.byGroup).forEach(g => {
+          byGroup.set(g, res.byGroup[g].volumeKg);
+          setsByGroup.set(g, res.byGroup[g].sets);
+        });
+        engOk = true;
+      } catch (e127) { console.warn('[analytics] volumeByMuscle failed → legacy:', e127); }
+    }
+    if (!engOk) {
+      a.wf.forEach(r => (r.exercises || []).forEach(ex => {
+        const v = (ex.sets || []).reduce((sum, s) => sum + (s && s.done !== false ? (Number(s.weight) || 0) * (Number(s.reps) || 0) : 0), 0);
+        if (!v) return;
+        const g = aGroupOf(ex);
+        byGroup.set(g, (byGroup.get(g) || 0) + v);
+        setsByGroup.set(g, 0);
+      }));
+    }
     if (!byGroup.size) { box.innerHTML = '<p class="text-xs text-muted text-center py-4">' + esc(t('aNoData')) + '</p>'; return; }
     const sorted = [...byGroup.entries()].sort((x, y) => y[1] - x[1]);
     const max = sorted[0][1] || 1;
-    box.innerHTML = sorted.map(([g, v]) => `
+    box.innerHTML = sorted.map(([g, v]) => {
+      const sets = setsByGroup.get(g) || 0;
+      const sub = sets ? ' · ' + sets + ' ' + t('aSetsWord') : '';
+      return `
       <div>
         <div class="flex justify-between text-[11px] mb-1">
           <span class="font-semibold text-text">${esc(mgLabel(g))}</span>
-          <span class="font-mono text-muted">${aNum(v)} kg·reps</span>
+          <span class="font-mono text-muted">${aNum(Math.round(v))} kg${esc(sub)}</span>
         </div>
         <div class="h-2 bg-[rgb(var(--c-surface-2))] rounded-full overflow-hidden">
           <div class="h-full rounded-full" style="width:${Math.max(3, Math.round(v / max * 100))}%;background:linear-gradient(90deg,#6366f1,#22d3ee)"></div>
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
   }
   function renderAWeight() {
     const box = document.getElementById('analytics-weight-chart'); if (!box) return;
@@ -4422,9 +4459,15 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
     return h > 0 ? `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}` : `${m}:${String(sec).padStart(2,'0')}`;
   }
+  /* c127: honest session volume — DONE sets only, lb → kg per exercise unit
+     (prefilled prescriptions from skipped sets no longer inflate the live
+     tile, the saved record or the WhatsApp share) */
   function sessionVolume(sess) {
+    if (window.dkAnalyticsEngine && typeof window.dkAnalyticsEngine.recVolumeKg === 'function') {
+      try { return window.dkAnalyticsEngine.recVolumeKg({ exercises: (sess && sess.exercises) || [] }); } catch (e127) { console.warn('[analytics] session recVolumeKg failed → legacy:', e127); }
+    }
     let v = 0;
-    (sess.exercises||[]).forEach(ex => (ex.sets||[]).forEach(s => { v += (Number(s.weight)||0) * (Number(s.reps)||0); }));
+    (sess && sess.exercises || []).forEach(ex => (ex.sets || []).forEach(s => { if (s && s.done === false) return; v += (Number(s.weight) || 0) * (Number(s.reps) || 0); }));
     return Math.round(v);
   }
   function sessionSetCount(sess, onlyDone) {

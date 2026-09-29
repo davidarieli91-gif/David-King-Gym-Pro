@@ -22,6 +22,7 @@ const assets = [
   'models',
   'src/muscle-map.js',
   'src/recovery-engine.js',
+  'src/analytics-engine.js',
   'src/i18n',
   'src/input.css',
 ];
