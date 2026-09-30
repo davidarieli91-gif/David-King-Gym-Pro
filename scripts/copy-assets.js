@@ -9,6 +9,7 @@ const assets = [
   'exercise-db.json',
   'food-db.json',
   'manifest.json',
+  'manifest-portal.json',
   'sw.js',
   'icon-192.png',
   'logo-web.webp',

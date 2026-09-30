@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0a0a0f" />
   <meta name="description" content="David King Gym — Персональный кабинет подопечного" />
   <title>David King Gym — Мой Портал</title>
-  <link rel="manifest" href="manifest.json" />
+  <link rel="manifest" href="manifest-portal.json" />
   <script>
   /* c94: the trainer app's service worker precaches this page too — when a
      new version activates, pick it up: auto-reload when no workout is in
@@ -2407,6 +2407,13 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
           <h3 class="font-display font-bold text-sm text-text" id="txt-diary-title">Дневник питания</h3>
           <span id="diary-cal-total" class="font-mono font-bold text-cyan-300 text-sm">0 ккал</span>
         </div>
+        <!-- c134: product search from the food DB (2344 items, LAZY — the
+             2.4 MB file is fetched only when the search is first used) -->
+        <div class="relative">
+          <input type="text" id="diary-food-search" placeholder="Поиск продукта из базы…" autocomplete="off" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2 text-xs text-text focus:outline-none focus:ring-2 focus:ring-primary/60" />
+          <div id="diary-food-results" class="hidden absolute z-20 mt-1 w-full max-h-56 overflow-y-auto rounded-xl border border-border bg-[rgb(var(--c-surface))] shadow-float"></div>
+          <p id="diary-food-search-status" class="hidden text-[10px] text-muted mt-1"></p>
+        </div>
         <div class="flex gap-2">
           <input type="text" id="diary-food-name" placeholder="Продукт (например: Творог 5%)" class="flex-1 bg-surface-2 border border-border rounded-xl px-3 py-2 text-xs text-text focus:outline-none focus:ring-2 focus:ring-primary/60" />
           <input type="number" id="diary-food-grams" placeholder="100" min="0" step="5" class="w-16 bg-surface-2 border border-border rounded-xl px-2 py-2 text-xs font-mono text-center text-text focus:outline-none" />
@@ -2696,6 +2703,7 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       chooseProgram:'Выберите программу',choosePlan:'Выберите план питания',
       noProgram:'Нет активных программ',noPlan:'Нет активных планов питания',
       diaryTitle:'Дневник питания',diaryAdd:'+ Добавить в дневник',diaryNeedName:'Укажите продукт',diaryAdded:'Добавлено в дневник ✓',diaryEmpty:'Дневник пуст. Добавьте первый продукт выше.',diaryKcal:'ккал',
+      diarySearchPh:'Поиск продукта из базы…',diarySearchLoading:'Загружаю базу продуктов…',diarySearchEmpty:'Ничего не найдено — введите ккал и БЖУ вручную',diarySearchOffline:'База недоступна офлайн — введите ккал и БЖУ вручную',
       video:'Видео', searchOnYouTube:'Искать на YouTube', noImage:'Нет изображения', noTechnique:'Описание техники пока нет', minShort:'мин', secShort:'сек',
       /* c106: leftover-RU sweep */
       dayWord:'День', planActive:'План активен', splitLabel:'Сплит', gramShort:'г', literShort:'л', cmShort:'см',
@@ -2746,6 +2754,7 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       chooseProgram:'Choose program',choosePlan:'Choose nutrition plan',
       noProgram:'No active programs',noPlan:'No active nutrition plans',
       diaryTitle:'Food Diary',diaryAdd:'+ Add to diary',diaryNeedName:'Enter a food name',diaryAdded:'Added to diary ✓',diaryEmpty:'Diary is empty. Add your first food above.',diaryKcal:'kcal',
+      diarySearchPh:'Search the food database…',diarySearchLoading:'Loading the food database…',diarySearchEmpty:'Nothing found — enter kcal and macros manually',diarySearchOffline:'Database unavailable offline — enter kcal and macros manually',
       video:'Video', searchOnYouTube:'Search on YouTube', noImage:'No image', noTechnique:'No technique description yet', minShort:'min', secShort:'sec',
       /* c106: leftover-RU sweep */
       dayWord:'Day', planActive:'Plan active', splitLabel:'Split', gramShort:'g', literShort:'L', cmShort:'cm',
@@ -2796,6 +2805,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       chooseProgram:'בחר תוכנית',choosePlan:'בחר תוכנית תזונה',
       noProgram:'אין תוכניות פעילות',noPlan:'אין תוכניות תזונה פעילות',
       diaryTitle:'יומן תזונה',diaryAdd:'+ הוסף ליומן',diaryNeedName:'הזן שם מזון',diaryAdded:'נוסף ליומן ✓',diaryEmpty:'היומן ריק. הוסף מזון למעלה.',diaryKcal:'קק״ל',
+      diarySearchPh:'חיפוש במאגר המזונות…',diarySearchLoading:'טוען את מאגר המזונות…',diarySearchEmpty:'לא נמצא — הזן קלוריות ומאקרו ידנית',diarySearchOffline:'המאגר לא זמין במצב לא מקוון — הזן ידנית',
       video:'וידאו', searchOnYouTube:'חפש ביוטיוב', noImage:'אין תמונה', noTechnique:'אין תיאור טכניקה', minShort:'דק׳', secShort:'שנ׳',
       /* c106: leftover-RU sweep */
       dayWord:'יום', planActive:'תוכנית פעילה', splitLabel:'פיצול', gramShort:'ג׳', literShort:'ל׳', cmShort:'ס״מ',
@@ -3159,6 +3169,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     document.getElementById('lbl-diary-c').textContent = t('macroCShort');
     document.getElementById('txt-diary-hint').textContent = t('diaryHint');
     document.getElementById('diary-food-name').placeholder = t('diaryFoodPh');
+    const _dfs134 = document.getElementById('diary-food-search');
+    if (_dfs134) _dfs134.placeholder = t('diarySearchPh'); /* c134: DB search */
     const h = document.getElementById('hdr-name');
     if (h && !currentClient) h.textContent = t('portalTitle');
     /* c118: labels that used dead data-i18n attrs (the portal engine never
@@ -6076,7 +6088,129 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     if(img) img.src='';
   }
 
+  /* ============ c134: DEVICE DATA WIPE (shared-device privacy) ============
+   * One tap removes every CLIENT-scoped key (history / check-ins / diary /
+   * water / pending queue / done-days / quarantined legacy copies) plus the
+   * saved share blob and the live draft, then reloads to a clean portal.
+   * Global UI prefs (language / theme / units) survive on purpose. */
+  function dkWipeData() {
+    let n = 0;
+    try {
+      const ns = dkClientNs();
+      const kill = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && (k.endsWith('__' + ns) || k.indexOf('dk_legacy_') === 0)) kill.push(k);
+      }
+      ['dk_client_data', 'dk_client_share', 'dk_live_draft'].forEach(function (k) {
+        if (localStorage.getItem(k) != null) kill.push(k);
+      });
+      kill.forEach(function (k) { try { localStorage.removeItem(k); n++; } catch (e) {} });
+    } catch (e) { console.warn('[wipe] failed', e); }
+    return n;
+  }
+  function dkWipeDeviceData() {
+    const n = dkWipeData();
+    console.info('[wipe] removed ' + n + ' key(s) — reloading clean');
+    try { location.href = location.pathname; } catch (e) { location.reload(); }
+  }
+  window.dkWipeData = dkWipeData;
+  window.dkWipeDeviceData = dkWipeDeviceData;
+
   /* ============ CLIENT FOOD DIARY ============ */
+  /* c134: FOOD DATABASE SEARCH — the portal finally USES food-db.json (2344
+     items, ru/en/he names + per-100 g nutrition). LAZY: the ~2.4 MB file is
+     fetched only on the first search keystroke, kept in memory, and the SW
+     caches it for offline after the first visit. Manual entry stays intact. */
+  let foodDB = null, foodDBLoading = null;
+  function dkLoadFoodDB() {
+    if (foodDB) return Promise.resolve(foodDB);
+    if (!foodDBLoading) {
+      foodDBLoading = fetch('food-db.json').then(function (r) { return r.json(); }).then(function (j) {
+        foodDB = Array.isArray(j) ? j : (j.foods || j.items || []);
+        return foodDB;
+      }).catch(function (e) { foodDBLoading = null; throw e; });
+    }
+    return foodDBLoading;
+  }
+  function foodName(p) {
+    if (!p) return '';
+    return p['name_' + currentLang] || p.name_en || p.name_ru || p.name_he || '';
+  }
+  function dkFoodSearch(q) {
+    const words = String(q || '').trim().toLowerCase().split(/\s+/).filter(Boolean);
+    if (!words.length || !foodDB) return [];
+    const out = [];
+    for (let i = 0; i < foodDB.length && out.length < 12; i++) {
+      const p = foodDB[i]; if (!p) continue;
+      const hay = ((p.name_en || '') + ' ' + (p.name_ru || '') + ' ' + (p.name_he || '') + ' ' + (p.brand || '')).toLowerCase();
+      let hit = true;
+      for (let w = 0; w < words.length; w++) { if (hay.indexOf(words[w]) === -1) { hit = false; break; } }
+      if (hit) out.push(p);
+    }
+    return out;
+  }
+  function hideFoodResults() {
+    const box = document.getElementById('diary-food-results');
+    if (box) { box.classList.add('hidden'); box.innerHTML = ''; }
+  }
+  function dkFoodPick(id) {
+    if (!foodDB) return;
+    const p = foodDB.find(function (x) { return x && x.id === id; });
+    if (!p) return;
+    const n = p.nutrition || {};
+    const set = function (elId, v) { const el = document.getElementById(elId); if (el) el.value = v; };
+    set('diary-food-name', foodName(p) || p.name_en || '');
+    set('diary-food-grams', '100');
+    set('diary-food-kcal', Math.round(Number(n.calories) || 0));
+    set('diary-food-p', Math.round((Number(n.protein) || 0) * 10) / 10);
+    set('diary-food-f', Math.round((Number(n.fat) || 0) * 10) / 10);
+    set('diary-food-c', Math.round((Number(n.carbs) || 0) * 10) / 10);
+    hideFoodResults();
+    const q = document.getElementById('diary-food-search');
+    if (q) q.value = '';
+    try { document.getElementById('diary-food-grams').focus({ preventScroll: true }); } catch (e) {}
+  }
+  let _foodSearchTimer = null;
+  function wireFoodSearch() {
+    const inp = document.getElementById('diary-food-search');
+    const box = document.getElementById('diary-food-results');
+    const status = document.getElementById('diary-food-search-status');
+    if (!inp || !box) return;
+    const showStatus = function (msg) {
+      if (!status) return;
+      status.textContent = msg || '';
+      status.classList.toggle('hidden', !msg);
+    };
+    inp.addEventListener('input', function () {
+      clearTimeout(_foodSearchTimer);
+      _foodSearchTimer = setTimeout(function () {
+        const q = inp.value.trim();
+        if (q.length < 2) { hideFoodResults(); showStatus(''); return; }
+        showStatus(t('diarySearchLoading'));
+        dkLoadFoodDB().then(function () {
+          showStatus('');
+          const res = dkFoodSearch(q);
+          if (!res.length) { hideFoodResults(); showStatus(t('diarySearchEmpty')); return; }
+          box.innerHTML = res.map(function (p) {
+            const n = p.nutrition || {};
+            const sub = [p.brand || '', p.category || '', (Math.round(Number(n.calories) || 0) + ' ' + t('diaryKcal') + '/100' + t('gramShort'))].filter(Boolean).join(' · ');
+            return '<button type="button" data-food-pick="' + esc(p.id) + '" class="w-full text-start px-3 py-2 hover:bg-[rgb(var(--c-surface-2))] transition border-b border-border/40 last:border-0">'
+              + '<div class="text-[11px] font-semibold text-text truncate">' + esc(foodName(p) || p.name_en || '?') + '</div>'
+              + '<div class="text-[9px] text-muted truncate">' + esc(sub) + '</div></button>';
+          }).join('');
+          box.querySelectorAll('[data-food-pick]').forEach(function (b) {
+            b.addEventListener('click', function () { dkFoodPick(b.getAttribute('data-food-pick')); });
+          });
+          box.classList.remove('hidden');
+        }).catch(function () { showStatus(t('diarySearchOffline')); });
+      }, 250);
+    });
+    document.addEventListener('click', function (e) {
+      if (e.target.closest('#diary-food-search') || e.target.closest('#diary-food-results')) return;
+      hideFoodResults();
+    });
+  }
   function diaryKey() { return nsKey('dk_diary_' + todayKey()); }
   function loadDiary() { try { return JSON.parse(localStorage.getItem(diaryKey())||'[]'); } catch(e){ return []; } }
   function saveDiary(list) { try { localStorage.setItem(diaryKey(), JSON.stringify(list.slice(-100))); return true; } catch (e) { console.warn('[storage] diary save failed', e); return false; } }
@@ -6238,6 +6372,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     document.getElementById('btn-diary-add').addEventListener('click', addDiaryEntry);
     document.getElementById('diary-food-grams')?.addEventListener('keydown',e=>{ if(e.key==='Enter') addDiaryEntry(); });
     document.getElementById('diary-food-name')?.addEventListener('keydown',e=>{ if(e.key==='Enter') addDiaryEntry(); });
+    /* c134: lazy food-DB search (food-db.json is fetched on first use only) */
+    try { wireFoodSearch(); } catch (e134) { console.warn('[diary] food search wiring failed:', e134); }
 
     // Lang
     document.getElementById('lang-select').addEventListener('change',e=>setLang(e.target.value));
@@ -6251,7 +6387,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     document.getElementById('viewer-close')?.addEventListener('click', closeViewer);
     em?.addEventListener('click', e=>{ if(e.target===em) closeExerciseModal(); });
     vm?.addEventListener('click', e=>{ if(e.target===vm) closeViewer(); });
-    document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeViewer(); closeExerciseModal(); closeReportModal(); } });
+    document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeViewer(); closeExerciseModal(); closeReportModal(); try { hideFoodResults(); } catch (e134) {} } });
     // Tap on exercise image/title -> open card
     const exList=document.getElementById('workout-exercises-list');
     if(exList){
@@ -6300,9 +6436,9 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
 
     /* ---- local strings (ru / en / he) ---- */
     var L = {
-      ru: { dumbbellAria:'Вернуться к тренировке', a11yClose:'Закрыть', setTitle:'Настройки', themes:'Темы', darkThemes:'Тёмные темы', lightThemes:'Светлые темы', textures:'Текстуры', texHint:'Текстурные наложения поверх любой темы — те же, что в основном приложении. Выберите эффект и настройте насыщенность.', opacity:'Насыщенность', reset:'Сброс', resetDone:'Возврат к стандартной насыщенности', applied:'Текстура применена', share:'Поделиться отчётом', themeChanged:'Тема изменена', wunitTitle:'Единица веса', wunitKg:'Килограммы', wunitLb:'Фунты', wunitKgShort:'кг', wunitLbShort:'фт', wunitTime:'Единица времени', wunitMin:'Минуты', wunitSec:'Секунды', wunitMinShort:'мин', wunitSecShort:'сек', wunitDist:'Единица расстояния', wunitM:'Метры', wunitKm:'Километры', wunitMShort:'м', wunitKmShort:'км', wunitCardioTitle:'Единицы кардио', wunitExTitle:'Единица веса упражнения', wunitApplyAll:'Применить ко всем упражнениям тренировки', wunitDefaultTitle:'Единица веса по умолчанию (для новых упражнений)', timeLabel:'Время', distLabel:'Дистанция', distShortLabel:'Дист', ptexTitle:'Текстура панели', ptexHint:'Стекло на всех панелях портала — карточки, шапка, меню и окна. Матовая, прозрачная, тонированная и разноцветная мозаичная текстуры. Панели остаются чистым стеклом — текстурные эффекты живут только на фоне страницы.', ptexOff:'Выкл.', ptexFrost:'Матовое стекло', ptexClear:'Прозрачное стекло', ptexTint:'Тонированное стекло', ptexMosaic:'Мозаичное стекло', ptexColor:'Оттенок', ptexPreview:'Живой предпросмотр', ptexPreviewHint:'Так будет выглядеть каждая панель портала — карточки, шапка и окна', ptexOpacity:'Прозрачность', ptexOpacityHint:'Выше — прозрачнее, ниже — плотнее', ptexOpSolid:'Плотнее', ptexOpSee:'Прозрачнее', ptexApplied:'Текстура панели применена', ptexResetDone:'Возвращена стандартная прозрачность', ptexCfrostMilk:'Молочный', ptexCfrostSmoke:'Дымчатый', ptexCfrostIce:'Ледяной голубой', ptexCfrostMint:'Мятный', ptexCfrostRose:'Розовый туман', ptexCfrostLav:'Лавандовый', ptexCclearCrystal:'Кристальный', ptexCclearAqua:'Аква', ptexCclearChamp:'Шампань', ptexCclearEmer:'Изумрудный лёд', ptexCclearSapph:'Сапфировый', ptexCtintGraph:'Графит', ptexCtintOcean:'Морской', ptexCtintEmer:'Изумруд', ptexCtintBronze:'Бронза', ptexCtintBord:'Бордо', ptexCtintSmoke:'Тёмный дым', ptexCmosStain:'Витраж', ptexCmosOcean:'Океан', ptexCmosSunset:'Закат', ptexCmosForest:'Лес', ptexCmosNeon:'Неон', ptexCmosPastel:'Пастель' },
-      en: { dumbbellAria:'Back to workout', a11yClose:'Close', setTitle:'Settings', themes:'Themes', darkThemes:'Dark themes', lightThemes:'Light themes', textures:'Textures', texHint:'Texture overlays on top of any theme — the same as in the main app. Pick an effect and fine-tune its opacity.', opacity:'Opacity', reset:'Reset', resetDone:'Returned to the effect default', applied:'Texture applied', share:'Share report', themeChanged:'Theme changed', wunitTitle:'Unit of weight', wunitKg:'Kilograms', wunitLb:'Pounds', wunitKgShort:'kg', wunitLbShort:'lb', wunitTime:'Time unit', wunitMin:'Minutes', wunitSec:'Seconds', wunitMinShort:'min', wunitSecShort:'sec', wunitDist:'Distance unit', wunitM:'Meters', wunitKm:'Kilometers', wunitMShort:'m', wunitKmShort:'km', wunitCardioTitle:'Cardio units', wunitExTitle:'Weight unit of this exercise', wunitApplyAll:'Apply to all exercises of this workout', wunitDefaultTitle:'Default unit for new exercises', timeLabel:'Time', distLabel:'Distance', distShortLabel:'Dist', ptexTitle:'Panel texture', ptexHint:'Glass for every portal panel — cards, header, menus and windows. Frosted, clear, tinted and multicolor mosaic. Panels stay pure glass — texture effects live only on the page background.', ptexOff:'Off', ptexFrost:'Frosted glass', ptexClear:'Clear glass', ptexTint:'Tinted glass', ptexMosaic:'Mosaic glass', ptexColor:'Shade', ptexPreview:'Live preview', ptexPreviewHint:'This is how every portal panel will look — cards, header and windows', ptexOpacity:'Transparency', ptexOpacityHint:'Higher — more see-through, lower — more solid', ptexOpSolid:'Solid', ptexOpSee:'See-through', ptexApplied:'Panel texture applied', ptexResetDone:'Returned to default transparency', ptexCfrostMilk:'Milk', ptexCfrostSmoke:'Smoke', ptexCfrostIce:'Ice blue', ptexCfrostMint:'Mint', ptexCfrostRose:'Rose mist', ptexCfrostLav:'Lavender', ptexCclearCrystal:'Crystal', ptexCclearAqua:'Aqua', ptexCclearChamp:'Champagne', ptexCclearEmer:'Emerald ice', ptexCclearSapph:'Sapphire', ptexCtintGraph:'Graphite', ptexCtintOcean:'Ocean', ptexCtintEmer:'Emerald', ptexCtintBronze:'Bronze', ptexCtintBord:'Bordeaux', ptexCtintSmoke:'Dark smoke', ptexCmosStain:'Stained glass', ptexCmosOcean:'Ocean', ptexCmosSunset:'Sunset', ptexCmosForest:'Forest', ptexCmosNeon:'Neon', ptexCmosPastel:'Pastel' },
-      he: { dumbbellAria:'חזרה לאימון', a11yClose:'סגירה', setTitle:'הגדרות', themes:'ערכות נושא', darkThemes:'ערכות כהות', lightThemes:'ערכות בהירות', textures:'טקסטורות', texHint:'שכבות מרקף מעל כל ערכת נושא — אותן טקסטורות כמו באפליקציה הראשית. בחרו אפקט וכוונו את העוצמה.', opacity:'עוצמה', reset:'איפוס', resetDone:'חזרה לעוצמת ברירת המחדל', applied:'הטקסטורה הוחלה', share:'שתף דוח', themeChanged:'ערכת הנושא הוחלפה', wunitTitle:'יחידת משקל', wunitKg:'קילוגרמים', wunitLb:'פאונד', wunitKgShort:'ק״ג', wunitLbShort:'lb', wunitTime:'יחידת זמן', wunitMin:'דקות', wunitSec:'שניות', wunitMinShort:'דק׳', wunitSecShort:'שנ׳', wunitDist:'יחידת מרחק', wunitM:'מטרים', wunitKm:'קילומטרים', wunitMShort:'מט', wunitKmShort:'ק״מ', wunitCardioTitle:'יחידות קרדיו', wunitExTitle:'יחידת משקל לתרגיל זה', wunitApplyAll:'החל על כל התרגילים באימון', wunitDefaultTitle:'יחידת משקל כברירת מחדל (לתרגילים חדשים)', timeLabel:'זמן', distLabel:'מרחק', distShortLabel:'מרחק', ptexTitle:'מרקם פאנל', ptexHint:'זכוכית על כל פאנל בפורטל — כרטיסים, כותרת, תפריטים וחלונות. זכוכית מעורפלת, שקופה, מוכהה ופסיפס צבעוני. הפאנלים נשארים זכוכית נקייה — אפקטי המרקם חיים רק על רקע הדף.', ptexOff:'כבוי', ptexFrost:'זכוכית מעורפלת', ptexClear:'זכוכית שקופה', ptexTint:'זכוכית מוכהה', ptexMosaic:'זכוכית פסיפס', ptexColor:'גוון', ptexPreview:'תצוגה מקדימה', ptexPreviewHint:'כך ייראה כל פאנל בפורטל — כרטיסים, כותרת וחלונות', ptexOpacity:'שקיפות', ptexOpacityHint:'גבוה יותר — שקוף יותר, נמוך יותר — אטום יותר', ptexOpSolid:'אטום יותר', ptexOpSee:'שקוף יותר', ptexApplied:'מרקם הפאנל הוחל', ptexResetDone:'חזרה לשקיפות ברירת המחדל', ptexCfrostMilk:'חלבי', ptexCfrostSmoke:'עשן', ptexCfrostIce:'כחול קרח', ptexCfrostMint:'מנטה', ptexCfrostRose:'אודם מעורפל', ptexCfrostLav:'לבנדר', ptexCclearCrystal:'קריסטל', ptexCclearAqua:'אקווה', ptexCclearChamp:'שמפניה', ptexCclearEmer:'קרח אזמרגד', ptexCclearSapph:'ספיר', ptexCtintGraph:'גרפיט', ptexCtintOcean:'אוקיינוס', ptexCtintEmer:'אזמרגד', ptexCtintBronze:'ארד', ptexCtintBord:'בורדו', ptexCtintSmoke:'עשן כהה', ptexCmosStain:'ויטראז', ptexCmosOcean:'אוקיינוס', ptexCmosSunset:'שקיעה', ptexCmosForest:'יער', ptexCmosNeon:'ניאון', ptexCmosPastel:'פסטל' }
+      ru: { dumbbellAria:'Вернуться к тренировке', a11yClose:'Закрыть', wipeBtn:'Выйти и очистить данные на устройстве', wipeConfirm:'Удалить все данные портала с этого устройства? Действие нельзя отменить.', setTitle:'Настройки', themes:'Темы', darkThemes:'Тёмные темы', lightThemes:'Светлые темы', textures:'Текстуры', texHint:'Текстурные наложения поверх любой темы — те же, что в основном приложении. Выберите эффект и настройте насыщенность.', opacity:'Насыщенность', reset:'Сброс', resetDone:'Возврат к стандартной насыщенности', applied:'Текстура применена', share:'Поделиться отчётом', themeChanged:'Тема изменена', wunitTitle:'Единица веса', wunitKg:'Килограммы', wunitLb:'Фунты', wunitKgShort:'кг', wunitLbShort:'фт', wunitTime:'Единица времени', wunitMin:'Минуты', wunitSec:'Секунды', wunitMinShort:'мин', wunitSecShort:'сек', wunitDist:'Единица расстояния', wunitM:'Метры', wunitKm:'Километры', wunitMShort:'м', wunitKmShort:'км', wunitCardioTitle:'Единицы кардио', wunitExTitle:'Единица веса упражнения', wunitApplyAll:'Применить ко всем упражнениям тренировки', wunitDefaultTitle:'Единица веса по умолчанию (для новых упражнений)', timeLabel:'Время', distLabel:'Дистанция', distShortLabel:'Дист', ptexTitle:'Текстура панели', ptexHint:'Стекло на всех панелях портала — карточки, шапка, меню и окна. Матовая, прозрачная, тонированная и разноцветная мозаичная текстуры. Панели остаются чистым стеклом — текстурные эффекты живут только на фоне страницы.', ptexOff:'Выкл.', ptexFrost:'Матовое стекло', ptexClear:'Прозрачное стекло', ptexTint:'Тонированное стекло', ptexMosaic:'Мозаичное стекло', ptexColor:'Оттенок', ptexPreview:'Живой предпросмотр', ptexPreviewHint:'Так будет выглядеть каждая панель портала — карточки, шапка и окна', ptexOpacity:'Прозрачность', ptexOpacityHint:'Выше — прозрачнее, ниже — плотнее', ptexOpSolid:'Плотнее', ptexOpSee:'Прозрачнее', ptexApplied:'Текстура панели применена', ptexResetDone:'Возвращена стандартная прозрачность', ptexCfrostMilk:'Молочный', ptexCfrostSmoke:'Дымчатый', ptexCfrostIce:'Ледяной голубой', ptexCfrostMint:'Мятный', ptexCfrostRose:'Розовый туман', ptexCfrostLav:'Лавандовый', ptexCclearCrystal:'Кристальный', ptexCclearAqua:'Аква', ptexCclearChamp:'Шампань', ptexCclearEmer:'Изумрудный лёд', ptexCclearSapph:'Сапфировый', ptexCtintGraph:'Графит', ptexCtintOcean:'Морской', ptexCtintEmer:'Изумруд', ptexCtintBronze:'Бронза', ptexCtintBord:'Бордо', ptexCtintSmoke:'Тёмный дым', ptexCmosStain:'Витраж', ptexCmosOcean:'Океан', ptexCmosSunset:'Закат', ptexCmosForest:'Лес', ptexCmosNeon:'Неон', ptexCmosPastel:'Пастель' },
+      en: { dumbbellAria:'Back to workout', a11yClose:'Close', wipeBtn:'Sign out & clear device data', wipeConfirm:'Delete all portal data from this device? This cannot be undone.', setTitle:'Settings', themes:'Themes', darkThemes:'Dark themes', lightThemes:'Light themes', textures:'Textures', texHint:'Texture overlays on top of any theme — the same as in the main app. Pick an effect and fine-tune its opacity.', opacity:'Opacity', reset:'Reset', resetDone:'Returned to the effect default', applied:'Texture applied', share:'Share report', themeChanged:'Theme changed', wunitTitle:'Unit of weight', wunitKg:'Kilograms', wunitLb:'Pounds', wunitKgShort:'kg', wunitLbShort:'lb', wunitTime:'Time unit', wunitMin:'Minutes', wunitSec:'Seconds', wunitMinShort:'min', wunitSecShort:'sec', wunitDist:'Distance unit', wunitM:'Meters', wunitKm:'Kilometers', wunitMShort:'m', wunitKmShort:'km', wunitCardioTitle:'Cardio units', wunitExTitle:'Weight unit of this exercise', wunitApplyAll:'Apply to all exercises of this workout', wunitDefaultTitle:'Default unit for new exercises', timeLabel:'Time', distLabel:'Distance', distShortLabel:'Dist', ptexTitle:'Panel texture', ptexHint:'Glass for every portal panel — cards, header, menus and windows. Frosted, clear, tinted and multicolor mosaic. Panels stay pure glass — texture effects live only on the page background.', ptexOff:'Off', ptexFrost:'Frosted glass', ptexClear:'Clear glass', ptexTint:'Tinted glass', ptexMosaic:'Mosaic glass', ptexColor:'Shade', ptexPreview:'Live preview', ptexPreviewHint:'This is how every portal panel will look — cards, header and windows', ptexOpacity:'Transparency', ptexOpacityHint:'Higher — more see-through, lower — more solid', ptexOpSolid:'Solid', ptexOpSee:'See-through', ptexApplied:'Panel texture applied', ptexResetDone:'Returned to default transparency', ptexCfrostMilk:'Milk', ptexCfrostSmoke:'Smoke', ptexCfrostIce:'Ice blue', ptexCfrostMint:'Mint', ptexCfrostRose:'Rose mist', ptexCfrostLav:'Lavender', ptexCclearCrystal:'Crystal', ptexCclearAqua:'Aqua', ptexCclearChamp:'Champagne', ptexCclearEmer:'Emerald ice', ptexCclearSapph:'Sapphire', ptexCtintGraph:'Graphite', ptexCtintOcean:'Ocean', ptexCtintEmer:'Emerald', ptexCtintBronze:'Bronze', ptexCtintBord:'Bordeaux', ptexCtintSmoke:'Dark smoke', ptexCmosStain:'Stained glass', ptexCmosOcean:'Ocean', ptexCmosSunset:'Sunset', ptexCmosForest:'Forest', ptexCmosNeon:'Neon', ptexCmosPastel:'Pastel' },
+      he: { dumbbellAria:'חזרה לאימון', a11yClose:'סגירה', wipeBtn:'יציאה ומחיקת נתוני המכשיר', wipeConfirm:'למחוק את כל נתוני הפורטל מהמכשיר? אין דרך לבטל פעולה זו.', setTitle:'הגדרות', themes:'ערכות נושא', darkThemes:'ערכות כהות', lightThemes:'ערכות בהירות', textures:'טקסטורות', texHint:'שכבות מרקף מעל כל ערכת נושא — אותן טקסטורות כמו באפליקציה הראשית. בחרו אפקט וכוונו את העוצמה.', opacity:'עוצמה', reset:'איפוס', resetDone:'חזרה לעוצמת ברירת המחדל', applied:'הטקסטורה הוחלה', share:'שתף דוח', themeChanged:'ערכת הנושא הוחלפה', wunitTitle:'יחידת משקל', wunitKg:'קילוגרמים', wunitLb:'פאונד', wunitKgShort:'ק״ג', wunitLbShort:'lb', wunitTime:'יחידת זמן', wunitMin:'דקות', wunitSec:'שניות', wunitMinShort:'דק׳', wunitSecShort:'שנ׳', wunitDist:'יחידת מרחק', wunitM:'מטרים', wunitKm:'קילומטרים', wunitMShort:'מט', wunitKmShort:'ק״מ', wunitCardioTitle:'יחידות קרדיו', wunitExTitle:'יחידת משקל לתרגיל זה', wunitApplyAll:'החל על כל התרגילים באימון', wunitDefaultTitle:'יחידת משקל כברירת מחדל (לתרגילים חדשים)', timeLabel:'זמן', distLabel:'מרחק', distShortLabel:'מרחק', ptexTitle:'מרקם פאנל', ptexHint:'זכוכית על כל פאנל בפורטל — כרטיסים, כותרת, תפריטים וחלונות. זכוכית מעורפלת, שקופה, מוכהה ופסיפס צבעוני. הפאנלים נשארים זכוכית נקייה — אפקטי המרקם חיים רק על רקע הדף.', ptexOff:'כבוי', ptexFrost:'זכוכית מעורפלת', ptexClear:'זכוכית שקופה', ptexTint:'זכוכית מוכהה', ptexMosaic:'זכוכית פסיפס', ptexColor:'גוון', ptexPreview:'תצוגה מקדימה', ptexPreviewHint:'כך ייראה כל פאנל בפורטל — כרטיסים, כותרת וחלונות', ptexOpacity:'שקיפות', ptexOpacityHint:'גבוה יותר — שקוף יותר, נמוך יותר — אטום יותר', ptexOpSolid:'אטום יותר', ptexOpSee:'שקוף יותר', ptexApplied:'מרקם הפאנל הוחל', ptexResetDone:'חזרה לשקיפות ברירת המחדל', ptexCfrostMilk:'חלבי', ptexCfrostSmoke:'עשן', ptexCfrostIce:'כחול קרח', ptexCfrostMint:'מנטה', ptexCfrostRose:'אודם מעורפל', ptexCfrostLav:'לבנדר', ptexCclearCrystal:'קריסטל', ptexCclearAqua:'אקווה', ptexCclearChamp:'שמפניה', ptexCclearEmer:'קרח אזמרגד', ptexCclearSapph:'ספיר', ptexCtintGraph:'גרפיט', ptexCtintOcean:'אוקיינוס', ptexCtintEmer:'אזמרגד', ptexCtintBronze:'ארד', ptexCtintBord:'בורדו', ptexCtintSmoke:'עשן כהה', ptexCmosStain:'ויטראז', ptexCmosOcean:'אוקיינוס', ptexCmosSunset:'שקיעה', ptexCmosForest:'יער', ptexCmosNeon:'ניאון', ptexCmosPastel:'פסטל' }
     };
     function T(k) { var l = curLang(); return (L[l] && L[l][k]) || L.ru[k] || k; }
 
@@ -6789,6 +6925,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       var set = function (id, txt) { var el = document.getElementById(id); if (el) el.textContent = txt; };
       set('cps-title', T('setTitle'));
       set('cps-share-label', T('share'));
+      set('cps-wipe-label', T('wipeBtn')); /* c134 */
       set('cps-themes-label', T('themes'));
       set('cps-textures-label', T('textures'));
       set('cps-texhint-label', T('texHint'));
@@ -6828,6 +6965,11 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
             '<button type="button" id="cps-share" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-xs font-bold text-text transition hover:opacity-80 flex items-center justify-center gap-2">' +
               '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>' +
               '<span id="cps-share-label"></span>' +
+            '</button>' +
+            /* c134: shared-device privacy — wipe client data + reload */
+            '<button type="button" id="cps-wipe" class="w-full bg-red-500/10 border border-red-500/30 rounded-xl px-3 py-2.5 text-xs font-bold text-red-400 transition hover:bg-red-500/20 flex items-center justify-center gap-2">' +
+              '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>' +
+              '<span id="cps-wipe-label"></span>' +
             '</button>' +
             '<div>' +
               '<div id="cps-themes-label" class="text-[10px] font-bold uppercase tracking-wider text-muted mb-2"></div>' +
@@ -7246,6 +7388,15 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       if (col) { wOpen(null); return; }
       if (e.target.closest('#portal-settings-btn')) { openSettingsSheet(); return; }
       if (e.target.closest('[data-cps-backdrop]') || e.target.closest('[data-cps-close]')) { closeSettingsSheet(); return; }
+      /* c134: wipe client data on this device (confirm first, then reload) */
+      if (e.target.closest('#cps-wipe')) {
+        try {
+          if (confirm(T('wipeConfirm'))) {
+            if (window.dkWipeDeviceData) window.dkWipeDeviceData(); else location.reload();
+          }
+        } catch (err) {}
+        return;
+      }
       if (e.target.closest('#cps-share')) {
         closeSettingsSheet();
         try { shareReport(); } catch (err) {}
