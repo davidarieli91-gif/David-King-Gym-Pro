@@ -518,7 +518,21 @@
     "bodyWaist": "Waist",
     "bodyHip": "Hips",
     "bodyRatio": "Waist/hips ratio",
-    "bodyPerWeek": "/wk"
+    "bodyPerWeek": "/wk",
+    "trendTitle": "Volume trend · 8 weeks",
+    "progressTitle": "Exercise progress",
+    "progressHint": "e1RM (Epley) & top set · completed sets",
+    "seriesTop": "Top set",
+    "lastOccurrence": "Last time:",
+    "prsTitle": "Personal records · 30 days",
+    "prsEmpty": "No new records in the last 30 days",
+    "prsPrev": "was",
+    "unitReps": "reps",
+    "rpeMix": "Intensity · 8 weeks",
+    "rpeLight": "light ≤6",
+    "rpeModerate": "moderate 7–8",
+    "rpeHard": "hard ≥9",
+    "noWeightData": "No weight recorded — bodyweight-only rows carry no load chart"
   },
   "workouts": {
     "title": "Workouts",

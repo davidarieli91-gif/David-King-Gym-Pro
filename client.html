@@ -2451,6 +2451,31 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
         <p class="text-[10px] text-muted" id="txt-analytics-doneonly">Выполненные подходы · кг (фунты пересчитаны) · синергисты 30%</p>
         <div id="analytics-muscles" class="space-y-2.5"></div>
       </div>
+      <!-- c130: WEEKLY VOLUME TREND — the shared engine's volumeWeekly over
+           the WHOLE history (a trend ignores the range chips by design: it
+           IS the time series) + RPE mix strip -->
+      <div class="glass rounded-2xl p-4 space-y-2">
+        <h3 class="font-display font-bold text-sm text-text" id="txt-a-trend">Динамика объёма · 8 недель</h3>
+        <p class="text-[10px] text-muted" id="txt-a-trend-hint">Выполненные подходы · кг (фунты пересчитаны) · синергисты 30%</p>
+        <div id="a-trend"></div>
+        <div id="a-rpe" class="mt-2"></div>
+      </div>
+      <!-- c130: EXERCISE PROGRESS — e1RM (Epley) + top set per workout
+           occurrence, engine exerciseSeries, kg ⇄ lb follows the chip -->
+      <div class="glass rounded-2xl p-4 space-y-2">
+        <div class="flex items-center justify-between gap-2 flex-wrap">
+          <h3 class="font-display font-bold text-sm text-text" id="txt-a-progress">Прогресс в упражнении</h3>
+          <select id="a-progress-select" class="bg-[rgb(var(--c-surface-2))] border border-border rounded-xl px-2 py-1.5 text-xs text-text focus:outline-none focus:ring-2 focus:ring-cyan-500/60 cursor-pointer max-w-[55%]"></select>
+        </div>
+        <p class="text-[10px] text-muted" id="txt-a-progress-hint">e1RM (Эпли) и лучший подход · выполненные подходы</p>
+        <div id="a-progress"></div>
+      </div>
+      <!-- c130: RECENT PRs — the engine's prs() feed (30 days), done sets
+           only (a warmup is not a record) -->
+      <div class="glass rounded-2xl p-4 space-y-2">
+        <h3 class="font-display font-bold text-sm text-text" id="txt-a-prs">Личные рекорды · 30 дней</h3>
+        <div id="a-prs" class="space-y-1.5 max-h-64 overflow-y-auto"></div>
+      </div>
       <div class="glass rounded-2xl p-4 space-y-2">
         <div class="flex items-center justify-between gap-2">
           <h3 class="font-display font-bold text-sm text-text" id="txt-analytics-weight">Динамика веса</h3>
@@ -2639,6 +2664,7 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       aActivity:'Активность',aCalWorkout:'тренировка',aCalCheckin:'чек-ин',
       aDoneOnly:'Выполненные подходы · кг (фунты пересчитаны) · синергисты 30%',aSetsWord:'сет.',aTapDay:'Нажмите на день с тренировкой — откроется его аналитика',aRangeTotal:'Объём за период',aDayTitle:'Аналитика дня',aDayClose:'Закрыть',aDayExs:'Упражнения',aTrShort:'трен.',aNoSets:'Нет выполненных подходов',aMuscles:'Объём по группам мышц',aWeightT:'Динамика веса',aWeightNeed:'Нужно ≥ 2 чек-ина с весом для графика',aTarget:'цель',
       aRecent:'Последние тренировки',aNoWorkouts:'Пока нет тренировок — завершите первую!',aNoData:'Нет данных за период',
+      aTrendT:'Динамика объёма · 8 недель',aProgressT:'Прогресс в упражнении',aProgressHint:'e1RM (Эпли) и лучший подход · выполненные подходы',aLastOcc:'Последний раз:',aNoWeight:'Вес не записан — упражнения с собственным весом не дают графика нагрузки',aPRsT:'Личные рекорды · 30 дней',aPRsEmpty:'Новых рекордов за последние 30 дней нет',aPRsPrev:'было',aRepsWord:'повт.',aRpeMix:'Интенсивность · 8 недель',aRpeLight:'лёгкие ≤6',aRpeMod:'средние 7–8',aRpeHard:'тяжёлые ≥9',
       aWaist:'Талия (см)',aHip:'Бёдра (см)',aNote:'Заметка тренеру',checkinNotePh:'Сон, восстановление, аппетит...',
       noExercises:'Нет упражнений',noMeals:'План питания не назначен',technique:'Техника',
       targetMuscle:'Целевые',auxMuscle:'Вспомогательные',rest:'Отдых',
@@ -2688,6 +2714,7 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       aActivity:'Activity',aCalWorkout:'workout',aCalCheckin:'check-in',
       aDoneOnly:'Completed sets only · kg (lb converted) · synergists 30%',aSetsWord:'sets',aTapDay:'Tap a workout day to open its analytics',aRangeTotal:'Period volume',aDayTitle:'Day analytics',aDayClose:'Close',aDayExs:'Exercises',aTrShort:'wkouts',aNoSets:'No completed sets',aMuscles:'Volume by Muscle Group',aWeightT:'Body Weight Trend',aWeightNeed:'Need at least 2 weight check-ins for the chart',aTarget:'target',
       aRecent:'Recent Workouts',aNoWorkouts:'No workouts yet — finish your first one!',aNoData:'No data for this period',
+      aTrendT:'Volume trend · 8 weeks',aProgressT:'Exercise progress',aProgressHint:'e1RM (Epley) & top set · completed sets',aLastOcc:'Last time:',aNoWeight:'No weight recorded — bodyweight-only rows carry no load chart',aPRsT:'Personal records · 30 days',aPRsEmpty:'No new records in the last 30 days',aPRsPrev:'was',aRepsWord:'reps',aRpeMix:'Intensity · 8 weeks',aRpeLight:'light ≤6',aRpeMod:'moderate 7–8',aRpeHard:'hard ≥9',
       aWaist:'Waist (cm)',aHip:'Hips (cm)',aNote:'Note to coach',checkinNotePh:'Sleep, recovery, appetite…',
       noExercises:'No exercises',noMeals:'No nutrition plan',technique:'Technique',
       targetMuscle:'Target',auxMuscle:'Auxiliary',rest:'Rest',
@@ -2737,6 +2764,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       aActivity:'פעילות',aCalWorkout:'אימון',aCalCheckin:'צ׳ק-אין',
       aDoneOnly:'סטים שבוצעו בלבד · ק״ג (lb הומר) · שרירי עזר 30%',aSetsWord:'סטים',aTapDay:'הקישו על יום אימון כדי לפתוח את האנליטיקה שלו',aRangeTotal:'נפח לתקופה',aDayTitle:'אנליטיקת היום',aDayClose:'סגירה',aDayExs:'תרגילים',aTrShort:'אימ.',aNoSets:'אין סטים שבוצעו',aMuscles:'נפח לפי קבוצות שרירים',aWeightT:'מגמת משקל',aWeightNeed:'צריך לפחות 2 צ׳ק-אינים עם משקל לגרף',aTarget:'יעד',
       aRecent:'אימונים אחרונים',aNoWorkouts:'עדיין אין אימונים — סיימו את הראשון!',aNoData:'אין נתונים לתקופה',
+      aTrendT:'מגמת נפח · 8 שבועות',aProgressT:'התקדמות בתרגיל',aProgressHint:'e1RM (אפלי) והסט המוביל · סטים שבוצעו',aLastOcc:'פעם קודמת:',aNoWeight:'לא נרשם משקל — תרגילי משקל גוף אינם מייצרים גרף עומס',aPRsT:'שיאים אישיים · 30 יום',aPRsEmpty:'אין שיאים חדשים ב-30 הימים האחרונים',aPRsPrev:'היה',aRepsWord:'חזרות',aRpeMix:'עצימות · 8 שבועות',aRpeLight:'קל ≤6',aRpeMod:'בינוני 7–8',aRpeHard:'קשה ≥9',
       aWaist:'מותן (ס״מ)',aHip:'ירכיים (ס״מ)',aNote:'פתק למאמן',checkinNotePh:'שינה, התאוששות, תיאבון…',
       noExercises:'אין תרגילים',noMeals:'אין תפריט',technique:'טכניקה',
       targetMuscle:'יעד',auxMuscle:'עזר',rest:'מנוחה',
@@ -3038,6 +3066,17 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     if (_calHint128) _calHint128.textContent = t('aTapDay');
     document.getElementById('txt-analytics-weight').textContent = t('aWeightT');
     document.getElementById('txt-analytics-recent').textContent = t('aRecent');
+    /* c130: time-series progress cards */
+    const _aTrend130 = document.getElementById('txt-a-trend');
+    if (_aTrend130) _aTrend130.textContent = t('aTrendT');
+    const _aTrendHint130 = document.getElementById('txt-a-trend-hint');
+    if (_aTrendHint130) _aTrendHint130.textContent = t('aDoneOnly');
+    const _aProg130 = document.getElementById('txt-a-progress');
+    if (_aProg130) _aProg130.textContent = t('aProgressT');
+    const _aProgHint130 = document.getElementById('txt-a-progress-hint');
+    if (_aProgHint130) _aProgHint130.textContent = t('aProgressHint');
+    const _aPRs130 = document.getElementById('txt-a-prs');
+    if (_aPRs130) _aPRs130.textContent = t('aPRsT');
     document.getElementById('lbl-waist').textContent = t('aWaist');
     document.getElementById('lbl-hip').textContent = t('aHip');
     document.getElementById('lbl-energy').textContent = t('reportEnergy');
@@ -3294,6 +3333,9 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   function renderAnalytics() {
     const a = aAnalytics();
     renderAMetrics(a); renderACalendar(); renderAMuscles(a); renderAWeight(); renderARecent();
+    /* c130: time-series progress cards (whole history — a trend IS the
+       series; the range chips don't apply to it) */
+    renderATrend(); renderAProgress(); renderAPRs();
   }
   function renderAMetrics(a) {
     const box = document.getElementById('analytics-metrics'); if (!box) return;
@@ -3441,6 +3483,140 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     box.innerHTML = `
       <p class="text-[11px] text-muted mb-2">${esc(t('aRangeTotal'))}: <span class="font-mono text-text">${aNum(dispVolKg(a.volume))} ${uS}</span> · ${m.totalSets} ${esc(t('aSetsWord'))}</p>
       ${renderMuscleBars(m, uS)}`;
+  }
+  /* ======== c130: TIME-SERIES PROGRESS (audit item ② — «no progress
+     charts anywhere in the system»). The portal mirrors the trainer's three
+     progress cards from the SAME shared engine: weekly volume trend + RPE
+     mix, per-exercise e1RM/top-set chart, recent PRs. Display units follow
+     the c128 kg/lb chip; the underlying math is kg-canonical and done-only
+     in BOTH apps — identical numbers by construction. */
+  function aProgExList() {
+    const eng = window.dkAnalyticsEngine;
+    const hist = loadHistory();
+    const map = new Map();
+    hist.forEach(r => (r.exercises || []).forEach(ex => {
+      const hasDone = (ex.sets || []).some(s => s && s.done !== false && (Number(s.reps) || 0) > 0);
+      if (!hasDone) return;
+      const key = (eng && typeof eng.exKeyOf === 'function') ? eng.exKeyOf(ex) : ('nm:' + String(ex.name || '').trim().toLowerCase());
+      if (!key) return;
+      const e = map.get(key);
+      if (e) e.count++;
+      else map.set(key, { key, name: ex.name || key, count: 1 });
+    }));
+    return [...map.values()].sort((x, y) => y.count - x.count || x.name.localeCompare(y.name)).slice(0, 40);
+  }
+  function aWeekLbl(ts) { const d = new Date(ts); return String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0'); }
+  function renderATrend() {
+    const box = document.getElementById('a-trend');
+    const rpeBox = document.getElementById('a-rpe');
+    if (!box) return;
+    const eng = window.dkAnalyticsEngine;
+    const hist = loadHistory();
+    if (!eng || typeof eng.volumeWeekly !== 'function' || typeof eng.sparkBarsSVG !== 'function' || !hist.length) {
+      box.innerHTML = '<p class="text-xs text-muted text-center py-4">' + esc(t('aNoWorkouts')) + '</p>';
+      if (rpeBox) rpeBox.innerHTML = '';
+      return;
+    }
+    try {
+      const resolveEx = ex => ({ group: aGroupOf(ex), synergists: Array.isArray(ex.syn) ? ex.syn.map(s => mgKeyOf(s) || s) : [] });
+      const weeks = eng.volumeWeekly(hist, { resolveEx }, 8);
+      /* c128: bars follow the display unit (kg ⇄ lb) */
+      const svg = eng.sparkBarsSVG(weeks.map(w => ({ v: dispVolKg(w.totalKg), label: aWeekLbl(w.weekStart) })), { fmt: v => aNum(v) });
+      box.innerHTML = svg || '<p class="text-xs text-muted text-center py-4">' + esc(t('aNoWorkouts')) + '</p>';
+      if (rpeBox) {
+        const rpe = typeof eng.weeklyRpe === 'function' ? eng.weeklyRpe(hist, {}, 8) : [];
+        const z = { light: 0, moderate: 0, hard: 0 };
+        rpe.forEach(w => { z.light += w.zones.light.sets; z.moderate += w.zones.moderate.sets; z.hard += w.zones.hard.sets; });
+        const total = z.light + z.moderate + z.hard;
+        if (!total) { rpeBox.innerHTML = ''; return; }
+        const seg = (n, cls) => '<div class="' + cls + ' h-2 rounded-full transition-all" style="width:' + Math.max(2, Math.round(n / total * 100)) + '%"></div>';
+        const chip = (n, cls, key) => '<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-sm ' + cls + ' inline-block"></span>' + esc(t(key)) + ' · ' + Math.round(n / total * 100) + '%</span>';
+        rpeBox.innerHTML =
+          '<div class="text-[10px] uppercase tracking-wider text-muted mb-1.5">' + esc(t('aRpeMix')) + ' · ' + total + ' ' + esc(t('aSetsWord')) + '</div>'
+          + '<div class="flex gap-1 mb-1.5">' + seg(z.light, 'bg-cyan-400/70') + seg(z.moderate, 'bg-amber-500/80') + seg(z.hard, 'bg-rose-500/80') + '</div>'
+          + '<div class="flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-muted">'
+          + chip(z.light, 'bg-cyan-400/70', 'aRpeLight')
+          + chip(z.moderate, 'bg-amber-500/80', 'aRpeMod')
+          + chip(z.hard, 'bg-rose-500/80', 'aRpeHard')
+          + '</div>';
+      }
+    } catch (e130) { console.warn('[analytics] portal trend failed:', e130); }
+  }
+  function renderAProgress() {
+    const sel = document.getElementById('a-progress-select');
+    const box = document.getElementById('a-progress');
+    if (!sel || !box) return;
+    const eng = window.dkAnalyticsEngine;
+    const hist = loadHistory();
+    if (!eng || typeof eng.exerciseSeries !== 'function' || typeof eng.progressLinesSVG !== 'function' || !hist.length) {
+      sel.innerHTML = '';
+      box.innerHTML = '<p class="text-xs text-muted text-center py-4">' + esc(t('aNoWorkouts')) + '</p>';
+      return;
+    }
+    const list = aProgExList();
+    if (!list.length) {
+      sel.innerHTML = '';
+      box.innerHTML = '<p class="text-xs text-muted text-center py-4">' + esc(t('aNoWorkouts')) + '</p>';
+      return;
+    }
+    const prev = sel.value;
+    sel.innerHTML = list.map(o => '<option value="' + esc(o.key) + '">' + esc(o.name) + ' (' + o.count + ')</option>').join('');
+    sel.value = list.some(o => o.key === prev) ? prev : list[0].key;
+    const key130 = sel.value;
+    const pts = eng.exerciseSeries(hist, { match: ex => ((eng.exKeyOf ? eng.exKeyOf(ex) : '') === key130) }).slice(-12);
+    if (!pts.length) { box.innerHTML = '<p class="text-xs text-muted text-center py-4">' + esc(t('aNoWorkouts')) + '</p>'; return; }
+    /* c130: bodyweight-only rows — a flat zero line would look broken */
+    if (pts.every(p => !p.topKg && !p.e1rm)) {
+      box.innerHTML = '<p class="text-xs text-muted text-center py-4">' + esc(t('aNoWeight')) + '</p>';
+      return;
+    }
+    /* c128: e1RM / top set in the DISPLAY unit */
+    const svg = eng.progressLinesSVG(pts.map(p => ({ a: dispW1(p.e1rm), b: dispW1(p.topKg), label: aWeekLbl(p.ts) })));
+    const first = pts[0], last = pts[pts.length - 1];
+    const dE = Math.round((dispW1(last.e1rm) - dispW1(first.e1rm)) * 10) / 10;
+    const uS = esc(dispUnitShort());
+    const deltaHtml = dE === 0 ? '<span class="text-muted">=</span>'
+      : dE > 0 ? '<span class="text-emerald-400">▲ +' + dE + ' ' + uS + ' e1RM</span>'
+      : '<span class="text-amber-400">▼ ' + dE + ' ' + uS + ' e1RM</span>';
+    const lastLine = '<div class="text-[11px] text-muted mt-2">' + esc(t('aLastOcc')) + ' <span class="font-mono text-text">' + esc(aWeekLbl(last.ts)) + '</span> · <span class="font-mono text-text">' + (last.topKg > 0 ? dispW1(last.topKg) + '×' : '×') + last.topReps + ' ' + uS + '</span>' + (last.rpeAvg != null ? ' · RPE ' + last.rpeAvg : '') + ' · ' + deltaHtml + '</div>';
+    box.innerHTML = svg + lastLine;
+  }
+  function renderAPRs() {
+    const box = document.getElementById('a-prs');
+    if (!box) return;
+    const eng = window.dkAnalyticsEngine;
+    const hist = loadHistory();
+    if (!eng || typeof eng.prs !== 'function' || !hist.length) {
+      box.innerHTML = '<p class="text-xs text-muted text-center py-4">' + esc(t('aPRsEmpty')) + '</p>';
+      return;
+    }
+    try {
+      const res = eng.prs(hist, { windowDays: 30 });
+      if (!res.recent.length) {
+        box.innerHTML = '<p class="text-xs text-muted text-center py-4">' + esc(t('aPRsEmpty')) + '</p>';
+        return;
+      }
+      const uS = esc(dispUnitShort());
+      box.innerHTML = res.recent.slice(0, 12).map(pr => {
+        const icon = pr.type === 'weight' ? '🏋️' : pr.type === 'e1rm' ? '📈' : '🔁';
+        /* c128: PR values convert to the display unit (reps stay reps) */
+        const val = pr.type === 'reps'
+          ? pr.value + ' ×' + esc(t('aRepsWord'))
+          : pr.type === 'e1rm' ? 'e1RM ' + dispW1(pr.value) + ' ' + uS
+          : dispW1(pr.value) + ' ' + uS;
+        const prevV = pr.type === 'reps'
+          ? pr.prev + ' ×' + esc(t('aRepsWord'))
+          : pr.type === 'e1rm' ? 'e1RM ' + dispW1(pr.prev) + ' ' + uS
+          : dispW1(pr.prev) + ' ' + uS;
+        return '<div class="flex items-center gap-2 bg-[rgb(var(--c-surface-2))]/60 px-2.5 py-1.5 rounded-xl text-[11px]">'
+          + '<span class="shrink-0">' + icon + '</span>'
+          + '<span class="text-text font-semibold truncate flex-1 min-w-0">' + esc(pr.name) + '</span>'
+          + '<span class="font-mono text-text shrink-0">' + val + '</span>'
+          + '<span class="font-mono text-muted shrink-0">' + esc(t('aPRsPrev')) + ' ' + prevV + '</span>'
+          + '<span class="font-mono text-muted shrink-0">' + esc(aWeekLbl(pr.ts)) + '</span>'
+          + '</div>';
+      }).join('');
+    } catch (e130) { console.warn('[analytics] portal prs failed:', e130); }
   }
   function renderAWeight() {
     const box = document.getElementById('analytics-weight-chart'); if (!box) return;
@@ -5771,6 +5947,12 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       aDaySel = null;
       renderACalendar();
       renderAMuscles(aAnalytics());
+    });
+    /* c130: exercise picker → re-render just the progress chart (localStorage
+       history, instant; the selection survives re-renders) */
+    const aProgSel130 = document.getElementById('a-progress-select');
+    if (aProgSel130) aProgSel130.addEventListener('change', () => {
+      renderAProgress();
     });
     const aDefChip = document.getElementById('a-chip-week');
     if (aDefChip) { aDefChip.classList.add('bg-indigo-500','text-white'); aDefChip.classList.remove('text-muted'); }

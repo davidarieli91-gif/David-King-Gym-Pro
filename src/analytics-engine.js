@@ -74,6 +74,10 @@
 
   function r1(x) { return isFinite(x) ? Math.round(x * 10) / 10 : 0; }
 
+  /* isFinite(null)/isFinite('') are TRUE (JS coercion) — a null point must
+     never render as 0. Numbers only. */
+  function isNum(v) { return typeof v === 'number' && isFinite(v); }
+
   /* ---------- volume (honest, kg-normalized) ---------- */
 
   /* Per-exercise stats over DONE sets: { volumeKg, setsDone, warmupKg }.
@@ -401,9 +405,109 @@
     };
   }
 
+  /* ---------- shared SVG builders (c130) ---------- */
+
+  /* The c127 engine shipped the math (volumeWeekly / exerciseSeries / prs /
+     weeklyRpe) but the apps still had to draw their own charts — the exact
+     drift the recovery engine killed with its shared sparkSVG (c124). These
+     two builders are the SAME precedent for analytics: pure string output,
+     no chart library, no DOM access; the APP feeds DISPLAY-unit values
+     (the trainer renders kg, the portal converts through its c128 unit
+     chip) so the builder stays unit-agnostic.
+
+     sparkBarsSVG — weekly volume bars. vals: [{ v: number, label: string }]
+     oldest-first, zero weeks included as visible empty slots (a chart that
+     skips a week lies). opts: { h, color, accent, fmt(v) → short label }.
+   */
+  function sparkBarsSVG(vals, opts) {
+    opts = opts || {};
+    var data = (vals || []).filter(function (p) { return p && isNum(p.v); });
+    var n = data.length;
+    if (!n) return '';
+    var W = opts.w || 320, H = opts.h || 96, T = 15, B = 17, L = 5, R = 5;
+    var max = 0;
+    data.forEach(function (p) { if (p.v > max) max = p.v; });
+    if (!max) return '';
+    var color = opts.color || '#8b5cf6';
+    var accent = opts.accent || '#22d3ee';
+    var escTxt = function (s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
+    var fmt = opts.fmt || function (v) { return v >= 10000 ? Math.round(v / 1000) + 'k' : v >= 1000 ? (Math.round(v / 100) / 10) + 'k' : String(Math.round(v)); };
+    var slot = (W - L - R) / n;
+    var bw = Math.min(30, slot * 0.62);
+    var out = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="w-full h-auto" style="direction:ltr" role="img" preserveAspectRatio="xMidYMid meet">';
+    out += '<line x1="' + L + '" y1="' + (H - B) + '" x2="' + (W - R) + '" y2="' + (H - B) + '" stroke="rgba(255,255,255,0.14)" stroke-width="1" />';
+    data.forEach(function (p, i) {
+      var cx = L + slot * i + slot / 2;
+      var hVal = Math.max(p.v > 0 ? 4 : 0, (H - T - B) * (p.v / max));
+      var y = H - B - hVal;
+      var isMax = p.v === max;
+      out += '<rect x="' + (cx - bw / 2).toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + hVal.toFixed(1) + '" rx="3" fill="' + (isMax ? accent : color) + '" opacity="' + (p.v > 0 ? (isMax ? 1 : 0.72) : 0.18) + '" />';
+      if (p.v > 0) {
+        out += '<text x="' + cx.toFixed(1) + '" y="' + (y - 3.5).toFixed(1) + '" text-anchor="middle" font-size="8.5" font-weight="700" fill="' + (isMax ? accent : 'rgba(255,255,255,0.75)') + '">' + fmt(p.v) + '</text>';
+      }
+      if (p.label != null) {
+        out += '<text x="' + cx.toFixed(1) + '" y="' + (H - 5) + '" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.45)">' + escTxt(p.label) + '</text>';
+      }
+    });
+    out += '</svg>';
+    return out;
+  }
+
+  /* progressLinesSVG — per-exercise progress: two polylines (e1RM + top set
+     weight) over workout occurrences. pts: [{ a, b, label }] oldest-first
+     where a/b are DISPLAY-unit numbers (a may be null when reps were too
+     low to matter — Epley is 0 only for empty sets, the app filters).
+     opts: { h, colorA, colorB }. */
+  function progressLinesSVG(pts, opts) {
+    opts = opts || {};
+    var data = (pts || []).filter(function (p) { return p && ((isNum(p.a)) || (isNum(p.b))); });
+    var n = data.length;
+    if (!n) return '';
+    var W = opts.w || 320, H = opts.h || 120, T = 14, B = 18, L = 30, R = 10;
+    var lo = Infinity, hi = -Infinity;
+    data.forEach(function (p) {
+      if (isNum(p.a)) { if (p.a < lo) lo = p.a; if (p.a > hi) hi = p.a; }
+      if (isNum(p.b)) { if (p.b < lo) lo = p.b; if (p.b > hi) hi = p.b; }
+    });
+    if (!isFinite(lo) || !isFinite(hi)) return '';
+    if (hi === lo) { hi += 1; lo -= 1; }
+    var pad = (hi - lo) * 0.12; hi += pad; lo -= pad;
+    var X = function (i) { return L + (W - L - R) * (n === 1 ? 0.5 : i / (n - 1)); };
+    var Y = function (v) { return T + (H - T - B) * (1 - (v - lo) / (hi - lo)); };
+    function line(field) {
+      var seg = [];
+      data.forEach(function (p, i) { if (isNum(p[field])) seg.push(i + ':' + p[field]); });
+      if (!seg.length) return '';
+      var ptsStr = seg.map(function (s) {
+        var parts = s.split(':');
+        return X(Number(parts[0])).toFixed(1) + ',' + Y(Number(parts[1])).toFixed(1);
+      }).join(' ');
+      var dots = seg.map(function (s) {
+        var parts = s.split(':');
+        return '<circle cx="' + X(Number(parts[0])).toFixed(1) + '" cy="' + Y(Number(parts[1])).toFixed(1) + '" r="2.4" fill="' + (field === 'a' ? (opts.colorA || '#22d3ee') : (opts.colorB || '#f59e0b')) + '" />';
+      }).join('');
+      return '<polyline points="' + ptsStr + '" fill="none" stroke="' + (field === 'a' ? (opts.colorA || '#22d3ee') : (opts.colorB || '#f59e0b')) + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" opacity="0.9" />' + dots;
+    }
+    var grid = [0.33, 0.66].map(function (f) {
+      var y = (T + (H - T - B) * f).toFixed(1);
+      return '<line x1="' + L + '" y1="' + y + '" x2="' + (W - R) + '" y2="' + y + '" stroke="rgba(255,255,255,0.06)" stroke-width="1" />';
+    }).join('');
+    var escTxt = function (s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
+    var first = data[0], last = data[n - 1];
+    var lbl = function (v) { return v >= 100 ? String(Math.round(v)) : String(Math.round(v * 10) / 10); };
+    var out = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="w-full h-auto" style="direction:ltr" role="img" preserveAspectRatio="xMidYMid meet">';
+    out += grid + line('a') + line('b');
+    out += '<text x="' + (L - 4) + '" y="' + (Y(hi - pad) + 3).toFixed(1) + '" text-anchor="end" font-size="8.5" fill="rgba(255,255,255,0.5)">' + lbl(hi - pad) + '</text>';
+    out += '<text x="' + (L - 4) + '" y="' + (Y(lo + pad) + 3).toFixed(1) + '" text-anchor="end" font-size="8.5" fill="rgba(255,255,255,0.5)">' + lbl(lo + pad) + '</text>';
+    if (first.label != null) out += '<text x="' + X(0).toFixed(1) + '" y="' + (H - 5) + '" font-size="8" fill="rgba(255,255,255,0.45)">' + escTxt(first.label) + '</text>';
+    if (n > 1 && last.label != null) out += '<text x="' + X(n - 1).toFixed(1) + '" y="' + (H - 5) + '" text-anchor="end" font-size="8" fill="rgba(255,255,255,0.45)">' + escTxt(last.label) + '</text>';
+    out += '</svg>';
+    return out;
+  }
+
   /* ---------- exports ---------- */
   var api = {
-    version: 'c129',
+    version: 'c130',
     LB_TO_KG: LB_TO_KG,
     SYNERGIST_CREDIT: SYNERGIST_CREDIT,
     toKg: toKg,
@@ -417,6 +521,8 @@
     prs: prs,
     weeklyRpe: weeklyRpe,
     bodySeries: bodySeries,
+    sparkBarsSVG: sparkBarsSVG,
+    progressLinesSVG: progressLinesSVG,
     exKeyOf: exKeyOf
   };
   if (typeof window !== 'undefined') window.dkAnalyticsEngine = api;
