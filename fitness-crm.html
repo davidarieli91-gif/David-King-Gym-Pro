@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c139" />
+<meta name="dk-build" content="c140" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2849,7 +2849,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c139</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c140</p>
             </div>
           </div>
 
@@ -10478,6 +10478,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
             unit: ex.unit === 'lb' || ex.unit === 'kg' ? ex.unit : null, /* c104 */
             tunit: ex.tunit === 'min' || ex.tunit === 'sec' ? ex.tunit : null, /* c104 */
             is_superset: ex.is_superset === true, /* c104 */
+            ss_link: ex.ss_link === true, /* c140: link model survives */
             rest_sec: ex.rest_sec != null ? ex.rest_sec : 90,
             sets: (ex.sets || []).map(s => ({
               weight: s.weight || null,
@@ -10639,6 +10640,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
             group: ex.group,
             cardio: ex.cardio === true,
             is_superset: ex.is_superset || false,
+            ss_link: ex.ss_link === true, /* c140 */
             unit: ex.unit === 'lb' || ex.unit === 'kg' ? ex.unit : null, /* c104: per-exercise weight unit travels with the template */
             tunit: ex.tunit === 'min' || ex.tunit === 'sec' ? ex.tunit : null, /* c104 */
             rest_sec: ex.rest_sec != null ? ex.rest_sec : 90,
@@ -10802,6 +10804,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
         group: ex.group,
         cardio: ex.cardio === true,
         is_superset: ex.is_superset || false,
+        ss_link: ex.ss_link === true, /* c140 */
         unit: ex.unit === 'lb' || ex.unit === 'kg' ? ex.unit : null,
         tunit: ex.tunit === 'min' || ex.tunit === 'sec' ? ex.tunit : null,
         rest_sec: ex.rest_sec != null ? ex.rest_sec : 90,
@@ -11439,7 +11442,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               </button>
             </div>`;
           });
-          return `<div class="bg-surface-2 border border-border rounded-xl p-3 pb-draggable ${ex.is_superset ? 'dk-superset-hl' : ''}" data-pb-ex-index="${ei}">
+          return `<div class="bg-surface-2 border border-border rounded-xl p-3 pb-draggable ${(() => { const c = window.dkSupersetChains(day.exercises).get(ei); return c ? 'dk-ss-grouped' : ''; })()}" ${(() => { const c = window.dkSupersetChains(day.exercises).get(ei); return c ? 'style="' + window.dkSSStyle(c.gi) + '"' : ''; })()} data-pb-ex-index="${ei}">
             <!-- c119: flex-wrap so the ×3 thumbnail + controls reflow on narrow phones -->
             <div class="flex flex-wrap items-center gap-2 mb-2 pb-drag-handle" draggable="true" data-pb-drag-handle="${ei}">
               <div class="pb-grip text-muted/60 hover:text-muted transition cursor-grab active:cursor-grabbing shrink-0" title="${t('programs.dragToReorder') || 'Drag to reorder'}">
@@ -11472,7 +11475,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
                 }
                 return '';
               })()}
-              ${ex.is_superset ? '<span class="text-xs text-accent font-bold shrink-0" title="Superset">⚡</span>' : ''}
+              ${ex.is_superset ? '<span class="text-xs font-bold shrink-0" style="color:' + window.dkSSColor((window.dkSupersetChains(day.exercises).get(ei) || { gi: 0 }).gi) + '" title="Superset">⚡</span>' : ''}
               <div class="flex-1 min-w-0 cursor-pointer" data-pb-view-ex="${escapeAttr(ex.exercise_id || '')}">
                 <div class="text-sm font-medium truncate hover:text-primary-2 transition">${escapeHTML(getLocalizedExName(ex))}</div>
                 ${ex.group ? `<div class="text-[10px] text-muted truncate">${escapeHTML(getLocalizedExGroup(ex))}</div>` : ''}
@@ -11599,31 +11602,30 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             }, _pb.exerciseCache);
           });
         });
-        // Wire superset toggle
+        // Wire superset toggle (c140: link model — ⚡ links THIS with the NEXT)
         contentEl.querySelectorAll('[data-pb-superset]').forEach(btn => {
           btn.addEventListener('click', () => {
             const ei = parseInt(btn.getAttribute('data-pb-superset'), 10);
             const ex = day.exercises[ei];
             if (!ex) return;
-            ex.is_superset = !ex.is_superset;
-            if (ex.is_superset) {
-              // Mark this exercise and the next one as superset partners
-              const nextEx = day.exercises[ei + 1];
-              if (nextEx) {
-                ex.superset_partner = nextEx.name || '';
-                nextEx.is_superset = true;
-                nextEx.superset_partner = ex.name || '';
-              }
+            window.dkNormalizeSupersets(day.exercises);
+            const prev = ei > 0 ? day.exercises[ei - 1] : null;
+            const nextEx = day.exercises[ei + 1];
+            const linkedPrev = !!(prev && prev.ss_link === true);
+            if (ex.ss_link === true) {
+              delete ex.ss_link; /* split the chain after this exercise */
+              toast(t('programs.supersetOff') || 'Superset OFF', 'info', 2000);
+            } else if (linkedPrev) {
+              delete prev.ss_link; /* the pair turns off from both sides */
+              toast(t('programs.supersetOff') || 'Superset OFF', 'info', 2000);
+            } else if (nextEx) {
+              ex.ss_link = true; /* groups merge naturally when next leads a chain */
               toast(t('programs.supersetOn') || 'Superset ON — exercises done back-to-back before rest', 'success', 3000);
             } else {
-              const nextEx = day.exercises[ei + 1];
-              if (nextEx && nextEx.is_superset) {
-                nextEx.is_superset = false;
-                delete nextEx.superset_partner;
-              }
-              delete ex.superset_partner;
-              toast(t('programs.supersetOff') || 'Superset OFF', 'info', 2000);
+              toast(t('workouts.ssNeedNext') || 'A superset links this exercise with the NEXT one — add it first', 'info', 3000);
+              return;
             }
+            window.dkNormalizeSupersets(day.exercises);
             renderBuilder();
           });
         });
@@ -12124,11 +12126,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       // Apply the new order
       day.exercises = scored.map(s => s.ex);
 
-      // Clear stale superset flags (a reordered exercise's `superset_partner` index is now wrong)
+      // Clear stale superset links (c140: reordered exercises' ss_link/pairs are now wrong)
       day.exercises.forEach(ex => {
-        if (ex.is_superset || ex.superset_partner !== undefined) {
+        if (ex.is_superset || ex.superset_partner !== undefined || ex.ss_link !== undefined) {
           ex.is_superset = false;
           delete ex.superset_partner;
+          delete ex.ss_link;
         }
       });
 
@@ -12154,11 +12157,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       if (fromIdx < 0 || fromIdx >= n || toIdx < 0 || toIdx >= n || fromIdx === toIdx) return false;
       const [moved] = day.exercises.splice(fromIdx, 1);
       day.exercises.splice(toIdx, 0, moved);
-      // Clear stale superset flags — superset_partner indices are now invalid
+      // Clear stale superset links (c140: ss_link means «this + next» — a move invalidates it)
       day.exercises.forEach(ex => {
-        if (ex.is_superset || ex.superset_partner !== undefined) {
+        if (ex.is_superset || ex.superset_partner !== undefined || ex.ss_link !== undefined) {
           ex.is_superset = false;
           delete ex.superset_partner;
+          delete ex.ss_link;
         }
       });
       renderBuilder();
@@ -12175,11 +12179,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const ex = srcDay.exercises && srcDay.exercises[exIdx];
       if (!ex) return false;
       srcDay.exercises.forEach(o => {
-        if (o !== ex && (o.is_superset || o.superset_partner !== undefined)) { o.is_superset = false; delete o.superset_partner; }
+        if (o !== ex && (o.is_superset || o.superset_partner !== undefined || o.ss_link !== undefined)) { o.is_superset = false; delete o.superset_partner; delete o.ss_link; }
       });
       srcDay.exercises.splice(exIdx, 1);
       ex.is_superset = false;
       delete ex.superset_partner;
+      delete ex.ss_link;
       if (!dstDay.exercises) dstDay.exercises = [];
       dstDay.exercises.push(ex);
       _pb.activeDay = toDayIdx;
@@ -12250,6 +12255,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             group: ex.group,
             cardio: ex.cardio === true,
             is_superset: ex.is_superset || false,
+            ss_link: ex.ss_link === true, /* c140 */
             unit: ex.unit === 'lb' || ex.unit === 'kg' ? ex.unit : null, /* c104: per-exercise weight unit survives the edit round-trip */
             tunit: ex.tunit === 'min' || ex.tunit === 'sec' ? ex.tunit : null, /* c104: per-exercise time unit survives too */
             rest_sec: ex.rest_sec != null ? ex.rest_sec : 90,
@@ -15430,6 +15436,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           unit_src: ex.unit === 'lb' || ex.unit === 'kg' ? 'program' : 'default', /* c121: history may override non-prescribed units */
           tunit: ex.tunit === 'min' || ex.tunit === 'sec' ? ex.tunit : null, /* c107 */
           is_superset: ex.is_superset === true, /* c107: superset pairs survive template → live */
+          ss_link: ex.ss_link === true, /* c140 */
           sets: (ex.sets || []).map(s => ({ ...s, done: false }))
         })),
         started_at: Date.now()
@@ -15463,6 +15470,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           unit_src: ex.unit === 'lb' || ex.unit === 'kg' ? 'program' : 'default', /* c121: history may override non-prescribed units */
           tunit: ex.tunit === 'min' || ex.tunit === 'sec' ? ex.tunit : null, /* c104 */
           is_superset: ex.is_superset === true, /* c104 */
+          ss_link: ex.ss_link === true, /* c140 */
           sets: (ex.sets || []).map(s => ({
             weight: s.weight || null,
             reps: s.reps || null,
@@ -15757,6 +15765,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const name = globalExName(ex);
       const group = globalExGroup(ex);
       const sets = ex.sets || [];
+      const _liveChain = window.dkSupersetChains(_workout.exercises).get(idx); /* c140: group color */
       /* c96: this exercise's own weight unit (falls back to the default) */
       const exUnit = ex.unit === 'lb' ? 'lb' : (ex.unit === 'kg' ? 'kg' : dkWUnitGet());
       // Exercise thumbnail (Sprint 3+): look up image from local cache via Map index
@@ -15806,13 +15815,13 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         : `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-tunit-col data-tunit-base="${t('workouts.time')}">${t('workouts.time')} · ${dkTUnitShort()}</button>`;
 
       return `
-        <div class="glass rounded-2xl p-4 space-y-3 fade-in ${ex.is_superset ? 'dk-superset-hl' : ''}" data-exercise-idx="${idx}">
+        <div class="glass rounded-2xl p-4 space-y-3 fade-in" ${_liveChain ? `style="${window.dkSSStyle(_liveChain.gi)}"` : ''} data-exercise-idx="${idx}">
           <!-- Exercise header (portal layout) -->
           <div class="flex items-start justify-between gap-2">
             ${thumbHtml}
             <div class="flex-1 min-w-0">
               <div class="flex items-start gap-2">
-                <h4 class="font-display font-bold text-sm leading-snug flex-1 min-w-0 cursor-pointer hover:text-[rgb(var(--c-primary-2))] transition truncate" data-view-exercise="${escapeAttr(ex.exercise_id || '')}">${ex.is_superset ? '<span class="text-accent font-bold shrink-0" title="Superset">⚡ </span>' : ''}${escapeHTML(name)}</h4>
+                <h4 class="font-display font-bold text-sm leading-snug flex-1 min-w-0 cursor-pointer hover:text-[rgb(var(--c-primary-2))] transition truncate" data-view-exercise="${escapeAttr(ex.exercise_id || '')}">${ex.is_superset ? '<span class="font-bold shrink-0" style="color:' + window.dkSSColor((_liveChain || { gi: 0 }).gi) + '" title="Superset">⚡ </span>' : ''}${escapeHTML(name)}</h4>
                 <div class="flex items-center gap-1 shrink-0">
                   ${ex.exercise_id ? `<button class="w-7 h-7 grid place-items-center rounded-lg bg-surface-2 border border-border text-muted hover:text-[rgb(var(--c-primary-2))] hover:border-[rgb(var(--c-primary)/0.5)] transition" data-view-exercise-btn="${escapeAttr(ex.exercise_id)}" title="${t('aria.view')}" aria-label="${t('aria.view')}">
                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -15917,28 +15926,89 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       return false;
     }
 
+    /* ===== c140: SUPERSET GROUPS (link model) ============================
+       ss_link:true on exercise i means «i and i+1 form a superset». A group
+       is a consecutive LINK CHAIN, so two independent pairs stay TWO groups
+       (the old flag-run model merged A-B + C-D into one quadruple). The
+       legacy is_superset / superset_partner fields are kept NORMALIZED on
+       every pass for older consumers (portal share, highlights, c107 sync).
+       Colors: one palette color per group, in list order. ==== */
+    var DK_SS_COLORS = ['#f59e0b', '#22d3ee', '#a78bfa', '#34d399', '#f472b6', '#60a5fa'];
+    window.dkSSColors = DK_SS_COLORS;
+    window.dkSSColor = function (gi) { return DK_SS_COLORS[((gi % DK_SS_COLORS.length) + DK_SS_COLORS.length) % DK_SS_COLORS.length]; };
+    window.dkSSStyle = function (gi) {
+      var c = window.dkSSColor(gi);
+      return 'border-color:' + c + ';background:' + c + '12;box-shadow:0 0 0 1px ' + c + '59, inset 0 0 14px ' + c + '1a';
+    };
+    /* normalize: migrate legacy runs into links (once), drop dangling links,
+       rebuild is_superset + superset_partner for every member */
+    window.dkNormalizeSupersets = function (exs) {
+      if (!Array.isArray(exs)) return;
+      var hasLinks = false;
+      for (var x = 0; x < exs.length; x++) { if (exs[x] && exs[x].ss_link !== undefined) { hasLinks = true; break; } }
+      if (!hasLinks) {
+        for (var m = 0; m < exs.length - 1; m++) {
+          if (exs[m] && exs[m].is_superset === true && exs[m + 1] && exs[m + 1].is_superset === true) exs[m].ss_link = true;
+        }
+      }
+      for (var d = 0; d < exs.length; d++) { if (exs[d] && exs[d].ss_link && !exs[d + 1]) delete exs[d].ss_link; }
+      for (var k = 0; k < exs.length; k++) {
+        var e = exs[k]; if (!e) continue;
+        var prevLink = k > 0 && exs[k - 1] && exs[k - 1].ss_link === true;
+        if (e.ss_link === true || prevLink) {
+          e.is_superset = true;
+          e.superset_partner = (e.ss_link === true && exs[k + 1]) ? (exs[k + 1].name || '') : (prevLink ? (exs[k - 1].name || '') : '');
+        } else {
+          e.is_superset = false;
+          delete e.superset_partner;
+        }
+      }
+    };
+    /* chains: Map(idx -> { gi, a, b }) — gi is the group order (color index).
+       Auto-migrates legacy flag runs on the first query (idempotent). */
+    window.dkSupersetChains = function (exs) {
+      var map = new Map();
+      if (!Array.isArray(exs)) return map;
+      window.dkNormalizeSupersets(exs);
+      var chains = [];
+      var i = 0;
+      while (i < exs.length) {
+        if (i + 1 < exs.length && exs[i] && exs[i].ss_link === true) {
+          var a = i, b = i;
+          while (b + 1 < exs.length && exs[b] && exs[b].ss_link === true) b++;
+          chains.push([a, b]);
+          i = b + 1;
+        } else i++;
+      }
+      chains.forEach(function (c, gi) {
+        for (var k = c[0]; k <= c[1]; k++) map.set(k, { gi: gi, a: c[0], b: c[1] });
+      });
+      return map;
+    };
+
     /* ===== c107: superset set-sync — a ✓ on one exercise checks the SAME set
-       index on its superset partners; «Сделал всё», add-set and remove-set
-       keep every partner at the same set count, so the pair always finishes
-       together. A superset group = a maximal run of CONSECUTIVE is_superset
-       exercises (the builder always marks an exercise and its next one). ===== */
+       index on its SUPERSET GROUP partners (c140: group = link chain);
+       «Сделал всё», add-set and remove-set keep every partner at the same
+       set count, so the group always finishes together. ===== */
     function lwSupersetGroup(idx) {
-      if (!_workout || !_workout.exercises[idx] || _workout.exercises[idx].is_superset !== true) return [];
+      if (!_workout) return [];
       const exs = _workout.exercises;
-      let a = idx; while (a - 1 >= 0 && exs[a - 1] && exs[a - 1].is_superset === true) a--;
-      let b = idx; while (b + 1 < exs.length && exs[b + 1] && exs[b + 1].is_superset === true) b++;
+      window.dkNormalizeSupersets(exs);
+      const chain = window.dkSupersetChains(exs).get(idx);
+      if (!chain) return [];
       const out = [];
-      for (let i = a; i <= b; i++) if (i !== idx) out.push(i);
+      for (let i = chain.a; i <= chain.b; i++) if (i !== idx) out.push(i);
       return out;
     }
-    /* pad every member of a superset run to the same set count (last-set clone) */
+    /* pad every member of a superset chain to the same set count (last-set clone) */
     function lwEqualizeSupersets(exs) {
       if (!Array.isArray(exs)) return;
+      window.dkNormalizeSupersets(exs);
       let i = 0;
       while (i < exs.length) {
-        if (exs[i] && exs[i].is_superset === true) {
+        if (i + 1 < exs.length && exs[i] && exs[i].ss_link === true) {
           let j = i;
-          while (j + 1 < exs.length && exs[j + 1] && exs[j + 1].is_superset === true) j++;
+          while (j + 1 < exs.length && exs[j] && exs[j].ss_link === true) j++;
           let max = 0;
           for (let k = i; k <= j; k++) max = Math.max(max, (exs[k].sets || []).length);
           for (let k = i; k <= j; k++) {
@@ -15967,36 +16037,39 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       saveDraft();
     }
 
-    /* ===== c117: apply / cancel a superset from the live workout (the same
-       semantics as the program builder: ⚡ marks THIS exercise and the NEXT
-       one as partners; toggling off clears both). Partners are re-equalized
-       to the same set count so the c107 ✓-sync keeps working. ===== */
+    /* ===== c117/c140: apply / cancel a superset from the live workout.
+       The ⚡ button always means «link THIS exercise with the NEXT one»:
+       · not in a group + next exists → link (groups merge when the next one
+         already leads its own chain — triples/quads build naturally);
+       · linked to the next → unlink (splits the chain after this exercise);
+       · linked to the previous → unlink from that side (the pair turns off);
+       · last exercise without a link → honest «add the next one first».
+       Two independent pairs therefore STAY two pairs. Partners share the set
+       count so the c107 ✓-sync keeps working. ===== */
     function lwToggleSuperset(idx) {
       if (!_workout) return;
       const exs = _workout.exercises;
+      window.dkNormalizeSupersets(exs);
       const ex = exs[idx];
       if (!ex) return;
+      const prev = idx > 0 ? exs[idx - 1] : null;
       const next = exs[idx + 1];
-      if (!ex.is_superset && !next) {
-        /* A superset links an exercise with the NEXT one — nothing to link */
+      const linkedPrev = !!(prev && prev.ss_link === true);
+      if (ex.ss_link === true) {
+        delete ex.ss_link; /* split the chain after this exercise */
+        toast(t('programs.supersetOff') || 'Superset OFF', 'info', 2000);
+      } else if (linkedPrev) {
+        delete prev.ss_link; /* the pair turns off from both sides */
+        toast(t('programs.supersetOff') || 'Superset OFF', 'info', 2000);
+      } else if (next) {
+        ex.ss_link = true;
+        lwEqualizeSupersets(exs); /* partners must share the set count for the ✓-sync */
+        toast(t('programs.supersetOn') || 'Superset ON — exercises done back-to-back before rest', 'success', 3000);
+      } else {
         toast(t('workouts.ssNeedNext') || 'A superset links this exercise with the NEXT one — add it first', 'info', 3000);
         return;
       }
-      if (ex.is_superset) {
-        ex.is_superset = false;
-        delete ex.superset_partner;
-        if (next && next.is_superset) { next.is_superset = false; delete next.superset_partner; }
-        toast(t('programs.supersetOff') || 'Superset OFF', 'info', 2000);
-      } else {
-        ex.is_superset = true;
-        if (next) {
-          ex.superset_partner = next.name || '';
-          next.is_superset = true;
-          next.superset_partner = ex.name || '';
-        }
-        lwEqualizeSupersets(exs); /* partners must share the set count for the ✓-sync */
-        toast(t('programs.supersetOn') || 'Superset ON — exercises done back-to-back before rest', 'success', 3000);
-      }
+      window.dkNormalizeSupersets(exs);
       markStruct('ss');
       render();
     }
@@ -16908,7 +16981,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         const o = a[i] || {};
         return o.exercise_id !== lx.exercise_id
           || ((o.sets || []).length !== (lx.sets || []).length)
-          || (!!o.is_superset) !== (!!lx.is_superset);
+          || (!!o.is_superset) !== (!!lx.is_superset)
+          || (o.ss_link === true) !== (lx.ss_link === true); /* c140: links participate in the change check */
       });
     }
 
@@ -16995,6 +17069,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           group: same ? o.group : lx.group,
           cardio: same ? (o.cardio === true) : (lx.cardio === true),
           is_superset: lx.is_superset === true,
+          ss_link: lx.ss_link === true, /* c140 */
           unit: same ? (o.unit != null ? o.unit : null) : (lx.unit === 'lb' || lx.unit === 'kg' ? lx.unit : null),
           tunit: same ? (o.tunit != null ? o.tunit : null) : (lx.tunit === 'min' || lx.tunit === 'sec' ? lx.tunit : null),
           rest_sec: same ? (o.rest_sec != null ? o.rest_sec : 90) : (lx.rest_sec != null ? lx.rest_sec : 90),
@@ -17092,6 +17167,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           unit_src: ex.unit === 'lb' || ex.unit === 'kg' ? 'program' : 'default', /* c121: history may override non-prescribed units */
           tunit: ex.tunit === 'min' || ex.tunit === 'sec' ? ex.tunit : null, /* c107 */
           is_superset: ex.is_superset === true, /* c107: superset pairs survive template → live */
+          ss_link: ex.ss_link === true, /* c140 */
           sets: (ex.sets || []).map(s => ({ ...s, done: false }))
         })),
         started_at: Date.now()
@@ -31530,7 +31606,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 139; /* numeric part of dk-build c139 */
+  var RUNNING = 140; /* numeric part of dk-build c140 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
