@@ -37,7 +37,7 @@ ok('finish releases the wake lock', html.indexOf('voiceWakeLock(false);') >= 0);
 ok('voice-mode CSS block', html.indexOf('body.voice-mode .set-check') >= 0 && html.indexOf('body.voice-mode .rpe-btn') >= 0 && html.indexOf('body.voice-mode .set-input') >= 0);
 ok('voiceApply toggles the body class', html.indexOf("document.body.classList.toggle('voice-mode', voiceOn())") >= 0);
 ok('exercise modal focuses its close button', html.indexOf('if (!_exPrevFocus136 && document.activeElement && document.activeElement !== document.body)') >= 0 && html.indexOf("_xc136.focus({ preventScroll: true })") >= 0);
-ok('card tap captures the opener for focus restore', html.indexOf("_openEl136.setAttribute('tabindex', '-1'); _exPrevFocus136 = _openEl136;") >= 0);
+ok('card tap captures the opener for focus restore', html.indexOf("opener.setAttribute('tabindex', '-1'); _exPrevFocus136 = opener;") >= 0);
 ok('modal close restores focus', html.indexOf('if (_exPrevFocus136 && document.contains(_exPrevFocus136)) _exPrevFocus136.focus') >= 0);
 
 /* ---------- 5. versions ---------- */

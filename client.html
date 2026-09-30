@@ -2640,7 +2640,7 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
         <h3 id="exercise-modal-title" class="font-display font-bold text-base text-text flex-1 truncate"></h3>
         <button id="exercise-modal-close" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-[rgb(var(--c-surface-2))] text-muted"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
       </div>
-      <div id="exercise-view" class="p-4 space-y-4 overflow-y-auto">
+      <div id="exercise-view" class="p-4 space-y-4 overflow-y-auto flex-1 min-h-0 overscroll-contain">
         <div id="exercise-gif-slot" class="aspect-video rounded-xl bg-[rgb(var(--c-surface-2))] border border-border grid place-items-center overflow-hidden"></div>
         <div id="exercise-video-section" class="hidden"><div id="exercise-video-player" class="yt-player"></div></div>
         <div id="exercise-youtube-search" class="hidden text-center"><a id="exercise-yt-link" href="#" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-sm font-semibold px-4 py-2 rounded-lg"><span id="exercise-yt-label">Search on YouTube</span></a></div>
@@ -2711,7 +2711,7 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       targetMuscle:'Целевые',auxMuscle:'Вспомогательные',rest:'Отдых',
       liveBadge:'Идёт тренировка',statEx:'Упражнения',statSets:'Подходы',statVol:'Объём',
       doneAllBtn:'Сделал всё',prevLabel:'Пред.',weightLabel:'Вес',repsLabel:'Повт.',rpeLabel:'RPE',timeLabel:'Время',distLabel:'Дистанция',distShortLabel:'Дист',
-      addSet:'+ подход',setWarmup:'Разминка',setDrop:'Дроп',setFailure:'Отказ',setAmrap:'AMRAP',setNormal:'Обычный',supersetLabel:'Суперсет',timeToggle:'мин ⇄ сек',a11yDoneSet:'Отметить подход выполненным',a11yRemoveSet:'Удалить подход',a11yFontDec:'Уменьшить шрифт',a11yFontInc:'Увеличить шрифт',a11yTheme:'Переключить тему',a11yThemeMenu:'Выбор темы',a11ySettings:'Настройки',a11yWaterPlus:'Добавить стакан воды',a11yWaterMinus:'Убрать стакан воды',a11yRestMinus:'Минус 15 секунд',a11yRestPlus:'Плюс 30 секунд',a11yRestSkip:'Пропустить отдых',a11yRemoveDiary:'Удалить из дневника',a11yCloseViewer:'Закрыть просмотр',voiceTechPlay:'Прочитать технику',voiceTechNext:'Далее',voiceTechRepeat:'Повторить',voiceTechStop:'Стоп',voiceStepWord:'Шаг',voiceStepOf:'из',voiceStart:'Тренировка начата',voiceResume:'Продолжаем тренировку',voiceSetWord:'Подход',voiceSetDone:'выполнен',voiceSetUndone:'отменён',voiceNextSet:'Следующий подход',voiceKg:'килограммов',voiceLb:'фунтов',voiceReps:'повторов',voiceRest:'Отдых',voiceRestSec:'секунд',voiceFinish:'Тренировка завершена',voiceSetAdded:'Подход добавлен',voiceSetRemoved:'Подход удалён',voiceRpe:'Уровень тяжести',voiceMinutes:'минут',voiceMeters:'метров',voiceKm:'километров',voiceCm:'сантиметров',voiceUnitKg:'килограммы',voiceUnitLb:'фунты',
+      addSet:'+ подход',setWarmup:'Разминка',setDrop:'Дроп',setFailure:'Отказ',setAmrap:'AMRAP',setNormal:'Обычный',supersetLabel:'Суперсет',timeToggle:'мин ⇄ сек',a11yDoneSet:'Отметить подход выполненным',a11yRemoveSet:'Удалить подход',a11yFontDec:'Уменьшить шрифт',a11yFontInc:'Увеличить шрифт',a11yTheme:'Переключить тему',a11yThemeMenu:'Выбор темы',a11ySettings:'Настройки',a11yWaterPlus:'Добавить стакан воды',a11yWaterMinus:'Убрать стакан воды',a11yRestMinus:'Минус 15 секунд',a11yRestPlus:'Плюс 30 секунд',a11yRestSkip:'Пропустить отдых',a11yRemoveDiary:'Удалить из дневника',a11yCloseViewer:'Закрыть просмотр',voiceTechPlay:'Прочитать технику',voiceTechNext:'Далее',voiceTechRepeat:'Повторить',voiceTechStop:'Стоп',voiceStepWord:'Шаг',voiceStepOf:'из',voiceStart:'Тренировка начата',voiceResume:'Продолжаем тренировку',voiceSetWord:'Подход',voiceSetDone:'выполнен',voiceSetUndone:'отменён',voiceNextSet:'Следующий подход',voiceKg:'килограммов',voiceLb:'фунтов',voiceReps:'повторов',voiceRest:'Отдых',voiceRestSec:'секунд',voiceFinish:'Тренировка завершена',voiceSetAdded:'Подход добавлен',voiceSetRemoved:'Подход удалён',voiceRpe:'Уровень тяжести',voiceMinutes:'минут',voiceMeters:'метров',voiceKm:'километров',voiceCm:'сантиметров',voiceUnitKg:'килограммы',voiceUnitLb:'фунты',a11yOpenCard:'Открыть карточку упражнения',
       restDone:'Отдых окончен!',skipRest:'Пропустить',restPerEx:'Отдых, с',
       finishConfirm:'Завершить тренировку?',draftFound:'Найдена незавершённая тренировка. Продолжить?',
       draftRestored:'Тренировка восстановлена ✓',workoutSaved:'Тренировка сохранена ✓',
@@ -2762,7 +2762,7 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       targetMuscle:'Target',auxMuscle:'Auxiliary',rest:'Rest',
       liveBadge:'Workout in progress',statEx:'Exercises',statSets:'Sets',statVol:'Volume',
       doneAllBtn:'Done all',prevLabel:'Prev.',weightLabel:'Weight',repsLabel:'Reps',rpeLabel:'RPE',timeLabel:'Time',distLabel:'Distance',distShortLabel:'Dist',
-      addSet:'+ set',setWarmup:'Warmup',setDrop:'Drop',setFailure:'Failure',setAmrap:'AMRAP',setNormal:'Normal',supersetLabel:'Superset',timeToggle:'min ⇄ sec',a11yDoneSet:'Mark set done',a11yRemoveSet:'Remove set',a11yFontDec:'Decrease font size',a11yFontInc:'Increase font size',a11yTheme:'Toggle theme',a11yThemeMenu:'Choose theme',a11ySettings:'Settings',a11yWaterPlus:'Add a glass of water',a11yWaterMinus:'Remove a glass of water',a11yRestMinus:'Minus 15 seconds',a11yRestPlus:'Plus 30 seconds',a11yRestSkip:'Skip rest',a11yRemoveDiary:'Remove from diary',a11yCloseViewer:'Close viewer',voiceTechPlay:'Read technique',voiceTechNext:'Next',voiceTechRepeat:'Repeat',voiceTechStop:'Stop',voiceStepWord:'Step',voiceStepOf:'of',voiceStart:'Workout started',voiceResume:'Resuming workout',voiceSetWord:'Set',voiceSetDone:'done',voiceSetUndone:'undone',voiceNextSet:'Next set',voiceKg:'kilograms',voiceLb:'pounds',voiceReps:'reps',voiceRest:'Rest',voiceRestSec:'seconds',voiceFinish:'Workout complete',voiceSetAdded:'Set added',voiceSetRemoved:'Set removed',voiceRpe:'Effort level',voiceMinutes:'minutes',voiceMeters:'meters',voiceKm:'kilometers',voiceCm:'centimeters',voiceUnitKg:'kilograms',voiceUnitLb:'pounds',
+      addSet:'+ set',setWarmup:'Warmup',setDrop:'Drop',setFailure:'Failure',setAmrap:'AMRAP',setNormal:'Normal',supersetLabel:'Superset',timeToggle:'min ⇄ sec',a11yDoneSet:'Mark set done',a11yRemoveSet:'Remove set',a11yFontDec:'Decrease font size',a11yFontInc:'Increase font size',a11yTheme:'Toggle theme',a11yThemeMenu:'Choose theme',a11ySettings:'Settings',a11yWaterPlus:'Add a glass of water',a11yWaterMinus:'Remove a glass of water',a11yRestMinus:'Minus 15 seconds',a11yRestPlus:'Plus 30 seconds',a11yRestSkip:'Skip rest',a11yRemoveDiary:'Remove from diary',a11yCloseViewer:'Close viewer',voiceTechPlay:'Read technique',voiceTechNext:'Next',voiceTechRepeat:'Repeat',voiceTechStop:'Stop',voiceStepWord:'Step',voiceStepOf:'of',voiceStart:'Workout started',voiceResume:'Resuming workout',voiceSetWord:'Set',voiceSetDone:'done',voiceSetUndone:'undone',voiceNextSet:'Next set',voiceKg:'kilograms',voiceLb:'pounds',voiceReps:'reps',voiceRest:'Rest',voiceRestSec:'seconds',voiceFinish:'Workout complete',voiceSetAdded:'Set added',voiceSetRemoved:'Set removed',voiceRpe:'Effort level',voiceMinutes:'minutes',voiceMeters:'meters',voiceKm:'kilometers',voiceCm:'centimeters',voiceUnitKg:'kilograms',voiceUnitLb:'pounds',a11yOpenCard:'Open exercise card',
       restDone:'Rest is over!',skipRest:'Skip',restPerEx:'Rest, s',
       finishConfirm:'Finish workout?',draftFound:'Unfinished workout found. Resume?',
       draftRestored:'Workout restored ✓',workoutSaved:'Workout saved ✓',
@@ -2813,7 +2813,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       targetMuscle:'יעד',auxMuscle:'עזר',rest:'מנוחה',
       liveBadge:'אימון מתבצע',statEx:'תרגילים',statSets:'סטים',statVol:'נפח',
       doneAllBtn:'בוצע הכל',prevLabel:'קודם',weightLabel:'משקל',repsLabel:'חזרות',rpeLabel:'RPE',timeLabel:'זמן',distLabel:'מרחק',distShortLabel:'מרחק',
-      addSet:'+ סט',setWarmup:'חימום',setDrop:'דרופ',setFailure:'כשל',setAmrap:'AMRAP',setNormal:'רגיל',supersetLabel:'סופרסט',timeToggle:'דק׳ ⇄ שנ׳',a11yDoneSet:'סמן סט כבוצע',a11yRemoveSet:'הסר סט',a11yFontDec:'הקטן גופן',a11yFontInc:'הגדל גופן',a11yTheme:'החלף ערכת נושא',a11yThemeMenu:'בחירת ערכת נושא',a11ySettings:'הגדרות',a11yWaterPlus:'הוסף כוס מים',a11yWaterMinus:'הסר כוס מים',a11yRestMinus:'פחות 15 שניות',a11yRestPlus:'ועוד 30 שניות',a11yRestSkip:'דלג על מנוחה',a11yRemoveDiary:'הסר מהיומן',a11yCloseViewer:'סגור תצוגה',voiceTechPlay:'קרא טכניקה',voiceTechNext:'הבא',voiceTechRepeat:'חזור',voiceTechStop:'עצור',voiceStepWord:'צעד',voiceStepOf:'מתוך',voiceStart:'האימון החל',voiceResume:'ממשיכים באימון',voiceSetWord:'סט',voiceSetDone:'בוצע',voiceSetUndone:'בוטל',voiceNextSet:'הסט הבא',voiceKg:'קילוגרמים',voiceLb:'ליברות',voiceReps:'חזרות',voiceRest:'מנוחה',voiceRestSec:'שניות',voiceFinish:'האימון הושלם',voiceSetAdded:'הסט נוסף',voiceSetRemoved:'הסט הוסר',voiceRpe:'רמת קושי',voiceMinutes:'דקות',voiceMeters:'מטרים',voiceKm:'קילומטרים',voiceCm:'סנטימטרים',voiceUnitKg:'קילוגרמים',voiceUnitLb:'ליברות',
+      addSet:'+ סט',setWarmup:'חימום',setDrop:'דרופ',setFailure:'כשל',setAmrap:'AMRAP',setNormal:'רגיל',supersetLabel:'סופרסט',timeToggle:'דק׳ ⇄ שנ׳',a11yDoneSet:'סמן סט כבוצע',a11yRemoveSet:'הסר סט',a11yFontDec:'הקטן גופן',a11yFontInc:'הגדל גופן',a11yTheme:'החלף ערכת נושא',a11yThemeMenu:'בחירת ערכת נושא',a11ySettings:'הגדרות',a11yWaterPlus:'הוסף כוס מים',a11yWaterMinus:'הסר כוס מים',a11yRestMinus:'פחות 15 שניות',a11yRestPlus:'ועוד 30 שניות',a11yRestSkip:'דלג על מנוחה',a11yRemoveDiary:'הסר מהיומן',a11yCloseViewer:'סגור תצוגה',voiceTechPlay:'קרא טכניקה',voiceTechNext:'הבא',voiceTechRepeat:'חזור',voiceTechStop:'עצור',voiceStepWord:'צעד',voiceStepOf:'מתוך',voiceStart:'האימון החל',voiceResume:'ממשיכים באימון',voiceSetWord:'סט',voiceSetDone:'בוצע',voiceSetUndone:'בוטל',voiceNextSet:'הסט הבא',voiceKg:'קילוגרמים',voiceLb:'ליברות',voiceReps:'חזרות',voiceRest:'מנוחה',voiceRestSec:'שניות',voiceFinish:'האימון הושלם',voiceSetAdded:'הסט נוסף',voiceSetRemoved:'הסט הוסר',voiceRpe:'רמת קושי',voiceMinutes:'דקות',voiceMeters:'מטרים',voiceKm:'קילומטרים',voiceCm:'סנטימטרים',voiceUnitKg:'קילוגרמים',voiceUnitLb:'ליברות',a11yOpenCard:'פתח כרטיס תרגיל',
       restDone:'המנוחה נגמרה!',skipRest:'דלג',restPerEx:'מנוחה, שנ׳',
       finishConfirm:'לסיים את האימון?',draftFound:'נמצא אימון שלא הושלם. להמשיך?',
       draftRestored:'האימון שוחזר ✓',workoutSaved:'האימון נשמר ✓',
@@ -5631,7 +5631,11 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         <div class="flex items-start justify-between gap-2">
           ${thumbHtml}
           <div class="flex-1 min-w-0">
-            <h4 class="font-display font-bold text-sm text-white leading-snug cursor-pointer hover:text-[rgb(var(--c-primary))] transition" data-open-exercise>${supHl ? '<span style="color:rgb(var(--c-accent))" title="' + esc(t('supersetLabel')) + '">⚡ </span>' : ''}${esc(exName)}</h4>
+            <div class="flex items-start gap-1.5">
+            <h4 class="font-display font-bold text-sm text-white leading-snug flex-1 min-w-0" data-exercise-title>${supHl ? '<span style="color:rgb(var(--c-accent))" title="' + esc(t('supersetLabel')) + '">⚡ </span>' : ''}${esc(exName)}</h4>
+            <!-- c139: the card opens ONLY from the eye or the image — stray taps on the card body must not pop a modal at blind trainees -->
+            <button type="button" data-open-exercise aria-label="${esc(t('a11yOpenCard'))}" title="${esc(t('a11yOpenCard'))}" class="w-9 h-9 shrink-0 grid place-items-center rounded-lg bg-surface-2 border border-border text-muted hover:text-[rgb(var(--c-primary))] hover:border-[rgb(var(--c-primary))]/50 transition cursor-pointer">👁</button>
+            </div>
             <div class="text-[11px] text-muted flex items-center gap-2 mt-0.5 flex-wrap">
               ${groupLabel?`<span class="text-cyan-300">${esc(groupLabel)}</span><span>·</span>`:''}
               <label class="flex items-center gap-1">${esc(t('restPerEx'))}
@@ -6809,28 +6813,22 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       } catch (e138) {}
     });
     document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeViewer(); closeExerciseModal(); closeReportModal(); try { hideFoodResults(); } catch (e134) {} } });
-    // Tap on exercise image/title -> open card
+    // Tap the eye or the exercise image -> open the card (c139: the card BODY
+    // no longer opens anything — a stray tap at a blind trainee must not
+    // explode a modal; the title/paragraphs/rows are inert now)
     const exList=document.getElementById('workout-exercises-list');
     if(exList){
       exList.addEventListener('click', e=>{
         const card=e.target.closest('[data-exercise-card]');
         if(!card) return;
-        if(e.target.closest('input,button')) return;
-        /* c87: the weight-unit top label opens ONLY the unit sheet (the
-         * document-level picker handler deals with it) — never the exercise
-         * card. Report: tapping «Вес» opened the card first (z-[110] above
-         * the z-[95] sheet), and the unit dialog only showed up after the
-         * card was closed. */
-        /* c97: the c96 PER-EXERCISE unit header (data-wunit-col-ex) and the
-         * «Техника» toggle are standalone controls too — tapping them must
-         * never open the exercise card (the span/summary used to bubble). */
-        if(e.target.closest('[data-wunit-col],[data-wunit-chip],[data-wunit-col-ex],[data-tunit-col],[data-dunit-col],[data-tech-toggle]')) return;
+        const opener = e.target.closest('[data-open-exercise]');
+        if(!opener) return; /* only the eye 👁 / the thumbnail */
+        if(e.target.closest('input,[data-tech-toggle],[data-wunit-col],[data-wunit-chip],[data-wunit-col-ex],[data-tunit-col],[data-dunit-col]')) return;
         const idx=+card.dataset.exerciseCard;
         const day=dayInfo(activeDayIndex);
         const ex=(day&&day.exercises||[])[idx];
         /* c136: remember the opener for focus restore (taps focus nothing on mobile) */
-        const _openEl136 = e.target.closest('[data-open-exercise]');
-        if (_openEl136) { try { _openEl136.setAttribute('tabindex', '-1'); _exPrevFocus136 = _openEl136; } catch (e136) {} }
+        try { opener.setAttribute('tabindex', '-1'); _exPrevFocus136 = opener; } catch (e136) {}
         if(ex) openExerciseModal(exKey(ex));
       });
     }
