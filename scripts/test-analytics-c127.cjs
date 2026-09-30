@@ -1,6 +1,7 @@
 /* c127 engine unit test — hand-computed expectations */
 const fs = require('fs');
-const src = fs.readFileSync('/home/z/David-King-Gym-Pro/src/analytics-engine.js', 'utf8');
+const path = require('path');
+const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'analytics-engine.js'), 'utf8');
 new Function(src)(); // IIFE sets globalThis.dkAnalyticsEngine
 const E = globalThis.dkAnalyticsEngine;
 if (!E) { console.log('FAIL: engine not exported'); process.exit(1); }

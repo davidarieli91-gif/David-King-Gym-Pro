@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c130" />
+<meta name="dk-build" content="c131" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2849,7 +2849,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c130</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c131</p>
             </div>
           </div>
 
@@ -26123,12 +26123,6 @@ async function boot() {
         await ensurePortalFirebase();
         if (!firebase.apps.length) firebase.initializeApp(PORTAL_SHARE_CFG);
         const ref = firebase.firestore().collection('portal_shares').doc(docId);
-        let recs = [], checks = [];   /* c125: checks preserved — additive field, the portal owns it */
-        try {
-          const snap = await ref.get({ source: 'server' });
-          const data = snap && snap.exists ? snap.data() : null;
-          if (data && data.d) { const p = JSON.parse(data.d); if (Array.isArray(p.recs)) recs = p.recs; if (Array.isArray(p.checks)) checks = p.checks; }
-        } catch (_) {}
         /* c98: enrich the mirrored workout with canonical group + synergists
            (the portal's recovery map uses them for the 30% synergist credit) */
         try {
@@ -26144,11 +26138,26 @@ async function boot() {
             (rec.exercises || []).forEach(ex => { if (ex && ex.key === id98) { ex.g = g98; ex.syn = syn98; } });
           }
         } catch (_) {}
-        recs = recs.filter(r => r && Number(r.ts) !== Number(rec.ts));
-        recs.push(rec);
-        recs.sort((a, b) => (a.ts || 0) - (b.ts || 0));
-        /* c125: write recs AND the untouched checks — never drop the portal's check-ins */
-        await ref.set({ d: JSON.stringify({ recs: recs.slice(-200), checks: checks }), v: 2, ts: Date.now() });
+        /* c131: ONE transaction — read+write are atomic (the portal pushes into
+           the same doc; the SDK retries automatically on contention), and a
+           failed read or a corrupt payload ABORTS the push instead of letting
+           the «empty» payload overwrite the portal's workouts/check-ins */
+        await firebase.firestore().runTransaction(async (trx) => {
+          const snap = await trx.get(ref);
+          let recs = [], checks = [];   /* c125: checks preserved — additive field, the portal owns it */
+          const data = snap && snap.exists ? snap.data() : null;
+          if (data && data.d) {
+            let p = null;
+            try { p = JSON.parse(data.d); } catch (e) { throw new Error('corrupt payload — push aborted'); }
+            if (p && Array.isArray(p.recs)) recs = p.recs;
+            if (p && Array.isArray(p.checks)) checks = p.checks;
+          }
+          recs = recs.filter(r => r && Number(r.ts) !== Number(rec.ts));
+          recs.push(rec);
+          recs.sort((a, b) => (a.ts || 0) - (b.ts || 0));
+          /* c125: write recs AND the untouched checks — never drop the portal's check-ins */
+          trx.set(ref, { d: JSON.stringify({ recs: recs.slice(-200), checks: checks }), v: 2, ts: Date.now() });
+        });
         return true;
       } catch (e) { console.warn('[hist-sync] CRM push failed', e); return false; }
     };
@@ -26292,24 +26301,29 @@ async function boot() {
         await ensurePortalFirebase();
         if (!firebase.apps.length) firebase.initializeApp(PORTAL_SHARE_CFG);
         const ref = firebase.firestore().collection('portal_shares').doc(docId);
-        let remote = [], remoteChecks = [];   /* c125: preserve the portal's checks on backfill */
-        try {
-          const snap = await Promise.race([
-            ref.get({ source: 'server' }),
-            new Promise(res => setTimeout(() => res(null), 5000))
-          ]);
-          if (snap && snap.exists) {
-            const data = snap.data() || {};
-            if (data.d) { const p = JSON.parse(data.d); if (Array.isArray(p.recs)) remote = p.recs; if (Array.isArray(p.checks)) remoteChecks = p.checks; }
+        /* c131: ONE transaction — a failed read or corrupt payload ABORTS the
+           backfill. The old 5s-timeout read treated failure as «cloud empty»
+           and could overwrite the portal's checks and recent workouts. */
+        let _added131 = 0;
+        await firebase.firestore().runTransaction(async (trx) => {
+          const snap = await trx.get(ref);
+          let remote = [], remoteChecks = [];   /* c125: preserve the portal's checks on backfill */
+          const data = snap && snap.exists ? snap.data() : null;
+          if (data && data.d) {
+            let p = null;
+            try { p = JSON.parse(data.d); } catch (e) { throw new Error('corrupt payload — backfill aborted'); }
+            if (p && Array.isArray(p.recs)) remote = p.recs;
+            if (p && Array.isArray(p.checks)) remoteChecks = p.checks;
           }
-        } catch (_) {}
-        const seen = new Set(remote.map(r => Number(r && r.ts) || 0));
-        const add = recs.filter(r => !seen.has(Number(r.ts) || 0));
-        if (!add.length) return true; /* cloud already has everything */
-        const merged = remote.concat(add).sort((a, b) => (a.ts || 0) - (b.ts || 0));
-        /* c125: recs + the untouched checks — additive, never dropped */
-        await ref.set({ d: JSON.stringify({ recs: merged.slice(-200), checks: remoteChecks }), v: 2, ts: Date.now() });
-        console.info('[hist-sync] backfilled ' + add.length + '/' + recs.length + ' workout(s) for client ' + clientId);
+          const seen = new Set(remote.map(r => Number(r && r.ts) || 0));
+          const add = recs.filter(r => !seen.has(Number(r.ts) || 0));
+          if (!add.length) return; /* cloud already has everything */
+          const merged = remote.concat(add).sort((a, b) => (a.ts || 0) - (b.ts || 0));
+          /* c125: recs + the untouched checks — additive, never dropped */
+          trx.set(ref, { d: JSON.stringify({ recs: merged.slice(-200), checks: remoteChecks }), v: 2, ts: Date.now() });
+          _added131 = add.length;
+        });
+        if (_added131) console.info('[hist-sync] backfilled ' + _added131 + '/' + recs.length + ' workout(s) for client ' + clientId);
         return true;
       } catch (e) { console.warn('[hist-sync] CRM backfill failed', e); return false; }
     };
@@ -31495,7 +31509,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 130; /* numeric part of dk-build c130 */
+  var RUNNING = 131; /* numeric part of dk-build c131 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

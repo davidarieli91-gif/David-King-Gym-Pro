@@ -1,7 +1,8 @@
 /* c130 unit test — shared SVG builders + the chart data paths they consume.
    Hand-computed expectations on the same fixture style as c127's test. */
 const fs = require('fs');
-const src = fs.readFileSync('/home/z/David-King-Gym-Pro/src/analytics-engine.js', 'utf8');
+const path = require('path');
+const src = fs.readFileSync(path.join(__dirname, '..', 'src', 'analytics-engine.js'), 'utf8');
 new Function(src)(); // IIFE sets globalThis.dkAnalyticsEngine
 const E = globalThis.dkAnalyticsEngine;
 if (!E) { console.log('FAIL: engine not exported'); process.exit(1); }

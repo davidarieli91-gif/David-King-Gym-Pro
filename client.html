@@ -2303,6 +2303,8 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
             <span id="txt-active-program">План активен</span>
           </span>
                 <span class="inline-flex items-center gap-1.5">
+                  <!-- c131: cloud-sync status — visible only while workouts wait or the device is offline -->
+                  <span id="sync-badge" class="hidden text-[9px] font-bold px-1.5 py-0.5 rounded-lg border border-border bg-surface-2 text-muted whitespace-nowrap"></span>
                   <button type="button" id="cp-unit-chip" data-wunit-chip class="h-7 px-2 grid place-items-center rounded-lg bg-surface-2 border border-border text-[9px] font-bold uppercase tracking-wide text-muted transition hover:opacity-80">кг</button>
                   <span id="live-duration" class="hidden font-mono font-bold text-sm text-cyan-300">0:00</span>
                 </span>
@@ -2491,7 +2493,8 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
       <div class="glass rounded-2xl p-4 space-y-4">
         <h3 class="font-display font-bold text-sm text-text" id="txt-daily-checkin">Утренний чек-ин</h3>
         <div>
-          <label class="block text-xs text-muted mb-1" id="lbl-morning-weight">Вес утром (кг)</label>
+          <!-- c131: the unit in the label follows the kg/lb chip (set by updateLabels) -->
+          <label class="block text-xs text-muted mb-1" id="lbl-morning-weight">Вес утром</label>
           <input type="number" step="0.1" id="input-checkin-weight" placeholder="78.4" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
         </div>
         <div class="grid grid-cols-2 gap-3">
@@ -2646,13 +2649,13 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
     ru: {
       portalTitle:'Мой Портал',coachBadge:'David King Gym',closeGuard:'Закрыть портал подопечного?',startBtn:'В зал',resumeBtn:'Продолжить',finishWorkout:'Завершить тренировку',
       dailyTargets:'Суточная норма',waterTitle:'Водный баланс',dailyCheckin:'Утренний чек-ин',
-      morningWeight:'Вес утром (кг)',savedToast:'Сохранено ✓',checkinSaved:'Чек-ин сохранён ✓',checkinNeedWeight:'Укажите вес',
+      morningWeight:'Вес утром',savedToast:'Сохранено ✓',checkinSaved:'Чек-ин сохранён ✓',checkinNeedWeight:'Укажите вес',
       workoutDoneTitle:'Тренировка завершена! 🎉',restLabel:'Отдых',unlockTitle:'Введите код доступа',
       unlockSubtitle:'Код прислал тренер вместе со ссылкой',unlockBtn:'Открыть портал',
       unlockWrongCode:'Неверный код',unlockExpired:'Срок действия ссылки истёк',unlockNoCrypto:'Откройте по https',
       shareLoading:'Загружаю план из облака…',shareNotFound:'План не найден — попросите тренера отправить ссылку заново',shareDenied:'Облако пока не открыто для портала — тренеру нужно обновить правила базы (Настройки → Облако)',shareOffline:'Нет интернета — подключитесь к сети и откройте ссылку ещё раз',
       unlockBadFormat:'Неизвестный формат ссылки',legacyWarning:'⚠️ Ссылка устаревшего формата',
-      historyTitle:'История замеров',noHistory:'Нет чек-инов',doneToday:'Выполнено ✓',
+      historyTitle:'История замеров',noHistory:'Нет чек-инов',doneToday:'Выполнено ✓',anotherWorkout:'Ещё одна тренировка',syncOffline:'Нет сети',syncPending:'Ждут синхронизации',syncTitle:'Синхронизация с тренером',checkinWeightRange:'Вес должен быть 30–300 кг',storageFull:'Хранилище заполнено — данные не сохранились',
       reportWeight:'Вес',reportWaist:'Талия',reportHip:'Бёдра',reportEnergy:'Энергия',reportWater:'Вода',
       navWorkouts:'Тренировки',navNutrition:'Питание',navAnalytics:'Аналитика',navRecovery:'Восстановление',
       wunitExTitle:'Единица веса упражнения',wunitApplyAll:'Применить ко всем упражнениям тренировки',wunitDefaultTitle:'Единица веса по умолчанию (для новых упражнений)',
@@ -2696,13 +2699,13 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
     en: {
       portalTitle:'My Portal',coachBadge:'David King Gym',closeGuard:'Close the client portal?',startBtn:'Start',resumeBtn:'Resume',finishWorkout:'Finish Workout',
       dailyTargets:'Daily Targets',waterTitle:'Water',dailyCheckin:'Morning Check-In',
-      morningWeight:'Morning Weight (kg)',savedToast:'Saved ✓',checkinSaved:'Check-in saved ✓',checkinNeedWeight:'Enter weight',
+      morningWeight:'Morning weight',savedToast:'Saved ✓',checkinSaved:'Check-in saved ✓',checkinNeedWeight:'Enter weight',
       workoutDoneTitle:'Workout Complete! 🎉',restLabel:'Rest',unlockTitle:'Enter access code',
       unlockSubtitle:'Your coach sent the code',unlockBtn:'Open Portal',
       unlockWrongCode:'Wrong code',unlockExpired:'Link expired',unlockNoCrypto:'Open over https',
       shareLoading:'Loading plan from cloud…',shareNotFound:'Plan not found — ask your trainer to resend the link',shareDenied:'Cloud is not open for the portal yet — the trainer must update the database rules (Settings → Cloud)',shareOffline:'No internet — reconnect and open the link again',
       unlockBadFormat:'Unknown link format',legacyWarning:'⚠️ Legacy link',
-      historyTitle:'History',noHistory:'No check-ins',doneToday:'Done ✓',
+      historyTitle:'History',noHistory:'No check-ins',doneToday:'Done ✓',anotherWorkout:'Another workout',syncOffline:'Offline',syncPending:'Waiting to sync',syncTitle:'Sync with the coach',checkinWeightRange:'Weight must be 30–300 kg (66–661 lb)',storageFull:'Device storage is full — data was not saved',
       reportWeight:'Weight',reportWaist:'Waist',reportHip:'Hips',reportEnergy:'Energy',reportWater:'Water',
       navWorkouts:'Workouts',navNutrition:'Nutrition',navAnalytics:'Analytics',navRecovery:'Recovery',
       wunitExTitle:'Weight unit of this exercise',wunitApplyAll:'Apply to all exercises of this workout',wunitDefaultTitle:'Default unit for new exercises',
@@ -2746,13 +2749,13 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
     he: {
       portalTitle:'הפורטל שלי',coachBadge:'David King Gym',closeGuard:'לסגור את פורטל המתאמן?',startBtn:'התחל',resumeBtn:'המשך',finishWorkout:'סיים אימון',
       dailyTargets:'יעדים יומיים',waterTitle:'מאזן נוזלים',dailyCheckin:'צ׳ק-אין בוקר',
-      morningWeight:'משקל בוקר (ק״ג)',savedToast:'נשמר ✓',checkinSaved:'צ׳ק-אין נשמר ✓',checkinNeedWeight:'הזן משקל',
+      morningWeight:'משקל בוקר',savedToast:'נשמר ✓',checkinSaved:'צ׳ק-אין נשמר ✓',checkinNeedWeight:'הזן משקל',
       workoutDoneTitle:'האימון הושלם! 🎉',restLabel:'מנוחה',unlockTitle:'הזן קוד גישה',
       unlockSubtitle:'הקוד נשלח על ידי המאמן',unlockBtn:'פתח פורטל',
       unlockWrongCode:'קוד שגוי',unlockExpired:'תוקף הקישור פג',unlockNoCrypto:'פתח דרך https',
       shareLoading:'טוען את התוכנית מהענן…',shareNotFound:'התוכנית לא נמצאה — בקשו מהמאמן לשלוח את הקישור שוב',shareDenied:'הענן עדיין לא פתוח לפורטל — על המאמן לעדכן את כללי מסד הנתונים (הגדרות → ענן)',shareOffline:'אין אינטרנט — התחברו לרשת ופתחו את הקישור שוב',
       unlockBadFormat:'פורמט לא מוכר',legacyWarning:'⚠️ קישור ישן',
-      historyTitle:'היסטוריה',noHistory:'אין צ׳ק-אינים',doneToday:'בוצע ✓',
+      historyTitle:'היסטוריה',noHistory:'אין צ׳ק-אינים',doneToday:'בוצע ✓',anotherWorkout:'אימון נוסף',syncOffline:'אין רשת',syncPending:'ממתין לסנכרון',syncTitle:'סנכרון עם המאמן',checkinWeightRange:'המשקל חייב להיות 30–300 ק״ג',storageFull:'אחסון המכשיר מלא — הנתונים לא נשמרו',
       reportWeight:'משקל',reportWaist:'מותן',reportHip:'ירכיים',reportEnergy:'אנרגיה',reportWater:'מים',
       navWorkouts:'אימונים',navNutrition:'תזונה',navAnalytics:'אנליטיקה',navRecovery:'התאוששות', /* c99: physical recovery, not data restore */
       wunitExTitle:'יחידת משקל לתרגיל זה',wunitApplyAll:'החל על כל התרגילים באימון',wunitDefaultTitle:'יחידת משקל כברירת מחדל (לתרגילים חדשים)',
@@ -2797,6 +2800,27 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   const t = k => (I18N[currentLang] && I18N[currentLang][k]) || I18N.ru[k] || k;
 
   function esc(v) { return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+  /* c131: LOCAL calendar date (YYYY-MM-DD). toISOString() is UTC — for UTC+2/+3
+     (Israel/Europe) an evening check-in landed on «tomorrow» and the water
+     key rolled over mid-evening; every date KEY now uses the device-local day
+     (calendar/streak/day filters already built local days — now they match). */
+  function dkLocalDateKey(d) {
+    const t = new Date(d == null ? Date.now() : d);
+    if (isNaN(t)) return '';
+    return t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
+  }
+  /* c131: check-in weight UI ⇄ storage. The form edits the DISPLAY unit
+     (kg/lb chip), everything stored and pushed is kg with the same 30..300
+     sanity band the trainer's engine applies when reading. Returns kg or
+     null when the value is missing/out of band. */
+  function dkCheckinToKg(v, unit) {
+    const n = parseFloat(v);
+    if (!isFinite(n) || n <= 0) return null;
+    const kg = (unit === 'lb') ? n * 0.45359237 : n;
+    if (kg < 30 || kg > 300) return null;
+    return Math.round(kg * 10) / 10;
+  }
 
   function toast(msg, kind) {
     const box = document.getElementById('toast-box');
@@ -2879,6 +2903,10 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     /* c125: push local check-ins into the shared doc (additive `checks`:
        ts/weight/energy ONLY) — idempotent, writes only what's missing */
     try { dkPushChecks(); } catch (e) {}
+    /* c131: workouts finished offline wait in the local pending queue —
+       flush them as soon as a share id is known (silently fails offline) */
+    try { dkFlushPending(); } catch (e) {}
+    try { dkSyncState(); } catch (e) {}
   }
   function applyDemo() {
     currentClient = { full_name:'Демо Клиент', goal:'hypertrophy', weight:78.4, target_weight:84 };
@@ -3042,7 +3070,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     document.getElementById('txt-daily-targets').textContent = t('dailyTargets');
     document.getElementById('txt-water-title').textContent = t('waterTitle');
     document.getElementById('txt-daily-checkin').textContent = t('dailyCheckin');
-    document.getElementById('lbl-morning-weight').textContent = t('morningWeight');
+    /* c131: weight label now carries the ACTIVE display unit (kg/lb chip) */
+    dkCheckinUnitSync();
     document.getElementById('txt-rest-label').textContent = t('restLabel');
     document.getElementById('nav-workouts').textContent = t('navWorkouts');
     document.getElementById('nav-nutrition').textContent = t('navNutrition');
@@ -3177,12 +3206,12 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   }
 
   /* ============ WATER ============ */
-  function waterKey() { return nsKey('dk_water_' + new Date().toISOString().slice(0,10)); }
+  function waterKey() { return nsKey('dk_water_' + dkLocalDateKey()); }
   function initWater() {
     waterGlasses = parseInt(localStorage.getItem(waterKey()),10) || 0;
     updateWaterUI();
   }
-  function setWater(n) { waterGlasses = Math.max(0,n); localStorage.setItem(waterKey(),String(waterGlasses)); updateWaterUI(); }
+  function setWater(n) { waterGlasses = Math.max(0,n); try { localStorage.setItem(waterKey(),String(waterGlasses)); } catch (e) { console.warn('[storage] water save failed', e); } updateWaterUI(); }
   function updateWaterUI() {
     document.getElementById('water-glasses').textContent = waterGlasses;
     document.getElementById('water-count-text').textContent = (waterGlasses * 0.25).toFixed(1) + ' ' + t('literShort');
@@ -3196,7 +3225,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   const A_LOCALE = { ru: 'ru-RU', en: 'en-US', he: 'he-IL' };
   function aLoc() { return A_LOCALE[currentLang] || 'en-US'; }
   function aNum(v) { try { return Math.round(v).toLocaleString(aLoc()); } catch (e) { return String(Math.round(v)); } }
-  function aDateKey(d) { const dt = new Date(d); return isNaN(dt) ? '' : dt.toISOString().slice(0, 10); }
+  function aDateKey(d) { const dt = new Date(d); return isNaN(dt) ? '' : dkLocalDateKey(dt); }
   /* c128: DISPLAY-UNIT layer — the kg/lb chip is no longer a cosmetic
      label: choosing Фунты converts EVERY displayed weight/tonnage in the
      portal (analytics bars, metric cards, weight chart, check-in history,
@@ -3732,81 +3761,151 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       return Array.isArray(p.recs) ? p.recs : [];
     }).catch(function () { return null; });
   }
-  /* c125: raw payload read — recs AND the additive checks field. The trainer
-     preserves checks when IT writes workouts; the portal preserves recs when
-     IT writes checks — neither side can drop the other's data. */
-  function dkHistFetchPayload() {
-    const docId = dkHistDocId();
-    if (!docId) return Promise.resolve({ recs: [], checks: [] });
+  /* c131: WRITE-PROTECTION for the shared doc + PENDING QUEUE ----------------
+     The old push read the doc first and, when that READ failed, wrote its own
+     data over an EMPTY payload — up to 200 workouts and every check-in could
+     vanish (both sync directions, trainer included). Now:
+     · pushes are Firestore TRANSACTIONS (atomic read+write, the SDK retries
+       automatically when the trainer writes the same doc at the same time);
+     · a failed read/corrupt payload THROWS → nothing is overwritten;
+     · a workout that still cannot be pushed (offline) waits in a per-client
+       pending queue and is flushed on boot / when the network returns;
+     · the merge helpers below are PURE and unit-tested (scripts/test-c131.cjs). */
+  function dkMergeHistRecs(recs, rec) {
+    const out = (Array.isArray(recs) ? recs : []).filter(r => r && Number(r.ts) !== Number(rec.ts));
+    out.push(rec);
+    out.sort((a, b) => (a.ts || 0) - (b.ts || 0));
+    return out.slice(-200);
+  }
+  function dkCheckinToCloud(c) {
+    if (!c || !(Number(c.ts) > 0)) return null;
+    const w = Number(c.weight);
+    if (!(w >= 30 && w <= 300)) return null; /* c131: same kg band the trainer reads */
+    const cm = v => { const n = parseFloat(v); return (isFinite(n) && n >= 30 && n <= 200) ? Math.round(n * 10) / 10 : null; };
+    const out = { ts: Number(c.ts), date: c.date || '', weight: Math.round(w * 10) / 10,
+                  energy: isFinite(parseInt(c.energy, 10)) ? parseInt(c.energy, 10) : null };
+    const wa = cm(c.waist), hi = cm(c.hip);
+    if (wa != null) out.waist = wa;
+    if (hi != null) out.hip = hi;
+    return out;
+  }
+  function dkMergeCheckinPayload(cloudChecks, mine) {
+    const byTs = new Map((mine || []).map(c => [Number(c.ts), c]));
+    const mergedTs = new Set();
+    let enriched = 0;
+    const merged = (Array.isArray(cloudChecks) ? cloudChecks : []).map(function (cc) {
+      const ts = Number(cc && cc.ts) || 0;
+      mergedTs.add(ts);
+      const local = byTs.get(ts);
+      if (!local) return cc;
+      /* c131: per-FIELD backfill — a check-in synced with waist but no hip
+         now gets the hip too (the old rule only fired when BOTH were absent) */
+      let out = cc, changed = false;
+      if (local.waist != null && !(cc.waist > 0)) { out = Object.assign({}, out, { waist: local.waist }); changed = true; }
+      if (local.hip != null && !(cc.hip > 0)) { out = Object.assign({}, out, { hip: local.hip }); changed = true; }
+      if (changed) enriched++;
+      return out;
+    });
+    const add = (mine || []).filter(c => !mergedTs.has(Number(c.ts)));
+    return { checks: merged.concat(add).sort((a, b) => (a.ts || 0) - (b.ts || 0)).slice(-90), added: add.length, enriched: enriched };
+  }
+  /* c131: pending-sync queue — finished workouts that could not reach the
+     cloud wait here (namespaced per client, cap 20, dedupe by ts) */
+  function dkPendingKey() { return nsKey('dk_pending_sync'); }
+  function dkPendingList() { try { const a = JSON.parse(localStorage.getItem(dkPendingKey()) || '[]'); return Array.isArray(a) ? a.filter(r => r && Number(r.ts) > 0) : []; } catch (e) { return []; } }
+  function dkPendingSave(a) { try { localStorage.setItem(dkPendingKey(), JSON.stringify(a.slice(-20))); } catch (e) { console.warn('[storage] pending queue save failed', e); } dkSyncState(); }
+  function dkPendingAdd(rec) { if (!rec || !(Number(rec.ts) > 0)) return; const a = dkPendingList().filter(r => Number(r.ts) !== Number(rec.ts)); a.push(rec); a.sort((x, y) => (x.ts || 0) - (y.ts || 0)); dkPendingSave(a); }
+  function dkPendingRemove(ts) { dkPendingSave(dkPendingList().filter(r => Number(r.ts) !== Number(ts))); }
+  function dkPendingCount() { return dkPendingList().length; }
+  /* c131: the tiny hero badge — hidden when everything is in sync; 📡 offline,
+     ⏳ N while workouts wait in the queue */
+  function dkSyncState() {
+    const el = document.getElementById('sync-badge');
+    if (!el) return;
+    const n = dkPendingCount();
+    const off = (typeof navigator !== 'undefined' && navigator.onLine === false);
+    let txt = '';
+    if (off) txt = '📡 ' + t('syncOffline');
+    else if (n) txt = '⏳ ' + n;
+    el.textContent = txt;
+    el.title = off ? t('syncTitle') : (n ? t('syncPending') + ': ' + n : '');
+    el.classList.toggle('hidden', !txt);
+  }
+  window.dkSyncState = dkSyncState;
+  /* c131: shared transaction runner — read + write are atomic; a missing doc
+     is a VALID empty payload, a failed get or a corrupt JSON THROWS so the
+     caller can never overwrite data it failed to read */
+  function dkHistTx(docId, mutate) {
     return dkHistRef(docId).then(function (ref) {
-      return ref.get({ source: 'server' });
-    }).then(function (snap) {
-      if (!snap || !snap.exists) return { recs: [], checks: [] };
-      const data = snap.data() || {};
-      if (!data.d) return { recs: [], checks: [] };
-      const p = JSON.parse(data.d);
-      return { recs: Array.isArray(p.recs) ? p.recs : [], checks: Array.isArray(p.checks) ? p.checks : [] };
-    }).catch(function () { return { recs: [], checks: [] }; });
+      const db = firebase.firestore();
+      return db.runTransaction(function (trx) {
+        return trx.get(ref).then(function (snap) {
+          let p = { recs: [], checks: [] };
+          if (snap && snap.exists) {
+            const data = snap.data() || {};
+            if (data.d) {
+              try { p = JSON.parse(data.d) || {}; } catch (e) { throw new Error('corrupt payload'); }
+            }
+          }
+          return mutate(trx, ref, { recs: Array.isArray(p.recs) ? p.recs : [], checks: Array.isArray(p.checks) ? p.checks : [] });
+        });
+      });
+    });
+  }
+  function dkHistPushRaw(rec) {
+    const docId = dkHistDocId();
+    if (!docId || !rec) return Promise.resolve(false);
+    return dkHistTx(docId, function (trx, ref, pay) {
+      trx.set(ref, { d: JSON.stringify({ recs: dkMergeHistRecs(pay.recs, rec), checks: pay.checks }), v: 2, ts: Date.now() });
+    }).then(function () { return true; }).catch(function (e) { console.warn('[hist-sync] push failed', e); return false; });
   }
   function dkHistPush(rec) {
     const docId = dkHistDocId();
     if (!docId || !rec) return Promise.resolve(false);
-    return dkHistFetchPayload().then(function (pay) {
-      const recs = (pay.recs || []).filter(r => r && Number(r.ts) !== Number(rec.ts));
-      recs.push(rec);
-      recs.sort((a, b) => (a.ts || 0) - (b.ts || 0));
-      return dkHistRef(docId).then(function (ref) {
-        /* c125: recs + the untouched checks — additive, never dropped */
-        return ref.set({ d: JSON.stringify({ recs: recs.slice(-200), checks: pay.checks || [] }), v: 2, ts: Date.now() });
-      });
-    }).then(function () { return true; }).catch(function (e) { console.warn('[hist-sync] push failed', e); return false; });
+    return dkHistPushRaw(rec).then(function (ok) {
+      if (!ok) dkPendingAdd(rec);
+      dkSyncState();
+      return ok;
+    });
   }
+  window.dkHistPush = dkHistPush;
+  /* c131: drain the pending queue sequentially (transactions on the same doc
+     must not race each other); leaves still-offline records queued */
+  function dkFlushPending() {
+    const q = dkPendingList();
+    if (!q.length) { dkSyncState(); return Promise.resolve(0); }
+    let done = 0;
+    return q.reduce(function (p, rec) {
+      return p.then(function () {
+        return dkHistPushRaw(rec).then(function (ok) { if (ok) { done++; dkPendingRemove(rec.ts); } });
+      });
+    }, Promise.resolve()).then(function () {
+      dkSyncState();
+      try { dkPushChecks(); } catch (e) {}
+      return done;
+    }).catch(function (e) { console.warn('[hist-sync] flush failed', e); dkSyncState(); return done; });
+  }
+  window.dkFlushPending = dkFlushPending;
   /* c125: push LOCAL check-ins into the shared doc's additive `checks` field.
      c129: ts/weight/energy AND waist/hip now travel too — the coach's progress
      analytics reads real measurements (cm, 30..200 sanity); the note stays
      portal-private. Merge by ts; a cloud copy that predates c129 (no waist/
      hip) gets ENRICHED from the local record so already-synced check-ins
-     backfill without a manual re-save. Cap 90, write ONLY when something is
-     actually missing (a cheap boot no-op once everything is on the cloud). */
+     backfill without a manual re-save. c131: the whole write is ONE Firestore
+     transaction (read failure/corruption aborts instead of overwriting) and
+     the merge backfills waist and hip INDEPENDENTLY. Cap 90, writes only when
+     something is actually missing (a cheap boot no-op once everything is up). */
   function dkPushChecks() {
     const docId = dkHistDocId();
     if (!docId) return Promise.resolve(false);
-    const cm = v => { const n = parseFloat(v); return (isFinite(n) && n >= 30 && n <= 200) ? Math.round(n * 10) / 10 : null; };
-    const mine = loadCheckins()
-      .filter(c => c && Number(c.ts) > 0 && Number(c.weight) > 0)
-      .map(c => {
-        const out = { ts: Number(c.ts), date: c.date || '', weight: Number(c.weight),
-                      energy: isFinite(parseInt(c.energy, 10)) ? parseInt(c.energy, 10) : null };
-        const wa = cm(c.waist), hi = cm(c.hip);
-        if (wa != null) out.waist = wa;
-        if (hi != null) out.hip = hi;
-        return out;
-      })
-      .sort((a, b) => a.ts - b.ts).slice(-90);
+    const mine = loadCheckins().map(dkCheckinToCloud).filter(Boolean).sort((a, b) => a.ts - b.ts);
     if (!mine.length) return Promise.resolve(false);
-    return dkHistFetchPayload().then(function (pay) {
-      const mineByTs = new Map(mine.map(c => [c.ts, c]));
-      const mergedTs = new Set();
-      let enriched = 0;
-      const merged = (pay.checks || []).map(function (cc) {
-        const ts = Number(cc && cc.ts) || 0;
-        mergedTs.add(ts);
-        const local = mineByTs.get(ts);
-        /* c129: cloud copy synced before waist/hip existed → backfill it */
-        if (local && !(cc.waist > 0) && !(cc.hip > 0) && (local.waist != null || local.hip != null)) {
-          enriched++;
-          return Object.assign({}, cc, { waist: local.waist != null ? local.waist : (cc.waist || null),
-                                         hip: local.hip != null ? local.hip : (cc.hip || null) });
-        }
-        return cc;
-      });
-      const add = mine.filter(c => !mergedTs.has(c.ts));
-      if (!add.length && !enriched) return true; /* cloud already complete */
-      const checks = merged.concat(add).sort((a, b) => (a.ts || 0) - (b.ts || 0)).slice(-90);
-      return dkHistRef(docId).then(function (ref) {
-        return ref.set({ d: JSON.stringify({ recs: pay.recs || [], checks: checks }), v: 2, ts: Date.now() });
-      }).then(function () { console.info('[hist-sync] ' + add.length + ' new + ' + enriched + ' enriched check-in(s) synced to the shared doc'); return true; });
-    }).catch(function (e) { console.warn('[hist-sync] checks push failed', e); return false; });
+    return dkHistTx(docId, function (trx, ref, pay) {
+      const m = dkMergeCheckinPayload(pay.checks, mine);
+      if (!m.added && !m.enriched) return; /* cloud already complete → no write */
+      trx.set(ref, { d: JSON.stringify({ recs: pay.recs, checks: m.checks }), v: 2, ts: Date.now() });
+    }).then(function () { return true; }).catch(function (e) { console.warn('[hist-sync] checks push failed', e); return false; })
+      .then(function (ok) { dkSyncState(); return ok; });
   }
   /* c125: exposed like the trainer's dkPushClientHistory/dkSyncClientHistory —
      one shared debug/integration surface for the check-in mirror */
@@ -3835,20 +3934,52 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   function dkHistStart() { if (dkHistDocId()) dkHistWatch(); }
 
   /* ============ CHECK-IN ============ */
-  function todayKey() { return new Date().toISOString().slice(0,10); }
+  function todayKey() { return dkLocalDateKey(); }
   function loadCheckins() { try { return JSON.parse(localStorage.getItem(nsKey('dk_checkins'))||'[]'); } catch(e){ return []; } }
   function num(v){ const n=parseFloat(v); return isFinite(n)?n:null; }
+  /* c131: keep the check-in form honest about its unit — the label follows the
+     kg/lb chip, prefill converts STORED kg into the display unit, and flipping
+     the chip while the form is open converts the already-typed number instead
+     of letting «80 kg» silently become «80 lb» */
+  function dkCheckinUnitSync() {
+    const el = document.getElementById('lbl-morning-weight');
+    if (el) el.textContent = t('morningWeight') + ' (' + dispUnitShort() + ')';
+    const inp = document.getElementById('input-checkin-weight');
+    if (inp && inp.dataset.unitSync == null) inp.dataset.unitSync = dispUnitGet();
+  }
+  function dkCheckinAfterUnit() {
+    const inp = document.getElementById('input-checkin-weight');
+    if (inp) {
+      const prev = inp.dataset.unitSync;
+      const now = dispUnitGet();
+      if (prev && prev !== now && inp.value) {
+        const v = parseFloat(inp.value);
+        if (isFinite(v) && v > 0) inp.value = now === 'lb' ? Math.round(v * 2.20462262 * 10) / 10 : Math.round(v * 0.45359237 * 10) / 10;
+      }
+      inp.dataset.unitSync = now;
+    }
+    dkCheckinUnitSync();
+  }
+  window.dkCheckinAfterUnit = dkCheckinAfterUnit;
   function saveCheckin() {
     const st = document.getElementById('checkin-status');
-    const w = num(document.getElementById('input-checkin-weight').value);
-    if (!w || w <= 0) { st.textContent = '⚠️ ' + t('checkinNeedWeight'); st.className = 'text-[11px] text-center text-red-400 min-h-[1rem]'; return; }
+    /* c131: the form is in the DISPLAY unit — convert to kg before storing,
+       with the same 30..300 kg band the trainer engine reads */
+    const w = dkCheckinToKg(document.getElementById('input-checkin-weight').value, dispUnitGet());
+    if (w == null) { st.textContent = '⚠️ ' + t('checkinWeightRange'); st.className = 'text-[11px] text-center text-red-400 min-h-[1rem]'; return; }
     const rec = { date:todayKey(), ts:Date.now(), weight:w,
       waist:num(document.getElementById('input-checkin-waist').value),
       hip:num(document.getElementById('input-checkin-hip').value),
       energy:parseInt(document.getElementById('slider-energy').value,10)||8,
       note:document.getElementById('input-checkin-note').value.trim().slice(0,500) };
     const list = loadCheckins().filter(r=>r.date!==rec.date); list.push(rec);
-    localStorage.setItem(nsKey('dk_checkins'), JSON.stringify(list.slice(-365)));
+    try {
+      localStorage.setItem(nsKey('dk_checkins'), JSON.stringify(list.slice(-365)));
+    } catch (e) {
+      console.warn('[storage] check-in save failed', e);
+      st.textContent = '⚠️ ' + t('storageFull'); st.className = 'text-[11px] text-center text-red-400 min-h-[1rem]';
+      return;
+    }
     /* c125: mirror the check-in into the shared doc (weight+energy only) so
        the trainer's recovery map uses the real body weight */
     try { dkPushChecks(); } catch (e) {}
@@ -3859,7 +3990,9 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   function prefillCheckin() {
     const list = loadCheckins(); if (!list.length) return;
     const tk = todayKey(); const r = list.find(r=>r.date===tk) || list[list.length-1];
-    if (r.weight) document.getElementById('input-checkin-weight').value = r.weight;
+    /* c131: stored kg → the current DISPLAY unit (the form edits display units) */
+    const inp = document.getElementById('input-checkin-weight');
+    if (r.weight && inp) { inp.value = dispW1(r.weight); inp.dataset.unitSync = dispUnitGet(); }
     if (r.waist) document.getElementById('input-checkin-waist').value = r.waist;
     if (r.hip) document.getElementById('input-checkin-hip').value = r.hip;
     if (r.energy) { document.getElementById('slider-energy').value = r.energy; document.getElementById('slider-energy-val').textContent = r.energy+' / 10'; }
@@ -3959,7 +4092,32 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     } catch (e) {}
   }
   function loadHistory() { try { return JSON.parse(localStorage.getItem(nsKey('dk_workout_history'))||'[]'); } catch(e){ return []; } }
-  function saveHistory(list) { localStorage.setItem(nsKey('dk_workout_history'), JSON.stringify(list.slice(-200))); }
+  function saveHistory(list) { try { localStorage.setItem(nsKey('dk_workout_history'), JSON.stringify(list.slice(-200))); return true; } catch (e) { console.warn('[storage] history save failed', e); return false; } }
+  /* c131: housekeeping — one localStorage key PER DAY per client (water/diary)
+     accumulated forever; old done-day markers too. Runs on boot: per-day keys
+     older than 90 days and done-day entries older than 60 days are dropped. */
+  function dkPruneOldDailyKeys() {
+    const cut90 = Date.now() - 90 * 86400000;
+    const cut60 = Date.now() - 60 * 86400000;
+    const kill = [];
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i); if (!k) continue;
+        const m = k.match(/^dk_(water|diary)_(\d{4})-(\d{2})-(\d{2})(__|$)/);
+        if (m) { const ts = Date.parse(m[2] + '-' + m[3] + '-' + m[4] + 'T12:00:00'); if (isFinite(ts) && ts < cut90) kill.push(k); }
+      }
+    } catch (e) {}
+    kill.forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
+    try {
+      const raw = localStorage.getItem(nsKey('dk_done_days'));
+      if (raw) {
+        const dm = JSON.parse(raw) || {};
+        let changed = false;
+        Object.keys(dm).forEach(function (k) { const ts = Date.parse(k + 'T12:00:00'); if (isFinite(ts) && ts < cut60) { delete dm[k]; changed = true; } });
+        if (changed) localStorage.setItem(nsKey('dk_done_days'), JSON.stringify(dm));
+      }
+    } catch (e) {}
+  }
   /* ===== c121: per-exercise history lookup — «what did I lift last time?» =====
    * The old findPrev required an EXACT program-name + day-letter match, so
    * trainer-mirrored records («Программа — День A» names, legacy records
@@ -4814,6 +4972,9 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         fst.textContent = `⏱ ${fmtDuration(Date.now()-sess.started_at)} · ${t('sumVolume')}: ${aNum(dispVolKg(sessionVolume(sess)))} ${dispUnitShort()} · ${t('sumDone')}: ${sessionSetCount(sess,true)}/${sessionSetCount(sess,false)}`;
       } else fs.classList.add('hidden');
     }
+    /* c131: keep the finish button label in sync with the ACTIVE session
+       (starting a second workout must flip it back to «Завершить») */
+    try { refreshDone(); } catch (e) {}
   }
 
   /* --- rest timer (sticky banner, CRM parity) --- */
@@ -5503,8 +5664,13 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       <button id="report-wa" class="w-full mt-2 text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 py-1 transition">💬 ${esc(t('btnWA'))}</button>`;
     document.getElementById('report-modal').classList.remove('hidden');
     document.getElementById('report-save').addEventListener('click', () => {
-      const hist = loadHistory(); hist.push(rec); saveHistory(hist);
-      /* c93: mirror the finished workout into the shared cloud history doc */
+      const hist = loadHistory(); hist.push(rec);
+      /* c131: a full device storage must not crash the save flow — tell the
+         trainee; the workout still goes to the cloud (and the pending queue) */
+      const _saved131 = saveHistory(hist);
+      if (!_saved131) toast(t('storageFull'), 'danger');
+      /* c93: mirror the finished workout into the shared cloud history doc
+         (c131: a failed push waits in the pending queue — flushed on boot/online) */
       try { dkHistPush(rec); } catch (e) {}
       delete sessions[rec.day_index];
       saveDraft(true);
@@ -5559,7 +5725,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     let done = {};
     try { done = JSON.parse(localStorage.getItem(nsKey('dk_done_days')) || '{}') || {}; } catch (e) {} /* c118: corrupt storage must not kill the finish flow */
     done[todayKey()] = (currentProgram&&currentProgram.name)||'';
-    localStorage.setItem(nsKey('dk_done_days'),JSON.stringify(done));
+    try { localStorage.setItem(nsKey('dk_done_days'),JSON.stringify(done)); } catch (e) { console.warn('[storage] done-days save failed', e); }
     refreshDone();
   }
   function refreshDone() {
@@ -5568,8 +5734,13 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     let doneMap = {};
     try { doneMap = JSON.parse(localStorage.getItem(nsKey('dk_done_days')) || '{}') || {}; } catch (e) {}
     const isDone = doneMap[todayKey()];
-    btn.classList.toggle('opacity-60',!!isDone); btn.classList.toggle('pointer-events-none',!!isDone);
-    btn.querySelector('span').textContent = isDone ? t('doneToday') : t('finishWorkout');
+    /* c131: a finished session no longer LOCKS the day — the old
+       pointer-events-none made a second workout impossible to finish.
+       The button stays usable: «Ещё одна тренировка» starts a fresh session. */
+    btn.classList.remove('pointer-events-none','opacity-60');
+    const sess = getSession(activeDayIndex);
+    const active = !!(sess && sess.started_at);
+    btn.querySelector('span').textContent = active ? t('finishWorkout') : (isDone ? t('anotherWorkout') : t('finishWorkout'));
   }
 
   /* ============ SHARE ============ */
@@ -5832,7 +6003,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   /* ============ CLIENT FOOD DIARY ============ */
   function diaryKey() { return nsKey('dk_diary_' + todayKey()); }
   function loadDiary() { try { return JSON.parse(localStorage.getItem(diaryKey())||'[]'); } catch(e){ return []; } }
-  function saveDiary(list) { localStorage.setItem(diaryKey(), JSON.stringify(list.slice(-100))); }
+  function saveDiary(list) { try { localStorage.setItem(diaryKey(), JSON.stringify(list.slice(-100))); return true; } catch (e) { console.warn('[storage] diary save failed', e); return false; } }
   function addDiaryEntry() {
     const nameEl=document.getElementById('diary-food-name');
     const gEl=document.getElementById('diary-food-grams');
@@ -5887,6 +6058,11 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     loadInitialData();
     initWater();
     renderDiary();
+    /* c131: drop per-day keys older than 90 days (they grew forever) */
+    try { dkPruneOldDailyKeys(); } catch (e) {}
+    /* c131: network return → flush the pending queue and refresh the badge */
+    window.addEventListener('online', function () { try { dkFlushPending(); } catch (e) {} try { dkPushChecks(); } catch (e) {} try { dkSyncState(); } catch (e) {} });
+    window.addEventListener('offline', function () { try { dkSyncState(); } catch (e) {} });
     // Move modals to body to escape stacking contexts (like CRM)
     ['exercise-modal','viewer-modal'].forEach(id=>{ const m=document.getElementById(id); if(m) document.body.appendChild(m); });
 
@@ -6759,6 +6935,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         try { renderAnalytics(); } catch (e128) {}
         try { renderHistory(); } catch (e128) {}
         try { updateLiveUI(); } catch (e128) {}
+        /* c131: the check-in form follows the chip too (label + typed value) */
+        try { if (window.dkCheckinAfterUnit) window.dkCheckinAfterUnit(); } catch (e128) {}
       }
       wClose();
     }
@@ -6871,6 +7049,12 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         if (u.d) { try { localStorage.setItem(CU_DKEY, u.d === 'km' ? 'km' : 'm'); } catch (e) {} }
         try { localStorage.setItem(CU_TSKEY, String(Number(data.ts))); } catch (e) {}
         wApply();
+        /* c131: cross-device unit change — refresh the same views the local
+           wSet() refreshes (they stayed stale until the next interaction) */
+        try { renderAnalytics(); } catch (e) {}
+        try { renderHistory(); } catch (e) {}
+        try { updateLiveUI(); } catch (e) {}
+        try { if (window.dkCheckinAfterUnit) window.dkCheckinAfterUnit(); } catch (e) {}
       } catch (e) {}
     }
     function cuSync(watch) {
