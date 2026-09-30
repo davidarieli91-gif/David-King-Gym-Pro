@@ -41,6 +41,8 @@
   <script type="module" src="src/recovery-engine.js"></script>
   <!-- c127: shared analytics engine — ONE honest analytics core for BOTH apps (done-only, kg-normalized, e1RM, PRs) -->
   <script type="module" src="src/analytics-engine.js"></script>
+  <!-- c135: voice coach — spoken guidance for blind trainees (device TTS, offline) -->
+  <script type="module" src="src/voice-coach.js"></script>
   <style>
     :root {
       --font-sans: 'Inter', system-ui, sans-serif;
@@ -2634,7 +2636,16 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
         <div id="exercise-youtube-search" class="hidden text-center"><a id="exercise-yt-link" href="#" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-sm font-semibold px-4 py-2 rounded-lg"><span id="exercise-yt-label">Search on YouTube</span></a></div>
         <div class="flex flex-wrap gap-1.5"><span id="badge-group" class="text-[11px] font-semibold px-2 py-1 rounded-md bg-indigo-500/15 text-indigo-300"></span><span id="badge-subgroup" class="text-[11px] font-semibold px-2 py-1 rounded-md bg-cyan-400/15 text-cyan-300"></span><span id="badge-equipment" class="text-[11px] font-semibold px-2 py-1 rounded-md bg-[rgb(var(--c-surface-2))] text-muted border border-border"></span></div>
         <div id="exercise-muscle-chips" class="flex flex-wrap gap-1.5"></div>
-        <div><h4 id="exercise-technique-h" class="text-[11px] uppercase tracking-wider text-muted font-semibold mb-2">Техника</h4><div id="exercise-technique" class="text-sm bg-[rgb(var(--c-surface-2))] border border-border rounded-xl p-3 leading-relaxed min-h-[60px] text-text"></div></div>
+        <div><h4 id="exercise-technique-h" class="text-[11px] uppercase tracking-wider text-muted font-semibold mb-2">Техника</h4><div id="exercise-technique" class="text-sm bg-[rgb(var(--c-surface-2))] border border-border rounded-xl p-3 leading-relaxed min-h-[60px] text-text"></div>
+          <!-- c135: step-by-step technique reader (voice coach mode) -->
+          <div id="voice-tech-bar" class="hidden flex-wrap items-center gap-1.5 mt-2">
+            <button type="button" id="vt-play" class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 transition active:scale-95">▶ <span id="vt-play-lbl"></span></button>
+            <button type="button" id="vt-next" class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl bg-surface-2 text-text border border-border transition active:scale-95">⏭ <span id="vt-next-lbl"></span></button>
+            <button type="button" id="vt-repeat" class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl bg-surface-2 text-text border border-border transition active:scale-95">🔁 <span id="vt-repeat-lbl"></span></button>
+            <button type="button" id="vt-stop" class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl bg-surface-2 text-text border border-border transition active:scale-95">⏹ <span id="vt-stop-lbl"></span></button>
+            <span id="vt-step" class="font-mono text-[10px] text-muted"></span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -2690,7 +2701,7 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       targetMuscle:'Целевые',auxMuscle:'Вспомогательные',rest:'Отдых',
       liveBadge:'Идёт тренировка',statEx:'Упражнения',statSets:'Подходы',statVol:'Объём',
       doneAllBtn:'Сделал всё',prevLabel:'Пред.',weightLabel:'Вес',repsLabel:'Повт.',rpeLabel:'RPE',timeLabel:'Время',distLabel:'Дистанция',distShortLabel:'Дист',
-      addSet:'+ подход',setWarmup:'Разминка',setDrop:'Дроп',setFailure:'Отказ',setAmrap:'AMRAP',setNormal:'Обычный',supersetLabel:'Суперсет',timeToggle:'мин ⇄ сек',a11yDoneSet:'Отметить подход выполненным',a11yRemoveSet:'Удалить подход',a11yFontDec:'Уменьшить шрифт',a11yFontInc:'Увеличить шрифт',a11yTheme:'Переключить тему',a11yThemeMenu:'Выбор темы',a11ySettings:'Настройки',a11yWaterPlus:'Добавить стакан воды',a11yWaterMinus:'Убрать стакан воды',a11yRestMinus:'Минус 15 секунд',a11yRestPlus:'Плюс 30 секунд',a11yRestSkip:'Пропустить отдых',a11yRemoveDiary:'Удалить из дневника',a11yCloseViewer:'Закрыть просмотр',
+      addSet:'+ подход',setWarmup:'Разминка',setDrop:'Дроп',setFailure:'Отказ',setAmrap:'AMRAP',setNormal:'Обычный',supersetLabel:'Суперсет',timeToggle:'мин ⇄ сек',a11yDoneSet:'Отметить подход выполненным',a11yRemoveSet:'Удалить подход',a11yFontDec:'Уменьшить шрифт',a11yFontInc:'Увеличить шрифт',a11yTheme:'Переключить тему',a11yThemeMenu:'Выбор темы',a11ySettings:'Настройки',a11yWaterPlus:'Добавить стакан воды',a11yWaterMinus:'Убрать стакан воды',a11yRestMinus:'Минус 15 секунд',a11yRestPlus:'Плюс 30 секунд',a11yRestSkip:'Пропустить отдых',a11yRemoveDiary:'Удалить из дневника',a11yCloseViewer:'Закрыть просмотр',voiceTechPlay:'Прочитать технику',voiceTechNext:'Далее',voiceTechRepeat:'Повторить',voiceTechStop:'Стоп',voiceStepWord:'Шаг',voiceStepOf:'из',
       restDone:'Отдых окончен!',skipRest:'Пропустить',restPerEx:'Отдых, с',
       finishConfirm:'Завершить тренировку?',draftFound:'Найдена незавершённая тренировка. Продолжить?',
       draftRestored:'Тренировка восстановлена ✓',workoutSaved:'Тренировка сохранена ✓',
@@ -2741,7 +2752,7 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       targetMuscle:'Target',auxMuscle:'Auxiliary',rest:'Rest',
       liveBadge:'Workout in progress',statEx:'Exercises',statSets:'Sets',statVol:'Volume',
       doneAllBtn:'Done all',prevLabel:'Prev.',weightLabel:'Weight',repsLabel:'Reps',rpeLabel:'RPE',timeLabel:'Time',distLabel:'Distance',distShortLabel:'Dist',
-      addSet:'+ set',setWarmup:'Warmup',setDrop:'Drop',setFailure:'Failure',setAmrap:'AMRAP',setNormal:'Normal',supersetLabel:'Superset',timeToggle:'min ⇄ sec',a11yDoneSet:'Mark set done',a11yRemoveSet:'Remove set',a11yFontDec:'Decrease font size',a11yFontInc:'Increase font size',a11yTheme:'Toggle theme',a11yThemeMenu:'Choose theme',a11ySettings:'Settings',a11yWaterPlus:'Add a glass of water',a11yWaterMinus:'Remove a glass of water',a11yRestMinus:'Minus 15 seconds',a11yRestPlus:'Plus 30 seconds',a11yRestSkip:'Skip rest',a11yRemoveDiary:'Remove from diary',a11yCloseViewer:'Close viewer',
+      addSet:'+ set',setWarmup:'Warmup',setDrop:'Drop',setFailure:'Failure',setAmrap:'AMRAP',setNormal:'Normal',supersetLabel:'Superset',timeToggle:'min ⇄ sec',a11yDoneSet:'Mark set done',a11yRemoveSet:'Remove set',a11yFontDec:'Decrease font size',a11yFontInc:'Increase font size',a11yTheme:'Toggle theme',a11yThemeMenu:'Choose theme',a11ySettings:'Settings',a11yWaterPlus:'Add a glass of water',a11yWaterMinus:'Remove a glass of water',a11yRestMinus:'Minus 15 seconds',a11yRestPlus:'Plus 30 seconds',a11yRestSkip:'Skip rest',a11yRemoveDiary:'Remove from diary',a11yCloseViewer:'Close viewer',voiceTechPlay:'Read technique',voiceTechNext:'Next',voiceTechRepeat:'Repeat',voiceTechStop:'Stop',voiceStepWord:'Step',voiceStepOf:'of',
       restDone:'Rest is over!',skipRest:'Skip',restPerEx:'Rest, s',
       finishConfirm:'Finish workout?',draftFound:'Unfinished workout found. Resume?',
       draftRestored:'Workout restored ✓',workoutSaved:'Workout saved ✓',
@@ -2792,7 +2803,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       targetMuscle:'יעד',auxMuscle:'עזר',rest:'מנוחה',
       liveBadge:'אימון מתבצע',statEx:'תרגילים',statSets:'סטים',statVol:'נפח',
       doneAllBtn:'בוצע הכל',prevLabel:'קודם',weightLabel:'משקל',repsLabel:'חזרות',rpeLabel:'RPE',timeLabel:'זמן',distLabel:'מרחק',distShortLabel:'מרחק',
-      addSet:'+ סט',setWarmup:'חימום',setDrop:'דרופ',setFailure:'כשל',setAmrap:'AMRAP',setNormal:'רגיל',supersetLabel:'סופרסט',timeToggle:'דק׳ ⇄ שנ׳',a11yDoneSet:'סמן סט כבוצע',a11yRemoveSet:'הסר סט',a11yFontDec:'הקטן גופן',a11yFontInc:'הגדל גופן',a11yTheme:'החלף ערכת נושא',a11yThemeMenu:'בחירת ערכת נושא',a11ySettings:'הגדרות',a11yWaterPlus:'הוסף כוס מים',a11yWaterMinus:'הסר כוס מים',a11yRestMinus:'פחות 15 שניות',a11yRestPlus:'ועוד 30 שניות',a11yRestSkip:'דלג על מנוחה',a11yRemoveDiary:'הסר מהיומן',a11yCloseViewer:'סגור תצוגה',
+      addSet:'+ סט',setWarmup:'חימום',setDrop:'דרופ',setFailure:'כשל',setAmrap:'AMRAP',setNormal:'רגיל',supersetLabel:'סופרסט',timeToggle:'דק׳ ⇄ שנ׳',a11yDoneSet:'סמן סט כבוצע',a11yRemoveSet:'הסר סט',a11yFontDec:'הקטן גופן',a11yFontInc:'הגדל גופן',a11yTheme:'החלף ערכת נושא',a11yThemeMenu:'בחירת ערכת נושא',a11ySettings:'הגדרות',a11yWaterPlus:'הוסף כוס מים',a11yWaterMinus:'הסר כוס מים',a11yRestMinus:'פחות 15 שניות',a11yRestPlus:'ועוד 30 שניות',a11yRestSkip:'דלג על מנוחה',a11yRemoveDiary:'הסר מהיומן',a11yCloseViewer:'סגור תצוגה',voiceTechPlay:'קרא טכניקה',voiceTechNext:'הבא',voiceTechRepeat:'חזור',voiceTechStop:'עצור',voiceStepWord:'צעד',voiceStepOf:'מתוך',
       restDone:'המנוחה נגמרה!',skipRest:'דלג',restPerEx:'מנוחה, שנ׳',
       finishConfirm:'לסיים את האימון?',draftFound:'נמצא אימון שלא הושלם. להמשיך?',
       draftRestored:'האימון שוחזר ✓',workoutSaved:'האימון נשמר ✓',
@@ -2849,6 +2860,9 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     el.className = color + ' text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-xl fade-in max-w-sm text-center';
     el.textContent = msg;
     box.appendChild(el);
+    /* c135: the voice coach repeats what the screen shows (errors, saves,
+       rest done, hints) — cleaned of emoji by the module itself */
+    try { voiceSay(msg, 'info'); } catch (e) {}
     setTimeout(()=>{ el.style.transition='opacity .4s'; el.style.opacity='0'; setTimeout(()=>el.remove(),400); }, 2600);
   }
 
@@ -2908,6 +2922,16 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   }
   function applyData(d) {
     currentClient = d.client || null;
+    /* c135: the trainer may mark this client as blind (blind_voice in the
+       share payload) → the narrator auto-enables with the FULL level, unless
+       the trainee himself turned it off on this device (dk_voice_optout) */
+    try {
+      if (d.blind_voice && localStorage.getItem('dk_voice_optout') !== '1') {
+        localStorage.setItem('dk_voice_on', '1');
+        localStorage.setItem('dk_voice_level', 'full');
+      }
+    } catch (e135) {}
+    try { voiceApply(); } catch (e135) {}
     if (Array.isArray(d.programs) && d.programs.length) programs = d.programs;
     else if (d.program) programs = [d.program];
     else programs = [];
@@ -3192,6 +3216,124 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     updateLabels(); renderAll();
     try { renderRecMap(true); } catch(e) {} /* c98: the recovery map re-renders in the new language instantly (cached per-muscle data) */
     try { if (window.dkPortalSync) window.dkPortalSync(); } catch(e) {}
+    try { voiceApply(); } catch(e) {} /* c135: the narrator follows the new language */
+  }
+  /* ============ c135: VOICE COACH (spoken guidance for blind trainees) ============
+   * Device TTS via src/voice-coach.js (offline, ru/en/he). The narrator is a
+   * MODE: when ON the portal speaks section navigation, the step-by-step
+   * technique reader and every toast; system screen readers (VoiceOver /
+   * TalkBack) keep working on their own — users run one or the other, the
+   * settings hint says so. Prefs are global device prefs; dk_voice_optout
+   * remembers «the trainee turned it off here» so the trainer's blind_voice
+   * preset can auto-enable the narrator without ever fighting the user. */
+  function voiceOn() { try { return localStorage.getItem('dk_voice_on') === '1'; } catch (e) { return false; } }
+  function voiceLevel() { try { return localStorage.getItem('dk_voice_level') === 'full' ? 'full' : 'brief'; } catch (e) { return 'brief'; } }
+  function voiceRate() { try { const r = parseFloat(localStorage.getItem('dk_voice_rate')); return isFinite(r) ? Math.max(0.7, Math.min(1.3, r)) : 1; } catch (e) { return 1; } }
+  function voiceName() { try { return localStorage.getItem('dk_voice_name') || ''; } catch (e) { return ''; } }
+  function voiceSupported() { try { return !!(window.dkVoiceCoach && window.dkVoiceCoach.isSupported && window.dkVoiceCoach.isSupported()); } catch (e) { return false; } }
+  function voiceApply() {
+    try {
+      if (voiceSupported()) {
+        window.dkVoiceCoach.configure({ lang: window.dkVoiceCoach.langTag(currentLang), rate: voiceRate(), voiceName: voiceName() });
+      }
+    } catch (e) {}
+    try { renderVoiceBar(); } catch (e) {}
+    /* c135: the 🔊 buttons on exercise cards render only in voice mode —
+       re-render the list ONLY when the on/off state actually flipped (the
+       rate slider fires voiceApply on every input tick) */
+    try {
+      const on = voiceOn();
+      if (_voiceLastOn !== null && _voiceLastOn !== on && currentClient) renderExercises();
+      _voiceLastOn = on;
+    } catch (e) {}
+  }
+  let _voiceLastOn = null;
+  function voiceSay(text, priority) {
+    try {
+      if (!voiceOn() || !voiceSupported()) return;
+      window.dkVoiceCoach.speak(text, {
+        priority: priority || 'info',
+        lang: window.dkVoiceCoach.langTag(currentLang),
+        rate: voiceRate(),
+        voiceName: voiceName()
+      });
+    } catch (e) {}
+  }
+  function voiceStepLabel(i, total) { return t('voiceStepWord') + ' ' + (i + 1) + ' ' + t('voiceStepOf') + ' ' + total + '.'; }
+  function voiceHaptic(ms) { try { if (navigator.vibrate) navigator.vibrate(ms || 20); } catch (e) {} }
+  /* the technique steps exactly as the card displays them (share payload) */
+  function exTechniqueSteps(ex) {
+    const raw = ex ? (ex['technique_' + currentLang] || ex.technique_en || '') : '';
+    const parts = String(raw).indexOf(' | ') !== -1 ? String(raw).split(' | ') : String(raw).split('|');
+    return parts.map(s => String(s || '').trim()).filter(Boolean);
+  }
+  /* start (or restart) the step-by-step reader for a named exercise */
+  function voiceStepsStart(name, steps) {
+    if (!voiceSupported()) return false;
+    if (!Array.isArray(steps) || !steps.length) { toast(t('noTechnique'), 'warn'); return false; }
+    if (name) voiceSay(name + '. ' + t('technique') + '.', 'nav'); /* intro, steps queue right behind it */
+    window.dkVoiceCoach.speakSteps(steps.join(' | '), {
+      lang: window.dkVoiceCoach.langTag(currentLang), rate: voiceRate(), voiceName: voiceName(),
+      stepLabel: voiceStepLabel,
+      onStep: function (i, total) { renderVoiceBarStep(i, total); voiceHaptic(20); },
+      onDone: function () { renderVoiceBarStep(-1, 0); }
+    });
+    return true;
+  }
+  /* 🔊 button on the exercise card inside the live workout list */
+  function voiceTechByEi(ei) {
+    try {
+      const day = dayInfo(activeDayIndex);
+      const dayEx = day && day.exercises ? day.exercises[ei] : null;
+      if (!dayEx) return;
+      const exData = getExData(dayEx) || dayEx;
+      const name = exData['name_' + currentLang] || exData.name_en || dayEx.name || '';
+      voiceStepsStart(name, exTechniqueSteps(exData));
+    } catch (e) { console.warn('[voice] technique failed:', e); }
+  }
+  /* day tab → «День A. Упражнения: 6» */
+  function voiceAnnounceDay(idx) {
+    const day = dayInfo(idx); if (!day) return;
+    const n = ((day.exercises) || []).length;
+    voiceSay(dayLabel(idx) + '. ' + t('statEx') + ': ' + n, 'nav');
+  }
+  /* modal player panel + step counter */
+  let voiceTechStepsCache = null;
+  function renderVoiceBar() {
+    const bar = document.getElementById('voice-tech-bar');
+    if (!bar) return;
+    const show = voiceOn() && voiceSupported();
+    bar.classList.toggle('hidden', !show);
+    bar.classList.toggle('flex', show);
+    if (!show) return;
+    const set = function (id, v) { const el = document.getElementById(id); if (el) el.textContent = v; };
+    set('vt-play-lbl', t('voiceTechPlay'));
+    set('vt-next-lbl', t('voiceTechNext'));
+    set('vt-repeat-lbl', t('voiceTechRepeat'));
+    set('vt-stop-lbl', t('voiceTechStop'));
+    try {
+      const st = window.dkVoiceCoach.stepStatus();
+      renderVoiceBarStep(st.active ? st.index : -1, st.total);
+    } catch (e) {}
+  }
+  function renderVoiceBarStep(i, total) {
+    const el = document.getElementById('vt-step');
+    if (!el) return;
+    el.textContent = (i >= 0 && total) ? (t('voiceStepWord') + ' ' + (i + 1) + ' / ' + total) : '';
+  }
+  function voiceTechFromModal() {
+    const cached = voiceTechStepsCache;
+    if (!cached || !cached.steps || !cached.steps.length) { toast(t('noTechnique'), 'warn'); return; }
+    voiceStepsStart(cached.name, cached.steps);
+  }
+  /* auto-read when the exercise modal opens (FULL level only) */
+  function voiceOnModalOpen(ex) {
+    try { renderVoiceBar(); } catch (e) {}
+    if (!voiceOn() || voiceLevel() !== 'full' || !voiceSupported()) return;
+    const name = ex ? (ex['name_' + currentLang] || ex.name_en || ex.name || '') : '';
+    const steps = exTechniqueSteps(ex);
+    if (steps.length) voiceStepsStart(name, steps);
+    else if (name) voiceSay(name, 'nav');
   }
   /* ============ THEME ============ */
   const THEME_META = {
@@ -5172,6 +5314,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     }).join('');
     c.querySelectorAll('[data-day]').forEach(b=>b.addEventListener('click',()=>{
       activeDayIndex = +b.dataset.day; renderAll();
+      try { voiceAnnounceDay(activeDayIndex); } catch (e135) {}
     }));
   }
 
@@ -5305,9 +5448,12 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
          <details><summary>, whose tap bubbled to the card handler: the card
          modal opened first and the technique only appeared after close). */
       const techniqueHtml = technique ? `<div>
+          <div class="flex items-center gap-1.5 flex-wrap">
           <button type="button" data-tech-toggle="${ei}" aria-expanded="false" class="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/25 transition select-none cursor-pointer">
           <svg data-tech-chevron="${ei}" class="w-3 h-3 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
           ${esc(t('technique'))}</button>
+          ${(window.dkVoiceCoach && window.dkVoiceCoach.isSupported && window.dkVoiceCoach.isSupported() && voiceOn()) ? `<button type="button" data-voice-tech="${ei}" aria-label="${esc(t('voiceTechPlay'))}" title="${esc(t('voiceTechPlay'))}" class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/25 transition select-none cursor-pointer">🔊</button>` : ''}
+          </div>
           <div class="hidden mt-1.5 space-y-1 pl-1" data-tech-body="${ei}">${technique.split(' | ').map(st=>`<p class="text-[11px] text-muted leading-relaxed">• ${esc(st.trim())}</p>`).join('')}</div></div>` : '';
 
       return `<div class="glass rounded-2xl p-4 space-y-3 fade-in${supHl ? ' dk-superset-hl' : ''}" data-exercise-card="${ei}">
@@ -5598,6 +5744,14 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         const chev = card.querySelector('[data-tech-chevron="' + ei + '"]');
         if (chev) chev.style.transform = open ? 'rotate(90deg)' : '';
         btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    });
+
+    // c135: 🔊 read THIS exercise's technique aloud (voice coach mode)
+    list.querySelectorAll('[data-voice-tech]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        voiceTechByEi(+btn.dataset.voiceTech);
       });
     });
   }
@@ -6067,12 +6221,19 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       if(yts){ yts.classList.remove('hidden'); if(yl) yl.href='https://www.youtube.com/results?search_query='+encodeURIComponent(ex.name_en||name)+' exercise'; }
     }
     modal.classList.remove('hidden');
+    /* c135: the narrator — cache the current technique, sync the player bar
+       and (FULL level) start reading the steps automatically */
+    try {
+      voiceTechStepsCache = { name: name, steps: exTechniqueSteps(ex) };
+      voiceOnModalOpen(ex);
+    } catch (e135) {}
   }
   function closeExerciseModal(){
     const m=document.getElementById('exercise-modal');
     if(m) m.classList.add('hidden');
     const vp=document.getElementById('exercise-video-player');
     if(vp) vp.innerHTML='';
+    try { if (window.dkVoiceCoach) dkVoiceCoach.stopSteps(); } catch (e135) {} /* c135: no orphan narration */
   }
   function openViewer(src){
     const m=document.getElementById('viewer-modal');
@@ -6295,6 +6456,11 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         });
         if (tab.dataset.tab === 'analytics') renderAnalytics();
         if (tab.dataset.tab === 'recovery') { try { renderRecMap(); } catch(e){} } /* c99: the map recomputes on every tab open; the save slots moved to the settings sheet */
+        /* c135: the narrator announces the opened section */
+        try {
+          const _vk135 = { workouts: 'navWorkouts', nutrition: 'navNutrition', analytics: 'navAnalytics', recovery: 'navRecovery' }[tab.dataset.tab];
+          if (_vk135) voiceSay(t(_vk135), 'nav');
+        } catch (e135) {}
       });
     });
 
@@ -6387,6 +6553,11 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     document.getElementById('viewer-close')?.addEventListener('click', closeViewer);
     em?.addEventListener('click', e=>{ if(e.target===em) closeExerciseModal(); });
     vm?.addEventListener('click', e=>{ if(e.target===vm) closeViewer(); });
+    /* c135: voice-coach technique player in the exercise modal */
+    document.getElementById('vt-play')?.addEventListener('click', voiceTechFromModal);
+    document.getElementById('vt-next')?.addEventListener('click', ()=>{ try { window.dkVoiceCoach.stepNext(); } catch(e135) {} });
+    document.getElementById('vt-repeat')?.addEventListener('click', ()=>{ try { window.dkVoiceCoach.stepRepeat(); } catch(e135) {} });
+    document.getElementById('vt-stop')?.addEventListener('click', ()=>{ try { window.dkVoiceCoach.stopSteps(); } catch(e135) {} renderVoiceBarStep(-1, 0); voiceHaptic(30); });
     document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeViewer(); closeExerciseModal(); closeReportModal(); try { hideFoodResults(); } catch (e134) {} } });
     // Tap on exercise image/title -> open card
     const exList=document.getElementById('workout-exercises-list');
@@ -6436,9 +6607,9 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
 
     /* ---- local strings (ru / en / he) ---- */
     var L = {
-      ru: { dumbbellAria:'Вернуться к тренировке', a11yClose:'Закрыть', wipeBtn:'Выйти и очистить данные на устройстве', wipeConfirm:'Удалить все данные портала с этого устройства? Действие нельзя отменить.', setTitle:'Настройки', themes:'Темы', darkThemes:'Тёмные темы', lightThemes:'Светлые темы', textures:'Текстуры', texHint:'Текстурные наложения поверх любой темы — те же, что в основном приложении. Выберите эффект и настройте насыщенность.', opacity:'Насыщенность', reset:'Сброс', resetDone:'Возврат к стандартной насыщенности', applied:'Текстура применена', share:'Поделиться отчётом', themeChanged:'Тема изменена', wunitTitle:'Единица веса', wunitKg:'Килограммы', wunitLb:'Фунты', wunitKgShort:'кг', wunitLbShort:'фт', wunitTime:'Единица времени', wunitMin:'Минуты', wunitSec:'Секунды', wunitMinShort:'мин', wunitSecShort:'сек', wunitDist:'Единица расстояния', wunitM:'Метры', wunitKm:'Километры', wunitMShort:'м', wunitKmShort:'км', wunitCardioTitle:'Единицы кардио', wunitExTitle:'Единица веса упражнения', wunitApplyAll:'Применить ко всем упражнениям тренировки', wunitDefaultTitle:'Единица веса по умолчанию (для новых упражнений)', timeLabel:'Время', distLabel:'Дистанция', distShortLabel:'Дист', ptexTitle:'Текстура панели', ptexHint:'Стекло на всех панелях портала — карточки, шапка, меню и окна. Матовая, прозрачная, тонированная и разноцветная мозаичная текстуры. Панели остаются чистым стеклом — текстурные эффекты живут только на фоне страницы.', ptexOff:'Выкл.', ptexFrost:'Матовое стекло', ptexClear:'Прозрачное стекло', ptexTint:'Тонированное стекло', ptexMosaic:'Мозаичное стекло', ptexColor:'Оттенок', ptexPreview:'Живой предпросмотр', ptexPreviewHint:'Так будет выглядеть каждая панель портала — карточки, шапка и окна', ptexOpacity:'Прозрачность', ptexOpacityHint:'Выше — прозрачнее, ниже — плотнее', ptexOpSolid:'Плотнее', ptexOpSee:'Прозрачнее', ptexApplied:'Текстура панели применена', ptexResetDone:'Возвращена стандартная прозрачность', ptexCfrostMilk:'Молочный', ptexCfrostSmoke:'Дымчатый', ptexCfrostIce:'Ледяной голубой', ptexCfrostMint:'Мятный', ptexCfrostRose:'Розовый туман', ptexCfrostLav:'Лавандовый', ptexCclearCrystal:'Кристальный', ptexCclearAqua:'Аква', ptexCclearChamp:'Шампань', ptexCclearEmer:'Изумрудный лёд', ptexCclearSapph:'Сапфировый', ptexCtintGraph:'Графит', ptexCtintOcean:'Морской', ptexCtintEmer:'Изумруд', ptexCtintBronze:'Бронза', ptexCtintBord:'Бордо', ptexCtintSmoke:'Тёмный дым', ptexCmosStain:'Витраж', ptexCmosOcean:'Океан', ptexCmosSunset:'Закат', ptexCmosForest:'Лес', ptexCmosNeon:'Неон', ptexCmosPastel:'Пастель' },
-      en: { dumbbellAria:'Back to workout', a11yClose:'Close', wipeBtn:'Sign out & clear device data', wipeConfirm:'Delete all portal data from this device? This cannot be undone.', setTitle:'Settings', themes:'Themes', darkThemes:'Dark themes', lightThemes:'Light themes', textures:'Textures', texHint:'Texture overlays on top of any theme — the same as in the main app. Pick an effect and fine-tune its opacity.', opacity:'Opacity', reset:'Reset', resetDone:'Returned to the effect default', applied:'Texture applied', share:'Share report', themeChanged:'Theme changed', wunitTitle:'Unit of weight', wunitKg:'Kilograms', wunitLb:'Pounds', wunitKgShort:'kg', wunitLbShort:'lb', wunitTime:'Time unit', wunitMin:'Minutes', wunitSec:'Seconds', wunitMinShort:'min', wunitSecShort:'sec', wunitDist:'Distance unit', wunitM:'Meters', wunitKm:'Kilometers', wunitMShort:'m', wunitKmShort:'km', wunitCardioTitle:'Cardio units', wunitExTitle:'Weight unit of this exercise', wunitApplyAll:'Apply to all exercises of this workout', wunitDefaultTitle:'Default unit for new exercises', timeLabel:'Time', distLabel:'Distance', distShortLabel:'Dist', ptexTitle:'Panel texture', ptexHint:'Glass for every portal panel — cards, header, menus and windows. Frosted, clear, tinted and multicolor mosaic. Panels stay pure glass — texture effects live only on the page background.', ptexOff:'Off', ptexFrost:'Frosted glass', ptexClear:'Clear glass', ptexTint:'Tinted glass', ptexMosaic:'Mosaic glass', ptexColor:'Shade', ptexPreview:'Live preview', ptexPreviewHint:'This is how every portal panel will look — cards, header and windows', ptexOpacity:'Transparency', ptexOpacityHint:'Higher — more see-through, lower — more solid', ptexOpSolid:'Solid', ptexOpSee:'See-through', ptexApplied:'Panel texture applied', ptexResetDone:'Returned to default transparency', ptexCfrostMilk:'Milk', ptexCfrostSmoke:'Smoke', ptexCfrostIce:'Ice blue', ptexCfrostMint:'Mint', ptexCfrostRose:'Rose mist', ptexCfrostLav:'Lavender', ptexCclearCrystal:'Crystal', ptexCclearAqua:'Aqua', ptexCclearChamp:'Champagne', ptexCclearEmer:'Emerald ice', ptexCclearSapph:'Sapphire', ptexCtintGraph:'Graphite', ptexCtintOcean:'Ocean', ptexCtintEmer:'Emerald', ptexCtintBronze:'Bronze', ptexCtintBord:'Bordeaux', ptexCtintSmoke:'Dark smoke', ptexCmosStain:'Stained glass', ptexCmosOcean:'Ocean', ptexCmosSunset:'Sunset', ptexCmosForest:'Forest', ptexCmosNeon:'Neon', ptexCmosPastel:'Pastel' },
-      he: { dumbbellAria:'חזרה לאימון', a11yClose:'סגירה', wipeBtn:'יציאה ומחיקת נתוני המכשיר', wipeConfirm:'למחוק את כל נתוני הפורטל מהמכשיר? אין דרך לבטל פעולה זו.', setTitle:'הגדרות', themes:'ערכות נושא', darkThemes:'ערכות כהות', lightThemes:'ערכות בהירות', textures:'טקסטורות', texHint:'שכבות מרקף מעל כל ערכת נושא — אותן טקסטורות כמו באפליקציה הראשית. בחרו אפקט וכוונו את העוצמה.', opacity:'עוצמה', reset:'איפוס', resetDone:'חזרה לעוצמת ברירת המחדל', applied:'הטקסטורה הוחלה', share:'שתף דוח', themeChanged:'ערכת הנושא הוחלפה', wunitTitle:'יחידת משקל', wunitKg:'קילוגרמים', wunitLb:'פאונד', wunitKgShort:'ק״ג', wunitLbShort:'lb', wunitTime:'יחידת זמן', wunitMin:'דקות', wunitSec:'שניות', wunitMinShort:'דק׳', wunitSecShort:'שנ׳', wunitDist:'יחידת מרחק', wunitM:'מטרים', wunitKm:'קילומטרים', wunitMShort:'מט', wunitKmShort:'ק״מ', wunitCardioTitle:'יחידות קרדיו', wunitExTitle:'יחידת משקל לתרגיל זה', wunitApplyAll:'החל על כל התרגילים באימון', wunitDefaultTitle:'יחידת משקל כברירת מחדל (לתרגילים חדשים)', timeLabel:'זמן', distLabel:'מרחק', distShortLabel:'מרחק', ptexTitle:'מרקם פאנל', ptexHint:'זכוכית על כל פאנל בפורטל — כרטיסים, כותרת, תפריטים וחלונות. זכוכית מעורפלת, שקופה, מוכהה ופסיפס צבעוני. הפאנלים נשארים זכוכית נקייה — אפקטי המרקם חיים רק על רקע הדף.', ptexOff:'כבוי', ptexFrost:'זכוכית מעורפלת', ptexClear:'זכוכית שקופה', ptexTint:'זכוכית מוכהה', ptexMosaic:'זכוכית פסיפס', ptexColor:'גוון', ptexPreview:'תצוגה מקדימה', ptexPreviewHint:'כך ייראה כל פאנל בפורטל — כרטיסים, כותרת וחלונות', ptexOpacity:'שקיפות', ptexOpacityHint:'גבוה יותר — שקוף יותר, נמוך יותר — אטום יותר', ptexOpSolid:'אטום יותר', ptexOpSee:'שקוף יותר', ptexApplied:'מרקם הפאנל הוחל', ptexResetDone:'חזרה לשקיפות ברירת המחדל', ptexCfrostMilk:'חלבי', ptexCfrostSmoke:'עשן', ptexCfrostIce:'כחול קרח', ptexCfrostMint:'מנטה', ptexCfrostRose:'אודם מעורפל', ptexCfrostLav:'לבנדר', ptexCclearCrystal:'קריסטל', ptexCclearAqua:'אקווה', ptexCclearChamp:'שמפניה', ptexCclearEmer:'קרח אזמרגד', ptexCclearSapph:'ספיר', ptexCtintGraph:'גרפיט', ptexCtintOcean:'אוקיינוס', ptexCtintEmer:'אזמרגד', ptexCtintBronze:'ארד', ptexCtintBord:'בורדו', ptexCtintSmoke:'עשן כהה', ptexCmosStain:'ויטראז', ptexCmosOcean:'אוקיינוס', ptexCmosSunset:'שקיעה', ptexCmosForest:'יער', ptexCmosNeon:'ניאון', ptexCmosPastel:'פסטל' }
+      ru: { dumbbellAria:'Вернуться к тренировке', a11yClose:'Закрыть', wipeBtn:'Выйти и очистить данные на устройстве', wipeConfirm:'Удалить все данные портала с этого устройства? Действие нельзя отменить.', voiceTitle:'🎧 Голосовой тренер', voiceHint:'Диктор читает технику по шагам, называет разделы и проговаривает подсказки. Включите его вместо экранного диктора телефона, чтобы не слушать два голоса сразу.', voiceOn:'Вкл.', voiceOff:'Выкл.', voiceLevelBrief:'Обзорный', voiceLevelFull:'Подробный', voiceRate:'Скорость', voiceVoice:'Голос', voiceVoiceAuto:'Авто (по языку)', voiceNoVoice:'⚠️ Голос для этого языка не найден — установите голосовые данные в настройках телефона.', voiceTest:'Проверить голос', voiceTestPhrase:'Голосовой тренер включён. Шаг один. Слушайте технику и следуйте ей.', voiceOnToast:'Голосовой тренер включён', voiceOffToast:'Голосовой тренер выключен', setTitle:'Настройки', themes:'Темы', darkThemes:'Тёмные темы', lightThemes:'Светлые темы', textures:'Текстуры', texHint:'Текстурные наложения поверх любой темы — те же, что в основном приложении. Выберите эффект и настройте насыщенность.', opacity:'Насыщенность', reset:'Сброс', resetDone:'Возврат к стандартной насыщенности', applied:'Текстура применена', share:'Поделиться отчётом', themeChanged:'Тема изменена', wunitTitle:'Единица веса', wunitKg:'Килограммы', wunitLb:'Фунты', wunitKgShort:'кг', wunitLbShort:'фт', wunitTime:'Единица времени', wunitMin:'Минуты', wunitSec:'Секунды', wunitMinShort:'мин', wunitSecShort:'сек', wunitDist:'Единица расстояния', wunitM:'Метры', wunitKm:'Километры', wunitMShort:'м', wunitKmShort:'км', wunitCardioTitle:'Единицы кардио', wunitExTitle:'Единица веса упражнения', wunitApplyAll:'Применить ко всем упражнениям тренировки', wunitDefaultTitle:'Единица веса по умолчанию (для новых упражнений)', timeLabel:'Время', distLabel:'Дистанция', distShortLabel:'Дист', ptexTitle:'Текстура панели', ptexHint:'Стекло на всех панелях портала — карточки, шапка, меню и окна. Матовая, прозрачная, тонированная и разноцветная мозаичная текстуры. Панели остаются чистым стеклом — текстурные эффекты живут только на фоне страницы.', ptexOff:'Выкл.', ptexFrost:'Матовое стекло', ptexClear:'Прозрачное стекло', ptexTint:'Тонированное стекло', ptexMosaic:'Мозаичное стекло', ptexColor:'Оттенок', ptexPreview:'Живой предпросмотр', ptexPreviewHint:'Так будет выглядеть каждая панель портала — карточки, шапка и окна', ptexOpacity:'Прозрачность', ptexOpacityHint:'Выше — прозрачнее, ниже — плотнее', ptexOpSolid:'Плотнее', ptexOpSee:'Прозрачнее', ptexApplied:'Текстура панели применена', ptexResetDone:'Возвращена стандартная прозрачность', ptexCfrostMilk:'Молочный', ptexCfrostSmoke:'Дымчатый', ptexCfrostIce:'Ледяной голубой', ptexCfrostMint:'Мятный', ptexCfrostRose:'Розовый туман', ptexCfrostLav:'Лавандовый', ptexCclearCrystal:'Кристальный', ptexCclearAqua:'Аква', ptexCclearChamp:'Шампань', ptexCclearEmer:'Изумрудный лёд', ptexCclearSapph:'Сапфировый', ptexCtintGraph:'Графит', ptexCtintOcean:'Морской', ptexCtintEmer:'Изумруд', ptexCtintBronze:'Бронза', ptexCtintBord:'Бордо', ptexCtintSmoke:'Тёмный дым', ptexCmosStain:'Витраж', ptexCmosOcean:'Океан', ptexCmosSunset:'Закат', ptexCmosForest:'Лес', ptexCmosNeon:'Неон', ptexCmosPastel:'Пастель' },
+      en: { dumbbellAria:'Back to workout', a11yClose:'Close', wipeBtn:'Sign out & clear device data', wipeConfirm:'Delete all portal data from this device? This cannot be undone.', voiceTitle:'🎧 Voice coach', voiceHint:'The narrator reads technique step by step, names sections and speaks hints. Enable it INSTEAD of your phone’s screen reader — not both at once.', voiceOn:'On', voiceOff:'Off', voiceLevelBrief:'Overview', voiceLevelFull:'Detailed', voiceRate:'Speed', voiceVoice:'Voice', voiceVoiceAuto:'Auto (by language)', voiceNoVoice:'⚠️ No voice for this language — install speech data in your phone settings.', voiceTest:'Test voice', voiceTestPhrase:'Voice coach enabled. Step one. Listen to the technique and follow it.', voiceOnToast:'Voice coach on', voiceOffToast:'Voice coach off', setTitle:'Settings', themes:'Themes', darkThemes:'Dark themes', lightThemes:'Light themes', textures:'Textures', texHint:'Texture overlays on top of any theme — the same as in the main app. Pick an effect and fine-tune its opacity.', opacity:'Opacity', reset:'Reset', resetDone:'Returned to the effect default', applied:'Texture applied', share:'Share report', themeChanged:'Theme changed', wunitTitle:'Unit of weight', wunitKg:'Kilograms', wunitLb:'Pounds', wunitKgShort:'kg', wunitLbShort:'lb', wunitTime:'Time unit', wunitMin:'Minutes', wunitSec:'Seconds', wunitMinShort:'min', wunitSecShort:'sec', wunitDist:'Distance unit', wunitM:'Meters', wunitKm:'Kilometers', wunitMShort:'m', wunitKmShort:'km', wunitCardioTitle:'Cardio units', wunitExTitle:'Weight unit of this exercise', wunitApplyAll:'Apply to all exercises of this workout', wunitDefaultTitle:'Default unit for new exercises', timeLabel:'Time', distLabel:'Distance', distShortLabel:'Dist', ptexTitle:'Panel texture', ptexHint:'Glass for every portal panel — cards, header, menus and windows. Frosted, clear, tinted and multicolor mosaic. Panels stay pure glass — texture effects live only on the page background.', ptexOff:'Off', ptexFrost:'Frosted glass', ptexClear:'Clear glass', ptexTint:'Tinted glass', ptexMosaic:'Mosaic glass', ptexColor:'Shade', ptexPreview:'Live preview', ptexPreviewHint:'This is how every portal panel will look — cards, header and windows', ptexOpacity:'Transparency', ptexOpacityHint:'Higher — more see-through, lower — more solid', ptexOpSolid:'Solid', ptexOpSee:'See-through', ptexApplied:'Panel texture applied', ptexResetDone:'Returned to default transparency', ptexCfrostMilk:'Milk', ptexCfrostSmoke:'Smoke', ptexCfrostIce:'Ice blue', ptexCfrostMint:'Mint', ptexCfrostRose:'Rose mist', ptexCfrostLav:'Lavender', ptexCclearCrystal:'Crystal', ptexCclearAqua:'Aqua', ptexCclearChamp:'Champagne', ptexCclearEmer:'Emerald ice', ptexCclearSapph:'Sapphire', ptexCtintGraph:'Graphite', ptexCtintOcean:'Ocean', ptexCtintEmer:'Emerald', ptexCtintBronze:'Bronze', ptexCtintBord:'Bordeaux', ptexCtintSmoke:'Dark smoke', ptexCmosStain:'Stained glass', ptexCmosOcean:'Ocean', ptexCmosSunset:'Sunset', ptexCmosForest:'Forest', ptexCmosNeon:'Neon', ptexCmosPastel:'Pastel' },
+      he: { dumbbellAria:'חזרה לאימון', a11yClose:'סגירה', wipeBtn:'יציאה ומחיקת נתוני המכשיר', wipeConfirm:'למחוק את כל נתוני הפורטל מהמכשיר? אין דרך לבטל פעולה זו.', voiceTitle:'🎧 מאמן קולי', voiceHint:'הקריין מקריא טכניקה שלב אחר שלב, אומר שמות מדורים ומקריא רמזים. הפעילו אותו במקום קורא המסך של הטלפון — לא את שניהם יחד.', voiceOn:'פעיל', voiceOff:'כבוי', voiceLevelBrief:'סקירה', voiceLevelFull:'מפורט', voiceRate:'מהירות', voiceVoice:'קול', voiceVoiceAuto:'אוטומטי (לפי שפה)', voiceNoVoice:'⚠️ לא נמצא קול לשפה הזו — התקינו נתוני דיבור בהגדרות הטלפון.', voiceTest:'בדיקת קול', voiceTestPhrase:'המאמן הקולי פעיל. שלב אחד. הקשיבו לטכניקה ובצעו אותה.', voiceOnToast:'המאמן הקולי הופעל', voiceOffToast:'המאמן הקולי כובה', setTitle:'הגדרות', themes:'ערכות נושא', darkThemes:'ערכות כהות', lightThemes:'ערכות בהירות', textures:'טקסטורות', texHint:'שכבות מרקף מעל כל ערכת נושא — אותן טקסטורות כמו באפליקציה הראשית. בחרו אפקט וכוונו את העוצמה.', opacity:'עוצמה', reset:'איפוס', resetDone:'חזרה לעוצמת ברירת המחדל', applied:'הטקסטורה הוחלה', share:'שתף דוח', themeChanged:'ערכת הנושא הוחלפה', wunitTitle:'יחידת משקל', wunitKg:'קילוגרמים', wunitLb:'פאונד', wunitKgShort:'ק״ג', wunitLbShort:'lb', wunitTime:'יחידת זמן', wunitMin:'דקות', wunitSec:'שניות', wunitMinShort:'דק׳', wunitSecShort:'שנ׳', wunitDist:'יחידת מרחק', wunitM:'מטרים', wunitKm:'קילומטרים', wunitMShort:'מט', wunitKmShort:'ק״מ', wunitCardioTitle:'יחידות קרדיו', wunitExTitle:'יחידת משקל לתרגיל זה', wunitApplyAll:'החל על כל התרגילים באימון', wunitDefaultTitle:'יחידת משקל כברירת מחדל (לתרגילים חדשים)', timeLabel:'זמן', distLabel:'מרחק', distShortLabel:'מרחק', ptexTitle:'מרקם פאנל', ptexHint:'זכוכית על כל פאנל בפורטל — כרטיסים, כותרת, תפריטים וחלונות. זכוכית מעורפלת, שקופה, מוכהה ופסיפס צבעוני. הפאנלים נשארים זכוכית נקייה — אפקטי המרקם חיים רק על רקע הדף.', ptexOff:'כבוי', ptexFrost:'זכוכית מעורפלת', ptexClear:'זכוכית שקופה', ptexTint:'זכוכית מוכהה', ptexMosaic:'זכוכית פסיפס', ptexColor:'גוון', ptexPreview:'תצוגה מקדימה', ptexPreviewHint:'כך ייראה כל פאנל בפורטל — כרטיסים, כותרת וחלונות', ptexOpacity:'שקיפות', ptexOpacityHint:'גבוה יותר — שקוף יותר, נמוך יותר — אטום יותר', ptexOpSolid:'אטום יותר', ptexOpSee:'שקוף יותר', ptexApplied:'מרקם הפאנל הוחל', ptexResetDone:'חזרה לשקיפות ברירת המחדל', ptexCfrostMilk:'חלבי', ptexCfrostSmoke:'עשן', ptexCfrostIce:'כחול קרח', ptexCfrostMint:'מנטה', ptexCfrostRose:'אודם מעורפל', ptexCfrostLav:'לבנדר', ptexCclearCrystal:'קריסטל', ptexCclearAqua:'אקווה', ptexCclearChamp:'שמפניה', ptexCclearEmer:'קרח אזמרגד', ptexCclearSapph:'ספיר', ptexCtintGraph:'גרפיט', ptexCtintOcean:'אוקיינוס', ptexCtintEmer:'אזמרגד', ptexCtintBronze:'ארד', ptexCtintBord:'בורדו', ptexCtintSmoke:'עשן כהה', ptexCmosStain:'ויטראז', ptexCmosOcean:'אוקיינוס', ptexCmosSunset:'שקיעה', ptexCmosForest:'יער', ptexCmosNeon:'ניאון', ptexCmosPastel:'פסטל' }
     };
     function T(k) { var l = curLang(); return (L[l] && L[l][k]) || L.ru[k] || k; }
 
@@ -6926,6 +7097,16 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       set('cps-title', T('setTitle'));
       set('cps-share-label', T('share'));
       set('cps-wipe-label', T('wipeBtn')); /* c134 */
+      /* c135: voice coach labels + live state */
+      set('cps-voice-label', T('voiceTitle'));
+      set('cps-voice-hint', T('voiceHint'));
+      set('cps-voice-lvl-brief', T('voiceLevelBrief'));
+      set('cps-voice-lvl-full', T('voiceLevelFull'));
+      set('cps-voice-rate-label', T('voiceRate'));
+      set('cps-voice-voice-label', T('voiceVoice'));
+      set('cps-voice-test-lbl', T('voiceTest'));
+      set('cps-voice-novoice', T('voiceNoVoice'));
+      try { voiceRefreshUI(); } catch (e135) {}
       set('cps-themes-label', T('themes'));
       set('cps-textures-label', T('textures'));
       set('cps-texhint-label', T('texHint'));
@@ -6949,6 +7130,99 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       var cpsX = document.querySelector('#portal-settings-sheet [data-cps-close]');
       if (cpsX) cpsX.setAttribute('aria-label', T('a11yClose'));
     }
+
+    /* ---- c135: voice coach settings (device TTS, per-device prefs) ---- */
+    function voicePrefGet(k, d) { try { var v = localStorage.getItem(k); return v != null ? v : d; } catch (e) { return d; } }
+    function voiceSelVoices() {
+      var sel = document.getElementById('cps-voice-voice');
+      var warn = document.getElementById('cps-voice-novoice');
+      if (!sel) return;
+      var list = [];
+      try { if (window.dkVoiceCoach && window.dkVoiceCoach.isSupported()) list = window.dkVoiceCoach.listVoices(curLang()); } catch (e) {}
+      var cur = voicePrefGet('dk_voice_name', '');
+      var html = '<option value="">' + T('voiceVoiceAuto') + '</option>';
+      list.forEach(function (v) {
+        html += '<option value="' + String(v.name).replace(/"/g, '&quot;') + '">' + v.name + ' (' + v.lang + ')</option>';
+      });
+      sel.innerHTML = html;
+      sel.value = list.some(function (v) { return v.name === cur; }) ? cur : '';
+      if (warn) warn.classList.toggle('hidden', list.length > 0);
+    }
+    function voiceRefreshUI() {
+      var on = voicePrefGet('dk_voice_on', '0') === '1';
+      var lvl = voicePrefGet('dk_voice_level', 'brief') === 'full' ? 'full' : 'brief';
+      var rate = parseFloat(voicePrefGet('dk_voice_rate', '1')); if (!isFinite(rate)) rate = 1;
+      var tg = document.getElementById('cps-voice-toggle');
+      if (tg) {
+        tg.textContent = on ? T('voiceOn') : T('voiceOff');
+        tg.classList.toggle('wunit-opt-active', on);
+        tg.setAttribute('aria-pressed', on ? 'true' : 'false');
+      }
+      document.querySelectorAll('#portal-settings-sheet [data-voice-level]').forEach(function (b) {
+        var active = b.getAttribute('data-voice-level') === lvl;
+        b.classList.toggle('wunit-opt-active', active);
+        b.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+      var rng = document.getElementById('cps-voice-rate');
+      var rv = document.getElementById('cps-voice-rate-val');
+      if (rng) rng.value = String(rate);
+      if (rv) rv.textContent = Math.round(rate * 100) + '%';
+      voiceSelVoices();
+    }
+    function voiceSetOn(on) {
+      try {
+        localStorage.setItem('dk_voice_on', on ? '1' : '0');
+        /* the trainee's own choice must outlive the trainer's preset */
+        if (on) localStorage.removeItem('dk_voice_optout');
+        else localStorage.setItem('dk_voice_optout', '1');
+      } catch (e) {}
+      try { if (!on && window.dkVoiceCoach) window.dkVoiceCoach.stopAll(); } catch (e) {}
+      try { if (window.dkVoiceApply) window.dkVoiceApply(); } catch (e) {}
+      voiceRefreshUI();
+      try { toast(on ? T('voiceOnToast') : T('voiceOffToast'), on ? 'success' : 'warn'); } catch (e) {}
+      if (on) {
+        /* immediate proof that it works */
+        try {
+          window.dkVoiceCoach.speak(T('voiceTestPhrase'), {
+            priority: 'nav', rate: parseFloat(voicePrefGet('dk_voice_rate', '1')) || 1,
+            lang: window.dkVoiceCoach.langTag(curLang()), voiceName: voicePrefGet('dk_voice_name', '')
+          });
+        } catch (e) {}
+      }
+    }
+    function wireVoiceSettings(w) {
+      var vtg = w.querySelector('#cps-voice-toggle');
+      if (vtg) vtg.addEventListener('click', function () { voiceSetOn(voicePrefGet('dk_voice_on', '0') !== '1'); });
+      w.querySelectorAll('[data-voice-level]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          try { localStorage.setItem('dk_voice_level', b.getAttribute('data-voice-level') === 'full' ? 'full' : 'brief'); } catch (e) {}
+          try { if (window.dkVoiceApply) window.dkVoiceApply(); } catch (e) {}
+          voiceRefreshUI();
+        });
+      });
+      var rng = w.querySelector('#cps-voice-rate');
+      if (rng) rng.addEventListener('input', function () {
+        var r = Math.max(0.7, Math.min(1.3, parseFloat(rng.value) || 1));
+        try { localStorage.setItem('dk_voice_rate', String(r)); } catch (e) {}
+        var rv = document.getElementById('cps-voice-rate-val');
+        if (rv) rv.textContent = Math.round(r * 100) + '%';
+        try { if (window.dkVoiceApply) window.dkVoiceApply(); } catch (e) {}
+      });
+      var vsel = w.querySelector('#cps-voice-voice');
+      if (vsel) vsel.addEventListener('change', function () {
+        try { localStorage.setItem('dk_voice_name', vsel.value || ''); } catch (e) {}
+        try { if (window.dkVoiceApply) window.dkVoiceApply(); } catch (e) {}
+      });
+      var vtest = w.querySelector('#cps-voice-test');
+      if (vtest) vtest.addEventListener('click', function () {
+        try {
+          window.dkVoiceCoach.speak(T('voiceTestPhrase'), {
+            priority: 'nav', rate: parseFloat(voicePrefGet('dk_voice_rate', '1')) || 1,
+            lang: window.dkVoiceCoach.langTag(curLang()), voiceName: voicePrefGet('dk_voice_name', '')
+          });
+        } catch (e) {}
+      });
+    }
     function ensureSettingsSheet() {
       if (document.getElementById('portal-settings-sheet')) return;
       var w = document.createElement('div');
@@ -6971,6 +7245,31 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
               '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>' +
               '<span id="cps-wipe-label"></span>' +
             '</button>' +
+            /* c135: voice coach — spoken guidance for blind trainees */
+            '<div>' +
+              '<div class="flex items-center justify-between mb-2">' +
+                '<div id="cps-voice-label" class="text-[10px] font-bold uppercase tracking-wider text-muted"></div>' +
+                '<button type="button" id="cps-voice-toggle" aria-pressed="false" class="text-[10px] font-bold px-3 py-1.5 rounded-full border border-border bg-surface-2 text-muted transition"></button>' +
+              '</div>' +
+              '<p id="cps-voice-hint" class="text-[11px] text-muted mb-2 leading-relaxed"></p>' +
+              '<div class="grid grid-cols-2 gap-2 mb-2">' +
+                '<button type="button" data-voice-level="brief" class="wunit-opt rounded-xl border border-border bg-surface-2 px-3 py-2 text-xs font-bold text-text transition"><span id="cps-voice-lvl-brief"></span></button>' +
+                '<button type="button" data-voice-level="full" class="wunit-opt rounded-xl border border-border bg-surface-2 px-3 py-2 text-xs font-bold text-text transition"><span id="cps-voice-lvl-full"></span></button>' +
+              '</div>' +
+              '<div class="mb-2">' +
+                '<div class="flex items-center justify-between mb-1">' +
+                  '<label id="cps-voice-rate-label" class="text-xs font-semibold text-muted" for="cps-voice-rate"></label>' +
+                  '<span id="cps-voice-rate-val" class="font-mono text-xs text-cyan-300">100%</span>' +
+                '</div>' +
+                '<input type="range" id="cps-voice-rate" min="0.7" max="1.3" step="0.05" value="1" class="w-full" style="accent-color:rgb(var(--c-accent))" />' +
+              '</div>' +
+              '<div class="mb-2">' +
+                '<label id="cps-voice-voice-label" class="block text-xs font-semibold text-muted mb-1" for="cps-voice-voice"></label>' +
+                '<select id="cps-voice-voice" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2 text-xs text-text"></select>' +
+              '</div>' +
+              '<p id="cps-voice-novoice" class="hidden text-[11px] text-amber-500 mb-2 leading-relaxed"></p>' +
+              '<button type="button" id="cps-voice-test" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-xs font-bold text-text transition hover:opacity-80"><span id="cps-voice-test-lbl"></span></button>' +
+            '</div>' +
             '<div>' +
               '<div id="cps-themes-label" class="text-[10px] font-bold uppercase tracking-wider text-muted mb-2"></div>' +
               '<div id="cps-theme-grid" class="grid grid-cols-2 gap-1.5 max-h-64 overflow-y-auto"></div>' +
@@ -7029,6 +7328,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       document.body.appendChild(w);
       buildTexButtons();
       buildPtexButtons();
+      try { wireVoiceSettings(w); } catch (e) {}
     }
     function openSettingsSheet() {
       ensureSettingsSheet();
@@ -7495,6 +7795,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       syncThemeIcon();
       renderThemeMenus();
       wApply();
+      /* c135: voices load asynchronously on Chromium — refresh the picker */
+      try { if (window.speechSynthesis) window.speechSynthesis.onvoiceschanged = function () { try { voiceSelVoices(); } catch (e135) {} }; } catch (e135) {}
       setInterval(syncDumbbell, 1000);
       syncDumbbell();
     });

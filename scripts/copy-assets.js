@@ -24,6 +24,7 @@ const assets = [
   'src/muscle-map.js',
   'src/recovery-engine.js',
   'src/analytics-engine.js',
+  'src/voice-coach.js',
   'src/i18n',
   'src/input.css',
 ];

@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c134" />
+<meta name="dk-build" content="c135" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2849,7 +2849,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c134</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c135</p>
             </div>
           </div>
 
@@ -5503,6 +5503,11 @@ button[id$="-close"]:active, button[data-cps-close]:active {
         </div>
 
         <div class="space-y-2 pt-1">
+          <!-- c135: voice coach preset — the generated portal link auto-enables the narrator -->
+          <label class="w-full flex items-center gap-2.5 bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-xs font-semibold text-text cursor-pointer select-none">
+            <input type="checkbox" id="chk-blind-voice" class="w-4 h-4 accent-primary cursor-pointer" />
+            <span data-i18n="portal.blindLabel">Для незрячего клиента (голосовой диктор)</span>
+          </label>
           <button id="btn-copy-portal-link" class="w-full bg-surface-2 hover:bg-border/60 border border-border text-xs font-semibold py-2.5 rounded-xl transition flex items-center justify-center gap-2">
             <svg class="w-4 h-4 text-primary-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             <span data-i18n="portal.copyLink">Скопировать персональную ссылку</span>
@@ -26391,6 +26396,7 @@ async function boot() {
 
         const payload = {
           client: { full_name: client.full_name, goal: client.goal, weight: client.weight, target_weight: client.target_weight },
+          blind_voice: !!client.portal_blind, /* c135: auto-enable the voice coach in the portal */
           program: activeProg,
           programs: programs,
           plan: activePlan,
@@ -26445,6 +26451,21 @@ async function boot() {
         document.getElementById('portal-modal-client-name').textContent = client.full_name;
         document.getElementById('btn-open-portal-tab').href = clientUrl;
         document.getElementById('portal-access-code').textContent = accessCode;
+
+        /* c135: blind-client preset — stored on the client record; toggling it
+           regenerates the link so the payload actually carries the flag */
+        const _chkBlind135 = document.getElementById('chk-blind-voice');
+        if (_chkBlind135) {
+          _chkBlind135.checked = !!client.portal_blind;
+          _chkBlind135.onchange = async () => {
+            try {
+              client.portal_blind = !!_chkBlind135.checked;
+              await db.put('clients', client);
+              toast(t('portal.blindRegen'), 'success', 2500);
+              openClientPortalModal(clientId);
+            } catch (e135) { console.warn('[portal] blind flag save failed', e135); }
+          };
+        }
 
         // Local QR generation — the encrypted blob never leaves the app unencrypted
         try {
@@ -31509,7 +31530,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 134; /* numeric part of dk-build c134 */
+  var RUNNING = 135; /* numeric part of dk-build c135 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
