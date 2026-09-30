@@ -43,7 +43,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   const VC = globalThis.dkVoiceCoach;
 
   ok('engine exported', !!VC);
-  ok('version c135', VC.version === 'c135');
+  ok('version c137', VC.version === 'c137');
   ok('isSupported with stub', VC.isSupported() === true);
 
   /* ---------- 1. chunking ---------- */
@@ -107,33 +107,57 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await sleep(250);
   eq('dedupe: nav repeats always spoken', said.filter(u => u.text === 'Повтор').length, 2);
 
-  /* ---------- 7. steps lifecycle ---------- */
-  const stepEvents = [];
+  /* ---------- 7. steps: AUTO continuation (c137 — the real-device bug) ---------- */
+  const autoEvents = [];
   said.length = 0;
   const st0 = VC.speakSteps('Займите положение | Опускайте медленно | Вернитесь вверх', {
+    gapMs: 25,
     stepLabel: (i, t) => 'Шаг ' + (i + 1) + ' из ' + t,
-    onStep: (i, t) => stepEvents.push('s' + i + '/' + t),
-    onDone: () => stepEvents.push('done')
+    onStep: (i) => autoEvents.push('s' + i),
+    onDone: () => autoEvents.push('done')
   });
-  eq('steps: initial status', st0, { active: true, index: 0, total: 3 });
+  eq('steps: initial status', st0, { active: true, index: 0, total: 3, finished: false });
+  await sleep(450);
+  eq('steps: AUTO plays all three in order', said.map(u => u.text), [
+    'Шаг 1 из 3 Займите положение', 'Шаг 2 из 3 Опускайте медленно', 'Шаг 3 из 3 Вернитесь вверх']);
+  eq('steps: onStep order', autoEvents.filter(e => e[0] === 's'), ['s0', 's1', 's2']);
+  ok('steps: onDone fired at the end', autoEvents.indexOf('done') >= 0);
+  eq('steps: finished status keeps the last position', VC.stepStatus(), { active: true, index: 2, total: 3, finished: true });
+
+  /* ---------- 8. goto / pause / resume / reset (c137) ---------- */
+  said.length = 0;
+  VC.stepGoto(1);
+  await sleep(30);
+  ok('goto: plays step 2 after a finished run', said.some(u => u.text === 'Шаг 2 из 3 Опускайте медленно'));
+  await sleep(350);
+  eq('goto: auto continued to the end', said[said.length - 1].text, 'Шаг 3 из 3 Вернитесь вверх');
+
+  said.length = 0;
+  VC.speakSteps('X старт | Y середина | Z финал', { gapMs: 150 });
+  await sleep(250); /* X done, Y speaking */
+  VC.stopSteps();
+  const pausedStatus = VC.stepStatus();
+  eq('pause: keeps the current position', [pausedStatus.active, pausedStatus.index, pausedStatus.total], [true, 1, 3]);
+  const saidAtPause = said.length;
+  await sleep(300);
+  eq('pause: auto-advance cancelled (no Z)', [said.length, said.some(u => u.text.indexOf('Z финал') >= 0)], [saidAtPause, false]);
+  said.length = 0;
+  VC.stepResume();
+  await sleep(120);
+  ok('resume: re-speaks the CURRENT step (Y), not step 1', said.some(u => u.text.indexOf('Y середина') >= 0) && !said.some(u => u.text.indexOf('X старт') >= 0));
+  VC.resetSteps();
+  eq('reset: player cleared', VC.stepStatus(), { active: false, index: -1, total: 0, finished: false });
+
+  /* ---------- 9. manual mode (auto:false) steps by button only ---------- */
+  said.length = 0;
+  VC.speakSteps('Первый | Второй', { auto: false });
   await sleep(150);
-  eq('steps: step 1 spoken with label', said[said.length - 1].text, 'Шаг 1 из 3 Займите положение');
+  eq('manual: only step 1 spoken', said.map(u => u.text), ['Первый']);
   VC.stepNext();
   await sleep(150);
-  eq('steps: next → step 2', said[said.length - 1].text, 'Шаг 2 из 3 Опускайте медленно');
-  VC.stepRepeat();
-  await sleep(150);
-  eq('steps: repeat re-speaks step 2 (never deduped)', said[said.length - 1].text, 'Шаг 2 из 3 Опускайте медленно');
-  VC.stepPrev();
-  await sleep(150);
-  eq('steps: prev → step 1', said[said.length - 1].text, 'Шаг 1 из 3 Займите положение');
-  VC.stepNext(); VC.stepNext();
-  await sleep(200);
-  eq('steps: onStep sequence', stepEvents.filter(e => e[0] === 's'), ['s0/3', 's1/3', 's1/3', 's0/3', 's1/3', 's2/3']);
-  ok('steps: onDone fired at the end', stepEvents.indexOf('done') >= 0);
-  VC.stopSteps();
-  eq('steps: stop → inactive', VC.stepStatus(), { active: false, index: -1, total: 0 });
-  eq('steps: next after stop is a no-op', VC.stepNext(), { active: false, index: -1, total: 0 });
+  eq('manual: Далее → step 2', said[said.length - 1].text, 'Второй');
+  ok('manual: finished after the last step', VC.stepStatus().finished === true);
+  VC.resetSteps();
 
   /* ---------- 8. watchdog: stuck utterance must not block the queue ---------- */
   VC.configure({ watchdogMs: 120 });
