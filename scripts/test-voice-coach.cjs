@@ -43,7 +43,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   const VC = globalThis.dkVoiceCoach;
 
   ok('engine exported', !!VC);
-  ok('version c137', VC.version === 'c137');
+  ok('version c145 (strict mode era)', VC.version === 'c145');
   ok('isSupported with stub', VC.isSupported() === true);
 
   /* ---------- 1. chunking ---------- */

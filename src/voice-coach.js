@@ -22,13 +22,13 @@
 (function () {
   'use strict';
 
-  var VERSION = 'c137';
+  var VERSION = 'c145';
   var MAX_CHUNK = 180;
   var QUEUE_CAP = 8;
   var DEDUP_MS = 2000;
   var P = { nav: 0, alert: 0, info: 1, step: 2 };
 
-  var cfg = { lang: 'ru-RU', rate: 1, voiceName: '', watchdogMs: 15000 };
+  var cfg = { lang: 'ru-RU', rate: 1, voiceName: '', watchdogMs: 15000, strictVoice: false, onMissingVoice: null };
   var queue = [];
   var current = null;
   var lastText = '', lastAt = 0;
@@ -127,6 +127,18 @@
     return local || match[0];
   }
   function hasVoiceFor(langName) { return !!pickVoice(langName, ''); }
+  /* c145: the app can demand a REAL voice for the language. Without one the
+     utterance must NOT be spoken at all — an English engine reading Hebrew
+     produces gibberish («странные звуки»); instead the app is notified ONCE
+     per attempt so it can show install instructions. */
+  function missingVoice(langTag) {
+    if (!cfg.strictVoice) return false;
+    if (hasVoiceFor(langTag)) return false;
+    if (typeof cfg.onMissingVoice === 'function') {
+      try { cfg.onMissingVoice(String(langTag || cfg.lang)); } catch (e) {}
+    }
+    return true;
+  }
 
   function buildUtterance(text, opts) {
     var U = UtterCls();
@@ -205,6 +217,7 @@
     opts = opts || {};
     var clean = cleanForSpeech(text);
     if (!clean) return false;
+    if (missingVoice(opts.lang || cfg.lang)) return false;
     var prio = (P[opts.priority] != null) ? P[opts.priority] : P.info;
     var now = Date.now();
     /* dedupe exists ONLY for queued informational toasts (they may repeat);
@@ -271,6 +284,7 @@
   function speakSteps(text, opts) {
     if (!isSupported()) return null;
     opts = opts || {};
+    if (missingVoice(opts.lang || cfg.lang)) return null; /* c145: never garble */
     var raw = String(text == null ? '' : text);
     var parts = raw.indexOf(' | ') !== -1 ? raw.split(' | ') : raw.split('|');
     var steps = parts.map(function (s) { return String(s || '').trim(); }).filter(Boolean);
@@ -330,7 +344,9 @@
     if (o.rate != null) cfg.rate = clampRate(o.rate);
     if (o.voiceName != null) cfg.voiceName = String(o.voiceName);
     if (o.watchdogMs != null) cfg.watchdogMs = Math.max(100, Number(o.watchdogMs) || 15000);
-    return { lang: cfg.lang, rate: cfg.rate, voiceName: cfg.voiceName };
+    if (o.strictVoice != null) cfg.strictVoice = !!o.strictVoice;
+    if (o.onMissingVoice !== undefined) cfg.onMissingVoice = (typeof o.onMissingVoice === 'function') ? o.onMissingVoice : null;
+    return { lang: cfg.lang, rate: cfg.rate, voiceName: cfg.voiceName, strictVoice: cfg.strictVoice };
   }
 
   var api = {

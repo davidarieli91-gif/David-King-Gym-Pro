@@ -13,7 +13,7 @@ function ok(name, cond) { if (cond) { pass++; console.log('PASS ' + name); } els
 function count(s, needle) { return s.split(needle).length - 1; }
 
 /* ---------- 1. module: auto + goto/pause/resume/reset ---------- */
-ok('module version c137', mod.indexOf("var VERSION = 'c137'") >= 0);
+ok('module version at least c137', (function () { const m = mod.match(/var VERSION = 'c(\d+)'/); return !!m && Number(m[1]) >= 137; })());
 ok('auto-continue with a breathing gap', mod.indexOf('STEP_GAP_MS = 800') >= 0 && mod.indexOf('st.idx = i + 1; sayStep(false);') >= 0);
 ok('auto can be disabled per call', mod.indexOf('opts.auto === false') >= 0);
 ok('pause keeps the position, cancels the pending timer', mod.indexOf('function stopSteps()') >= 0 && mod.indexOf('stepState._paused = true; clearTimeout(stepState._timer);') >= 0);
