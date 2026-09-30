@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c140" />
+<meta name="dk-build" content="c141" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2575,7 +2575,7 @@ body.auth-locked #dk-dumbbell-btn { display: none; }
 /* ===== c85: weight unit picker (live workouts) ===== */
 .wunit-check { visibility: hidden; color: rgb(var(--c-primary-2)); font-weight: 800; }
 .wunit-opt-active { border-color: rgb(var(--c-primary) / .6) !important; background: rgb(var(--c-primary) / .12) !important; color: rgb(var(--c-primary-2)); }
-#lw-unit-chip { max-width: 9.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* c141: #lw-unit-chip removed — units are per-exercise inside a live workout */
 /* c86/c97: the unit column headers are REAL buttons now — accent on hover, accent-ish border */
 [data-wunit-col], [data-wunit-col-ex], [data-tunit-col], [data-dunit-col] { cursor: pointer; transition: color .15s ease, border-color .15s ease; }
 [data-wunit-col]:hover, [data-wunit-col-ex]:hover, [data-tunit-col]:hover, [data-dunit-col]:hover { color: rgb(var(--c-accent)); border-color: rgb(var(--c-accent) / .55); }
@@ -2849,7 +2849,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c140</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c141</p>
             </div>
           </div>
 
@@ -3100,19 +3100,16 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                   <svg class="w-4 h-4 flip-rtl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
                 </button>
                 <input type="text" id="live-workout-name" data-i18n-ph="workouts.workoutName" class="flex-1 min-w-0 bg-transparent border-none focus:outline-none font-display font-extrabold text-xl tracking-tight" />
-                <button type="button" id="lw-unit-chip" data-wunit-chip class="shrink-0 h-9 px-2.5 grid place-items-center rounded-lg bg-surface-2 hover:bg-border/40 border border-border text-[10px] font-bold uppercase tracking-wide text-muted transition" title="Weight unit">кг</button>
                 <div class="text-end shrink-0">
                   <div class="font-mono font-bold text-lg" id="live-workout-duration">0:00</div>
                   <div class="text-[10px] text-muted uppercase tracking-wider" data-i18n="workouts.duration">Duration</div>
                 </div>
               </div>
 
-              <!-- Client selector for this workout -->
-              <div class="mb-4">
-                <select id="live-workout-client" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60 cursor-pointer">
-                  <option value="" data-i18n="analytics.selectClient">Select client…</option>
-                </select>
-              </div>
+              <!-- c141: the client selector and the global kg/lb chip are gone —
+                   inside a live workout the client is fixed and the weight unit
+                   is a per-exercise concern (real-device feedback: both controls
+                   did nothing useful here) -->
 
               <!-- Stats row -->
               <div class="grid grid-cols-3 gap-2 mb-4">
@@ -15728,16 +15725,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           nameInput.dataset.wired = '1';
         }
       }
-      const clientSel = document.getElementById('live-workout-client');
-      if (clientSel && !clientSel.dataset.wired) {
-        clientSel.addEventListener('change', async (e) => {
-          _workout.client_id = e.target.value;
-          /* c90: client switched → refetch his last-workout reference */
-          _lastRefMap = null;
-          ensureLastRef();
-        });
-        clientSel.dataset.wired = '1';
-      }
+      /* c141: the client select is gone from the live workout — nothing to wire */
 
       const container = document.getElementById('live-workout-exercises');
       const empty = document.getElementById('live-workout-empty');
@@ -15823,6 +15811,13 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               <div class="flex items-start gap-2">
                 <h4 class="font-display font-bold text-sm leading-snug flex-1 min-w-0 cursor-pointer hover:text-[rgb(var(--c-primary-2))] transition truncate" data-view-exercise="${escapeAttr(ex.exercise_id || '')}">${ex.is_superset ? '<span class="font-bold shrink-0" style="color:' + window.dkSSColor((_liveChain || { gi: 0 }).gi) + '" title="Superset">⚡ </span>' : ''}${escapeHTML(name)}</h4>
                 <div class="flex items-center gap-1 shrink-0">
+                  <!-- c141: reorder right here — a freshly added exercise lands at the bottom and must be movable at once -->
+                  <button data-move-up="${idx}" ${idx === 0 ? 'disabled style="opacity:.25"' : ''} class="w-7 h-7 grid place-items-center rounded-lg bg-surface-2 border border-border text-muted hover:text-[rgb(var(--c-primary-2))] hover:border-[rgb(var(--c-primary)/0.5)] transition" title="${t('workouts.moveUp') || 'Move up'}" aria-label="${t('workouts.moveUp') || 'Move up'}">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5"/><polyline points="5 12 12 5 19 12"/></svg>
+                  </button>
+                  <button data-move-down="${idx}" ${idx === (_workout.exercises.length - 1) ? 'disabled style="opacity:.25"' : ''} class="w-7 h-7 grid place-items-center rounded-lg bg-surface-2 border border-border text-muted hover:text-[rgb(var(--c-primary-2))] hover:border-[rgb(var(--c-primary)/0.5)] transition" title="${t('workouts.moveDown') || 'Move down'}" aria-label="${t('workouts.moveDown') || 'Move down'}">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14"/><polyline points="5 12 12 19 19 12"/></svg>
+                  </button>
                   ${ex.exercise_id ? `<button class="w-7 h-7 grid place-items-center rounded-lg bg-surface-2 border border-border text-muted hover:text-[rgb(var(--c-primary-2))] hover:border-[rgb(var(--c-primary)/0.5)] transition" data-view-exercise-btn="${escapeAttr(ex.exercise_id)}" title="${t('aria.view')}" aria-label="${t('aria.view')}">
                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                   </button>` : ''}
@@ -16072,6 +16067,29 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       window.dkNormalizeSupersets(exs);
       markStruct('ss');
       render();
+    }
+
+    /* c141: move an exercise up/down inside the live workout (a just-added
+       exercise lands at the bottom — reorder it right away). The exact rule
+       of the program builder's drag-and-drop applies: a move invalidates the
+       «this + next» superset links, so they are cleared for the whole day. */
+    function moveLiveExercise(idx, dir) {
+      if (!_workout || !Array.isArray(_workout.exercises)) return false;
+      const exs = _workout.exercises;
+      const j = idx + dir;
+      if (idx < 0 || idx >= exs.length || j < 0 || j >= exs.length) return false;
+      const tmp = exs[idx]; exs[idx] = exs[j]; exs[j] = tmp;
+      exs.forEach(ex => {
+        if (ex && (ex.ss_link !== undefined || ex.is_superset)) {
+          delete ex.ss_link;
+          ex.is_superset = false;
+          delete ex.superset_partner;
+        }
+      });
+      markStruct('moved');
+      render();
+      toast(t('workouts.moved') || 'Exercise moved', 'success', 1200);
+      return true;
     }
 
     /* chain the just-done set's values into the next set's «prev» (shared by
@@ -16411,6 +16429,20 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
           lwToggleSuperset(parseInt(btn.getAttribute('data-lw-superset'), 10));
+        });
+      });
+
+      // c141: exercise reorder (↑ / ↓)
+      document.querySelectorAll('[data-move-up]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          moveLiveExercise(parseInt(btn.getAttribute('data-move-up'), 10), -1);
+        });
+      });
+      document.querySelectorAll('[data-move-down]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          moveLiveExercise(parseInt(btn.getAttribute('data-move-down'), 10), 1);
         });
       });
 
@@ -31606,7 +31638,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 140; /* numeric part of dk-build c140 */
+  var RUNNING = 141; /* numeric part of dk-build c141 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
