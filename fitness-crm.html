@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c142" />
+<meta name="dk-build" content="c143" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2849,7 +2849,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c142</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c143</p>
             </div>
           </div>
 
@@ -10482,6 +10482,9 @@ button[id$="-close"]:active, button[data-cps-close]:active {
               reps: s.reps || null,
               time: s.time != null ? s.time : null,
               dist: s.dist != null ? s.dist : null,
+              speed: s.speed != null ? s.speed : null, /* c143 */
+              incline: s.incline != null ? s.incline : null,
+              level: s.level != null ? s.level : null,
               rpe: s.rpe || null,
               type: s.type || 'normal',
               done: false
@@ -10641,7 +10644,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
             unit: ex.unit === 'lb' || ex.unit === 'kg' ? ex.unit : null, /* c104: per-exercise weight unit travels with the template */
             tunit: ex.tunit === 'min' || ex.tunit === 'sec' ? ex.tunit : null, /* c104 */
             rest_sec: ex.rest_sec != null ? ex.rest_sec : 90,
-            sets: (ex.sets || []).map(s => ({ weight: s.weight, reps: s.reps, rpe: s.rpe, type: s.type || 'normal', time: s.time != null ? s.time : null, dist: s.dist != null ? s.dist : null }))
+            sets: (ex.sets || []).map(s => ({ weight: s.weight, reps: s.reps, rpe: s.rpe, type: s.type || 'normal', time: s.time != null ? s.time : null, dist: s.dist != null ? s.dist : null, speed: s.speed != null ? s.speed : null, incline: s.incline != null ? s.incline : null, level: s.level != null ? s.level : null }))
           }))
         })),
         created_at: Date.now(),
@@ -10805,7 +10808,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
         unit: ex.unit === 'lb' || ex.unit === 'kg' ? ex.unit : null,
         tunit: ex.tunit === 'min' || ex.tunit === 'sec' ? ex.tunit : null,
         rest_sec: ex.rest_sec != null ? ex.rest_sec : 90,
-        sets: (ex.sets || []).map(s => ({ weight: s.weight, reps: s.reps, rpe: s.rpe, type: s.type || 'normal', time: s.time != null ? s.time : null, dist: s.dist != null ? s.dist : null }))
+        sets: (ex.sets || []).map(s => ({ weight: s.weight, reps: s.reps, rpe: s.rpe, type: s.type || 'normal', time: s.time != null ? s.time : null, dist: s.dist != null ? s.dist : null, speed: s.speed != null ? s.speed : null, incline: s.incline != null ? s.incline : null, level: s.level != null ? s.level : null }))
       });
       const tplDays = (Array.isArray(tpl.workout_days) ? tpl.workout_days : []).filter(d => d && !d.is_rest_day && (d.exercises || []).length > 0);
       if (tplDays.length) {
@@ -11397,6 +11400,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           const isTimeFirstB = isStretchEx || isWarmupEx;
           /* c104: cardio machines get time/distance cells in the builder too */
           const isCardioB = ex.cardio === true || !!(exBase && exBase.category === 'cardio');
+          /* c143: which cardio machine — treadmill wants speed+incline, the rest a resistance level */
+          const machineB = isCardioB ? window.dkCardioMachine(ex, exBase) : '';
           // Set type colors (matches live workout's palette for consistency)
           const setTypeColors = {
             warmup: 'bg-warning/15 text-warning border-warning/30',
@@ -11420,7 +11425,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               ? `<span class="text-[8px] font-bold px-1 py-0.5 rounded border ${setTypeColors[setType] || ''}" title="${escapeAttr(setTypeLabel(setType))}">${setTypeIcons[setType]} ${escapeHTML(setTypeLabel(setType))}</span>`
               : '';
             const setRowBg = setType !== 'normal' ? `border border-s-2 ${setTypeColors[setType] || ''}` : '';
-            setsHtml += `<div class="flex items-center gap-2 bg-surface rounded-lg p-1.5 ${setRowBg}">
+            setsHtml += `<div class="flex flex-wrap items-center gap-2 bg-surface rounded-lg p-1.5 ${setRowBg}">
               <span class="text-[10px] font-mono font-bold text-muted w-5 shrink-0">${si + 1}</span>
               ${typeBadge}
               ${(isStretchEx || isWarmupEx) ? `<input type="number" step="1" min="0" placeholder="${t('workouts.time')}" value="${s.time != null ? s.time : ''}" data-pb-set="${ei}.${si}.time" title="${t('workouts.time')} · ${tShortB}" class="w-14 bg-surface-2 border border-primary/50 rounded px-1.5 py-1 text-xs text-center font-bold focus:outline-none focus:ring-1 focus:ring-primary/60" />
@@ -11430,7 +11435,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               ` : `<input type="number" step="0.5" placeholder="${wShortB}" title="${t('workouts.weight')} · ${wShortB}" value="${s.weight || ''}" data-pb-set="${ei}.${si}.weight" class="w-16 bg-surface-2 border border-border rounded px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-1 focus:ring-primary/60" />
               <span class="text-[10px] text-muted">×</span>
               <input type="text" inputmode="numeric" pattern="[0-9\\-\\s]*" placeholder="${t('workouts.reps')}" value="${s.reps != null ? s.reps : ''}" data-pb-set="${ei}.${si}.reps" class="w-14 bg-surface-2 border border-border rounded px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-1 focus:ring-primary/60" />`}
-              <input type="text" inputmode="numeric" pattern="[0-9\\-]*" placeholder="${t('workouts.effortScale')}" value="${s.rpe != null ? s.rpe : ''}" data-pb-set="${ei}.${si}.rpe" class="w-12 bg-surface-2 border border-border rounded px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-1 focus:ring-primary/60 hidden sm:block" />
+              ${isCardioB
+                ? (machineB === 'treadmill'
+                  ? `<input type="number" step="0.1" min="0" placeholder="${t('workouts.speed')}" value="${s.speed != null ? s.speed : ''}" data-pb-set="${ei}.${si}.speed" title="${t('workouts.speed')}" class="w-20 bg-surface-2 border border-border rounded px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-1 focus:ring-primary/60" />
+              <input type="number" step="1" min="1" max="20" placeholder="${t('workouts.incline')}" value="${s.incline != null ? s.incline : ''}" data-pb-set="${ei}.${si}.incline" title="${t('workouts.incline')}" class="w-20 bg-surface-2 border border-border rounded px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-1 focus:ring-primary/60" />`
+                  : `<input type="number" step="1" min="1" max="20" placeholder="${t('workouts.level')}" value="${s.level != null ? s.level : ''}" data-pb-set="${ei}.${si}.level" title="${t('workouts.level')}" class="w-20 bg-surface-2 border border-border rounded px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-1 focus:ring-primary/60" />`)
+                : `<input type="text" inputmode="numeric" pattern="[0-9\\-]*" placeholder="${t('workouts.effortScale')}" value="${s.rpe != null ? s.rpe : ''}" data-pb-set="${ei}.${si}.rpe" class="w-12 bg-surface-2 border border-border rounded px-1.5 py-1 text-xs text-center focus:outline-none focus:ring-1 focus:ring-primary/60 hidden sm:block" />`}
               <button data-pb-set-type="${ei}.${si}" class="text-muted hover:text-primary-2 transition w-5 h-5 grid place-items-center shrink-0" title="${t('workouts.setType') || 'Set type'}" aria-label="${t('workouts.setType') || 'Set type'}">
                 <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m7.07 7.07l4.24 4.24M1 12h6m6 0h6M4.22 19.78l4.24-4.24m7.07-7.07l4.24-4.24"/></svg>
               </button>
@@ -11513,7 +11523,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             if (ex && ex.sets[parseInt(si, 10)]) {
               if (val === '') {
                 ex.sets[parseInt(si, 10)][field] = null;
-              } else if (field === 'weight' || field === 'time' || field === 'dist') {
+              } else if (field === 'weight' || field === 'time' || field === 'dist' || field === 'speed' || field === 'incline' || field === 'level') {
                 ex.sets[parseInt(si, 10)][field] = parseFloat(val);
               } else {
                 // reps and rpe are now text fields — allow ranges like "8-12", "AMRAP", "7-8"
@@ -12256,7 +12266,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             unit: ex.unit === 'lb' || ex.unit === 'kg' ? ex.unit : null, /* c104: per-exercise weight unit survives the edit round-trip */
             tunit: ex.tunit === 'min' || ex.tunit === 'sec' ? ex.tunit : null, /* c104: per-exercise time unit survives too */
             rest_sec: ex.rest_sec != null ? ex.rest_sec : 90,
-            sets: (ex.sets || []).map(s => ({ weight: s.weight, reps: s.reps, rpe: s.rpe, type: s.type || 'normal', time: s.time != null ? s.time : null, dist: s.dist != null ? s.dist : null }))
+            sets: (ex.sets || []).map(s => ({ weight: s.weight, reps: s.reps, rpe: s.rpe, type: s.type || 'normal', time: s.time != null ? s.time : null, dist: s.dist != null ? s.dist : null, speed: s.speed != null ? s.speed : null, incline: s.incline != null ? s.incline : null, level: s.level != null ? s.level : null }))
           }))
         })),
         editId: programId
@@ -15473,6 +15483,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             reps: s.reps || null,
             time: s.time != null ? s.time : null,
             dist: s.dist != null ? s.dist : null,
+            speed: s.speed != null ? s.speed : null, /* c143 */
+            incline: s.incline != null ? s.incline : null,
+            level: s.level != null ? s.level : null,
             rpe: s.rpe || null,
             type: s.type || 'normal',
             done: false
@@ -15935,6 +15948,31 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       var c = window.dkSSColor(gi);
       return 'border-color:' + c + ';background:' + c + '12;box-shadow:0 0 0 1px ' + c + '59, inset 0 0 14px ' + c + '1a';
     };
+
+    /* ===== c143: cardio machine fields ==============================
+       Different machines have different controls — «Усилие» is meaningless on
+       a treadmill: it wants SPEED and INCLINE (подъём 1–20); bikes/ellipticals
+       want a RESISTANCE LEVEL (1–20). Detection reads names + equipment in all
+       three languages; every other cardio gets the level. */
+    window.dkCardioMachine = function (ex, base) {
+      var hay = '';
+      try {
+        hay = [
+          ex && ex.name, ex && ex.name_en, ex && ex.name_ru, ex && ex.name_he,
+          base && base.name_en, base && base.name_ru, base && base.name_he,
+          base && base.equipment_en, base && base.equipment_ru, base && base.equipment_he,
+          base && base.equipment, ex && ex.equipment,
+          base && base.subgroup_en, base && base.subgroup_ru
+        ].filter(Boolean).join(' ').toLowerCase();
+      } catch (e) { hay = ''; }
+      if (/treadmill|бегов|дорожк|הליכון|ריצה/.test(hay)) return 'treadmill';
+      if (/ellip|эллип|אליפטי/.test(hay)) return 'elliptical';
+      if (/rowing|rower|греб|חתירה/.test(hay)) return 'rower';
+      if (/bike|bicycle|вело|байк|эргометр|ergometer|spinning|spin bike|ספינ|אופני/.test(hay)) return 'bike';
+      if (/stepper|степпер|stair|stepmill|step mill|מדרגות/.test(hay)) return 'stepper';
+      if (/ski ?erg|skierg|лыж|סקי/.test(hay)) return 'ski';
+      return 'level'; /* generic cardio machine → resistance level */
+    };
     /* normalize: migrate legacy runs into links (once), drop dangling links,
        rebuild is_superset + superset_partner for every member */
     window.dkNormalizeSupersets = function (exs) {
@@ -15960,8 +15998,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       }
     };
     /* chains: Map(idx -> { gi, a, b }) — gi is the group order (color index).
-       Auto-migrates legacy flag runs on the first query (idempotent). */
-    window.dkSupersetChains = function (exs) {
+       Auto-migrates legacy flag runs on the first query (idempotent). */    window.dkSupersetChains = function (exs) {
       var map = new Map();
       if (!Array.isArray(exs)) return map;
       window.dkNormalizeSupersets(exs);
@@ -16126,6 +16163,15 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
          pick from workout_history), then the chain value of the set just done
          (Hevy parity). The colored badge shows the 1–10 effort of that set. */
       const isC = exIsCardio(_workout && _workout.exercises[exIdx]);
+      /* c143: which cardio machine (treadmill → speed+incline, others → level) */
+      const _liveExRef = _workout && _workout.exercises[exIdx];
+      const _liveFull = (() => {
+        try {
+          if (!_exMap || _exMapSize !== _exerciseCache.length) { _exMap = buildExerciseIndex(_exerciseCache); _exMapSize = _exerciseCache.length; }
+          return _exMap.get(_liveExRef && _liveExRef.exercise_id);
+        } catch (e) { return null; }
+      })();
+      const _machine = isC ? window.dkCardioMachine(_liveExRef, _liveFull) : '';
       /* c102: stretching = THREE optional measures, time has priority */
       const isS = exIsStretch(_workout && _workout.exercises[exIdx]);
       /* c105: warm-up drills are time-first too (same 3-input row as stretch) */
@@ -16186,6 +16232,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           ${checkBtn}
           ${typeBtn}
           ${removeBtn}
+          ${isC ? `<div class="flex flex-wrap items-center gap-2" style="grid-column:1/-1">
+            ${_machine === 'treadmill'
+              ? `<label class="text-[10px] text-muted flex items-center gap-1">${t('workouts.speed')} <input type="number" step="0.1" inputmode="decimal" min="0" value="${set.speed != null ? set.speed : ''}" data-set-input="${exIdx}.${setIdx}.speed" class="set-input" placeholder="0" title="${t('workouts.speed')}" /></label>
+            <label class="text-[10px] text-muted flex items-center gap-1">${t('workouts.incline')} <input type="number" step="1" inputmode="numeric" min="1" max="20" value="${set.incline != null ? set.incline : ''}" data-set-input="${exIdx}.${setIdx}.incline" class="set-input" placeholder="0" title="${t('workouts.incline')}" /></label>`
+              : `<label class="text-[10px] text-muted flex items-center gap-1">${t('workouts.level')} <input type="number" step="1" inputmode="numeric" min="1" max="20" value="${set.level != null ? set.level : ''}" data-set-input="${exIdx}.${setIdx}.level" class="set-input" placeholder="0" title="${t('workouts.level')}" /></label>`}
+          </div>` : ''}
         </div>
         <div class="lw-rpe-row" data-rpe-strip="${exIdx}.${setIdx}">${rpeBtns}<span class="lw-rpe-vol">${setVol}</span></div>
       `;
@@ -16199,7 +16251,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           const [exIdx, setIdx, field] = e.target.getAttribute('data-set-input').split('.');
           const val = e.target.value;
           if (_workout && _workout.exercises[exIdx] && _workout.exercises[exIdx].sets[setIdx]) {
-            _workout.exercises[exIdx].sets[setIdx][field] = val === '' ? null : (field === 'reps' || field === 'rpe' ? parseInt(val, 10) : parseFloat(val));
+            _workout.exercises[exIdx].sets[setIdx][field] = val === '' ? null : (field === 'reps' || field === 'rpe' || field === 'incline' || field === 'level' ? parseInt(val, 10) : parseFloat(val));
             updateStats();
             // live-update the set volume readout next to the RPE buttons
             const st = _workout.exercises[exIdx].sets[setIdx];
@@ -16788,6 +16840,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             reps: s.reps || 0,
             time: s.time != null ? s.time : null,
             dist: s.dist != null ? s.dist : null,
+            speed: s.speed != null ? s.speed : null, /* c143 */
+            incline: s.incline != null ? s.incline : null,
+            level: s.level != null ? s.level : null,
             rpe: s.rpe || null,
             type: s.type || 'normal',
             done: !!s.done
@@ -17086,6 +17141,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             reps: s.reps != null ? s.reps : null,
             time: s.time != null ? s.time : null,
             dist: s.dist != null ? s.dist : null,
+            speed: s.speed != null ? s.speed : null, /* c143 */
+            incline: s.incline != null ? s.incline : null,
+            level: s.level != null ? s.level : null,
             rpe: s.rpe != null ? s.rpe : null,
             type: s.type || 'normal'
           }));
@@ -26384,7 +26442,7 @@ async function boot() {
             g: (exInfo && exInfo[ex.exercise_id] && exInfo[ex.exercise_id].g) || '',
             syn: (exInfo && exInfo[ex.exercise_id] && exInfo[ex.exercise_id].syn) || [],
             unit: ex.unit === 'lb' ? 'lb' : 'kg',
-            sets: (ex.sets || []).map(s => ({ weight: s.weight || 0, reps: s.reps || 0, time: s.time != null ? s.time : null, dist: s.dist != null ? s.dist : null, rpe: s.rpe || null, type: s.type || 'normal', done: !!s.done }))
+            sets: (ex.sets || []).map(s => ({ weight: s.weight || 0, reps: s.reps || 0, time: s.time != null ? s.time : null, dist: s.dist != null ? s.dist : null, speed: s.speed != null ? s.speed : null, incline: s.incline != null ? s.incline : null, level: s.level != null ? s.level : null, rpe: s.rpe || null, type: s.type || 'normal', done: !!s.done }))
           }))
         };
       } catch (e) { return null; }
@@ -31638,7 +31696,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 142; /* numeric part of dk-build c142 */
+  var RUNNING = 143; /* numeric part of dk-build c143 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
