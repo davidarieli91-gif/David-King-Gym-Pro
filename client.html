@@ -2359,9 +2359,9 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
 
     <!-- ===== TAB: WORKOUTS ===== -->
     <section id="tab-workouts" class="space-y-3 fade-in">
-      <div id="program-selector" class="hidden flex gap-1.5 overflow-x-auto no-sb pb-1"></div>
+      <div id="program-selector" class="hidden flex flex-wrap items-center gap-1.5 pb-1"></div>
       <div id="rotation-banner" class="hidden"></div>
-      <div id="days-tabs-container" class="flex items-center gap-1.5 overflow-x-auto no-sb pb-1"></div>
+      <div id="days-tabs-container" class="flex flex-wrap items-center gap-1.5 pb-1"></div>
       <div id="workout-exercises-list" class="space-y-3"></div>
       <div id="workout-finish-box" class="pt-1 space-y-2">
         <div id="finish-summary" class="hidden glass rounded-xl px-3 py-2 flex items-center justify-between text-[11px] text-muted">
@@ -2376,7 +2376,7 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
 
     <!-- ===== TAB: NUTRITION ===== -->
     <section id="tab-nutrition" class="hidden space-y-3 fade-in">
-      <div id="plan-selector" class="hidden flex gap-1.5 overflow-x-auto no-sb"></div>
+      <div id="plan-selector" class="hidden flex flex-wrap items-center gap-1.5"></div>
       <div class="glass rounded-2xl p-4">
         <div class="flex justify-between items-center mb-3">
           <h3 class="font-display font-bold text-sm text-text" id="txt-daily-targets">Суточная норма</h3>
@@ -6320,11 +6320,11 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       const p=programs[0];
       c.innerHTML=`<span class="text-[11px] text-muted">${esc(t('chooseProgram'))}:</span><span class="text-xs font-bold text-white bg-indigo-500/20 border border-indigo-500/30 px-2.5 py-1 rounded-xl">${esc(p.name||'Program')}</span>`;
       c.classList.remove('hidden');
-      c.className='flex items-center gap-2 overflow-x-auto no-sb pb-1';
+      c.className='flex flex-wrap items-center gap-2 pb-1';
       return;
     }
     c.classList.remove('hidden');
-    c.className='flex items-center gap-1.5 overflow-x-auto no-sb pb-1';
+    c.className='flex flex-wrap items-center gap-1.5 pb-1';
     c.innerHTML=`<span class="text-[11px] text-muted shrink-0">${esc(t('chooseProgram'))}:</span>`+programs.map((p,i)=>{
       const active=i===activeProgramIdx;
       const ds=(p.workout_days||p.days||[]).length;
@@ -6340,11 +6340,11 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       const p=plans[0];
       c.innerHTML=`<span class="text-[11px] text-muted">${esc(t('choosePlan'))}:</span><span class="text-xs font-bold text-white bg-emerald-500/20 border border-emerald-500/30 px-2.5 py-1 rounded-xl">${esc(p.name||'Plan')} · ${(p.target_calories||'—')} ${t('diaryKcal')}</span>`;
       c.classList.remove('hidden');
-      c.className='flex items-center gap-2 overflow-x-auto no-sb';
+      c.className='flex flex-wrap items-center gap-2';
       return;
     }
     c.classList.remove('hidden');
-    c.className='flex items-center gap-1.5 overflow-x-auto no-sb';
+    c.className='flex flex-wrap items-center gap-1.5';
     c.innerHTML=`<span class="text-[11px] text-muted shrink-0">${esc(t('choosePlan'))}:</span>`+plans.map((p,i)=>{
       const active=i===activePlanIdx;
       return `<button data-plan-idx="${i}" class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition shrink-0 ${active?'bg-emerald-500 text-white shadow-md shadow-emerald-500/25':'bg-surface-2 text-muted hover:text-white'}">${esc(p.name||('Plan '+(i+1)))} <span class="opacity-60 text-[10px]">${p.target_calories||'—'} ${t('diaryKcal')}</span></button>`;
