@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c143" />
+<meta name="dk-build" content="c144" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2849,7 +2849,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c143</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c144</p>
             </div>
           </div>
 
@@ -15363,12 +15363,92 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         gain.connect(ctx.destination);
         osc.frequency.value = 880;
         osc.type = 'sine';
-        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain.gain.setValueAtTime(0.6, ctx.currentTime); /* c144: twice as loud (user request) */
         gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
         osc.start();
         osc.stop(ctx.currentTime + 0.5);
       } catch (e) { /* ignore audio errors */ }
     }
+
+    /* ===== c144: loud bell, progress chime and the per-set interval timer
+       (shared by the live workout; time-based work gets a ▶ that counts the
+       set's own time and rings twice as loud as the old rest beep) ===== */
+    window.dkLiveBell = function () {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const t0 = ctx.currentTime;
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.6, t0);
+        gain.connect(ctx.destination);
+        [880, 1174.66].forEach(function (f, i) {
+          const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = f;
+          o.connect(gain); o.start(t0 + i * 0.22); o.stop(t0 + i * 0.22 + 0.3);
+        });
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.75);
+      } catch (e) {}
+      try { if (navigator.vibrate) navigator.vibrate([250, 120, 250, 120, 500]); } catch (e) {}
+    };
+    window.dkLiveProgress = function () {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const t0 = ctx.currentTime;
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.3, t0);
+        gain.connect(ctx.destination);
+        [659.25, 880, 1318.5].forEach(function (f, i) {
+          const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = f;
+          o.connect(gain); o.start(t0 + i * 0.12); o.stop(t0 + i * 0.12 + 0.22);
+        });
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.6);
+      } catch (e) {}
+      try { if (navigator.vibrate) navigator.vibrate([60, 40, 60]); } catch (e) {}
+    };
+    window.dkLiveProgressCheck = function (set) {
+      try {
+        if (!set || !set.done) return false;
+        const w = set.weight != null ? Number(set.weight) : null;
+        const r = set.reps != null ? Number(set.reps) : null;
+        const pw = set.prev_weight != null ? Number(set.prev_weight) : null;
+        const pr = set.prev_reps != null ? Number(set.prev_reps) : null;
+        if (w == null && r == null) return false;
+        let better = false;
+        if (w != null && pw != null) better = (w * (r || 0)) > (pw * (pr || 0));
+        else if (r != null && pr != null) better = r > pr; /* bodyweight: reps only */
+        if (!better) return false;
+        window.dkLiveProgress();
+        return true;
+      } catch (e) { return false; }
+    };
+    window.dkLiveSetTimers = {};
+    window.dkLiveTimerStop = function (key) {
+      const tm = window.dkLiveSetTimers[key];
+      if (!tm) return;
+      clearInterval(tm.int);
+      if (tm.btn && document.contains(tm.btn)) { tm.btn.textContent = '▶'; tm.btn.classList.remove('bg-cyan-500/20', 'text-cyan-200'); }
+      delete window.dkLiveSetTimers[key];
+    };
+    window.dkLiveTimerToggle = function (key, seconds, btn) {
+      if (window.dkLiveSetTimers[key]) { window.dkLiveTimerStop(key); return; }
+      const tm = window.dkLiveSetTimers[key] = { left: Math.max(1, Math.round(seconds)), btn: btn, int: null };
+      if (btn) btn.classList.add('bg-cyan-500/20', 'text-cyan-200');
+      const render = function () {
+        if (btn && document.contains(btn)) {
+          const m = Math.floor(tm.left / 60), s = tm.left % 60;
+          btn.textContent = m + ':' + String(s).padStart(2, '0');
+        }
+      };
+      render();
+      tm.int = setInterval(function () {
+        tm.left--;
+        if (tm.left <= 0) {
+          window.dkLiveTimerStop(key);
+          window.dkLiveBell();
+          toast(t('workouts.timeUp'), 'success', 2500);
+          return;
+        }
+        render();
+      }, 1000);
+    };
 
     function stop() {
       if (_interval) {
@@ -16211,6 +16291,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const weightInput = `<input type="number" step="0.5" inputmode="decimal" min="0" value="${set.weight != null ? set.weight : ''}" data-set-input="${exIdx}.${setIdx}.weight" class="set-input" placeholder="0" />`;
       const repsInput = `<input type="number" step="1" inputmode="numeric" min="0" value="${setType === 'amrap' ? '' : (set.reps != null ? set.reps : '')}" data-set-input="${exIdx}.${setIdx}.reps" class="set-input" placeholder="${setType === 'amrap' ? '∞' : '0'}" />`;
       const timeInput = `<input type="number" step="${isT ? 1 : 0.5}" inputmode="decimal" min="0" value="${set.time != null ? set.time : ''}" data-set-input="${exIdx}.${setIdx}.time" class="set-input${isT ? ' stretch-time' : ''}" placeholder="0" title="${t('workouts.time')} · ${exTUnitShort(exIdx)}" />`;
+      /* c144: per-set ▶ interval timer (time-based rows only) */
+      const timerBtn = `<button type="button" data-live-set-timer="${exIdx}.${setIdx}" class="w-8 h-7 shrink-0 grid place-items-center rounded-lg bg-surface-2 border border-border text-cyan-300 hover:border-cyan-400/60 transition" aria-label="${t('workouts.setTimer')}" title="${t('workouts.setTimer')}">▶</button>`;
       const distInput = `<input type="number" step="0.5" inputmode="decimal" min="0" value="${set.dist != null ? set.dist : ''}" data-set-input="${exIdx}.${setIdx}.dist" class="set-input" placeholder="0" />`;
 
       return `
@@ -16222,8 +16304,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           <div class="font-mono text-[10px] text-muted text-center truncate" data-prev-cell>${escapeHTML(prev)}${prevBadge}</div>
           ${isC ? `${timeInput}
           <span class="text-[9px] text-muted text-center">/</span>
-          ${distInput}`
-          : isT ? `${timeInput}
+          ${distInput}${timerBtn}`
+          : isT ? `${timeInput}${timerBtn}
           ${weightInput}
           ${repsInput}`
           : `${weightInput}
@@ -16272,6 +16354,21 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         });
       });
 
+      // c144: per-set ▶ interval timer
+      document.querySelectorAll('[data-live-set-timer]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const [exIdx, setIdx] = btn.getAttribute('data-live-set-timer').split('.').map(Number);
+          const ex = _workout && _workout.exercises[exIdx];
+          const set = ex && ex.sets[setIdx];
+          if (!set) return;
+          const v = (set.time != null) ? Number(set.time) : Number(set.prev_time);
+          if (!(v > 0)) { toast(t('workouts.noTime'), 'warning', 2500); return; }
+          const sec = (ex.tunit === 'sec') ? v : v * 60;
+          window.dkLiveTimerToggle(exIdx + '-' + setIdx, sec, btn);
+        });
+      });
+
       // RPE intensity buttons 1-10 (tap again to clear)
       document.querySelectorAll('[data-lw-rpe]').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -16303,6 +16400,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             if (row) row.classList.toggle('set-row-done', set.done);
             updateMiniProgress(xi);
             if (set.done) {
+              /* c144: progress must be heard */
+              try { window.dkLiveProgressCheck(set); } catch (e144) {}
               // c107: chain prev values (primary exercise)
               lwChainPrev(xi, si);
               // c107: superset sync — the ✓ lands on the SAME set of every partner
@@ -31696,7 +31795,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 143; /* numeric part of dk-build c143 */
+  var RUNNING = 144; /* numeric part of dk-build c144 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
