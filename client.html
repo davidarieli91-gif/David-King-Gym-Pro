@@ -71,6 +71,12 @@
         /* ===== c85: FULL theme pack (33 themes incl. fancy decorations) + texture effects v2,
        ported 1:1 from fitness-crm.html so the portal looks EXACTLY like the
        trainer app / live workout ===== */
+    /* ===== c136: bigger touch targets while the voice coach is ON ===== */
+    body.voice-mode .set-check { width: 2.4rem; height: 2.4rem; font-size: 0.95rem; }
+    body.voice-mode .rpe-btn { min-width: 1.75rem; height: 1.75rem; }
+    body.voice-mode .set-input { min-height: 2.4rem; font-size: 0.9rem; padding-top: 0.2rem; padding-bottom: 0.2rem; }
+    body.voice-mode #workout-exercises-list .set-row { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+
     [data-theme="light"] {
       --c-bg:        248 249 252;
       --c-surface:   255 255 255;
@@ -2701,7 +2707,7 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       targetMuscle:'Целевые',auxMuscle:'Вспомогательные',rest:'Отдых',
       liveBadge:'Идёт тренировка',statEx:'Упражнения',statSets:'Подходы',statVol:'Объём',
       doneAllBtn:'Сделал всё',prevLabel:'Пред.',weightLabel:'Вес',repsLabel:'Повт.',rpeLabel:'RPE',timeLabel:'Время',distLabel:'Дистанция',distShortLabel:'Дист',
-      addSet:'+ подход',setWarmup:'Разминка',setDrop:'Дроп',setFailure:'Отказ',setAmrap:'AMRAP',setNormal:'Обычный',supersetLabel:'Суперсет',timeToggle:'мин ⇄ сек',a11yDoneSet:'Отметить подход выполненным',a11yRemoveSet:'Удалить подход',a11yFontDec:'Уменьшить шрифт',a11yFontInc:'Увеличить шрифт',a11yTheme:'Переключить тему',a11yThemeMenu:'Выбор темы',a11ySettings:'Настройки',a11yWaterPlus:'Добавить стакан воды',a11yWaterMinus:'Убрать стакан воды',a11yRestMinus:'Минус 15 секунд',a11yRestPlus:'Плюс 30 секунд',a11yRestSkip:'Пропустить отдых',a11yRemoveDiary:'Удалить из дневника',a11yCloseViewer:'Закрыть просмотр',voiceTechPlay:'Прочитать технику',voiceTechNext:'Далее',voiceTechRepeat:'Повторить',voiceTechStop:'Стоп',voiceStepWord:'Шаг',voiceStepOf:'из',
+      addSet:'+ подход',setWarmup:'Разминка',setDrop:'Дроп',setFailure:'Отказ',setAmrap:'AMRAP',setNormal:'Обычный',supersetLabel:'Суперсет',timeToggle:'мин ⇄ сек',a11yDoneSet:'Отметить подход выполненным',a11yRemoveSet:'Удалить подход',a11yFontDec:'Уменьшить шрифт',a11yFontInc:'Увеличить шрифт',a11yTheme:'Переключить тему',a11yThemeMenu:'Выбор темы',a11ySettings:'Настройки',a11yWaterPlus:'Добавить стакан воды',a11yWaterMinus:'Убрать стакан воды',a11yRestMinus:'Минус 15 секунд',a11yRestPlus:'Плюс 30 секунд',a11yRestSkip:'Пропустить отдых',a11yRemoveDiary:'Удалить из дневника',a11yCloseViewer:'Закрыть просмотр',voiceTechPlay:'Прочитать технику',voiceTechNext:'Далее',voiceTechRepeat:'Повторить',voiceTechStop:'Стоп',voiceStepWord:'Шаг',voiceStepOf:'из',voiceStart:'Тренировка начата',voiceResume:'Продолжаем тренировку',voiceSetWord:'Подход',voiceSetDone:'выполнен',voiceSetUndone:'отменён',voiceNextSet:'Следующий подход',voiceKg:'килограммов',voiceLb:'фунтов',voiceReps:'повторов',voiceRest:'Отдых',voiceRestSec:'секунд',voiceFinish:'Тренировка завершена',voiceSetAdded:'Подход добавлен',voiceSetRemoved:'Подход удалён',
       restDone:'Отдых окончен!',skipRest:'Пропустить',restPerEx:'Отдых, с',
       finishConfirm:'Завершить тренировку?',draftFound:'Найдена незавершённая тренировка. Продолжить?',
       draftRestored:'Тренировка восстановлена ✓',workoutSaved:'Тренировка сохранена ✓',
@@ -2752,7 +2758,7 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       targetMuscle:'Target',auxMuscle:'Auxiliary',rest:'Rest',
       liveBadge:'Workout in progress',statEx:'Exercises',statSets:'Sets',statVol:'Volume',
       doneAllBtn:'Done all',prevLabel:'Prev.',weightLabel:'Weight',repsLabel:'Reps',rpeLabel:'RPE',timeLabel:'Time',distLabel:'Distance',distShortLabel:'Dist',
-      addSet:'+ set',setWarmup:'Warmup',setDrop:'Drop',setFailure:'Failure',setAmrap:'AMRAP',setNormal:'Normal',supersetLabel:'Superset',timeToggle:'min ⇄ sec',a11yDoneSet:'Mark set done',a11yRemoveSet:'Remove set',a11yFontDec:'Decrease font size',a11yFontInc:'Increase font size',a11yTheme:'Toggle theme',a11yThemeMenu:'Choose theme',a11ySettings:'Settings',a11yWaterPlus:'Add a glass of water',a11yWaterMinus:'Remove a glass of water',a11yRestMinus:'Minus 15 seconds',a11yRestPlus:'Plus 30 seconds',a11yRestSkip:'Skip rest',a11yRemoveDiary:'Remove from diary',a11yCloseViewer:'Close viewer',voiceTechPlay:'Read technique',voiceTechNext:'Next',voiceTechRepeat:'Repeat',voiceTechStop:'Stop',voiceStepWord:'Step',voiceStepOf:'of',
+      addSet:'+ set',setWarmup:'Warmup',setDrop:'Drop',setFailure:'Failure',setAmrap:'AMRAP',setNormal:'Normal',supersetLabel:'Superset',timeToggle:'min ⇄ sec',a11yDoneSet:'Mark set done',a11yRemoveSet:'Remove set',a11yFontDec:'Decrease font size',a11yFontInc:'Increase font size',a11yTheme:'Toggle theme',a11yThemeMenu:'Choose theme',a11ySettings:'Settings',a11yWaterPlus:'Add a glass of water',a11yWaterMinus:'Remove a glass of water',a11yRestMinus:'Minus 15 seconds',a11yRestPlus:'Plus 30 seconds',a11yRestSkip:'Skip rest',a11yRemoveDiary:'Remove from diary',a11yCloseViewer:'Close viewer',voiceTechPlay:'Read technique',voiceTechNext:'Next',voiceTechRepeat:'Repeat',voiceTechStop:'Stop',voiceStepWord:'Step',voiceStepOf:'of',voiceStart:'Workout started',voiceResume:'Resuming workout',voiceSetWord:'Set',voiceSetDone:'done',voiceSetUndone:'undone',voiceNextSet:'Next set',voiceKg:'kilograms',voiceLb:'pounds',voiceReps:'reps',voiceRest:'Rest',voiceRestSec:'seconds',voiceFinish:'Workout complete',voiceSetAdded:'Set added',voiceSetRemoved:'Set removed',
       restDone:'Rest is over!',skipRest:'Skip',restPerEx:'Rest, s',
       finishConfirm:'Finish workout?',draftFound:'Unfinished workout found. Resume?',
       draftRestored:'Workout restored ✓',workoutSaved:'Workout saved ✓',
@@ -2803,7 +2809,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       targetMuscle:'יעד',auxMuscle:'עזר',rest:'מנוחה',
       liveBadge:'אימון מתבצע',statEx:'תרגילים',statSets:'סטים',statVol:'נפח',
       doneAllBtn:'בוצע הכל',prevLabel:'קודם',weightLabel:'משקל',repsLabel:'חזרות',rpeLabel:'RPE',timeLabel:'זמן',distLabel:'מרחק',distShortLabel:'מרחק',
-      addSet:'+ סט',setWarmup:'חימום',setDrop:'דרופ',setFailure:'כשל',setAmrap:'AMRAP',setNormal:'רגיל',supersetLabel:'סופרסט',timeToggle:'דק׳ ⇄ שנ׳',a11yDoneSet:'סמן סט כבוצע',a11yRemoveSet:'הסר סט',a11yFontDec:'הקטן גופן',a11yFontInc:'הגדל גופן',a11yTheme:'החלף ערכת נושא',a11yThemeMenu:'בחירת ערכת נושא',a11ySettings:'הגדרות',a11yWaterPlus:'הוסף כוס מים',a11yWaterMinus:'הסר כוס מים',a11yRestMinus:'פחות 15 שניות',a11yRestPlus:'ועוד 30 שניות',a11yRestSkip:'דלג על מנוחה',a11yRemoveDiary:'הסר מהיומן',a11yCloseViewer:'סגור תצוגה',voiceTechPlay:'קרא טכניקה',voiceTechNext:'הבא',voiceTechRepeat:'חזור',voiceTechStop:'עצור',voiceStepWord:'צעד',voiceStepOf:'מתוך',
+      addSet:'+ סט',setWarmup:'חימום',setDrop:'דרופ',setFailure:'כשל',setAmrap:'AMRAP',setNormal:'רגיל',supersetLabel:'סופרסט',timeToggle:'דק׳ ⇄ שנ׳',a11yDoneSet:'סמן סט כבוצע',a11yRemoveSet:'הסר סט',a11yFontDec:'הקטן גופן',a11yFontInc:'הגדל גופן',a11yTheme:'החלף ערכת נושא',a11yThemeMenu:'בחירת ערכת נושא',a11ySettings:'הגדרות',a11yWaterPlus:'הוסף כוס מים',a11yWaterMinus:'הסר כוס מים',a11yRestMinus:'פחות 15 שניות',a11yRestPlus:'ועוד 30 שניות',a11yRestSkip:'דלג על מנוחה',a11yRemoveDiary:'הסר מהיומן',a11yCloseViewer:'סגור תצוגה',voiceTechPlay:'קרא טכניקה',voiceTechNext:'הבא',voiceTechRepeat:'חזור',voiceTechStop:'עצור',voiceStepWord:'צעד',voiceStepOf:'מתוך',voiceStart:'האימון החל',voiceResume:'ממשיכים באימון',voiceSetWord:'סט',voiceSetDone:'בוצע',voiceSetUndone:'בוטל',voiceNextSet:'הסט הבא',voiceKg:'קילוגרמים',voiceLb:'ליברות',voiceReps:'חזרות',voiceRest:'מנוחה',voiceRestSec:'שניות',voiceFinish:'האימון הושלם',voiceSetAdded:'הסט נוסף',voiceSetRemoved:'הסט הוסר',
       restDone:'המנוחה נגמרה!',skipRest:'דלג',restPerEx:'מנוחה, שנ׳',
       finishConfirm:'לסיים את האימון?',draftFound:'נמצא אימון שלא הושלם. להמשיך?',
       draftRestored:'האימון שוחזר ✓',workoutSaved:'האימון נשמר ✓',
@@ -3231,6 +3237,24 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   function voiceRate() { try { const r = parseFloat(localStorage.getItem('dk_voice_rate')); return isFinite(r) ? Math.max(0.7, Math.min(1.3, r)) : 1; } catch (e) { return 1; } }
   function voiceName() { try { return localStorage.getItem('dk_voice_name') || ''; } catch (e) { return ''; } }
   function voiceSupported() { try { return !!(window.dkVoiceCoach && window.dkVoiceCoach.isSupported && window.dkVoiceCoach.isSupported()); } catch (e) { return false; } }
+  function voiceFull() { try { return voiceOn() && voiceSupported() && voiceLevel() === 'full'; } catch (e) { return false; } }
+  /* c136: the phone must not sleep mid-workout while the narrator guides */
+  let _voiceWakeLock = null;
+  async function voiceWakeLock(on) {
+    try {
+      if (on) {
+        if (!voiceOn() || !navigator.wakeLock || _voiceWakeLock) return;
+        _voiceWakeLock = await navigator.wakeLock.request('screen');
+        if (_voiceWakeLock && _voiceWakeLock.addEventListener) _voiceWakeLock.addEventListener('release', function () { _voiceWakeLock = null; });
+      } else if (_voiceWakeLock) {
+        try { await _voiceWakeLock.release(); } catch (e) {}
+        _voiceWakeLock = null;
+      }
+    } catch (e) {}
+  }
+  document.addEventListener('visibilitychange', function () {
+    try { if (!document.hidden && voiceOn() && getSession(activeDayIndex)) voiceWakeLock(true); } catch (e136) {}
+  });
   function voiceApply() {
     try {
       if (voiceSupported()) {
@@ -3238,6 +3262,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       }
     } catch (e) {}
     try { renderVoiceBar(); } catch (e) {}
+    /* c136: bigger touch targets while the narrator is on */
+    try { document.body.classList.toggle('voice-mode', voiceOn()); } catch (e) {}
     /* c135: the 🔊 buttons on exercise cards render only in voice mode —
        re-render the list ONLY when the on/off state actually flipped (the
        rate slider fires voiceApply on every input tick) */
@@ -3299,6 +3325,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   }
   /* modal player panel + step counter */
   let voiceTechStepsCache = null;
+  let _exPrevFocus136 = null; /* c136: focus returns to the opener on close */
   function renderVoiceBar() {
     const bar = document.getElementById('voice-tech-bar');
     if (!bar) return;
@@ -5102,6 +5129,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   function startOrResumeDay() {
     const idx = activeDayIndex;
     if (!dayInfo(idx)) return;
+    const _resumed136 = !!(sessions[idx] && sessions[idx].started_at); /* c136: resume only when it was already STARTED (renderExercises auto-creates a draft session) */
     let sess = sessions[idx];
     if (!sess) {
       sess = buildSession(idx, true);
@@ -5117,6 +5145,15 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     renderExercises();
     const firstUndone = document.querySelector('#workout-exercises-list .set-row:not(.set-row-done) .set-input');
     if (firstUndone) firstUndone.scrollIntoView({behavior:'smooth',block:'center'});
+    /* c136: the narrator announces the workout; the screen stays awake */
+    try {
+      if (voiceOn()) {
+        const _day136 = dayInfo(idx);
+        const _n136 = _day136 ? ((_day136.exercises) || []).length : 0;
+        voiceSay((_resumed136 ? t('voiceResume') : t('voiceStart')) + '. ' + dayLabel(idx) + '. ' + t('statEx') + ': ' + _n136, 'nav');
+      }
+      voiceWakeLock(true);
+    } catch (e136) {}
   }
 
   function fmtDuration(ms) {
@@ -5211,6 +5248,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     timerTotal = Math.max(5, sec||90); timerSecondsLeft = timerTotal;
     const banner = document.getElementById('rest-banner');
     banner.classList.remove('hidden');
+    /* c136: the narrator announces the rest */
+    try { if (voiceOn()) voiceSay(t('voiceRest') + ' ' + timerTotal + ' ' + t('voiceRestSec'), 'info'); } catch (e136) {}
     updateRestDisplay();
     timerInterval = setInterval(() => {
       timerSecondsLeft--;
@@ -5618,6 +5657,29 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         const row = btn.closest('.set-row');
         row.classList.toggle('set-row-done', set.done);
         btn.setAttribute('aria-pressed', set.done ? 'true' : 'false'); /* c133 */
+        /* c136: spoken feedback — «Подход 2 выполнен. Следующий подход: 70
+           килограммов, повторов 8» (the next-set hint only at FULL level) */
+        try {
+          if (voiceOn()) {
+            const _uw136 = (ex.unit === 'lb') ? t('voiceLb') : t('voiceKg');
+            if (set.done) {
+              let _m136 = t('voiceSetWord') + ' ' + (si + 1) + ' ' + t('voiceSetDone');
+              const _nxt136 = ex.sets[si + 1];
+              /* values may still sit in prev_* (the program's prescription
+                 until the trainee types the working weight) */
+              const _nw136 = _nxt136 ? (_nxt136.weight != null ? _nxt136.weight : _nxt136.prev_weight) : null;
+              const _nr136 = _nxt136 ? (_nxt136.reps != null ? _nxt136.reps : _nxt136.prev_reps) : null;
+              if (voiceLevel() === 'full' && _nxt136 && (_nw136 != null || _nr136 != null)) {
+                const _w136 = _nw136 != null ? (_nw136 + ' ' + _uw136) : '';
+                const _r136 = _nr136 != null ? (t('voiceReps') + ' ' + _nr136) : '';
+                _m136 += '. ' + t('voiceNextSet') + ': ' + (_w136 && _r136 ? _w136 + ', ' + _r136 : (_w136 || _r136));
+              }
+              voiceSay(_m136, 'nav');
+            } else if (voiceLevel() === 'full') {
+              voiceSay(t('voiceSetWord') + ' ' + (si + 1) + ' ' + t('voiceSetUndone'), 'info');
+            }
+          }
+        } catch (e136) {}
         ensureStarted(sess0); saveDraft(); updateLiveUI(); updateMiniProgress(ei);
         // auto-scroll when all sets of the exercise are done
         if (set.done && ex.sets.every(s=>s.done)) {
@@ -5645,6 +5707,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         if (set.type !== 'normal') numCell.insertAdjacentHTML('beforeend', typeBadge(set.type));
         /* c133: the cycler announces the NEW type (title + aria) */
         try { const _tt133 = t(TYPE_I18N[set.type] || 'setNormal'); btn.setAttribute('title', _tt133); btn.setAttribute('aria-label', _tt133); } catch (e133) {}
+        try { if (voiceFull()) voiceSay(t(TYPE_I18N[set.type] || 'setNormal'), 'info'); } catch (e136) {}
         const repsInp = row.querySelector('[data-field="reps"]');
         if (set.type === 'amrap') { repsInp.value = ''; repsInp.placeholder = '∞'; }
         else if (repsInp.placeholder === '∞') repsInp.placeholder = '0';
@@ -5677,6 +5740,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
           if (pEx) pEx.sets.push(Object.assign({}, ex.sets[ex.sets.length - 1]));
         });
         ensureStarted(sess0); saveDraft(); renderExercises();
+        try { if (voiceFull()) voiceSay(t('voiceSetAdded'), 'info'); } catch (e136) {}
         const rows = document.querySelectorAll(`[data-exercise-card="${ei}"] .set-row`);
         if (rows.length) {
           rows[rows.length-1].scrollIntoView({behavior:'smooth',block:'center'});
@@ -5716,6 +5780,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
           if (pEx && pEx.sets.length > 1 && pEx.sets[si]) pEx.sets.splice(si, 1);
         });
         saveDraft(); renderExercises();
+        try { if (voiceFull()) voiceSay(t('voiceSetRemoved'), 'info'); } catch (e136) {}
       });
     });
 
@@ -5959,6 +6024,14 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         };
       })
     };
+    /* c136: spoken workout summary + release the wake lock */
+    try {
+      if (voiceOn()) {
+        const _uwF136 = dispUnitGet() === 'lb' ? t('voiceLb') : t('voiceKg');
+        voiceSay(t('voiceFinish') + '. ' + t('sumDone') + ': ' + done + ' ' + t('voiceStepOf') + ' ' + total + '. ' + t('sumVolume') + ': ' + aNum(dispVolKg(volume)) + ' ' + _uwF136, 'nav');
+      }
+      voiceWakeLock(false);
+    } catch (e136) {}
     openReportModal(rec, findPrevWorkout(rec));
   }
 
@@ -6227,6 +6300,13 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       voiceTechStepsCache = { name: name, steps: exTechniqueSteps(ex) };
       voiceOnModalOpen(ex);
     } catch (e135) {}
+    /* c136: focus lands inside the dialog (blind-friendly); the opener is
+       captured by the card handler when the tap did not focus anything */
+    try {
+      if (!_exPrevFocus136 && document.activeElement && document.activeElement !== document.body) _exPrevFocus136 = document.activeElement;
+      const _xc136 = document.getElementById('exercise-modal-close');
+      if (_xc136) _xc136.focus({ preventScroll: true });
+    } catch (e136) {}
   }
   function closeExerciseModal(){
     const m=document.getElementById('exercise-modal');
@@ -6234,6 +6314,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     const vp=document.getElementById('exercise-video-player');
     if(vp) vp.innerHTML='';
     try { if (window.dkVoiceCoach) dkVoiceCoach.stopSteps(); } catch (e135) {} /* c135: no orphan narration */
+    try { if (_exPrevFocus136 && document.contains(_exPrevFocus136)) _exPrevFocus136.focus({ preventScroll: true }); } catch (e136) {} /* c136: back to the opener */
+    _exPrevFocus136 = null;
   }
   function openViewer(src){
     const m=document.getElementById('viewer-modal');
@@ -6578,6 +6660,9 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         const idx=+card.dataset.exerciseCard;
         const day=dayInfo(activeDayIndex);
         const ex=(day&&day.exercises||[])[idx];
+        /* c136: remember the opener for focus restore (taps focus nothing on mobile) */
+        const _openEl136 = e.target.closest('[data-open-exercise]');
+        if (_openEl136) { try { _openEl136.setAttribute('tabindex', '-1'); _exPrevFocus136 = _openEl136; } catch (e136) {} }
         if(ex) openExerciseModal(exKey(ex));
       });
     }
