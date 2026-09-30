@@ -22,7 +22,7 @@
 (function () {
   'use strict';
 
-  var VERSION = 'c135';
+  var VERSION = 'c137';
   var MAX_CHUNK = 180;
   var QUEUE_CAP = 8;
   var DEDUP_MS = 2000;
@@ -229,22 +229,41 @@
   function stopAll() {
     queue.length = 0;
     cancelCurrent();
-    stepState = null;
+    resetSteps();
   }
 
-  function sayStep() {
+  var STEP_GAP_MS = 800;
+  /* Steps AUTO-CONTINUE by default (c137: on a real device the first version
+     read step 1 and went silent — the technique must play through). Every
+     step speaks as its own utterance; after it ends a gapMs pause lets the
+     trainee breathe, then the next one starts. «Стоп» PAUSES (keeps the
+     position), «▶» resumes from it, tapping a step jumps (stepGoto), and a
+     finished run restarts from step 1 on the next play. */
+  function sayStep(interrupt) {
     if (!stepState) return null;
     var st = stepState;
+    clearTimeout(st._timer);
     var total = st.steps.length;
     var i = st.idx;
     var label = (st.opts && typeof st.opts.stepLabel === 'function') ? st.opts.stepLabel(i, total) : '';
     var text = (label ? label + ' ' : '') + st.steps[i];
+    st.finished = false;
+    st._paused = false;
     if (st.opts && st.opts.onStep) { try { st.opts.onStep(i, total); } catch (e) {} }
     speak(text, {
-      priority: 'step',
+      priority: interrupt ? 'nav' : 'step',
       lang: st.opts && st.opts.lang, rate: st.opts && st.opts.rate, voiceName: st.opts && st.opts.voiceName,
       onend: function () {
-        if (i >= total - 1 && st.opts && st.opts.onDone) { try { st.opts.onDone(); } catch (e) {} }
+        if (stepState !== st || st._paused) return;
+        if (i >= total - 1) {
+          st.finished = true;
+          if (st.opts && st.opts.onDone) { try { st.opts.onDone(); } catch (e) {} }
+          return;
+        }
+        if (st.opts && st.opts.auto === false) return;
+        st._timer = setTimeout(function () {
+          if (stepState === st && st.idx === i && !st._paused && !st.finished) { st.idx = i + 1; sayStep(false); }
+        }, (st.opts && st.opts.gapMs != null) ? st.opts.gapMs : STEP_GAP_MS);
       }
     });
     return stepStatus();
@@ -256,14 +275,54 @@
     var parts = raw.indexOf(' | ') !== -1 ? raw.split(' | ') : raw.split('|');
     var steps = parts.map(function (s) { return String(s || '').trim(); }).filter(Boolean);
     if (!steps.length) return null;
-    stepState = { steps: steps, idx: 0, opts: opts };
-    return sayStep();
+    if (stepState) clearTimeout(stepState._timer);
+    var start = parseInt(opts.startIndex, 10);
+    if (!isFinite(start) || start < 0) start = 0;
+    if (start > steps.length - 1) start = steps.length - 1;
+    stepState = { steps: steps, idx: start, opts: opts, finished: false, _paused: false };
+    return sayStep(false);
   }
-  function stepNext() { if (!stepState) return stepStatus(); if (stepState.idx < stepState.steps.length - 1) stepState.idx++; return sayStep(); }
-  function stepPrev() { if (!stepState) return stepStatus(); if (stepState.idx > 0) stepState.idx--; return sayStep(); }
-  function stepRepeat() { if (!stepState) return stepStatus(); return sayStep(); }
-  function stopSteps() { stepState = null; cancelCurrent(); return stepStatus(); }
-  function stepStatus() { return stepState ? { active: true, index: stepState.idx, total: stepState.steps.length } : { active: false, index: -1, total: 0 }; }
+  function stepNext() {
+    if (!stepState) return stepStatus();
+    clearTimeout(stepState._timer);
+    if (stepState.idx < stepState.steps.length - 1) stepState.idx++;
+    return sayStep(true);
+  }
+  function stepPrev() {
+    if (!stepState) return stepStatus();
+    clearTimeout(stepState._timer);
+    if (stepState.idx > 0) stepState.idx--;
+    return sayStep(true);
+  }
+  function stepRepeat() { if (!stepState) return stepStatus(); return sayStep(true); }
+  function stepGoto(i) {
+    if (!stepState) return stepStatus();
+    i = parseInt(i, 10);
+    if (!isFinite(i) || i < 0 || i > stepState.steps.length - 1) return stepStatus();
+    clearTimeout(stepState._timer);
+    stepState.idx = i;
+    stepState.finished = false;
+    return sayStep(true);
+  }
+  /* resume from the paused position (no-op when finished) */
+  function stepResume() { if (!stepState || stepState.finished) return stepStatus(); return sayStep(false); }
+  /* PAUSE: keep the selection + position (c137 — «Стоп» used to wipe it) */
+  function stopSteps() {
+    if (stepState) { stepState._paused = true; clearTimeout(stepState._timer); }
+    cancelCurrent();
+    return stepStatus();
+  }
+  function resetSteps() {
+    if (stepState) { stepState._paused = true; clearTimeout(stepState._timer); }
+    stepState = null;
+    cancelCurrent();
+    return stepStatus();
+  }
+  function stepStatus() {
+    return stepState
+      ? { active: true, index: stepState.idx, total: stepState.steps.length, finished: !!stepState.finished }
+      : { active: false, index: -1, total: 0, finished: false };
+  }
 
   function configure(o) {
     o = o || {};
@@ -285,7 +344,10 @@
     stepNext: stepNext,
     stepPrev: stepPrev,
     stepRepeat: stepRepeat,
+    stepGoto: stepGoto,
+    stepResume: stepResume,
     stopSteps: stopSteps,
+    resetSteps: resetSteps,
     stepStatus: stepStatus,
     listVoices: listVoices,
     hasVoiceFor: hasVoiceFor,

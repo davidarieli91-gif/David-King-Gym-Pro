@@ -34,8 +34,8 @@ ok('card renders the 🔊 button in voice mode', html.indexOf('data-voice-tech="
 ok('card handler wired in wireExerciseEvents', html.indexOf("list.querySelectorAll('[data-voice-tech]')") >= 0 && html.indexOf('voiceTechByEi(+btn.dataset.voiceTech)') >= 0);
 ok('modal player panel exists', html.indexOf('id="voice-tech-bar"') >= 0 && ['vt-play', 'vt-next', 'vt-repeat', 'vt-stop', 'vt-step'].every(id => html.indexOf('id="' + id + '"') >= 0));
 ok('modal player buttons wired', ["vt-play')?.addEventListener('click', voiceTechFromModal", "vt-next')?.addEventListener", "vt-repeat')?.addEventListener", "vt-stop')?.addEventListener"].every(s => html.indexOf(s) >= 0));
-ok('closing the modal stops the narration', html.indexOf('dkVoiceCoach.stopSteps(); } catch (e135) {} /* c135: no orphan narration */') >= 0);
-ok('modal open caches steps + auto-reads in FULL', html.indexOf('voiceTechStepsCache = { name: name, steps: exTechniqueSteps(ex) };') >= 0 && html.indexOf('voiceOnModalOpen(ex);') >= 0);
+ok('closing the modal clears the narration (c137 uses resetSteps)', html.indexOf('dkVoiceCoach.resetSteps(); } catch (e135) {}') >= 0);
+ok('modal open caches steps + auto-reads in FULL', html.indexOf('voiceTechStepsCache = { key: exerciseId, name: name, steps: exTechniqueSteps(ex) };') >= 0 && html.indexOf('voiceOnModalOpen(ex);') >= 0);
 ok('auto-read only at FULL level', html.indexOf("voiceLevel() !== 'full' || !voiceSupported()") >= 0);
 ok('steps split on the existing « | » format', html.indexOf("indexOf(' | ') !== -1 ? String(raw).split(' | ') : String(raw).split('|')") >= 0);
 ok('step label localized (Шаг N из M)', html.indexOf("t('voiceStepWord') + ' ' + (i + 1) + ' ' + t('voiceStepOf') + ' ' + total + '.'") >= 0);

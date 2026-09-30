@@ -76,6 +76,10 @@
     body.voice-mode .rpe-btn { min-width: 1.75rem; height: 1.75rem; }
     body.voice-mode .set-input { min-height: 2.4rem; font-size: 0.9rem; padding-top: 0.2rem; padding-bottom: 0.2rem; }
     body.voice-mode #workout-exercises-list .set-row { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    /* c137: tappable technique steps + the active one highlighted */
+    .voice-step-item { background: transparent; border: 1px solid transparent; display: block; color: inherit; }
+    .voice-step-item:hover { background: rgb(var(--c-surface-2) / 0.6); }
+    .voice-step-active { background: rgb(var(--c-accent) / 0.12); border-color: rgb(var(--c-accent) / 0.35); }
 
     [data-theme="light"] {
       --c-bg:        248 249 252;
@@ -2324,7 +2328,7 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
           </div>
           <button id="btn-quick-start" class="bg-gradient-to-r from-indigo-500 to-cyan-400 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-lg shadow-indigo-500/20 transition active:scale-95 flex items-center gap-1.5 shrink-0">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-            <span id="txt-start-btn">В зал</span>
+            <span id="txt-start-btn">Начать тренировку</span>
           </button>
         </div>
         <!-- Workout progress bar -->
@@ -2681,7 +2685,7 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
   /* ============ I18N ============ */
   const I18N = {
     ru: {
-      portalTitle:'Мой Портал',coachBadge:'David King Gym',closeGuard:'Закрыть портал подопечного?',startBtn:'В зал',resumeBtn:'Продолжить',finishWorkout:'Завершить тренировку',
+      portalTitle:'Мой Портал',coachBadge:'David King Gym',closeGuard:'Закрыть портал подопечного?',startBtn:'Начать тренировку',resumeBtn:'Продолжить',finishWorkout:'Завершить тренировку',
       dailyTargets:'Суточная норма',waterTitle:'Водный баланс',dailyCheckin:'Утренний чек-ин',
       morningWeight:'Вес утром',savedToast:'Сохранено ✓',checkinSaved:'Чек-ин сохранён ✓',checkinNeedWeight:'Укажите вес',
       workoutDoneTitle:'Тренировка завершена! 🎉',restLabel:'Отдых',unlockTitle:'Введите код доступа',
@@ -2715,7 +2719,7 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       volPerEx:'Объём по упражнениям',compareTitle:'Сравнение с прошлой тренировкой',baselineNote:'Это первая записанная тренировка — она станет базой для прогресса!',
       btnSave:'Сохранить',btnContinue:'Продолжить тренировку',btnWA:'Поделиться в WhatsApp',badgeNew:'новое',
       repLast:'Прошлый раз:',wunitKgShort:'кг',wunitLbShort:'фт',
-      startHint:'Нажмите «В зал», чтобы заполнять подходы',volumeKg:'кг',
+      startHint:'Нажмите «Начать тренировку», чтобы заполнять подходы',volumeKg:'кг',
       sumDuration:'Длительность',sumVolume:'Объём',sumDone:'Подходы',
       chooseProgram:'Выберите программу',choosePlan:'Выберите план питания',
       noProgram:'Нет активных программ',noPlan:'Нет активных планов питания',
@@ -2732,7 +2736,7 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       diaryFoodPh:'Продукт (например: Творог 5%)', diaryHint:'Дневник хранится на устройстве и уходит тренеру в WhatsApp-отчёте. Отмечай съеденное из плана галочками выше.'
     },
     en: {
-      portalTitle:'My Portal',coachBadge:'David King Gym',closeGuard:'Close the client portal?',startBtn:'Start',resumeBtn:'Resume',finishWorkout:'Finish Workout',
+      portalTitle:'My Portal',coachBadge:'David King Gym',closeGuard:'Close the client portal?',startBtn:'Start workout',resumeBtn:'Resume',finishWorkout:'Finish Workout',
       dailyTargets:'Daily Targets',waterTitle:'Water',dailyCheckin:'Morning Check-In',
       morningWeight:'Morning weight',savedToast:'Saved ✓',checkinSaved:'Check-in saved ✓',checkinNeedWeight:'Enter weight',
       workoutDoneTitle:'Workout Complete! 🎉',restLabel:'Rest',unlockTitle:'Enter access code',
@@ -2766,7 +2770,7 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       volPerEx:'Volume per exercise',compareTitle:'vs previous workout',baselineNote:'First recorded workout — it becomes your progress baseline!',
       btnSave:'Save',btnContinue:'Continue workout',btnWA:'Share via WhatsApp',badgeNew:'new',
       repLast:'Last time:',wunitKgShort:'kg',wunitLbShort:'lb',
-      startHint:'Tap "Start" to fill in your sets',volumeKg:'kg',
+      startHint:'Tap "Start workout" to fill in your sets',volumeKg:'kg',
       sumDuration:'Duration',sumVolume:'Volume',sumDone:'Sets',
       chooseProgram:'Choose program',choosePlan:'Choose nutrition plan',
       noProgram:'No active programs',noPlan:'No active nutrition plans',
@@ -2783,7 +2787,7 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       diaryFoodPh:'Food (e.g. Cottage cheese 5%)', diaryHint:'The diary stays on this device and goes to the trainer in the WhatsApp report. Check off eaten items from the plan above.'
     },
     he: {
-      portalTitle:'הפורטל שלי',coachBadge:'David King Gym',closeGuard:'לסגור את פורטל המתאמן?',startBtn:'התחל',resumeBtn:'המשך',finishWorkout:'סיים אימון',
+      portalTitle:'הפורטל שלי',coachBadge:'David King Gym',closeGuard:'לסגור את פורטל המתאמן?',startBtn:'התחל אימון',resumeBtn:'המשך',finishWorkout:'סיים אימון',
       dailyTargets:'יעדים יומיים',waterTitle:'מאזן נוזלים',dailyCheckin:'צ׳ק-אין בוקר',
       morningWeight:'משקל בוקר',savedToast:'נשמר ✓',checkinSaved:'צ׳ק-אין נשמר ✓',checkinNeedWeight:'הזן משקל',
       workoutDoneTitle:'האימון הושלם! 🎉',restLabel:'מנוחה',unlockTitle:'הזן קוד גישה',
@@ -2817,7 +2821,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       volPerEx:'נפח לפי תרגילים',compareTitle:'השוואה לאימון קודם',baselineNote:'זהו האימון המתועד הראשון — הוא יהווה בסיס להתקדמות!',
       btnSave:'שמור',btnContinue:'המשך אימון',btnWA:'שתף בוואטסאפ',badgeNew:'חדש',
       repLast:'פעם קודמת:',wunitKgShort:'ק״ג',wunitLbShort:'lb',
-      startHint:'לחץ "התחל" כדי למלא את הסטים',volumeKg:'ק״ג',
+      startHint:'לחץ "התחל אימון" כדי למלא את הסטים',volumeKg:'ק״ג',
       sumDuration:'משך',sumVolume:'נפח',sumDone:'סטים',
       chooseProgram:'בחר תוכנית',choosePlan:'בחר תוכנית תזונה',
       noProgram:'אין תוכניות פעילות',noPlan:'אין תוכניות תזונה פעילות',
@@ -3293,16 +3297,22 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     const parts = String(raw).indexOf(' | ') !== -1 ? String(raw).split(' | ') : String(raw).split('|');
     return parts.map(s => String(s || '').trim()).filter(Boolean);
   }
-  /* start (or restart) the step-by-step reader for a named exercise */
-  function voiceStepsStart(name, steps) {
+  /* start (or restart) the step-by-step reader for a named exercise.
+     c137: steps AUTO-CONTINUE (a real-device run went silent after step 1);
+     startIndex lets a tapped step begin the playback; `key` identifies which
+     exercise the player currently holds so «▶» resumes instead of restarting */
+  let voiceTechPlayingKey = null;
+  function voiceStepsStart(name, steps, startIndex, key) {
     if (!voiceSupported()) return false;
     if (!Array.isArray(steps) || !steps.length) { toast(t('noTechnique'), 'warn'); return false; }
-    if (name) voiceSay(name + '. ' + t('technique') + '.', 'nav'); /* intro, steps queue right behind it */
+    if (name && !startIndex) voiceSay(name + '. ' + t('technique') + '.', 'nav'); /* intro, steps queue right behind it */
+    voiceTechPlayingKey = (key != null) ? String(key) : null;
     window.dkVoiceCoach.speakSteps(steps.join(' | '), {
       lang: window.dkVoiceCoach.langTag(currentLang), rate: voiceRate(), voiceName: voiceName(),
+      auto: true, gapMs: 800, startIndex: startIndex || 0,
       stepLabel: voiceStepLabel,
       onStep: function (i, total) { renderVoiceBarStep(i, total); voiceHaptic(20); },
-      onDone: function () { renderVoiceBarStep(-1, 0); }
+      onDone: function () { const st = window.dkVoiceCoach.stepStatus(); renderVoiceBarStep(st.index, st.total); }
     });
     return true;
   }
@@ -3345,13 +3355,42 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   }
   function renderVoiceBarStep(i, total) {
     const el = document.getElementById('vt-step');
-    if (!el) return;
-    el.textContent = (i >= 0 && total) ? (t('voiceStepWord') + ' ' + (i + 1) + ' / ' + total) : '';
+    if (el) el.textContent = (i >= 0 && total) ? (t('voiceStepWord') + ' ' + (i + 1) + ' / ' + total) : '';
+    /* c137: highlight (and gently scroll to) the active technique step */
+    try {
+      document.querySelectorAll('#exercise-technique [data-tech-step]').forEach(function (b) {
+        b.classList.toggle('voice-step-active', +b.getAttribute('data-tech-step') === i);
+      });
+      if (i >= 0) {
+        const a = document.querySelector('#exercise-technique [data-tech-step="' + i + '"]');
+        if (a && a.scrollIntoView) try { a.scrollIntoView({ block: 'nearest' }); } catch (e) {}
+      }
+    } catch (e136) {}
   }
   function voiceTechFromModal() {
     const cached = voiceTechStepsCache;
     if (!cached || !cached.steps || !cached.steps.length) { toast(t('noTechnique'), 'warn'); return; }
-    voiceStepsStart(cached.name, cached.steps);
+    /* c137: paused mid-way → CONTINUE from the current step, not from the top */
+    try {
+      const st = window.dkVoiceCoach.stepStatus();
+      if (st.active && !st.finished && voiceTechPlayingKey === String(cached.key)) { window.dkVoiceCoach.stepResume(); return; }
+    } catch (e) {}
+    voiceStepsStart(cached.name, cached.steps, 0, cached.key);
+  }
+  /* c137: tap a technique step in the modal → play FROM that step (auto-continues) */
+  function voiceTechStepTap(i) {
+    if (!voiceOn() || !voiceSupported()) return;
+    const cached = voiceTechStepsCache;
+    if (!cached || !cached.steps || !cached.steps[i]) return;
+    try {
+      const st = window.dkVoiceCoach.stepStatus();
+      if (st.active && voiceTechPlayingKey === String(cached.key) && st.total === cached.steps.length) {
+        window.dkVoiceCoach.stepGoto(i);
+      } else {
+        voiceStepsStart(cached.name, cached.steps, i, cached.key);
+      }
+      voiceHaptic(20);
+    } catch (e136) {}
   }
   /* auto-read when the exercise modal opens (FULL level only) */
   function voiceOnModalOpen(ex) {
@@ -5374,7 +5413,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       list.innerHTML = '<div class="text-xs text-muted text-center py-6">'+esc(t('noExercises'))+'</div>'; return;
     }
     const lang = currentLang;
-    /* c128: «В зал» is REAL now — the set inputs stay LOCKED until the
+    /* c128: «Начать тренировку» is REAL now — the set inputs stay LOCKED until the
        session is started (exactly what the startHint always promised).
        A started draft (resume) unlocks automatically; «Продолжить» scrolls
        to the first unfinished set. */
@@ -5997,7 +6036,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     const idx = activeDayIndex;
     const sess = getSession(idx);
     if (!sess) { toast(t('startHint'), 'warn'); return; }
-    /* c128: an unstarted session cannot be finished — «В зал» first */
+    /* c128: an unstarted session cannot be finished — «Начать тренировку» first */
     if (!sess.started_at) { toast(t('startHint'), 'warn'); startOrResumeDay(); return; }
     const day = dayInfo(idx);
     const total = sessionSetCount(sess, false), done = sessionSetCount(sess, true);
@@ -6276,7 +6315,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     if(techEl){
       if(technique){
         const steps = technique.indexOf(' | ')!==-1 ? technique.split(' | ') : technique.split('|');
-        techEl.innerHTML = steps.map(s=>`<p class="mb-1">• ${esc(s.trim())}</p>`).join('');
+        /* c137: each step is tappable — the voice coach starts FROM it */
+        techEl.innerHTML = steps.map((s, i)=>`<button type="button" data-tech-step="${i}" class="voice-step-item w-full text-start mb-1 rounded-lg px-2 py-1 leading-relaxed">• ${esc(s.trim())}</button>`).join('');
       } else techEl.innerHTML = `<p class="text-muted italic">${esc(t('noTechnique'))}</p>`;
     }
     // video
@@ -6297,7 +6337,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     /* c135: the narrator — cache the current technique, sync the player bar
        and (FULL level) start reading the steps automatically */
     try {
-      voiceTechStepsCache = { name: name, steps: exTechniqueSteps(ex) };
+      voiceTechStepsCache = { key: exerciseId, name: name, steps: exTechniqueSteps(ex) };
       voiceOnModalOpen(ex);
     } catch (e135) {}
     /* c136: focus lands inside the dialog (blind-friendly); the opener is
@@ -6313,7 +6353,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     if(m) m.classList.add('hidden');
     const vp=document.getElementById('exercise-video-player');
     if(vp) vp.innerHTML='';
-    try { if (window.dkVoiceCoach) dkVoiceCoach.stopSteps(); } catch (e135) {} /* c135: no orphan narration */
+    try { if (window.dkVoiceCoach) dkVoiceCoach.resetSteps(); } catch (e135) {} /* c135/c137: leaving the modal clears the player */
+    voiceTechPlayingKey = null;
     try { if (_exPrevFocus136 && document.contains(_exPrevFocus136)) _exPrevFocus136.focus({ preventScroll: true }); } catch (e136) {} /* c136: back to the opener */
     _exPrevFocus136 = null;
   }
@@ -6639,7 +6680,12 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     document.getElementById('vt-play')?.addEventListener('click', voiceTechFromModal);
     document.getElementById('vt-next')?.addEventListener('click', ()=>{ try { window.dkVoiceCoach.stepNext(); } catch(e135) {} });
     document.getElementById('vt-repeat')?.addEventListener('click', ()=>{ try { window.dkVoiceCoach.stepRepeat(); } catch(e135) {} });
-    document.getElementById('vt-stop')?.addEventListener('click', ()=>{ try { window.dkVoiceCoach.stopSteps(); } catch(e135) {} renderVoiceBarStep(-1, 0); voiceHaptic(30); });
+    document.getElementById('vt-stop')?.addEventListener('click', ()=>{ try { window.dkVoiceCoach.stopSteps(); } catch(e135) {} renderVoiceBarStep(window.dkVoiceCoach.stepStatus().index, window.dkVoiceCoach.stepStatus().total); voiceHaptic(30); });
+    /* c137: tap a technique step list item → play from it */
+    document.getElementById('exercise-modal')?.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-tech-step]');
+      if (b) voiceTechStepTap(+b.getAttribute('data-tech-step'));
+    });
     document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeViewer(); closeExerciseModal(); closeReportModal(); try { hideFoodResults(); } catch (e134) {} } });
     // Tap on exercise image/title -> open card
     const exList=document.getElementById('workout-exercises-list');
