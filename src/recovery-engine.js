@@ -466,7 +466,7 @@
     var maxLoad = 0;
     arr.forEach(function (p) { if (p && p.load > maxLoad) maxLoad = p.load; });
     var slot = W / n;
-    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" height="' + H + '" preserveAspectRatio="none" aria-hidden="true" focusable="false" style="display:block">';
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" height="' + H + '" preserveAspectRatio="none" aria-hidden="true" focusable="false" style="display:block;direction:ltr">';
     /* baseline */
     s += '<line x1="0" y1="' + (H - 0.5) + '" x2="' + W + '" y2="' + (H - 0.5) + '" stroke="rgba(128,128,128,0.25)" stroke-width="1" vector-effect="non-scaling-stroke"/>';
     /* load bars (normalized to the window max) */

@@ -2276,7 +2276,7 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
   </div>
 
   <!-- ============= UNLOCK SCREEN ============= -->
-  <div id="unlock-screen" class="hidden fixed inset-0 z-[100] bg-black/90 backdrop-blur-lg flex items-center justify-center p-4">
+  <div id="unlock-screen" class="hidden fixed inset-0 z-[100] bg-black/90 backdrop-blur-lg flex items-center justify-center p-4" role="dialog" aria-modal="true">
     <div class="glass-strong rounded-3xl p-6 max-w-xs w-full text-center space-y-4">
       <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-indigo-500 to-cyan-400 grid place-items-center text-2xl shadow-lg shadow-indigo-500/30">🔒</div>
       <div>
@@ -2683,7 +2683,7 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       targetMuscle:'Целевые',auxMuscle:'Вспомогательные',rest:'Отдых',
       liveBadge:'Идёт тренировка',statEx:'Упражнения',statSets:'Подходы',statVol:'Объём',
       doneAllBtn:'Сделал всё',prevLabel:'Пред.',weightLabel:'Вес',repsLabel:'Повт.',rpeLabel:'RPE',timeLabel:'Время',distLabel:'Дистанция',distShortLabel:'Дист',
-      addSet:'+ подход',setWarmup:'Разминка',setDrop:'Дроп',setFailure:'Отказ',setAmrap:'AMRAP',
+      addSet:'+ подход',setWarmup:'Разминка',setDrop:'Дроп',setFailure:'Отказ',setAmrap:'AMRAP',setNormal:'Обычный',supersetLabel:'Суперсет',timeToggle:'мин ⇄ сек',a11yDoneSet:'Отметить подход выполненным',a11yRemoveSet:'Удалить подход',a11yFontDec:'Уменьшить шрифт',a11yFontInc:'Увеличить шрифт',a11yTheme:'Переключить тему',a11yThemeMenu:'Выбор темы',a11ySettings:'Настройки',a11yWaterPlus:'Добавить стакан воды',a11yWaterMinus:'Убрать стакан воды',a11yRestMinus:'Минус 15 секунд',a11yRestPlus:'Плюс 30 секунд',a11yRestSkip:'Пропустить отдых',a11yRemoveDiary:'Удалить из дневника',a11yCloseViewer:'Закрыть просмотр',
       restDone:'Отдых окончен!',skipRest:'Пропустить',restPerEx:'Отдых, с',
       finishConfirm:'Завершить тренировку?',draftFound:'Найдена незавершённая тренировка. Продолжить?',
       draftRestored:'Тренировка восстановлена ✓',workoutSaved:'Тренировка сохранена ✓',
@@ -2733,7 +2733,7 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       targetMuscle:'Target',auxMuscle:'Auxiliary',rest:'Rest',
       liveBadge:'Workout in progress',statEx:'Exercises',statSets:'Sets',statVol:'Volume',
       doneAllBtn:'Done all',prevLabel:'Prev.',weightLabel:'Weight',repsLabel:'Reps',rpeLabel:'RPE',timeLabel:'Time',distLabel:'Distance',distShortLabel:'Dist',
-      addSet:'+ set',setWarmup:'Warmup',setDrop:'Drop',setFailure:'Failure',setAmrap:'AMRAP',
+      addSet:'+ set',setWarmup:'Warmup',setDrop:'Drop',setFailure:'Failure',setAmrap:'AMRAP',setNormal:'Normal',supersetLabel:'Superset',timeToggle:'min ⇄ sec',a11yDoneSet:'Mark set done',a11yRemoveSet:'Remove set',a11yFontDec:'Decrease font size',a11yFontInc:'Increase font size',a11yTheme:'Toggle theme',a11yThemeMenu:'Choose theme',a11ySettings:'Settings',a11yWaterPlus:'Add a glass of water',a11yWaterMinus:'Remove a glass of water',a11yRestMinus:'Minus 15 seconds',a11yRestPlus:'Plus 30 seconds',a11yRestSkip:'Skip rest',a11yRemoveDiary:'Remove from diary',a11yCloseViewer:'Close viewer',
       restDone:'Rest is over!',skipRest:'Skip',restPerEx:'Rest, s',
       finishConfirm:'Finish workout?',draftFound:'Unfinished workout found. Resume?',
       draftRestored:'Workout restored ✓',workoutSaved:'Workout saved ✓',
@@ -2783,7 +2783,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       targetMuscle:'יעד',auxMuscle:'עזר',rest:'מנוחה',
       liveBadge:'אימון מתבצע',statEx:'תרגילים',statSets:'סטים',statVol:'נפח',
       doneAllBtn:'בוצע הכל',prevLabel:'קודם',weightLabel:'משקל',repsLabel:'חזרות',rpeLabel:'RPE',timeLabel:'זמן',distLabel:'מרחק',distShortLabel:'מרחק',
-      addSet:'+ סט',setWarmup:'חימום',setDrop:'דרופ',setFailure:'כשל',setAmrap:'AMRAP',
+      addSet:'+ סט',setWarmup:'חימום',setDrop:'דרופ',setFailure:'כשל',setAmrap:'AMRAP',setNormal:'רגיל',supersetLabel:'סופרסט',timeToggle:'דק׳ ⇄ שנ׳',a11yDoneSet:'סמן סט כבוצע',a11yRemoveSet:'הסר סט',a11yFontDec:'הקטן גופן',a11yFontInc:'הגדל גופן',a11yTheme:'החלף ערכת נושא',a11yThemeMenu:'בחירת ערכת נושא',a11ySettings:'הגדרות',a11yWaterPlus:'הוסף כוס מים',a11yWaterMinus:'הסר כוס מים',a11yRestMinus:'פחות 15 שניות',a11yRestPlus:'ועוד 30 שניות',a11yRestSkip:'דלג על מנוחה',a11yRemoveDiary:'הסר מהיומן',a11yCloseViewer:'סגור תצוגה',
       restDone:'המנוחה נגמרה!',skipRest:'דלג',restPerEx:'מנוחה, שנ׳',
       finishConfirm:'לסיים את האימון?',draftFound:'נמצא אימון שלא הושלם. להמשיך?',
       draftRestored:'האימון שוחזר ✓',workoutSaved:'האימון נשמר ✓',
@@ -2867,7 +2867,9 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     document.getElementById('btn-unlock').textContent = t('unlockBtn');
     document.getElementById('unlock-code-input').value = '';
     document.getElementById('unlock-error').textContent = '';
-    document.getElementById('unlock-screen').classList.remove('hidden');
+    const _us133 = document.getElementById('unlock-screen');
+    _us133.setAttribute('aria-label', t('unlockTitle')); /* c133: dialog has a name */
+    _us133.classList.remove('hidden');
     setTimeout(()=>document.getElementById('unlock-code-input').focus(),100);
   }
   async function attemptUnlock() {
@@ -3121,6 +3123,20 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     ['txt-a-trend-all', 'txt-a-progress-all', 'txt-a-prs-all'].forEach(function (id) {
       const el = document.getElementById(id);
       if (el) el.textContent = t('aAllTime');
+    });
+    /* c133: localized accessible names for the icon-only controls (they were
+       English-only aria/title attributes in the static HTML) */
+    [['font-dec-btn', 'a11yFontDec'], ['font-inc-btn', 'a11yFontInc'],
+     ['theme-toggle', 'a11yTheme'], ['theme-menu', 'a11yThemeMenu'],
+     ['portal-settings-btn', 'a11ySettings'],
+     ['btn-water-plus', 'a11yWaterPlus'], ['btn-water-minus', 'a11yWaterMinus'],
+     ['btn-timer-minus15', 'a11yRestMinus'], ['btn-timer-plus30', 'a11yRestPlus'],
+     ['btn-timer-skip', 'a11yRestSkip'], ['viewer-close', 'a11yCloseViewer']
+    ].forEach(function (pair) {
+      const el = document.getElementById(pair[0]);
+      if (!el) return;
+      el.setAttribute('aria-label', t(pair[1]));
+      if (pair[0] === 'portal-settings-btn') el.setAttribute('title', t(pair[1]));
     });
     document.getElementById('lbl-waist').textContent = t('aWaist');
     document.getElementById('lbl-hip').textContent = t('aHip');
@@ -3451,7 +3467,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
           ${cell}
         </div>`);
     }
-    box.innerHTML = `<div class="grid grid-cols-7 gap-1">${cells.join('')}</div>`;
+    box.innerHTML = `<div class="grid grid-cols-7 gap-1" style="direction:ltr">${cells.join('')}</div>`; /* c133: chronological order stays L→R in RTL too (charts precedent) */
   }
   /* c128: records of ONE calendar day + its honest tonnage (kg)
      (c132: optional pre-parsed snapshot; aDayVolumeK kept for compatibility) */
@@ -3593,7 +3609,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       const resolveEx = ex => ({ group: aGroupOf(ex), synergists: Array.isArray(ex.syn) ? ex.syn.map(s => mgKeyOf(s) || s) : [] });
       const weeks = eng.volumeWeekly(H, { resolveEx }, 8);
       /* c128: bars follow the display unit (kg ⇄ lb) */
-      const svg = eng.sparkBarsSVG(weeks.map(w => ({ v: dispVolKg(w.totalKg), label: aWeekLbl(w.weekStart) })), { fmt: v => aNum(v) });
+      const svg = eng.sparkBarsSVG(weeks.map(w => ({ v: dispVolKg(w.totalKg), label: aWeekLbl(w.weekStart) })), { fmt: v => aNum(v), ariaLabel: t('aTrendT') });
       box.innerHTML = svg || '<p class="text-xs text-muted text-center py-4">' + esc(t('aNoWorkouts')) + '</p>';
       if (rpeBox) {
         const rpe = typeof eng.weeklyRpe === 'function' ? eng.weeklyRpe(H, {}, 8) : [];
@@ -3643,7 +3659,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       return;
     }
     /* c128: e1RM / top set in the DISPLAY unit */
-    const svg = eng.progressLinesSVG(pts.map(p => ({ a: dispW1(p.e1rm), b: dispW1(p.topKg), label: aWeekLbl(p.ts) })));
+    const svg = eng.progressLinesSVG(pts.map(p => ({ a: dispW1(p.e1rm), b: dispW1(p.topKg), label: aWeekLbl(p.ts) })), { ariaLabel: t('aProgressT') });
     const first = pts[0], last = pts[pts.length - 1];
     const dE = Math.round((dispW1(last.e1rm) - dispW1(first.e1rm)) * 10) / 10;
     const uS = esc(dispUnitShort());
@@ -3748,7 +3764,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
           <div class="text-text font-semibold truncate">${esc((r.program || '') + (r.day_letter ? ' · ' + r.day_letter : ''))}</div>
           <div class="text-[10px] text-muted mt-0.5">${esc(fmtDay(r.ts || r.date))}</div>
         </div>
-        <span class="font-mono text-muted shrink-0 text-end">${aNum(dispVolKg(v))} ${esc(dispUnitShort())}·reps · ${done}/${tot} · ${mins} ${esc(t('aMinutes'))}</span>
+        <span class="font-mono text-muted shrink-0 text-end">${aNum(dispVolKg(v))} ${esc(dispUnitShort())} · ${done}/${tot} ${esc(t('aSetsWord'))} · ${mins} ${esc(t('aMinutes'))}</span>
       </div>`;
     }).join('');
   }
@@ -5196,7 +5212,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       const tShortP = perT ? esc(t(liveEx.tunit === 'sec' ? 'secShort' : 'minShort')) : '';
       const supHl = ((liveEx && liveEx.is_superset) || ex.is_superset === true);
       const tColBtnP = perT
-        ? `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-primary/40 bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-tunit-col-ex="${ei}" title="min ⇄ sec">${esc(t('timeLabel'))}${tShortP ? ' · ' + tShortP : ''}</button>`
+        ? `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-primary/40 bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-tunit-col-ex="${ei}" title="${esc(t('timeToggle'))}" aria-label="${esc(t('timeToggle'))}">${esc(t('timeLabel'))}${tShortP ? ' · ' + tShortP : ''}</button>`
         : `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-tunit-col data-tunit-base="${esc(t('timeLabel'))}">${esc(t('timeLabel'))}</button>`;
       const thumbHtml = (() => {
         /* c103: slightly bigger thumbnail (w-20 h-20 / sm:w-24 sm:h-24) — the live
@@ -5235,7 +5251,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         const rpeBtns = RPE_COLORS.map((c, i) => {
           const v = i + 1;
           const sel = s.rpe === v ? ' sel' : '';
-          return `<button class="rpe-btn${sel}" data-rpe-btn data-ex="${ei}" data-si="${si}" data-v="${v}" style="background:${c}" title="RPE ${v}" ${dis ? 'disabled' : ''}>${v}</button>`;
+          return `<button class="rpe-btn${sel}" data-rpe-btn data-ex="${ei}" data-si="${si}" data-v="${v}" style="background:${c}" title="RPE ${v}" aria-label="RPE ${v}" aria-pressed="${s.rpe === v ? 'true' : 'false'}" ${dis ? 'disabled' : ''}>${v}</button>`;
         }).join('');
         return `<div class="set-row set-grid ${isTimeFirstEx ? 'set-grid-stretch' : ''} bg-surface-2/60 px-2 py-1.5 rounded-xl ${done?'set-row-done':''}" data-si="${si}">
           <div class="text-center leading-tight">
@@ -5255,11 +5271,11 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
           <span class="text-[9px] text-muted text-center">×</span>
           <input type="number" step="1" inputmode="numeric" value="${s.type==='amrap'?'':(s.reps!=null?Number(s.reps):'')}" ${dis} data-field="reps" data-ex="${ei}" data-si="${si}" class="set-input" placeholder="${s.type==='amrap'?'∞':'0'}" />`}
           <button class="set-check w-7 h-7 rounded-lg bg-surface-2 border border-border hover:border-emerald-400 hover:bg-emerald-400/15 text-muted hover:text-emerald-400 grid place-items-center transition ${done?'':''}"
-            data-toggle-set data-ex="${ei}" data-si="${si}" ${editable?'':'disabled'}>✓</button>
-          <button class="w-6 h-7 grid place-items-center rounded-lg text-muted hover:text-cyan-300 transition" data-cycle-type data-ex="${ei}" data-si="${si}" title="type" ${editable?'':'disabled'}>
+            data-toggle-set data-ex="${ei}" data-si="${si}" aria-label="${esc(t('a11yDoneSet'))}" aria-pressed="${done ? 'true' : 'false'}" title="${esc(t('a11yDoneSet'))}" ${editable?'':'disabled'}>✓</button>
+          <button class="w-6 h-7 grid place-items-center rounded-lg text-muted hover:text-cyan-300 transition" data-cycle-type data-ex="${ei}" data-si="${si}" title="${esc(t(TYPE_I18N[s.type] || 'setNormal'))}" aria-label="${esc(t(TYPE_I18N[s.type] || 'setNormal'))}" ${editable?'':'disabled'}>
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
           </button>
-          <button class="w-5 h-7 grid place-items-center rounded-lg text-muted hover:text-red-400 transition" data-remove-set data-ex="${ei}" data-si="${si}" ${(!editable || si===0)?'disabled':''} ${si===0?'style="opacity:.25"':''}>×</button>
+          <button class="w-5 h-7 grid place-items-center rounded-lg text-muted hover:text-red-400 transition" data-remove-set data-ex="${ei}" data-si="${si}" aria-label="${esc(t('a11yRemoveSet'))}" title="${esc(t('a11yRemoveSet'))}" ${(!editable || si===0)?'disabled':''} ${si===0?'style="opacity:.25"':''}>×</button>
         </div>
         <div class="rpe-row" data-rpe-row="${ei}-${si}">${rpeBtns}<span class="rpe-vol">${setVol}</span></div>`;
       }).join('');
@@ -5286,7 +5302,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         <div class="flex items-start justify-between gap-2">
           ${thumbHtml}
           <div class="flex-1 min-w-0">
-            <h4 class="font-display font-bold text-sm text-white leading-snug cursor-pointer hover:text-[rgb(var(--c-primary))] transition" data-open-exercise>${supHl ? '<span style="color:rgb(var(--c-accent))" title="Superset">⚡ </span>' : ''}${esc(exName)}</h4>
+            <h4 class="font-display font-bold text-sm text-white leading-snug cursor-pointer hover:text-[rgb(var(--c-primary))] transition" data-open-exercise>${supHl ? '<span style="color:rgb(var(--c-accent))" title="' + esc(t('supersetLabel')) + '">⚡ </span>' : ''}${esc(exName)}</h4>
             <div class="text-[11px] text-muted flex items-center gap-2 mt-0.5 flex-wrap">
               ${groupLabel?`<span class="text-cyan-300">${esc(groupLabel)}</span><span>·</span>`:''}
               <label class="flex items-center gap-1">${esc(t('restPerEx'))}
@@ -5365,7 +5381,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         if (!set) return;
         set.rpe = (set.rpe === v) ? null : v;
         const row = btn.closest('[data-rpe-row]');
-        if (row) row.querySelectorAll('[data-rpe-btn]').forEach(b => b.classList.toggle('sel', +b.dataset.v === set.rpe));
+        if (row) row.querySelectorAll('[data-rpe-btn]').forEach(b => { const on = +b.dataset.v === set.rpe; b.classList.toggle('sel', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); }); /* c133: aria-pressed stays true to the state */
         ensureStarted(sess0); saveDraft(); updateLiveUI();
       });
     });
@@ -5443,6 +5459,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         }
         const row = btn.closest('.set-row');
         row.classList.toggle('set-row-done', set.done);
+        btn.setAttribute('aria-pressed', set.done ? 'true' : 'false'); /* c133 */
         ensureStarted(sess0); saveDraft(); updateLiveUI(); updateMiniProgress(ei);
         // auto-scroll when all sets of the exercise are done
         if (set.done && ex.sets.every(s=>s.done)) {
@@ -5468,6 +5485,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         const old = numCell.querySelector('.type-badge');
         if (old) old.remove();
         if (set.type !== 'normal') numCell.insertAdjacentHTML('beforeend', typeBadge(set.type));
+        /* c133: the cycler announces the NEW type (title + aria) */
+        try { const _tt133 = t(TYPE_I18N[set.type] || 'setNormal'); btn.setAttribute('title', _tt133); btn.setAttribute('aria-label', _tt133); } catch (e133) {}
         const repsInp = row.querySelector('[data-field="reps"]');
         if (set.type === 'amrap') { repsInp.value = ''; repsInp.placeholder = '∞'; }
         else if (repsInp.placeholder === '∞') repsInp.placeholder = '0';
@@ -5707,7 +5726,13 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       <button id="report-save" class="w-full mt-3 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-extrabold py-3 rounded-2xl transition">💾 ${esc(t('btnSave'))}</button>
       <button id="report-continue" class="w-full mt-2 bg-[rgb(var(--c-surface-2))] hover:bg-[rgb(var(--c-border))]/40 text-text border border-border text-sm font-semibold py-2.5 rounded-2xl transition">← ${esc(t('btnContinue'))}</button>
       <button id="report-wa" class="w-full mt-2 text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 py-1 transition">💬 ${esc(t('btnWA'))}</button>`;
-    document.getElementById('report-modal').classList.remove('hidden');
+    const _rm133 = document.getElementById('report-modal');
+    _rm133.setAttribute('aria-label', t('reportTitle')); /* c133: dialog gets a name */
+    /* c133: restore focus on close — fall back to the finish button when the
+       report was opened programmatically (activeElement=body) */
+    _reportPrevFocus133 = (document.activeElement && document.activeElement !== document.body) ? document.activeElement : document.getElementById('btn-finish-workout');
+    _rm133.classList.remove('hidden');
+    try { document.getElementById('report-save').focus({ preventScroll: true }); } catch (e) {}
     document.getElementById('report-save').addEventListener('click', () => {
       const hist = loadHistory(); hist.push(rec);
       /* c131: a full device storage must not crash the save flow — tell the
@@ -5728,8 +5753,14 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     document.getElementById('report-continue').addEventListener('click', closeReportModal);
     document.getElementById('report-wa').addEventListener('click', () => shareReport({ workout: rec }));
   }
+  /* c133: the report is a real dialog — it remembers the opener for focus
+     restore and Escape can close it (the session survives, finishing again
+     reopens the same report) */
+  let _reportPrevFocus133 = null;
   function closeReportModal() {
     document.getElementById('report-modal').classList.add('hidden');
+    try { if (_reportPrevFocus133 && document.contains(_reportPrevFocus133)) _reportPrevFocus133.focus({ preventScroll: true }); } catch (e) {}
+    _reportPrevFocus133 = null;
   }
   function finishWorkout() {
     const idx = activeDayIndex;
@@ -6090,7 +6121,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         <div class="text-[10px] text-muted">${e.grams}${t('gramShort')} · ${t('macroPShort')}${Math.round((e.per100.protein||0)*e.grams/100)} ${t('macroFShort')}${Math.round((e.per100.fat||0)*e.grams/100)} ${t('macroCShort')}${Math.round((e.per100.carbs||0)*e.grams/100)}</div>
       </div>
       <span class="font-mono text-cyan-300 shrink-0 mx-2">${Math.round((e.per100.calories||0)*e.grams/100)}</span>
-      <button data-diary-del="${i}" class="w-6 h-6 grid place-items-center rounded-lg text-muted hover:text-red-400 transition shrink-0">×</button>
+      <button data-diary-del="${i}" aria-label="${esc(t('a11yRemoveDiary'))}" title="${esc(t('a11yRemoveDiary'))}" class="w-6 h-6 grid place-items-center rounded-lg text-muted hover:text-red-400 transition shrink-0">×</button>
     </div>`).join('');
     box.querySelectorAll('[data-diary-del]').forEach(b=>b.addEventListener('click',()=>removeDiaryEntry(+b.dataset.diaryDel)));
   }
@@ -6220,7 +6251,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     document.getElementById('viewer-close')?.addEventListener('click', closeViewer);
     em?.addEventListener('click', e=>{ if(e.target===em) closeExerciseModal(); });
     vm?.addEventListener('click', e=>{ if(e.target===vm) closeViewer(); });
-    document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeViewer(); closeExerciseModal(); } });
+    document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeViewer(); closeExerciseModal(); closeReportModal(); } });
     // Tap on exercise image/title -> open card
     const exList=document.getElementById('workout-exercises-list');
     if(exList){
@@ -6269,9 +6300,9 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
 
     /* ---- local strings (ru / en / he) ---- */
     var L = {
-      ru: { dumbbellAria:'Вернуться к тренировке', setTitle:'Настройки', themes:'Темы', darkThemes:'Тёмные темы', lightThemes:'Светлые темы', textures:'Текстуры', texHint:'Текстурные наложения поверх любой темы — те же, что в основном приложении. Выберите эффект и настройте насыщенность.', opacity:'Насыщенность', reset:'Сброс', resetDone:'Возврат к стандартной насыщенности', applied:'Текстура применена', share:'Поделиться отчётом', themeChanged:'Тема изменена', wunitTitle:'Единица веса', wunitKg:'Килограммы', wunitLb:'Фунты', wunitKgShort:'кг', wunitLbShort:'фт', wunitTime:'Единица времени', wunitMin:'Минуты', wunitSec:'Секунды', wunitMinShort:'мин', wunitSecShort:'сек', wunitDist:'Единица расстояния', wunitM:'Метры', wunitKm:'Километры', wunitMShort:'м', wunitKmShort:'км', wunitCardioTitle:'Единицы кардио', wunitExTitle:'Единица веса упражнения', wunitApplyAll:'Применить ко всем упражнениям тренировки', wunitDefaultTitle:'Единица веса по умолчанию (для новых упражнений)', timeLabel:'Время', distLabel:'Дистанция', distShortLabel:'Дист', ptexTitle:'Текстура панели', ptexHint:'Стекло на всех панелях портала — карточки, шапка, меню и окна. Матовая, прозрачная, тонированная и разноцветная мозаичная текстуры. Панели остаются чистым стеклом — текстурные эффекты живут только на фоне страницы.', ptexOff:'Выкл.', ptexFrost:'Матовое стекло', ptexClear:'Прозрачное стекло', ptexTint:'Тонированное стекло', ptexMosaic:'Мозаичное стекло', ptexColor:'Оттенок', ptexPreview:'Живой предпросмотр', ptexPreviewHint:'Так будет выглядеть каждая панель портала — карточки, шапка и окна', ptexOpacity:'Прозрачность', ptexOpacityHint:'Выше — прозрачнее, ниже — плотнее', ptexOpSolid:'Плотнее', ptexOpSee:'Прозрачнее', ptexApplied:'Текстура панели применена', ptexResetDone:'Возвращена стандартная прозрачность', ptexCfrostMilk:'Молочный', ptexCfrostSmoke:'Дымчатый', ptexCfrostIce:'Ледяной голубой', ptexCfrostMint:'Мятный', ptexCfrostRose:'Розовый туман', ptexCfrostLav:'Лавандовый', ptexCclearCrystal:'Кристальный', ptexCclearAqua:'Аква', ptexCclearChamp:'Шампань', ptexCclearEmer:'Изумрудный лёд', ptexCclearSapph:'Сапфировый', ptexCtintGraph:'Графит', ptexCtintOcean:'Морской', ptexCtintEmer:'Изумруд', ptexCtintBronze:'Бронза', ptexCtintBord:'Бордо', ptexCtintSmoke:'Тёмный дым', ptexCmosStain:'Витраж', ptexCmosOcean:'Океан', ptexCmosSunset:'Закат', ptexCmosForest:'Лес', ptexCmosNeon:'Неон', ptexCmosPastel:'Пастель' },
-      en: { dumbbellAria:'Back to workout', setTitle:'Settings', themes:'Themes', darkThemes:'Dark themes', lightThemes:'Light themes', textures:'Textures', texHint:'Texture overlays on top of any theme — the same as in the main app. Pick an effect and fine-tune its opacity.', opacity:'Opacity', reset:'Reset', resetDone:'Returned to the effect default', applied:'Texture applied', share:'Share report', themeChanged:'Theme changed', wunitTitle:'Unit of weight', wunitKg:'Kilograms', wunitLb:'Pounds', wunitKgShort:'kg', wunitLbShort:'lb', wunitTime:'Time unit', wunitMin:'Minutes', wunitSec:'Seconds', wunitMinShort:'min', wunitSecShort:'sec', wunitDist:'Distance unit', wunitM:'Meters', wunitKm:'Kilometers', wunitMShort:'m', wunitKmShort:'km', wunitCardioTitle:'Cardio units', wunitExTitle:'Weight unit of this exercise', wunitApplyAll:'Apply to all exercises of this workout', wunitDefaultTitle:'Default unit for new exercises', timeLabel:'Time', distLabel:'Distance', distShortLabel:'Dist', ptexTitle:'Panel texture', ptexHint:'Glass for every portal panel — cards, header, menus and windows. Frosted, clear, tinted and multicolor mosaic. Panels stay pure glass — texture effects live only on the page background.', ptexOff:'Off', ptexFrost:'Frosted glass', ptexClear:'Clear glass', ptexTint:'Tinted glass', ptexMosaic:'Mosaic glass', ptexColor:'Shade', ptexPreview:'Live preview', ptexPreviewHint:'This is how every portal panel will look — cards, header and windows', ptexOpacity:'Transparency', ptexOpacityHint:'Higher — more see-through, lower — more solid', ptexOpSolid:'Solid', ptexOpSee:'See-through', ptexApplied:'Panel texture applied', ptexResetDone:'Returned to default transparency', ptexCfrostMilk:'Milk', ptexCfrostSmoke:'Smoke', ptexCfrostIce:'Ice blue', ptexCfrostMint:'Mint', ptexCfrostRose:'Rose mist', ptexCfrostLav:'Lavender', ptexCclearCrystal:'Crystal', ptexCclearAqua:'Aqua', ptexCclearChamp:'Champagne', ptexCclearEmer:'Emerald ice', ptexCclearSapph:'Sapphire', ptexCtintGraph:'Graphite', ptexCtintOcean:'Ocean', ptexCtintEmer:'Emerald', ptexCtintBronze:'Bronze', ptexCtintBord:'Bordeaux', ptexCtintSmoke:'Dark smoke', ptexCmosStain:'Stained glass', ptexCmosOcean:'Ocean', ptexCmosSunset:'Sunset', ptexCmosForest:'Forest', ptexCmosNeon:'Neon', ptexCmosPastel:'Pastel' },
-      he: { dumbbellAria:'חזרה לאימון', setTitle:'הגדרות', themes:'ערכות נושא', darkThemes:'ערכות כהות', lightThemes:'ערכות בהירות', textures:'טקסטורות', texHint:'שכבות מרקף מעל כל ערכת נושא — אותן טקסטורות כמו באפליקציה הראשית. בחרו אפקט וכוונו את העוצמה.', opacity:'עוצמה', reset:'איפוס', resetDone:'חזרה לעוצמת ברירת המחדל', applied:'הטקסטורה הוחלה', share:'שתף דוח', themeChanged:'ערכת הנושא הוחלפה', wunitTitle:'יחידת משקל', wunitKg:'קילוגרמים', wunitLb:'פאונד', wunitKgShort:'ק״ג', wunitLbShort:'lb', wunitTime:'יחידת זמן', wunitMin:'דקות', wunitSec:'שניות', wunitMinShort:'דק׳', wunitSecShort:'שנ׳', wunitDist:'יחידת מרחק', wunitM:'מטרים', wunitKm:'קילומטרים', wunitMShort:'מט', wunitKmShort:'ק״מ', wunitCardioTitle:'יחידות קרדיו', wunitExTitle:'יחידת משקל לתרגיל זה', wunitApplyAll:'החל על כל התרגילים באימון', wunitDefaultTitle:'יחידת משקל כברירת מחדל (לתרגילים חדשים)', timeLabel:'זמן', distLabel:'מרחק', distShortLabel:'מרחק', ptexTitle:'מרקם פאנל', ptexHint:'זכוכית על כל פאנל בפורטל — כרטיסים, כותרת, תפריטים וחלונות. זכוכית מעורפלת, שקופה, מוכהה ופסיפס צבעוני. הפאנלים נשארים זכוכית נקייה — אפקטי המרקם חיים רק על רקע הדף.', ptexOff:'כבוי', ptexFrost:'זכוכית מעורפלת', ptexClear:'זכוכית שקופה', ptexTint:'זכוכית מוכהה', ptexMosaic:'זכוכית פסיפס', ptexColor:'גוון', ptexPreview:'תצוגה מקדימה', ptexPreviewHint:'כך ייראה כל פאנל בפורטל — כרטיסים, כותרת וחלונות', ptexOpacity:'שקיפות', ptexOpacityHint:'גבוה יותר — שקוף יותר, נמוך יותר — אטום יותר', ptexOpSolid:'אטום יותר', ptexOpSee:'שקוף יותר', ptexApplied:'מרקם הפאנל הוחל', ptexResetDone:'חזרה לשקיפות ברירת המחדל', ptexCfrostMilk:'חלבי', ptexCfrostSmoke:'עשן', ptexCfrostIce:'כחול קרח', ptexCfrostMint:'מנטה', ptexCfrostRose:'אודם מעורפל', ptexCfrostLav:'לבנדר', ptexCclearCrystal:'קריסטל', ptexCclearAqua:'אקווה', ptexCclearChamp:'שמפניה', ptexCclearEmer:'קרח אזמרגד', ptexCclearSapph:'ספיר', ptexCtintGraph:'גרפיט', ptexCtintOcean:'אוקיינוס', ptexCtintEmer:'אזמרגד', ptexCtintBronze:'ארד', ptexCtintBord:'בורדו', ptexCtintSmoke:'עשן כהה', ptexCmosStain:'ויטראז', ptexCmosOcean:'אוקיינוס', ptexCmosSunset:'שקיעה', ptexCmosForest:'יער', ptexCmosNeon:'ניאון', ptexCmosPastel:'פסטל' }
+      ru: { dumbbellAria:'Вернуться к тренировке', a11yClose:'Закрыть', setTitle:'Настройки', themes:'Темы', darkThemes:'Тёмные темы', lightThemes:'Светлые темы', textures:'Текстуры', texHint:'Текстурные наложения поверх любой темы — те же, что в основном приложении. Выберите эффект и настройте насыщенность.', opacity:'Насыщенность', reset:'Сброс', resetDone:'Возврат к стандартной насыщенности', applied:'Текстура применена', share:'Поделиться отчётом', themeChanged:'Тема изменена', wunitTitle:'Единица веса', wunitKg:'Килограммы', wunitLb:'Фунты', wunitKgShort:'кг', wunitLbShort:'фт', wunitTime:'Единица времени', wunitMin:'Минуты', wunitSec:'Секунды', wunitMinShort:'мин', wunitSecShort:'сек', wunitDist:'Единица расстояния', wunitM:'Метры', wunitKm:'Километры', wunitMShort:'м', wunitKmShort:'км', wunitCardioTitle:'Единицы кардио', wunitExTitle:'Единица веса упражнения', wunitApplyAll:'Применить ко всем упражнениям тренировки', wunitDefaultTitle:'Единица веса по умолчанию (для новых упражнений)', timeLabel:'Время', distLabel:'Дистанция', distShortLabel:'Дист', ptexTitle:'Текстура панели', ptexHint:'Стекло на всех панелях портала — карточки, шапка, меню и окна. Матовая, прозрачная, тонированная и разноцветная мозаичная текстуры. Панели остаются чистым стеклом — текстурные эффекты живут только на фоне страницы.', ptexOff:'Выкл.', ptexFrost:'Матовое стекло', ptexClear:'Прозрачное стекло', ptexTint:'Тонированное стекло', ptexMosaic:'Мозаичное стекло', ptexColor:'Оттенок', ptexPreview:'Живой предпросмотр', ptexPreviewHint:'Так будет выглядеть каждая панель портала — карточки, шапка и окна', ptexOpacity:'Прозрачность', ptexOpacityHint:'Выше — прозрачнее, ниже — плотнее', ptexOpSolid:'Плотнее', ptexOpSee:'Прозрачнее', ptexApplied:'Текстура панели применена', ptexResetDone:'Возвращена стандартная прозрачность', ptexCfrostMilk:'Молочный', ptexCfrostSmoke:'Дымчатый', ptexCfrostIce:'Ледяной голубой', ptexCfrostMint:'Мятный', ptexCfrostRose:'Розовый туман', ptexCfrostLav:'Лавандовый', ptexCclearCrystal:'Кристальный', ptexCclearAqua:'Аква', ptexCclearChamp:'Шампань', ptexCclearEmer:'Изумрудный лёд', ptexCclearSapph:'Сапфировый', ptexCtintGraph:'Графит', ptexCtintOcean:'Морской', ptexCtintEmer:'Изумруд', ptexCtintBronze:'Бронза', ptexCtintBord:'Бордо', ptexCtintSmoke:'Тёмный дым', ptexCmosStain:'Витраж', ptexCmosOcean:'Океан', ptexCmosSunset:'Закат', ptexCmosForest:'Лес', ptexCmosNeon:'Неон', ptexCmosPastel:'Пастель' },
+      en: { dumbbellAria:'Back to workout', a11yClose:'Close', setTitle:'Settings', themes:'Themes', darkThemes:'Dark themes', lightThemes:'Light themes', textures:'Textures', texHint:'Texture overlays on top of any theme — the same as in the main app. Pick an effect and fine-tune its opacity.', opacity:'Opacity', reset:'Reset', resetDone:'Returned to the effect default', applied:'Texture applied', share:'Share report', themeChanged:'Theme changed', wunitTitle:'Unit of weight', wunitKg:'Kilograms', wunitLb:'Pounds', wunitKgShort:'kg', wunitLbShort:'lb', wunitTime:'Time unit', wunitMin:'Minutes', wunitSec:'Seconds', wunitMinShort:'min', wunitSecShort:'sec', wunitDist:'Distance unit', wunitM:'Meters', wunitKm:'Kilometers', wunitMShort:'m', wunitKmShort:'km', wunitCardioTitle:'Cardio units', wunitExTitle:'Weight unit of this exercise', wunitApplyAll:'Apply to all exercises of this workout', wunitDefaultTitle:'Default unit for new exercises', timeLabel:'Time', distLabel:'Distance', distShortLabel:'Dist', ptexTitle:'Panel texture', ptexHint:'Glass for every portal panel — cards, header, menus and windows. Frosted, clear, tinted and multicolor mosaic. Panels stay pure glass — texture effects live only on the page background.', ptexOff:'Off', ptexFrost:'Frosted glass', ptexClear:'Clear glass', ptexTint:'Tinted glass', ptexMosaic:'Mosaic glass', ptexColor:'Shade', ptexPreview:'Live preview', ptexPreviewHint:'This is how every portal panel will look — cards, header and windows', ptexOpacity:'Transparency', ptexOpacityHint:'Higher — more see-through, lower — more solid', ptexOpSolid:'Solid', ptexOpSee:'See-through', ptexApplied:'Panel texture applied', ptexResetDone:'Returned to default transparency', ptexCfrostMilk:'Milk', ptexCfrostSmoke:'Smoke', ptexCfrostIce:'Ice blue', ptexCfrostMint:'Mint', ptexCfrostRose:'Rose mist', ptexCfrostLav:'Lavender', ptexCclearCrystal:'Crystal', ptexCclearAqua:'Aqua', ptexCclearChamp:'Champagne', ptexCclearEmer:'Emerald ice', ptexCclearSapph:'Sapphire', ptexCtintGraph:'Graphite', ptexCtintOcean:'Ocean', ptexCtintEmer:'Emerald', ptexCtintBronze:'Bronze', ptexCtintBord:'Bordeaux', ptexCtintSmoke:'Dark smoke', ptexCmosStain:'Stained glass', ptexCmosOcean:'Ocean', ptexCmosSunset:'Sunset', ptexCmosForest:'Forest', ptexCmosNeon:'Neon', ptexCmosPastel:'Pastel' },
+      he: { dumbbellAria:'חזרה לאימון', a11yClose:'סגירה', setTitle:'הגדרות', themes:'ערכות נושא', darkThemes:'ערכות כהות', lightThemes:'ערכות בהירות', textures:'טקסטורות', texHint:'שכבות מרקף מעל כל ערכת נושא — אותן טקסטורות כמו באפליקציה הראשית. בחרו אפקט וכוונו את העוצמה.', opacity:'עוצמה', reset:'איפוס', resetDone:'חזרה לעוצמת ברירת המחדל', applied:'הטקסטורה הוחלה', share:'שתף דוח', themeChanged:'ערכת הנושא הוחלפה', wunitTitle:'יחידת משקל', wunitKg:'קילוגרמים', wunitLb:'פאונד', wunitKgShort:'ק״ג', wunitLbShort:'lb', wunitTime:'יחידת זמן', wunitMin:'דקות', wunitSec:'שניות', wunitMinShort:'דק׳', wunitSecShort:'שנ׳', wunitDist:'יחידת מרחק', wunitM:'מטרים', wunitKm:'קילומטרים', wunitMShort:'מט', wunitKmShort:'ק״מ', wunitCardioTitle:'יחידות קרדיו', wunitExTitle:'יחידת משקל לתרגיל זה', wunitApplyAll:'החל על כל התרגילים באימון', wunitDefaultTitle:'יחידת משקל כברירת מחדל (לתרגילים חדשים)', timeLabel:'זמן', distLabel:'מרחק', distShortLabel:'מרחק', ptexTitle:'מרקם פאנל', ptexHint:'זכוכית על כל פאנל בפורטל — כרטיסים, כותרת, תפריטים וחלונות. זכוכית מעורפלת, שקופה, מוכהה ופסיפס צבעוני. הפאנלים נשארים זכוכית נקייה — אפקטי המרקם חיים רק על רקע הדף.', ptexOff:'כבוי', ptexFrost:'זכוכית מעורפלת', ptexClear:'זכוכית שקופה', ptexTint:'זכוכית מוכהה', ptexMosaic:'זכוכית פסיפס', ptexColor:'גוון', ptexPreview:'תצוגה מקדימה', ptexPreviewHint:'כך ייראה כל פאנל בפורטל — כרטיסים, כותרת וחלונות', ptexOpacity:'שקיפות', ptexOpacityHint:'גבוה יותר — שקוף יותר, נמוך יותר — אטום יותר', ptexOpSolid:'אטום יותר', ptexOpSee:'שקוף יותר', ptexApplied:'מרקם הפאנל הוחל', ptexResetDone:'חזרה לשקיפות ברירת המחדל', ptexCfrostMilk:'חלבי', ptexCfrostSmoke:'עשן', ptexCfrostIce:'כחול קרח', ptexCfrostMint:'מנטה', ptexCfrostRose:'אודם מעורפל', ptexCfrostLav:'לבנדר', ptexCclearCrystal:'קריסטל', ptexCclearAqua:'אקווה', ptexCclearChamp:'שמפניה', ptexCclearEmer:'קרח אזמרגד', ptexCclearSapph:'ספיר', ptexCtintGraph:'גרפיט', ptexCtintOcean:'אוקיינוס', ptexCtintEmer:'אזמרגד', ptexCtintBronze:'ארד', ptexCtintBord:'בורדו', ptexCtintSmoke:'עשן כהה', ptexCmosStain:'ויטראז', ptexCmosOcean:'אוקיינוס', ptexCmosSunset:'שקיעה', ptexCmosForest:'יער', ptexCmosNeon:'ניאון', ptexCmosPastel:'פסטל' }
     };
     function T(k) { var l = curLang(); return (L[l] && L[l][k]) || L.ru[k] || k; }
 
@@ -6775,6 +6806,11 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       set('cps-ptex-reset-label', T('reset'));
       var db = document.getElementById('dk-dumbbell-btn');
       if (db) { db.setAttribute('aria-label', T('dumbbellAria')); db.setAttribute('title', T('dumbbellAria')); }
+      /* c133: accessible names for the settings sheet's own controls */
+      var pc = document.getElementById('ptex-colors');
+      if (pc) pc.setAttribute('aria-label', T('ptexColor'));
+      var cpsX = document.querySelector('#portal-settings-sheet [data-cps-close]');
+      if (cpsX) cpsX.setAttribute('aria-label', T('a11yClose'));
     }
     function ensureSettingsSheet() {
       if (document.getElementById('portal-settings-sheet')) return;

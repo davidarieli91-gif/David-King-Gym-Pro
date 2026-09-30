@@ -434,7 +434,7 @@
     var fmt = opts.fmt || function (v) { return v >= 10000 ? Math.round(v / 1000) + 'k' : v >= 1000 ? (Math.round(v / 100) / 10) + 'k' : String(Math.round(v)); };
     var slot = (W - L - R) / n;
     var bw = Math.min(30, slot * 0.62);
-    var out = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="w-full h-auto" style="direction:ltr" role="img" preserveAspectRatio="xMidYMid meet">';
+    var out = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="w-full h-auto" style="direction:ltr" role="img"' + (opts.ariaLabel ? ' aria-label="' + escTxt(opts.ariaLabel) + '"' : '') + ' preserveAspectRatio="xMidYMid meet">';
     out += '<line x1="' + L + '" y1="' + (H - B) + '" x2="' + (W - R) + '" y2="' + (H - B) + '" stroke="rgba(255,255,255,0.14)" stroke-width="1" />';
     data.forEach(function (p, i) {
       var cx = L + slot * i + slot / 2;
@@ -495,7 +495,7 @@
     var escTxt = function (s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
     var first = data[0], last = data[n - 1];
     var lbl = function (v) { return v >= 100 ? String(Math.round(v)) : String(Math.round(v * 10) / 10); };
-    var out = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="w-full h-auto" style="direction:ltr" role="img" preserveAspectRatio="xMidYMid meet">';
+    var out = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="w-full h-auto" style="direction:ltr" role="img"' + (opts.ariaLabel ? ' aria-label="' + escTxt(opts.ariaLabel) + '"' : '') + ' preserveAspectRatio="xMidYMid meet">';
     out += grid + line('a') + line('b');
     out += '<text x="' + (L - 4) + '" y="' + (Y(hi - pad) + 3).toFixed(1) + '" text-anchor="end" font-size="8.5" fill="rgba(255,255,255,0.5)">' + lbl(hi - pad) + '</text>';
     out += '<text x="' + (L - 4) + '" y="' + (Y(lo + pad) + 3).toFixed(1) + '" text-anchor="end" font-size="8.5" fill="rgba(255,255,255,0.5)">' + lbl(lo + pad) + '</text>';
@@ -507,7 +507,7 @@
 
   /* ---------- exports ---------- */
   var api = {
-    version: 'c130',
+    version: 'c133',
     LB_TO_KG: LB_TO_KG,
     SYNERGIST_CREDIT: SYNERGIST_CREDIT,
     toKg: toKg,
