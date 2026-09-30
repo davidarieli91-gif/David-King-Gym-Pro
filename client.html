@@ -3586,26 +3586,50 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     }).then(function () { return true; }).catch(function (e) { console.warn('[hist-sync] push failed', e); return false; });
   }
   /* c125: push LOCAL check-ins into the shared doc's additive `checks` field.
-     ts/weight/energy ONLY — waist/hip/note never leave the portal. Merge by
-     ts, cap 90, write ONLY when something is actually missing (a cheap boot
-     no-op once everything is on the cloud). */
+     c129: ts/weight/energy AND waist/hip now travel too — the coach's progress
+     analytics reads real measurements (cm, 30..200 sanity); the note stays
+     portal-private. Merge by ts; a cloud copy that predates c129 (no waist/
+     hip) gets ENRICHED from the local record so already-synced check-ins
+     backfill without a manual re-save. Cap 90, write ONLY when something is
+     actually missing (a cheap boot no-op once everything is on the cloud). */
   function dkPushChecks() {
     const docId = dkHistDocId();
     if (!docId) return Promise.resolve(false);
+    const cm = v => { const n = parseFloat(v); return (isFinite(n) && n >= 30 && n <= 200) ? Math.round(n * 10) / 10 : null; };
     const mine = loadCheckins()
       .filter(c => c && Number(c.ts) > 0 && Number(c.weight) > 0)
-      .map(c => ({ ts: Number(c.ts), date: c.date || '', weight: Number(c.weight),
-                   energy: isFinite(parseInt(c.energy, 10)) ? parseInt(c.energy, 10) : null }))
+      .map(c => {
+        const out = { ts: Number(c.ts), date: c.date || '', weight: Number(c.weight),
+                      energy: isFinite(parseInt(c.energy, 10)) ? parseInt(c.energy, 10) : null };
+        const wa = cm(c.waist), hi = cm(c.hip);
+        if (wa != null) out.waist = wa;
+        if (hi != null) out.hip = hi;
+        return out;
+      })
       .sort((a, b) => a.ts - b.ts).slice(-90);
     if (!mine.length) return Promise.resolve(false);
     return dkHistFetchPayload().then(function (pay) {
-      const seen = new Set((pay.checks || []).map(c => Number(c && c.ts) || 0));
-      const add = mine.filter(c => !seen.has(c.ts));
-      if (!add.length) return true; /* cloud already has every check-in */
-      const checks = (pay.checks || []).concat(add).sort((a, b) => (a.ts || 0) - (b.ts || 0)).slice(-90);
+      const mineByTs = new Map(mine.map(c => [c.ts, c]));
+      const mergedTs = new Set();
+      let enriched = 0;
+      const merged = (pay.checks || []).map(function (cc) {
+        const ts = Number(cc && cc.ts) || 0;
+        mergedTs.add(ts);
+        const local = mineByTs.get(ts);
+        /* c129: cloud copy synced before waist/hip existed → backfill it */
+        if (local && !(cc.waist > 0) && !(cc.hip > 0) && (local.waist != null || local.hip != null)) {
+          enriched++;
+          return Object.assign({}, cc, { waist: local.waist != null ? local.waist : (cc.waist || null),
+                                         hip: local.hip != null ? local.hip : (cc.hip || null) });
+        }
+        return cc;
+      });
+      const add = mine.filter(c => !mergedTs.has(c.ts));
+      if (!add.length && !enriched) return true; /* cloud already complete */
+      const checks = merged.concat(add).sort((a, b) => (a.ts || 0) - (b.ts || 0)).slice(-90);
       return dkHistRef(docId).then(function (ref) {
         return ref.set({ d: JSON.stringify({ recs: pay.recs || [], checks: checks }), v: 2, ts: Date.now() });
-      }).then(function () { console.info('[hist-sync] ' + add.length + ' check-in(s) synced to the shared doc'); return true; });
+      }).then(function () { console.info('[hist-sync] ' + add.length + ' new + ' + enriched + ' enriched check-in(s) synced to the shared doc'); return true; });
     }).catch(function (e) { console.warn('[hist-sync] checks push failed', e); return false; });
   }
   /* c125: exposed like the trainer's dkPushClientHistory/dkSyncClientHistory —

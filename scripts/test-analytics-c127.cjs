@@ -90,7 +90,7 @@ eq('8 weeks filled', wr.length, 8);
 const checks = [
   { ts: D0, date: 'c0', weight: 80 },
   { ts: D1, date: 'c1', weight: 80.5, waist: 80 },
-  { ts: D2, date: 'c2', weight: 81, waist: 79 },
+  { ts: D2, date: 'c2', weight: 81, waist: 79, hip: 99 },
   { ts: D3, date: 'c3', weight: 80.8, waist: 78.5, hip: 98 }
 ];
 const bs = E.bodySeries(checks, { now: NOW, days: 90 });
@@ -100,6 +100,10 @@ eq('waistDelta -1.5', bs.waistDelta, -1.5, 0.001);
 eq('waistRatePerWeek -0.81', bs.waistRatePerWeek, -0.81, 0.02);
 eq('ratioWaistHip 0.80', bs.ratioWaistHip, 0.8, 0.005);
 eq('points 4', bs.points.length, 4);
+/* c129: hip parity fields — 99→98 over 6d → -1/6 per day → -1.17/wk */
+eq('hipDelta -1', bs.hipDelta, -1, 0.001);
+eq('hipRatePerWeek -1.17', bs.hipRatePerWeek, -1.17, 0.02);
+eq('waist/hip slope independence (waist rate unchanged)', bs.waistRatePerWeek, -0.81, 0.02);
 
 /* 7. toKg / doneSets primitives */
 eq('toKg lb', Math.round(E.toKg(100, 'lb') * 1000) / 1000, 45.359);

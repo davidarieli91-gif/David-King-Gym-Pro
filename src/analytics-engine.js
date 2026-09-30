@@ -378,15 +378,24 @@
       if (lastHip == null && pts[i].hip != null) lastHip = pts[i].hip;
       if (lastWaist != null && lastHip != null) break;
     }
+    /* c129: hip fields mirror the waist ones — the trainer's body card
+       shows both with the SAME math (no per-UI improvisation). */
+    var rateHip = slope('hip');
+    var hipDelta = rateHip == null ? null : (function () {
+      var hp = pts.filter(function (p) { return p.hip != null; });
+      return Math.round((hp[hp.length - 1].hip - hp[0].hip) * 10) / 10;
+    })();
     return {
       points: pts, smoothWeight: smoothW, smoothWaist: smoothWaist,
       deltaKg: firstW && lastW ? Math.round((lastW.weight - firstW.weight) * 10) / 10 : null,
       ratePerWeekKg: rateW,
-      waistDelta: slope('waist') == null ? null : (function () {
+      waistDelta: rateWaist == null ? null : (function () {
         var wp = pts.filter(function (p) { return p.waist != null; });
         return Math.round((wp[wp.length - 1].waist - wp[0].waist) * 10) / 10;
       })(),
       waistRatePerWeek: rateWaist,
+      hipDelta: hipDelta,
+      hipRatePerWeek: rateHip,
       ratioWaistHip: lastWaist && lastHip ? Math.round(lastWaist / lastHip * 100) / 100 : null,
       first: firstW, last: lastW
     };
@@ -394,7 +403,7 @@
 
   /* ---------- exports ---------- */
   var api = {
-    version: 'c127',
+    version: 'c129',
     LB_TO_KG: LB_TO_KG,
     SYNERGIST_CREDIT: SYNERGIST_CREDIT,
     toKg: toKg,

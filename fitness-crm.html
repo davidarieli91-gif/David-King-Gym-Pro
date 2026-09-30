@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c128" />
+<meta name="dk-build" content="c129" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2849,7 +2849,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c128</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c129</p>
             </div>
           </div>
 
@@ -4234,6 +4234,17 @@ button[id$="-close"]:active, button[data-cps-close]:active {
               <!-- c128: DAY drill-down panel — filled when the trainer taps a
                    workout day in the calendar above -->
               <div id="analytics-day-detail" class="hidden bg-surface border border-amber-500/30 rounded-2xl shadow-card p-5"></div>
+
+              <!-- c129: BODY measurements — the portal's check-ins now sync
+                   waist/hip (cm) next to weight; engine bodySeries math -->
+              <div id="analytics-body" class="hidden bg-surface border border-border rounded-2xl shadow-card p-5">
+                <div class="flex items-center gap-2 mb-3">
+                  <h3 class="font-display font-bold text-sm" data-i18n="analytics.bodyTitle">Body measurements</h3>
+                  <span class="ms-auto text-[10px] text-muted" data-i18n="analytics.bodyHint">portal check-ins</span>
+                </div>
+                <div id="analytics-body-grid" class="grid grid-cols-3 gap-2.5"></div>
+                <p id="analytics-body-ratio" class="text-[11px] text-muted mt-2.5"></p>
+              </div>
 
               <!-- Volume per muscle group — c127: honest engine (done-only, kg, synergists 30%) -->
               <div class="bg-surface border border-border rounded-2xl shadow-card p-5">
@@ -12808,6 +12819,16 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const startTs128 = start128.getTime();
       const inRange128 = (workoutsAll || []).filter(w => (Number(w.date) || Number(w.created_at) || 0) >= startTs128);
       renderVolume(inRange128);
+      /* c129: body measurements (weight/waist/hips from the portal's shared
+         check-ins) — non-blocking 5s-guarded fetch, stale-client guarded */
+      try {
+        const cid129 = _clientId;
+        const bodyP = (typeof window.dkFetchClientChecks === 'function')
+          ? Promise.race([window.dkFetchClientChecks(cid129), new Promise(res => setTimeout(() => res([]), 5000))])
+          : Promise.resolve([]);
+        bodyP.then(function (cb129) { if (_clientId === cid129) renderBodyMetrics(cb129 || []); })
+             .catch(function () { if (_clientId === cid129) renderBodyMetrics([]); });
+      } catch (_) {}
       if (_daySel) renderDayDetail(_daySel);
       else hideDayDetail();
     }
@@ -13161,6 +13182,46 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       renderCalendar(_lastWorkouts, _lastNutrition);
       renderDayDetail(_daySel);
     });
+
+    /** c129: body measurements card — latest weight/waist/hips from the
+     *  portal's shared check-ins + per-week engine slopes + waist/hips ratio.
+     *  Hidden entirely when the client has no check-ins at all. */
+    function renderBodyMetrics(checks) {
+      const card = document.getElementById('analytics-body');
+      const grid = document.getElementById('analytics-body-grid');
+      const ratioEl = document.getElementById('analytics-body-ratio');
+      if (!card || !grid) return;
+      const arr = checks || [];
+      if (!arr.length) { card.classList.add('hidden'); return; }
+      const eng = window.dkAnalyticsEngine;
+      const bs = (eng && typeof eng.bodySeries === 'function') ? eng.bodySeries(arr, { days: 90 }) : null;
+      if (!bs) { card.classList.add('hidden'); return; }
+      const fmtD = ts => { const d = new Date(ts); return String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0'); };
+      const rate = v => (v == null || !isFinite(v)) ? '' : '<span class="text-[10px]">' + (v > 0 ? '+' : '') + v + escapeHTML(t('analytics.bodyPerWeek')) + '</span>';
+      const wPts = arr.filter(c => Number(c.weight) > 0);
+      const lastW = wPts.length ? wPts[wPts.length - 1] : null;
+      const lastWaistPt = [...arr].reverse().find(c => Number(c.waist) > 0) || null;
+      const lastHipPt = [...arr].reverse().find(c => Number(c.hip) > 0) || null;
+      function tile(labelKey, latest, subHtml) {
+        return '<div class="bg-surface-2 border border-border rounded-xl p-3 min-w-0">'
+          + '<div class="text-[10px] uppercase tracking-wider text-muted truncate">' + escapeHTML(t(labelKey)) + '</div>'
+          + '<div class="font-display font-extrabold text-lg mt-0.5">' + (latest != null ? escapeHTML(latest) : '—') + '</div>'
+          + '<div class="text-[10px] text-muted mt-0.5 truncate">' + subHtml + '</div></div>';
+      }
+      grid.innerHTML =
+        tile('analytics.bodyWeight', lastW ? fmtNumber(Math.round(lastW.weight * 10) / 10) + ' kg' : null,
+             (lastW ? escapeHTML(fmtD(lastW.ts)) : '') + ' ' + rate(bs.ratePerWeekKg)) +
+        tile('analytics.bodyWaist', lastWaistPt ? fmtNumber(Math.round(lastWaistPt.waist * 10) / 10) + ' cm' : null,
+             (lastWaistPt ? escapeHTML(fmtD(lastWaistPt.ts)) : '') + ' ' + rate(bs.waistRatePerWeek)) +
+        tile('analytics.bodyHip', lastHipPt ? fmtNumber(Math.round(lastHipPt.hip * 10) / 10) + ' cm' : null,
+             (lastHipPt ? escapeHTML(fmtD(lastHipPt.ts)) : '') + ' ' + rate(bs.hipRatePerWeek));
+      if (ratioEl) {
+        ratioEl.innerHTML = (bs.ratioWaistHip != null)
+          ? escapeHTML(t('analytics.bodyRatio')) + ': <span class="font-mono">' + bs.ratioWaistHip + '</span>'
+          : '';
+      }
+      card.classList.remove('hidden');
+    }
 
     /** Render volume per muscle group (placeholder until Phase 3 logs data). */
     function renderVolume(workouts) {
@@ -25969,12 +26030,20 @@ async function boot() {
         const p = JSON.parse(data.d);
         return (Array.isArray(p.checks) ? p.checks : [])
           .filter(c => c && Number(c.ts) > 0 && Number(c.weight) > 0)
-          .map(c => ({
-            ts: Number(c.ts),
-            date: String(c.date || new Date(Number(c.ts)).toISOString().slice(0, 10)),
-            weight: Number(c.weight),
-            energy: isFinite(parseFloat(c.energy)) ? parseFloat(c.energy) : null
-          }))
+          .map(c => {
+            /* c129: waist/hip travel with the check-in now (cm, 30..200
+               sanity, the portal side enforces the same band) — the analytics
+               body card and the recovery body-weight strip share ONE source */
+            const cm = v => { const n = parseFloat(v); return (isFinite(n) && n >= 30 && n <= 200) ? Math.round(n * 10) / 10 : null; };
+            return {
+              ts: Number(c.ts),
+              date: String(c.date || new Date(Number(c.ts)).toISOString().slice(0, 10)),
+              weight: Number(c.weight),
+              energy: isFinite(parseFloat(c.energy)) ? parseFloat(c.energy) : null,
+              waist: cm(c.waist),
+              hip: cm(c.hip)
+            };
+          })
           .sort((a, b) => a.ts - b.ts);
       } catch (e) { console.warn('[hist-sync] CRM checks fetch failed', e); return []; }
     };
@@ -31040,21 +31109,32 @@ document.addEventListener('input', function (e) {
   function renderReport(hist) {
     var s = S();
     var now = Date.now();
-    var last30 = 0, prev30 = 0, totalVol = 0, totalDur = 0;
+    /* c129: ONE honest volume source — the shared engine (done-only, lb→kg,
+       warmups labeled separately) replaces the raw h.total_volume sums that
+       still counted prescriptions from skipped sets and lb rows as kg. */
+    var eng = (typeof window !== 'undefined') ? window.dkAnalyticsEngine : null;
+    var volOf = function (h) {
+      if (eng && typeof eng.recVolumeKg === 'function') return eng.recVolumeKg(h);
+      return Math.round(h.total_volume || 0);
+    };
+    var last30 = 0, prev30 = 0, last30Vol = 0, prev30Vol = 0, totalVol = 0, totalDur = 0;
     var exCount = {}, exMax = {};
     hist.forEach(function (h) {
-      totalVol += h.total_volume || 0;
+      var v = volOf(h);
+      totalVol += v;
       totalDur += h.duration || 0;
       var age = now - h.date;
-      if (age <= 30 * 86400000) last30++;
-      else if (age <= 60 * 86400000) prev30++;
+      if (age <= 30 * 86400000) { last30++; last30Vol += v; }
+      else if (age <= 60 * 86400000) { prev30++; prev30Vol += v; }
       (h.exercises || []).forEach(function (ex) {
         var n = (typeof globalExName === 'function') ? globalExName(ex) : (ex.name || "?");
         exCount[n] = (exCount[n] || 0) + 1;
         (ex.sets || []).forEach(function (st) {
           if (st && st.done === false) return; /* c127: prescriptions from skipped sets are not achievements */
-          var w = parseFloat(st.weight);
-          if (w > (exMax[n] || 0)) exMax[n] = w;
+          if (st && st.type === 'warmup') return; /* c129: a warm-up is not a PR */
+          var w = parseFloat(st.weight) || 0;
+          var wKg = (eng && typeof eng.toKg === 'function') ? eng.toKg(w, ex.unit) : w; /* c129: lb finally reads as lb (c96 respected) */
+          if (wKg > (exMax[n] || 0)) exMax[n] = Math.round(wKg * 10) / 10;
         });
       });
     });
@@ -31067,7 +31147,9 @@ document.addEventListener('input', function (e) {
       html += stat(s.volume, Math.round(totalVol).toLocaleString() + " " + s.kg);
       html += stat(s.avg, Math.round(totalDur / 60 / hist.length) + " " + s.min);
       html += stat(s.streak, computeStreak(hist) + " " + s.days);
-      html += "<div style='width:100%;padding:0 16px 8px'><div style='color:rgb(var(--c-muted));font-size:12px'>" + s.last30 + ": <b style='color:rgb(var(--c-text))'>" + last30 + "</b> · " + s.prev30 + ": <b style='color:rgb(var(--c-text))'>" + prev30 + "</b></div></div>";
+      /* c129: the 30-day comparison now carries VOLUME, not just a workout count —
+         the same done-only kg math as the analytics panel (no more coexisting truths) */
+      html += "<div style='width:100%;padding:0 16px 8px'><div style='color:rgb(var(--c-muted));font-size:12px'>" + s.last30 + ": <b style='color:rgb(var(--c-text))'>" + last30 + "</b> (" + Math.round(last30Vol).toLocaleString() + " " + s.kg + ") · " + s.prev30 + ": <b style='color:rgb(var(--c-text))'>" + prev30 + "</b> (" + Math.round(prev30Vol).toLocaleString() + " " + s.kg + ")</div></div>";
       if (top.length) {
         html += "<div style='width:100%;padding:0 16px 12px'><div style='color:rgb(var(--c-muted));font-size:12px;margin-bottom:6px'>" + s.top + "</div>";
         top.forEach(function (n) {
@@ -31116,8 +31198,12 @@ document.addEventListener('input', function (e) {
     var s = S();
     var client = "";
     try { client = screens.profile._client ? (screens.profile._client.full_name || "") : ""; } catch (e) {}
+    /* c129: the shared number leaves through WhatsApp too — done-only kg */
+    var eng = (typeof window !== 'undefined') ? window.dkAnalyticsEngine : null;
     var vol = 0;
-    hist.forEach(function (h) { vol += h.total_volume || 0; });
+    hist.forEach(function (h) {
+      vol += (eng && typeof eng.recVolumeKg === 'function') ? eng.recVolumeKg(h) : Math.round(h.total_volume || 0);
+    });
     var lines = ["🏋️ " + s.title + (client ? " — " + client : "")];
     lines.push(s.workouts + ": " + hist.length);
     lines.push(s.volume + ": " + Math.round(vol).toLocaleString() + " " + s.kg);
@@ -31226,7 +31312,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 128; /* numeric part of dk-build c128 */
+  var RUNNING = 129; /* numeric part of dk-build c129 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
