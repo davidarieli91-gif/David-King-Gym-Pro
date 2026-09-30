@@ -157,8 +157,15 @@ ok('i18n ×3: checkinWeightRange', (html.match(/checkinWeightRange:'/g) || []).l
 ok('i18n ×3: storageFull', (html.match(/storageFull:'/g) || []).length === 3);
 ok('trainer: push AND backfill both transactional', (trainer.match(/runTransaction/g) || []).length >= 2);
 ok('trainer: corrupt payload aborts', trainer.indexOf('corrupt payload — push aborted') >= 0 && trainer.indexOf('corrupt payload — backfill aborted') >= 0);
-ok('sw: cache bumped to v158', fs.readFileSync(path.join(root, 'sw.js'), 'utf8').indexOf("'dk-gym-v158'") >= 0);
-ok('versions: RUNNING 131 + dk-build c131', trainer.indexOf('RUNNING = 131') >= 0 && trainer.indexOf('content="c131"') >= 0);
+ok('sw: cache at least v158 (c131 shipped it)', (function () {
+  const m = fs.readFileSync(path.join(root, 'sw.js'), 'utf8').match(/CACHE_NAME = 'dk-gym-v(\d+)'/);
+  return !!m && Number(m[1]) >= 158;
+})());
+ok('versions: RUNNING/dk-build at least c131', (function () {
+  const r = trainer.match(/var RUNNING = (\d+)/);
+  const b = trainer.match(/content="c(\d+)"/);
+  return !!r && !!b && Number(r[1]) >= 131 && Number(b[1]) >= 131;
+})());
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
