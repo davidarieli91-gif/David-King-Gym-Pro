@@ -34,7 +34,7 @@ ok('i18n ×3: diarySearchOffline', count(html, "diarySearchOffline:'") === 3);
 
 /* ---------- 2. device wipe ---------- */
 ok('dkWipeData removes client-scoped + legacy keys', html.indexOf("k.endsWith('__' + ns) || k.indexOf('dk_legacy_') === 0") >= 0);
-ok('dkWipeData removes share blob + live draft (+ c151 session)', html.indexOf("['dk_client_data', 'dk_client_share', 'dk_live_draft', 'dk_portal_session']") >= 0);
+ok('dkWipeData removes share blob + live draft (+ c151 session)', html.indexOf("['dk_client_data', 'dk_client_share', 'dk_live_draft', 'dk_portal_session',") >= 0);
 ok('wipe functions exposed for the settings sheet', html.indexOf('window.dkWipeData = dkWipeData') >= 0 && html.indexOf('window.dkWipeDeviceData = dkWipeDeviceData') >= 0);
 ok('settings sheet has the wipe button', html.indexOf("id=\"cps-wipe\"") >= 0 && html.indexOf("id=\"cps-wipe-label\"") >= 0);
 ok('wipe button label filled in fillLabels', html.indexOf("set('cps-wipe-label', T('wipeBtn'))") >= 0);

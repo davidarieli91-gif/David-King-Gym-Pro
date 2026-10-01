@@ -2321,6 +2321,7 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
       </div>
       <!-- c151: «продолжить как X» — the remembered session, one tap, no code -->
       <div id="unlock-continue" class="hidden space-y-2">
+        <div id="unlock-accounts" class="hidden space-y-2"></div>
         <button id="btn-continue" class="w-full bg-gradient-to-r from-indigo-500 to-cyan-400 text-white font-bold text-sm py-3 rounded-xl shadow-lg shadow-indigo-500/25 transition active:scale-95">Продолжить</button>
         <button id="btn-use-code" class="w-full bg-surface-2 border border-border text-muted font-semibold text-xs py-2.5 rounded-xl transition">Ввести код заново</button>
       </div>
@@ -2330,6 +2331,38 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
         <p id="unlock-error" class="text-xs text-red-400 min-h-[1rem]"></p>
         <button id="btn-unlock" class="w-full bg-gradient-to-r from-indigo-500 to-cyan-400 text-white font-bold text-sm py-3 rounded-xl shadow-lg shadow-indigo-500/25 transition active:scale-95">Открыть портал</button>
       </div>
+      <!-- c152: общий вход — полный номер телефона + личный пароль -->
+      <div id="unlock-phone-block" class="hidden space-y-3 text-start">
+        <div>
+          <label id="phone-label" class="block text-[10px] font-bold uppercase tracking-wider text-muted mb-1"></label>
+          <input type="tel" id="phone-input" inputmode="tel" autocomplete="tel" placeholder="0540000000"
+            class="w-full bg-surface-2 border border-border rounded-xl px-3 py-3 text-center font-mono text-base text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+        </div>
+        <div>
+          <label id="phone-pass-label" class="block text-[10px] font-bold uppercase tracking-wider text-muted mb-1"></label>
+          <input type="password" id="phone-pass" inputmode="numeric" maxlength="10" autocomplete="current-password" placeholder="••••"
+            class="w-full bg-surface-2 border border-border rounded-xl px-3 py-3 text-center font-mono text-lg tracking-[0.3em] text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+        </div>
+        <p id="phone-error" class="text-xs text-red-400 min-h-[1rem] text-center"></p>
+        <button id="btn-phone-go" class="w-full bg-gradient-to-r from-indigo-500 to-cyan-400 text-white font-bold text-sm py-3 rounded-xl shadow-lg shadow-indigo-500/25 transition active:scale-95"></button>
+        <button id="btn-phone-back" class="w-full bg-surface-2 border border-border text-muted font-semibold text-xs py-2.5 rounded-xl transition"></button>
+      </div>
+      <button id="btn-phone-login" class="w-full bg-surface-2 border border-border text-muted font-semibold text-xs py-2.5 rounded-xl transition">Войти по номеру телефона</button>
+    </div>
+  </div>
+
+  <!-- c152: личный пароль клиента (4–10 цифр) — задаётся при первом входе -->
+  <div id="dk-pass-modal" class="hidden fixed inset-0 z-[105] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true">
+    <div class="glass-strong rounded-3xl p-5 max-w-xs w-full space-y-3">
+      <h3 id="pass-title" class="font-display font-bold text-base text-white text-center"></h3>
+      <p id="pass-hint" class="text-[11px] text-muted text-center leading-relaxed"></p>
+      <input type="password" id="pass-new" inputmode="numeric" maxlength="10" autocomplete="new-password" placeholder="••••"
+        class="w-full bg-surface-2 border border-border rounded-xl px-3 py-3 text-center font-mono text-lg tracking-[0.3em] text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+      <input type="password" id="pass-repeat" inputmode="numeric" maxlength="10" autocomplete="new-password" placeholder="••••"
+        class="w-full bg-surface-2 border border-border rounded-xl px-3 py-3 text-center font-mono text-lg tracking-[0.3em] text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+      <p id="pass-error" class="text-xs text-red-400 min-h-[1rem] text-center"></p>
+      <button id="pass-save" class="w-full bg-gradient-to-r from-indigo-500 to-cyan-400 text-white font-bold text-sm py-3 rounded-xl shadow-lg shadow-indigo-500/25 transition active:scale-95"></button>
+      <button id="pass-later" class="w-full bg-surface-2 border border-border text-muted font-semibold text-xs py-2.5 rounded-xl transition"></button>
     </div>
   </div>
 
@@ -2743,6 +2776,8 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
       lockedTitle:'Портал заблокирован',lockedSubtitle:'Введите код, чтобы вернуться',noPortalTitle:'Портал не подключён',noPortalHint:'Откройте ссылку от тренера, чтобы подключить портал',sessionExpired:'Код доступа изменился — введите новый код из сообщения тренера',
       appSection:'Приложение',installTitle:'Установить приложение',installSub:'Работает офлайн, открывается на весь экран',installBtn:'Установить',installIosHint:'На iPhone: кнопка «Поделиться» → «На экран «Домой»»',autolockTitle:'Автоблокировка',autolockOff:'Выключена',autolockMin:'{n} мин',autolockSaved:'Сохранено',lockNow:'🔒 Заблокировать',logoutBtn:'Выйти',logoutConfirm:'Выйти из портала? Данные на этом устройстве будут удалены, войти можно будет по новой ссылке или коду.',exitWorkoutConfirm:'Идёт тренировка. Выйти? Прогресс сохранён — продолжить можно будет с главного экрана.',
       unlockWrongCode:'Неверный код',unlockExpired:'Срок действия ссылки истёк',unlockNoCrypto:'Откройте по https',
+      phoneLoginBtn:'Войти по номеру телефона',phoneTitle:'Вход по телефону',phoneSubtitle:'Полный номер и личный пароль',phoneLabel:'Номер телефона',phonePassLabel:'Пароль (4–10 цифр)',phoneGo:'Войти',phoneBack:'Назад к коду',phoneInvalid:'Введите номер в формате 0540000000',phoneWrong:'Неверный номер или пароль',
+      accountsTitle:'Кто входит?',accountsSubtitle:'Несколько клиентов на этом устройстве',passSetupTitle:'Придумайте пароль',passSetupHint:'4–10 цифр. Советуем 6 и больше — пароль защищает ваши данные. Его можно сменить в настройках.',passChangeTitle:'Сменить пароль',passSave:'Сохранить пароль',passLater:'Позже',passRange:'Пароль: от 4 до 10 цифр',passMismatch:'Пароли не совпадают',passError:'Не удалось сохранить пароль — попробуйте ещё раз',passSaved:'Пароль сохранён',passSavedLocal:'Пароль сохранён на устройстве — синхронизируется при подключении',
       shareLoading:'Загружаю план из облака…',shareNotFound:'План не найден — попросите тренера отправить ссылку заново',shareDenied:'Облако пока не открыто для портала — тренеру нужно обновить правила базы (Настройки → Облако)',shareOffline:'Нет интернета — подключитесь к сети и откройте ссылку ещё раз',
       unlockBadFormat:'Неизвестный формат ссылки',legacyWarning:'⚠️ Ссылка устаревшего формата',
       historyTitle:'История замеров',noHistory:'Нет чек-инов',doneToday:'Выполнено ✓',anotherWorkout:'Ещё одна тренировка',syncOffline:'Нет сети',syncPending:'Ждут синхронизации',syncTitle:'Синхронизация с тренером',checkinWeightRange:'Вес должен быть 30–300 кг',storageFull:'Хранилище заполнено — данные не сохранились',
@@ -2798,6 +2833,8 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       lockedTitle:'Portal locked',lockedSubtitle:'Enter the code to return',noPortalTitle:'Portal not connected',noPortalHint:'Open the link from your coach to connect the portal',sessionExpired:'The access code changed — enter the new code from your coach',
       appSection:'App',installTitle:'Install the app',installSub:'Works offline, opens full screen',installBtn:'Install',installIosHint:'On iPhone: tap Share → Add to Home Screen',autolockTitle:'Auto-lock',autolockOff:'Off',autolockMin:'{n} min',autolockSaved:'Saved',lockNow:'🔒 Lock',logoutBtn:'Log out',logoutConfirm:'Log out of the portal? Data on this device will be erased; you can sign in again with a new link or code.',exitWorkoutConfirm:'A workout is in progress. Leave? Progress is saved — you can resume from the main screen.',
       unlockWrongCode:'Wrong code',unlockExpired:'Link expired',unlockNoCrypto:'Open over https',
+      phoneLoginBtn:'Sign in with phone number',phoneTitle:'Phone sign-in',phoneSubtitle:'Full number and personal password',phoneLabel:'Phone number',phonePassLabel:'Password (4–10 digits)',phoneGo:'Sign in',phoneBack:'Back to the code',phoneInvalid:'Enter the number as 0540000000',phoneWrong:'Wrong number or password',
+      accountsTitle:'Who is signing in?',accountsSubtitle:'Several clients on this device',passSetupTitle:'Create your password',passSetupHint:'4–10 digits. We recommend 6+ — the password protects your data. You can change it in settings.',passChangeTitle:'Change password',passSave:'Save password',passLater:'Later',passRange:'Password: 4 to 10 digits',passMismatch:'Passwords do not match',passError:'Could not save the password — try again',passSaved:'Password saved',passSavedLocal:'Password saved on this device — will sync when online',
       shareLoading:'Loading plan from cloud…',shareNotFound:'Plan not found — ask your trainer to resend the link',shareDenied:'Cloud is not open for the portal yet — the trainer must update the database rules (Settings → Cloud)',shareOffline:'No internet — reconnect and open the link again',
       unlockBadFormat:'Unknown link format',legacyWarning:'⚠️ Legacy link',
       historyTitle:'History',noHistory:'No check-ins',doneToday:'Done ✓',anotherWorkout:'Another workout',syncOffline:'Offline',syncPending:'Waiting to sync',syncTitle:'Sync with the coach',checkinWeightRange:'Weight must be 30–300 kg (66–661 lb)',storageFull:'Device storage is full — data was not saved',
@@ -2853,6 +2890,8 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       lockedTitle:'הפורטל נעול',lockedSubtitle:'הזן קוד כדי לחזור',noPortalTitle:'הפורטל לא מחובר',noPortalHint:'פתח את הקישור מהמאמן כדי לחבר את הפורטל',sessionExpired:'קוד הגישה השתנה — הזן את הקוד החדש מהמאמן',
       appSection:'אפליקציה',installTitle:'התקן את האפליקציה',installSub:'עובד גם ללא אינטרנט, נפתח במסך מלא',installBtn:'התקן',installIosHint:'ב-iPhone: כפתור שיתוף → הוסף למסך הבית',autolockTitle:'נעילה אוטומטית',autolockOff:'כבויה',autolockMin:'{n} דק׳',autolockSaved:'נשמר',lockNow:'🔒 נעל',logoutBtn:'התנתק',logoutConfirm:'להתנתק מהפורטל? הנתונים במכשיר יימחקו; ניתן להיכנס שוב עם קישור או קוד חדש.',exitWorkoutConfirm:'אימון פעיל. לצאת? ההתקדמות נשמרה — אפשר להמשיך מהמסך הראשי.',
       unlockWrongCode:'קוד שגוי',unlockExpired:'תוקף הקישור פג',unlockNoCrypto:'פתח דרך https',
+      phoneLoginBtn:'כניסה לפי מספר טלפון',phoneTitle:'כניסה לפי טלפון',phoneSubtitle:'מספר מלא וסיסמה אישית',phoneLabel:'מספר טלפון',phonePassLabel:'סיסמה (4–10 ספרות)',phoneGo:'כניסה',phoneBack:'חזרה לקוד',phoneInvalid:'הזן מספר בפורמט 0540000000',phoneWrong:'מספר או סיסמה שגויים',
+      accountsTitle:'מי נכנס?',accountsSubtitle:'כמה מתאמנים במכשיר הזה',passSetupTitle:'צור סיסמה',passSetupHint:'4–10 ספרות. מומלץ 6 ומעלה — הסיסמה מגנה על הנתונים. אפשר לשנות בהגדרות.',passChangeTitle:'שינוי סיסמה',passSave:'שמור סיסמה',passLater:'מאוחר יותר',passRange:'סיסמה: 4 עד 10 ספרות',passMismatch:'הסיסמאות אינן תואמות',passError:'לא ניתן לשמור את הסיסמה — נסה שוב',passSaved:'הסיסמה נשמרה',passSavedLocal:'הסיסמה נשמרה במכשיר — תסתנכרן בחיבור',
       shareLoading:'טוען את התוכנית מהענן…',shareNotFound:'התוכנית לא נמצאה — בקשו מהמאמן לשלוח את הקישור שוב',shareDenied:'הענן עדיין לא פתוח לפורטל — על המאמן לעדכן את כללי מסד הנתונים (הגדרות → ענן)',shareOffline:'אין אינטרנט — התחברו לרשת ופתחו את הקישור שוב',
       unlockBadFormat:'פורמט לא מוכר',legacyWarning:'⚠️ קישור ישן',
       historyTitle:'היסטוריה',noHistory:'אין צ׳ק-אינים',doneToday:'בוצע ✓',anotherWorkout:'אימון נוסף',syncOffline:'אין רשת',syncPending:'ממתין לסנכרון',syncTitle:'סנכרון עם המאמן',checkinWeightRange:'המשקל חייב להיות 30–300 ק״ג',storageFull:'אחסון המכשיר מלא — הנתונים לא נשמרו',
@@ -2947,34 +2986,121 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     let bin=''; for(let i=0;i<bytes.length;i++) bin+=String.fromCharCode(bytes[i]);
     return btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
   }
-  async function decryptPortal(code) {
-    const salt = portalBlob.slice(0,16), iv = portalBlob.slice(16,28), ct = portalBlob.slice(28);
-    const km = await crypto.subtle.importKey('raw', new TextEncoder().encode(code), 'PBKDF2', false, ['deriveKey']);
+  /* ===== c152: ShareKey crypto — the share doc holds the payload encrypted
+     with a stable per-client key (SK) plus `wsk` (the SK wrapped by the
+     client's 4-10 digit password or by a one-time setup code). Legacy docs
+     (no wsk) still decrypt the old way (PBKDF2 straight from the code). */
+  let _shareDoc = null;   /* current share doc (d/wsk/setup) in memory */
+  let _shareSk = null;    /* unwrapped ShareKey after a successful unlock */
+  async function dkWrapKey152(secret, skBytes) {
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const km = await crypto.subtle.importKey('raw', new TextEncoder().encode(String(secret)), 'PBKDF2', false, ['deriveKey']);
+    const kek = await crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:150000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['encrypt']);
+    const ct = new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},kek,skBytes));
+    const out = new Uint8Array(16+12+ct.length); out.set(salt,0); out.set(iv,16); out.set(ct,28);
+    return b64uEncode(out);
+  }
+  async function dkUnwrapKey152(secret, wskB64) {
+    try {
+      const buf = b64uDecode(wskB64);
+      const salt = buf.slice(0,16), iv = buf.slice(16,28), ct = buf.slice(28);
+      const km = await crypto.subtle.importKey('raw', new TextEncoder().encode(String(secret)), 'PBKDF2', false, ['deriveKey']);
+      const kek = await crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:150000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['decrypt']);
+      return new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv},kek,ct));
+    } catch (e) { return null; }
+  }
+  async function dkDecryptWithSk152(skBytes, d) {
+    const buf = b64uDecode(d);
+    const iv = buf.slice(0,12), ct = buf.slice(12);
+    const key = await crypto.subtle.importKey('raw', skBytes, {name:'AES-GCM'}, false, ['decrypt']);
+    return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv},key,ct)));
+  }
+  /* c152: decrypt with any secret — the personal password or a setup code */
+  async function dkShareDecrypt(secret) {
+    const doc = _shareDoc || dkShareCacheGet();
+    if (!doc) throw { code: 'notfound' };
+    if (doc.wsk) {
+      const sk = await dkUnwrapKey152(secret, doc.wsk);
+      if (!sk) throw { code: 'wrong' };
+      const parsed = await dkDecryptWithSk152(sk, doc.d);
+      if (parsed && parsed.exp && Date.now() > parsed.exp) throw { code: 'expired' };
+      _shareSk = sk;
+      return parsed;
+    }
+    /* legacy: no wsk — the blob itself is PBKDF2(secret) */
+    const blob = portalBlob || (doc.blobB64 ? b64uDecode(doc.blobB64) : null);
+    if (!blob) throw { code: 'notfound' };
+    const salt = blob.slice(0,16), iv = blob.slice(16,28), ct = blob.slice(28);
+    const km = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), 'PBKDF2', false, ['deriveKey']);
     const key = await crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:150000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['decrypt']);
     const pt = await crypto.subtle.decrypt({name:'AES-GCM',iv},key,ct);
     const parsed = JSON.parse(new TextDecoder().decode(pt));
     if (parsed.exp && Date.now() > parsed.exp) throw {code:'expired'};
     return parsed;
   }
+  async function decryptPortal(code) { return dkShareDecrypt(code); }
+  /* c152: Israeli phone normalization — 0540000000 / +972… / 9-digit «5…» */
+  function dkNormPhone(raw) {
+    let d = String(raw || '').replace(/\D/g, '');
+    if (!d) return '';
+    if (d.indexOf('972') === 0) d = '0' + d.slice(3);
+    if (d.length === 9 && d.charAt(0) === '5') d = '0' + d;
+    return /^0\d{8,9}$/.test(d) ? d : '';
+  }
+  async function dkDirDocId(phone) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('dkdir:' + phone));
+    const a = new Uint8Array(buf); let h = '';
+    for (let i = 0; i < a.length; i++) h += ('0' + a[i].toString(16)).slice(-2);
+    return 'dir_' + h;
+  }
   /* ===== c151: session / continue / lock ==============================
-     A successful unlock REMEMBERS the share + access code on this device: the
-     next launch offers «Продолжить как <имя>» — one tap, no code («продолжить
-     с того же места»). The code is asked again only after an explicit lock, a
-     long time in background (auto-lock) or when the trainer issued a new code.
-     «Выйти» erases the session + client data and shows the no-portal screen. */
+     A successful unlock REMEMBERS the share + secret on this device: the next
+     launch offers «Продолжить как <имя>» — one tap, no code. c152: the secret
+     is the client's personal password (or a setup code until one is set) and
+     the device can hold SEVERAL client accounts. */
   const DK_SESSION_KEY = 'dk_portal_session';
   const DK_AUTOLOCK_KEY = 'dk_portal_autolock';
   const DK_LOGGED_OUT_KEY = 'dk_portal_logged_out';
+  const DK_ACCOUNTS_KEY = 'dk_portal_accounts';
   function dkSessionGet() {
     try {
       const s = JSON.parse(localStorage.getItem(DK_SESSION_KEY) || 'null');
-      return (s && s.v === 1 && s.shareId && s.code) ? s : null;
+      if (!s) return null;
+      const secret = s.secret || s.code; /* v1 sessions stored the code */
+      return (s.shareId && secret) ? { v: 2, shareId: String(s.shareId), secret: String(secret), name: String(s.name || ''), ts: s.ts || 0 } : null;
     } catch (e) { return null; }
   }
-  function dkSessionSet(shareId, code, name) {
-    try { localStorage.setItem(DK_SESSION_KEY, JSON.stringify({ v: 1, shareId: String(shareId || ''), code: String(code || ''), name: String(name || '').slice(0, 60), ts: Date.now() })); } catch (e) {}
+  function dkSessionSet(shareId, secret, name) {
+    try {
+      localStorage.setItem(DK_SESSION_KEY, JSON.stringify({ v: 2, shareId: String(shareId || ''), secret: String(secret || ''), name: String(name || '').slice(0, 60), ts: Date.now() }));
+      dkAccountsUpsert(shareId, secret, name);
+    } catch (e) {}
   }
   function dkSessionClear() { try { localStorage.removeItem(DK_SESSION_KEY); } catch (e) {} }
+  function dkAccountsGet() { try { const a = JSON.parse(localStorage.getItem(DK_ACCOUNTS_KEY) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+  function dkAccountsSave(list) { try { localStorage.setItem(DK_ACCOUNTS_KEY, JSON.stringify((list || []).slice(0, 5))); } catch (e) {} }
+  function dkAccountsUpsert(shareId, secret, name) {
+    if (!shareId || !secret) return;
+    const list = dkAccountsGet().filter(a => a && a.shareId !== shareId);
+    list.unshift({ shareId: String(shareId), secret: String(secret), name: String(name || '').slice(0, 60), ts: Date.now() });
+    dkAccountsSave(list);
+  }
+  function dkAccountsRemove(shareId) { dkAccountsSave(dkAccountsGet().filter(a => a && a.shareId !== shareId)); }
+  /* c152: switch the active account (its own data namespace + cached doc) */
+  function dkSwitchAccount(shareId) {
+    const acc = dkAccountsGet().find(a => a && a.shareId === shareId);
+    if (!acc) return false;
+    try {
+      localStorage.setItem('dk_client_share', JSON.stringify({ id: acc.shareId }));
+      localStorage.setItem(DK_SESSION_KEY, JSON.stringify({ v: 2, shareId: acc.shareId, secret: acc.secret, name: acc.name, ts: Date.now() }));
+      localStorage.removeItem(DK_LOGGED_OUT_KEY);
+      /* c152: an explicit switch skips the picker after the reload — one tap */
+      try { sessionStorage.setItem('dk_acc_switched', '1'); } catch (e) {}
+    } catch (e) { return false; }
+    location.reload();
+    return true;
+  }
   function dkAutoLockMin() {
     try { const v = parseInt(localStorage.getItem(DK_AUTOLOCK_KEY), 10); return (v >= 0 && v <= 240) ? v : 10; } catch (e) { return 10; }
   }
@@ -2986,13 +3112,28 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   function dkCurrentShareId() {
     try { const sh = JSON.parse(localStorage.getItem('dk_client_share') || 'null'); return (sh && sh.id) ? String(sh.id) : ''; } catch (e) { return ''; }
   }
-  /* c151: restore the cached encrypted blob into memory (session/continue path) */
-  function dkLoadCachedBlob() {
+  /* c152: per-account cache (falls back to the legacy global key) */
+  function dkShareCacheKey(shareId) { return shareId ? ('dk_client_data__' + shareId) : 'dk_client_data'; }
+  function dkShareCacheGet() {
     try {
-      const p = JSON.parse(localStorage.getItem('dk_client_data') || 'null');
-      if (p && p.v === 1 && p.blob) { portalBlob = b64uDecode(p.blob); return true; }
-    } catch (e) {}
-    return false;
+      const sid = dkCurrentShareId();
+      let raw = sid ? localStorage.getItem(dkShareCacheKey(sid)) : null;
+      if (!raw) raw = localStorage.getItem('dk_client_data');
+      if (!raw) return null;
+      const p = JSON.parse(raw);
+      if (!p) return null;
+      if (p.v === 2 && p.d) return { v: 2, d: p.d, wsk: p.wsk || '', setup: !!p.setup };
+      if (p.v === 1 && p.blob) return { v: 1, blobB64: p.blob };
+      return null;
+    } catch (e) { return null; }
+  }
+  /* c151: restore the cached encrypted doc into memory (session/continue path) */
+  function dkLoadCachedBlob() {
+    const doc = dkShareCacheGet();
+    if (!doc) return false;
+    _shareDoc = doc;
+    if (doc.v === 1 && doc.blobB64) portalBlob = b64uDecode(doc.blobB64);
+    return true;
   }
   /* c151: the portal's t() has no interpolation — fill {name} manually */
   function dkFmt(tpl, name) {
@@ -3009,6 +3150,10 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     if (cont) cont.classList.add('hidden');
     const codeBlock = document.getElementById('unlock-code-block');
     if (codeBlock) codeBlock.classList.remove('hidden');
+    const phoneBlock = document.getElementById('unlock-phone-block');
+    if (phoneBlock) phoneBlock.classList.add('hidden');
+    const phoneBtn = document.getElementById('btn-phone-login');
+    if (phoneBtn) { phoneBtn.classList.remove('hidden'); phoneBtn.textContent = t('phoneLoginBtn'); }
     const _us133 = document.getElementById('unlock-screen');
     _us133.setAttribute('aria-label', t('unlockTitle')); /* c133: dialog has a name */
     _us133.classList.remove('hidden');
@@ -3029,32 +3174,180 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     if (cont) cont.classList.add('hidden');
     const codeBlock = document.getElementById('unlock-code-block');
     if (codeBlock) codeBlock.classList.add('hidden');
+    const phoneBlock = document.getElementById('unlock-phone-block');
+    if (phoneBlock) phoneBlock.classList.add('hidden');
+    /* c152: a logged-out client can sign back in by phone + password */
+    const phoneBtn = document.getElementById('btn-phone-login');
+    if (phoneBtn) { phoneBtn.classList.remove('hidden'); phoneBtn.textContent = t('phoneLoginBtn'); }
     const _us = document.getElementById('unlock-screen');
     _us.setAttribute('aria-label', t('noPortalTitle'));
     _us.classList.remove('hidden');
   }
-  /* c151: remember-me screen — one tap, no code */
+  /* c151: remember-me screen — one tap, no code; c152: several accounts */
   function showContinue() {
+    const accs = dkAccountsGet();
+    let skipPicker = false;
+    try {
+      skipPicker = sessionStorage.getItem('dk_acc_switched') === '1';
+      if (skipPicker) sessionStorage.removeItem('dk_acc_switched');
+    } catch (e) {}
+    if (accs.length > 1 && !skipPicker) { dkShowAccountPicker(accs); return; }
     const s = dkSessionGet();
     if (!s) { showUnlock(); return; }
     document.getElementById('txt-unlock-title').textContent = t('continueTitle');
     document.getElementById('txt-unlock-subtitle').textContent = s.name ? dkFmt(t('continueSubtitle'), s.name) : t('unlockSubtitle');
     document.getElementById('unlock-error').textContent = '';
+    const accBox = document.getElementById('unlock-accounts');
+    if (accBox) { accBox.classList.add('hidden'); accBox.innerHTML = ''; }
     const btn = document.getElementById('btn-continue');
-    if (btn) btn.textContent = s.name ? dkFmt(t('continueBtn'), s.name) : t('continueBtnShort');
+    if (btn) { btn.classList.remove('hidden'); btn.textContent = s.name ? dkFmt(t('continueBtn'), s.name) : t('continueBtnShort'); }
     const useCode = document.getElementById('btn-use-code');
-    if (useCode) useCode.textContent = t('useCodeBtn');
+    if (useCode) { useCode.classList.remove('hidden'); useCode.textContent = t('useCodeBtn'); }
+    const phoneBtn = document.getElementById('btn-phone-login');
+    if (phoneBtn) { phoneBtn.classList.remove('hidden'); phoneBtn.textContent = t('phoneLoginBtn'); }
     const cont = document.getElementById('unlock-continue');
     if (cont) cont.classList.remove('hidden');
     const codeBlock = document.getElementById('unlock-code-block');
     if (codeBlock) codeBlock.classList.add('hidden');
+    const phoneBlock = document.getElementById('unlock-phone-block');
+    if (phoneBlock) phoneBlock.classList.add('hidden');
     document.getElementById('unlock-screen').classList.remove('hidden');
   }
-  function dkUnlockSuccess(parsed, code, shareId) {
+  /* c152: several clients on one device — pick whose portal to open */
+  function dkShowAccountPicker(accs) {
+    document.getElementById('txt-unlock-title').textContent = t('accountsTitle');
+    document.getElementById('txt-unlock-subtitle').textContent = t('accountsSubtitle');
+    document.getElementById('unlock-error').textContent = '';
+    const accBox = document.getElementById('unlock-accounts');
+    if (accBox) {
+      accBox.innerHTML = (accs || []).map(a => `
+        <button type="button" data-acc="${esc(a.shareId)}" class="w-full bg-surface-2 border border-border text-text font-semibold text-sm py-3 rounded-xl transition hover:opacity-80">${esc(a.name || a.shareId)}</button>`).join('');
+      accBox.classList.remove('hidden');
+      accBox.querySelectorAll('[data-acc]').forEach(b => b.addEventListener('click', () => { dkSwitchAccount(b.getAttribute('data-acc')); }));
+    }
+    const cont = document.getElementById('unlock-continue');
+    if (cont) cont.classList.remove('hidden');
+    const btn = document.getElementById('btn-continue');
+    if (btn) btn.classList.add('hidden');
+    const useCode = document.getElementById('btn-use-code');
+    if (useCode) useCode.classList.add('hidden');
+    const phoneBtn = document.getElementById('btn-phone-login');
+    if (phoneBtn) phoneBtn.classList.remove('hidden');
+    const codeBlock = document.getElementById('unlock-code-block');
+    if (codeBlock) codeBlock.classList.add('hidden');
+    const phoneBlock = document.getElementById('unlock-phone-block');
+    if (phoneBlock) phoneBlock.classList.add('hidden');
+    document.getElementById('unlock-screen').classList.remove('hidden');
+  }
+  /* c152: common login — phone + personal password (get-only directory) */
+  function showPhoneLogin() {
+    document.getElementById('txt-unlock-title').textContent = t('phoneTitle');
+    document.getElementById('txt-unlock-subtitle').textContent = t('phoneSubtitle');
+    document.getElementById('unlock-error').textContent = '';
+    const cont = document.getElementById('unlock-continue');
+    if (cont) cont.classList.add('hidden');
+    const codeBlock = document.getElementById('unlock-code-block');
+    if (codeBlock) codeBlock.classList.add('hidden');
+    const ph = document.getElementById('unlock-phone-block');
+    if (ph) ph.classList.remove('hidden');
+    const phoneBtn = document.getElementById('btn-phone-login');
+    if (phoneBtn) phoneBtn.classList.add('hidden');
+    const err = document.getElementById('phone-error');
+    if (err) err.textContent = '';
+    const btn = document.getElementById('btn-phone-go');
+    if (btn) btn.textContent = t('phoneGo');
+    const back = document.getElementById('btn-phone-back');
+    if (back) back.textContent = t('phoneBack');
+    const lab = document.getElementById('phone-label');
+    if (lab) lab.textContent = t('phoneLabel');
+    const lab2 = document.getElementById('phone-pass-label');
+    if (lab2) lab2.textContent = t('phonePassLabel');
+    document.getElementById('unlock-screen').classList.remove('hidden');
+    setTimeout(() => { const i = document.getElementById('phone-input'); if (i) i.focus(); }, 100);
+  }
+  async function dkPhoneLogin() {
+    const err = document.getElementById('phone-error');
+    const phone = dkNormPhone(document.getElementById('phone-input').value);
+    const secret = String(document.getElementById('phone-pass').value || '').replace(/\D/g, '');
+    if (!phone) { if (err) err.textContent = t('phoneInvalid'); return; }
+    if (secret.length < 4) { if (err) err.textContent = t('phoneWrong'); return; }
+    if (err) err.textContent = '';
+    const btn = document.getElementById('btn-phone-go');
+    if (btn) { btn.disabled = true; btn.style.opacity = '.6'; }
+    try {
+      const id = await dkDirDocId(phone);
+      await ensureFirebaseLite();
+      if (!firebase.apps.length) firebase.initializeApp(CLOUD_CFG);
+      const snap = await Promise.race([
+        firebase.firestore().collection('portal_dir').doc(id).get({ source: 'server' }),
+        new Promise(res => setTimeout(() => res(null), 7000))
+      ]);
+      if (!snap || !snap.exists || !snap.data() || !snap.data().shareId) throw { code: 'notfound' };
+      const shareId = String(snap.data().shareId);
+      await fetchAndCacheShare(shareId);
+      const parsed = await dkShareDecrypt(secret);
+      dkUnlockSuccess(parsed, secret, shareId);
+    } catch (e) {
+      if (err) err.textContent = (e && e.code === 'expired') ? t('unlockExpired') : t('phoneWrong');
+    } finally {
+      if (btn) { btn.disabled = false; btn.style.opacity = ''; }
+    }
+  }
+  /* c152: personal password — set on first login, changeable later */
+  function dkPassSetupOpen(isChange) {
+    const m = document.getElementById('dk-pass-modal');
+    if (!m) return;
+    document.getElementById('pass-title').textContent = isChange ? t('passChangeTitle') : t('passSetupTitle');
+    document.getElementById('pass-hint').textContent = t('passSetupHint');
+    document.getElementById('pass-new').value = '';
+    document.getElementById('pass-repeat').value = '';
+    document.getElementById('pass-error').textContent = '';
+    document.getElementById('pass-save').textContent = t('passSave');
+    const later = document.getElementById('pass-later');
+    if (later) { later.textContent = t('passLater'); later.classList.toggle('hidden', !!isChange); }
+    m.classList.remove('hidden');
+    setTimeout(() => document.getElementById('pass-new').focus(), 100);
+  }
+  async function dkPassSave() {
+    const err = document.getElementById('pass-error');
+    const p1 = String(document.getElementById('pass-new').value || '').replace(/\D/g, '');
+    const p2 = String(document.getElementById('pass-repeat').value || '').replace(/\D/g, '');
+    if (p1.length < 4 || p1.length > 10) { err.textContent = t('passRange'); return; }
+    if (p1 !== p2) { err.textContent = t('passMismatch'); return; }
+    const s = dkSessionGet();
+    if (!s || !_shareSk) { err.textContent = t('passError'); return; }
+    try {
+      const wsk = await dkWrapKey152(p1, _shareSk);
+      const doc = { v: 2, d: (_shareDoc && _shareDoc.d) || '', wsk: wsk, setup: false };
+      _shareDoc = doc;
+      /* local first — the new password must never be lost while offline */
+      try { localStorage.setItem(dkShareCacheKey(s.shareId), JSON.stringify(doc)); } catch (e) {}
+      try { localStorage.setItem('dk_client_data', JSON.stringify(doc)); } catch (e) {}
+      dkSessionSet(s.shareId, p1, s.name);
+      /* close immediately — the cloud copy syncs in the BACKGROUND so a slow
+         or offline network can never trap the client on this screen */
+      document.getElementById('dk-pass-modal').classList.add('hidden');
+      toast(t('passSaved'), 'success', 2500);
+      (async () => {
+        try {
+          await ensureFirebaseLite();
+          if (!firebase.apps.length) firebase.initializeApp(CLOUD_CFG);
+          await firebase.firestore().collection('portal_shares').doc(s.shareId).set({ d: doc.d, v: 2, ts: Date.now(), wsk: wsk, setup: false });
+        } catch (e) {
+          toast(t('passSavedLocal'), 'warning', 4000);
+        }
+      })();
+    } catch (e) {
+      err.textContent = t('passError');
+    }
+  }
+  function dkUnlockSuccess(parsed, secret, shareId) {
     try { localStorage.removeItem(DK_LOGGED_OUT_KEY); } catch (e) {}
     document.getElementById('unlock-screen').classList.add('hidden');
-    dkSessionSet(shareId || dkCurrentShareId(), code, (parsed && parsed.client && (parsed.client.full_name || parsed.client.name)) || '');
+    dkSessionSet(shareId || dkCurrentShareId(), secret, (parsed && parsed.client && (parsed.client.full_name || parsed.client.name)) || '');
     applyData(parsed);
+    /* c152: a share still on the one-time code asks for a personal password */
+    try { if (_shareDoc && _shareDoc.wsk && _shareDoc.setup) dkPassSetupOpen(false); } catch (e152) {}
   }
   async function attemptUnlock() {
     const err = document.getElementById('unlock-error');
@@ -3068,17 +3361,17 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       err.textContent = (e && e.code === 'expired') ? t('unlockExpired') : t('unlockWrongCode');
     }
   }
-  /* c151: one-tap continue — cached blob first (offline-friendly), then a
-     fresh cloud copy; a changed code falls back to the code screen. */
+  /* c151: one-tap continue — cached doc first (offline-friendly), then a
+     fresh cloud copy; a changed secret falls back to the code screen. */
   async function dkResumeSession() {
     const s = dkSessionGet();
     if (!s) { showUnlock(); return; }
-    dkLoadCachedBlob(); /* the continue path skips startShareFlow — restore the blob first */
-    try { const parsed = await decryptPortal(s.code); dkUnlockSuccess(parsed, s.code, s.shareId); return; } catch (e) {}
+    dkLoadCachedBlob(); /* the continue path skips startShareFlow — restore the doc first */
+    try { const parsed = await dkShareDecrypt(s.secret); dkUnlockSuccess(parsed, s.secret, s.shareId); return; } catch (e) {}
     try {
       await fetchAndCacheShare(s.shareId);
-      const parsed = await decryptPortal(s.code);
-      dkUnlockSuccess(parsed, s.code, s.shareId);
+      const parsed = await dkShareDecrypt(s.secret);
+      dkUnlockSuccess(parsed, s.secret, s.shareId);
     } catch (e) {
       dkSessionClear();
       showUnlock();
@@ -3087,9 +3380,13 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   }
   function dkLockNow() { showLocked(); }
   function dkPortalLogout() {
+    const sid = dkCurrentShareId();
+    if (sid) dkAccountsRemove(sid); /* c152: drop this account, keep the others */
     dkSessionClear();
     try { localStorage.setItem(DK_LOGGED_OUT_KEY, '1'); } catch (e) {}
     dkWipeData(); /* session + share + blob + client data (lang/theme prefs survive) */
+    const next = dkAccountsGet()[0];
+    if (next && next.shareId !== sid) { if (dkSwitchAccount(next.shareId)) return; }
     try { location.href = location.pathname; } catch (e) { location.reload(); }
   }
   /* c151: PWA install helpers — banner + native prompt (iOS gets a hint) */
@@ -3278,15 +3575,20 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     if (!data.d) throw { code: 'notfound' };
     return data;
   }
-  /* c151: fetch + cache the encrypted share blob (reused by the fresh-link
-     flow and by the one-tap session resume when the cache is stale) */
+  /* c151/c152: fetch + cache the share doc (payload + wrapped ShareKey);
+     legacy docs (no wsk) keep the old code-encrypted blob format */
   async function fetchAndCacheShare(id) {
     const data = await fetchPortalShare(id);
-    portalBlob = b64uDecode(data.d);
-    try { localStorage.setItem('dk_client_data', JSON.stringify({ v: 1, blob: b64uEncode(portalBlob) })); } catch (e) {}
+    if (!data || !data.d) throw { code: 'notfound' };
+    _shareDoc = data.wsk
+      ? { v: 2, d: data.d, wsk: data.wsk, setup: !!data.setup }
+      : { v: 1, blobB64: data.d };
+    if (_shareDoc.v === 1) portalBlob = b64uDecode(data.d);
+    try { localStorage.setItem(dkShareCacheKey(id), JSON.stringify(_shareDoc)); } catch (e) {}
+    try { localStorage.setItem('dk_client_data', JSON.stringify(_shareDoc)); } catch (e) {} /* legacy readers */
     try { localStorage.setItem('dk_client_share', JSON.stringify({ id: id })); } catch (e) {}
     try { dkQuarantineLegacyGlobalKeys(); } catch (e) {} /* c101: the old shared keys hold a MIX of clients — park them */
-    return portalBlob;
+    return _shareDoc;
   }
   async function startShareFlow(id) {
     showUnlock();
@@ -3296,13 +3598,19 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       setShareStatus('', false);
     } catch (e) {
       const cached = localStorage.getItem('dk_client_data');
-      /* c151: fall back to the cached blob for ANY fetch failure (not only
+      /* c151/c152: fall back to the cached doc for ANY fetch failure (not only
          «offline») — the device keeps working with the last shared plan */
       if (cached) {
         try {
           const p = JSON.parse(cached);
+          if (p && p.v === 2 && p.d) {
+            _shareDoc = { v: 2, d: p.d, wsk: p.wsk || '', setup: !!p.setup };
+            setShareStatus((e && e.code === 'denied') ? t('shareDenied') : t('shareOffline') + ' ' + t('shareOfflineCached'), false);
+            return;
+          }
           if (p && p.v === 1 && p.blob) {
             portalBlob = b64uDecode(p.blob);
+            _shareDoc = { v: 1, blobB64: p.blob };
             setShareStatus((e && e.code === 'denied') ? t('shareDenied') : t('shareOffline') + ' ' + t('shareOfflineCached'), false);
             return;
           }
@@ -3354,9 +3662,9 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       } catch(eShare) {}
       const cached = localStorage.getItem('dk_client_data');
       if (cached) {
-        const p = JSON.parse(cached);
-        if (p && p.v === 1 && p.blob) { portalBlob = b64uDecode(p.blob); showUnlock(); return; }
-        if (p && p.client) { applyData(p); return; }
+        /* c152: per-account cache first — the legacy global key is a fallback */
+        const doc = dkShareCacheGet();
+        if (doc) { _shareDoc = doc; if (doc.v === 1 && doc.blobB64) portalBlob = b64uDecode(doc.blobB64); showUnlock(); return; }
       }
     } catch(e) { console.error('load error:',e); }
     /* c151: after an explicit logout the app shows the «no portal» screen —
@@ -7178,7 +7486,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         const k = localStorage.key(i);
         if (k && (k.endsWith('__' + ns) || k.indexOf('dk_legacy_') === 0)) kill.push(k);
       }
-      ['dk_client_data', 'dk_client_share', 'dk_live_draft', 'dk_portal_session'].forEach(function (k) {
+      ['dk_client_data', 'dk_client_share', 'dk_live_draft', 'dk_portal_session', 'dk_client_data__' + ns].forEach(function (k) {
         if (localStorage.getItem(k) != null) kill.push(k);
       });
       kill.forEach(function (k) { try { localStorage.removeItem(k); n++; } catch (e) {} });
@@ -7454,6 +7762,21 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     if (_btnContinue151) _btnContinue151.addEventListener('click', function () { dkResumeSession(); });
     const _btnUseCode151 = document.getElementById('btn-use-code');
     if (_btnUseCode151) _btnUseCode151.addEventListener('click', function () { showUnlock(); });
+    /* c152: phone login + personal password */
+    const _btnPhoneLogin152 = document.getElementById('btn-phone-login');
+    if (_btnPhoneLogin152) _btnPhoneLogin152.addEventListener('click', function () { showPhoneLogin(); });
+    const _btnPhoneBack152 = document.getElementById('btn-phone-back');
+    if (_btnPhoneBack152) _btnPhoneBack152.addEventListener('click', function () { showUnlock(); });
+    const _btnPhoneGo152 = document.getElementById('btn-phone-go');
+    if (_btnPhoneGo152) _btnPhoneGo152.addEventListener('click', function () { dkPhoneLogin(); });
+    const _phonePass152 = document.getElementById('phone-pass');
+    if (_phonePass152) _phonePass152.addEventListener('keydown', function (e) { if (e.key === 'Enter') dkPhoneLogin(); });
+    const _passSave152 = document.getElementById('pass-save');
+    if (_passSave152) _passSave152.addEventListener('click', function () { dkPassSave(); });
+    const _passLater152 = document.getElementById('pass-later');
+    if (_passLater152) _passLater152.addEventListener('click', function () { document.getElementById('dk-pass-modal').classList.add('hidden'); });
+    const _passRepeat152 = document.getElementById('pass-repeat');
+    if (_passRepeat152) _passRepeat152.addEventListener('keydown', function (e) { if (e.key === 'Enter') dkPassSave(); });
 
     /* c151: auto-lock after a long background stay (same-session only) */
     document.addEventListener('visibilitychange', function () {
@@ -8195,6 +8518,10 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       }
       var _ci151 = document.getElementById('cps-install');
       if (_ci151) _ci151.classList.toggle('hidden', dkIsStandalone() || (!window.dkInstallPrompt && !dkIsIOS()));
+      /* c152: change the personal password (only when the share has one) */
+      set('cps-pass-lbl', T('passChangeTitle'));
+      var _cp152 = document.getElementById('cps-pass');
+      if (_cp152) _cp152.classList.toggle('hidden', !(_shareDoc && _shareDoc.wsk && !_shareDoc.setup));
       /* c135: voice coach labels + live state */
       set('cps-voice-label', T('voiceTitle'));
       set('cps-voice-hint', T('voiceHint'));
@@ -8457,6 +8784,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
                 '<button type="button" id="cps-lock" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-xs font-bold text-text transition hover:opacity-80"><span id="cps-lock-lbl"></span></button>' +
                 '<button type="button" id="cps-logout" class="w-full bg-red-500/10 border border-red-500/30 rounded-xl px-3 py-2.5 text-xs font-bold text-red-400 transition hover:bg-red-500/20"><span id="cps-logout-lbl"></span></button>' +
               '</div>' +
+              '<button type="button" id="cps-pass" class="hidden w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-xs font-bold text-text transition hover:opacity-80 mt-2"><span id="cps-pass-lbl"></span></button>' +
             '</div>' +
             /* c135: voice coach — spoken guidance for blind trainees */
             '<div>' +
@@ -8932,6 +9260,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         try { if (confirm(T('logoutConfirm'))) dkPortalLogout(); } catch (err) {}
         return;
       }
+      /* c152: change the personal password */
+      if (e.target.closest('#cps-pass')) { closeSettingsSheet(); try { dkPassSetupOpen(true); } catch (err) {} return; }
       if (e.target.closest('#cps-share')) {
         closeSettingsSheet();
         try { shareReport(); } catch (err) {}

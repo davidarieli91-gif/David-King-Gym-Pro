@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c151" />
+<meta name="dk-build" content="c152" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2849,7 +2849,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c151</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c152</p>
             </div>
           </div>
 
@@ -5641,6 +5641,13 @@ button[id$="-close"]:active, button[data-cps-close]:active {
             </button>
           </div>
           <p id="portal-expiry-note" class="text-[10px] text-muted" data-i18n="portal.encryptionNote">Ссылка зашифрована (AES-256) и действует 30 дней</p>
+        </div>
+
+        <!-- c152: общий вход по номеру телефона + личный пароль клиента -->
+        <div class="bg-surface-2 border border-border rounded-2xl p-3 space-y-2">
+          <p class="text-[10px] uppercase tracking-widest text-muted font-bold" data-i18n="portal.commonLoginTitle">Общий вход по телефону</p>
+          <p id="portal-phone-status" class="text-[11px] text-muted"></p>
+          <button id="btn-portal-reset-pass" class="hidden w-full bg-surface-2 hover:bg-border/60 border border-border text-xs font-semibold py-2 rounded-xl transition" data-i18n="portal.resetPass">Сбросить пароль клиента (новый код)</button>
         </div>
 
         <div class="space-y-2 pt-1">
@@ -27121,10 +27128,11 @@ async function boot() {
         return 'ps' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
       }
     }
-    async function uploadPortalShare(id, blobB64) {
+    /* c152: write the FULL share doc (payload + wrapped ShareKey + setup flag) */
+    async function uploadPortalShare(id, doc) {
       await ensurePortalFirebase();
       if (!firebase.apps.length) firebase.initializeApp(PORTAL_SHARE_CFG);
-      await firebase.firestore().collection('portal_shares').doc(id).set({ d: blobB64, v: 1, ts: Date.now() });
+      await firebase.firestore().collection('portal_shares').doc(id).set(doc);
     }
 
     /* ===== c93: shared workout-history doc (CRM ↔ trainee portal) =====
@@ -27407,7 +27415,76 @@ async function boot() {
       );
     }
 
-    async function openClientPortalModal(clientId) {
+    /* ===== c152: STABLE CLIENT ACCOUNT — ShareKey + phone directory =====
+       The payload is encrypted with a random per-client ShareKey (SK) kept in
+       the trainer's client record, so re-sharing only re-encrypts the payload
+       and NEVER invalidates the client's own password. The SK reaches the
+       client WRAPPED (PBKDF2 + AES-GCM) either by a one-time 6-digit setup
+       code (setup: true) or by the client's 4-10 digit personal password
+       (setup: false). The directory maps sha256('dkdir:'+phone) → shareId and
+       is GET-ONLY in the rules (no listing/enumeration). */
+    function dkNormPhone(raw) {
+      let d = String(raw || '').replace(/\D/g, '');
+      if (!d) return '';
+      if (d.indexOf('972') === 0) d = '0' + d.slice(3);
+      if (d.length === 9 && d.charAt(0) === '5') d = '0' + d;
+      return /^0\d{8,9}$/.test(d) ? d : '';
+    }
+    async function dkDirDocId(phone) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('dkdir:' + phone));
+      const a = new Uint8Array(buf); let h = '';
+      for (let i = 0; i < a.length; i++) h += ('0' + a[i].toString(16)).slice(-2);
+      return 'dir_' + h;
+    }
+    async function dkWrapKey152(secret, skBytes) {
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const km = await crypto.subtle.importKey('raw', new TextEncoder().encode(String(secret)), 'PBKDF2', false, ['deriveKey']);
+      const kek = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: salt, iterations: PORTAL_PBKDF2_ITERATIONS, hash: 'SHA-256' }, km, { name: 'AES-GCM', length: 256 }, false, ['encrypt']);
+      const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, kek, skBytes));
+      const out = new Uint8Array(16 + 12 + ct.length);
+      out.set(salt, 0); out.set(iv, 16); out.set(ct, 28);
+      return b64uEncode(out);
+    }
+    async function dkEncryptWithSk152(skBytes, obj) {
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const key = await crypto.subtle.importKey('raw', skBytes, { name: 'AES-GCM' }, false, ['encrypt']);
+      const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, new TextEncoder().encode(JSON.stringify(obj))));
+      const out = new Uint8Array(12 + ct.length);
+      out.set(iv, 0); out.set(ct, 12);
+      return b64uEncode(out);
+    }
+    /* c152: sha256('dkdir:'+phone) → shareId, GET-only directory entry */
+    async function registerPortalDirectory(client, shareId) {
+      const phone = dkNormPhone(client && client.phone);
+      if (!phone) return false;
+      try {
+        await ensurePortalFirebase();
+        if (!firebase.apps.length) firebase.initializeApp(PORTAL_SHARE_CFG);
+        const id = await dkDirDocId(phone);
+        await firebase.firestore().collection('portal_dir').doc(id).set({ shareId: shareId, v: 1, ts: Date.now() });
+        return true;
+      } catch (e) {
+        console.warn('[portal] directory registration failed (republish the rules?)', e);
+        return false;
+      }
+    }
+
+    /* c152: trainer-side password reset — issues a NEW one-time setup code
+       (the payload is untouched; the modal then shows the working code) */
+    async function resetPortalPassword(clientId) {
+      try {
+        const client = await db.get('clients', clientId);
+        if (!client || !client.portal_sk) { toast(t('portal.resetNoShare') || 'No cloud share yet', 'warning'); return; }
+        if (!confirm(t('portal.resetConfirm') || 'Reset the client password?')) return;
+        openClientPortalModal(clientId, { forceSetup: true });
+      } catch (e) {
+        console.error('[portal] reset failed', e);
+        toast(t('portal.genError'), 'danger');
+      }
+    }
+
+    async function openClientPortalModal(clientId, opts) {
       try {
         const client = await db.get('clients', clientId);
         if (!client) { toast(t('clients.notFound'), 'danger'); return; }
@@ -27468,29 +27545,47 @@ async function boot() {
           exp: Date.now() + PORTAL_LINK_TTL_DAYS * 86400000
         };
 
-        // AES-256-GCM encryption with a one-time 6-digit access code (PBKDF2-derived key)
-        const accessCode = String(Math.floor(100000 + Math.random() * 900000));
-        const salt = crypto.getRandomValues(new Uint8Array(16));
-        const iv = crypto.getRandomValues(new Uint8Array(12));
-        const key = await derivePortalKey(accessCode, salt, ['encrypt']);
-        const plaintext = new TextEncoder().encode(JSON.stringify(payload));
-        const ciphertext = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, plaintext));
-
-        const blob = new Uint8Array(salt.length + iv.length + ciphertext.length);
-        blob.set(salt, 0);
-        blob.set(iv, salt.length);
-        blob.set(ciphertext, salt.length + iv.length);
+        /* c152: stable ShareKey — generated once per client and kept in the
+           client record; re-shares re-encrypt the payload WITHOUT touching the
+           client's personal password (setup:false keeps its old wsk). */
+        if (!client.portal_sk) {
+          client.portal_sk = b64uEncode(crypto.getRandomValues(new Uint8Array(32)));
+          await db.put('clients', client);
+        }
+        const skBytes152 = b64uDecode(client.portal_sk);
+        const accessCode = (opts && opts.presetCode) ? String(opts.presetCode) : String(Math.floor(100000 + Math.random() * 900000));
+        const payloadB64Sk = await dkEncryptWithSk152(skBytes152, payload);
 
         const origin = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
 
-        /* c26: cloud-first link. Upload the SAME blob to Firestore and share a
-         * short #c=ID link; fall back to the legacy long #e= link when the
-         * cloud is unreachable or the rules are not open for portal_shares. */
-        let clientUrl = '', shareMode = 'cloud';
+        /* c26/c152: cloud-first link. The share doc carries the SK-wrapped
+         * payload; the client's personal password (once set) survives every
+         * re-share. Falls back to the legacy long #e= link when the cloud is
+         * unreachable — that one keeps the old code-encrypted format. */
+        let clientUrl = '', shareMode = 'cloud', setupMode = true;
         try {
           const shareId = await portalShareId(clientId);
-          await uploadPortalShare(shareId, b64uEncode(blob));
+          let existing = null;
+          try {
+            await ensurePortalFirebase();
+            if (!firebase.apps.length) firebase.initializeApp(PORTAL_SHARE_CFG);
+            const snap = await firebase.firestore().collection('portal_shares').doc(shareId).get({ source: 'server' });
+            if (snap && snap.exists) existing = snap.data() || null;
+          } catch (_) {}
+          let wsk, setup;
+          if (existing && existing.wsk && existing.setup === false && !(opts && opts.forceSetup)) {
+            /* the client has a personal password — keep it working */
+            wsk = existing.wsk; setup = false;
+          } else {
+            /* first share, an unset password, or a trainer reset: wrap with the
+               code shown in this modal so the displayed code always works */
+            wsk = await dkWrapKey152(accessCode, skBytes152); setup = true;
+          }
+          await uploadPortalShare(shareId, { d: payloadB64Sk, v: 2, ts: Date.now(), wsk: wsk, setup: setup });
+          setupMode = setup;
           clientUrl = `${origin}client.html#c=${shareId}`;
+          /* c152: register the common phone login (name-free directory) */
+          await registerPortalDirectory(client, shareId);
           /* c94: give the freshly generated portal the trainer's past workouts
              too — «Объём по группам мышц» identical from minute one */
           try {
@@ -27501,6 +27596,16 @@ async function boot() {
           } catch (_) {}
         } catch (shareErr) {
           shareMode = 'legacy';
+          /* legacy format: the payload encrypted directly with the code */
+          const salt = crypto.getRandomValues(new Uint8Array(16));
+          const iv = crypto.getRandomValues(new Uint8Array(12));
+          const key = await derivePortalKey(accessCode, salt, ['encrypt']);
+          const plaintext = new TextEncoder().encode(JSON.stringify(payload));
+          const ciphertext = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, plaintext));
+          const blob = new Uint8Array(salt.length + iv.length + ciphertext.length);
+          blob.set(salt, 0);
+          blob.set(iv, salt.length);
+          blob.set(ciphertext, salt.length + iv.length);
           clientUrl = `${origin}client.html#e=1.${b64uEncode(blob)}`;
           console.warn('[openClientPortalModal] cloud share unavailable — legacy link:', shareErr);
           const se = String((shareErr && (shareErr.code || shareErr.message)) || shareErr);
@@ -27513,7 +27618,25 @@ async function boot() {
 
         document.getElementById('portal-modal-client-name').textContent = client.full_name;
         document.getElementById('btn-open-portal-tab').href = clientUrl;
-        document.getElementById('portal-access-code').textContent = accessCode;
+        /* c152: setup code only while the client has no personal password */
+        document.getElementById('portal-access-code').textContent = setupMode ? accessCode : '••••••';
+        const _ph152 = dkNormPhone(client.phone);
+        const _phStatus = document.getElementById('portal-phone-status');
+        if (_phStatus) {
+          _phStatus.textContent = shareMode !== 'cloud'
+            ? (t('portal.phoneLegacy') || '')
+            : (_ph152 ? t('portal.phoneOk', { phone: _ph152 }) : t('portal.phoneMissing'));
+          _phStatus.className = 'text-[11px] ' + ((shareMode === 'cloud' && _ph152) ? 'text-success' : 'text-warning');
+        }
+        const _resetBtn = document.getElementById('btn-portal-reset-pass');
+        if (_resetBtn) {
+          _resetBtn.classList.toggle('hidden', shareMode !== 'cloud');
+          _resetBtn.onclick = () => { resetPortalPassword(clientId); };
+        }
+        const _note152 = document.getElementById('portal-expiry-note');
+        if (_note152 && shareMode === 'cloud' && !setupMode) {
+          _note152.textContent = t('portal.passSetNote') || _note152.textContent;
+        }
 
         /* c135: blind-client preset — stored on the client record; toggling it
            regenerates the link so the payload actually carries the flag */
@@ -27573,7 +27696,9 @@ async function boot() {
         document.getElementById('btn-whatsapp-portal').onclick = () => {
           const phone = (client.phone || '').replace(/[^0-9]/g, '');
           const msg = encodeURIComponent(
-            t('clients.waInvite', { name: client.full_name || '', url: clientUrl, code: accessCode })
+            setupMode
+              ? t('clients.waInvite', { name: client.full_name || '', url: clientUrl, code: accessCode })
+              : t('clients.waInviteApp', { name: client.full_name || '', url: clientUrl })
           );
           const waUrl = phone ? `https://wa.me/${phone}?text=${msg}` : `https://wa.me/?text=${msg}`;
           window.open(waUrl, '_blank');
@@ -30744,8 +30869,10 @@ document.addEventListener('DOMContentLoaded', function () {
      * sign-in). LIST is DENIED — with it open anyone holding the config could
      * enumerate every encrypted share AND the plaintext history/check-in docs
      * (workouts, weight, nutrition). DELETE is denied too (no remote wipe).
-     * Writes keep the size guard; doc ids are unguessable 18-char hashes. */
-    var FIRESTORE_RULES = "rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /users/{uid}/{document=**} {\n      allow read, write: if request.auth != null && request.auth.uid == uid;\n    }\n    match /portal_shares/{id} {\n      allow get: if true;\n      allow create, update: if request.resource.data.d is string && request.resource.data.d.size() < 1000000;\n      allow delete: if false;\n    }\n  }\n}";
+     * c152: /portal_dir maps sha256('dkdir:'+phone) → shareId, GET-ONLY (no
+     * listing → the client base can not be scraped); the mapping is immutable.
+     * Writes keep size guards; doc ids are unguessable hashes. */
+    var FIRESTORE_RULES = "rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /users/{uid}/{document=**} {\n      allow read, write: if request.auth != null && request.auth.uid == uid;\n    }\n    match /portal_shares/{id} {\n      allow get: if true;\n      allow create, update: if request.resource.data.d is string && request.resource.data.d.size() < 1000000;\n      allow delete: if false;\n    }\n    match /portal_dir/{id} {\n      allow get: if true;\n      allow create: if request.resource.data.shareId is string && request.resource.data.shareId.size() < 64;\n      allow update: if request.resource.data.shareId == resource.data.shareId;\n      allow delete: if false;\n    }\n  }\n}";
 
     var _fbLoading = null, _auth = null, _fs = null, _user = null, _cfg = null;
     var _authError = null;
@@ -32633,7 +32760,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 151; /* numeric part of dk-build c151 */
+  var RUNNING = 152; /* numeric part of dk-build c152 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

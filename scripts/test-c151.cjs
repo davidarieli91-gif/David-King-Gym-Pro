@@ -50,8 +50,8 @@ ok('portal registers the service worker itself', html.indexOf("navigator.service
 ok('SW install is per-entry best-effort (no all-or-nothing addAll)', sw.indexOf('Promise.all(APP_SHELL.map((u) => cache.add(u).catch(() => null)))') >= 0 && sw.indexOf('cache.addAll(APP_SHELL)') < 0);
 
 /* ---------- STATIC: session / continue / lock / logout ---------- */
-ok('session helpers', html.indexOf("const DK_SESSION_KEY = 'dk_portal_session'") >= 0 && html.indexOf('function dkSessionGet()') >= 0 && html.indexOf('function dkSessionSet(shareId, code, name)') >= 0 && html.indexOf('function dkSessionClear()') >= 0);
-ok('successful unlock remembers the session', html.indexOf('function dkUnlockSuccess(parsed, code, shareId)') >= 0 && html.indexOf('dkSessionSet(shareId || dkCurrentShareId(), code,') >= 0);
+ok('session helpers', html.indexOf("const DK_SESSION_KEY = 'dk_portal_session'") >= 0 && html.indexOf('function dkSessionGet()') >= 0 && html.indexOf('function dkSessionSet(shareId, secret, name)') >= 0 && html.indexOf('function dkSessionClear()') >= 0);
+ok('successful unlock remembers the session', html.indexOf('function dkUnlockSuccess(parsed, secret, shareId)') >= 0 && html.indexOf('dkSessionSet(shareId || dkCurrentShareId(), secret,') >= 0);
 ok('one-tap resume decrypts cache then refreshes cloud', html.indexOf('async function dkResumeSession()') >= 0 && html.indexOf('await fetchAndCacheShare(s.shareId)') >= 0);
 ok('continue screen HTML (button + use-code fallback)', html.indexOf('id="unlock-continue"') >= 0 && html.indexOf('id="btn-continue"') >= 0 && html.indexOf('id="btn-use-code"') >= 0 && html.indexOf('id="unlock-code-block"') >= 0);
 ok('boot offers continue for a remembered share', html.indexOf('_sess151.shareId === sh.id') >= 0 && html.indexOf('showContinue(); return;') >= 0);
@@ -59,7 +59,7 @@ ok('lock + no-portal screens', html.indexOf('function showLocked()') >= 0 && htm
 ok('logout erases session + data and lands on no-portal', html.indexOf('function dkPortalLogout()') >= 0 && html.indexOf("localStorage.setItem(DK_LOGGED_OUT_KEY, '1')") >= 0 && html.indexOf('dkWipeData();') >= 0 && html.indexOf("if (localStorage.getItem(DK_LOGGED_OUT_KEY) === '1') { showNoPortal(); return; }") >= 0);
 ok('session is wiped by the device wipe too', html.indexOf("'dk_live_draft', 'dk_portal_session'") >= 0);
 ok('auto-lock (visibility + pure dkLockDue + selectable minutes)', html.indexOf('function dkAutoLockMin()') >= 0 && html.indexOf('dkLockDue(t0, Date.now(), dkAutoLockMin())') >= 0 && html.indexOf("sessionStorage.setItem('dk_hidden_at'") >= 0);
-ok('cached blob fallback on ANY fetch error', html.indexOf('fall back to the cached blob for ANY fetch failure') >= 0 && html.indexOf("e.code === 'offline' && cached") < 0);
+ok('cached blob fallback on ANY fetch error', html.indexOf('fall back to the cached doc for ANY fetch failure') >= 0 && html.indexOf("e.code === 'offline' && cached") < 0);
 ok('back-guard during a workout + beforeunload', html.indexOf("window.addEventListener('beforeunload'") >= 0 && html.indexOf("history.pushState({ dk151: 1 }") >= 0 && html.indexOf("t('exitWorkoutConfirm')") >= 0);
 ok('install banner + persistent storage', html.indexOf('function dkInstallBanner()') >= 0 && html.indexOf('beforeinstallprompt') >= 0 && html.indexOf('function dkInstallNow()') >= 0 && html.indexOf('navigator.storage.persist()') >= 0);
 
