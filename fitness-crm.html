@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c147" />
+<meta name="dk-build" content="c148" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2849,7 +2849,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c147</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c148</p>
             </div>
           </div>
 
@@ -4241,6 +4241,18 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
                 <div id="analytics-body-grid" class="grid grid-cols-3 gap-2.5"></div>
                 <p id="analytics-body-ratio" class="text-[11px] text-muted mt-2.5"></p>
+              </div>
+
+              <!-- c148: PORTAL NUTRITION — «съел» marks + food diary from the
+                   client's shared doc; fact/plan adherence per day -->
+              <div id="analytics-nutr" class="hidden bg-surface border border-border rounded-2xl shadow-card p-5">
+                <div class="flex items-center gap-2 mb-3">
+                  <h3 class="font-display font-bold text-sm" data-i18n="analytics.nutrTitle">Nutrition from portal</h3>
+                  <span class="ms-auto text-[10px] text-muted" data-i18n="analytics.nutrHint">checked meals + diary · last 7 days</span>
+                </div>
+                <p id="analytics-nutr-avg" class="text-[11px] text-muted mb-3"></p>
+                <div id="analytics-nutr-days" class="space-y-1.5"></div>
+                <p id="analytics-nutr-last" class="text-[11px] text-muted mt-3 leading-relaxed"></p>
               </div>
 
               <!-- Volume per muscle group — c127: honest engine (done-only, kg, synergists 30%) -->
@@ -12770,6 +12782,10 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     let _lastWorkouts = [];
     let _lastNutrition = [];
     let _clients = [];
+    /* c148: portal nutrition days (checked meals + diary) fetched from the
+       shared doc — merged into adherence; bound to the client they came from */
+    let _cloudNutr148 = [];
+    let _cloudNutrCid148 = null;
 
     /** Populate the client selector dropdown. */
     async function loadClientList() {
@@ -12857,9 +12873,13 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       /* c128: cache for the day drill-down (no refetch on a day tap) */
       _lastWorkouts = workoutsAll || [];
       _lastNutrition = nutrition || [];
-      const metrics = computeMetrics(workoutsAll, nutrition);
+      /* c148: use the portal nutrition only for the client it was fetched
+         for, then merge one log per date (portal day wins) */
+      const nutr148 = (_cloudNutrCid148 === _clientId) ? _cloudNutr148 : [];
+      const nutrMerged148 = dkMergeNutrition(nutrition, nutr148);
+      const metrics = computeMetrics(workoutsAll, nutrMerged148);
       renderMetrics(metrics);
-      renderCalendar(workoutsAll, nutrition);
+      renderCalendar(workoutsAll, nutrMerged148);
       /* c128: the volume panel now RESPECTS the Day/Week/Month selector —
          it used to render the WHOLE history no matter the range, which made
          the three buttons cosmetically identical */
@@ -12884,6 +12904,24 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           : Promise.resolve([]);
         bodyP.then(function (cb129) { if (_clientId === cid129) renderBodyMetrics(cb129 || []); })
              .catch(function () { if (_clientId === cid129) renderBodyMetrics([]); });
+      } catch (_) {}
+      /* c148: nutrition from the portal (checked plan items + food diary) —
+         same non-blocking pattern; card + adherence re-render on resolve */
+      try {
+        renderClientNutr(nutr148);
+        const cid148 = _clientId;
+        const nutrP = (typeof window.dkFetchClientNutr === 'function')
+          ? Promise.race([window.dkFetchClientNutr(cid148), new Promise(res => setTimeout(() => res([]), 5000))])
+          : Promise.resolve([]);
+        nutrP.then(function (nr148) {
+          if (_clientId !== cid148) return;
+          _cloudNutr148 = nr148 || [];
+          _cloudNutrCid148 = cid148;
+          renderClientNutr(_cloudNutr148);
+          const merged148 = dkMergeNutrition(_lastNutrition, _cloudNutr148);
+          renderMetrics(computeMetrics(_lastWorkouts, merged148));
+          renderCalendar(_lastWorkouts, merged148);
+        }).catch(function () { if (_clientId === cid148) renderClientNutr([]); });
       } catch (_) {}
       if (_daySel) renderDayDetail(_daySel);
       else hideDayDetail();
@@ -13004,6 +13042,42 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         if (logCount > 0) { sum += logSum / logCount; count++; }
       });
       return count > 0 ? Math.round((sum / count) * 100) : null;
+    }
+
+    /* c148: portal nutrition day → a nutrition-log shape computeAdherence
+       understands (targets → target_*, day totals → ONE per-100g item of
+       100 g so the ×g/100 math is neutral) */
+    function nutrToLogs(nutrArr) {
+      return (nutrArr || []).map(r => {
+        const d = String((r && r.date) || '');
+        const ts = Number(r && r.ts) || Date.parse(d + 'T12:00:00') || 0;
+        if (!ts || !r.target || !r.totals) return null;
+        return {
+          date: ts, created_at: ts, _cloud148: true,
+          target_calories: Number(r.target.c) || 0,
+          target_protein: Number(r.target.p) || 0,
+          target_carbs: Number(r.target.cb) || 0,
+          target_fat: Number(r.target.f) || 0,
+          meals: [{ items: [{ grams: 100, nutrition: {
+            calories: Number(r.totals.c) || 0, protein: Number(r.totals.p) || 0,
+            carbs: Number(r.totals.cb) || 0, fat: Number(r.totals.f) || 0 } }] }]
+        };
+      }).filter(Boolean);
+    }
+
+    /* c148: merge the trainer's own nutrition logs with the portal's days —
+       one log per calendar date, the portal day (what the client ACTUALLY
+       ate) wins over the trainer's plan log for the same date */
+    function dkMergeNutrition(localLogs, nutrArr) {
+      const byDate = new Map();
+      (localLogs || []).forEach(l => {
+        if (!l) return;
+        const ts = Number(l.date || l.created_at) || 0;
+        if (!ts) return;
+        byDate.set(dateKey(new Date(ts)), l);
+      });
+      nutrToLogs(nutrArr).forEach(c => byDate.set(dateKey(new Date(c.date)), c));
+      return Array.from(byDate.values());
     }
 
     /** Render the 4 key metric cards. */
@@ -13295,6 +13369,46 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       }
       card.classList.remove('hidden');
     }
+
+    /** c148: portal nutrition card — «съел» marks + food diary mirrored into
+     *  the shared doc. Fact/plan adherence bars for the last 7 days + the
+     *  latest day's totals and food names. Hidden without data. */
+    function renderClientNutr(nutrArr) {
+      const card = document.getElementById('analytics-nutr');
+      const days = document.getElementById('analytics-nutr-days');
+      const avgEl = document.getElementById('analytics-nutr-avg');
+      const lastEl = document.getElementById('analytics-nutr-last');
+      if (!card || !days) return;
+      const arr = (nutrArr || []).filter(r => r && r.target && r.totals);
+      if (!arr.length) { card.classList.add('hidden'); return; }
+      const fmtD = d => { const p2 = String(d).split('-'); return p2.length === 3 ? p2[2] + '.' + p2[1] : String(d); };
+      const adh = computeAdherence(nutrToLogs(arr.slice(-7)));
+      if (avgEl) avgEl.innerHTML = adh != null
+        ? escapeHTML(t('analytics.nutrAvg')) + ': <span class="font-mono font-bold">' + adh + '%</span>'
+        : '';
+      days.innerHTML = arr.slice(-7).map(r => {
+        const tc = Number(r.target.c) || 0;
+        const v = tc > 0 ? Math.min(140, (Number(r.totals.c) || 0) / tc * 100) : 0;
+        const col = tc <= 0 ? 'bg-border' : (v >= 85 && v <= 115) ? 'bg-emerald-500' : (v >= 60 && v <= 135) ? 'bg-amber-500' : 'bg-red-500/70';
+        const d = new Date(Date.parse(r.date + 'T12:00:00') || Date.now());
+        const dow = !isNaN(d) ? d.toLocaleDateString(localeString(), { weekday: 'short' }) : '';
+        return `<div class="flex items-center gap-2 text-[11px]">
+          <span class="font-mono text-muted w-16 shrink-0">${escapeHTML(fmtD(r.date))} ${escapeHTML(dow)}</span>
+          <div class="flex-1 h-2 bg-surface-2 rounded-full overflow-hidden"><div class="h-full ${col} rounded-full" style="width:${Math.max(3, v)}%"></div></div>
+          <span class="font-mono text-muted shrink-0">${Math.round(Number(r.totals.c) || 0)}/${Math.round(tc)}</span>
+        </div>`;
+      }).join('');
+      if (lastEl) {
+        const r = arr[arr.length - 1];
+        const names = (r.items || []).map(i => i && i.n).concat((r.diary || []).map(i => i && i.n)).filter(Boolean).slice(0, 6).join(', ');
+        lastEl.innerHTML = '<span class="font-semibold">' + escapeHTML(t('analytics.nutrLast')) + '</span> ' + escapeHTML(fmtD(r.date)) +
+          (r.plan ? ' · ' + escapeHTML(r.plan) : '') +
+          ' · <span class="font-mono">' + Math.round(Number(r.totals.c) || 0) + '/' + Math.round(Number(r.target.c) || 0) + ' kcal · Б ' + Math.round(Number(r.totals.p) || 0) + '/' + Math.round(Number(r.target.p) || 0) + ' · Ж ' + Math.round(Number(r.totals.f) || 0) + '/' + Math.round(Number(r.target.f) || 0) + ' · У ' + Math.round(Number(r.totals.cb) || 0) + '/' + Math.round(Number(r.target.cb) || 0) + '</span>' +
+          (names ? '<br>' + escapeHTML(names) : '');
+      }
+      card.classList.remove('hidden');
+    }
+
 
     /* ======== c130: TIME-SERIES PROGRESS (audit item ② — «no progress
        charts anywhere in the system»). Three cards fed by the SHARED
@@ -26507,19 +26621,20 @@ async function boot() {
            the «empty» payload overwrite the portal's workouts/check-ins */
         await firebase.firestore().runTransaction(async (trx) => {
           const snap = await trx.get(ref);
-          let recs = [], checks = [];   /* c125: checks preserved — additive field, the portal owns it */
+          let recs = [], checks = [], nutr = [];   /* c125: checks preserved — the portal owns it; c148: nutrition too */
           const data = snap && snap.exists ? snap.data() : null;
           if (data && data.d) {
             let p = null;
             try { p = JSON.parse(data.d); } catch (e) { throw new Error('corrupt payload — push aborted'); }
             if (p && Array.isArray(p.recs)) recs = p.recs;
             if (p && Array.isArray(p.checks)) checks = p.checks;
+            if (p && Array.isArray(p.nutr)) nutr = p.nutr;
           }
           recs = recs.filter(r => r && Number(r.ts) !== Number(rec.ts));
           recs.push(rec);
           recs.sort((a, b) => (a.ts || 0) - (b.ts || 0));
           /* c125: write recs AND the untouched checks — never drop the portal's check-ins */
-          trx.set(ref, { d: JSON.stringify({ recs: recs.slice(-200), checks: checks }), v: 2, ts: Date.now() });
+          trx.set(ref, { d: JSON.stringify({ recs: recs.slice(-200), checks: checks, nutr: nutr }), v: 2, ts: Date.now() });
         });
         return true;
       } catch (e) { console.warn('[hist-sync] CRM push failed', e); return false; }
@@ -26603,6 +26718,41 @@ async function boot() {
       } catch (e) { console.warn('[hist-sync] CRM checks fetch failed', e); return []; }
     };
 
+    /* c148: read the portal's nutrition days from the SAME shared doc (additive
+       `nutr` field: [{date, ts, plan, target{c,p,cb,f}, totals{c,p,cb,f},
+       items[≤40], diary[≤30]}]). Read-only: never creates the doc. The
+       analytics adherence merges these days («факт/план») with the trainer's
+       own logs — cloud wins for a date the client actually logged. */
+    window.dkFetchClientNutr = async function (clientId) {
+      try {
+        if (!clientId) return [];
+        const docId = await portalHistoryDocId(clientId);
+        await ensurePortalFirebase();
+        if (!firebase.apps.length) firebase.initializeApp(PORTAL_SHARE_CFG);
+        const snap = await Promise.race([
+          firebase.firestore().collection('portal_shares').doc(docId).get({ source: 'server' }),
+          new Promise(res => setTimeout(() => res(null), 5000))
+        ]);
+        if (!snap || !snap.exists) return [];
+        const data = snap.data() || {};
+        if (!data.d) return [];
+        const p = JSON.parse(data.d);
+        return (Array.isArray(p.nutr) ? p.nutr : [])
+          .filter(r => r && /^\d{4}-\d{2}-\d{2}$/.test(String(r.date || '')) && r.target && r.totals)
+          .map(r => ({
+            date: String(r.date),
+            ts: Number(r.ts) || Date.parse(r.date + 'T12:00:00') || 0,
+            plan: String(r.plan || '').slice(0, 60),
+            target: { c: Number(r.target.c) || 0, p: Number(r.target.p) || 0, cb: Number(r.target.cb) || 0, f: Number(r.target.f) || 0 },
+            totals: { c: Number(r.totals.c) || 0, p: Number(r.totals.p) || 0, cb: Number(r.totals.cb) || 0, f: Number(r.totals.f) || 0 },
+            items: (Array.isArray(r.items) ? r.items : []).slice(0, 40).map(i => ({ n: String(i.n || '').slice(0, 60), g: Math.round(Number(i.g) || 0), k: Math.round(Number(i.k) || 0) })),
+            diary: (Array.isArray(r.diary) ? r.diary : []).slice(0, 30).map(i => ({ n: String(i.n || '').slice(0, 60), g: Math.round(Number(i.g) || 0), k: Math.round(Number(i.k) || 0) }))
+          }))
+          .sort((a, b) => (Date.parse(a.date) || 0) - (Date.parse(b.date) || 0))
+          .slice(-90);
+      } catch (e) { console.warn('[hist-sync] CRM nutr fetch failed', e); return []; }
+    };
+
     /* c94: convert a CRM workout_history record to the portal schema
        (c98: exInfo = { exercise_id → {g, syn} } — canonical group +
        synergists so the portal's recovery map computes EXACTLY like the
@@ -26670,20 +26820,21 @@ async function boot() {
         let _added131 = 0;
         await firebase.firestore().runTransaction(async (trx) => {
           const snap = await trx.get(ref);
-          let remote = [], remoteChecks = [];   /* c125: preserve the portal's checks on backfill */
+          let remote = [], remoteChecks = [], remoteNutr = [];   /* c125: preserve the portal's checks on backfill; c148: nutrition too */
           const data = snap && snap.exists ? snap.data() : null;
           if (data && data.d) {
             let p = null;
             try { p = JSON.parse(data.d); } catch (e) { throw new Error('corrupt payload — backfill aborted'); }
             if (p && Array.isArray(p.recs)) remote = p.recs;
             if (p && Array.isArray(p.checks)) remoteChecks = p.checks;
+            if (p && Array.isArray(p.nutr)) remoteNutr = p.nutr;
           }
           const seen = new Set(remote.map(r => Number(r && r.ts) || 0));
           const add = recs.filter(r => !seen.has(Number(r.ts) || 0));
           if (!add.length) return; /* cloud already has everything */
           const merged = remote.concat(add).sort((a, b) => (a.ts || 0) - (b.ts || 0));
           /* c125: recs + the untouched checks — additive, never dropped */
-          trx.set(ref, { d: JSON.stringify({ recs: merged.slice(-200), checks: remoteChecks }), v: 2, ts: Date.now() });
+          trx.set(ref, { d: JSON.stringify({ recs: merged.slice(-200), checks: remoteChecks, nutr: remoteNutr }), v: 2, ts: Date.now() });
           _added131 = add.length;
         });
         if (_added131) console.info('[hist-sync] backfilled ' + _added131 + '/' + recs.length + ' workout(s) for client ' + clientId);
@@ -31898,7 +32049,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 147; /* numeric part of dk-build c147 */
+  var RUNNING = 148; /* numeric part of dk-build c148 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

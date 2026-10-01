@@ -2399,6 +2399,14 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
           </div>
         </div>
       </div>
+      <!-- c148: «съедено/цель» — отметки в плане + дневник; уходит тренеру в облако -->
+      <div id="nutr-progress" class="glass rounded-2xl p-4 space-y-3 hidden">
+        <div class="flex items-center justify-between">
+          <h3 class="font-display font-bold text-sm text-text" id="txt-nutr-progress">Съедено сегодня</h3>
+          <span id="nutr-progress-sub" class="text-[10px] text-muted"></span>
+        </div>
+        <div id="nutr-rings" class="grid grid-cols-4 gap-1.5"></div>
+      </div>
       <div class="glass rounded-2xl p-4 flex items-center justify-between">
         <div>
           <div class="text-xs font-bold text-text flex items-center gap-1.5">
@@ -2441,6 +2449,12 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
         <button id="btn-diary-add" class="w-full bg-primary/15 hover:bg-primary/25 text-indigo-300 border border-primary/30 text-xs font-bold py-2 rounded-xl transition">+ Добавить в дневник</button>
         <div id="diary-list" class="space-y-1.5"></div>
         <p class="text-[10px] text-muted leading-relaxed" id="txt-diary-hint">Дневник хранится на устройстве и уходит тренеру в WhatsApp-отчёте. Отмечай съеденное из плана галочками выше.</p>
+      </div>
+      <!-- c148: микронутриенты по отмеченным продуктам плана (данные из базы) -->
+      <div id="nutr-micro" class="glass rounded-2xl p-4 space-y-2 hidden">
+        <h3 class="font-display font-bold text-sm text-text" id="txt-nutr-micro">Микронутриенты</h3>
+        <p class="text-[10px] text-muted" id="txt-nutr-micro-hint">По отмеченным продуктам плана · % от суточной нормы</p>
+        <div id="nutr-micro-list" class="space-y-1.5"></div>
       </div>
     </section>
 
@@ -2713,7 +2727,7 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       targetMuscle:'Целевые',auxMuscle:'Вспомогательные',rest:'Отдых',
       liveBadge:'Идёт тренировка',statEx:'Упражнения',statSets:'Подходы',statVol:'Объём',
       doneAllBtn:'Сделал всё',prevLabel:'Пред.',weightLabel:'Вес',repsLabel:'Повт.',rpeLabel:'RPE',timeLabel:'Время',distLabel:'Дистанция',distShortLabel:'Дист',
-      addSet:'+ подход',setWarmup:'Разминка',setDrop:'Дроп',setFailure:'Отказ',setAmrap:'AMRAP',setNormal:'Обычный',supersetLabel:'Суперсет',timeToggle:'мин ⇄ сек',a11yDoneSet:'Отметить подход выполненным',a11yRemoveSet:'Удалить подход',a11yFontDec:'Уменьшить шрифт',a11yFontInc:'Увеличить шрифт',a11yTheme:'Переключить тему',a11yThemeMenu:'Выбор темы',a11ySettings:'Настройки',a11yWaterPlus:'Добавить стакан воды',a11yWaterMinus:'Убрать стакан воды',a11yRestMinus:'Минус 15 секунд',a11yRestPlus:'Плюс 30 секунд',a11yRestSkip:'Пропустить отдых',a11yRemoveDiary:'Удалить из дневника',a11yCloseViewer:'Закрыть просмотр',voiceTechPlay:'Прочитать технику',voiceTechNext:'Далее',voiceTechRepeat:'Повторить',voiceTechStop:'Стоп',voiceStepWord:'Шаг',voiceStepOf:'из',voiceStart:'Тренировка начата',voiceResume:'Продолжаем тренировку',voiceSetWord:'Подход',voiceSetDone:'выполнен',voiceSetUndone:'отменён',voiceNextSet:'Следующий подход',voiceKg:'килограммов',voiceLb:'фунтов',voiceReps:'повторов',voiceRest:'Отдых',voiceRestSec:'секунд',voiceFinish:'Тренировка завершена',voiceSetAdded:'Подход добавлен',voiceSetRemoved:'Подход удалён',voiceRpe:'Уровень тяжести',voiceMinutes:'минут',voiceMeters:'метров',voiceKm:'километров',voiceCm:'сантиметров',voiceUnitKg:'килограммы',voiceUnitLb:'фунты',a11yOpenCard:'Открыть карточку упражнения',speedLabel:'Скорость',inclineLabel:'Угол 1–20',levelLabel:'Уровень 1–20',a11ySetTimer:'Таймер подхода',voiceTimerStart:'Таймер запущен',voiceTimeUp:'Время вышло',voiceProgress:'Прогресс — лучше прошлого раза',timerNoTime:'Укажите время подхода',voiceInstallBadge:'Голос для этого языка не установлен — нажмите, чтобы исправить',
+      addSet:'+ подход',setWarmup:'Разминка',setDrop:'Дроп',setFailure:'Отказ',setAmrap:'AMRAP',setNormal:'Обычный',supersetLabel:'Суперсет',timeToggle:'мин ⇄ сек',a11yDoneSet:'Отметить подход выполненным',a11yRemoveSet:'Удалить подход',a11yFontDec:'Уменьшить шрифт',a11yFontInc:'Увеличить шрифт',a11yTheme:'Переключить тему',a11yThemeMenu:'Выбор темы',a11ySettings:'Настройки',a11yWaterPlus:'Добавить стакан воды',a11yWaterMinus:'Убрать стакан воды',a11yRestMinus:'Минус 15 секунд',a11yRestPlus:'Плюс 30 секунд',a11yRestSkip:'Пропустить отдых',a11yRemoveDiary:'Удалить из дневника',a11yCloseViewer:'Закрыть просмотр',voiceTechPlay:'Прочитать технику',voiceTechNext:'Далее',voiceTechRepeat:'Повторить',voiceTechStop:'Стоп',voiceStepWord:'Шаг',voiceStepOf:'из',voiceStart:'Тренировка начата',voiceResume:'Продолжаем тренировку',voiceSetWord:'Подход',voiceSetDone:'выполнен',voiceSetUndone:'отменён',voiceNextSet:'Следующий подход',voiceKg:'килограммов',voiceLb:'фунтов',voiceReps:'повторов',voiceRest:'Отдых',voiceRestSec:'секунд',voiceFinish:'Тренировка завершена',voiceSetAdded:'Подход добавлен',voiceSetRemoved:'Подход удалён',voiceRpe:'Уровень тяжести',voiceMinutes:'минут',voiceMeters:'метров',voiceKm:'километров',voiceCm:'сантиметров',voiceUnitKg:'килограммы',voiceUnitLb:'фунты',a11yOpenCard:'Открыть карточку упражнения',speedLabel:'Скорость',inclineLabel:'Угол 1–20',levelLabel:'Уровень 1–20',a11ySetTimer:'Таймер подхода',voiceTimerStart:'Таймер запущен',voiceTimeUp:'Время вышло',voiceProgress:'Прогресс — лучше прошлого раза',timerNoTime:'Укажите время подхода',voiceInstallBadge:'Голос для этого языка не установлен — нажмите, чтобы исправить',nutrProgressTitle:'Съедено сегодня',nutrMicroTitle:'Микронутриенты',nutrMicroHint:'По отмеченным продуктам плана · % от суточной нормы',fiberLbl:'Клетчатка',sodiumLbl:'Натрий',ironLbl:'Железо',calciumLbl:'Кальций',potassiumLbl:'Калий',vitCLbl:'Витамин C',
       restDone:'Отдых окончен!',skipRest:'Пропустить',restPerEx:'Отдых, с',
       finishConfirm:'Завершить тренировку?',draftFound:'Найдена незавершённая тренировка. Продолжить?',
       draftRestored:'Тренировка восстановлена ✓',workoutSaved:'Тренировка сохранена ✓',
@@ -2764,7 +2778,7 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       targetMuscle:'Target',auxMuscle:'Auxiliary',rest:'Rest',
       liveBadge:'Workout in progress',statEx:'Exercises',statSets:'Sets',statVol:'Volume',
       doneAllBtn:'Done all',prevLabel:'Prev.',weightLabel:'Weight',repsLabel:'Reps',rpeLabel:'RPE',timeLabel:'Time',distLabel:'Distance',distShortLabel:'Dist',
-      addSet:'+ set',setWarmup:'Warmup',setDrop:'Drop',setFailure:'Failure',setAmrap:'AMRAP',setNormal:'Normal',supersetLabel:'Superset',timeToggle:'min ⇄ sec',a11yDoneSet:'Mark set done',a11yRemoveSet:'Remove set',a11yFontDec:'Decrease font size',a11yFontInc:'Increase font size',a11yTheme:'Toggle theme',a11yThemeMenu:'Choose theme',a11ySettings:'Settings',a11yWaterPlus:'Add a glass of water',a11yWaterMinus:'Remove a glass of water',a11yRestMinus:'Minus 15 seconds',a11yRestPlus:'Plus 30 seconds',a11yRestSkip:'Skip rest',a11yRemoveDiary:'Remove from diary',a11yCloseViewer:'Close viewer',voiceTechPlay:'Read technique',voiceTechNext:'Next',voiceTechRepeat:'Repeat',voiceTechStop:'Stop',voiceStepWord:'Step',voiceStepOf:'of',voiceStart:'Workout started',voiceResume:'Resuming workout',voiceSetWord:'Set',voiceSetDone:'done',voiceSetUndone:'undone',voiceNextSet:'Next set',voiceKg:'kilograms',voiceLb:'pounds',voiceReps:'reps',voiceRest:'Rest',voiceRestSec:'seconds',voiceFinish:'Workout complete',voiceSetAdded:'Set added',voiceSetRemoved:'Set removed',voiceRpe:'Effort level',voiceMinutes:'minutes',voiceMeters:'meters',voiceKm:'kilometers',voiceCm:'centimeters',voiceUnitKg:'kilograms',voiceUnitLb:'pounds',a11yOpenCard:'Open exercise card',speedLabel:'Speed',inclineLabel:'Incline 1–20',levelLabel:'Level 1–20',a11ySetTimer:'Set timer',voiceTimerStart:'Timer started',voiceTimeUp:'Time is up',voiceProgress:'Progress — better than last time',timerNoTime:'Enter the set time first',voiceInstallBadge:'No voice for this language — tap to fix',
+      addSet:'+ set',setWarmup:'Warmup',setDrop:'Drop',setFailure:'Failure',setAmrap:'AMRAP',setNormal:'Normal',supersetLabel:'Superset',timeToggle:'min ⇄ sec',a11yDoneSet:'Mark set done',a11yRemoveSet:'Remove set',a11yFontDec:'Decrease font size',a11yFontInc:'Increase font size',a11yTheme:'Toggle theme',a11yThemeMenu:'Choose theme',a11ySettings:'Settings',a11yWaterPlus:'Add a glass of water',a11yWaterMinus:'Remove a glass of water',a11yRestMinus:'Minus 15 seconds',a11yRestPlus:'Plus 30 seconds',a11yRestSkip:'Skip rest',a11yRemoveDiary:'Remove from diary',a11yCloseViewer:'Close viewer',voiceTechPlay:'Read technique',voiceTechNext:'Next',voiceTechRepeat:'Repeat',voiceTechStop:'Stop',voiceStepWord:'Step',voiceStepOf:'of',voiceStart:'Workout started',voiceResume:'Resuming workout',voiceSetWord:'Set',voiceSetDone:'done',voiceSetUndone:'undone',voiceNextSet:'Next set',voiceKg:'kilograms',voiceLb:'pounds',voiceReps:'reps',voiceRest:'Rest',voiceRestSec:'seconds',voiceFinish:'Workout complete',voiceSetAdded:'Set added',voiceSetRemoved:'Set removed',voiceRpe:'Effort level',voiceMinutes:'minutes',voiceMeters:'meters',voiceKm:'kilometers',voiceCm:'centimeters',voiceUnitKg:'kilograms',voiceUnitLb:'pounds',a11yOpenCard:'Open exercise card',speedLabel:'Speed',inclineLabel:'Incline 1–20',levelLabel:'Level 1–20',a11ySetTimer:'Set timer',voiceTimerStart:'Timer started',voiceTimeUp:'Time is up',voiceProgress:'Progress — better than last time',timerNoTime:'Enter the set time first',voiceInstallBadge:'No voice for this language — tap to fix',nutrProgressTitle:'Eaten today',nutrMicroTitle:'Micronutrients',nutrMicroHint:'From checked plan items · % of daily value',fiberLbl:'Fiber',sodiumLbl:'Sodium',ironLbl:'Iron',calciumLbl:'Calcium',potassiumLbl:'Potassium',vitCLbl:'Vitamin C',
       restDone:'Rest is over!',skipRest:'Skip',restPerEx:'Rest, s',
       finishConfirm:'Finish workout?',draftFound:'Unfinished workout found. Resume?',
       draftRestored:'Workout restored ✓',workoutSaved:'Workout saved ✓',
@@ -2815,7 +2829,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       targetMuscle:'יעד',auxMuscle:'עזר',rest:'מנוחה',
       liveBadge:'אימון מתבצע',statEx:'תרגילים',statSets:'סטים',statVol:'נפח',
       doneAllBtn:'בוצע הכל',prevLabel:'קודם',weightLabel:'משקל',repsLabel:'חזרות',rpeLabel:'RPE',timeLabel:'זמן',distLabel:'מרחק',distShortLabel:'מרחק',
-      addSet:'+ סט',setWarmup:'חימום',setDrop:'דרופ',setFailure:'כשל',setAmrap:'AMRAP',setNormal:'רגיל',supersetLabel:'סופרסט',timeToggle:'דק׳ ⇄ שנ׳',a11yDoneSet:'סמן סט כבוצע',a11yRemoveSet:'הסר סט',a11yFontDec:'הקטן גופן',a11yFontInc:'הגדל גופן',a11yTheme:'החלף ערכת נושא',a11yThemeMenu:'בחירת ערכת נושא',a11ySettings:'הגדרות',a11yWaterPlus:'הוסף כוס מים',a11yWaterMinus:'הסר כוס מים',a11yRestMinus:'פחות 15 שניות',a11yRestPlus:'ועוד 30 שניות',a11yRestSkip:'דלג על מנוחה',a11yRemoveDiary:'הסר מהיומן',a11yCloseViewer:'סגור תצוגה',voiceTechPlay:'קרא טכניקה',voiceTechNext:'הבא',voiceTechRepeat:'חזור',voiceTechStop:'עצור',voiceStepWord:'צעד',voiceStepOf:'מתוך',voiceStart:'האימון החל',voiceResume:'ממשיכים באימון',voiceSetWord:'סט',voiceSetDone:'בוצע',voiceSetUndone:'בוטל',voiceNextSet:'הסט הבא',voiceKg:'קילוגרמים',voiceLb:'ליברות',voiceReps:'חזרות',voiceRest:'מנוחה',voiceRestSec:'שניות',voiceFinish:'האימון הושלם',voiceSetAdded:'הסט נוסף',voiceSetRemoved:'הסט הוסר',voiceRpe:'רמת קושי',voiceMinutes:'דקות',voiceMeters:'מטרים',voiceKm:'קילומטרים',voiceCm:'סנטימטרים',voiceUnitKg:'קילוגרמים',voiceUnitLb:'ליברות',a11yOpenCard:'פתח כרטיס תרגיל',speedLabel:'מהירות',inclineLabel:'שיפוע 1–20',levelLabel:'רמה 1–20',a11ySetTimer:'טיימר סט',voiceTimerStart:'הטיימר הופעל',voiceTimeUp:'הזמן נגמר',voiceProgress:'התקדמות — טוב יותר מהפעם הקודמת',timerNoTime:'הזן קודם זמן לסט',voiceInstallBadge:'אין קול לשפה הזו — הקישו לתיקון',
+      addSet:'+ סט',setWarmup:'חימום',setDrop:'דרופ',setFailure:'כשל',setAmrap:'AMRAP',setNormal:'רגיל',supersetLabel:'סופרסט',timeToggle:'דק׳ ⇄ שנ׳',a11yDoneSet:'סמן סט כבוצע',a11yRemoveSet:'הסר סט',a11yFontDec:'הקטן גופן',a11yFontInc:'הגדל גופן',a11yTheme:'החלף ערכת נושא',a11yThemeMenu:'בחירת ערכת נושא',a11ySettings:'הגדרות',a11yWaterPlus:'הוסף כוס מים',a11yWaterMinus:'הסר כוס מים',a11yRestMinus:'פחות 15 שניות',a11yRestPlus:'ועוד 30 שניות',a11yRestSkip:'דלג על מנוחה',a11yRemoveDiary:'הסר מהיומן',a11yCloseViewer:'סגור תצוגה',voiceTechPlay:'קרא טכניקה',voiceTechNext:'הבא',voiceTechRepeat:'חזור',voiceTechStop:'עצור',voiceStepWord:'צעד',voiceStepOf:'מתוך',voiceStart:'האימון החל',voiceResume:'ממשיכים באימון',voiceSetWord:'סט',voiceSetDone:'בוצע',voiceSetUndone:'בוטל',voiceNextSet:'הסט הבא',voiceKg:'קילוגרמים',voiceLb:'ליברות',voiceReps:'חזרות',voiceRest:'מנוחה',voiceRestSec:'שניות',voiceFinish:'האימון הושלם',voiceSetAdded:'הסט נוסף',voiceSetRemoved:'הסט הוסר',voiceRpe:'רמת קושי',voiceMinutes:'דקות',voiceMeters:'מטרים',voiceKm:'קילומטרים',voiceCm:'סנטימטרים',voiceUnitKg:'קילוגרמים',voiceUnitLb:'ליברות',a11yOpenCard:'פתח כרטיס תרגיל',speedLabel:'מהירות',inclineLabel:'שיפוע 1–20',levelLabel:'רמה 1–20',a11ySetTimer:'טיימר סט',voiceTimerStart:'הטיימר הופעל',voiceTimeUp:'הזמן נגמר',voiceProgress:'התקדמות — טוב יותר מהפעם הקודמת',timerNoTime:'הזן קודם זמן לסט',voiceInstallBadge:'אין קול לשפה הזו — הקישו לתיקון',nutrProgressTitle:'נאכל היום',nutrMicroTitle:'מיקרו-נוטריאנטים',nutrMicroHint:'לפי פריטי התוכנית המסומנים · % מהצריכה היומית',fiberLbl:'סיבים',sodiumLbl:'נתרן',ironLbl:'ברזל',calciumLbl:'סידן',potassiumLbl:'אשלגן',vitCLbl:'ויטמין C',
       restDone:'המנוחה נגמרה!',skipRest:'דלג',restPerEx:'מנוחה, שנ׳',
       finishConfirm:'לסיים את האימון?',draftFound:'נמצא אימון שלא הושלם. להמשיך?',
       draftRestored:'האימון שוחזר ✓',workoutSaved:'האימון נשמר ✓',
@@ -2961,6 +2975,10 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     /* c125: push local check-ins into the shared doc (additive `checks`:
        ts/weight/energy ONLY) — idempotent, writes only what's missing */
     try { dkPushChecks(); } catch (e) {}
+    /* c148: mirror the day's nutrition (checked meals + diary) into the same
+       shared doc — the coach's analytics reads «факт/план» adherence */
+    try { renderNutrProgress(); renderNutrMicro(); } catch (e) {}
+    try { dkPushNutr(); } catch (e) {}
     /* c131: workouts finished offline wait in the local pending queue —
        flush them as soon as a share id is known (silently fails offline) */
     try { dkFlushPending(); } catch (e) {}
@@ -3104,7 +3122,13 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         if (sid) { startShareFlow(sid); return; }
       }
       if (hash.startsWith('#data=')) {
-        const parsed = JSON.parse(atob(decodeURIComponent(hash.substring(6))));
+        /* c148: the legacy #data= link carries UTF-8 JSON, but atob returns a
+           Latin-1 binary string — Russian/Hebrew names arrived as mojibake.
+           Decode the bytes as UTF-8 (same as the #e=/#c= blob paths). */
+        const bin = atob(decodeURIComponent(hash.substring(6)));
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i) & 0xff;
+        const parsed = JSON.parse(new TextDecoder('utf-8').decode(bytes));
         history.replaceState(null,'',window.location.pathname);
         applyData(parsed); return;
       }
@@ -3205,6 +3229,10 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     document.getElementById('lbl-diary-c').textContent = t('macroCShort');
     document.getElementById('txt-diary-hint').textContent = t('diaryHint');
     document.getElementById('diary-food-name').placeholder = t('diaryFoodPh');
+    /* c148: nutrition bridge labels */
+    const _np148 = document.getElementById('txt-nutr-progress'); if (_np148) _np148.textContent = t('nutrProgressTitle');
+    const _nm148 = document.getElementById('txt-nutr-micro'); if (_nm148) _nm148.textContent = t('nutrMicroTitle');
+    const _nmh148 = document.getElementById('txt-nutr-micro-hint'); if (_nmh148) _nmh148.textContent = t('nutrMicroHint');
     const _dfs134 = document.getElementById('diary-food-search');
     if (_dfs134) _dfs134.placeholder = t('diarySearchPh'); /* c134: DB search */
     const h = document.getElementById('hdr-name');
@@ -4295,7 +4323,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
               try { p = JSON.parse(data.d) || {}; } catch (e) { throw new Error('corrupt payload'); }
             }
           }
-          return mutate(trx, ref, { recs: Array.isArray(p.recs) ? p.recs : [], checks: Array.isArray(p.checks) ? p.checks : [] });
+          return mutate(trx, ref, { recs: Array.isArray(p.recs) ? p.recs : [], checks: Array.isArray(p.checks) ? p.checks : [], nutr: Array.isArray(p.nutr) ? p.nutr : [] });
         });
       });
     });
@@ -4304,7 +4332,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     const docId = dkHistDocId();
     if (!docId || !rec) return Promise.resolve(false);
     return dkHistTx(docId, function (trx, ref, pay) {
-      trx.set(ref, { d: JSON.stringify({ recs: dkMergeHistRecs(pay.recs, rec), checks: pay.checks }), v: 2, ts: Date.now() });
+      trx.set(ref, { d: JSON.stringify({ recs: dkMergeHistRecs(pay.recs, rec), checks: pay.checks, nutr: pay.nutr }), v: 2, ts: Date.now() });
     }).then(function () { return true; }).catch(function (e) { console.warn('[hist-sync] push failed', e); return false; });
   }
   function dkHistPush(rec) {
@@ -4330,6 +4358,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     }, Promise.resolve()).then(function () {
       dkSyncState();
       try { dkPushChecks(); } catch (e) {}
+      try { dkPushNutr(); } catch (e) {} /* c148 */
       return done;
     }).catch(function (e) { console.warn('[hist-sync] flush failed', e); dkSyncState(); return done; });
   }
@@ -4351,7 +4380,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     return dkHistTx(docId, function (trx, ref, pay) {
       const m = dkMergeCheckinPayload(pay.checks, mine);
       if (!m.added && !m.enriched) return; /* cloud already complete → no write */
-      trx.set(ref, { d: JSON.stringify({ recs: pay.recs, checks: m.checks }), v: 2, ts: Date.now() });
+      trx.set(ref, { d: JSON.stringify({ recs: pay.recs, checks: m.checks, nutr: pay.nutr }), v: 2, ts: Date.now() });
     }).then(function () { return true; }).catch(function (e) { console.warn('[hist-sync] checks push failed', e); return false; })
       .then(function (ok) { dkSyncState(); return ok; });
   }
@@ -6590,6 +6619,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     renderRotationBanner(); /* c120: «last time X → now Y» above the day tabs */
     renderDaysTabs(); renderExercises(); renderMeals();
     updateLabels(); updateWaterUI(); prefillCheckin(); renderHistory(); renderAnalytics(); refreshDone();
+    try { renderNutrProgress(); renderNutrMicro(); } catch (e148) {} /* c148 */
     renderDiary(); /* c106: re-translate the diary total/hint on language switch too */
     updateLiveUI();
   }
@@ -6632,17 +6662,151 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     const ext = (f && f.image_url) || '';
     return '<img src="food-images/' + esc(id) + '.jpg" data-ext="' + esc(ext) + '" class="' + cls + '" loading="lazy" alt="" onerror="if(this.dataset.ext){this.src=this.dataset.ext;this.removeAttribute(\'data-ext\');}else{this.style.display=\'none\';}" />';
   }
+
+  /* ===== c148: NUTRITION BRIDGE (client → coach) =====================
+     «Съел» marks + the diary become per-day totals with rings in the portal,
+     and are mirrored into the shared cloud doc (additive `nutr` field) so the
+     coach sees adherence «факт/план» — the same doc that already carries the
+     workout history and check-ins. Merged by date, cap 90 days. */
+  function nutrStateKey() { return nsKey('dk_nutr_' + todayKey()); }
+  function loadNutrState() { try { const o = JSON.parse(localStorage.getItem(nutrStateKey()) || '{}'); return o && typeof o === 'object' ? o : {}; } catch (e) { return {}; } }
+  function saveNutrState(st) { try { localStorage.setItem(nutrStateKey(), JSON.stringify(st)); } catch (e) {} }
+  function nutrChecked(st, mi, fi) { return !!(st && st.eaten && st.eaten[mi + ':' + fi]); }
+  function nutrTotals() {
+    const st = loadNutrState();
+    const totals = { c: 0, p: 0, cb: 0, f: 0 };
+    const items = [];
+    if (currentPlan && currentPlan.meals) {
+      currentPlan.meals.forEach((m, mi) => (m.foods || m.items || []).forEach((f, fi) => {
+        if (!nutrChecked(st, mi, fi)) return;
+        const n = f.nutrition || {};
+        const g = foodGramsOf(f);
+        const cal = foodCalOf(f);
+        totals.c += cal;
+        totals.p += (Number(n.protein) || 0) * g / 100;
+        totals.cb += (Number(n.carbs) || 0) * g / 100;
+        totals.f += (Number(n.fat) || 0) * g / 100;
+        items.push({ n: foodNameOf(f), g: g, cal: cal, nut: n });
+      }));
+    }
+    loadDiary().forEach(e => {
+      const g = (Number(e.grams) || 0) / 100;
+      const n = e.per100 || {};
+      totals.c += (Number(n.calories) || 0) * g;
+      totals.p += (Number(n.protein) || 0) * g;
+      totals.cb += (Number(n.carbs) || 0) * g;
+      totals.f += (Number(n.fat) || 0) * g;
+    });
+    return { totals, items };
+  }
+  function renderNutrProgress() {
+    const card = document.getElementById('nutr-progress');
+    const rings = document.getElementById('nutr-rings');
+    if (!card || !rings) return;
+    const plan = currentPlan;
+    const hasTargets = plan && (plan.target_calories || plan.target_protein || plan.target_carbs || plan.target_fat);
+    if (!hasTargets) { card.classList.add('hidden'); return; }
+    const { totals } = nutrTotals();
+    const gs = t('gramShort');
+    const defs = [
+      { v: totals.c, t: plan.target_calories || 0, grad: 'ng-a', unit: '' },
+      { v: totals.p, t: plan.target_protein || 0, grad: 'ng-b', unit: gs },
+      { v: totals.cb, t: plan.target_carbs || 0, grad: 'ng-c', unit: gs },
+      { v: totals.f, t: plan.target_fat || 0, grad: 'ng-d', unit: gs }
+    ];
+    const circ = 2 * Math.PI * 30;
+    rings.innerHTML = defs.map(d => {
+      const pct = d.t > 0 ? Math.min(100, (d.v / d.t) * 100) : 0;
+      const over = d.t > 0 && d.v > d.t * 1.05;
+      return `<div class="flex flex-col items-center gap-0.5">
+        <div class="relative w-[68px] h-[68px]">
+          <svg class="w-[68px] h-[68px] -rotate-90" viewBox="0 0 68 68" style="direction:ltr">
+            <defs><linearGradient id="${d.grad}" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#22d3ee"/></linearGradient></defs>
+            <circle cx="34" cy="34" r="30" fill="none" stroke="rgb(var(--c-surface-2))" stroke-width="6"/>
+            <circle cx="34" cy="34" r="30" fill="none" stroke="${over ? '#ef4444' : 'url(#' + d.grad + ')'}" stroke-width="6" stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${(circ * (1 - pct / 100)).toFixed(1)}" stroke-linecap="round"/>
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <div class="font-mono font-extrabold text-[11px] ${over ? 'text-red-400' : 'text-text'}">${Math.round(d.v)}</div>
+            <div class="text-[8px] text-muted">/ ${d.t > 0 ? Math.round(d.t) : '—'}${d.unit}</div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    card.classList.remove('hidden');
+  }
+  const NUTR_RDI = { fiber: { v: 25, u: 'g', lbl: 'fiberLbl' }, sodium: { v: 2000, u: 'mg', lbl: 'sodiumLbl' }, iron: { v: 18, u: 'mg', lbl: 'ironLbl' }, calcium: { v: 1000, u: 'mg', lbl: 'calciumLbl' }, potassium: { v: 3500, u: 'mg', lbl: 'potassiumLbl' }, vitamin_c: { v: 90, u: 'mg', lbl: 'vitCLbl' } };
+  function renderNutrMicro() {
+    const card = document.getElementById('nutr-micro');
+    const list = document.getElementById('nutr-micro-list');
+    if (!card || !list) return;
+    const { items } = nutrTotals();
+    const sums = {};
+    items.forEach(it => Object.keys(NUTR_RDI).forEach(k => {
+      const per100 = Number(it.nut && it.nut[k]) || 0;
+      if (per100 > 0) sums[k] = (sums[k] || 0) + per100 * it.g / 100;
+    }));
+    const keys = Object.keys(NUTR_RDI).filter(k => sums[k] > 0);
+    if (keys.length < 2) { card.classList.add('hidden'); return; }
+    list.innerHTML = keys.map(k => {
+      const pct = Math.min(100, (sums[k] / NUTR_RDI[k].v) * 100);
+      return `<div>
+        <div class="flex justify-between text-[10px]"><span class="text-muted">${esc(t(NUTR_RDI[k].lbl))}</span><span class="font-mono text-muted">${Math.round(sums[k])} / ${NUTR_RDI[k].v} ${NUTR_RDI[k].u} · ${Math.round(pct)}%</span></div>
+        <div class="h-1.5 bg-[rgb(var(--c-surface-2))] rounded-full overflow-hidden"><div class="h-full rounded-full" style="width:${Math.max(3, pct)}%;background:linear-gradient(90deg,#6366f1,#22d3ee)"></div></div>
+      </div>`;
+    }).join('');
+    card.classList.remove('hidden');
+  }
+  let _nutrPushTimer = null;
+  function dkNutrAfterChange() {
+    try { renderNutrProgress(); renderNutrMicro(); } catch (e) {}
+    clearTimeout(_nutrPushTimer);
+    _nutrPushTimer = setTimeout(function () { try { dkPushNutr(); } catch (e) {} }, 1500);
+  }
+  function dkNutrSnapshot() {
+    const plan = currentPlan;
+    if (!plan) return null;
+    const { totals, items } = nutrTotals();
+    const diary = loadDiary().map(e => ({
+      n: String(e.name || '').slice(0, 60),
+      g: Math.round(Number(e.grams) || 0),
+      k: Math.round((Number(e.per100 && e.per100.calories) || 0) * (Number(e.grams) || 0) / 100)
+    }));
+    return {
+      date: todayKey(), ts: Date.now(),
+      plan: String(plan.name || '').slice(0, 60),
+      target: { c: Math.round(plan.target_calories || 0), p: Math.round(plan.target_protein || 0), cb: Math.round(plan.target_carbs || 0), f: Math.round(plan.target_fat || 0) },
+      totals: { c: Math.round(totals.c), p: Math.round(totals.p), cb: Math.round(totals.cb), f: Math.round(totals.f) },
+      items: items.slice(0, 40).map(it => ({ n: it.n.slice(0, 60), g: Math.round(it.g), k: Math.round(it.cal) })),
+      diary: diary.slice(0, 30)
+    };
+  }
+  window.dkNutrSnapshot = dkNutrSnapshot;
+  function dkPushNutr() {
+    const docId = dkHistDocId();
+    const snap = dkNutrSnapshot();
+    if (!docId || !snap) return Promise.resolve(false);
+    return dkHistTx(docId, function (trx, ref, pay) {
+      const list = (pay.nutr || []).filter(function (r) { return r && r.date && r.date !== snap.date; });
+      list.push(snap);
+      list.sort(function (a, b) { return String(a.date) < String(b.date) ? -1 : 1; });
+      trx.set(ref, { d: JSON.stringify({ recs: pay.recs, checks: pay.checks, nutr: list.slice(-90) }), v: 2, ts: Date.now() });
+    }).then(function () { return true; }).catch(function (e) { console.warn('[hist-sync] nutr push failed', e); return false; });
+  }
+  window.dkPushNutr = dkPushNutr;
   function renderMeals() {
     const c = document.getElementById('meals-container');
     if (!currentPlan || !currentPlan.meals) { c.innerHTML = '<div class="text-xs text-muted text-center py-6">'+esc(t('noMeals'))+'</div>'; return; }
+    /* c148: «съел» marks live per day, per plan; a plan switch resets them */
+    const _st148 = loadNutrState();
+    if (_st148.plan && currentPlan.id && _st148.plan !== currentPlan.id) { _st148.eaten = {}; _st148.plan = currentPlan.id; saveNutrState(_st148); }
     c.innerHTML = currentPlan.meals.map((meal,mi)=>{
-      const items = (meal.foods||meal.items||[]).map(f=>{
+      const items = (meal.foods||meal.items||[]).map((f,ii)=>{
         const name = foodNameOf(f);
         const g = Math.round(foodGramsOf(f));
         const cal = Math.round(foodCalOf(f));
         return `<label class="flex items-center justify-between bg-surface-2/60 px-3 py-2 rounded-xl text-xs cursor-pointer hover:bg-surface-2 transition">
           <div class="flex items-center gap-2.5 min-w-0">
-            <input type="checkbox" class="nutri-check rounded bg-surface-2 border-border text-indigo-400 w-4 h-4 cursor-pointer shrink-0" />
+            <input type="checkbox" class="nutri-check rounded bg-surface-2 border-border text-indigo-400 w-4 h-4 cursor-pointer shrink-0" data-nutr-key="${mi}:${ii}" ${nutrChecked(_st148, mi, ii) ? 'checked' : ''} />
             <span class="relative w-9 h-9 rounded-lg overflow-hidden bg-surface-2 border border-border shrink-0 grid place-items-center" aria-hidden="true"><span class="absolute text-[13px] opacity-60">🥗</span>${foodImgTag(f, 'absolute inset-0 w-full h-full object-cover')}</span>
             <span class="text-text truncate">${esc(name)}</span>
           </div>
@@ -6658,6 +6822,17 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         <div class="space-y-1.5 pt-1">${items}</div>
       </div>`;
     }).join('');
+    /* c148: persist every «съел» mark → rings + the coach's cloud doc */
+    c.querySelectorAll('input[data-nutr-key]').forEach(cb => cb.addEventListener('change', function () {
+      const st = loadNutrState();
+      st.plan = currentPlan ? currentPlan.id : '';
+      st.eaten = st.eaten || {};
+      const k = cb.getAttribute('data-nutr-key');
+      if (cb.checked) st.eaten[k] = 1; else delete st.eaten[k];
+      st.ts = Date.now();
+      saveNutrState(st);
+      dkNutrAfterChange();
+    }));
   }
 
   /* ============ EXERCISE CARD (tap image -> modal) ============ */
@@ -6921,9 +7096,11 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     nameEl.value=''; gEl.value=''; kcalEl.value=''; pEl.value=''; fEl.value=''; cEl.value='';
     renderDiary();
     toast(t('diaryAdded'),'success');
+    try { dkNutrAfterChange(); } catch (e) {} /* c148 */
   }
   function removeDiaryEntry(idx){
     const list=loadDiary(); list.splice(idx,1); saveDiary(list); renderDiary();
+    try { dkNutrAfterChange(); } catch (e) {} /* c148 */
   }
   function renderDiary() {
     const box=document.getElementById('diary-list');
@@ -6955,7 +7132,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     /* c131: drop per-day keys older than 90 days (they grew forever) */
     try { dkPruneOldDailyKeys(); } catch (e) {}
     /* c131: network return → flush the pending queue and refresh the badge */
-    window.addEventListener('online', function () { try { dkFlushPending(); } catch (e) {} try { dkPushChecks(); } catch (e) {} try { dkSyncState(); } catch (e) {} });
+    window.addEventListener('online', function () { try { dkFlushPending(); } catch (e) {} try { dkPushChecks(); } catch (e) {} try { dkPushNutr(); } catch (e) {} try { dkSyncState(); } catch (e) {} });
     window.addEventListener('offline', function () { try { dkSyncState(); } catch (e) {} });
     // Move modals to body to escape stacking contexts (like CRM)
     ['exercise-modal','viewer-modal'].forEach(id=>{ const m=document.getElementById(id); if(m) document.body.appendChild(m); });
