@@ -343,6 +343,8 @@
     "goalRehab": "Rehabilitation",
     "sexMale": "Male",
     "sexFemale": "Female",
+    "sex": "Sex",
+    "sexHint": "Used by the nutrition generator for the BMR (Mifflin-St Jeor) calculation.",
     "injuries": "Injuries / limitations",
     "injuriesPlaceholder": "e.g. lumbar hernia, ACL reconstruction, shoulder impingement",
     "equipment": "Available equipment",
