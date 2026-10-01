@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c145" />
+<meta name="dk-build" content="c146" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2849,7 +2849,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c145</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c146</p>
             </div>
           </div>
 
@@ -3657,7 +3657,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
 
             <!-- ===== Tab: Daily log ===== -->
             <div data-nutrition-panel="log" class="hidden">
-              <button id="nutrition-add-food-btn" class="hidden bg-primary hover:bg-primary-2 text-white text-sm font-semibold px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1.5 shadow-card">
+              <button id="nutrition-add-food-btn" class="bg-primary hover:bg-primary-2 text-white text-sm font-semibold px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1.5 shadow-card">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
                 <span data-i18n="nutrition.log">Log food</span>
               </button>
@@ -4973,13 +4973,13 @@ button[id$="-close"]:active, button[data-cps-close]:active {
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6m-3 0v3M5 8h14l-1 12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 8z"/><path d="M10 14h4"/></svg>
             <span data-i18n="nutrition.micros">Micros</span>
           </button>
-          <button id="np-share" class="flex-1 min-w-[80px] bg-success/15 hover:bg-success/25 text-success border border-success/30 text-sm font-semibold py-2 rounded-xl transition inline-flex items-center justify-center gap-2" title="${t('nutrition.shareHint') || 'Share as image via WhatsApp'}">
+          <button id="np-share" class="flex-1 min-w-[80px] bg-success/15 hover:bg-success/25 text-success border border-success/30 text-sm font-semibold py-2 rounded-xl transition inline-flex items-center justify-center gap-2" title="Share as image via WhatsApp" data-i18n-attr="title:nutrition.shareHint">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-            <span data-i18n="programs.share">${t('programs.share') || 'Share'}</span>
+            <span data-i18n="programs.share">Share</span>
           </button>
-          <button id="np-print" class="flex-1 min-w-[80px] bg-surface-2 hover:bg-border/40 border border-border text-sm font-semibold py-2 rounded-xl transition inline-flex items-center justify-center gap-2" title="${t('programs.printTextHint') || 'Print as text on A4'}">
+          <button id="np-print" class="flex-1 min-w-[80px] bg-surface-2 hover:bg-border/40 border border-border text-sm font-semibold py-2 rounded-xl transition inline-flex items-center justify-center gap-2" title="Print as text on A4" data-i18n-attr="title:programs.printTextHint">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-            <span data-i18n="programs.print">${t('programs.print') || 'Print'}</span>
+            <span data-i18n="programs.print">Print</span>
           </button>
           <button id="np-save" class="flex-1 min-w-[100px] bg-primary hover:bg-primary-2 text-white text-sm font-semibold py-2 rounded-xl transition shadow-card" data-i18n="nutrition.savePlan">Save plan</button>
         </div>
@@ -5003,7 +5003,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
         <div class="p-3 border-b border-border space-y-2 shrink-0">
           <div class="flex gap-2">
             <input type="search" id="fp-search" placeholder="Search food..." data-i18n-ph="nutrition.foodSearch" class="flex-1 bg-surface-2 border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
-            <button id="fp-scan-barcode" class="bg-accent/15 hover:bg-accent/25 text-accent border border-accent/30 rounded-xl p-2.5 transition inline-flex items-center justify-center shrink-0" title="${t('nutrition.scanBarcode') || 'Scan barcode'}">
+            <button id="fp-scan-barcode" class="bg-accent/15 hover:bg-accent/25 text-accent border border-accent/30 rounded-xl p-2.5 transition inline-flex items-center justify-center shrink-0" title="Scan barcode" data-i18n-attr="title:nutrition.scanBarcode">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5V3h2M17 3h2v2M21 17v2h-2M7 21H5v-2"/><rect x="7" y="7" width="10" height="10" rx="1"/><path d="M9 9h2v6H9zM13 9h2v6h-2z"/></svg>
             </button>
             <button id="fp-photo" class="bg-primary/15 hover:bg-primary/25 text-primary border border-primary/30 rounded-xl p-2.5 transition inline-flex items-center justify-center shrink-0" data-i18n-attr="title:ai.foodPhotoTip" title="Фото еды — AI оценка">
@@ -5311,6 +5311,11 @@ button[id$="-close"]:active, button[data-cps-close]:active {
             <div>
               <label class="block text-[11px] uppercase tracking-wider text-muted font-semibold mb-1" data-i18n="food.nameHe">Name (Hebrew)</label>
               <input name="name_he" class="w-full bg-surface-2 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
+            </div>
+            <div>
+              <!-- c146: the Russian name was previously erased by every save -->
+              <label class="block text-[11px] uppercase tracking-wider text-muted font-semibold mb-1">Название (рус.)</label>
+              <input name="name_ru" class="w-full bg-surface-2 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
             </div>
             <div>
               <label class="block text-[11px] uppercase tracking-wider text-muted font-semibold mb-1" data-i18n="food.category">Category</label>
@@ -12966,27 +12971,37 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       return streak;
     }
 
-    /** Compute average macro adherence % from nutrition logs. */
+    /** Compute average macro adherence % from nutrition logs.
+     *  c146: the old code read `actual_*` fields that NOTHING ever wrote, so
+     *  the metric was permanently «—». Actuals are derived from the log's own
+     *  meals[].items[] (items store portion totals; plan-shaped items carry
+     *  per-100g nutrition × grams/100). */
     function computeAdherence(nutritionLogs) {
-      // Each log should have: target_calories, actual_calories, target_protein, actual_protein, etc.
-      // Adherence = avg(1 - |actual - target| / target) across all macros, clamped to [0, 1]
       let sum = 0, count = 0;
-      nutritionLogs.forEach(n => {
-        const fields = ['calories', 'protein', 'carbs', 'fat'];
+      (nutritionLogs || []).forEach(n => {
+        if (!n) return;
+        const actual = { calories: 0, protein: 0, carbs: 0, fat: 0 };
+        (n.meals || []).forEach(m => (m.items || []).forEach(it => {
+          if (!it) return;
+          const g = Number(it.grams != null ? it.grams : it.amount_g) || 0;
+          const nut = it.nutrition || {};
+          const mul = g > 0 ? g / 100 : 1;
+          actual.calories += (it.calories != null ? Number(it.calories) || 0 : (Number(nut.calories) || 0) * mul);
+          actual.protein += (it.protein != null ? Number(it.protein) || 0 : (Number(nut.protein) || 0) * mul);
+          actual.carbs += (it.carbs != null ? Number(it.carbs) || 0 : (Number(nut.carbs) || 0) * mul);
+          actual.fat += (it.fat != null ? Number(it.fat) || 0 : (Number(nut.fat) || 0) * mul);
+        }));
         let logSum = 0, logCount = 0;
-        fields.forEach(f => {
-          const target = n['target_' + f];
-          const actual = n['actual_' + f] || n[f];
-          if (target && target > 0 && actual != null) {
-            const diff = Math.abs(actual - target) / target;
+        ['calories', 'protein', 'carbs', 'fat'].forEach(f => {
+          const target = Number(n['target_' + f]) || 0;
+          const act = actual[f];
+          if (target > 0 && act > 0) {
+            const diff = Math.abs(act - target) / target;
             logSum += Math.max(0, 1 - diff);
             logCount++;
           }
         });
-        if (logCount > 0) {
-          sum += logSum / logCount;
-          count++;
-        }
+        if (logCount > 0) { sum += logSum / logCount; count++; }
       });
       return count > 0 ? Math.round((sum / count) * 100) : null;
     }
@@ -17946,8 +17961,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       }
       const dateInput = document.getElementById('nutrition-date');
       if (dateInput && !dateInput.value) {
-        const today = new Date();
-        dateInput.value = today.toISOString().slice(0, 10);
+        dateInput.value = dkLogDateKey(new Date()); /* c146: local today, not UTC */
       }
     }
 
@@ -17976,19 +17990,28 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       }
     }
 
+    /** c146: LOCAL calendar key YYYY-MM-DD. toISOString() is UTC — in UTC+2/+3
+       the record saved for «today» converted to the PREVIOUS day and the next
+       load created a fresh empty log (food «disappeared», empty duplicates
+       piled up). Same class of bug the portal fixed in c131. */
+    function dkLogDateKey(d) {
+      const dt = new Date(d);
+      if (isNaN(dt)) return '';
+      return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
+    }
+
     /** Load (or create) the nutrition_history record for client+date. */
     async function loadLog() {
       if (!_clientId) return;
       const dateStr = _date || document.getElementById('nutrition-date')?.value;
       if (!dateStr) return;
-      const dateTs = new Date(dateStr + 'T00:00:00').getTime();
-      // Find existing record via index
+      /* c146: LOCAL midnight (was `new Date(dateStr+'T00:00:00')` compared
+         through toISOString → never matched in UTC+ timezones) */
+      const parts = String(dateStr).split('-').map(Number);
+      const dateTs = new Date(parts[0] || 1970, (parts[1] || 1) - 1, parts[2] || 1).getTime();
+      // Find existing record via index (local-day compare, legacy records included)
       const records = await db.find('nutrition_history', 'by_clientId', _clientId);
-      _log = records.find(r => {
-        const rDate = new Date(r.date);
-        const rStr = rDate.toISOString().slice(0, 10);
-        return rStr === dateStr;
-      });
+      _log = records.find(r => dkLogDateKey(r.date) === dateStr);
       if (!_log) {
         // Create empty log for this date
         _log = {
@@ -18236,14 +18259,36 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       try {
         let items = [];
         if (_searchSource === 'local') {
-          // Search local food_base (includes custom + cached OFF items)
-          const all = await db.all('food_base');
+          /* c146: search BOTH the reference database (2344 seeded products in
+             food_database) and the local cache/custom store (food_base) — the
+             old code only read food_base and found nothing for a fresh device.
+             Reference items are normalized to the flat shape the renderer and
+             the portion modal expect. */
+          let ref = [], base = [];
+          try { ref = await db.all('food_database'); } catch (e) { ref = []; }
+          try { base = await db.all('food_base'); } catch (e) { base = []; }
+          const normRef = f => {
+            const n = f.nutrition || {};
+            return {
+              id: f.id, name_en: f.name_en, name_ru: f.name_ru, name_he: f.name_he,
+              brand: f.brand || '', barcode: f.barcode || '', category: f.category || '',
+              calories: Number(n.calories) || 0, protein: Number(n.protein) || 0,
+              carbs: Number(n.carbs) || 0, fat: Number(n.fat) || 0, fiber: Number(n.fiber) || 0,
+              source: f.source || 'reference', image_url: f.image_url || '', _ref: true
+            };
+          };
           const q = query.toLowerCase();
-          items = all.filter(f => {
-            const haystack = [f.name_en, f.brand, f.barcode, f.category]
-              .filter(Boolean).join(' ').toLowerCase();
-            return haystack.includes(q);
-          });
+          const seen = new Set();
+          items = base.concat(ref.filter(f => f && !f.is_archived).map(normRef))
+            .filter(f => {
+              if (!f || !f.id || seen.has(f.id)) return false;
+              const haystack = [f.name_en, f.name_ru, f.name_he, f.brand, f.barcode, f.category]
+                .filter(Boolean).join(' ').toLowerCase();
+              if (!haystack.includes(q)) return false;
+              seen.add(f.id);
+              return true;
+            })
+            .slice(0, 60);
         } else {
           // Open Food Facts API — also check if it's a barcode (numbers only)
           const isBarcode = /^\d{6,}$/.test(query.trim());
@@ -18276,7 +18321,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zM12 8v4M12 16h.01"/></svg>
           </div>
           <div class="flex-1 min-w-0">
-            <div class="font-medium text-sm truncate">${escapeHTML(f.name_en || '?')}</div>
+            <div class="font-medium text-sm truncate">${escapeHTML(f['name_' + currentLang()] || f.name_en || f.name_he || '?')}</div>
             <div class="text-[11px] text-muted truncate">
               ${f.brand ? escapeHTML(f.brand) + ' · ' : ''}${fmtNumber(f.calories)} ${t('nutrition.calories').toLowerCase()}/100g
               ${f.source === 'openfoodfacts' ? ' · OFF' : ''}
@@ -18302,7 +18347,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const modal = document.getElementById('food-portion-modal');
       const title = document.getElementById('food-portion-title');
       const info = document.getElementById('food-portion-info');
-      if (title) title.textContent = food.name_en || '?';
+      if (title) title.textContent = (food['name_' + currentLang()] || food.name_en || food.name_he || '?');
       if (info) {
         info.innerHTML = `
           ${food.brand ? `<div>${escapeHTML(food.brand)}</div>` : ''}
@@ -18446,6 +18491,14 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         const dl = document.getElementById('food-category-list');
         if (dl) dl.innerHTML = cats.map(c => `<option value="${escapeAttr(c)}">`).join('');
       });
+      /* c146: categories also come from the reference database */
+      db.all('food_database').then(all => {
+        const dl = document.getElementById('food-category-list');
+        if (!dl) return;
+        const cats = [...new Set([...(dl._cats || []), ...all.map(f => f.category).filter(Boolean)])].sort();
+        dl._cats = cats;
+        dl.innerHTML = cats.map(c => `<option value="${escapeAttr(c)}">`).join('');
+      }).catch(() => {});
       modal.classList.remove('hidden');
       setTimeout(() => form.elements.name_en && form.elements.name_en.focus(), 100);
     }
@@ -21548,7 +21601,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         factor -= 0.02;  // additional -2% for obese clients (they can afford a bigger deficit safely)
       }
 
-      return Math.round(tdee * factor);
+      return Math.max(800, Math.min(6000, Math.round(tdee * factor))); /* c146: sane calorie band */
     }
 
     /** Macro distribution per diet type.
@@ -21579,11 +21632,18 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
     function calcMacros(calories, weightKg, diet, goal) {
       const p = macroProfile(diet, goal);
-      const protein = Math.round((weightKg || 70) * p.proteinPerKg);
+      const cal = Math.max(800, Math.min(6000, Math.round(calories || 0))); /* c146: band */
+      let protein = Math.round((weightKg || 70) * p.proteinPerKg);
+      protein = Math.min(protein, Math.round((cal * 0.45) / 4)); /* c146: protein ≤45% of calories */
       const proteinCal = protein * 4;
-      const remainingCal = Math.max(0, calories - proteinCal);
-      const fat = Math.round((calories * p.fatPct) / 9);
-      const carbs = Math.round((calories * p.carbPct) / 4);
+      const remainingCal = Math.max(0, cal - proteinCal);
+      /* c146: fat & carbs split the REMAINING calories (after protein) and are
+         renormalized to sum to 100% of it — they used to be computed from the
+         FULL target, so any plan with a large protein share overshot its own
+         calorie goal (300 г белка + 70% жиров/углеводов от 2000 ккал) */
+      const rest = (p.fatPct + p.carbPct) || 1;
+      const fat = Math.round((remainingCal * (p.fatPct / rest)) / 9);
+      const carbs = Math.round((remainingCal * (p.carbPct / rest)) / 4);
       return { protein, fat, carbs, proteinPerKg: p.proteinPerKg, fatPct: p.fatPct, carbPct: p.carbPct };
     }
 
@@ -23621,7 +23681,8 @@ Select foods for each meal. Output as JSON only.`;
       if (_fpSource !== 'all') filtered = filtered.filter(f => f.source === _fpSource);
       if (query) {
         const q = query.toLowerCase();
-        filtered = filtered.filter(f => (f.name_he || '').toLowerCase().includes(q) || (f.name_en || '').toLowerCase().includes(q) || (f.name_ru || '').toLowerCase().includes(q));
+        /* c146: brand + barcode + category search, not just names */
+        filtered = filtered.filter(f => (f.name_he || '').toLowerCase().includes(q) || (f.name_en || '').toLowerCase().includes(q) || (f.name_ru || '').toLowerCase().includes(q) || (f.brand || '').toLowerCase().includes(q) || (f.barcode || '').toLowerCase().includes(q) || (f.category || '').toLowerCase().includes(q));
       }
       if (filtered.length === 0) {
         container.innerHTML = `<div class="text-center py-6 text-sm text-muted">${t('nutrition.noFoodsFound')}</div>`;
@@ -23806,7 +23867,11 @@ Select foods for each meal. Output as JSON only.`;
           if (e.target.closest('[data-fp-view]')) return;
           const food = _foods.find(f => f.id === el.getAttribute('data-fp-pick'));
           if (food && _fpCallback) {
-            _fpCallback(food, 100);
+            /* c146: start from the product's REAL serving (123 products carry
+               it) instead of always dumping 100 г */
+            const servingG = Number(food.serving_quantity || food.package_grams || 0);
+            const g = servingG > 0 ? Math.round(servingG) : 100;
+            _fpCallback(food, g);
             document.getElementById('food-picker-modal').classList.add('hidden');
             _fpCallback = null;
           }
@@ -23842,8 +23907,11 @@ Select foods for each meal. Output as JSON only.`;
       const scale = direction > 0 ? 1.20 : 0.80;
       target.forEach(c => {
         const f = _editing.meals[c.mi].foods[c.fi];
-        const newGrams = Math.max(minGrams, Math.round((f.grams || 0) * scale));
+        const oldG = f.grams || 0;
+        const newGrams = Math.max(minGrams, Math.round(oldG * scale));
         f.grams = newGrams;
+        /* c146: keep unit_amount truthful after the grams change */
+        if (f.unit_amount > 0 && oldG > 0) f.unit_amount = Math.round(f.unit_amount * (newGrams / oldG) * 100) / 100;
       });
       renderMeals();
       const macroName = { protein: t('nutrition.proteinShort') || 'P', carbs: t('nutrition.carbsShort') || 'C', fat: t('nutrition.fatShort') || 'F' }[macroKey];
@@ -23856,7 +23924,11 @@ Select foods for each meal. Output as JSON only.`;
       const minGrams = 10;
       _editing.meals.forEach(meal => {
         (meal.foods || []).forEach(f => {
-          f.grams = Math.max(minGrams, Math.round((f.grams || 0) * factor));
+          const oldG = f.grams || 0;
+          const newGrams = Math.max(minGrams, Math.round(oldG * factor));
+          f.grams = newGrams;
+          /* c146: unit_amount follows the grams */
+          if (f.unit_amount > 0 && oldG > 0) f.unit_amount = Math.round(f.unit_amount * (newGrams / oldG) * 100) / 100;
         });
       });
       renderMeals();
@@ -23868,10 +23940,17 @@ Select foods for each meal. Output as JSON only.`;
     async function savePlan() {
       if (!_editing) return;
       _editing.name = document.getElementById('np-name').value || (t('nutrition.newPlan'));
-      _editing.target_calories = parseInt(document.getElementById('np-target-cal').value, 10) || 2000;
-      _editing.target_protein = parseInt(document.getElementById('np-target-protein').value, 10) || 150;
-      _editing.target_carbs = parseInt(document.getElementById('np-target-carbs').value, 10) || 200;
-      _editing.target_fat = parseInt(document.getElementById('np-target-fat').value, 10) || 65;
+      /* c146: validate + clamp every target (0 no longer becomes 2000 silently,
+         negatives/absurd values can no longer be saved) */
+      const clampT = (id, min, max, dflt) => {
+        let n = parseInt(document.getElementById(id).value, 10);
+        if (!isFinite(n) || n <= 0) n = dflt;
+        return Math.max(min, Math.min(max, n));
+      };
+      _editing.target_calories = clampT('np-target-cal', 800, 6000, 2000);
+      _editing.target_protein = clampT('np-target-protein', 30, 400, 150);
+      _editing.target_carbs = clampT('np-target-carbs', 20, 800, 200);
+      _editing.target_fat = clampT('np-target-fat', 10, 250, 65);
       _editing.updated_at = Date.now();
       if (!_editing.id) _editing.id = db.uuid();
       await db.put('nutrition_plans', _editing);
@@ -24504,7 +24583,7 @@ Select foods for each meal. Output as JSON only.`;
         if (_categoryFilter !== 'all' && f.category !== _categoryFilter) return false;
         if (_search) {
           const q = _search.toLowerCase();
-          const hay = ((f.name_he || '') + ' ' + (f.name_en || '') + ' ' + (f.name_ru || '') + ' ' + (f.brand || '') + ' ' + (f.category || '')).toLowerCase();
+          const hay = ((f.name_he || '') + ' ' + (f.name_en || '') + ' ' + (f.name_ru || '') + ' ' + (f.brand || '') + ' ' + (f.category || '') + ' ' + (f.barcode || '')).toLowerCase();
           if (!hay.includes(q)) return false;
         }
         return true;
@@ -24936,6 +25015,7 @@ Select foods for each meal. Output as JSON only.`;
     if (form) {
       form.elements.name_en.value = food.name_en || '';
       form.elements.name_he.value = food.name_he || '';
+      if (form.elements.name_ru) form.elements.name_ru.value = food.name_ru || ''; /* c146 */
       form.elements.category.value = food.category || '';
       form.elements.brand.value = food.brand || '';
       form.elements.barcode.value = food.barcode || '';
@@ -25026,18 +25106,22 @@ Select foods for each meal. Output as JSON only.`;
     if (_foodDetailCurrentId) {
       try { food = await db.get('food_database', _foodDetailCurrentId); } catch(e) {}
     }
-    const newFood = {
+    const newFood = Object.assign({}, food || {}, {
+      /* c146: preserve EVERYTHING not present in the edit form (name_ru,
+         serving_quantity, package_grams, is_archived, subcategory…) — the old
+         code rebuilt the record from scratch and silently erased them */
       id: _foodDetailCurrentId || db.uuid(),
-      name_en: obj.name_en || '',
-      name_he: obj.name_he || '',
+      name_en: obj.name_en || (food && food.name_en) || '',
+      name_he: obj.name_he || (food && food.name_he) || '',
+      name_ru: obj.name_ru || (food && food.name_ru) || '',
       source: (food && food.source) || 'custom',
       category: obj.category || '',
-      image_url: obj.image_url || '',
+      image_url: obj.image_url || (food && food.image_url) || '',
       barcode: obj.barcode || '',
       brand: obj.brand || '',
       nutrition: Object.assign({}, food ? (food.nutrition || {}) : {}, nutrition),
       updated_at: Date.now()
-    };
+    });
     await db.put('food_database', newFood);
     // Refresh food database tab + nutritionPlans cache
     if (typeof foodDatabase !== 'undefined') await foodDatabase.load();
@@ -26062,10 +26146,13 @@ async function boot() {
     };
 
     // ---- Nutrition plan modal wiring ----
+    /* c146: dataset guards — the same elements are also wired in a second
+       init block; without the guards every save fired TWICE and the picker
+       search ran twice per keystroke */
     const npClose = document.getElementById('np-close');
-    if (npClose) npClose.addEventListener('click', () => document.getElementById('nutrition-plan-modal').classList.add('hidden'));
+    if (npClose && !npClose.dataset.wired146) { npClose.dataset.wired146 = '1'; npClose.addEventListener('click', () => document.getElementById('nutrition-plan-modal').classList.add('hidden')); }
     const npSave = document.getElementById('np-save');
-    if (npSave) npSave.addEventListener('click', () => nutritionPlans.savePlan());
+    if (npSave && !npSave.dataset.wired146) { npSave.dataset.wired146 = '1'; npSave.addEventListener('click', () => nutritionPlans.savePlan()); }
     // Quick macro adjustment buttons
     const npMoreP = document.getElementById('np-more-protein');
     if (npMoreP) npMoreP.addEventListener('click', () => nutritionPlans.adjustMacro(1, 'protein'));
@@ -26176,9 +26263,10 @@ async function boot() {
 
     // Food picker wiring
     const fpClose = document.getElementById('fp-close');
-    if (fpClose) fpClose.addEventListener('click', () => document.getElementById('food-picker-modal').classList.add('hidden'));
+    if (fpClose && !fpClose.dataset.wired146) { fpClose.dataset.wired146 = '1'; fpClose.addEventListener('click', () => document.getElementById('food-picker-modal').classList.add('hidden')); }
     const fpSearch = document.getElementById('fp-search');
-    if (fpSearch) {
+    if (fpSearch && !fpSearch.dataset.wired146) {
+      fpSearch.dataset.wired146 = '1';
       let fpTimer;
       fpSearch.addEventListener('input', () => {
         clearTimeout(fpTimer);
@@ -28872,22 +28960,32 @@ loadPanelTexture();
       if (e.target === ntPickerModal) ntPickerModal.classList.add('hidden');
     });
 
-    // === NUTRITION PLAN MODAL (client profile) — close/save ===
+    // === NUTRITION PLAN MODAL (client profile) — close/save (c146: guarded) ===
     const npClose = document.getElementById('np-close');
-    if (npClose) npClose.addEventListener('click', () => {
-      document.getElementById('nutrition-plan-modal').classList.add('hidden');
-    });
+    if (npClose && !npClose.dataset.wired146) {
+      npClose.dataset.wired146 = '1';
+      npClose.addEventListener('click', () => {
+        document.getElementById('nutrition-plan-modal').classList.add('hidden');
+      });
+    }
     const npSave = document.getElementById('np-save');
-    if (npSave) npSave.addEventListener('click', () => {
-      if (typeof nutritionPlans !== 'undefined') nutritionPlans.savePlan();
-    });
-    // Food picker (used by both nutrition plans and templates)
+    if (npSave && !npSave.dataset.wired146) {
+      npSave.dataset.wired146 = '1';
+      npSave.addEventListener('click', () => {
+        if (typeof nutritionPlans !== 'undefined') nutritionPlans.savePlan();
+      });
+    }
+    // Food picker (used by both nutrition plans and templates; c146: guarded)
     const fpClose = document.getElementById('fp-close');
-    if (fpClose) fpClose.addEventListener('click', () => {
-      document.getElementById('food-picker-modal').classList.add('hidden');
-    });
+    if (fpClose && !fpClose.dataset.wired146) {
+      fpClose.dataset.wired146 = '1';
+      fpClose.addEventListener('click', () => {
+        document.getElementById('food-picker-modal').classList.add('hidden');
+      });
+    }
     const fpSearch = document.getElementById('fp-search');
-    if (fpSearch) {
+    if (fpSearch && !fpSearch.dataset.wired146) {
+      fpSearch.dataset.wired146 = '1';
       let fpTimer;
       fpSearch.addEventListener('input', () => {
         clearTimeout(fpTimer);
@@ -31795,7 +31893,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 145; /* numeric part of dk-build c145 */
+  var RUNNING = 146; /* numeric part of dk-build c146 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

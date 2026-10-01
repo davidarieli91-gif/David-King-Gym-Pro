@@ -12,7 +12,7 @@ function count(s, needle) { return s.split(needle).length - 1; }
 /* ---------- 1. food-DB search ---------- */
 ok('search input + results + status markup', html.indexOf('id="diary-food-search"') >= 0 && html.indexOf('id="diary-food-results"') >= 0 && html.indexOf('id="diary-food-search-status"') >= 0);
 ok('DB is fetched LAZILY inside dkLoadFoodDB only', (function () {
-  const fn = html.slice(html.indexOf('function dkLoadFoodDB'), html.indexOf('function foodName'));
+  const fn = html.slice(html.indexOf('function dkLoadFoodDB'), html.indexOf('function foodName(p)'));
   return fn.indexOf("fetch('food-db.json')") >= 0;
 })());
 ok('no eager food-db fetch at boot', count(html, "fetch('food-db.json')") === 1);

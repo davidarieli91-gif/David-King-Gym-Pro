@@ -2731,7 +2731,7 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       /* c106: leftover-RU sweep */
       dayWord:'День', planActive:'План активен', splitLabel:'Сплит', gramShort:'г', literShort:'л', cmShort:'см',
       rotLast:'Прошлый раз', rotNow:'Сейчас', rotGo:'Перейти', rotWasLast:'выполнено в прошлый раз', rotIsNext:'следующая в ротации',
-      mealFallback:'Приём', clientFallback:'Клиент', shareOfflineCached:'— показан сохранённый план',
+      mealFallback:'Приём', mealBreakfast:'Завтрак', mealLunch:'Обед', mealDinner:'Ужин', mealSnack:'Перекус', mealBeforeSleep:'Перед сном', clientFallback:'Клиент', shareOfflineCached:'— показан сохранённый план',
       updateToast:'🔄 Доступна новая версия — обновить', waistShort:'талия', hipShort:'бёдра',
       macroPShort:'Б', macroFShort:'Ж', macroCShort:'У', macroKcal:'Ккал',
       macrosProtein:'Белки', macrosFat:'Жиры', macrosCarbs:'Углеводы',
@@ -2782,7 +2782,7 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       /* c106: leftover-RU sweep */
       dayWord:'Day', planActive:'Plan active', splitLabel:'Split', gramShort:'g', literShort:'L', cmShort:'cm',
       rotLast:'Last time', rotNow:'Up next', rotGo:'Go', rotWasLast:'done last time', rotIsNext:'next in the rotation',
-      mealFallback:'Meal', clientFallback:'Client', shareOfflineCached:'— showing the saved plan',
+      mealFallback:'Meal', mealBreakfast:'Breakfast', mealLunch:'Lunch', mealDinner:'Dinner', mealSnack:'Snack', mealBeforeSleep:'Before sleep', clientFallback:'Client', shareOfflineCached:'— showing the saved plan',
       updateToast:'🔄 New version available — refresh', waistShort:'waist', hipShort:'hips',
       macroPShort:'P', macroFShort:'F', macroCShort:'C', macroKcal:'kcal',
       macrosProtein:'Protein', macrosFat:'Fat', macrosCarbs:'Carbs',
@@ -2833,7 +2833,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       /* c106: leftover-RU sweep */
       dayWord:'יום', planActive:'תוכנית פעילה', splitLabel:'פיצול', gramShort:'ג׳', literShort:'ל׳', cmShort:'ס״מ',
       rotLast:'בפעם שעברה', rotNow:'עכשיו', rotGo:'עבור', rotWasLast:'בוצע בפעם שעברה', rotIsNext:'הבא ברוטציה',
-      mealFallback:'ארוחה', clientFallback:'מתאמן', shareOfflineCached:'— מוצגת התוכנית השמורה',
+      mealFallback:'ארוחה', mealBreakfast:'ארוחת בוקר', mealLunch:'צהריים', mealDinner:'ערב', mealSnack:'חטיף', mealBeforeSleep:'לפני השינה', clientFallback:'מתאמן', shareOfflineCached:'— מוצגת התוכנית השמורה',
       updateToast:'🔄 גרסה חדשה זמינה — רענון', waistShort:'מותן', hipShort:'ירכיים',
       macroPShort:'ח׳', macroFShort:'ש׳', macroCShort:'פ׳', macroKcal:'קק״ל',
       macrosProtein:'חלבונים', macrosFat:'שומנים', macrosCarbs:'פחמימות',
@@ -6594,14 +6594,43 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     updateLiveUI();
   }
 
+  /* c146: the trainer's plans store localized names + per-100g nutrition
+     (name_ru/en/he, nutrition.calories), while the portal used to read
+     f.name / meal.name → every product showed «?» and every meal «Приём».
+     One source of truth for the label/amount/calorie of a plan item. */
+  const MEAL_LABEL_KEYS = { breakfast: 'mealBreakfast', snack1: 'mealSnack', lunch: 'mealLunch', snack2: 'mealSnack', dinner: 'mealDinner', before_sleep: 'mealBeforeSleep' };
+  function mealLabelOf(meal) {
+    const m = meal || {};
+    if (m.customLabel) return m.customLabel;
+    const byLang = m['label_' + currentLang];
+    if (byLang) return byLang;
+    /* c146: the PORTAL's own type map comes first — the trainer's labelKey
+       («nutrition.mealBreakfast») has no portal dictionary and used to render
+       as a raw key string */
+    const byType = MEAL_LABEL_KEYS[m.type] ? t(MEAL_LABEL_KEYS[m.type]) : '';
+    if (byType) return byType;
+    if (m.labelKey) { const lk = t(m.labelKey); if (lk && lk !== m.labelKey) return lk; }
+    return m.name || t('mealFallback');
+  }
+  function foodNameOf(f) {
+    if (!f) return '?';
+    return f['name_' + currentLang] || f.name_ru || f.name_en || f.name_he || f.name || f.food_name || '?';
+  }
+  function foodGramsOf(f) { return Number(f && (f.grams != null ? f.grams : f.amount_g)) || 0; }
+  function foodCalOf(f) {
+    if (!f) return 0;
+    if (f.calories != null && f.calories !== '') return Number(f.calories) || 0;
+    const n = f.nutrition || {};
+    return (Number(n.calories) || 0) * foodGramsOf(f) / 100;
+  }
   function renderMeals() {
     const c = document.getElementById('meals-container');
     if (!currentPlan || !currentPlan.meals) { c.innerHTML = '<div class="text-xs text-muted text-center py-6">'+esc(t('noMeals'))+'</div>'; return; }
     c.innerHTML = currentPlan.meals.map((meal,mi)=>{
       const items = (meal.foods||meal.items||[]).map(f=>{
-        const name = f.name || f.food_name || '?';
-        const g = f.grams || f.amount_g || 0;
-        const cal = f.calories || Math.round((f.nutrition?.calories||0) * g / 100);
+        const name = foodNameOf(f);
+        const g = Math.round(foodGramsOf(f));
+        const cal = Math.round(foodCalOf(f));
         return `<label class="flex items-center justify-between bg-surface-2/60 px-3 py-2 rounded-xl text-xs cursor-pointer hover:bg-surface-2 transition">
           <div class="flex items-center gap-2.5 min-w-0">
             <input type="checkbox" class="nutri-check rounded bg-surface-2 border-border text-indigo-400 w-4 h-4 cursor-pointer shrink-0" />
@@ -6610,11 +6639,11 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
           <span class="font-mono text-muted shrink-0">${g}${t('gramShort')} · ${cal} ${t('diaryKcal')}</span>
         </label>`;
       }).join('');
-      const mealCal = (meal.foods||meal.items||[]).reduce((s2,f)=>s2+(f.calories||Math.round((f.nutrition?.calories||0)*(f.grams||f.amount_g||0)/100)),0);
+      const mealCal = (meal.foods||meal.items||[]).reduce((s2,f)=>s2+foodCalOf(f),0);
       return `<div class="glass rounded-2xl p-4 space-y-2 fade-in">
         <div class="flex justify-between items-center">
-          <h4 class="font-display font-bold text-sm text-white">${esc(meal.name||t('mealFallback'))}</h4>
-          <span class="font-mono text-xs text-muted">${mealCal} ${t('diaryKcal')}</span>
+          <h4 class="font-display font-bold text-sm text-white">${esc(mealLabelOf(meal))}</h4>
+          <span class="font-mono text-xs text-muted">${Math.round(mealCal)} ${t('diaryKcal')}</span>
         </div>
         <div class="space-y-1.5 pt-1">${items}</div>
       </div>`;
