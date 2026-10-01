@@ -6623,6 +6623,15 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     const n = f.nutrition || {};
     return (Number(n.calories) || 0) * foodGramsOf(f) / 100;
   }
+  /* c147: product photo — the LOCAL mirror first (food-images/<id>.jpg, all
+     2180 downloaded, 19.7 MB), the external URL as the second chance, and the
+     🥗 placeholder (rendered behind the image) when both fail */
+  function foodImgTag(f, cls) {
+    const id = f && f.id ? String(f.id) : '';
+    if (!id) return '';
+    const ext = (f && f.image_url) || '';
+    return '<img src="food-images/' + esc(id) + '.jpg" data-ext="' + esc(ext) + '" class="' + cls + '" loading="lazy" alt="" onerror="if(this.dataset.ext){this.src=this.dataset.ext;this.removeAttribute(\'data-ext\');}else{this.style.display=\'none\';}" />';
+  }
   function renderMeals() {
     const c = document.getElementById('meals-container');
     if (!currentPlan || !currentPlan.meals) { c.innerHTML = '<div class="text-xs text-muted text-center py-6">'+esc(t('noMeals'))+'</div>'; return; }
@@ -6634,6 +6643,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         return `<label class="flex items-center justify-between bg-surface-2/60 px-3 py-2 rounded-xl text-xs cursor-pointer hover:bg-surface-2 transition">
           <div class="flex items-center gap-2.5 min-w-0">
             <input type="checkbox" class="nutri-check rounded bg-surface-2 border-border text-indigo-400 w-4 h-4 cursor-pointer shrink-0" />
+            <span class="relative w-9 h-9 rounded-lg overflow-hidden bg-surface-2 border border-border shrink-0 grid place-items-center" aria-hidden="true"><span class="absolute text-[13px] opacity-60">🥗</span>${foodImgTag(f, 'absolute inset-0 w-full h-full object-cover')}</span>
             <span class="text-text truncate">${esc(name)}</span>
           </div>
           <span class="font-mono text-muted shrink-0">${g}${t('gramShort')} · ${cal} ${t('diaryKcal')}</span>
@@ -6868,8 +6878,10 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
             const n = p.nutrition || {};
             const sub = [p.brand || '', p.category || '', (Math.round(Number(n.calories) || 0) + ' ' + t('diaryKcal') + '/100' + t('gramShort'))].filter(Boolean).join(' · ');
             return '<button type="button" data-food-pick="' + esc(p.id) + '" class="w-full text-start px-3 py-2 hover:bg-[rgb(var(--c-surface-2))] transition border-b border-border/40 last:border-0">'
-              + '<div class="text-[11px] font-semibold text-text truncate">' + esc(foodName(p) || p.name_en || '?') + '</div>'
-              + '<div class="text-[9px] text-muted truncate">' + esc(sub) + '</div></button>';
+              + '<span class="flex items-center gap-2.5 min-w-0">'
+              + '<span class="relative w-9 h-9 rounded-lg overflow-hidden bg-surface-2 border border-border shrink-0 grid place-items-center" aria-hidden="true"><span class="absolute text-[13px] opacity-60">🥗</span>' + foodImgTag(p, 'absolute inset-0 w-full h-full object-cover') + '</span>'
+              + '<span class="flex-1 min-w-0"><div class="text-[11px] font-semibold text-text truncate">' + esc(foodName(p) || p.name_en || '?') + '</div>'
+              + '<div class="text-[9px] text-muted truncate">' + esc(sub) + '</div></span></span></button>';
           }).join('');
           box.querySelectorAll('[data-food-pick]').forEach(function (b) {
             b.addEventListener('click', function () { dkFoodPick(b.getAttribute('data-food-pick')); });
