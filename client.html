@@ -30,6 +30,30 @@
     } catch (e) {}
   })();
   </script>
+  <script>
+  /* c151: the PORTAL registers the shared service worker ITSELF — before this
+     only the trainer app did, so a client who installed the portal directly
+     (without ever opening the trainer app) had no offline cache and no PWA
+     install path. Scope './' covers the whole app folder. */
+  (function () {
+    try {
+      if (!('serviceWorker' in navigator)) return;
+      var dkReg151 = function () {
+        try {
+          navigator.serviceWorker.register('sw.js', { scope: './' }).then(function () {
+            try { window.__dkSW151 = 'registered'; } catch (_) {}
+          }).catch(function (e) {
+            try { window.dkSWErr = String((e && e.message) || e); } catch (_) {}
+          });
+        } catch (e2) { try { window.dkSWErr = String((e2 && e2.message) || e2); } catch (_) {} }
+      };
+      if (document.readyState === 'complete') dkReg151();
+      else window.addEventListener('load', dkReg151);
+      /* belt-and-braces: some in-app browsers never deliver a usable load event */
+      setTimeout(function () { if (window.__dkSW151 !== 'registered') dkReg151(); }, 2500);
+    } catch (e) {}
+  })();
+  </script>
   <link rel="icon" type="image/png" href="icon-512.png" />
   <link rel="apple-touch-icon" href="icon-512.png" />
   <link rel="stylesheet" href="src/input.css" />
@@ -2295,10 +2319,17 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
         <h2 class="font-display font-bold text-base text-white" id="txt-unlock-title">Введите код доступа</h2>
         <p class="text-xs text-muted mt-1" id="txt-unlock-subtitle">Код прислал тренер вместе со ссылкой</p>
       </div>
-      <input type="tel" inputmode="numeric" maxlength="6" id="unlock-code-input" placeholder="••••••" autocomplete="off"
-        class="w-full bg-surface-2 border border-border rounded-xl px-3 py-3 text-center font-mono text-xl tracking-[0.4em] text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
-      <p id="unlock-error" class="text-xs text-red-400 min-h-[1rem]"></p>
-      <button id="btn-unlock" class="w-full bg-gradient-to-r from-indigo-500 to-cyan-400 text-white font-bold text-sm py-3 rounded-xl shadow-lg shadow-indigo-500/25 transition active:scale-95">Открыть портал</button>
+      <!-- c151: «продолжить как X» — the remembered session, one tap, no code -->
+      <div id="unlock-continue" class="hidden space-y-2">
+        <button id="btn-continue" class="w-full bg-gradient-to-r from-indigo-500 to-cyan-400 text-white font-bold text-sm py-3 rounded-xl shadow-lg shadow-indigo-500/25 transition active:scale-95">Продолжить</button>
+        <button id="btn-use-code" class="w-full bg-surface-2 border border-border text-muted font-semibold text-xs py-2.5 rounded-xl transition">Ввести код заново</button>
+      </div>
+      <div id="unlock-code-block" class="space-y-4">
+        <input type="tel" inputmode="numeric" maxlength="6" id="unlock-code-input" placeholder="••••••" autocomplete="off"
+          class="w-full bg-surface-2 border border-border rounded-xl px-3 py-3 text-center font-mono text-xl tracking-[0.4em] text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
+        <p id="unlock-error" class="text-xs text-red-400 min-h-[1rem]"></p>
+        <button id="btn-unlock" class="w-full bg-gradient-to-r from-indigo-500 to-cyan-400 text-white font-bold text-sm py-3 rounded-xl shadow-lg shadow-indigo-500/25 transition active:scale-95">Открыть портал</button>
+      </div>
     </div>
   </div>
 
@@ -2708,6 +2739,9 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
       morningWeight:'Вес утром',savedToast:'Сохранено ✓',checkinSaved:'Чек-ин сохранён ✓',checkinNeedWeight:'Укажите вес',
       workoutDoneTitle:'Тренировка завершена! 🎉',restLabel:'Отдых',unlockTitle:'Введите код доступа',
       unlockSubtitle:'Код прислал тренер вместе со ссылкой',unlockBtn:'Открыть портал',
+      continueTitle:'С возвращением!',continueSubtitle:'{name} — продолжить с того же места?',continueBtn:'Продолжить как {name}',continueBtnShort:'Продолжить',useCodeBtn:'Ввести код заново',
+      lockedTitle:'Портал заблокирован',lockedSubtitle:'Введите код, чтобы вернуться',noPortalTitle:'Портал не подключён',noPortalHint:'Откройте ссылку от тренера, чтобы подключить портал',sessionExpired:'Код доступа изменился — введите новый код из сообщения тренера',
+      appSection:'Приложение',installTitle:'Установить приложение',installSub:'Работает офлайн, открывается на весь экран',installBtn:'Установить',installIosHint:'На iPhone: кнопка «Поделиться» → «На экран «Домой»»',autolockTitle:'Автоблокировка',autolockOff:'Выключена',autolockMin:'{n} мин',autolockSaved:'Сохранено',lockNow:'🔒 Заблокировать',logoutBtn:'Выйти',logoutConfirm:'Выйти из портала? Данные на этом устройстве будут удалены, войти можно будет по новой ссылке или коду.',exitWorkoutConfirm:'Идёт тренировка. Выйти? Прогресс сохранён — продолжить можно будет с главного экрана.',
       unlockWrongCode:'Неверный код',unlockExpired:'Срок действия ссылки истёк',unlockNoCrypto:'Откройте по https',
       shareLoading:'Загружаю план из облака…',shareNotFound:'План не найден — попросите тренера отправить ссылку заново',shareDenied:'Облако пока не открыто для портала — тренеру нужно обновить правила базы (Настройки → Облако)',shareOffline:'Нет интернета — подключитесь к сети и откройте ссылку ещё раз',
       unlockBadFormat:'Неизвестный формат ссылки',legacyWarning:'⚠️ Ссылка устаревшего формата',
@@ -2760,6 +2794,9 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       morningWeight:'Morning weight',savedToast:'Saved ✓',checkinSaved:'Check-in saved ✓',checkinNeedWeight:'Enter weight',
       workoutDoneTitle:'Workout Complete! 🎉',restLabel:'Rest',unlockTitle:'Enter access code',
       unlockSubtitle:'Your coach sent the code',unlockBtn:'Open Portal',
+      continueTitle:'Welcome back!',continueSubtitle:'{name} — continue where you left off?',continueBtn:'Continue as {name}',continueBtnShort:'Continue',useCodeBtn:'Enter the code again',
+      lockedTitle:'Portal locked',lockedSubtitle:'Enter the code to return',noPortalTitle:'Portal not connected',noPortalHint:'Open the link from your coach to connect the portal',sessionExpired:'The access code changed — enter the new code from your coach',
+      appSection:'App',installTitle:'Install the app',installSub:'Works offline, opens full screen',installBtn:'Install',installIosHint:'On iPhone: tap Share → Add to Home Screen',autolockTitle:'Auto-lock',autolockOff:'Off',autolockMin:'{n} min',autolockSaved:'Saved',lockNow:'🔒 Lock',logoutBtn:'Log out',logoutConfirm:'Log out of the portal? Data on this device will be erased; you can sign in again with a new link or code.',exitWorkoutConfirm:'A workout is in progress. Leave? Progress is saved — you can resume from the main screen.',
       unlockWrongCode:'Wrong code',unlockExpired:'Link expired',unlockNoCrypto:'Open over https',
       shareLoading:'Loading plan from cloud…',shareNotFound:'Plan not found — ask your trainer to resend the link',shareDenied:'Cloud is not open for the portal yet — the trainer must update the database rules (Settings → Cloud)',shareOffline:'No internet — reconnect and open the link again',
       unlockBadFormat:'Unknown link format',legacyWarning:'⚠️ Legacy link',
@@ -2812,6 +2849,9 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       morningWeight:'משקל בוקר',savedToast:'נשמר ✓',checkinSaved:'צ׳ק-אין נשמר ✓',checkinNeedWeight:'הזן משקל',
       workoutDoneTitle:'האימון הושלם! 🎉',restLabel:'מנוחה',unlockTitle:'הזן קוד גישה',
       unlockSubtitle:'הקוד נשלח על ידי המאמן',unlockBtn:'פתח פורטל',
+      continueTitle:'ברוך שובך!',continueSubtitle:'{name} — להמשיך מהמקום שבו הפסקת?',continueBtn:'המשך בתור {name}',continueBtnShort:'המשך',useCodeBtn:'הזן קוד מחדש',
+      lockedTitle:'הפורטל נעול',lockedSubtitle:'הזן קוד כדי לחזור',noPortalTitle:'הפורטל לא מחובר',noPortalHint:'פתח את הקישור מהמאמן כדי לחבר את הפורטל',sessionExpired:'קוד הגישה השתנה — הזן את הקוד החדש מהמאמן',
+      appSection:'אפליקציה',installTitle:'התקן את האפליקציה',installSub:'עובד גם ללא אינטרנט, נפתח במסך מלא',installBtn:'התקן',installIosHint:'ב-iPhone: כפתור שיתוף → הוסף למסך הבית',autolockTitle:'נעילה אוטומטית',autolockOff:'כבויה',autolockMin:'{n} דק׳',autolockSaved:'נשמר',lockNow:'🔒 נעל',logoutBtn:'התנתק',logoutConfirm:'להתנתק מהפורטל? הנתונים במכשיר יימחקו; ניתן להיכנס שוב עם קישור או קוד חדש.',exitWorkoutConfirm:'אימון פעיל. לצאת? ההתקדמות נשמרה — אפשר להמשיך מהמסך הראשי.',
       unlockWrongCode:'קוד שגוי',unlockExpired:'תוקף הקישור פג',unlockNoCrypto:'פתח דרך https',
       shareLoading:'טוען את התוכנית מהענן…',shareNotFound:'התוכנית לא נמצאה — בקשו מהמאמן לשלוח את הקישור שוב',shareDenied:'הענן עדיין לא פתוח לפורטל — על המאמן לעדכן את כללי מסד הנתונים (הגדרות → ענן)',shareOffline:'אין אינטרנט — התחברו לרשת ופתחו את הקישור שוב',
       unlockBadFormat:'פורמט לא מוכר',legacyWarning:'⚠️ קישור ישן',
@@ -2916,16 +2956,105 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     if (parsed.exp && Date.now() > parsed.exp) throw {code:'expired'};
     return parsed;
   }
+  /* ===== c151: session / continue / lock ==============================
+     A successful unlock REMEMBERS the share + access code on this device: the
+     next launch offers «Продолжить как <имя>» — one tap, no code («продолжить
+     с того же места»). The code is asked again only after an explicit lock, a
+     long time in background (auto-lock) or when the trainer issued a new code.
+     «Выйти» erases the session + client data and shows the no-portal screen. */
+  const DK_SESSION_KEY = 'dk_portal_session';
+  const DK_AUTOLOCK_KEY = 'dk_portal_autolock';
+  const DK_LOGGED_OUT_KEY = 'dk_portal_logged_out';
+  function dkSessionGet() {
+    try {
+      const s = JSON.parse(localStorage.getItem(DK_SESSION_KEY) || 'null');
+      return (s && s.v === 1 && s.shareId && s.code) ? s : null;
+    } catch (e) { return null; }
+  }
+  function dkSessionSet(shareId, code, name) {
+    try { localStorage.setItem(DK_SESSION_KEY, JSON.stringify({ v: 1, shareId: String(shareId || ''), code: String(code || ''), name: String(name || '').slice(0, 60), ts: Date.now() })); } catch (e) {}
+  }
+  function dkSessionClear() { try { localStorage.removeItem(DK_SESSION_KEY); } catch (e) {} }
+  function dkAutoLockMin() {
+    try { const v = parseInt(localStorage.getItem(DK_AUTOLOCK_KEY), 10); return (v >= 0 && v <= 240) ? v : 10; } catch (e) { return 10; }
+  }
+  /* c151: pure timing check (unit-tested) — lock only after a LONG background */
+  function dkLockDue(hiddenAt, now, mins) {
+    if (!hiddenAt || !(mins > 0)) return false;
+    return (now - hiddenAt) > mins * 60000;
+  }
+  function dkCurrentShareId() {
+    try { const sh = JSON.parse(localStorage.getItem('dk_client_share') || 'null'); return (sh && sh.id) ? String(sh.id) : ''; } catch (e) { return ''; }
+  }
+  /* c151: restore the cached encrypted blob into memory (session/continue path) */
+  function dkLoadCachedBlob() {
+    try {
+      const p = JSON.parse(localStorage.getItem('dk_client_data') || 'null');
+      if (p && p.v === 1 && p.blob) { portalBlob = b64uDecode(p.blob); return true; }
+    } catch (e) {}
+    return false;
+  }
+  /* c151: the portal's t() has no interpolation — fill {name} manually */
+  function dkFmt(tpl, name) {
+    const s = String(tpl || '');
+    return s.indexOf('{name}') >= 0 ? s.replace('{name}', name) : s;
+  }
   function showUnlock() {
     document.getElementById('txt-unlock-title').textContent = t('unlockTitle');
     document.getElementById('txt-unlock-subtitle').textContent = t('unlockSubtitle');
     document.getElementById('btn-unlock').textContent = t('unlockBtn');
     document.getElementById('unlock-code-input').value = '';
     document.getElementById('unlock-error').textContent = '';
+    const cont = document.getElementById('unlock-continue');
+    if (cont) cont.classList.add('hidden');
+    const codeBlock = document.getElementById('unlock-code-block');
+    if (codeBlock) codeBlock.classList.remove('hidden');
     const _us133 = document.getElementById('unlock-screen');
     _us133.setAttribute('aria-label', t('unlockTitle')); /* c133: dialog has a name */
     _us133.classList.remove('hidden');
     setTimeout(()=>document.getElementById('unlock-code-input').focus(),100);
+  }
+  /* c151: lock screen — same UI, different words; the code is required again */
+  function showLocked() {
+    showUnlock();
+    document.getElementById('txt-unlock-title').textContent = t('lockedTitle');
+    document.getElementById('txt-unlock-subtitle').textContent = t('lockedSubtitle');
+  }
+  /* c151: no portal on this device (after an explicit logout) */
+  function showNoPortal() {
+    document.getElementById('txt-unlock-title').textContent = t('noPortalTitle');
+    document.getElementById('txt-unlock-subtitle').textContent = t('noPortalHint');
+    document.getElementById('unlock-error').textContent = '';
+    const cont = document.getElementById('unlock-continue');
+    if (cont) cont.classList.add('hidden');
+    const codeBlock = document.getElementById('unlock-code-block');
+    if (codeBlock) codeBlock.classList.add('hidden');
+    const _us = document.getElementById('unlock-screen');
+    _us.setAttribute('aria-label', t('noPortalTitle'));
+    _us.classList.remove('hidden');
+  }
+  /* c151: remember-me screen — one tap, no code */
+  function showContinue() {
+    const s = dkSessionGet();
+    if (!s) { showUnlock(); return; }
+    document.getElementById('txt-unlock-title').textContent = t('continueTitle');
+    document.getElementById('txt-unlock-subtitle').textContent = s.name ? dkFmt(t('continueSubtitle'), s.name) : t('unlockSubtitle');
+    document.getElementById('unlock-error').textContent = '';
+    const btn = document.getElementById('btn-continue');
+    if (btn) btn.textContent = s.name ? dkFmt(t('continueBtn'), s.name) : t('continueBtnShort');
+    const useCode = document.getElementById('btn-use-code');
+    if (useCode) useCode.textContent = t('useCodeBtn');
+    const cont = document.getElementById('unlock-continue');
+    if (cont) cont.classList.remove('hidden');
+    const codeBlock = document.getElementById('unlock-code-block');
+    if (codeBlock) codeBlock.classList.add('hidden');
+    document.getElementById('unlock-screen').classList.remove('hidden');
+  }
+  function dkUnlockSuccess(parsed, code, shareId) {
+    try { localStorage.removeItem(DK_LOGGED_OUT_KEY); } catch (e) {}
+    document.getElementById('unlock-screen').classList.add('hidden');
+    dkSessionSet(shareId || dkCurrentShareId(), code, (parsed && parsed.client && (parsed.client.full_name || parsed.client.name)) || '');
+    applyData(parsed);
   }
   async function attemptUnlock() {
     const err = document.getElementById('unlock-error');
@@ -2934,12 +3063,81 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     if (!window.crypto || !crypto.subtle) { err.textContent = t('unlockNoCrypto'); return; }
     try {
       const parsed = await decryptPortal(code);
-      document.getElementById('unlock-screen').classList.add('hidden');
-      applyData(parsed);
+      dkUnlockSuccess(parsed, code);
     } catch(e) {
       err.textContent = (e && e.code === 'expired') ? t('unlockExpired') : t('unlockWrongCode');
     }
   }
+  /* c151: one-tap continue — cached blob first (offline-friendly), then a
+     fresh cloud copy; a changed code falls back to the code screen. */
+  async function dkResumeSession() {
+    const s = dkSessionGet();
+    if (!s) { showUnlock(); return; }
+    dkLoadCachedBlob(); /* the continue path skips startShareFlow — restore the blob first */
+    try { const parsed = await decryptPortal(s.code); dkUnlockSuccess(parsed, s.code, s.shareId); return; } catch (e) {}
+    try {
+      await fetchAndCacheShare(s.shareId);
+      const parsed = await decryptPortal(s.code);
+      dkUnlockSuccess(parsed, s.code, s.shareId);
+    } catch (e) {
+      dkSessionClear();
+      showUnlock();
+      setShareStatus(t('sessionExpired'), false);
+    }
+  }
+  function dkLockNow() { showLocked(); }
+  function dkPortalLogout() {
+    dkSessionClear();
+    try { localStorage.setItem(DK_LOGGED_OUT_KEY, '1'); } catch (e) {}
+    dkWipeData(); /* session + share + blob + client data (lang/theme prefs survive) */
+    try { location.href = location.pathname; } catch (e) { location.reload(); }
+  }
+  /* c151: PWA install helpers — banner + native prompt (iOS gets a hint) */
+  function dkIsStandalone() {
+    try { return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true; } catch (e) { return false; }
+  }
+  function dkIsIOS() { return /iPad|iPhone|iPod/.test(navigator.userAgent); }
+  function dkInstallDismissed() {
+    try { const ts = Number(localStorage.getItem('dk_install_dismissed')) || 0; return Date.now() - ts < 30 * 86400000; } catch (e) { return false; }
+  }
+  function dkInstallBanner() {
+    try {
+      if (dkIsStandalone() || dkInstallDismissed()) return;
+      if (!window.dkInstallPrompt && !dkIsIOS()) return;
+      if (document.getElementById('dk-install-banner')) return;
+      const b = document.createElement('div');
+      b.id = 'dk-install-banner';
+      b.className = 'fixed inset-x-3 z-[95] flex items-center gap-2 bg-[rgb(var(--c-surface))] border border-border rounded-2xl shadow-float p-3';
+      b.style.bottom = 'calc(72px + var(--sab))';
+      b.innerHTML = '<span class="text-lg">📲</span>'
+        + '<div class="flex-1 min-w-0"><div class="text-xs font-bold text-text" id="dk-install-title"></div>'
+        + '<div class="text-[10px] text-muted truncate" id="dk-install-sub"></div></div>'
+        + '<button type="button" id="dk-install-go" class="shrink-0 bg-primary/15 hover:bg-primary/25 text-indigo-300 border border-primary/30 text-[11px] font-bold px-3 py-2 rounded-xl transition"></button>'
+        + '<button type="button" id="dk-install-x" class="shrink-0 w-7 h-7 grid place-items-center rounded-lg text-muted hover:bg-surface-2">✕</button>';
+      document.body.appendChild(b);
+      document.getElementById('dk-install-title').textContent = t('installTitle');
+      document.getElementById('dk-install-sub').textContent = t('installSub');
+      document.getElementById('dk-install-go').textContent = t('installBtn');
+      document.getElementById('dk-install-go').addEventListener('click', dkInstallNow);
+      document.getElementById('dk-install-x').addEventListener('click', function () {
+        try { localStorage.setItem('dk_install_dismissed', String(Date.now())); } catch (e) {}
+        b.remove();
+      });
+    } catch (e) {}
+  }
+  async function dkInstallNow() {
+    try {
+      if (window.dkInstallPrompt) {
+        window.dkInstallPrompt.prompt();
+        const r = await window.dkInstallPrompt.userChoice;
+        if (r && r.outcome === 'accepted') { const b = document.getElementById('dk-install-banner'); if (b) b.remove(); }
+        window.dkInstallPrompt = null;
+        return;
+      }
+    } catch (e) {}
+    toast(t('installIosHint'), 'info');
+  }
+  window.dkInstallNow = dkInstallNow;
 
   /* ============ DATA LOADING ============ */
   function progKeyFor(idx){
@@ -3080,24 +3278,32 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     if (!data.d) throw { code: 'notfound' };
     return data;
   }
+  /* c151: fetch + cache the encrypted share blob (reused by the fresh-link
+     flow and by the one-tap session resume when the cache is stale) */
+  async function fetchAndCacheShare(id) {
+    const data = await fetchPortalShare(id);
+    portalBlob = b64uDecode(data.d);
+    try { localStorage.setItem('dk_client_data', JSON.stringify({ v: 1, blob: b64uEncode(portalBlob) })); } catch (e) {}
+    try { localStorage.setItem('dk_client_share', JSON.stringify({ id: id })); } catch (e) {}
+    try { dkQuarantineLegacyGlobalKeys(); } catch (e) {} /* c101: the old shared keys hold a MIX of clients — park them */
+    return portalBlob;
+  }
   async function startShareFlow(id) {
     showUnlock();
     setShareStatus(t('shareLoading'), true);
     try {
-      const data = await fetchPortalShare(id);
-      portalBlob = b64uDecode(data.d);
-      try { localStorage.setItem('dk_client_data', JSON.stringify({ v: 1, blob: b64uEncode(portalBlob) })); } catch (e) {}
-      try { localStorage.setItem('dk_client_share', JSON.stringify({ id: id })); } catch (e) {}
-      try { dkQuarantineLegacyGlobalKeys(); } catch (e) {} /* c101: the old shared keys hold a MIX of clients — park them */
+      await fetchAndCacheShare(id);
       setShareStatus('', false);
     } catch (e) {
       const cached = localStorage.getItem('dk_client_data');
-      if (e && e.code === 'offline' && cached) {
+      /* c151: fall back to the cached blob for ANY fetch failure (not only
+         «offline») — the device keeps working with the last shared plan */
+      if (cached) {
         try {
           const p = JSON.parse(cached);
           if (p && p.v === 1 && p.blob) {
             portalBlob = b64uDecode(p.blob);
-            setShareStatus(t('shareOffline') + ' ' + t('shareOfflineCached'), false);
+            setShareStatus((e && e.code === 'denied') ? t('shareDenied') : t('shareOffline') + ' ' + t('shareOfflineCached'), false);
             return;
           }
         } catch (e2) {}
@@ -3139,7 +3345,12 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       }
       try {
         const sh = JSON.parse(localStorage.getItem('dk_client_share') || 'null');
-        if (sh && sh.id) { startShareFlow(sh.id); return; }
+        if (sh && sh.id) {
+          /* c151: a remembered session offers «Продолжить как X» — no code */
+          const _sess151 = dkSessionGet();
+          if (_sess151 && _sess151.shareId === sh.id) { dkLoadCachedBlob(); showContinue(); return; }
+          startShareFlow(sh.id); return;
+        }
       } catch(eShare) {}
       const cached = localStorage.getItem('dk_client_data');
       if (cached) {
@@ -3148,6 +3359,9 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         if (p && p.client) { applyData(p); return; }
       }
     } catch(e) { console.error('load error:',e); }
+    /* c151: after an explicit logout the app shows the «no portal» screen —
+       never demo data (which looked like someone else's account) */
+    if (localStorage.getItem(DK_LOGGED_OUT_KEY) === '1') { showNoPortal(); return; }
     applyDemo();
   }
 
@@ -6964,7 +7178,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         const k = localStorage.key(i);
         if (k && (k.endsWith('__' + ns) || k.indexOf('dk_legacy_') === 0)) kill.push(k);
       }
-      ['dk_client_data', 'dk_client_share', 'dk_live_draft'].forEach(function (k) {
+      ['dk_client_data', 'dk_client_share', 'dk_live_draft', 'dk_portal_session'].forEach(function (k) {
         if (localStorage.getItem(k) != null) kill.push(k);
       });
       kill.forEach(function (k) { try { localStorage.removeItem(k); n++; } catch (e) {} });
@@ -7235,6 +7449,55 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       e.target.value = e.target.value.replace(/\D/g,'').slice(0,6);
       document.getElementById('unlock-error').textContent = '';
     });
+    /* c151: remember-me controls */
+    const _btnContinue151 = document.getElementById('btn-continue');
+    if (_btnContinue151) _btnContinue151.addEventListener('click', function () { dkResumeSession(); });
+    const _btnUseCode151 = document.getElementById('btn-use-code');
+    if (_btnUseCode151) _btnUseCode151.addEventListener('click', function () { showUnlock(); });
+
+    /* c151: auto-lock after a long background stay (same-session only) */
+    document.addEventListener('visibilitychange', function () {
+      try {
+        if (document.hidden) { sessionStorage.setItem('dk_hidden_at', String(Date.now())); return; }
+        const t0 = Number(sessionStorage.getItem('dk_hidden_at')) || 0;
+        const us = document.getElementById('unlock-screen');
+        if (t0 && dkSessionGet() && us && us.classList.contains('hidden') && dkLockDue(t0, Date.now(), dkAutoLockMin())) {
+          sessionStorage.removeItem('dk_hidden_at');
+          dkLockNow();
+        }
+      } catch (e151) {}
+    });
+    /* c151: never lose an active workout to an accidental exit */
+    window.addEventListener('beforeunload', function (e) {
+      try {
+        if (!Object.keys(sessions).length) return;
+        e.preventDefault();
+        e.returnValue = '';
+      } catch (err) {}
+    });
+    /* c151: an accidental browser-back during a workout asks first */
+    try {
+      history.pushState({ dk151: 1 }, '');
+      window.addEventListener('popstate', function () {
+        try {
+          if (Object.keys(sessions).length && !confirm(t('exitWorkoutConfirm'))) { history.pushState({ dk151: 1 }, ''); return; }
+        } catch (err) {}
+      });
+    } catch (e151b) {}
+
+    /* c151: install prompt (Android/desktop) + iOS instructions */
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault();
+      window.dkInstallPrompt = e;
+      dkInstallBanner();
+    });
+    try {
+      if (navigator.storage && navigator.storage.persist && !localStorage.getItem('dk_persist_asked')) {
+        localStorage.setItem('dk_persist_asked', '1');
+        navigator.storage.persist().catch(function () {});
+      }
+    } catch (e151c) {}
+    dkInstallBanner();
 
     // Tabs
     document.querySelectorAll('.nav-tab').forEach(tab=>{
@@ -7916,6 +8179,22 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       set('cps-title', T('setTitle'));
       set('cps-share-label', T('share'));
       set('cps-wipe-label', T('wipeBtn')); /* c134 */
+      /* c151: app section (install / auto-lock / lock / logout) */
+      set('cps-app-label', T('appSection'));
+      set('cps-install-lbl', T('installBtn'));
+      set('cps-autolock-label', T('autolockTitle'));
+      set('cps-lock-lbl', T('lockNow'));
+      set('cps-logout-lbl', T('logoutBtn'));
+      var _al151 = document.getElementById('cps-autolock');
+      if (_al151) {
+        var _alv151 = dkAutoLockMin();
+        Array.prototype.forEach.call(_al151.options, function (o) {
+          o.textContent = o.value === '0' ? T('autolockOff') : T('autolockMin', { n: o.value });
+        });
+        _al151.value = String(_alv151);
+      }
+      var _ci151 = document.getElementById('cps-install');
+      if (_ci151) _ci151.classList.toggle('hidden', dkIsStandalone() || (!window.dkInstallPrompt && !dkIsIOS()));
       /* c135: voice coach labels + live state */
       set('cps-voice-label', T('voiceTitle'));
       set('cps-voice-hint', T('voiceHint'));
@@ -8164,6 +8443,21 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
               '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>' +
               '<span id="cps-wipe-label"></span>' +
             '</button>' +
+            /* c151: app section — install / auto-lock / lock / logout */
+            '<div>' +
+              '<div id="cps-app-label" class="text-[10px] font-bold uppercase tracking-wider text-muted mb-2"></div>' +
+              '<button type="button" id="cps-install" class="hidden w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-xs font-bold text-text transition hover:opacity-80 mb-2"><span id="cps-install-lbl"></span></button>' +
+              '<div class="flex items-center justify-between mb-2">' +
+                '<label id="cps-autolock-label" class="text-xs font-semibold text-muted" for="cps-autolock"></label>' +
+                '<select id="cps-autolock" class="bg-surface-2 border border-border rounded-lg px-2 py-1 text-xs text-text">' +
+                  '<option value="0"></option><option value="5"></option><option value="10"></option><option value="30"></option>' +
+                '</select>' +
+              '</div>' +
+              '<div class="grid grid-cols-2 gap-2">' +
+                '<button type="button" id="cps-lock" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-xs font-bold text-text transition hover:opacity-80"><span id="cps-lock-lbl"></span></button>' +
+                '<button type="button" id="cps-logout" class="w-full bg-red-500/10 border border-red-500/30 rounded-xl px-3 py-2.5 text-xs font-bold text-red-400 transition hover:bg-red-500/20"><span id="cps-logout-lbl"></span></button>' +
+              '</div>' +
+            '</div>' +
             /* c135: voice coach — spoken guidance for blind trainees */
             '<div>' +
               '<div class="flex items-center justify-between mb-2">' +
@@ -8631,10 +8925,24 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         } catch (err) {}
         return;
       }
+      /* c151: install / lock / logout */
+      if (e.target.closest('#cps-install')) { try { dkInstallNow(); } catch (err) {} return; }
+      if (e.target.closest('#cps-lock')) { closeSettingsSheet(); try { dkLockNow(); } catch (err) {} return; }
+      if (e.target.closest('#cps-logout')) {
+        try { if (confirm(T('logoutConfirm'))) dkPortalLogout(); } catch (err) {}
+        return;
+      }
       if (e.target.closest('#cps-share')) {
         closeSettingsSheet();
         try { shareReport(); } catch (err) {}
         return;
+      }
+    });
+    /* c151: auto-lock delay picker */
+    document.addEventListener('change', function (e) {
+      if (e.target && e.target.id === 'cps-autolock') {
+        try { localStorage.setItem(DK_AUTOLOCK_KEY, String(parseInt(e.target.value, 10) || 0)); } catch (err) {}
+        try { toast(T('autolockSaved'), 'success', 1600); } catch (err) {}
       }
     });
     document.addEventListener('click', function (e) {
