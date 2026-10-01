@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c149" />
+<meta name="dk-build" content="c150" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2849,7 +2849,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c149</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c150</p>
             </div>
           </div>
 
@@ -3764,6 +3764,14 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                   <button data-food-source="local" class="food-source-btn flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-primary text-white" data-i18n="food.sourceLocal">Local DB</button>
                   <button data-food-source="online" class="food-source-btn flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition text-muted" data-i18n="food.sourceOpenFoodFactsGlobal">OpenFoodFacts</button>
                 </div>
+                <!-- c150: smart filters — favorites / recent / recipes + recipe builder -->
+                <div class="flex gap-1.5 items-center flex-wrap">
+                  <button class="food-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-semibold border border-border transition bg-primary text-white" data-food-filter="all" data-i18n="food.filterAll">All</button>
+                  <button class="food-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-semibold border border-border transition text-muted bg-surface-2" data-food-filter="fav">⭐ <span data-i18n="food.filterFav">Favorites</span></button>
+                  <button class="food-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-semibold border border-border transition text-muted bg-surface-2" data-food-filter="recent">🕐 <span data-i18n="food.filterRecent">Recent</span></button>
+                  <button class="food-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-semibold border border-border transition text-muted bg-surface-2" data-food-filter="recipe">🍲 <span data-i18n="food.filterRecipes">Recipes</span></button>
+                  <button id="food-new-recipe" class="ms-auto px-2.5 py-1 rounded-lg text-[11px] font-semibold border border-success/40 bg-success/10 text-success transition hover:bg-success/20">＋ <span data-i18n="food.newRecipe">Recipe</span></button>
+                </div>
               </div>
               <div id="food-search-results" class="flex-1 overflow-y-auto p-3 space-y-2">
                 <div class="text-center py-8 text-sm text-muted" data-i18n="food.searchHint">Start typing to search…</div>
@@ -3800,6 +3808,8 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                     <span data-i18n="nutrition.serving">Serving</span>
                     <span class="text-muted">(g / ml)</span>
                   </label>
+                  <!-- c150: quick portions from the product's real serving/package -->
+                  <div id="food-portion-units" class="hidden flex flex-wrap gap-1.5 mb-2"></div>
                   <input type="number" id="food-portion-grams" min="1" step="1" value="100" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
                 </div>
                 <div class="bg-surface-2 border border-border rounded-xl p-3">
@@ -3815,6 +3825,34 @@ button[id$="-close"]:active, button[data-cps-close]:active {
               <div class="p-3 border-t border-border flex gap-2">
                 <button id="food-portion-cancel" class="flex-1 bg-surface-2 hover:bg-border/40 border border-border text-sm font-semibold py-2.5 rounded-xl transition" data-i18n="common.cancel">Cancel</button>
                 <button id="food-portion-add" class="flex-1 bg-primary hover:bg-primary-2 text-white text-sm font-semibold py-2.5 rounded-xl transition shadow-card" data-i18n="common.add">Add</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============= RECIPE MODAL (c150) — combine products into a dish ============= -->
+          <div id="recipe-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
+            <div class="bg-surface w-full sm:max-w-lg max-h-[90vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
+              <div class="p-4 border-b border-border flex items-center gap-3">
+                <h3 class="font-display font-bold text-base flex-1" data-i18n="food.newRecipe">New recipe</h3>
+                <button id="recipe-close" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-surface-2 text-muted" aria-label="Close" data-i18n-attr="aria-label:aria.close">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+              </div>
+              <div class="flex-1 overflow-y-auto p-4 space-y-3">
+                <input type="text" id="recipe-name" data-i18n-ph="food.recipeNamePh" placeholder="Recipe name…" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
+                <div class="relative">
+                  <input type="search" id="recipe-search" data-i18n-ph="food.recipeSearchPh" placeholder="Search a product to add…" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
+                  <div id="recipe-search-results" class="hidden absolute z-20 mt-1 w-full max-h-56 overflow-y-auto rounded-xl border border-border bg-[rgb(var(--c-surface))] shadow-float"></div>
+                </div>
+                <div>
+                  <div class="text-xs font-semibold mb-1.5" data-i18n="food.recipeIngredients">Ingredients</div>
+                  <div id="recipe-ingredients" class="space-y-1.5"></div>
+                </div>
+                <div id="recipe-total" class="text-xs text-muted bg-surface-2 border border-border rounded-xl p-2.5"></div>
+              </div>
+              <div class="p-3 border-t border-border flex gap-2">
+                <button id="recipe-cancel" class="flex-1 bg-surface-2 hover:bg-border/40 border border-border text-sm font-semibold py-2.5 rounded-xl transition" data-i18n="common.cancel">Cancel</button>
+                <button id="recipe-save" class="flex-1 bg-primary hover:bg-primary-2 text-white text-sm font-semibold py-2.5 rounded-xl transition shadow-card" data-i18n="food.recipeSave">Save recipe</button>
               </div>
             </div>
           </div>
@@ -9821,7 +9859,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
     /* c105: group filter setter (setGoalFilter kept as alias for old callers) */
     function setGroupFilter(v) { _groupFilter = v; applyFilters(); }
     function setGoalFilter(v)  { setGroupFilter(v); }
-    function refresh()      { return load(); }
+    function refresh() { return load(); }
     /** Open edit form by id (used by profile screen). Loads client if missing. */
     async function openEditById(id) {
       let c = _clients.find(x => x.id === id);
@@ -18268,6 +18306,41 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     let _clients = [];
     let _searchSource = 'local';
     let _pendingFood = null; // food item awaiting portion input
+    /* c150: smart food search — favorites / recent (localStorage, trainer-wide) */
+    let _foodFilter = 'all';
+    const FOOD_FAV_KEY = 'dk_food_favs';
+    const FOOD_RECENT_KEY = 'dk_food_recent';
+    function dkFoodList(key) {
+      try { const a = JSON.parse(localStorage.getItem(key) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; }
+    }
+    function dkFoodListSave(key, list, cap) {
+      try { localStorage.setItem(key, JSON.stringify((list || []).slice(0, cap))); } catch (e) {}
+    }
+    /** Normalize any food shape to the flat object stored in fav/recent lists. */
+    function dkFoodFlat(f) {
+      return {
+        id: f && f.id, name_en: (f && f.name_en) || '', name_ru: (f && f.name_ru) || '', name_he: (f && f.name_he) || '',
+        brand: (f && f.brand) || '', category: (f && f.category) || '',
+        calories: Number(f && f.calories) || 0, protein: Number(f && f.protein) || 0,
+        carbs: Number(f && f.carbs) || 0, fat: Number(f && f.fat) || 0, fiber: Number(f && f.fiber) || 0,
+        serving_quantity: Number(f && f.serving_quantity) || 0, package_grams: Number(f && f.package_grams) || 0,
+        source: (f && f.source) || 'local', image_url: (f && f.image_url) || ''
+      };
+    }
+    function dkFoodIsFav(id) { return dkFoodList(FOOD_FAV_KEY).some(f => f && f.id === id); }
+    function dkFoodFavToggle(f) {
+      const list = dkFoodList(FOOD_FAV_KEY);
+      const i = list.findIndex(x => x && x.id === f.id);
+      if (i >= 0) list.splice(i, 1); else list.unshift(dkFoodFlat(f));
+      dkFoodListSave(FOOD_FAV_KEY, list, 80);
+      return i < 0;
+    }
+    function dkFoodRecentAdd(f) {
+      if (!f || !f.id) return;
+      const list = dkFoodList(FOOD_RECENT_KEY).filter(x => x && x.id !== f.id);
+      list.unshift(dkFoodFlat(f));
+      dkFoodListSave(FOOD_RECENT_KEY, list, 30);
+    }
 
     const MEAL_TYPES = ['breakfast', 'lunch', 'dinner', 'snack', 'pre_workout', 'post_workout'];
 
@@ -18545,9 +18618,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       // Reset to local source
       _searchSource = 'local';
       updateSourceButtons();
-      // Show hint
-      const results = document.getElementById('food-search-results');
-      if (results) results.innerHTML = `<div class="text-center py-8 text-sm text-muted">${escapeHTML(t('food.searchHint'))}</div>`;
+      // c150: smart start view — favorites + recent, filter chips reset
+      setFoodFilter('all');
       modal.classList.remove('hidden');
       setTimeout(() => input && input.focus(), 100);
     }
@@ -18570,12 +18642,44 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       if (input && input.value) performSearch(input.value);
     }
 
+    /** c150: local search across the reference DB + local/custom/recipe store.
+     *  Returns NORMALIZED flat items (serving_quantity/package_grams included
+     *  so the portion modal can offer real portions). */
+    async function searchLocalFoods(query) {
+      let ref = [], base = [];
+      try { ref = await db.all('food_database'); } catch (e) { ref = []; }
+      try { base = await db.all('food_base'); } catch (e) { base = []; }
+      const normRef = f => {
+        const n = f.nutrition || {};
+        return {
+          id: f.id, name_en: f.name_en, name_ru: f.name_ru, name_he: f.name_he,
+          brand: f.brand || '', barcode: f.barcode || '', category: f.category || '',
+          calories: Number(n.calories) || 0, protein: Number(n.protein) || 0,
+          carbs: Number(n.carbs) || 0, fat: Number(n.fat) || 0, fiber: Number(n.fiber) || 0,
+          serving_quantity: Number(f.serving_quantity) || 0, package_grams: Number(f.package_grams) || 0,
+          source: f.source || 'reference', image_url: f.image_url || '', _ref: true
+        };
+      };
+      const q = String(query || '').toLowerCase();
+      const seen = new Set();
+      return base.concat(ref.filter(f => f && !f.is_archived).map(normRef))
+        .filter(f => {
+          if (!f || !f.id || seen.has(f.id)) return false;
+          const haystack = [f.name_en, f.name_ru, f.name_he, f.brand, f.barcode, f.category]
+            .filter(Boolean).join(' ').toLowerCase();
+          if (q && haystack.indexOf(q) === -1) return false;
+          seen.add(f.id);
+          return true;
+        })
+        .slice(0, 60);
+    }
+
     /** Perform food search (local DB or Open Food Facts). */
     async function performSearch(query) {
       const results = document.getElementById('food-search-results');
       const loading = document.getElementById('food-search-loading');
       if (!query || query.length < 2) {
-        if (results) results.innerHTML = `<div class="text-center py-8 text-sm text-muted">${escapeHTML(t('food.searchHint'))}</div>`;
+        showInitialFoodView();
         return;
       }
       if (loading) loading.classList.remove('hidden');
@@ -18585,35 +18689,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         let items = [];
         if (_searchSource === 'local') {
           /* c146: search BOTH the reference database (2344 seeded products in
-             food_database) and the local cache/custom store (food_base) — the
-             old code only read food_base and found nothing for a fresh device.
-             Reference items are normalized to the flat shape the renderer and
-             the portion modal expect. */
-          let ref = [], base = [];
-          try { ref = await db.all('food_database'); } catch (e) { ref = []; }
-          try { base = await db.all('food_base'); } catch (e) { base = []; }
-          const normRef = f => {
-            const n = f.nutrition || {};
-            return {
-              id: f.id, name_en: f.name_en, name_ru: f.name_ru, name_he: f.name_he,
-              brand: f.brand || '', barcode: f.barcode || '', category: f.category || '',
-              calories: Number(n.calories) || 0, protein: Number(n.protein) || 0,
-              carbs: Number(n.carbs) || 0, fat: Number(n.fat) || 0, fiber: Number(n.fiber) || 0,
-              source: f.source || 'reference', image_url: f.image_url || '', _ref: true
-            };
-          };
-          const q = query.toLowerCase();
-          const seen = new Set();
-          items = base.concat(ref.filter(f => f && !f.is_archived).map(normRef))
-            .filter(f => {
-              if (!f || !f.id || seen.has(f.id)) return false;
-              const haystack = [f.name_en, f.name_ru, f.name_he, f.brand, f.barcode, f.category]
-                .filter(Boolean).join(' ').toLowerCase();
-              if (!haystack.includes(q)) return false;
-              seen.add(f.id);
-              return true;
-            })
-            .slice(0, 60);
+             food_database) and the local cache/custom store (food_base); c150
+             extracted into searchLocalFoods + serving fields carried through. */
+          items = await searchLocalFoods(query);
         } else {
           // Open Food Facts API — also check if it's a barcode (numbers only)
           const isBarcode = /^\d{6,}$/.test(query.trim());
@@ -18632,6 +18710,98 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       }
     }
 
+    /** c150: switch the smart filter (all / fav / recent / recipe). */
+    function setFoodFilter(f) {
+      _foodFilter = f || 'all';
+      document.querySelectorAll('.food-filter-btn').forEach(btn => {
+        const on = btn.getAttribute('data-food-filter') === _foodFilter;
+        btn.classList.toggle('bg-primary', on);
+        btn.classList.toggle('text-white', on);
+        btn.classList.toggle('bg-surface-2', !on);
+        btn.classList.toggle('text-muted', !on);
+      });
+      const input = document.getElementById('food-search-input');
+      if (input && input.value && input.value.length >= 2 && _searchSource === 'local') performSearch(input.value);
+      else showInitialFoodView();
+    }
+
+    /** c150: the view when the query is empty — favorites + recent, or a filter list. */
+    function showInitialFoodView() {
+      const results = document.getElementById('food-search-results');
+      if (!results) return;
+      const favs = dkFoodList(FOOD_FAV_KEY);
+      const recents = dkFoodList(FOOD_RECENT_KEY);
+      const section = (title, items) => items.length
+        ? `<div class="text-[10px] uppercase tracking-wider text-muted px-1 pt-1">${escapeHTML(title)}</div>` + items.map(f => foodResultCardHTML(f)).join('')
+        : '';
+      if (_foodFilter === 'fav') {
+        results.innerHTML = favs.length ? favs.map(f => foodResultCardHTML(f)).join('')
+          : `<div class="text-center py-8 text-sm text-muted">${escapeHTML(t('food.noFavs'))}</div>`;
+      } else if (_foodFilter === 'recent') {
+        results.innerHTML = recents.length ? recents.map(f => foodResultCardHTML(f)).join('')
+          : `<div class="text-center py-8 text-sm text-muted">${escapeHTML(t('food.noRecent'))}</div>`;
+      } else if (_foodFilter === 'recipe') {
+        results.innerHTML = `<div class="text-center py-8 text-sm text-muted">${escapeHTML(t('common.loading'))}</div>`;
+        searchLocalFoods('').then(items => {
+          const recipes = items.filter(f => f.source === 'recipe');
+          results.innerHTML = recipes.length ? recipes.map(f => foodResultCardHTML(f)).join('')
+            : `<div class="text-center py-8 text-sm text-muted">${escapeHTML(t('food.noRecipes'))}</div>`;
+          wireFoodResultCards(results);
+        });
+        return;
+      } else {
+        results.innerHTML = (favs.length || recents.length)
+          ? section(t('food.favTitle'), favs.slice(0, 12)) + section(t('food.recentTitle'), recents.slice(0, 12))
+          : `<div class="text-center py-8 text-sm text-muted">${escapeHTML(t('food.searchHint'))}</div>`;
+      }
+      wireFoodResultCards(results);
+    }
+
+    /** c150: one search-result card (image chain + localized name + ⭐ toggle). */
+    function foodResultCardHTML(f) {
+      const fav = dkFoodIsFav(f.id);
+      return `
+        <div data-pick-food="${escapeAttr(JSON.stringify(f).replace(/"/g, '&quot;'))}" class="flex items-center gap-3 bg-surface-2 border border-border rounded-xl p-2.5 hover:bg-border/30 hover:border-primary/30 transition cursor-pointer">
+          <div class="relative w-9 h-9 rounded-lg overflow-hidden bg-surface border border-border grid place-items-center shrink-0">
+            <span class="absolute text-[13px] opacity-60">🥗</span>
+            ${f.id ? window.dkFoodImgTag(f, 'absolute inset-0 w-full h-full object-cover') : ''}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="font-medium text-sm truncate">${escapeHTML(f['name_' + currentLang()] || f.name_en || f.name_he || '?')}</div>
+            <div class="text-[11px] text-muted truncate">
+              ${f.brand ? escapeHTML(f.brand) + ' · ' : ''}${fmtNumber(f.calories)} ${t('nutrition.calories').toLowerCase()}/100g
+              ${f.source === 'openfoodfacts' ? ' · OFF' : ''}${f.source === 'recipe' ? ' · 🍲' : ''}
+            </div>
+          </div>
+          <button type="button" data-fav-toggle="${escapeAttr(String(f.id))}" class="w-8 h-8 grid place-items-center rounded-lg shrink-0 transition ${fav ? 'text-warning bg-warning/10' : 'text-muted hover:bg-border/40'}" aria-label="${escapeAttr(fav ? t('food.favRemove') : t('food.favAdd'))}">${fav ? '★' : '☆'}</button>
+        </div>`;
+    }
+
+    /** c150: wire card clicks (portion modal) + star toggles on any rendered list. */
+    function wireFoodResultCards(root) {
+      (root || document).querySelectorAll('[data-pick-food]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          if (e.target.closest('[data-fav-toggle]')) return;
+          const json = el.getAttribute('data-pick-food').replace(/&quot;/g, '"');
+          try { openPortionModal(JSON.parse(json)); } catch (err) { /* ignore */ }
+        });
+      });
+      (root || document).querySelectorAll('[data-fav-toggle]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const card = btn.closest('[data-pick-food]');
+          if (!card) return;
+          let food = null;
+          try { food = JSON.parse(card.getAttribute('data-pick-food').replace(/&quot;/g, '"')); } catch (err) {}
+          if (!food) return;
+          const nowFav = dkFoodFavToggle(food);
+          btn.textContent = nowFav ? '★' : '☆';
+          btn.className = 'w-8 h-8 grid place-items-center rounded-lg shrink-0 transition ' + (nowFav ? 'text-warning bg-warning/10' : 'text-muted hover:bg-border/40');
+          if (_foodFilter === 'fav' && !nowFav) showInitialFoodView();
+        });
+      });
+    }
+
     /** Render search results as clickable cards. */
     function renderSearchResults(items) {
       const results = document.getElementById('food-search-results');
@@ -18640,30 +18810,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         results.innerHTML = `<div class="text-center py-8 text-sm text-muted">${escapeHTML(t('food.notFound'))}</div>`;
         return;
       }
-      results.innerHTML = items.map(f => `
-        <div data-pick-food="${escapeAttr(JSON.stringify(f).replace(/"/g, '&quot;'))}" class="flex items-center gap-3 bg-surface-2 border border-border rounded-xl p-3 hover:bg-border/30 hover:border-primary/30 transition cursor-pointer">
-          <div class="w-9 h-9 rounded-lg grid place-items-center bg-success/10 text-success shrink-0">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zM12 8v4M12 16h.01"/></svg>
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="font-medium text-sm truncate">${escapeHTML(f['name_' + currentLang()] || f.name_en || f.name_he || '?')}</div>
-            <div class="text-[11px] text-muted truncate">
-              ${f.brand ? escapeHTML(f.brand) + ' · ' : ''}${fmtNumber(f.calories)} ${t('nutrition.calories').toLowerCase()}/100g
-              ${f.source === 'openfoodfacts' ? ' · OFF' : ''}
-            </div>
-          </div>
-        </div>
-      `).join('');
-
-      results.querySelectorAll('[data-pick-food]').forEach(el => {
-        el.addEventListener('click', () => {
-          const json = el.getAttribute('data-pick-food').replace(/&quot;/g, '"');
-          try {
-            const food = JSON.parse(json);
-            openPortionModal(food);
-          } catch (e) { /* ignore */ }
-        });
-      });
+      results.innerHTML = items.map(f => foodResultCardHTML(f)).join('');
+      wireFoodResultCards(results);
     }
 
     /** Open the portion input modal for a selected food. */
@@ -18695,9 +18843,23 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           mealSel.value = _log.meals[preIdx].type;
         }
       }
-      // Reset grams + preview
+      // Reset grams + preview — c150: start from the product's REAL portion
       const gramsInput = document.getElementById('food-portion-grams');
-      if (gramsInput) gramsInput.value = '100';
+      const sq = Number(food.serving_quantity) || 0;
+      const pg = Number(food.package_grams) || 0;
+      const units = document.getElementById('food-portion-units');
+      if (units) {
+        const btns = [{ g: 100, label: t('food.portion100') }];
+        if (sq > 0 && Math.round(sq) !== 100) btns.push({ g: Math.round(sq), label: t('food.portionServing') + ' · ' + Math.round(sq) + ' g' });
+        if (pg > 0 && Math.round(pg) !== 100 && Math.round(pg) !== Math.round(sq)) btns.push({ g: Math.round(pg), label: t('food.portionPackage') + ' · ' + Math.round(pg) + ' g' });
+        units.innerHTML = btns.map(b => `<button type="button" data-portion-g="${b.g}" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold border border-border bg-surface-2 hover:bg-border/40 transition">${escapeHTML(b.label)}</button>`).join('');
+        units.classList.toggle('hidden', btns.length < 2);
+        units.querySelectorAll('[data-portion-g]').forEach(b => b.addEventListener('click', () => {
+          if (gramsInput) gramsInput.value = b.getAttribute('data-portion-g');
+          updatePreview();
+        }));
+      }
+      if (gramsInput) gramsInput.value = sq > 0 ? String(Math.round(sq)) : '100';
       updatePreview();
       // Close search modal, open portion modal
       document.getElementById('food-search-modal').classList.add('hidden');
@@ -18766,6 +18928,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         } catch (e) { /* ignore cache errors */ }
       }
       await saveLog();
+      /* c150: remember it in the smart-search «Recent» list */
+      try { dkFoodRecentAdd(_pendingFood); } catch (eRec) {}
       // Also update client's last_active
       const client = await db.get('clients', _clientId);
       if (client) {
@@ -18864,6 +19028,131 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       });
     }
 
+        /* ===== c150: RECIPE BUILDER — combine products into a reusable dish ===== */
+    let _recipe = null;
+    /** Pure math: ingredient list → totals + per-100g values. */
+    function recipeTotals(r) {
+      const t0 = { grams: 0, calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
+      ((r && r.ingredients) || []).forEach(it => {
+        const k = (Number(it.grams) || 0) / 100;
+        t0.grams += Number(it.grams) || 0;
+        t0.calories += (Number(it.calories) || 0) * k;
+        t0.protein += (Number(it.protein) || 0) * k;
+        t0.carbs += (Number(it.carbs) || 0) * k;
+        t0.fat += (Number(it.fat) || 0) * k;
+        t0.fiber += (Number(it.fiber) || 0) * k;
+      });
+      const per = t0.grams > 0 ? 100 / t0.grams : 0;
+      return {
+        totals: t0,
+        per100: { calories: t0.calories * per, protein: t0.protein * per, carbs: t0.carbs * per, fat: t0.fat * per, fiber: t0.fiber * per }
+      };
+    }
+    function openRecipe() {
+      _recipe = { name: '', ingredients: [] };
+      const nameEl = document.getElementById('recipe-name');
+      if (nameEl) nameEl.value = '';
+      const searchEl = document.getElementById('recipe-search');
+      if (searchEl) searchEl.value = '';
+      const res = document.getElementById('recipe-search-results');
+      if (res) { res.classList.add('hidden'); res.innerHTML = ''; }
+      renderRecipe();
+      document.getElementById('recipe-modal').classList.remove('hidden');
+      setTimeout(() => nameEl && nameEl.focus(), 100);
+    }
+    function renderRecipe() {
+      const box = document.getElementById('recipe-ingredients');
+      if (!box || !_recipe) return;
+      box.innerHTML = (_recipe.ingredients || []).map((it, i) => `
+        <div class="flex items-center gap-2 bg-surface-2 border border-border rounded-xl p-2">
+          <div class="flex-1 min-w-0 text-sm truncate">${escapeHTML(it.name || '?')}</div>
+          <input type="number" min="1" step="1" value="${Math.round(Number(it.grams) || 0)}" data-rec-grams="${i}" class="w-20 bg-surface border border-border rounded-lg px-2 py-1 text-xs font-mono text-center" />
+          <span class="text-[10px] text-muted shrink-0">g · ${fmtNumber(Math.round((Number(it.calories) || 0) * (Number(it.grams) || 0) / 100))} ${t('nutrition.calories').toLowerCase()}</span>
+          <button type="button" data-rec-del="${i}" class="w-6 h-6 grid place-items-center rounded hover:bg-danger/20 text-danger shrink-0">✕</button>
+        </div>`).join('') || `<div class="text-xs text-muted text-center py-3">${escapeHTML(t('food.recipeEmpty'))}</div>`;
+      box.querySelectorAll('[data-rec-grams]').forEach(inp => inp.addEventListener('input', () => {
+        const i = parseInt(inp.getAttribute('data-rec-grams'), 10);
+        if (_recipe.ingredients[i]) { _recipe.ingredients[i].grams = parseFloat(inp.value) || 0; renderRecipeTotal(); }
+      }));
+      box.querySelectorAll('[data-rec-del]').forEach(btn => btn.addEventListener('click', () => {
+        const i = parseInt(btn.getAttribute('data-rec-del'), 10);
+        _recipe.ingredients.splice(i, 1);
+        renderRecipe();
+      }));
+      renderRecipeTotal();
+    }
+    function renderRecipeTotal() {
+      const el = document.getElementById('recipe-total');
+      if (!el || !_recipe) return;
+      const { totals, per100 } = recipeTotals(_recipe);
+      el.innerHTML = `${escapeHTML(t('food.recipeTotal'))}: <span class="font-mono font-semibold">${Math.round(totals.grams)} g · ${Math.round(totals.calories)} ${escapeHTML(t('nutrition.calories').toLowerCase())}</span>`
+        + (totals.grams > 0 ? ` · /100g: <span class="font-mono">${Math.round(per100.calories)} ${escapeHTML(t('nutrition.calories').toLowerCase())} · ${Math.round(per100.protein)}P ${Math.round(per100.carbs)}C ${Math.round(per100.fat)}F</span>` : '');
+    }
+    function recipeAddIngredient(f) {
+      if (!_recipe) return;
+      _recipe.ingredients.push({
+        id: f.id, name: f['name_' + currentLang()] || f.name_en || f.name_ru || f.name_he || '?',
+        grams: Number(f.serving_quantity) > 0 ? Math.round(Number(f.serving_quantity)) : 100,
+        calories: Number(f.calories) || 0, protein: Number(f.protein) || 0,
+        carbs: Number(f.carbs) || 0, fat: Number(f.fat) || 0, fiber: Number(f.fiber) || 0
+      });
+      renderRecipe();
+    }
+    async function saveRecipe() {
+      if (!_recipe) return;
+      const name = (document.getElementById('recipe-name').value || '').trim();
+      if (!name) { toast(t('food.recipeNeedName'), 'warning'); return; }
+      if (!_recipe.ingredients.length) { toast(t('food.recipeNeedItems'), 'warning'); return; }
+      const { totals, per100 } = recipeTotals(_recipe);
+      const item = {
+        id: 'recipe_' + db.uuid(),
+        name_en: name, name_ru: name, name_he: name,
+        source: 'recipe', category: 'recipe', per_100g: true,
+        calories: Math.round(per100.calories * 10) / 10, protein: Math.round(per100.protein * 10) / 10,
+        carbs: Math.round(per100.carbs * 10) / 10, fat: Math.round(per100.fat * 10) / 10,
+        fiber: Math.round(per100.fiber * 10) / 10,
+        serving_quantity: Math.round(totals.grams), package_grams: Math.round(totals.grams),
+        ingredients: _recipe.ingredients.map(it => ({ id: it.id, name: it.name, grams: it.grams })),
+        created_at: Date.now()
+      };
+      await db.put('food_base', item);
+      toast(t('food.recipeSaved'), 'success', 2500);
+      document.getElementById('recipe-modal').classList.add('hidden');
+      _recipe = null;
+      openPortionModal(dkFoodFlat(item));
+    }
+    /** Recipe search dropdown inside the recipe modal. */
+    let _recipeSearchTimer = null;
+    function wireRecipeSearch() {
+      const inp = document.getElementById('recipe-search');
+      const box = document.getElementById('recipe-search-results');
+      if (!inp || !box) return;
+      inp.addEventListener('input', () => {
+        clearTimeout(_recipeSearchTimer);
+        _recipeSearchTimer = setTimeout(async () => {
+          const q = inp.value.trim();
+          if (q.length < 2) { box.classList.add('hidden'); box.innerHTML = ''; return; }
+          const items = await searchLocalFoods(q);
+          if (!items.length) {
+            box.innerHTML = `<div class="p-3 text-xs text-muted">${escapeHTML(t('food.notFound'))}</div>`;
+          } else {
+            box.innerHTML = items.slice(0, 12).map(f => `
+              <button type="button" data-rec-pick="${escapeAttr(JSON.stringify(dkFoodFlat(f)).replace(/"/g, '&quot;'))}" class="w-full text-start px-3 py-2 text-xs hover:bg-border/30 border-b border-border/40 last:border-0">
+                <span class="font-semibold">${escapeHTML(f['name_' + currentLang()] || f.name_en || '?')}</span>
+                <span class="text-muted"> · ${fmtNumber(f.calories)} ${escapeHTML(t('nutrition.calories').toLowerCase())}/100g${Number(f.serving_quantity) > 0 ? ' · ' + escapeHTML(t('food.portionServing')) + ' ' + Math.round(f.serving_quantity) + ' g' : ''}</span>
+              </button>`).join('');
+          }
+          box.querySelectorAll('[data-rec-pick]').forEach(b => b.addEventListener('click', () => {
+            try { recipeAddIngredient(JSON.parse(b.getAttribute('data-rec-pick').replace(/&quot;/g, '"'))); } catch (e) {}
+            inp.value = '';
+            box.classList.add('hidden');
+            box.innerHTML = '';
+          }));
+          box.classList.remove('hidden');
+        }, 200);
+      });
+    }
+
     function refresh() {
       return init().then(() => {
         if (_clientId) return selectClient(_clientId);
@@ -18876,6 +19165,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     return { init, selectClient, selectDate, refresh, openFoodSearch, setSearchSource,
              performSearch, openPortionModal, updatePreview, addPendingToMeal,
              openTargets, saveTargets, openCustomFood, saveCustomFood,
+             openRecipe, saveRecipe, setFoodFilter, wireRecipeSearch,
              get clientId() { return _clientId; } };
   })();
 
@@ -29213,6 +29503,34 @@ loadPanelTexture();
       if (screens.nutrition) screens.nutrition.openCustomFood();
     });
 
+    // c150: smart filters + recipe builder
+    document.querySelectorAll('.food-filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (screens.nutrition) screens.nutrition.setFoodFilter(btn.getAttribute('data-food-filter'));
+      });
+    });
+    const newRecipeBtn = document.getElementById('food-new-recipe');
+    if (newRecipeBtn) newRecipeBtn.addEventListener('click', () => {
+      if (screens.nutrition) screens.nutrition.openRecipe();
+    });
+    const recipeClose = document.getElementById('recipe-close');
+    if (recipeClose) recipeClose.addEventListener('click', () => {
+      document.getElementById('recipe-modal').classList.add('hidden');
+    });
+    const recipeCancel = document.getElementById('recipe-cancel');
+    if (recipeCancel) recipeCancel.addEventListener('click', () => {
+      document.getElementById('recipe-modal').classList.add('hidden');
+    });
+    const recipeSaveBtn = document.getElementById('recipe-save');
+    if (recipeSaveBtn) recipeSaveBtn.addEventListener('click', () => {
+      if (screens.nutrition) screens.nutrition.saveRecipe();
+    });
+    const recipeModal = document.getElementById('recipe-modal');
+    if (recipeModal) recipeModal.addEventListener('click', (e) => {
+      if (e.target === recipeModal) recipeModal.classList.add('hidden');
+    });
+    if (screens.nutrition && screens.nutrition.wireRecipeSearch) screens.nutrition.wireRecipeSearch();
+
     // Portion modal
     const portionClose = document.getElementById('food-portion-close');
     if (portionClose) portionClose.addEventListener('click', () => {
@@ -32313,7 +32631,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 149; /* numeric part of dk-build c149 */
+  var RUNNING = 150; /* numeric part of dk-build c150 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

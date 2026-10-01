@@ -20,7 +20,7 @@ ok('foodName prefers the current language', html.indexOf("p['name_' + currentLan
 ok('search matches name_ru/en/he + brand, tokens AND-ed', html.indexOf('(p.name_en || \'\') + \' \' + (p.name_ru || \'\') + \' \' + (p.name_he || \'\')') >= 0 && html.indexOf('if (hay.indexOf(words[w]) === -1)') >= 0);
 ok('search caps results at 12', html.indexOf('out.length < 12') >= 0);
 ok('pick fills all 6 fields', ['diary-food-name', 'diary-food-grams', 'diary-food-kcal', 'diary-food-p', 'diary-food-f', 'diary-food-c'].every(id => html.indexOf("set('" + id + "'") >= 0));
-ok('pick defaults grams to 100', html.indexOf("set('diary-food-grams', '100')") >= 0);
+ok('pick defaults grams to the real serving, else 100 (c150)', html.indexOf("set('diary-food-grams', String(sq > 0 ? Math.round(sq) : 100))") >= 0);
 ok('debounce 250ms', html.indexOf('}, 250);') >= 0);
 ok('search needs ≥2 chars', html.indexOf('if (q.length < 2)') >= 0);
 ok('dropdown closes on outside click', html.indexOf("e.target.closest('#diary-food-search') || e.target.closest('#diary-food-results')") >= 0);
