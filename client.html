@@ -2278,6 +2278,41 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
     .recp-bar { height: 6px; border-radius: 3px; overflow: hidden; background: rgb(var(--c-surface)); }
     .recp-bar-fill { height: 100%; border-radius: 3px; transition: width .3s; }
   </style>
+  <style>
+  /* ===== c158: ADAPTIVE PORTAL LAYOUT (font scale 0.62× … 2.4×) =========
+     The portal scales the root font size. At large sizes rigid rows, nowrap/
+     truncate and fixed grids used to push labels and buttons out of their
+     panels. At html.dk-fs-big everything is allowed to WRAP and shrink: no
+     clipped text, nothing sticks out of its card. */
+  html.dk-fs-big .truncate { overflow: visible !important; text-overflow: clip !important; white-space: normal !important; word-break: break-word; }
+  html.dk-fs-big .whitespace-nowrap { white-space: normal !important; }
+  html.dk-fs-big button, html.dk-fs-big [role="button"] { white-space: normal; height: auto; min-width: 0; }
+  html.dk-fs-big .tab-label { white-space: normal; line-height: 1.05; }
+  html.dk-fs-big .nav-tab { flex: 1 1 0; min-width: 0; padding-inline: .3rem; }
+  html.dk-fs-big .grid-cols-2 { grid-template-columns: repeat(auto-fit, minmax(min(42vw, 11rem), 1fr)); }
+  html.dk-fs-big .grid-cols-3 { grid-template-columns: repeat(auto-fit, minmax(min(30vw, 8rem), 1fr)); }
+  html.dk-fs-big .grid-cols-4 { grid-template-columns: repeat(auto-fit, minmax(min(24vw, 6.5rem), 1fr)); }
+  html.dk-fs-big .flex.items-center.justify-between { flex-wrap: wrap; row-gap: .35rem; }
+  html.dk-fs-big .flex.justify-between { flex-wrap: wrap; row-gap: .35rem; }
+  html.dk-fs-big input, html.dk-fs-big select, html.dk-fs-big textarea { min-width: 0; max-width: 100%; }
+  html.dk-fs-big .w-16, html.dk-fs-big .w-20, html.dk-fs-big .w-24 { width: auto; min-width: 3.25rem; }
+  html.dk-fs-big [id^="cps-"] { word-break: break-word; }
+  html.dk-fs-big #portal-settings-sheet .p-4 { padding: .75rem; }
+  html.dk-fs-big #cp-unit-chip, html.dk-fs-big #voice-missing-badge, html.dk-fs-big #sync-badge { height: auto; padding-block: .25rem; }
+  html.dk-fs-big .prog-bar { min-height: .35rem; }
+  html.dk-fs-big #dk-install-banner { flex-wrap: wrap; }
+  html.dk-fs-big #toast-box > div { max-width: 94vw; }
+  html.dk-fs-big h1, html.dk-fs-big h2, html.dk-fs-big h3, html.dk-fs-big h4 { overflow-wrap: anywhere; }
+  html.dk-fs-big .a-chip, html.dk-fs-big .recp-tab, html.dk-fs-big .wunit-opt { white-space: normal; text-align: center; }
+  /* fixed-overlay cards (unlock / password / install / modals) never wider than the screen */
+  html.dk-fs-big [class*="max-w-"] { max-width: min(100%, calc(100vw - 1.25rem)) !important; }
+  html.dk-fs-big #unlock-screen, html.dk-fs-big #dk-pass-modal, html.dk-fs-big #dk-install-modal { padding: .5rem; }
+  /* at big fonts nothing keeps its rigid width — buttons/rows may shrink or wrap */
+  html.dk-fs-big .shrink-0 { flex-shrink: 1 !important; min-width: 0; }
+  /* final guard: the page itself never scrolls sideways at big fonts */
+  html.dk-fs-big { overflow-x: clip; }
+  html.dk-fs-big body { overflow-x: clip; }
+  </style>
 </head>
 <body class="flex flex-col">
 
@@ -8391,7 +8426,17 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       en: { dumbbellAria:'Back to workout', a11yClose:'Close', wipeBtn:'Sign out & clear device data', wipeConfirm:'Delete all portal data from this device? This cannot be undone.', voiceTitle:'🎧 Voice coach', voiceHint:'The narrator reads technique step by step, names sections and speaks hints. Enable it INSTEAD of your phone’s screen reader — not both at once.', voiceOn:'On', voiceOff:'Off', voiceLevelBrief:'Overview', voiceLevelFull:'Detailed', voiceRate:'Speed', voiceVoice:'Voice', voiceVoiceAuto:'Auto (by language)', voiceNoVoice:'⚠️ No voice for this language — install speech data in your phone settings.', voiceTest:'Test voice', voiceTestPhrase:'Voice coach enabled. Step one. Listen to the technique and follow it.', voiceOnToast:'Voice coach on', voiceOffToast:'Voice coach off', voiceStatusTitle:'Voices on this device', voiceStatusVoices:'voice(s)', voiceStatusNone:'not installed', voiceCheck:'Test', voiceRefresh:'Refresh', voiceHelpToggle:'How to install a voice', voiceHelpCopy:'Copy instructions', voiceCopied:'Instructions copied', voiceHelp_win:'1. Windows Settings → Time & language → Language & region.\n2. Add a language (Hebrew / Russian) → during install tick the Speech component.\nOr: Settings → Time & language → Speech → Manage voices → Add voices.\n3. Restart the browser.\nAlternative: open the portal in Microsoft Edge — it offers online voices for RU/EN/HE without installing anything (internet required).', voiceHelp_android:'1. Settings → Accessibility → Text-to-speech output.\n2. Engine: “Speech Recognition and Synthesis from Google”.\n3. Engine gear icon → “Install voice data” → download Russian and Hebrew.\n4. Reopen the portal.', voiceHelp_ios:'1. Settings → Accessibility → Spoken Content → Voices.\n2. Pick Russian and Hebrew → download the voices.\n3. Reopen the portal.', voiceHelp_mac:'1. System Settings → Accessibility → Spoken Content → System Voice → Manage Voices.\n2. Add Russian and Hebrew.\n3. Restart the browser.', setTitle:'Settings', themes:'Themes', darkThemes:'Dark themes', lightThemes:'Light themes', textures:'Textures', texHint:'Texture overlays on top of any theme — the same as in the main app. Pick an effect and fine-tune its opacity.', opacity:'Opacity', reset:'Reset', resetDone:'Returned to the effect default', applied:'Texture applied', share:'Share report', themeChanged:'Theme changed', wunitTitle:'Unit of weight', wunitKg:'Kilograms', wunitLb:'Pounds', wunitKgShort:'kg', wunitLbShort:'lb', wunitTime:'Time unit', wunitMin:'Minutes', wunitSec:'Seconds', wunitMinShort:'min', wunitSecShort:'sec', wunitDist:'Distance unit', wunitM:'Meters', wunitKm:'Kilometers', wunitMShort:'m', wunitKmShort:'km', wunitCardioTitle:'Cardio units', wunitExTitle:'Weight unit of this exercise', wunitApplyAll:'Apply to all exercises of this workout', wunitDefaultTitle:'Default unit for new exercises', timeLabel:'Time', distLabel:'Distance', distShortLabel:'Dist', ptexTitle:'Panel texture', ptexHint:'Glass for every portal panel — cards, header, menus and windows. Frosted, clear, tinted and multicolor mosaic. Panels stay pure glass — texture effects live only on the page background.', ptexOff:'Off', ptexFrost:'Frosted glass', ptexClear:'Clear glass', ptexTint:'Tinted glass', ptexMosaic:'Mosaic glass', ptexColor:'Shade', ptexPreview:'Live preview', ptexPreviewHint:'This is how every portal panel will look — cards, header and windows', ptexOpacity:'Transparency', ptexOpacityHint:'Higher — more see-through, lower — more solid', ptexOpSolid:'Solid', ptexOpSee:'See-through', ptexApplied:'Panel texture applied', ptexResetDone:'Returned to default transparency', ptexCfrostMilk:'Milk', ptexCfrostSmoke:'Smoke', ptexCfrostIce:'Ice blue', ptexCfrostMint:'Mint', ptexCfrostRose:'Rose mist', ptexCfrostLav:'Lavender', ptexCclearCrystal:'Crystal', ptexCclearAqua:'Aqua', ptexCclearChamp:'Champagne', ptexCclearEmer:'Emerald ice', ptexCclearSapph:'Sapphire', ptexCtintGraph:'Graphite', ptexCtintOcean:'Ocean', ptexCtintEmer:'Emerald', ptexCtintBronze:'Bronze', ptexCtintBord:'Bordeaux', ptexCtintSmoke:'Dark smoke', ptexCmosStain:'Stained glass', ptexCmosOcean:'Ocean', ptexCmosSunset:'Sunset', ptexCmosForest:'Forest', ptexCmosNeon:'Neon', ptexCmosPastel:'Pastel' },
       he: { dumbbellAria:'חזרה לאימון', a11yClose:'סגירה', wipeBtn:'יציאה ומחיקת נתוני המכשיר', wipeConfirm:'למחוק את כל נתוני הפורטל מהמכשיר? אין דרך לבטל פעולה זו.', voiceTitle:'🎧 מאמן קולי', voiceHint:'הקריין מקריא טכניקה שלב אחר שלב, אומר שמות מדורים ומקריא רמזים. הפעילו אותו במקום קורא המסך של הטלפון — לא את שניהם יחד.', voiceOn:'פעיל', voiceOff:'כבוי', voiceLevelBrief:'סקירה', voiceLevelFull:'מפורט', voiceRate:'מהירות', voiceVoice:'קול', voiceVoiceAuto:'אוטומטי (לפי שפה)', voiceNoVoice:'⚠️ לא נמצא קול לשפה הזו — התקינו נתוני דיבור בהגדרות הטלפון.', voiceTest:'בדיקת קול', voiceTestPhrase:'המאמן הקולי פעיל. שלב אחד. הקשיבו לטכניקה ובצעו אותה.', voiceOnToast:'המאמן הקולי הופעל', voiceOffToast:'המאמן הקולי כובה', voiceStatusTitle:'קולות במכשיר הזה', voiceStatusVoices:'קולות', voiceStatusNone:'לא מותקן', voiceCheck:'בדיקה', voiceRefresh:'רענון', voiceHelpToggle:'איך להתקין קול', voiceHelpCopy:'העתקת ההוראות', voiceCopied:'ההוראות הועתקו', voiceHelp_win:'1. הגדרות Windows → זמן ושפה → שפה ואזור.\n2. הוספת שפה (עברית / רוסית) → בזמן ההתקנה סמנו את רכיב הדיבור.\nאו: הגדרות → זמן ושפה → דיבור → ניהול קולות → הוספת קולות.\n3. הפעילו מחדש את הדפדפן.\nחלופה: פתחו את הפורטל ב-Microsoft Edge — שם יש קולות מקוונים לעברית/רוסית/אנגלית ללא התקנה (נדרש אינטרנט).', voiceHelp_android:'1. הגדרות → נגישות → פלט טקסט לדיבור.\n2. מנוע: “Speech Recognition and Synthesis from Google”.\n3. סמל ההגדרות של המנוע → “התקנת נתוני קול” → הורידו רוסית ועברית.\n4. פתחו את הפורטל מחדש.', voiceHelp_ios:'1. הגדרות → נגישות → תוכן מדובר → קולות.\n2. בחרו רוסית ועברית → הורידו את הקולות.\n3. פתחו את הפורטל מחדש.', voiceHelp_mac:'1. הגדרות מערכת → נגישות → תוכן מדובר → קול מערכת → ניהול קולות.\n2. הוסיפו רוסית ועברית.\n3. הפעילו מחדש את הדפדפן.', setTitle:'הגדרות', themes:'ערכות נושא', darkThemes:'ערכות כהות', lightThemes:'ערכות בהירות', textures:'טקסטורות', texHint:'שכבות מרקף מעל כל ערכת נושא — אותן טקסטורות כמו באפליקציה הראשית. בחרו אפקט וכוונו את העוצמה.', opacity:'עוצמה', reset:'איפוס', resetDone:'חזרה לעוצמת ברירת המחדל', applied:'הטקסטורה הוחלה', share:'שתף דוח', themeChanged:'ערכת הנושא הוחלפה', wunitTitle:'יחידת משקל', wunitKg:'קילוגרמים', wunitLb:'פאונד', wunitKgShort:'ק״ג', wunitLbShort:'lb', wunitTime:'יחידת זמן', wunitMin:'דקות', wunitSec:'שניות', wunitMinShort:'דק׳', wunitSecShort:'שנ׳', wunitDist:'יחידת מרחק', wunitM:'מטרים', wunitKm:'קילומטרים', wunitMShort:'מט', wunitKmShort:'ק״מ', wunitCardioTitle:'יחידות קרדיו', wunitExTitle:'יחידת משקל לתרגיל זה', wunitApplyAll:'החל על כל התרגילים באימון', wunitDefaultTitle:'יחידת משקל כברירת מחדל (לתרגילים חדשים)', timeLabel:'זמן', distLabel:'מרחק', distShortLabel:'מרחק', ptexTitle:'מרקם פאנל', ptexHint:'זכוכית על כל פאנל בפורטל — כרטיסים, כותרת, תפריטים וחלונות. זכוכית מעורפלת, שקופה, מוכהה ופסיפס צבעוני. הפאנלים נשארים זכוכית נקייה — אפקטי המרקם חיים רק על רקע הדף.', ptexOff:'כבוי', ptexFrost:'זכוכית מעורפלת', ptexClear:'זכוכית שקופה', ptexTint:'זכוכית מוכהה', ptexMosaic:'זכוכית פסיפס', ptexColor:'גוון', ptexPreview:'תצוגה מקדימה', ptexPreviewHint:'כך ייראה כל פאנל בפורטל — כרטיסים, כותרת וחלונות', ptexOpacity:'שקיפות', ptexOpacityHint:'גבוה יותר — שקוף יותר, נמוך יותר — אטום יותר', ptexOpSolid:'אטום יותר', ptexOpSee:'שקוף יותר', ptexApplied:'מרקם הפאנל הוחל', ptexResetDone:'חזרה לשקיפות ברירת המחדל', ptexCfrostMilk:'חלבי', ptexCfrostSmoke:'עשן', ptexCfrostIce:'כחול קרח', ptexCfrostMint:'מנטה', ptexCfrostRose:'אודם מעורפל', ptexCfrostLav:'לבנדר', ptexCclearCrystal:'קריסטל', ptexCclearAqua:'אקווה', ptexCclearChamp:'שמפניה', ptexCclearEmer:'קרח אזמרגד', ptexCclearSapph:'ספיר', ptexCtintGraph:'גרפיט', ptexCtintOcean:'אוקיינוס', ptexCtintEmer:'אזמרגד', ptexCtintBronze:'ארד', ptexCtintBord:'בורדו', ptexCtintSmoke:'עשן כהה', ptexCmosStain:'ויטראז', ptexCmosOcean:'אוקיינוס', ptexCmosSunset:'שקיעה', ptexCmosForest:'יער', ptexCmosNeon:'ניאון', ptexCmosPastel:'פסטל' }
     };
-    function T(k) { var l = curLang(); return (L[l] && L[l][k]) || L.ru[k] || k; }
+    /* c158: the settings sheet dictionary (L) is small — fall back to the MAIN
+       islands (t) and support {var} interpolation, so a key that only lives in
+       the main dictionary can never render as its raw camelCase name again */
+    function T(k, vars) {
+      var l = curLang();
+      var s = (L[l] && L[l][k]) || L.ru[k] || (typeof t === 'function' ? t(k) : '') || k;
+      if (vars && typeof s === 'string') {
+        s = s.replace(/\{(\w+)\}/g, function (_, kk) { return vars[kk] != null ? String(vars[kk]) : '{' + kk + '}'; });
+      }
+      return s;
+    }
 
     /* ---- the 33 themes of the trainer app (DK_THEMES, same order) ---- */
     var DK_THEMES = [
@@ -8480,8 +8525,14 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       var best = FONT_STEPS[0];
       FONT_STEPS.forEach(function (s) { if (Math.abs(s - v) < Math.abs(best - v)) best = s; });
       document.documentElement.style.setProperty('--font-scale', String(best));
+      /* c158: adaptive layout hooks — big fonts wrap instead of clipping */
+      try {
+        document.documentElement.classList.toggle('dk-fs-big', best >= 1.2);
+        document.documentElement.classList.toggle('dk-fs-small', best <= 0.8);
+      } catch (e158) {}
       try { localStorage.setItem('dk_portal_font', String(best)); } catch (e) {}
     }
+    window.dkPortalFont = applyFontScale; /* tests/harness */
     function stepFont(dir) {
       var cur = 1;
       try { cur = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--font-scale')) || 1; } catch (e) {}
