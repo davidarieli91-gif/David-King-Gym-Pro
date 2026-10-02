@@ -15,6 +15,12 @@ const assets = [
   'icon-192.png',
   'logo-web.webp',
   'icon-512.png',
+  /* c155: client-portal PWA icons (generated from ckientlogo.png) */
+  'icon-portal-192.png',
+  'icon-portal-512.png',
+  'icon-portal-maskable-512.png',
+  'icon-portal-180.png',
+  'icon-portal-32.png',
   'images',
   'videos',
   'vendor',
