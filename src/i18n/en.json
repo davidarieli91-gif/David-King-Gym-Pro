@@ -1541,7 +1541,8 @@
     "resetConfirm": "Issue a new one-time code? The client’s old password will stop working.",
     "resetNoShare": "Create a cloud link first",
     "passSetNote": "The client set a personal password — sign in by phone + password",
-    "resetDone": "New code ready — send it to the client"
+    "resetDone": "New code ready — send it to the client",
+    "phoneRegFail": "Could not register the phone — publish the database rules (Settings → Cloud); phone sign-in will not work without them"
   },
   "report": {
     "title": "Workout Report",

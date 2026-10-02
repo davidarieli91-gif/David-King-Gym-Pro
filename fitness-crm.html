@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c158" />
+<meta name="dk-build" content="c159" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2849,7 +2849,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c158</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c159</p>
             </div>
           </div>
 
@@ -27568,6 +27568,7 @@ async function boot() {
          * re-share. Falls back to the legacy long #e= link when the cloud is
          * unreachable — that one keeps the old code-encrypted format. */
         let clientUrl = '', shareMode = 'cloud', setupMode = true;
+        let dirOk152 = null; /* c159: did the phone directory write actually land? */
         try {
           const shareId = await portalShareId(clientId);
           let existing = null;
@@ -27590,7 +27591,7 @@ async function boot() {
           setupMode = setup;
           clientUrl = `${origin}client.html#c=${shareId}`;
           /* c152: register the common phone login (name-free directory) */
-          await registerPortalDirectory(client, shareId);
+          dirOk152 = await registerPortalDirectory(client, shareId);
           /* c94: give the freshly generated portal the trainer's past workouts
              too — «Объём по группам мышц» identical from minute one */
           try {
@@ -27628,10 +27629,21 @@ async function boot() {
         const _ph152 = dkNormPhone(client.phone);
         const _phStatus = document.getElementById('portal-phone-status');
         if (_phStatus) {
-          _phStatus.textContent = shareMode !== 'cloud'
-            ? (t('portal.phoneLegacy') || '')
-            : (_ph152 ? t('portal.phoneOk', { phone: _ph152 }) : t('portal.phoneMissing'));
-          _phStatus.className = 'text-[11px] ' + ((shareMode === 'cloud' && _ph152) ? 'text-success' : 'text-warning');
+          if (shareMode !== 'cloud') {
+            _phStatus.textContent = t('portal.phoneLegacy') || '';
+            _phStatus.className = 'text-[11px] text-warning';
+          } else if (!_ph152) {
+            _phStatus.textContent = t('portal.phoneMissing');
+            _phStatus.className = 'text-[11px] text-warning';
+          } else if (dirOk152) {
+            _phStatus.textContent = t('portal.phoneOk', { phone: _ph152 });
+            _phStatus.className = 'text-[11px] text-success';
+          } else {
+            /* c159: the number exists but the directory write failed — the
+               client CANNOT sign in by phone until the rules are published */
+            _phStatus.textContent = t('portal.phoneRegFail');
+            _phStatus.className = 'text-[11px] text-danger';
+          }
         }
         const _resetBtn = document.getElementById('btn-portal-reset-pass');
         if (_resetBtn) {
@@ -32765,7 +32777,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 158; /* numeric part of dk-build c158 */
+  var RUNNING = 159; /* numeric part of dk-build c159 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
