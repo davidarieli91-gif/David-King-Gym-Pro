@@ -8991,10 +8991,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       }
       var _ci151 = document.getElementById('cps-install');
       if (_ci151) _ci151.classList.toggle('hidden', dkIsStandalone());
-      /* c152: change the personal password (only when the share has one) */
-      set('cps-pass-lbl', T('passChangeTitle'));
-      var _cp152 = document.getElementById('cps-pass');
-      if (_cp152) _cp152.classList.toggle('hidden', !(_shareDoc && _shareDoc.wsk && !_shareDoc.setup));
+      /* c160: the portal password is managed by the TRAINER in the client card
+         (visible + editable there) — no self-service change button anymore */
       /* c153: local reminders */
       set('cps-rem-label', T('remTitle'));
       set('cps-rem-hint', T('remHint'));
@@ -9266,7 +9264,6 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
                 '<button type="button" id="cps-lock" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-xs font-bold text-text transition hover:opacity-80"><span id="cps-lock-lbl"></span></button>' +
                 '<button type="button" id="cps-logout" class="w-full bg-red-500/10 border border-red-500/30 rounded-xl px-3 py-2.5 text-xs font-bold text-red-400 transition hover:bg-red-500/20"><span id="cps-logout-lbl"></span></button>' +
               '</div>' +
-              '<button type="button" id="cps-pass" class="hidden w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-xs font-bold text-text transition hover:opacity-80 mt-2"><span id="cps-pass-lbl"></span></button>' +
             '</div>' +
             /* c153: local reminders (no server) */
             '<div>' +
@@ -9780,8 +9777,6 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         try { if (confirm(T('logoutConfirm'))) dkPortalLogout(); } catch (err) {}
         return;
       }
-      /* c152: change the personal password */
-      if (e.target.closest('#cps-pass')) { closeSettingsSheet(); try { dkPassSetupOpen(true); } catch (err) {} return; }
       /* c153: reminder day chips + test notification */
       const _dayBtn153 = e.target.closest('#cps-rem-w-days [data-day]');
       if (_dayBtn153) {

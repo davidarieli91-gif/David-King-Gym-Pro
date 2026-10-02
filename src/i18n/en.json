@@ -474,7 +474,15 @@
     "personalInfo": "Personal info",
     "goals": "Goals",
     "days": "days",
-    "perWeek": "/week"
+    "perWeek": "/week",
+    "portalPass": "Portal password (4–10 digits)",
+    "portalPassShort": "Portal password",
+    "portalPassGen": "Generate",
+    "portalPassHint": "The client signs in with their phone number and this password. Empty — one-time code login.",
+    "portalPassInvalid": "Password: 4–10 digits",
+    "portalPassSaved": "Portal password saved — phone sign-in is ready",
+    "portalPassLocal": "Password saved. Cloud unavailable — it will apply next time the portal is generated",
+    "portalPassNone": "not set"
   },
   "analytics": {
     "title": "Analytics",
@@ -1542,7 +1550,8 @@
     "resetNoShare": "Create a cloud link first",
     "passSetNote": "The client set a personal password — sign in by phone + password",
     "resetDone": "New code ready — send it to the client",
-    "phoneRegFail": "Could not register the phone — publish the database rules (Settings → Cloud); phone sign-in will not work without them"
+    "phoneRegFail": "Could not register the phone — publish the database rules (Settings → Cloud); phone sign-in will not work without them",
+    "resetUseCard": "The password is set in the client card — change it there"
   },
   "report": {
     "title": "Workout Report",

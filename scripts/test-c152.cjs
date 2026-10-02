@@ -89,7 +89,7 @@ function extractFn(src, name) {
   ok('portal: multi-account store + switch + picker', html.indexOf("const DK_ACCOUNTS_KEY = 'dk_portal_accounts'") >= 0 && html.indexOf('function dkSwitchAccount(shareId)') >= 0 && html.indexOf('function dkShowAccountPicker(accs)') >= 0 && html.indexOf('id="unlock-accounts"') >= 0);
   ok('portal: per-account cache + legacy fallback', html.indexOf("function dkShareCacheKey(shareId)") >= 0 && html.indexOf("localStorage.setItem(dkShareCacheKey(id), JSON.stringify(_shareDoc))") >= 0 && html.indexOf("'dk_client_data__' + ns") >= 0);
   ok('portal: logout drops the account and switches to the next', html.indexOf('if (sid) dkAccountsRemove(sid);') >= 0 && html.indexOf('if (next && next.shareId !== sid) { if (dkSwitchAccount(next.shareId)) return; }') >= 0);
-  ok('portal: change password in settings', html.indexOf('id="cps-pass"') >= 0 && html.indexOf("e.target.closest('#cps-pass')") >= 0 && html.indexOf('dkPassSetupOpen(true)') >= 0);
+  ok('portal: client-side password change REMOVED (c160: trainer owns it)', html.indexOf('id="cps-pass"') < 0 && html.indexOf('dkPassSetupOpen(true)') < 0);
 
   /* ---------- STATIC: i18n ×3 ---------- */
   ok('portal islands have the c152 keys ×3', count(html, 'phoneLoginBtn:') === 3 && count(html, 'passSetupTitle:') === 3 && count(html, 'accountsTitle:') === 3 && count(html, 'phoneWrong:') === 3 && count(html, 'passSaved:') === 3);

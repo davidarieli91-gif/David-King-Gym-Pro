@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c159" />
+<meta name="dk-build" content="c160" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2849,7 +2849,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c159</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c160</p>
             </div>
           </div>
 
@@ -5741,6 +5741,16 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 <label class="block text-xs font-semibold mb-1" data-i18n="client.email">Email</label>
                 <input name="email" type="email" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
               </div>
+            </div>
+            <!-- c160: client portal password — the trainer sees it, sets it and
+                 changes it right here; the client signs in with phone + this -->
+            <div>
+              <label class="block text-xs font-semibold mb-1" data-i18n="client.portalPass">Пароль портала (4–10 цифр)</label>
+              <div class="flex gap-2">
+                <input name="portal_pass" type="text" inputmode="numeric" maxlength="10" autocomplete="off" placeholder="не задан" class="flex-1 bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm font-mono tracking-[0.2em] focus:outline-none focus:ring-2 focus:ring-primary/60" />
+                <button type="button" id="client-gen-pass" class="shrink-0 bg-surface-2 hover:bg-border/40 border border-border text-xs font-semibold px-3 rounded-xl transition" data-i18n="client.portalPassGen">Сгенерировать</button>
+              </div>
+              <p class="text-[10px] text-muted mt-1 leading-relaxed" data-i18n="client.portalPassHint">Клиент входит по номеру телефона и этому паролю. Пусто — вход по одноразовому коду.</p>
             </div>
           </fieldset>
 
@@ -9679,6 +9689,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
       if (form.elements.work_hours) form.elements.work_hours.value = '';
       if (form.elements.liked_foods) form.elements.liked_foods.value = '';
       if (form.elements.disliked_foods) form.elements.disliked_foods.value = '';
+      if (form.elements.portal_pass) form.elements.portal_pass.value = ''; /* c160 */
       // Body composition fields
       ['body_fat_pct','visceral_fat','muscle_mass','bone_mass','water_pct','metabolic_age',
        'neck_cm','shoulder_cm','chest_cm','waist_cm','hip_cm','arm_cm','thigh_cm','calf_cm'].forEach(name => {
@@ -9752,6 +9763,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
       if (form.elements.work_hours) form.elements.work_hours.value = c.work_hours || '';
       if (form.elements.liked_foods) form.elements.liked_foods.value = c.liked_foods || '';
       if (form.elements.disliked_foods) form.elements.disliked_foods.value = c.disliked_foods || '';
+      if (form.elements.portal_pass) form.elements.portal_pass.value = c.portal_pass || ''; /* c160 */
       // Body composition + measurements
       ['body_fat_pct','visceral_fat','muscle_mass','bone_mass','water_pct','metabolic_age',
        'neck_cm','shoulder_cm','chest_cm','waist_cm','hip_cm','arm_cm','thigh_cm','calf_cm'].forEach(name => {
@@ -9810,6 +9822,12 @@ button[id$="-close"]:active, button[data-cps-close]:active {
       obj.training_days = fd.getAll('training_days').map(Number);
       // Allergies (multi-select)
       obj.allergies = fd.getAll('allergies');
+      /* c160: portal password — visible + editable in the card; empty clears it */
+      obj.portal_pass = String(fd.get('portal_pass') || '').trim();
+      if (obj.portal_pass && !/^\d{4,10}$/.test(obj.portal_pass)) {
+        showFormError(t('client.portalPassInvalid'));
+        return;
+      }
       // Photo (Sprint 3+): store compressed dataURL if user selected a new photo
       // Bridge: photo upload handler (outside IIFE) sets window._pendingClientPhotoData
       const photoData = window._pendingClientPhotoData || _pendingClientPhoto;
@@ -9827,6 +9845,14 @@ button[id$="-close"]:active, button[data-cps-close]:active {
       obj.last_active = Date.now();
       try {
         const saved = await db.put('clients', obj);
+        /* c160: publish the password to the client's cloud share → phone login */
+        if (saved && saved.portal_pass) {
+          Promise.resolve(window.dkTrainerSetClientPassword && window.dkTrainerSetClientPassword(saved.id, saved.portal_pass))
+            .then(function (ok) {
+              toast(ok ? t('client.portalPassSaved') : t('client.portalPassLocal'), ok ? 'success' : 'warning', ok ? 2500 : 4000);
+            })
+            .catch(function () {});
+        }
         closeModal();
         toast(t('clients.saved'), 'success');
         await load();
@@ -10330,10 +10356,13 @@ button[id$="-close"]:active, button[data-cps-close]:active {
 
     /** Personal info card (phone, email). */
     function personalInfoCard(c) {
-      if (!c.phone && !c.email) return '';
+      /* c160: the portal password is part of the personal data — always visible */
+      const hasPass = !!(c.portal_pass && /^\d{4,10}$/.test(String(c.portal_pass)));
+      if (!c.phone && !c.email && !hasPass) return '';
       const rows = [];
-      if (c.phone) rows.push(['Phone', c.phone, 'phone']);
-      if (c.email) rows.push(['Email', c.email, 'mail']);
+      if (c.phone) rows.push([t('client.phone'), c.phone, 'phone']);
+      if (c.email) rows.push([t('client.email'), c.email, 'mail']);
+      rows.push([t('client.portalPassShort'), hasPass ? String(c.portal_pass) : t('client.portalPassNone'), 'lock']);
       return `
         <div class="bg-surface border border-border rounded-2xl shadow-card p-5">
           <h3 class="font-display font-bold text-sm mb-3 text-muted uppercase tracking-wider">${t('client.personalInfo')}</h3>
@@ -10342,12 +10371,12 @@ button[id$="-close"]:active, button[data-cps-close]:active {
               <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-lg bg-surface-2 grid place-items-center text-muted shrink-0">
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    ${icon === 'phone' ? '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>' : '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>'}
+                    ${icon === 'phone' ? '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>' : icon === 'lock' ? '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>' : '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>'}
                   </svg>
                 </div>
                 <div class="min-w-0">
                   <div class="text-[10px] uppercase tracking-wider text-muted">${escapeHTML(k)}</div>
-                  <div class="text-sm font-medium truncate">${escapeHTML(String(v))}</div>
+                  <div class="text-sm font-medium truncate ${icon === 'lock' ? 'font-mono tracking-[0.18em]' : ''}">${escapeHTML(String(v))}</div>
                 </div>
               </div>
             `).join('')}
@@ -26654,6 +26683,12 @@ async function boot() {
     if (formSave) formSave.addEventListener('click', () => screens.dashboard.saveFromForm());
     const formDelete = document.getElementById('client-form-delete');
     if (formDelete) formDelete.addEventListener('click', () => screens.dashboard.deleteFromForm());
+    /* c160: generate a random 6-digit portal password into the form field */
+    const genPassBtn = document.getElementById('client-gen-pass');
+    if (genPassBtn) genPassBtn.addEventListener('click', () => {
+      const inp = document.querySelector('#client-form input[name="portal_pass"]');
+      if (inp) { inp.value = String(Math.floor(100000 + Math.random() * 900000)); inp.focus(); }
+    });
 
     // Client photo upload (Sprint 3+): click preview to open file picker, compress on select
     const photoPreview = document.getElementById('client-photo-preview');
@@ -27475,12 +27510,34 @@ async function boot() {
       }
     }
 
+    /* c160: trainer-side password management — wrap the client's ShareKey with
+       the password SAVED IN THE CLIENT CARD and publish it, so phone+password
+       login works even if the client never set anything themselves. Called on
+       every client save that carries a password (and by the share modal). */
+    window.dkTrainerSetClientPassword = async function (clientId, pass) {
+      try {
+        if (!clientId || !/^\d{4,10}$/.test(String(pass || ''))) return false;
+        const client = await db.get('clients', clientId);
+        if (!client || !client.portal_sk) return false;
+        const shareId = await portalShareId(clientId);
+        await ensurePortalFirebase();
+        if (!firebase.apps.length) firebase.initializeApp(PORTAL_SHARE_CFG);
+        const ref = firebase.firestore().collection('portal_shares').doc(shareId);
+        const snap = await ref.get({ source: 'server' });
+        if (!snap || !snap.exists || !snap.data() || !snap.data().d) return false; /* no share yet */
+        const wsk = await dkWrapKey152(String(pass), b64uDecode(client.portal_sk));
+        await ref.set({ d: snap.data().d, v: 2, ts: Date.now(), wsk: wsk, setup: false });
+        return true;
+      } catch (e) { console.warn('[portal] set client password failed', e); return false; }
+    };
+
     /* c152: trainer-side password reset — issues a NEW one-time setup code
        (the payload is untouched; the modal then shows the working code) */
     async function resetPortalPassword(clientId) {
       try {
         const client = await db.get('clients', clientId);
         if (!client || !client.portal_sk) { toast(t('portal.resetNoShare') || 'No cloud share yet', 'warning'); return; }
+        if (client.portal_pass) { toast(t('portal.resetUseCard') || 'Password is set in the client card — change it there', 'warning', 5000); return; }
         if (!confirm(t('portal.resetConfirm') || 'Reset the client password?')) return;
         openClientPortalModal(clientId, { forceSetup: true });
       } catch (e) {
@@ -27579,8 +27636,13 @@ async function boot() {
             if (snap && snap.exists) existing = snap.data() || null;
           } catch (_) {}
           let wsk, setup;
-          if (existing && existing.wsk && existing.setup === false && !(opts && opts.forceSetup)) {
-            /* the client has a personal password — keep it working */
+          /* c160: the password SAVED IN THE CLIENT CARD is the source of truth —
+             every share wraps the ShareKey with it, so phone login always works */
+          const cardPass160 = String(client.portal_pass || '').trim();
+          if (cardPass160 && /^\d{4,10}$/.test(cardPass160)) {
+            wsk = await dkWrapKey152(cardPass160, skBytes152); setup = false;
+          } else if (existing && existing.wsk && existing.setup === false && !(opts && opts.forceSetup)) {
+            /* a password was set before (portal or trainer) - keep it working */
             wsk = existing.wsk; setup = false;
           } else {
             /* first share, an unset password, or a trainer reset: wrap with the
@@ -32777,7 +32839,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 159; /* numeric part of dk-build c159 */
+  var RUNNING = 160; /* numeric part of dk-build c160 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
