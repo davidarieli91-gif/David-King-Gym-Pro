@@ -45,7 +45,7 @@ ok('i18n ×3: wipeConfirm', count(html, "wipeConfirm:'") === 3);
 /* ---------- 3. PWA hygiene ---------- */
 ok('portal manifest exists', fs.existsSync(path.join(root, 'manifest-portal.json')));
 const mp = fs.existsSync(path.join(root, 'manifest-portal.json')) ? JSON.parse(fs.readFileSync(path.join(root, 'manifest-portal.json'), 'utf8')) : {};
-ok('portal manifest starts at client.html', mp.start_url === '/David-King-Gym-Pro/client.html' && mp.scope === '/David-King-Gym-Pro/');
+ok('portal manifest starts at client.html (c157: exact-path scope)', mp.start_url === '/David-King-Gym-Pro/client.html' && mp.scope === '/David-King-Gym-Pro/client.html');
 ok('portal manifest has 3 portal icons (c155 re-icon)', Array.isArray(mp.icons) && mp.icons.length === 3 && mp.icons.every(i => /icon-portal-/.test(i.src)));
 ok('client.html links the portal manifest', html.indexOf('<link rel="manifest" href="manifest-portal.json" />') >= 0);
 ok('sw APP_SHELL precaches the portal CSS + engines', ['./src/input.css', './src/muscle-map.js', './src/recovery-engine.js', './src/analytics-engine.js', './manifest-portal.json'].every(f => sw.indexOf("'" + f + "'") >= 0));
