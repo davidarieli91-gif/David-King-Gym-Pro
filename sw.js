@@ -110,7 +110,8 @@
 // v177: c150 — SMART FOOD SEARCH (trainer + portal): the food picker finally REMEMBERS. FAVORITES (⭐ toggle on every result card, trainer-wide dk_food_favs) and RECENT (dk_food_recent, auto-filled when a food is added to a meal) appear as filter chips (All/Favorites/Recent/Recipes) and as the opening view of the search modal — no more retyping the same product every day. PORTIONS FROM THE PRODUCT: the reference items now carry serving_quantity/package_grams through the normalizer, the portion modal opens on the product's REAL serving (not always 100 g) and shows quick-portion chips (100 g / Serving · X g / Package · Y g); the portal diary does the same (grams auto-set + unit chips under the entry fields). RECIPES (trainer): a new recipe builder — name + product search dropdown + ingredient rows with editable grams, live totals + per-100 g recalculation (recipeTotals, pure), saved into food_base as source:'recipe' with the ingredient list and one-serving size = total weight, instantly searchable/pickable like any product. Portal search results got the ⭐ toggle + recent/favorites opening view (namespaced per client). New i18n ×3 (trainer food.filter*/fav*/recent*/no*/portion*/recipe*; portal diaryFav*/diaryRecentTitle/diaryPortion*). Versions: meta/footer/RUNNING c150, cache dk-gym-v177
 // v178: c151 — THE PORTAL BECOMES AN APP (foundation): (1) SECURITY — Firestore rules for /portal_shares are now GET-ONLY: `list` was open, so anyone holding the config could enumerate every encrypted share AND the plaintext history docs (workouts, weight/waist/hip check-ins, nutrition) and even DELETE them (`allow delete: if true`); now list and delete are denied, writes keep the size guard. The trainer's Settings → Cloud copyable rules text was updated (one-time republish needed). (2) THE PORTAL REGISTERS THE SERVICE WORKER ITSELF — before only the trainer app did, so a client who installed the portal directly had no offline cache and no PWA install path. (3) REMEMBER ME — after a successful unlock the share + access code are remembered: the next launch shows «С возвращением! Продолжить как <имя>?» — ONE TAP, no code (the «продолжить с того же места» request); «Ввести код заново» stays one tap away. (4) LOCK / LOGOUT — explicit «🔒 Заблокировать» and «Выйти» (confirm; erases the session + device data and lands on a proper «Портал не подключён» screen instead of demo data), auto-lock after a long background stay (selectable 5/10/30/off, pure dkLockDue check), and the fresh-link flow now falls back to the cached blob on ANY fetch error (not only offline). (5) NO ACCIDENTAL EXIT — browser-back during an active workout asks first, beforeunload guards a live session; installed PWA has no back at all. (6) PWA POLISH — install banner (native prompt on Android/desktop, Share → Add to Home Screen hint on iOS, dismissible for 30 days), navigator.storage.persist() so the browser stops evicting the portal data. (7) SW INSTALL SURVIVES ONE BAD FILE — cache.addAll was all-or-nothing, so one flaky/oversized entry (the 21 MB exercise-db.json) could kill the ENTIRE precache and leave the app with no service worker; install now caches each URL best-effort. New portal i18n ×3 (continue/lock/logout/app/install/autolock/exit strings). Versions: meta/footer/RUNNING c151, cache dk-gym-v178
 // v179: c152 — THE COMMON CLIENT APP (account by phone): (1) STABLE ACCOUNT — every client now has a random ShareKey (SK) kept in the trainer's client record; the plan payload is encrypted with SK and re-sharing only re-encrypts the payload, so the client's own password is NEVER invalidated (before, every «Поделиться» generated a new code). The SK travels wrapped (PBKDF2 150k + AES-GCM) in the share doc's `wsk`: first login uses the one-time 6-digit code (setup:true), then the client sets a personal 4-10 digit password (setup:false). (2) PHONE LOGIN — a get-only directory portal_dir/sha256('dkdir:'+phone) → shareId lets a client who lost the link sign in with the FULL Israeli number (0540000000 / +972… / 9-digit «5…» all normalize) + personal password; rules deny list (no scraping of the client base), immutable shareId, no delete. (3) PASSWORD UX — setup modal on first login (4-10 digits, hint recommends 6+), change password in settings, trainer-side «Сбросить пароль» issuing a fresh one-time code (modal hides the code once the client has a password and the WhatsApp invite switches to the password wording). (4) MULTI-ACCOUNT — up to 5 clients per device: the continue screen becomes a picker, each account keeps its own data namespace + cached doc, logout switches to the next account (or lands on the no-portal screen). (5) COMPATIBILITY — legacy code-encrypted shares (#e= links and old docs without wsk) still open exactly as before; a new password is never lost offline (local cache first, cloud sync when reachable). Versions: meta/footer/RUNNING c152, cache dk-gym-v179
-const CACHE_NAME = 'dk-gym-v179'; // c152
+// v180: c153 — LOCAL REMINDERS, NO SERVER (user choice «локальный, без сервера»): the portal's settings gained a Reminders block — WORKOUT (time + weekday chips), MEALS (daily time) and WATER (every 1-3 h inside a from-to window), with a «Test notification» button and an honest platform hint (background on Android/Chrome installed PWAs, app-open-only on iPhone). The schedule + last-shown timestamps live in IndexedDB ('dk-sw'/'kv') so the PAGE and the SERVICE WORKER share one state and never double-notify. In-page scheduler (60 s + on visibility) fires registration.showNotification with localized texts; the SW gained `message` (config sync + immediate due-check), `periodicsync` (dk-reminders tag, minInterval 1 h — Android background delivery) and `notificationclick` (focus the portal or open it). Permission is requested when a reminder is enabled; texts ×3 languages both in the portal i18n islands and inside sw.js for background checks. Versions: meta/footer/RUNNING c153, cache dk-gym-v180
+const CACHE_NAME = 'dk-gym-v180'; // c153
 // v104: c77 — UI sizes can no longer change themselves (zoom-based gif/food/cards, wheel/touch slider guards) + hard pre-login lock (Add Client included) + header theme quick menu with all 33 themes
 // v103: c76 — Exercise DB tab = exact Quick Pick copy (star/eye/+ cards, favorites/recent tabs, View grouping, localized map tabs)
 // v102: c75 — 3D atlas 1.5x + Settings ▸ UI sizes (atlas slider, bodymap/exercise-panel fixes) + Exercise DB tab rebuilt as picker-style browse
@@ -170,6 +171,134 @@ self.addEventListener('activate', (event) => {
       Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
     ).then(() => self.clients.claim())
   );
+});
+
+/* ===== c153: LOCAL REMINDERS in the background (no server) =============
+   The portal writes the schedule + last-shown timestamps into IndexedDB
+   ('dk-sw'/'kv'); Periodic Background Sync (Android/Chrome installed PWAs)
+   wakes this SW, checks what is due and shows a local notification. The
+   same `last` map is shared with the page so a reminder is never doubled. */
+const DK_REM_I18N = {
+  ru: { workout: ['Пора тренироваться 💪', 'Открой портал и начни тренировку'], meal: ['Время поесть 🍽️', 'Не забудь отметить приём пищи'], water: ['Выпей воды 💧', 'Пара глотков — и дальше'] },
+  en: { workout: ['Time to train 💪', 'Open the portal and start your workout'], meal: ['Time to eat 🍽️', 'Don\'t forget to log your meal'], water: ['Drink some water 💧', 'A couple of sips and carry on'] },
+  he: { workout: ['זמן להתאמן 💪', 'פתח את הפורטל והתחל את האימון'], meal: ['זמן לאכול 🍽️', 'אל תשכח לתעד את הארוחה'], water: ['שתה מים 💧', 'כמה לגימות וממשיכים'] }
+};
+function dkReminderDueTs(rem, kind, now) {
+  if (!rem || !rem.on) return null;
+  const t = now instanceof Date ? now : new Date(now);
+  const hm = function (s) {
+    const m = /^(\d{1,2}):(\d{2})$/.exec(String(s || ''));
+    if (!m) return null;
+    const h = parseInt(m[1], 10), mi = parseInt(m[2], 10);
+    if (h < 0 || h > 23 || mi < 0 || mi > 59) return null;
+    return h * 60 + mi;
+  };
+  if (kind === 'water') {
+    const from = hm(rem.from), to = hm(rem.to);
+    const every = Math.max(1, Math.min(6, parseInt(rem.every, 10) || 2));
+    if (from == null || to == null || to <= from) return null;
+    const nowMin = t.getHours() * 60 + t.getMinutes();
+    if (nowMin < from || nowMin > to) return null;
+    const tick = from + Math.floor((nowMin - from) / (every * 60)) * every * 60;
+    const d = new Date(t); d.setHours(Math.floor(tick / 60), tick % 60, 0, 0);
+    if (t.getTime() - d.getTime() > 60 * 60000) return null;
+    return d.getTime();
+  }
+  const at = hm(rem.time);
+  if (at == null) return null;
+  if (kind === 'workout') {
+    const days = Array.isArray(rem.days) ? rem.days.map(Number) : [];
+    if (!days.length || days.indexOf(t.getDay()) === -1) return null;
+  }
+  const d = new Date(t); d.setHours(Math.floor(at / 60), at % 60, 0, 0);
+  if (t.getTime() < d.getTime()) return null;
+  const maxLate = kind === 'workout' ? 6 * 3600000 : 4 * 3600000;
+  if (t.getTime() - d.getTime() > maxLate) return null;
+  return d.getTime();
+}
+function dkSwIdb() {
+  return new Promise(function (res, rej) {
+    try {
+      const r = indexedDB.open('dk-sw', 1);
+      r.onupgradeneeded = function () { try { r.result.createObjectStore('kv'); } catch (e) {} };
+      r.onsuccess = function () { res(r.result); };
+      r.onerror = function () { rej(r.error); };
+    } catch (e) { rej(e); }
+  });
+}
+function dkSwKvGet(k) {
+  return dkSwIdb().then(function (db) {
+    return new Promise(function (res, rej) {
+      const tx = db.transaction('kv', 'readonly');
+      const q = tx.objectStore('kv').get(k);
+      q.onsuccess = function () { res(q.result); };
+      q.onerror = function () { rej(q.error); };
+    });
+  }).catch(function () { return null; });
+}
+function dkSwKvSet(k, v) {
+  return dkSwIdb().then(function (db) {
+    return new Promise(function (res, rej) {
+      const tx = db.transaction('kv', 'readwrite');
+      tx.objectStore('kv').put(v, k);
+      tx.oncomplete = res;
+      tx.onerror = function () { rej(tx.error); };
+    });
+  }).catch(function () { return null; });
+}
+async function dkRemCheck() {
+  try {
+    const st = await dkSwKvGet('rem');
+    if (!st || !st.cfg) return;
+    const cfg = st.cfg;
+    const last = st.last || {};
+    const now = new Date();
+    const lang = DK_REM_I18N[st.lang] ? st.lang : 'ru';
+    let changed = false;
+    for (const kind of ['workout', 'meal', 'water']) {
+      const ts = dkReminderDueTs(cfg[kind], kind, now);
+      if (ts && ts > (last[kind] || 0)) {
+        const txt = DK_REM_I18N[lang][kind] || DK_REM_I18N.ru[kind];
+        try {
+          await self.registration.showNotification(txt[0], {
+            body: txt[1], tag: 'dk-' + kind, renotify: false, icon: './icon-192.png', badge: './icon-192.png'
+          });
+        } catch (e) {}
+        last[kind] = ts;
+        changed = true;
+      }
+    }
+    if (changed) {
+      st.last = last; st.ts = Date.now();
+      await dkSwKvSet('rem', st);
+    }
+  } catch (e) {}
+}
+self.addEventListener('message', (event) => {
+  const d = event.data || {};
+  if (d.type === 'dk-rem-config') {
+    event.waitUntil((async () => {
+      const st = (await dkSwKvGet('rem')) || {};
+      await dkSwKvSet('rem', { cfg: d.cfg || st.cfg || null, lang: d.lang || st.lang || 'ru', last: st.last || {}, ts: Date.now() });
+      /* a fresh config may already be due right now (e.g. the app was closed) */
+      await dkRemCheck();
+    })());
+  }
+});
+self.addEventListener('periodicsync', (event) => {
+  if (event.tag === 'dk-reminders') event.waitUntil(dkRemCheck());
+});
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil((async () => {
+    try {
+      const list = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+      for (const c of list) {
+        if ('focus' in c) { try { await c.focus(); return; } catch (e) {} }
+      }
+      await self.clients.openWindow('./client.html');
+    } catch (e) {}
+  })());
 });
 
 self.addEventListener('fetch', (event) => {
