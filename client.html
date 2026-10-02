@@ -2405,6 +2405,8 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
   <!-- ============= MAIN ============= -->
   <main class="flex-1 max-w-lg mx-auto w-full px-4 pt-4 pb-28 space-y-4">
 
+    <!-- ===== TAB: WORKOUTS ===== -->
+    <section id="tab-workouts" class="space-y-3 fade-in">
     <!-- Hero card -->
     <div id="client-card" class="glass rounded-2xl p-4 relative overflow-hidden fade-in">
       <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/8 via-transparent to-cyan-400/5 pointer-events-none"></div>
@@ -2419,7 +2421,6 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
                   <button type="button" id="voice-missing-badge" class="hidden text-[9px] font-bold px-1.5 py-0.5 rounded-lg border border-amber-500/40 bg-amber-500/15 text-amber-400 whitespace-nowrap" aria-label="">🎙️</button>
                   <!-- c131: cloud-sync status — visible only while workouts wait or the device is offline -->
                   <span id="sync-badge" class="hidden text-[9px] font-bold px-1.5 py-0.5 rounded-lg border border-border bg-surface-2 text-muted whitespace-nowrap"></span>
-                  <button type="button" id="cp-unit-chip" data-wunit-chip class="h-7 px-2 grid place-items-center rounded-lg bg-surface-2 border border-border text-[9px] font-bold uppercase tracking-wide text-muted transition hover:opacity-80">кг</button>
                   <span id="live-duration" class="hidden font-mono font-bold text-sm text-cyan-300">0:00</span>
                 </span>
         </div>
@@ -2458,9 +2459,6 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
         </div>
       </div>
     </div>
-
-    <!-- ===== TAB: WORKOUTS ===== -->
-    <section id="tab-workouts" class="space-y-3 fade-in">
       <div id="program-selector" class="hidden flex flex-wrap items-center gap-1.5 pb-1"></div>
       <div id="rotation-banner" class="hidden"></div>
       <div id="days-tabs-container" class="flex flex-wrap items-center gap-1.5 pb-1"></div>
@@ -2566,10 +2564,14 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
       <div class="glass rounded-2xl p-4 space-y-4">
         <div class="flex items-center justify-between gap-2">
           <h3 class="font-display font-bold text-sm text-text" id="txt-analytics-title">Личная аналитика</h3>
-          <div class="flex bg-[rgb(var(--c-surface-2))] rounded-xl p-0.5 gap-0.5 shrink-0" role="tablist" aria-label="Analytics range">
-            <button id="a-chip-week" data-range="week" class="a-chip text-[10px] font-bold px-2.5 py-1 rounded-lg transition text-muted">Неделя</button>
-            <button id="a-chip-month" data-range="month" class="a-chip text-[10px] font-bold px-2.5 py-1 rounded-lg transition text-muted">Месяц</button>
-            <button id="a-chip-all" data-range="all" class="a-chip text-[10px] font-bold px-2.5 py-1 rounded-lg transition text-muted">Всё</button>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <!-- c156: the kg/lb switch lives in Analytics — the only tab using it -->
+            <button type="button" id="cp-unit-chip" data-wunit-chip class="h-7 px-2 grid place-items-center rounded-lg bg-surface-2 border border-border text-[9px] font-bold uppercase tracking-wide text-muted transition hover:opacity-80">кг</button>
+            <div class="flex bg-[rgb(var(--c-surface-2))] rounded-xl p-0.5 gap-0.5 shrink-0" role="tablist" aria-label="Analytics range">
+              <button id="a-chip-week" data-range="week" class="a-chip text-[10px] font-bold px-2.5 py-1 rounded-lg transition text-muted">Неделя</button>
+              <button id="a-chip-month" data-range="month" class="a-chip text-[10px] font-bold px-2.5 py-1 rounded-lg transition text-muted">Месяц</button>
+              <button id="a-chip-all" data-range="all" class="a-chip text-[10px] font-bold px-2.5 py-1 rounded-lg transition text-muted">Всё</button>
+            </div>
           </div>
         </div>
         <div class="grid grid-cols-2 gap-2" id="analytics-metrics"></div>
@@ -3774,6 +3776,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     activeProgramIdx = 0; activePlanIdx = 0; activeDayIndex = 0;
     syncCurrentRefs();
     exerciseDB = d.exercises || {};
+    _aExNameIdx = null; _aExHistIdx = null; /* c156: rebuild the analytics name indexes */
     sessions = {};
     renderAll();
     checkDraft();
@@ -4827,6 +4830,69 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
      mix, per-exercise e1RM/top-set chart, recent PRs. Display units follow
      the c128 kg/lb chip; the underlying math is kg-canonical and done-only
      in BOTH apps — identical numbers by construction. */
+  /* c156: exercise DISPLAY name for the analytics — the share payload's
+     exercise map is keyed by exercise id and carries name_ru/en/he; records
+     without an id get a second chance via a name→id index (any language).
+     Falls back to the stored raw name when nothing matches. */
+  let _aExNameIdx = null;
+  let _aExHistIdx = null;
+  function aNormExName(s) { return String(s == null ? '' : s).trim().toLowerCase().replace(/\s+/g, ' '); }
+  function aExNameIdx() {
+    if (_aExNameIdx) return _aExNameIdx;
+    const m = {};
+    try {
+      Object.keys(exerciseDB || {}).forEach(function (id) {
+        const e = exerciseDB[id];
+        if (!e) return;
+        ['name_ru', 'name_en', 'name_he', 'name'].forEach(function (f) {
+          const n = aNormExName(e[f]);
+          if (n && !m[n]) m[n] = id;
+        });
+      });
+    } catch (e) {}
+    return (_aExNameIdx = m);
+  }
+  /* c156: localized names that travelled WITH the history records (trainer
+     pushes carry name_ru/en/he next to the id), keyed by exercise id */
+  function aExHistIdx() {
+    if (_aExHistIdx) return _aExHistIdx;
+    const m = {};
+    try {
+      loadHistory().forEach(function (r) {
+        (r.exercises || []).forEach(function (ex) {
+          const id = ex && (ex.exercise_id || ex.key);
+          if (!id || m[id]) return;
+          if (ex.name_en || ex.name_ru || ex.name_he) m[id] = { name_en: ex.name_en, name_ru: ex.name_ru, name_he: ex.name_he };
+        });
+      });
+    } catch (e) {}
+    return (_aExHistIdx = m);
+  }
+  function aExName(key, raw) {
+    try {
+      let id = String(key || '');
+      if (id.indexOf('id:') === 0) id = id.slice(3);
+      let exd = exerciseDB[id] || exerciseDB[String(id)] || null;
+      if (exd) {
+        const nm = exd['name_' + currentLang] || exd.name_en || exd.name_ru || exd.name;
+        if (nm) return nm;
+      }
+      const h = aExHistIdx()[id];
+      if (h) {
+        const nm = h['name_' + currentLang] || h.name_en || h.name_ru;
+        if (nm) return nm;
+      }
+      if (!exd && id.indexOf('nm:') === 0) {
+        const hit = aExNameIdx()[aNormExName(raw) || id.slice(3)];
+        if (hit) exd = exerciseDB[hit] || null;
+        if (exd) {
+          const nm = exd['name_' + currentLang] || exd.name_en || exd.name_ru || exd.name;
+          if (nm) return nm;
+        }
+      }
+    } catch (e) {}
+    return raw || String(key || '').replace(/^id:/, '') || '';
+  }
   function aProgExList(hist) {
     const eng = window.dkAnalyticsEngine;
     const H = Array.isArray(hist) ? hist : loadHistory(); /* c132: snapshot */
@@ -4838,7 +4904,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       if (!key) return;
       const e = map.get(key);
       if (e) e.count++;
-      else map.set(key, { key, name: ex.name || key, count: 1 });
+      else map.set(key, { key, name: aExName(key, ex.name), count: 1 });
     }));
     return [...map.values()].sort((x, y) => y.count - x.count || x.name.localeCompare(y.name)).slice(0, 40);
   }
@@ -4947,7 +5013,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
           : dispW1(pr.prev) + ' ' + uS;
         return '<div class="flex items-center gap-2 bg-[rgb(var(--c-surface-2))]/60 px-2.5 py-1.5 rounded-xl text-[11px]">'
           + '<span class="shrink-0">' + icon + '</span>'
-          + '<span class="text-text font-semibold truncate flex-1 min-w-0">' + esc(pr.name) + '</span>'
+          + '<span class="text-text font-semibold truncate flex-1 min-w-0">' + esc(aExName(pr.key, pr.name)) + '</span>'
           + '<span class="font-mono text-text shrink-0">' + val + '</span>'
           + '<span class="font-mono text-muted shrink-0">' + esc(t('aPRsPrev')) + ' ' + prevV + '</span>'
           + '<span class="font-mono text-muted shrink-0">' + esc(aWeekLbl(pr.ts)) + '</span>'
@@ -5403,7 +5469,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     } catch (e) {}
   }
   function loadHistory() { try { return JSON.parse(localStorage.getItem(nsKey('dk_workout_history'))||'[]'); } catch(e){ return []; } }
-  function saveHistory(list) { try { localStorage.setItem(nsKey('dk_workout_history'), JSON.stringify(list.slice(-200))); return true; } catch (e) { console.warn('[storage] history save failed', e); return false; } }
+  function saveHistory(list) { try { localStorage.setItem(nsKey('dk_workout_history'), JSON.stringify(list.slice(-200))); _aExNameIdx = null; _aExHistIdx = null; return true; } catch (e) { console.warn('[storage] history save failed', e); return false; } }
   /* c131: housekeeping — one localStorage key PER DAY per client (water/diary)
      accumulated forever; old done-day markers too. Runs on boot: per-day keys
      older than 90 days and done-day entries older than 60 days are dropped. */
@@ -7138,7 +7204,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       const ev = Math.round(rawToDisp(exDoneVolume(ex.sets).v, ex.unit) || 0);
       const pct = Math.max(0, Math.round(ev / maxV * 100));
       return `<div class="flex items-center gap-2 py-1">
-        <span class="text-[11px] text-text truncate flex-1 min-w-0">${esc(ex.name)}</span>
+        <span class="text-[11px] text-text truncate flex-1 min-w-0">${esc(aExName(ex.key, ex.name))}</span>
         <span class="w-2 h-2 rounded-full shrink-0" style="background:#f43f5e"></span>
         <span class="flex-1 h-1.5 rounded-full bg-[rgb(var(--c-surface-2))] overflow-hidden"><span class="block h-full rounded-full" style="width:${pct}%;background:linear-gradient(90deg,#f43f5e,#fb7185)"></span></span>
         <span class="font-mono text-[11px] font-bold text-text w-10 text-end shrink-0">${ev}</span>
@@ -7197,7 +7263,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         else chip = `<span class="font-mono text-[11px] font-bold text-muted shrink-0">=</span>`;
         return `<div class="py-1 min-w-0">
           <div class="flex items-center gap-2">
-            <span class="text-[11px] text-text truncate flex-1 min-w-0">${esc(ex.name)}</span>${chip}
+            <span class="text-[11px] text-text truncate flex-1 min-w-0">${esc(aExName(ex.key, ex.name))}</span>${chip}
           </div>${prevLine}
         </div>`;
       }).join('');

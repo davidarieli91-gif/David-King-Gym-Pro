@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c155" />
+<meta name="dk-build" content="c156" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2849,7 +2849,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c155</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c156</p>
             </div>
           </div>
 
@@ -27174,7 +27174,7 @@ async function boot() {
             if (!ex98) continue;
             const g98 = ex98.group_canonical || ex98.group_en || '';
             const syn98 = (ex98.synergist_muscles || []).map(synCanonical98).filter(Boolean);
-            (rec.exercises || []).forEach(ex => { if (ex && ex.key === id98) { ex.g = g98; ex.syn = syn98; } });
+            (rec.exercises || []).forEach(ex => { if (ex && ex.key === id98) { ex.g = g98; ex.syn = syn98; ex.name_en = ex98.name_en || ex.name_en || ''; ex.name_ru = ex98.name_ru || ex.name_ru || ''; ex.name_he = ex98.name_he || ex.name_he || ''; } });
           }
         } catch (_) {}
         /* c131: ONE transaction — read+write are atomic (the portal pushes into
@@ -27342,6 +27342,11 @@ async function boot() {
           exercises: exs.map(ex => ({
             key: ex.exercise_id,
             name: ex.name,
+            /* c156: localized names travel with the record so the PORTAL can
+               show every exercise in the active language */
+            name_en: (exInfo && exInfo[ex.exercise_id] && exInfo[ex.exercise_id].name_en) || '',
+            name_ru: (exInfo && exInfo[ex.exercise_id] && exInfo[ex.exercise_id].name_ru) || '',
+            name_he: (exInfo && exInfo[ex.exercise_id] && exInfo[ex.exercise_id].name_he) || '',
             group: ex.group || ex.muscle_group || '',
             g: (exInfo && exInfo[ex.exercise_id] && exInfo[ex.exercise_id].g) || '',
             syn: (exInfo && exInfo[ex.exercise_id] && exInfo[ex.exercise_id].syn) || [],
@@ -27367,7 +27372,7 @@ async function boot() {
         await Promise.all(Array.from(_ids98).map(async id => {
           try {
             const ex = await db.get('exercise_base', id);
-            if (ex) _exInfo98[id] = { g: ex.group_canonical || ex.group_en || '', syn: (ex.synergist_muscles || []).map(synCanonical98).filter(Boolean) };
+            if (ex) _exInfo98[id] = { g: ex.group_canonical || ex.group_en || '', syn: (ex.synergist_muscles || []).map(synCanonical98).filter(Boolean), name_en: ex.name_en || '', name_ru: ex.name_ru || '', name_he: ex.name_he || '' };
           } catch (_) {}
         }));
         const recs = crmRecs.map(r => crmToPortalRec94(r, _exInfo98)).filter(Boolean);
@@ -32760,7 +32765,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 155; /* numeric part of dk-build c155 */
+  var RUNNING = 156; /* numeric part of dk-build c156 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
