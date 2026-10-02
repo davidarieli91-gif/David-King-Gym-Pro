@@ -47,11 +47,32 @@
           });
         } catch (e2) { try { window.dkSWErr = String((e2 && e2.message) || e2); } catch (_) {} }
       };
-      if (document.readyState === 'complete') dkReg151();
-      else window.addEventListener('load', dkReg151);
-      /* belt-and-braces: some in-app browsers never deliver a usable load event */
+      /* c154: register ASAP (the browser's installability check needs an
+         active worker) — with load + timeout fallbacks for in-app browsers */
+      if (document.readyState === 'complete' || document.readyState === 'interactive') dkReg151();
+      else document.addEventListener('DOMContentLoaded', dkReg151);
+      window.addEventListener('load', dkReg151);
       setTimeout(function () { if (window.__dkSW151 !== 'registered') dkReg151(); }, 2500);
     } catch (e) {}
+  })();
+  </script>
+  <script>
+  /* c154: capture Chrome's install prompt AS EARLY AS POSSIBLE — it can fire
+     before the app's main script parses; also remember install completion. */
+  (function () {
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault();
+      window.dkInstallPrompt = e;
+      try { if (window.dkInstallBanner) window.dkInstallBanner(); } catch (_) {}
+    });
+    window.addEventListener('appinstalled', function () {
+      try {
+        var b = document.getElementById('dk-install-banner');
+        if (b) b.remove();
+        window.dkInstallPrompt = null;
+        window.__dkInstalled = true;
+      } catch (_) {}
+    });
   })();
   </script>
   <link rel="icon" type="image/png" href="icon-512.png" />
@@ -2366,6 +2387,16 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
     </div>
   </div>
 
+  <!-- c154: установка приложения — пошаговая инструкция, если Chrome не дал промпт -->
+  <div id="dk-install-modal" class="hidden fixed inset-0 z-[106] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true">
+    <div class="glass-strong rounded-3xl p-5 max-w-sm w-full space-y-3">
+      <h3 id="install-help-title" class="font-display font-bold text-base text-white text-center"></h3>
+      <div id="install-help-steps" class="text-sm text-muted space-y-2 leading-relaxed"></div>
+      <button id="install-help-go" class="hidden w-full bg-gradient-to-r from-indigo-500 to-cyan-400 text-white font-bold text-sm py-3 rounded-xl shadow-lg shadow-indigo-500/25 transition active:scale-95"></button>
+      <button id="install-help-close" class="w-full bg-surface-2 border border-border text-muted font-semibold text-xs py-2.5 rounded-xl transition"></button>
+    </div>
+  </div>
+
   <!-- ============= MAIN ============= -->
   <main class="flex-1 max-w-lg mx-auto w-full px-4 pt-4 pb-28 space-y-4">
 
@@ -2774,7 +2805,7 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
       unlockSubtitle:'Код прислал тренер вместе со ссылкой',unlockBtn:'Открыть портал',
       continueTitle:'С возвращением!',continueSubtitle:'{name} — продолжить с того же места?',continueBtn:'Продолжить как {name}',continueBtnShort:'Продолжить',useCodeBtn:'Ввести код заново',
       lockedTitle:'Портал заблокирован',lockedSubtitle:'Введите код, чтобы вернуться',noPortalTitle:'Портал не подключён',noPortalHint:'Откройте ссылку от тренера, чтобы подключить портал',sessionExpired:'Код доступа изменился — введите новый код из сообщения тренера',
-      appSection:'Приложение',installTitle:'Установить приложение',installSub:'Работает офлайн, открывается на весь экран',installBtn:'Установить',installIosHint:'На iPhone: кнопка «Поделиться» → «На экран «Домой»»',autolockTitle:'Автоблокировка',autolockOff:'Выключена',autolockMin:'{n} мин',autolockSaved:'Сохранено',lockNow:'🔒 Заблокировать',logoutBtn:'Выйти',logoutConfirm:'Выйти из портала? Данные на этом устройстве будут удалены, войти можно будет по новой ссылке или коду.',exitWorkoutConfirm:'Идёт тренировка. Выйти? Прогресс сохранён — продолжить можно будет с главного экрана.',
+      appSection:'Приложение',installTitle:'Установить приложение',installSub:'Работает офлайн, открывается на весь экран',installBtn:'Установить',installIosHint:'На iPhone: кнопка «Поделиться» → «На экран «Домой»»',installHelpTitle:'Как установить приложение',installHelpAndroid:'1. Откройте меню Chrome <b>⋮</b> (три точки справа сверху)<br>2. Нажмите <b>«Установить приложение»</b> (или «Добавить на главный экран»)<br>3. Подтвердите — иконка появится на экране',installHelpDesktop:'1. Нажмите значок установки в адресной строке (монитор со стрелкой)<br>2. Или меню <b>⋮</b> → <b>«Установить David King Gym»</b><br>3. Подтвердите — приложение откроется в отдельном окне',installHelpIos:'1. Нажмите <b>«Поделиться»</b> (квадрат со стрелкой)<br>2. Выберите <b>«На экран «Домой»»</b><br>3. Нажмите «Добавить» — иконка появится на экране',installHelpOther:'Откройте меню браузера и выберите «Установить приложение» или «Добавить на главный экран».',installHelpClose:'Понятно',installDone:'Приложение установлено ✓',autolockTitle:'Автоблокировка',autolockOff:'Выключена',autolockMin:'{n} мин',autolockSaved:'Сохранено',lockNow:'🔒 Заблокировать',logoutBtn:'Выйти',logoutConfirm:'Выйти из портала? Данные на этом устройстве будут удалены, войти можно будет по новой ссылке или коду.',exitWorkoutConfirm:'Идёт тренировка. Выйти? Прогресс сохранён — продолжить можно будет с главного экрана.',
       unlockWrongCode:'Неверный код',unlockExpired:'Срок действия ссылки истёк',unlockNoCrypto:'Откройте по https',
       phoneLoginBtn:'Войти по номеру телефона',phoneTitle:'Вход по телефону',phoneSubtitle:'Полный номер и личный пароль',phoneLabel:'Номер телефона',phonePassLabel:'Пароль (4–10 цифр)',phoneGo:'Войти',phoneBack:'Назад к коду',phoneInvalid:'Введите номер в формате 0540000000',phoneWrong:'Неверный номер или пароль',
       remTitle:'Напоминания',remHint:'Локальные напоминания — без сервера. Работают, пока приложение открыто; на Android в установленном приложении — и в фоне. На iPhone — только при открытом приложении.',remWorkout:'Тренировка',remMeal:'Питание',remWater:'Вода',remEvery:'Каждые',remTest:'Проверить уведомление',remNeedPerm:'Разрешите уведомления в настройках браузера',remTestSent:'Отправлено',
@@ -2834,7 +2865,7 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       unlockSubtitle:'Your coach sent the code',unlockBtn:'Open Portal',
       continueTitle:'Welcome back!',continueSubtitle:'{name} — continue where you left off?',continueBtn:'Continue as {name}',continueBtnShort:'Continue',useCodeBtn:'Enter the code again',
       lockedTitle:'Portal locked',lockedSubtitle:'Enter the code to return',noPortalTitle:'Portal not connected',noPortalHint:'Open the link from your coach to connect the portal',sessionExpired:'The access code changed — enter the new code from your coach',
-      appSection:'App',installTitle:'Install the app',installSub:'Works offline, opens full screen',installBtn:'Install',installIosHint:'On iPhone: tap Share → Add to Home Screen',autolockTitle:'Auto-lock',autolockOff:'Off',autolockMin:'{n} min',autolockSaved:'Saved',lockNow:'🔒 Lock',logoutBtn:'Log out',logoutConfirm:'Log out of the portal? Data on this device will be erased; you can sign in again with a new link or code.',exitWorkoutConfirm:'A workout is in progress. Leave? Progress is saved — you can resume from the main screen.',
+      appSection:'App',installTitle:'Install the app',installSub:'Works offline, opens full screen',installBtn:'Install',installIosHint:'On iPhone: tap Share → Add to Home Screen',installHelpTitle:'How to install the app',installHelpAndroid:'1. Open Chrome\'s menu <b>⋮</b> (top right)<br>2. Tap <b>“Install app”</b> (or “Add to Home screen”)<br>3. Confirm — the icon appears on your screen',installHelpDesktop:'1. Click the install icon in the address bar<br>2. Or menu <b>⋮</b> → <b>“Install David King Gym”</b><br>3. Confirm — the app opens in its own window',installHelpIos:'1. Tap <b>Share</b> (square with an arrow)<br>2. Choose <b>“Add to Home Screen”</b><br>3. Tap “Add” — the icon appears on your screen',installHelpOther:'Open the browser menu and choose “Install app” or “Add to Home screen”.',installHelpClose:'Got it',installDone:'App installed ✓',autolockTitle:'Auto-lock',autolockOff:'Off',autolockMin:'{n} min',autolockSaved:'Saved',lockNow:'🔒 Lock',logoutBtn:'Log out',logoutConfirm:'Log out of the portal? Data on this device will be erased; you can sign in again with a new link or code.',exitWorkoutConfirm:'A workout is in progress. Leave? Progress is saved — you can resume from the main screen.',
       unlockWrongCode:'Wrong code',unlockExpired:'Link expired',unlockNoCrypto:'Open over https',
       phoneLoginBtn:'Sign in with phone number',phoneTitle:'Phone sign-in',phoneSubtitle:'Full number and personal password',phoneLabel:'Phone number',phonePassLabel:'Password (4–10 digits)',phoneGo:'Sign in',phoneBack:'Back to the code',phoneInvalid:'Enter the number as 0540000000',phoneWrong:'Wrong number or password',
       remTitle:'Reminders',remHint:'Local reminders — no server. They fire while the app is open; on Android installed PWAs also in the background. On iPhone only while the app is open.',remWorkout:'Workout',remMeal:'Meals',remWater:'Water',remEvery:'Every',remTest:'Test notification',remNeedPerm:'Allow notifications in the browser settings',remTestSent:'Sent',
@@ -2894,7 +2925,7 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       unlockSubtitle:'הקוד נשלח על ידי המאמן',unlockBtn:'פתח פורטל',
       continueTitle:'ברוך שובך!',continueSubtitle:'{name} — להמשיך מהמקום שבו הפסקת?',continueBtn:'המשך בתור {name}',continueBtnShort:'המשך',useCodeBtn:'הזן קוד מחדש',
       lockedTitle:'הפורטל נעול',lockedSubtitle:'הזן קוד כדי לחזור',noPortalTitle:'הפורטל לא מחובר',noPortalHint:'פתח את הקישור מהמאמן כדי לחבר את הפורטל',sessionExpired:'קוד הגישה השתנה — הזן את הקוד החדש מהמאמן',
-      appSection:'אפליקציה',installTitle:'התקן את האפליקציה',installSub:'עובד גם ללא אינטרנט, נפתח במסך מלא',installBtn:'התקן',installIosHint:'ב-iPhone: כפתור שיתוף → הוסף למסך הבית',autolockTitle:'נעילה אוטומטית',autolockOff:'כבויה',autolockMin:'{n} דק׳',autolockSaved:'נשמר',lockNow:'🔒 נעל',logoutBtn:'התנתק',logoutConfirm:'להתנתק מהפורטל? הנתונים במכשיר יימחקו; ניתן להיכנס שוב עם קישור או קוד חדש.',exitWorkoutConfirm:'אימון פעיל. לצאת? ההתקדמות נשמרה — אפשר להמשיך מהמסך הראשי.',
+      appSection:'אפליקציה',installTitle:'התקן את האפליקציה',installSub:'עובד גם ללא אינטרנט, נפתח במסך מלא',installBtn:'התקן',installIosHint:'ב-iPhone: כפתור שיתוף → הוסף למסך הבית',installHelpTitle:'איך מתקינים את האפליקציה',installHelpAndroid:'1. פתח את תפריט Chrome <b>⋮</b> (למעלה מימין)<br>2. בחר <b>״התקן אפליקציה״</b> (או ״הוסף למסך הבית״)<br>3. אשר — הסמל יופיע במסך',installHelpDesktop:'1. לחץ על סמל ההתקנה בשורת הכתובת<br>2. או תפריט <b>⋮</b> → <b>״התקן את David King Gym״</b><br>3. אשר — האפליקציה תיפתח בחלון נפרד',installHelpIos:'1. לחץ על <b>שיתוף</b> (ריבוע עם חץ)<br>2. בחר <b>״הוסף למסך הבית״</b><br>3. לחץ ״הוסף״ — הסמל יופיע במסך',installHelpOther:'פתח את תפריט הדפדפן ובחר ״התקן אפליקציה״ או ״הוסף למסך הבית״.',installHelpClose:'הבנתי',installDone:'האפליקציה הותקנה ✓',autolockTitle:'נעילה אוטומטית',autolockOff:'כבויה',autolockMin:'{n} דק׳',autolockSaved:'נשמר',lockNow:'🔒 נעל',logoutBtn:'התנתק',logoutConfirm:'להתנתק מהפורטל? הנתונים במכשיר יימחקו; ניתן להיכנס שוב עם קישור או קוד חדש.',exitWorkoutConfirm:'אימון פעיל. לצאת? ההתקדמות נשמרה — אפשר להמשיך מהמסך הראשי.',
       unlockWrongCode:'קוד שגוי',unlockExpired:'תוקף הקישור פג',unlockNoCrypto:'פתח דרך https',
       phoneLoginBtn:'כניסה לפי מספר טלפון',phoneTitle:'כניסה לפי טלפון',phoneSubtitle:'מספר מלא וסיסמה אישית',phoneLabel:'מספר טלפון',phonePassLabel:'סיסמה (4–10 ספרות)',phoneGo:'כניסה',phoneBack:'חזרה לקוד',phoneInvalid:'הזן מספר בפורמט 0540000000',phoneWrong:'מספר או סיסמה שגויים',
       remTitle:'תזכורות',remHint:'תזכורות מקומיות — ללא שרת. עובדות כשהאפליקציה פתוחה; באנדרואיד מותקנת — גם ברקע. ב-iPhone — רק כשהאפליקציה פתוחה.',remWorkout:'אימון',remMeal:'ארוחות',remWater:'מים',remEvery:'כל',remTest:'בדיקת התראה',remNeedPerm:'אשר התראות בהגדרות הדפדפן',remTestSent:'נשלח',
@@ -3398,18 +3429,28 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     if (next && next.shareId !== sid) { if (dkSwitchAccount(next.shareId)) return; }
     try { location.href = location.pathname; } catch (e) { location.reload(); }
   }
-  /* c151: PWA install helpers — banner + native prompt (iOS gets a hint) */
+  /* c151/c154: PWA install helpers — the banner shows on EVERY device that is
+     not already running installed (it used to require beforeinstallprompt,
+     which Chrome often does not fire on the first visit). When Chrome offers
+     the native prompt we use it; otherwise a localized step-by-step guide. */
   function dkIsStandalone() {
     try { return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true; } catch (e) { return false; }
   }
   function dkIsIOS() { return /iPad|iPhone|iPod/.test(navigator.userAgent); }
+  function dkIsAndroid() { return /Android/i.test(navigator.userAgent); }
+  function dkIsChrome() { return /Chrome\//.test(navigator.userAgent) && !/Edg\//.test(navigator.userAgent) && !/OPR\//.test(navigator.userAgent); }
+  function dkInstallPlatform() {
+    if (dkIsIOS()) return 'ios';
+    if (dkIsAndroid() && dkIsChrome()) return 'android';
+    if (dkIsChrome()) return 'desktop';
+    return 'other';
+  }
   function dkInstallDismissed() {
     try { const ts = Number(localStorage.getItem('dk_install_dismissed')) || 0; return Date.now() - ts < 30 * 86400000; } catch (e) { return false; }
   }
   function dkInstallBanner() {
     try {
       if (dkIsStandalone() || dkInstallDismissed()) return;
-      if (!window.dkInstallPrompt && !dkIsIOS()) return;
       if (document.getElementById('dk-install-banner')) return;
       const b = document.createElement('div');
       b.id = 'dk-install-banner';
@@ -3441,9 +3482,30 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         return;
       }
     } catch (e) {}
-    toast(t('installIosHint'), 'info');
+    dkInstallHelp();
+  }
+  /* c154: no native prompt (Chrome did not offer it yet / another browser) —
+     show exact, platform-specific steps instead of a useless toast */
+  function dkInstallHelp() {
+    const m = document.getElementById('dk-install-modal');
+    if (!m) return;
+    const p = dkInstallPlatform();
+    const key = p === 'android' ? 'installHelpAndroid' : p === 'ios' ? 'installHelpIos' : p === 'desktop' ? 'installHelpDesktop' : 'installHelpOther';
+    document.getElementById('install-help-title').textContent = t('installHelpTitle');
+    document.getElementById('install-help-steps').innerHTML = t(key);
+    const go = document.getElementById('install-help-go');
+    if (go) {
+      go.classList.toggle('hidden', !window.dkInstallPrompt);
+      go.textContent = t('installBtn');
+      go.onclick = function () { m.classList.add('hidden'); dkInstallNow(); };
+    }
+    const close = document.getElementById('install-help-close');
+    if (close) { close.textContent = t('installHelpClose'); close.onclick = function () { m.classList.add('hidden'); }; }
+    m.classList.remove('hidden');
   }
   window.dkInstallNow = dkInstallNow;
+  window.dkInstallHelp = dkInstallHelp;
+  window.dkInstallBanner = dkInstallBanner;
 
   /* ===== c153: LOCAL REMINDERS (no server) ============================
      Workout / meal / water reminders fire while the app is open (in-page
@@ -8048,12 +8110,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       });
     } catch (e151b) {}
 
-    /* c151: install prompt (Android/desktop) + iOS instructions */
-    window.addEventListener('beforeinstallprompt', function (e) {
-      e.preventDefault();
-      window.dkInstallPrompt = e;
-      dkInstallBanner();
-    });
+    /* c151/c154: the early head listener captures the prompt; here we only
+       make sure the banner is on screen (it now shows WITHOUT the prompt too) */
     try {
       if (navigator.storage && navigator.storage.persist && !localStorage.getItem('dk_persist_asked')) {
         localStorage.setItem('dk_persist_asked', '1');
@@ -8061,6 +8119,12 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       }
     } catch (e151c) {}
     dkInstallBanner();
+    window.addEventListener('appinstalled', function () {
+      try {
+        const b = document.getElementById('dk-install-banner'); if (b) b.remove();
+        toast(t('installDone'), 'success', 3000);
+      } catch (e154) {}
+    });
 
     // Tabs
     document.querySelectorAll('.nav-tab').forEach(tab=>{
@@ -8757,7 +8821,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         _al151.value = String(_alv151);
       }
       var _ci151 = document.getElementById('cps-install');
-      if (_ci151) _ci151.classList.toggle('hidden', dkIsStandalone() || (!window.dkInstallPrompt && !dkIsIOS()));
+      if (_ci151) _ci151.classList.toggle('hidden', dkIsStandalone());
       /* c152: change the personal password (only when the share has one) */
       set('cps-pass-lbl', T('passChangeTitle'));
       var _cp152 = document.getElementById('cps-pass');
