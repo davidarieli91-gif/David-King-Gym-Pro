@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c160" />
+<meta name="dk-build" content="c161" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2849,7 +2849,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c160</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c161</p>
             </div>
           </div>
 
@@ -23467,7 +23467,7 @@ Select foods for each meal. Output as JSON only.`;
      FOOD DATABASE SEED — injects the food database into IndexedDB on boot.
      ===================================================================== */
   async function seedFoodDatabase(force = false) {
-    const flagKey = 'seeded_food_db_v54';
+    const flagKey = 'seeded_food_db_v55'; /* c161: curated DB (1253 quality items) */
     const flag = await db.get('settings', flagKey);
     if (!flag) force = true;
     const current = await db.count('food_database');
@@ -30943,7 +30943,7 @@ document.addEventListener('DOMContentLoaded', function () {
      * Firestore storage quota. The cloud mirrors USER data only; restore
      * re-seeds references locally if a store came back empty. */
     var REF_STORES = ['exercise_base', 'food_database'];
-    var SEED_FLAGS = ['seeded_exercise_base_v95', 'seeded_food_db_v54'];
+    var SEED_FLAGS = ['seeded_exercise_base_v95', 'seeded_food_db_v55'];
     /* c151: /portal_shares is get-only for the trainee portal (opens WITHOUT
      * sign-in). LIST is DENIED — with it open anyone holding the config could
      * enumerate every encrypted share AND the plaintext history/check-in docs
@@ -32839,7 +32839,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 160; /* numeric part of dk-build c160 */
+  var RUNNING = 161; /* numeric part of dk-build c161 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
