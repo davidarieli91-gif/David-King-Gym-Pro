@@ -94,7 +94,7 @@ ok('unit_amount follows grams in both adjusters', count(trainer, 'f.unit_amount 
 ok('plan targets validated + clamped', trainer.indexOf("const clampT = (id, min, max, dflt) =>") >= 0 && trainer.indexOf("_editing.target_calories = clampT('np-target-cal', 800, 6000, 2000);") >= 0);
 ok('food editor has the Russian-name field', trainer.indexOf('name="name_ru"') >= 0 && trainer.indexOf('form.elements.name_ru.value = food.name_ru') >= 0);
 ok('food save preserves unedited fields', trainer.indexOf('const newFood = Object.assign({}, food || {}, {') >= 0);
-ok('builders search by brand/barcode/category', trainer.indexOf("(f.brand || '').toLowerCase().includes(q)") >= 0 && trainer.indexOf("(f.barcode || '').toLowerCase().includes(q)") >= 0);
+ok('builders search by brand/barcode/category', trainer.indexOf("(f.brand || '').toLowerCase().includes(ql)") >= 0 && trainer.indexOf("(f.barcode || '').toLowerCase().includes(ql)") >= 0 && trainer.indexOf("(f.category || '').toLowerCase().includes(ql)") >= 0);
 ok('DB browser searches barcodes too', trainer.indexOf("(f.barcode || '') + ').toLowerCase()") >= 0 || trainer.indexOf("+ ' ' + (f.barcode || '')).toLowerCase()") >= 0);
 ok('literal template strings removed from the STATIC modal HTML', trainer.indexOf("title=\"${t('nutrition.shareHint')") === -1 && trainer.indexOf("data-i18n=\"programs.share\">${t('") === -1 && trainer.indexOf("title=\"${t('nutrition.scanBarcode')") === -1);
 ok('add-food button no longer hidden', trainer.indexOf('id="nutrition-add-food-btn" class="bg-primary') >= 0);

@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c169" />
+<meta name="dk-build" content="c170" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2874,7 +2874,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c169</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c170</p>
             </div>
           </div>
 
@@ -5237,13 +5237,6 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10a7 7 0 0 1-14 0"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
             </button>
             <input type="file" id="fp-photo-input" accept="image/*" capture="environment" class="hidden" />
-          </div>
-          <div class="flex gap-1 flex-wrap">
-            <button class="fp-src-btn px-3 py-1 rounded-md text-xs font-semibold transition bg-primary text-white" data-food-source="all" data-i18n="nutrition.allFoods">All</button>
-            <button class="fp-src-btn px-3 py-1 rounded-md text-xs font-semibold transition text-muted" data-food-source="FoodsDictionary_IL" data-i18n="nutrition.srcFoodsDict">Israeli DB</button>
-            <button class="fp-src-btn px-3 py-1 rounded-md text-xs font-semibold transition text-muted" data-food-source="OpenFoodFacts_IL" data-i18n="nutrition.srcOffIl">OFF Israel</button>
-            <button class="fp-src-btn px-3 py-1 rounded-md text-xs font-semibold transition text-muted" data-food-source="OpenFoodFacts_Global" data-i18n="nutrition.srcOffGlobal">OFF Global</button>
-            <button class="fp-src-btn px-3 py-1 rounded-md text-xs font-semibold transition text-muted" data-food-source="USDA_SR_Legacy" data-i18n="nutrition.srcUsda">USDA</button>
           </div>
         </div>
         <!-- Results -->
@@ -9700,6 +9693,14 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
 
     /** Render the filtered list (or empty state). */
     function render() {
+      /* c170: the visible search boxes must never disagree with the filter —
+         if a browser restore re-fills them without an event, this fixes it */
+      try {
+        const ds = document.getElementById('dash-search');
+        const as = document.getElementById('aside-search');
+        if (ds && ds.value !== _search) ds.value = _search;
+        if (as && as.value !== _search) as.value = _search;
+      } catch (e) {}
       const list  = document.getElementById('dash-list');
       const empty = document.getElementById('dash-empty');
       const count = document.getElementById('dash-count');
@@ -24790,195 +24791,45 @@ Select foods for each meal. Output as JSON only.`;
       if (search) { search.value = barcode; search.dispatchEvent(new Event('input')); }
     }
 
+    /* c170: THE PICKER IS THE SAME KIOSK — identical shelves, sub-folders,
+       smart shelves, photo tiles, badges and order as «База продуктов», from
+       the SAME food_database records (edit once → both views change). Empty
+       query → the kiosk home; typing → the same tiles, filtered; picking a
+       tile opens the c165 portion calculator. */
     function renderFoodResults(query) {
       const container = document.getElementById('fp-results');
       if (!container) return;
-      const lang = (typeof currentLang === 'function') ? currentLang() : 'en';
-      let filtered = _foods;
-      if (_fpSource !== 'all') filtered = filtered.filter(f => f.source === _fpSource);
-      if (query) {
-        const q = query.toLowerCase();
-        /* c146: brand + barcode + category search, not just names */
-        filtered = filtered.filter(f => (f.name_he || '').toLowerCase().includes(q) || (f.name_en || '').toLowerCase().includes(q) || (f.name_ru || '').toLowerCase().includes(q) || (f.brand || '').toLowerCase().includes(q) || (f.barcode || '').toLowerCase().includes(q) || (f.category || '').toLowerCase().includes(q));
+      const q = String(query || '').trim();
+      if (!q) {
+        if (typeof foodDatabase !== 'undefined' && foodDatabase.pickerMount) {
+          foodDatabase.pickerMount(container, _foods);
+          wireFoodPickTiles(container);
+          return;
+        }
+        container.innerHTML = '';
+        return;
       }
+      const ql = q.toLowerCase();
+      const filtered = _foods.filter(f =>
+        (f.name_he || '').toLowerCase().includes(ql) ||
+        (f.name_en || '').toLowerCase().includes(ql) ||
+        (f.name_ru || '').toLowerCase().includes(ql) ||
+        (f.brand || '').toLowerCase().includes(ql) ||
+        (f.barcode || '').toLowerCase().includes(ql) ||
+        (f.category || '').toLowerCase().includes(ql));
       if (filtered.length === 0) {
         container.innerHTML = `<div class="text-center py-6 text-sm text-muted">${t('nutrition.noFoodsFound')}</div>`;
         return;
       }
-
-      // Auto-expand all categories when searching
-      const isSearching = !!query;
-
-      // Helpers (same as main food database screen)
-      const catLabelFn = (typeof categoryLabel === 'function') ? categoryLabel : (c) => c;
-      const catIconFn = (typeof categoryIcon === 'function') ? categoryIcon : () => '⭐';
-      const localeFn = (typeof localeString === 'function') ? localeString : () => 'en';
-
-      // Macro-group support: if MACRO_GROUPS + getMacroGroup are available, use
-      // a two-level tree (macro group → category → foods). Otherwise fall back
-      // to a flat category → foods list (legacy behaviour).
-      const useMacroGroups = (typeof getMacroGroup === 'function') && (typeof MACRO_GROUPS !== 'undefined');
-      const macroOrder = ['proteins', 'carbs', 'fats', 'other'];
-
-      // Render a single food row — shared by both code paths
-      function renderFoodRow(f) {
-        const name = (lang === 'ru' ? (f.name_ru || f.name_en || f.name_he || '?') : (lang === 'he' ? (f.name_he || f.name_en || '?') : (f.name_en || f.name_he || '?')));
-        const n = f.nutrition || {};
-        const srcInfo = (typeof FOOD_SOURCE_INFO !== 'undefined' && FOOD_SOURCE_INFO[f.source]) || { badge: '?', class: 'bg-muted/15 text-muted' };
-        const srcBadge = srcInfo.badge;
-        const srcClass = srcInfo.class;
-        const img = `<span class="absolute text-[15px] opacity-60" aria-hidden="true">🥗</span>` + window.dkFoodImgTag(f, 'absolute inset-0 w-full h-full object-cover');
-        return `<div class="flex items-center gap-2 bg-surface border border-border rounded-lg p-2 hover:bg-border/30 hover:border-primary/30 transition cursor-pointer" data-fp-pick="${esc(f.id)}">
-          <div class="relative w-9 h-9 rounded-lg shrink-0 overflow-hidden bg-surface-2 border border-border grid place-items-center">${img}</div>
-          <div class="flex-1 min-w-0">
-            <div class="text-sm font-medium truncate">${esc(name)}</div>
-            <div class="text-[10px] text-muted">${Math.round(n.calories || 0)} ${t('nutrition.kcal')} · ${t('nutrition.proteinShort')}:${Math.round(n.protein || 0)} ${t('nutrition.carbsShort')}:${Math.round(n.carbs || 0)} ${t('nutrition.fatShort')}:${Math.round(n.fat || 0)} ${t('nutrition.per100g')}</div>
-          </div>
-          <button data-fp-view="${esc(f.id)}" class="text-muted hover:text-primary-2 transition w-6 h-6 grid place-items-center shrink-0" title="${t('common.view') || 'View'}" type="button">
-            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-          <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${srcClass} shrink-0">${srcBadge}</span>
-        </div>`;
-      }
-
-      // Sort foods by name (current lang)
-      function sortFoodsByName(arr) {
-        return arr.sort((a, b) => {
-          const na = (lang === 'ru' ? (a.name_ru || a.name_en || a.name_he) : (lang === 'he' ? (a.name_he || a.name_en) : (a.name_en || a.name_he))) || '';
-          const nb = (lang === 'ru' ? (b.name_ru || b.name_en || b.name_he) : (lang === 'he' ? (b.name_he || b.name_en) : (b.name_en || b.name_he))) || '';
-          return na.localeCompare(nb, localeFn());
-        });
-      }
-
-      let html = '';
-
-      if (useMacroGroups) {
-        // Build two-level structure: macroGroup → category → foods[]
-        const macroData = {};
-        macroOrder.forEach(g => { macroData[g] = {}; });
-        filtered.forEach(f => {
-          const mg = getMacroGroup(f);
-          const cat = f.category || 'other';
-          if (!macroData[mg][cat]) macroData[mg][cat] = [];
-          macroData[mg][cat].push(f);
-        });
-
-        macroOrder.forEach(mg => {
-          const cats = macroData[mg];
-          const catKeys = Object.keys(cats);
-          if (catKeys.length === 0) return;
-          const macroMeta = MACRO_GROUPS[mg];
-          const macroLabel = (macroMeta.label[lang] || macroMeta.label.en);
-          const macroIcon = macroMeta.icon;
-          const totalFoods = catKeys.reduce((sum, k) => sum + cats[k].length, 0);
-          const mgKey = 'macro:' + mg;
-          const mgExpanded = isSearching || _fpExpandedCats.has(mgKey);
-
-          // Macro group header (top-level folder)
-          html += `<div class="bg-surface-2/40 border border-border rounded-xl overflow-hidden mb-1.5">
-            <button class="w-full flex items-center gap-2 p-2.5 hover:bg-border/30 transition" data-fp-toggle-macro="${esc(mg)}">
-              <svg class="w-4 h-4 text-muted transition-transform ${mgExpanded ? 'rotate-90' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
-              <span class="text-xl shrink-0" style="width:1.75rem;text-align:center">${macroIcon}</span>
-              <span class="flex-1 text-start text-sm font-bold truncate">${esc(macroLabel)}</span>
-              <span class="text-[10px] text-muted font-mono">${totalFoods}</span>
-            </button>`;
-
-          if (mgExpanded) {
-            html += `<div class="space-y-1 p-1.5 pt-1">`;
-            // Sort categories by translated label
-            catKeys.sort((a, b) => catLabelFn(a).localeCompare(catLabelFn(b), localeFn()));
-            catKeys.forEach(cat => {
-              const foods = cats[cat];
-              const catExpanded = isSearching || _fpExpandedCats.has(cat);
-              const label = catLabelFn(cat);
-              const icon = catIconFn(cat);
-
-              // Category header (sub-folder)
-              html += `<div class="bg-surface-2/30 border border-border/60 rounded-lg overflow-hidden">
-                <button class="w-full flex items-center gap-2 p-2 hover:bg-border/30 transition" data-fp-toggle-cat="${esc(cat)}">
-                  <svg class="w-3.5 h-3.5 text-muted transition-transform ${catExpanded ? 'rotate-90' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
-                  <span class="text-base shrink-0" style="width:1.5rem;text-align:center">${icon}</span>
-                  <span class="flex-1 text-start text-xs font-semibold truncate">${esc(label)}</span>
-                  <span class="text-[10px] text-muted font-mono">${foods.length}</span>
-                </button>`;
-              if (catExpanded) {
-                html += `<div class="space-y-0.5 px-1.5 pb-1.5">`;
-                sortFoodsByName(foods).forEach(f => { html += renderFoodRow(f); });
-                html += `</div>`;
-              }
-              html += `</div>`;
-            });
-            html += `</div>`;
-          }
-          html += `</div>`;
-        }
-        );
-      } else {
-        // Legacy flat grouping: category → foods
-        const groups = {};
-        filtered.forEach(f => {
-          const cat = f.category || 'other';
-          if (!groups[cat]) groups[cat] = [];
-          groups[cat].push(f);
-        });
-        const sortedCats = Object.keys(groups).sort((a, b) =>
-          catLabelFn(a).localeCompare(catLabelFn(b), localeFn()));
-
-        sortedCats.forEach(cat => {
-          const foods = groups[cat];
-          const isExpanded = isSearching || _fpExpandedCats.has(cat);
-          const label = catLabelFn(cat);
-          const icon = catIconFn(cat);
-          html += `<div class="bg-surface-2/50 border border-border rounded-xl overflow-hidden mb-1">
-            <button class="w-full flex items-center gap-2 p-2 hover:bg-border/30 transition" data-fp-toggle-cat="${esc(cat)}">
-              <svg class="w-4 h-4 text-muted transition-transform ${isExpanded ? 'rotate-90' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
-              <span class="text-lg shrink-0" style="width:1.5rem;text-align:center">${icon}</span>
-              <span class="flex-1 text-start text-sm font-semibold truncate">${esc(label)}</span>
-              <span class="text-[10px] text-muted font-mono">${foods.length}</span>
-            </button>`;
-          if (isExpanded) {
-            html += `<div class="space-y-0.5 p-1.5 pt-0">`;
-            sortFoodsByName(foods).forEach(f => { html += renderFoodRow(f); });
-            html += `</div>`;
-          }
-          html += `</div>`;
-        });
-      }
-
-      container.innerHTML = html;
-
-      // Wire macro-group toggle (only present in macro-group mode)
-      container.querySelectorAll('[data-fp-toggle-macro]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const mg = 'macro:' + btn.getAttribute('data-fp-toggle-macro');
-          if (_fpExpandedCats.has(mg)) _fpExpandedCats.delete(mg);
-          else _fpExpandedCats.add(mg);
-          renderFoodResults(query);
-        });
-      });
-
-      // Wire category toggle (collapse/expand)
-      container.querySelectorAll('[data-fp-toggle-cat]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const cat = btn.getAttribute('data-fp-toggle-cat');
-          if (_fpExpandedCats.has(cat)) _fpExpandedCats.delete(cat);
-          else _fpExpandedCats.add(cat);
-          renderFoodResults(query);
-        });
-      });
-
-      // Wire view buttons (eye-icon) — open detail modal without picking
-      container.querySelectorAll('[data-fp-view]').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const fid = btn.getAttribute('data-fp-view');
-          if (fid && typeof openFoodDetailModal === 'function') openFoodDetailModal(fid);
-        });
-      });
-
+      const tileFn = (typeof foodDatabase !== 'undefined' && foodDatabase.pickerTileHTML) ? foodDatabase.pickerTileHTML : null;
+      container.innerHTML = tileFn
+        ? '<div class="food-grid">' + filtered.slice(0, 120).map(f => tileFn(f)).join('') + '</div>'
+        : '';
+      wireFoodPickTiles(container);
+    }
+    function wireFoodPickTiles(container) {
       container.querySelectorAll('[data-fp-pick]').forEach(el => {
         el.addEventListener('click', (e) => {
-          // Don't pick if user clicked the eye-icon
           if (e.target.closest('[data-fp-view]')) return;
           const food = _foods.find(f => f.id === el.getAttribute('data-fp-pick'));
           if (food && _fpCallback) {
@@ -26038,8 +25889,132 @@ Select foods for each meal. Output as JSON only.`;
       applyFilters();
     }
 
+    /* =====================================================================
+       c170: THE PICKER IS THE SAME KIOSK — the meal-plan picker mounts this
+       engine into its own container: identical shelves, sub-folders, smart
+       shelves, photo tiles, badges and ORDER, all from the SAME food_database
+       records. Editing a product anywhere updates both views (one database,
+       one look). Tiles carry data-fp-pick so the picker's portion bar opens.
+       ===================================================================== */
+    let _pickRoot = null;
+    let _pickFoods = null;
+    let _pickView = { kind: 'home', shelf: '', sub: '', smart: '' };
+    let _pickPage = 0;
+    function pickerTileHTML(f) {
+      const name = foodNameFor(f);
+      const n = f.nutrition || {};
+      const img = '<span class="absolute text-lg opacity-60" aria-hidden="true">🥗</span>' + window.dkFoodImgTag(f, 'absolute inset-0 w-full h-full object-cover');
+      return '<button type="button" data-fp-pick="' + escapeAttr(f.id) + '" class="food-tile bg-surface border border-border rounded-2xl overflow-hidden hover:border-primary/40 transition text-start">'
+        + '<div class="relative aspect-square bg-surface-2 overflow-hidden">' + img + '</div>'
+        + '<div class="p-2 min-w-0">'
+        + '<div class="food-tile-name text-[11px] font-semibold text-text">' + escapeHTML(name) + '</div>'
+        + '<div class="text-[9px] text-muted mt-0.5">' + Math.round(n.calories || 0) + ' ' + t('nutrition.kcal') + ' · ' + t('nutrition.proteinShort') + ' ' + Math.round(n.protein || 0) + ' ' + t('nutrition.carbsShort') + ' ' + Math.round(n.carbs || 0) + ' ' + t('nutrition.fatShort') + ' ' + Math.round(n.fat || 0) + '</div>'
+        + '<div class="food-badges flex flex-wrap gap-1 mt-1">' + foodBadgeHTML(f) + '</div>'
+        + '</div></button>';
+    }
+    function pickerGridHTML(list) {
+      const pages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+      if (_pickPage > pages - 1) _pickPage = pages - 1;
+      if (_pickPage < 0) _pickPage = 0;
+      const slice = list.slice(_pickPage * PAGE_SIZE, (_pickPage + 1) * PAGE_SIZE);
+      let html = '<div class="food-grid">' + slice.map(pickerTileHTML).join('') + '</div>';
+      if (pages > 1) {
+        html += '<div class="flex items-center justify-center gap-2 mt-3">'
+          + '<button type="button" data-pfp-page="prev" class="fdb-pager" ' + (_pickPage <= 0 ? 'disabled' : '') + '>‹ ' + escapeHTML(t('food.pagePrev')) + '</button>'
+          + '<span class="text-xs text-muted font-mono">' + (_pickPage + 1) + ' / ' + pages + '</span>'
+          + '<button type="button" data-pfp-page="next" class="fdb-pager" ' + (_pickPage >= pages - 1 ? 'disabled' : '') + '>' + escapeHTML(t('food.pageNext')) + ' ›</button></div>';
+      }
+      return html;
+    }
+    function pickerRender() {
+      const root = _pickRoot;
+      if (!root) return;
+      const pool = (_pickFoods || _all || []).filter((f) => f && !f.is_archived);
+      const v = _pickView;
+      let html = '';
+      if (v.smart) {
+        const list = smartShelfItems(v.smart, pool);
+        const s = SMART_SHELVES.find((x) => x.id === v.smart) || SMART_SHELVES[0];
+        html = '<div class="flex items-center gap-2 flex-wrap mb-3">'
+          + '<button type="button" data-pfp-home class="fdb-pager">‹ ' + escapeHTML(t('food.backHome')) + '</button>'
+          + '<span class="text-sm font-semibold">' + s.emoji + ' ' + escapeHTML(t(s.nameKey)) + '</span>'
+          + '<span class="text-xs text-muted font-mono">' + list.length + '</span></div>' + pickerGridHTML(list);
+      } else if (v.kind === 'shelf') {
+        const shelf = FOOD_SHELVES.find((s) => s.id === v.shelf) || FOOD_SHELVES[FOOD_SHELVES.length - 1];
+        const foods = pool.filter((f) => shelf.cats.indexOf(f.category) >= 0);
+        const subs = {};
+        foods.forEach((f) => { if (f.sub) (subs[f.sub] = subs[f.sub] || []).push(f); });
+        const subIds = Object.keys(subs).filter((x) => subs[x].length >= 3).sort((a, b) => subs[b].length - subs[a].length);
+        html = '<div class="flex items-center gap-2 flex-wrap mb-3">'
+          + '<button type="button" data-pfp-home class="fdb-pager">‹ ' + escapeHTML(t('food.backHome')) + '</button>'
+          + '<span class="text-sm font-semibold">' + shelf.emoji + ' ' + escapeHTML(t(shelf.nameKey)) + '</span>'
+          + '<span class="text-xs text-muted font-mono">' + foods.length + '</span></div>';
+        if (!v.sub && subIds.length >= 2) {
+          html += '<div class="food-grid">'
+            + '<button type="button" data-pfp-sub="all" class="food-tile bg-surface border border-border rounded-2xl overflow-hidden text-start hover:border-primary/40 transition">'
+            + '<span class="relative block aspect-square bg-surface-2 grid place-items-center text-3xl">' + shelf.emoji + '</span>'
+            + '<span class="block p-2"><span class="block text-[11px] font-semibold">' + escapeHTML(t('food.allProducts')) + '</span>'
+            + '<span class="block text-[9px] text-muted">' + foods.length + '</span></span></button>'
+            + subIds.map((sub) => {
+              const list = subs[sub];
+              return '<button type="button" data-pfp-sub="' + escapeAttr(sub) + '" class="food-tile bg-surface border border-border rounded-2xl overflow-hidden text-start hover:border-primary/40 transition">'
+                + '<span class="relative block aspect-square bg-surface-2">' + shelfCollageHTML(list)
+                + '<span class="absolute inset-0 grid place-items-center text-2xl pointer-events-none">' + (SUB_EMOJI[sub] || '📁') + '</span></span>'
+                + '<span class="block p-2"><span class="block text-[11px] font-semibold">' + escapeHTML(t('food.sub_' + sub)) + '</span>'
+                + '<span class="block text-[9px] text-muted">' + list.length + '</span></span></button>';
+            }).join('') + '</div>';
+        } else {
+          let list = foods;
+          if (v.sub && v.sub !== 'all') list = subs[v.sub] || [];
+          if (v.sub && v.sub !== 'all') {
+            html += '<div class="flex items-center gap-2 flex-wrap mb-3">'
+              + '<button type="button" data-pfp-shelf="' + escapeAttr(shelf.id) + '" class="fdb-pager">‹ ' + escapeHTML(t(shelf.nameKey)) + '</button>'
+              + '<span class="text-sm font-semibold">' + (SUB_EMOJI[v.sub] || '📁') + ' ' + escapeHTML(t('food.sub_' + v.sub)) + '</span></div>';
+          }
+          html += pickerGridHTML(list);
+        }
+      } else {
+        const shelves = FOOD_SHELVES.map((s) => ({ s: s, foods: pool.filter((f) => s.cats.indexOf(f.category) >= 0) })).filter((x) => x.foods.length > 0);
+        const smart = SMART_SHELVES.map((s) => ({ s: s, foods: smartShelfItems(s.id, pool) }));
+        html = '<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">' + smart.map((x) => smartTileHTML(x.s, x.foods)).join('') + '</div>';
+        html += '<div class="food-bento">' + shelves.map((x) => shelfTileHTML(x.s, x.foods)).join('') + '</div>';
+      }
+      root.innerHTML = html;
+      wirePicker();
+    }
+    function wirePicker() {
+      const root = _pickRoot;
+      if (!root) return;
+      const goHome = () => { _pickView = { kind: 'home', shelf: '', sub: '', smart: '' }; _pickPage = 0; pickerRender(); };
+      root.querySelectorAll('[data-pfp-home]').forEach((b) => b.addEventListener('click', goHome));
+      /* the smart/shelf tiles are the kiosk's own builders — they carry the
+         kiosk's data-fdb-* attributes, so wire those here as picker actions */
+      root.querySelectorAll('[data-pfp-smart], [data-fdb-smart]').forEach((b) => b.addEventListener('click', () => {
+        const id = b.getAttribute('data-pfp-smart') || b.getAttribute('data-fdb-smart');
+        _pickView = { kind: 'home', shelf: '', sub: '', smart: id }; _pickPage = 0; pickerRender();
+      }));
+      root.querySelectorAll('[data-pfp-shelf], [data-fdb-shelf]').forEach((b) => b.addEventListener('click', () => {
+        const id = b.getAttribute('data-pfp-shelf') || b.getAttribute('data-fdb-shelf');
+        _pickView = { kind: 'shelf', shelf: id, sub: '', smart: '' }; _pickPage = 0; pickerRender();
+      }));
+      root.querySelectorAll('[data-pfp-sub]').forEach((b) => b.addEventListener('click', () => {
+        _pickView.sub = b.getAttribute('data-pfp-sub'); _pickPage = 0; pickerRender();
+      }));
+      root.querySelectorAll('[data-pfp-page]').forEach((b) => b.addEventListener('click', () => {
+        _pickPage += b.getAttribute('data-pfp-page') === 'next' ? 1 : -1; pickerRender(); root.scrollTop = 0;
+      }));
+    }
+    function pickerMount(rootEl, foods) {
+      _pickRoot = rootEl || null;
+      _pickFoods = foods || null;
+      _pickView = { kind: 'home', shelf: '', sub: '', smart: '' };
+      _pickPage = 0;
+      pickerRender();
+    }
+
     return { load, refresh, setSearch, setSource, setCategoryFilter, openCreate,
              toggleEditMode, addCategory, toggleArchiveMode, restoreFood,
+             pickerMount, pickerTileHTML,
              get _all() { return _all; }, get _archiveMode() { return _archiveMode; } };
   })();
 
@@ -27221,31 +27196,51 @@ async function boot() {
 
   /** STEPS 7-9 — wire dashboard search / sort / filter / add / form modal. */
   function wireDashboard() {
-    // Search (dashboard + aside are synced)
     const dashSearch = document.getElementById('dash-search');
-    if (dashSearch) dashSearch.addEventListener('input', (e) => {
-      screens.dashboard.setSearch(e.target.value);
-      const asideSearch = document.getElementById('aside-search');
-      if (asideSearch && asideSearch.value !== e.target.value) asideSearch.value = e.target.value;
-    });
     const asideSearch = document.getElementById('aside-search');
-    if (asideSearch) asideSearch.addEventListener('input', (e) => {
-      screens.dashboard.setSearch(e.target.value);
-      if (dashSearch && dashSearch.value !== e.target.value) dashSearch.value = e.target.value;
-    });
-    /* c169: the client search must NEVER greet the trainer with stale digits —
-       the browser's form-state restore could pre-fill the box (and the filter),
-       so after every fresh launch the list starts with ALL clients visible. */
+    /* c170: the client search kept greeting the trainer with stale digits
+       («745351») even after cache clears — the browser's form restore/autofill
+       re-fills the boxes AFTER boot and may even dispatch input events, which
+       armed the filter and hid all 12 clients. Hard rules now:
+         • the fields are «hostile» until the user's first real gesture —
+           any input before that is wiped and the filter stays empty;
+         • delayed sweeps (300 ms / 1.2 s / 3 s) wipe whatever lands late;
+         • render() keeps the visible box equal to the ACTIVE filter, so the
+           two can never disagree. */
+    let _dkSearchArmed = false;
+    function dkArmSearch() { _dkSearchArmed = true; }
+    try {
+      ['pointerdown', 'keydown', 'touchstart'].forEach(ev =>
+        window.addEventListener(ev, dkArmSearch, { once: true, capture: true }));
+    } catch (e) {}
+    setTimeout(dkArmSearch, 4000); /* fallback — typing without any gesture */
     function dkClearClientSearch() {
       [dashSearch, asideSearch].forEach(el => { if (el && el.value) el.value = ''; });
       try { screens.dashboard.setSearch(''); } catch (e) {}
     }
+    function dkSearchGuard(e) {
+      if (_dkSearchArmed) return false;
+      if (e && e.target) { try { e.target.value = ''; } catch (err) {} }
+      dkClearClientSearch();
+      return true;
+    }
+    if (dashSearch) dashSearch.addEventListener('input', (e) => {
+      if (dkSearchGuard(e)) return;
+      screens.dashboard.setSearch(e.target.value);
+      if (asideSearch && asideSearch.value !== e.target.value) asideSearch.value = e.target.value;
+    });
+    if (asideSearch) asideSearch.addEventListener('input', (e) => {
+      if (dkSearchGuard(e)) return;
+      screens.dashboard.setSearch(e.target.value);
+      if (dashSearch && dashSearch.value !== e.target.value) dashSearch.value = e.target.value;
+    });
     dkClearClientSearch();
     window.addEventListener('pageshow', function (e) {
       /* a late browser restore (or a plain reload) — clear again; bfcache
          restores keep the trainer's live state untouched */
       if (!e.persisted) dkClearClientSearch();
     });
+    [300, 1200, 3000].forEach(ms => setTimeout(dkClearClientSearch, ms));
 
     // Sort
     const dashSort = document.getElementById('dash-sort');
@@ -27604,16 +27599,7 @@ async function boot() {
         fpTimer = setTimeout(() => nutritionPlans.renderFoodResults(fpSearch.value), 300);
       });
     }
-    document.querySelectorAll('.fp-src-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.fp-src-btn').forEach(b => { b.classList.remove('bg-primary','text-white'); b.classList.add('text-muted'); });
-        btn.classList.add('bg-primary','text-white');
-        btn.classList.remove('text-muted');
-        nutritionPlans._fpSource = btn.getAttribute('data-food-source');
-        const search = document.getElementById('fp-search');
-        nutritionPlans.renderFoodResults(search ? search.value : '');
-      });
-    });
+    /* c170: the picker's source chips are gone — same ONE common database */
 
     // ---- ALL nav buttons (aside + bottom-nav) → router ----
     // Any element with [data-nav="screenName"] routes to that screen.
@@ -30777,19 +30763,7 @@ loadPanelTexture();
         }, 300);
       });
     }
-    document.querySelectorAll('.fp-src-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.fp-src-btn').forEach(b => {
-          b.classList.remove('bg-primary','text-white');
-          b.classList.add('text-muted');
-        });
-        btn.classList.add('bg-primary','text-white');
-        btn.classList.remove('text-muted');
-        if (typeof nutritionPlans !== 'undefined') nutritionPlans._fpSource = btn.getAttribute('data-food-source');
-        const search = document.getElementById('fp-search');
-        if (search && typeof nutritionPlans !== 'undefined') nutritionPlans.renderFoodResults(search.value);
-      });
-    });
+    /* c170: picker source chips removed — one common database */
   }
 
   /* =====================================================================
@@ -33680,7 +33654,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 169; /* numeric part of dk-build c169 */
+  var RUNNING = 170; /* numeric part of dk-build c170 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
