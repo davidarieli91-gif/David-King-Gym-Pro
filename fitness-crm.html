@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c168" />
+<meta name="dk-build" content="c169" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2738,9 +2738,9 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
             <img src="logo-web.webp" alt="David King Gym" class="h-10 w-auto max-w-[200px] object-contain mx-auto mb-3" />
         <div class="relative">
             <svg class="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-            <input type="search" id="aside-search" placeholder="Search clients…"
-                   class="w-full bg-surface-2 border border-border rounded-xl ps-9 pe-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60"
-                   data-i18n-ph="aside.searchPlaceholder" />
+              <input type="search" id="aside-search" placeholder="Search clients…" autocomplete="off"
+                class="w-full bg-surface-2 border border-border rounded-xl ps-9 pe-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60"
+                data-i18n-ph="aside.searchPlaceholder" />
           </div>
         </div>
 
@@ -2874,7 +2874,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c168</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c169</p>
             </div>
           </div>
 
@@ -2905,7 +2905,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
             <div class="flex flex-col sm:flex-row gap-2 mb-3">
               <div class="relative flex-1">
                 <svg class="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-                <input type="search" id="dash-search" data-i18n-ph="clients.search" class="w-full bg-surface-2 border border-border rounded-xl ps-9 pe-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
+                  <input type="search" id="dash-search" autocomplete="off" data-i18n-ph="clients.search" class="w-full bg-surface-2 border border-border rounded-xl ps-9 pe-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
               </div>
               <select id="dash-sort" class="bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60 cursor-pointer">
                 <option value="created" data-i18n="clients.sortCreated">Date added</option>
@@ -3659,13 +3659,6 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
             <div data-nutrition-panel="database" class="overflow-x-hidden">
               <!-- Source toggle + count + add -->
               <div class="flex items-center gap-2 mb-3 flex-wrap max-w-full overflow-x-auto no-scrollbar">
-                <div id="food-db-source-group" class="flex flex-wrap gap-1 bg-surface-2 border border-border rounded-lg p-1 shrink-0 min-w-0 max-w-full">
-                  <button data-food-db-source="all" class="food-db-src-btn px-3 py-1.5 rounded-md text-xs font-semibold transition bg-primary text-white" data-i18n="common.all">All</button>
-                  <button data-food-db-source="FoodsDictionary_IL" class="food-db-src-btn px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted" data-i18n="food.sourceFoodsDictionaryIL">Israeli DB</button>
-                  <button data-food-db-source="OpenFoodFacts_IL" class="food-db-src-btn px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted" data-i18n="food.sourceOpenFoodFactsIL">Israeli Brands</button>
-                  <button data-food-db-source="OpenFoodFacts_Global" class="food-db-src-btn px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted" data-i18n="food.sourceOpenFoodFactsGlobal">OpenFoodFacts</button>
-                  <button data-food-db-source="USDA_SR_Legacy" class="food-db-src-btn px-3 py-1.5 rounded-md text-xs font-semibold transition text-muted" data-i18n="food.sourceUSDA">USDA</button>
-                </div>
                 <span id="food-db-count" class="text-xs text-muted bg-surface-2 border border-border rounded-full px-2 py-0.5">0</span>
                 <button id="food-db-edit-mode-btn" class="bg-surface-2 hover:bg-border/40 border border-border text-sm font-medium px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1.5">
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -23740,6 +23733,37 @@ Select foods for each meal. Output as JSON only.`;
   }
 
   
+  /* c169: category cleanup — the curated food-db.json is the source of truth;
+     devices already seeded get a SURGICAL sync of category/sub only (no full
+     reseed), so locally entered barcodes and custom products are preserved. */
+  async function migrateFoodCategoriesC169() {
+    const flagKey = 'dk_food_cat_fix_v1';
+    try {
+      if (await db.get('settings', flagKey)) return 0;
+      const resp = await fetch('food-db.json');
+      if (!resp.ok) return 0;
+      const foods = await resp.json();
+      if (!Array.isArray(foods) || !foods.length) return 0;
+      const byId = {};
+      foods.forEach(f => { byId[f.id] = f; });
+      const local = await db.all('food_database');
+      const updates = [];
+      for (const f of local) {
+        const src = byId[f.id];
+        if (!src) continue;
+        let dirty = false;
+        if (src.category && src.category !== f.category) { f.category = src.category; dirty = true; }
+        const srcSub = src.sub || '';
+        if (srcSub !== (f.sub || '')) { f.sub = srcSub; dirty = true; }
+        if (dirty) updates.push(f);
+      }
+      if (updates.length) await db.bulkPut('food_database', updates);
+      await db.put('settings', { key: flagKey, value: true });
+      console.info('[c169] food categories synced: ' + updates.length);
+      return updates.length;
+    } catch (e) { console.warn('[c169] category sync failed:', e); return 0; }
+  }
+
   /* =====================================================================
      MICRONUTRIENT ANALYSIS — RDI table + plan analyzer.
      Provides the recommended daily intake reference values and a function
@@ -26718,9 +26742,11 @@ async function boot() {
           throw openErr;
         }
       }
-      await ensureDefaultSettings();
-      const seedCount = await seedExerciseBase(false);
-      await seedFoodDatabase(false);
+    await ensureDefaultSettings();
+    const seedCount = await seedExerciseBase(false);
+    await seedFoodDatabase(false);
+    /* c169: pull the corrected categories/subs into an already-seeded base */
+    try { await migrateFoodCategoriesC169(); } catch (_e169) {}
       // c16: heal stale image paths (old bf_*.gif seeds → webp) in place
       try { await healExerciseImagePaths(); } catch (_) {}
       // c105: re-map canonical groups in place (cardio split from warm-up + balance)
@@ -27206,6 +27232,19 @@ async function boot() {
     if (asideSearch) asideSearch.addEventListener('input', (e) => {
       screens.dashboard.setSearch(e.target.value);
       if (dashSearch && dashSearch.value !== e.target.value) dashSearch.value = e.target.value;
+    });
+    /* c169: the client search must NEVER greet the trainer with stale digits —
+       the browser's form-state restore could pre-fill the box (and the filter),
+       so after every fresh launch the list starts with ALL clients visible. */
+    function dkClearClientSearch() {
+      [dashSearch, asideSearch].forEach(el => { if (el && el.value) el.value = ''; });
+      try { screens.dashboard.setSearch(''); } catch (e) {}
+    }
+    dkClearClientSearch();
+    window.addEventListener('pageshow', function (e) {
+      /* a late browser restore (or a plain reload) — clear again; bfcache
+         restores keep the trainer's live state untouched */
+      if (!e.persisted) dkClearClientSearch();
     });
 
     // Sort
@@ -30609,17 +30648,7 @@ loadPanelTexture();
         db = setTimeout(() => foodDatabase.setSearch(foodDbSearch.value), 250);
       });
     }
-    document.querySelectorAll('.food-db-src-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.food-db-src-btn').forEach(b => {
-          b.classList.remove('bg-primary','text-white');
-          b.classList.add('text-muted');
-        });
-        btn.classList.add('bg-primary','text-white');
-        btn.classList.remove('text-muted');
-        foodDatabase.setSource(btn.getAttribute('data-food-db-source'));
-      });
-    });
+    /* c169: the source chips are gone — ONE common database (user decision) */
     const foodDbCatFilter = document.getElementById('food-db-category-filter');
     if (foodDbCatFilter) foodDbCatFilter.addEventListener('change', () => {
       foodDatabase.setCategoryFilter(foodDbCatFilter.value);
@@ -33651,7 +33680,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 168; /* numeric part of dk-build c168 */
+  var RUNNING = 169; /* numeric part of dk-build c169 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
