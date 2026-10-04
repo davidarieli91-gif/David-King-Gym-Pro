@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c161" />
+<meta name="dk-build" content="c162" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2648,6 +2648,31 @@ button[id$="-close"]:active, button[data-cps-close]:active {
 /* RPE strip: portal spacing (margin-top + leading padding) */
 .lw-rpe-row { display: flex; align-items: center; gap: 3px; margin-top: 2px; padding-inline-start: 2px; }
 </style>
+<style>
+/* ===== c162: FOOD KIOSK (supermarket-scale tiles) ===================== */
+.food-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(8.25rem, 1fr)); gap: .625rem; }
+.food-bento { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .625rem; grid-auto-rows: 7.25rem; grid-auto-flow: dense; }
+@media (min-width: 640px) { .food-bento { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: 8rem; } }
+@media (min-width: 1280px) { .food-bento { grid-template-columns: repeat(6, minmax(0, 1fr)); grid-auto-rows: 8.5rem; } .food-grid { grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr)); } }
+.food-tile-hero { grid-column: span 2; grid-row: span 2; }
+.food-tile-wide { grid-column: span 2; }
+.food-tile-name { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.food-badges:empty { display: none; }
+.food-badge { display: inline-grid; place-items: center; min-width: 1.05rem; height: 1.05rem; padding: 0 .18rem; border-radius: .35rem; color: #fff; font-size: .58rem; font-weight: 800; line-height: 1; letter-spacing: 0; }
+.food-tile-x { position: absolute; top: .35rem; inset-inline-end: .35rem; width: 1.4rem; height: 1.4rem; border-radius: .5rem; background: rgba(0,0,0,.5); color: #fff; font-size: .7rem; font-weight: 700; display: grid; place-items: center; }
+.food-tile-restore { position: absolute; top: .35rem; inset-inline-end: .35rem; width: 1.4rem; height: 1.4rem; border-radius: .5rem; background: rgba(16,185,129,.85); color: #fff; font-size: .7rem; font-weight: 700; display: grid; place-items: center; }
+.fdb-pager { background: rgb(var(--c-surface-2)); border: 1px solid rgb(var(--c-border)); border-radius: .75rem; padding: .45rem .8rem; font-size: .75rem; font-weight: 600; color: rgb(var(--c-text)); }
+.fdb-pager:disabled { opacity: .4; }
+.fdb-pager:hover:not(:disabled) { border-color: rgb(var(--c-primary) / .5); }
+/* large-font behaviour: the bento folds, tiles grow, nothing clips */
+html.dk-fs-big .food-bento { grid-template-columns: repeat(auto-fill, minmax(min(46vw, 11rem), 1fr)) !important; grid-auto-rows: auto !important; }
+html.dk-fs-big .food-tile-hero, html.dk-fs-big .food-tile-wide { grid-column: auto !important; grid-row: auto !important; }
+html.dk-fs-big .food-tile-hero .food-shelf, html.dk-fs-big .food-shelf { min-height: 9rem; }
+html.dk-fs-big .food-grid { grid-template-columns: repeat(auto-fill, minmax(min(44vw, 10rem), 1fr)) !important; }
+html.dk-fs-big .food-badge { min-width: 1.35rem; height: 1.35rem; font-size: .72rem; }
+html.dk-fs-big .fdb-pager { padding: .6rem 1rem; font-size: .85rem; }
+html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
+</style>
 </head>
 
 <body class="min-h-full antialiased">
@@ -2849,7 +2874,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c161</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c162</p>
             </div>
           </div>
 
@@ -3617,7 +3642,7 @@ button[id$="-close"]:active, button[data-cps-close]:active {
           </div>
 
 <!-- ============= NUTRITION SCREEN (Tabs: Database / Templates / Daily Log) ============= -->
-          <div data-screen="nutrition" class="hidden p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto w-full">
+          <div data-screen="nutrition" class="hidden p-4 sm:p-6 lg:p-8 max-w-5xl xl:max-w-6xl 2xl:max-w-[1500px] mx-auto w-full">
             <!-- Header -->
             <div class="flex items-center gap-2 mb-4">
               <h1 class="font-display font-extrabold text-xl tracking-tight" data-i18n="nav.nutrition">Nutrition</h1>
@@ -3662,6 +3687,8 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
                   <span class="hidden sm:inline" data-i18n="common.archive">Archive</span>
                 </button>
+                <!-- c162: what do the Nutri-Score / Green-Score / NOVA badges mean? -->
+                <button id="food-db-badges-help" class="w-8 h-8 grid place-items-center rounded-lg bg-surface-2 hover:bg-border/40 border border-border text-muted text-sm font-bold transition" data-i18n-attr="title:food.badgesTitle">?</button>
               </div>
               <!-- Search + category filter -->
               <div class="flex flex-col sm:flex-row gap-2 mb-3">
@@ -3680,6 +3707,41 @@ button[id$="-close"]:active, button[data-cps-close]:active {
                   <svg class="w-7 h-7 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zM12 8v4M12 16h.01"/></svg>
                 </div>
                 <p class="text-sm text-muted" data-i18n="nutrition.noFoodsFound">No foods found</p>
+              </div>
+
+              <!-- c162: what the badges mean (RU/EN/HE) -->
+              <div id="food-badges-modal" class="hidden fixed inset-0 z-[120] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
+                <div class="bg-surface w-full sm:max-w-lg max-h-[90vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
+                  <div class="p-4 border-b border-border flex items-center gap-3">
+                    <h3 class="font-display font-bold text-base flex-1" data-i18n="food.badgesTitle">Что означают значки</h3>
+                    <button id="food-badges-close" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-surface-2 text-muted" aria-label="Close">✕</button>
+                  </div>
+                  <div class="p-4 overflow-y-auto space-y-4 text-sm">
+                    <div class="flex items-start gap-3">
+                      <span class="food-badge shrink-0" style="background:#74b816">B</span>
+                      <div><div class="font-semibold" data-i18n="food.badgesNutriTitle">Nutri-Score</div>
+                        <p class="text-xs text-muted mt-0.5 leading-relaxed" data-i18n="food.badgesNutri"></p></div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                      <span class="food-badge shrink-0" style="background:#74b816">🌿B</span>
+                      <div><div class="font-semibold" data-i18n="food.badgesEcoTitle">Green-Score</div>
+                        <p class="text-xs text-muted mt-0.5 leading-relaxed" data-i18n="food.badgesEco"></p></div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                      <span class="food-badge shrink-0" style="background:#f5a623">N3</span>
+                      <div><div class="font-semibold" data-i18n="food.badgesNovaTitle">NOVA</div>
+                        <p class="text-xs text-muted mt-0.5 leading-relaxed" data-i18n="food.badgesNova"></p></div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                      <span class="food-badge shrink-0" style="background:#1e8e3e">🌳</span>
+                      <div><div class="font-semibold" data-i18n="food.badgesForestTitle">Вырубка лесов</div>
+                        <p class="text-xs text-muted mt-0.5 leading-relaxed" data-i18n="food.badgesForest"></p></div>
+                    </div>
+                  </div>
+                  <div class="p-3 border-t border-border">
+                    <button id="food-badges-ok" class="w-full bg-primary hover:bg-primary-2 text-white text-sm font-semibold py-2.5 rounded-xl transition" data-i18n="food.badgesClose">Понятно</button>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -18693,6 +18755,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           calories: Number(n.calories) || 0, protein: Number(n.protein) || 0,
           carbs: Number(n.carbs) || 0, fat: Number(n.fat) || 0, fiber: Number(n.fiber) || 0,
           serving_quantity: Number(f.serving_quantity) || 0, package_grams: Number(f.package_grams) || 0,
+          /* c162: score badges travel into the picker tiles too */
+          nutri: f.nutri || null, eco: f.eco || null, nova: Number(f.nova) || null, forest: f.forest || null, sub: f.sub || '',
           source: f.source || 'reference', image_url: f.image_url || '', _ref: true
         };
       };
@@ -18768,19 +18832,19 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const favs = dkFoodList(FOOD_FAV_KEY);
       const recents = dkFoodList(FOOD_RECENT_KEY);
       const section = (title, items) => items.length
-        ? `<div class="text-[10px] uppercase tracking-wider text-muted px-1 pt-1">${escapeHTML(title)}</div>` + items.map(f => foodResultCardHTML(f)).join('')
+        ? `<div class="text-[10px] uppercase tracking-wider text-muted px-1 pt-1">${escapeHTML(title)}</div><div class="food-grid">` + items.map(f => foodResultCardHTML(f)).join('') + '</div>'
         : '';
       if (_foodFilter === 'fav') {
-        results.innerHTML = favs.length ? favs.map(f => foodResultCardHTML(f)).join('')
+        results.innerHTML = favs.length ? '<div class="food-grid">' + favs.map(f => foodResultCardHTML(f)).join('') + '</div>'
           : `<div class="text-center py-8 text-sm text-muted">${escapeHTML(t('food.noFavs'))}</div>`;
       } else if (_foodFilter === 'recent') {
-        results.innerHTML = recents.length ? recents.map(f => foodResultCardHTML(f)).join('')
+        results.innerHTML = recents.length ? '<div class="food-grid">' + recents.map(f => foodResultCardHTML(f)).join('') + '</div>'
           : `<div class="text-center py-8 text-sm text-muted">${escapeHTML(t('food.noRecent'))}</div>`;
       } else if (_foodFilter === 'recipe') {
         results.innerHTML = `<div class="text-center py-8 text-sm text-muted">${escapeHTML(t('common.loading'))}</div>`;
         searchLocalFoods('').then(items => {
           const recipes = items.filter(f => f.source === 'recipe');
-          results.innerHTML = recipes.length ? recipes.map(f => foodResultCardHTML(f)).join('')
+          results.innerHTML = recipes.length ? '<div class="food-grid">' + recipes.map(f => foodResultCardHTML(f)).join('') + '</div>'
             : `<div class="text-center py-8 text-sm text-muted">${escapeHTML(t('food.noRecipes'))}</div>`;
           wireFoodResultCards(results);
         });
@@ -18794,22 +18858,35 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     }
 
     /** c150: one search-result card (image chain + localized name + ⭐ toggle). */
+    /* c162: kiosk tile — photo first, Nutri/Green/NOVA badges, star overlay */
+    const PICKER_BADGE_COLORS = { a: '#1e8e3e', b: '#74b816', c: '#f5a623', d: '#ef6c00', e: '#d93025' };
+    function pickerBadgeHTML(f) {
+      let o = '';
+      if (f.nutri && PICKER_BADGE_COLORS[f.nutri]) o += '<span class="food-badge" style="background:' + PICKER_BADGE_COLORS[f.nutri] + '">' + String(f.nutri).toUpperCase() + '</span>';
+      if (f.eco && PICKER_BADGE_COLORS[f.eco]) o += '<span class="food-badge" style="background:' + PICKER_BADGE_COLORS[f.eco] + '">🌿' + String(f.eco).toUpperCase() + '</span>';
+      if (f.nova && PICKER_BADGE_COLORS[{ 1: 'a', 2: 'b', 3: 'c', 4: 'e' }[f.nova]]) o += '<span class="food-badge" style="background:' + PICKER_BADGE_COLORS[{ 1: 'a', 2: 'b', 3: 'c', 4: 'e' }[f.nova]] + '">N' + f.nova + '</span>';
+      if (f.forest === 'none') o += '<span class="food-badge" style="background:#1e8e3e">🌳</span>';
+      else if (f.forest === 'risk') o += '<span class="food-badge" style="background:#f5a623">🌳⚠</span>';
+      return o;
+    }
     function foodResultCardHTML(f) {
       const fav = dkFoodIsFav(f.id);
+      const name = f['name_' + currentLang()] || f.name_en || f.name_he || '?';
       return `
-        <div data-pick-food="${escapeAttr(JSON.stringify(f).replace(/"/g, '&quot;'))}" class="flex items-center gap-3 bg-surface-2 border border-border rounded-xl p-2.5 hover:bg-border/30 hover:border-primary/30 transition cursor-pointer">
-          <div class="relative w-9 h-9 rounded-lg overflow-hidden bg-surface border border-border grid place-items-center shrink-0">
-            <span class="absolute text-[13px] opacity-60">🥗</span>
+        <div data-pick-food="${escapeAttr(JSON.stringify(f).replace(/"/g, '&quot;'))}" class="food-tile bg-surface-2 border border-border rounded-2xl overflow-hidden hover:border-primary/40 transition cursor-pointer">
+          <div class="relative aspect-square bg-surface overflow-hidden">
+            <span class="absolute text-lg opacity-50">🥗</span>
             ${f.id ? window.dkFoodImgTag(f, 'absolute inset-0 w-full h-full object-cover') : ''}
+            <button type="button" data-fav-toggle="${escapeAttr(String(f.id))}" class="absolute top-1 inset-inline-end-1 w-7 h-7 grid place-items-center rounded-lg bg-black/45 ${fav ? 'text-amber-400' : 'text-white/80'}" aria-label="${escapeAttr(fav ? t('food.favRemove') : t('food.favAdd'))}">${fav ? '★' : '☆'}</button>
           </div>
-          <div class="flex-1 min-w-0">
-            <div class="font-medium text-sm truncate">${escapeHTML(f['name_' + currentLang()] || f.name_en || f.name_he || '?')}</div>
-            <div class="text-[11px] text-muted truncate">
+          <div class="p-2 min-w-0">
+            <div class="food-tile-name text-[11px] font-semibold text-text">${escapeHTML(name)}</div>
+            <div class="text-[9px] text-muted mt-0.5 truncate">
               ${f.brand ? escapeHTML(f.brand) + ' · ' : ''}${fmtNumber(f.calories)} ${t('nutrition.calories').toLowerCase()}/100g
-              ${f.source === 'openfoodfacts' ? ' · OFF' : ''}${f.source === 'recipe' ? ' · 🍲' : ''}
+              ${f.source === 'recipe' ? ' · 🍲' : ''}
             </div>
+            <div class="food-badges flex flex-wrap gap-1 mt-1">${pickerBadgeHTML(f)}</div>
           </div>
-          <button type="button" data-fav-toggle="${escapeAttr(String(f.id))}" class="w-8 h-8 grid place-items-center rounded-lg shrink-0 transition ${fav ? 'text-warning bg-warning/10' : 'text-muted hover:bg-border/40'}" aria-label="${escapeAttr(fav ? t('food.favRemove') : t('food.favAdd'))}">${fav ? '★' : '☆'}</button>
         </div>`;
     }
 
@@ -18832,7 +18909,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           if (!food) return;
           const nowFav = dkFoodFavToggle(food);
           btn.textContent = nowFav ? '★' : '☆';
-          btn.className = 'w-8 h-8 grid place-items-center rounded-lg shrink-0 transition ' + (nowFav ? 'text-warning bg-warning/10' : 'text-muted hover:bg-border/40');
+          btn.className = 'absolute top-1 inset-inline-end-1 w-7 h-7 grid place-items-center rounded-lg bg-black/45 ' + (nowFav ? 'text-amber-400' : 'text-white/80');
           if (_foodFilter === 'fav' && !nowFav) showInitialFoodView();
         });
       });
@@ -18846,7 +18923,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         results.innerHTML = `<div class="text-center py-8 text-sm text-muted">${escapeHTML(t('food.notFound'))}</div>`;
         return;
       }
-      results.innerHTML = items.map(f => foodResultCardHTML(f)).join('');
+      results.innerHTML = '<div class="food-grid">' + items.map(f => foodResultCardHTML(f)).join('') + '</div>';
       wireFoodResultCards(results);
     }
 
@@ -25307,175 +25384,275 @@ Select foods for each meal. Output as JSON only.`;
       renderTree();
     }
 
-    /** Render the tree grouped by category. */
+    /* =====================================================================
+       c162: FOOD KIOSK VIEW ENGINE — supermarket-scale style.
+       Home = bento of shelf tiles (size by importance), a shelf opens
+       sub-collections, products are paged photo tiles with Nutri-Score /
+       Green-Score / NOVA badges. Everything adaptive (rem-based grids,
+       html.dk-fs-big collapses the spans).
+       ===================================================================== */
+    const FOOD_SHELVES = [
+      { id: 'veg', emoji: '🥦', nameKey: 'food.shelfVeg', cats: ['vegetable', 'greens'], tier: 1 },
+      { id: 'fruit', emoji: '🍎', nameKey: 'food.shelfFruit', cats: ['fruit'], tier: 1 },
+      { id: 'protein', emoji: '🍗', nameKey: 'food.shelfProtein', cats: ['meat', 'fish', 'eggs', 'protein'], tier: 1 },
+      { id: 'dairy', emoji: '🥛', nameKey: 'food.shelfDairy', cats: ['dairy'], tier: 1 },
+      { id: 'carbs', emoji: '🍚', nameKey: 'food.shelfCarbs', cats: ['grains', 'bakery'], tier: 2 },
+      { id: 'drinks', emoji: '🥤', nameKey: 'food.shelfDrinks', cats: ['drinks'], tier: 2 },
+      { id: 'sweets', emoji: '🍫', nameKey: 'food.shelfSweets', cats: ['sweets'], tier: 2 },
+      { id: 'legumes', emoji: '🫘', nameKey: 'food.shelfLegumes', cats: ['legumes'], tier: 2 },
+      { id: 'fats', emoji: '🥜', nameKey: 'food.shelfFats', cats: ['oils', 'nuts'], tier: 3 },
+      { id: 'sauces', emoji: '🥫', nameKey: 'food.shelfSauces', cats: ['sauces'], tier: 3 },
+      { id: 'baby', emoji: '🍼', nameKey: 'food.shelfBaby', cats: ['baby'], tier: 3 },
+      { id: 'israeli', emoji: '🇮🇱', nameKey: 'food.shelfIsraeli', cats: ['israeli'], tier: 3 },
+      { id: 'world', emoji: '🌍', nameKey: 'food.shelfWorld', cats: ['international'], tier: 3 },
+      { id: 'vegan', emoji: '🌱', nameKey: 'food.shelfVegan', cats: ['vegan'], tier: 3 },
+      { id: 'other', emoji: '📦', nameKey: 'food.shelfOther', cats: ['other'], tier: 3 }
+    ];
+    const SUB_EMOJI = { milks: '🥛', yogurts: '🍶', cheeses: '🧀', butter: '🧈', creams: '🍨', poultry: '🍗', beef: '🥩', pork: '🥓', sausages: '🌭', fish: '🐟', seafood: '🦐', breads: '🍞', pastas: '🍝', rices: '🍚', cereals: '🥣', chocolates: '🍫', candies: '🍬', biscuits: '🍪', cakes: '🎂', icecream: '🍦', 'olive-oil': '🫒', 'vegetable-oils': '🫙', nuts: '🥜', seeds: '🌰', waters: '💧', juices: '🧃', sodas: '🥤', coffees: '☕', teas: '🍵', eggs: '🥚', oils: '🫙', other: '📁' };
+    const NUTRI_COLORS = { a: '#1e8e3e', b: '#74b816', c: '#f5a623', d: '#ef6c00', e: '#d93025' };
+    const NOVA_COLORS = { 1: '#1e8e3e', 2: '#74b816', 3: '#f5a623', 4: '#d93025' };
+    const SMART_SHELVES = [
+      { id: 'favs', emoji: '⭐', nameKey: 'food.smartFavs' },
+      { id: 'recent', emoji: '🕐', nameKey: 'food.smartRecent' },
+      { id: 'healthy', emoji: '🟢', nameKey: 'food.smartHealthy' },
+      { id: 'proteinHigh', emoji: '💪', nameKey: 'food.smartProtein' }
+    ];
+    let _view = { kind: 'home', shelf: '', sub: '' };
+    let _smart = '';
+    let _page = 0;
+    const PAGE_SIZE = 60;
+
+    function foodNameFor(f) {
+      const lang = currentLang();
+      return (lang === 'he' ? (f.name_he || f.name_en) : (lang === 'ru' ? (f.name_ru || f.name_en || f.name_he) : (f.name_en || f.name_he))) || '?';
+    }
+    function foodShelfOf(cat) {
+      const c = String(cat || '').toLowerCase();
+      const s = FOOD_SHELVES.find((x) => x.cats.indexOf(c) >= 0);
+      return s ? s.id : 'other';
+    }
+    function fdbList(key) {
+      try { const a = JSON.parse(localStorage.getItem(key) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; }
+    }
+    function smartShelfItems(id, pool) {
+      if (id === 'favs' || id === 'recent') {
+        const ids = fdbList(id === 'favs' ? 'dk_food_favs' : 'dk_food_recent').map((x) => x && x.id);
+        const byId = {};
+        pool.forEach((f) => { byId[f.id] = f; });
+        return ids.map((x) => byId[x]).filter(Boolean);
+      }
+      if (id === 'healthy') return pool.filter((f) => f.nutri === 'a' || f.nutri === 'b');
+      if (id === 'proteinHigh') return pool.filter((f) => Number((f.nutrition || {}).protein) >= 15);
+      return [];
+    }
+    function foodBadgeHTML(f) {
+      let out = '';
+      if (f.nutri && NUTRI_COLORS[f.nutri]) out += '<span class="food-badge" style="background:' + NUTRI_COLORS[f.nutri] + '" title="' + escapeAttr(t('food.badgesNutriShort')) + '">' + String(f.nutri).toUpperCase() + '</span>';
+      if (f.eco && NUTRI_COLORS[f.eco]) out += '<span class="food-badge" style="background:' + NUTRI_COLORS[f.eco] + '" title="' + escapeAttr(t('food.badgesEcoShort')) + '">🌿' + String(f.eco).toUpperCase() + '</span>';
+      if (f.nova && NOVA_COLORS[f.nova]) out += '<span class="food-badge" style="background:' + NOVA_COLORS[f.nova] + '" title="' + escapeAttr(t('food.badgesNovaShort')) + '">N' + f.nova + '</span>';
+      if (f.forest === 'none') out += '<span class="food-badge" style="background:#1e8e3e" title="' + escapeAttr(t('food.badgesForestShort')) + '">🌳</span>';
+      else if (f.forest === 'risk') out += '<span class="food-badge" style="background:#f5a623" title="' + escapeAttr(t('food.badgesForestShort')) + '">🌳⚠</span>';
+      return out;
+    }
+    function foodTileHTML(f) {
+      const name = foodNameFor(f);
+      const n = f.nutrition || {};
+      const srcInfo = (typeof FOOD_SOURCE_INFO !== 'undefined' && FOOD_SOURCE_INFO[f.source]) || { badge: '?', class: 'bg-muted/15 text-muted' };
+      const img = '<span class="absolute text-lg opacity-60" aria-hidden="true">🥗</span>' + window.dkFoodImgTag(f, 'absolute inset-0 w-full h-full object-cover');
+      const del = _editMode ? '<button type="button" class="food-tile-x" data-delete-food="' + escapeAttr(f.id) + '" title="' + escapeAttr(t('common.delete') || 'Delete') + '">✕</button>' : '';
+      const restore = _archiveMode ? '<button type="button" class="food-tile-restore" data-restore-food="' + escapeAttr(f.id) + '">↩</button>' : '';
+      return '<div class="food-tile bg-surface border border-border rounded-2xl overflow-hidden hover:border-primary/40 transition cursor-pointer" data-food-id="' + escapeAttr(f.id) + '">'
+        + '<div class="relative aspect-square bg-surface-2 overflow-hidden">' + img + del + restore
+        + '<span class="absolute bottom-1 start-1 text-[8px] font-bold px-1 py-0.5 rounded ' + srcInfo.class + '">' + srcInfo.badge + '</span>'
+        + '</div>'
+        + '<div class="p-2 min-w-0">'
+        + '<div class="food-tile-name text-[11px] font-semibold text-text">' + escapeHTML(name) + '</div>'
+        + '<div class="text-[9px] text-muted mt-0.5">' + Math.round(n.calories || 0) + ' ' + t('nutrition.kcal') + ' · ' + t('nutrition.proteinShort') + ' ' + Math.round(n.protein || 0) + ' ' + t('nutrition.carbsShort') + ' ' + Math.round(n.carbs || 0) + ' ' + t('nutrition.fatShort') + ' ' + Math.round(n.fat || 0) + '</div>'
+        + '<div class="food-badges flex flex-wrap gap-1 mt-1">' + foodBadgeHTML(f) + '</div>'
+        + '</div></div>';
+    }
+    function shelfCollageHTML(foods) {
+      const imgs = foods.filter((f) => f.image_url).slice(0, 4);
+      const cells = [];
+      for (let i = 0; i < 4; i++) {
+        const f = imgs[i];
+        cells.push('<div class="relative overflow-hidden bg-surface-2">' + (f ? window.dkFoodImgTag(f, 'absolute inset-0 w-full h-full object-cover') : '') + '</div>');
+      }
+      return '<div class="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-px">' + cells.join('') + '</div>'
+        + '<div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/5"></div>';
+    }
+    function shelfTileHTML(shelf, foods) {
+      const tierCls = shelf.tier === 1 ? ' food-tile-hero' : shelf.tier === 2 ? ' food-tile-wide' : '';
+      return '<button type="button" data-fdb-shelf="' + shelf.id + '" class="food-tile food-shelf relative rounded-2xl overflow-hidden border border-border text-start transition hover:border-primary/50' + tierCls + '">'
+        + shelfCollageHTML(foods)
+        + '<span class="absolute top-2 end-2 text-[10px] font-bold px-1.5 py-0.5 rounded-lg bg-black/45 text-white/90">' + foods.length + '</span>'
+        + '<span class="absolute inset-0 p-3 flex flex-col justify-end pointer-events-none">'
+        + '<span class="text-2xl leading-none mb-1">' + shelf.emoji + '</span>'
+        + '<span class="text-white font-display font-extrabold text-sm leading-tight">' + escapeHTML(t(shelf.nameKey)) + '</span>'
+        + '</span></button>';
+    }
+    function smartTileHTML(s, foods) {
+      return '<button type="button" data-fdb-smart="' + s.id + '" class="flex items-center gap-2 bg-surface border border-border rounded-xl px-3 py-2 transition hover:border-primary/40 text-start min-w-0">'
+        + '<span class="text-lg shrink-0">' + s.emoji + '</span>'
+        + '<span class="min-w-0"><span class="block text-[11px] font-semibold text-text truncate">' + escapeHTML(t(s.nameKey)) + '</span>'
+        + '<span class="block text-[9px] text-muted">' + foods.length + '</span></span></button>';
+    }
+    function renderProductGridHTML(list) {
+      const pages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+      if (_page > pages - 1) _page = pages - 1;
+      if (_page < 0) _page = 0;
+      const slice = list.slice(_page * PAGE_SIZE, (_page + 1) * PAGE_SIZE);
+      let html = '<div class="food-grid">' + slice.map(foodTileHTML).join('') + '</div>';
+      if (pages > 1) {
+        html += '<div class="flex items-center justify-center gap-3 mt-4">'
+          + '<button type="button" data-fdb-page="prev" class="fdb-pager" ' + (_page <= 0 ? 'disabled' : '') + '>‹ ' + escapeHTML(t('food.pagePrev')) + '</button>'
+          + '<span class="text-xs text-muted font-mono">' + (_page + 1) + ' / ' + pages + ' · ' + list.length + '</span>'
+          + '<button type="button" data-fdb-page="next" class="fdb-pager" ' + (_page >= pages - 1 ? 'disabled' : '') + '>' + escapeHTML(t('food.pageNext')) + ' ›</button>'
+          + '</div>';
+      }
+      return html;
+    }
+    function renderHomeTiles(tree) {
+      const shelves = FOOD_SHELVES.map((s) => ({ s: s, foods: _filtered.filter((f) => s.cats.indexOf(f.category) >= 0) })).filter((x) => x.foods.length > 0);
+      const smart = SMART_SHELVES.map((s) => ({ s: s, foods: smartShelfItems(s.id, _filtered) }));
+      let html = '<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">' + smart.map((x) => smartTileHTML(x.s, x.foods)).join('') + '</div>';
+      html += '<div class="food-bento">' + shelves.map((x) => shelfTileHTML(x.s, x.foods)).join('') + '</div>';
+      tree.innerHTML = html;
+    }
+    function renderShelfView(tree) {
+      const shelf = FOOD_SHELVES.find((s) => s.id === _view.shelf) || FOOD_SHELVES[FOOD_SHELVES.length - 1];
+      const foods = _filtered.filter((f) => shelf.cats.indexOf(f.category) >= 0);
+      const subs = {};
+      foods.forEach((f) => { if (f.sub) (subs[f.sub] = subs[f.sub] || []).push(f); });
+      const subIds = Object.keys(subs).filter((x) => subs[x].length >= 3).sort((a, b) => subs[b].length - subs[a].length);
+      const cats = Array.from(new Set(foods.map((f) => f.category)));
+      let html = '<div class="flex items-center gap-2 flex-wrap mb-3">'
+        + '<button type="button" data-fdb-home class="fdb-pager">‹ ' + escapeHTML(t('food.backHome')) + '</button>'
+        + '<span class="text-sm font-semibold">' + shelf.emoji + ' ' + escapeHTML(t(shelf.nameKey)) + '</span>'
+        + '<span class="text-xs text-muted font-mono">' + foods.length + '</span></div>';
+      if (_editMode && cats.length) {
+        html += '<div class="flex items-center gap-2 flex-wrap mb-3 text-[10px] text-muted">' + cats.map((c) =>
+          '<span class="inline-flex items-center gap-1 bg-surface-2 border border-border rounded-lg px-2 py-1">' + escapeHTML(categoryIcon(c)) + ' ' + escapeHTML(categoryLabel(c))
+          + '<button type="button" data-rename-cat="' + escapeAttr(c) + '" class="text-primary-2">✎</button>'
+          + (c === 'other' ? '' : '<button type="button" data-delete-cat="' + escapeAttr(c) + '" class="text-danger">✕</button>')
+          + '</span>').join('') + '</div>';
+      }
+      if (!_view.sub && subIds.length >= 2) {
+        html += '<div class="food-grid">'
+          + '<button type="button" data-fdb-sub="all" class="food-tile bg-surface border border-border rounded-2xl overflow-hidden text-start hover:border-primary/40 transition">'
+          + '<span class="relative block aspect-square bg-surface-2 grid place-items-center text-3xl">' + shelf.emoji + '</span>'
+          + '<span class="block p-2"><span class="block text-[11px] font-semibold">' + escapeHTML(t('food.allProducts')) + '</span>'
+          + '<span class="block text-[9px] text-muted">' + foods.length + '</span></span></button>'
+          + subIds.map((sub) => {
+            const list = subs[sub];
+            return '<button type="button" data-fdb-sub="' + escapeAttr(sub) + '" class="food-tile bg-surface border border-border rounded-2xl overflow-hidden text-start hover:border-primary/40 transition">'
+              + '<span class="relative block aspect-square bg-surface-2">' + shelfCollageHTML(list)
+              + '<span class="absolute inset-0 grid place-items-center text-2xl pointer-events-none">' + (SUB_EMOJI[sub] || '📁') + '</span></span>'
+              + '<span class="block p-2"><span class="block text-[11px] font-semibold">' + escapeHTML(t('food.sub_' + sub)) + '</span>'
+              + '<span class="block text-[9px] text-muted">' + list.length + '</span></span></button>';
+          }).join('') + '</div>';
+        tree.innerHTML = html;
+        return;
+      }
+      let list = foods;
+      if (_view.sub && _view.sub !== 'all') list = subs[_view.sub] || [];
+      if (_view.sub && _view.sub !== 'all') {
+        html += '<div class="flex items-center gap-2 flex-wrap mb-3">'
+          + '<button type="button" data-fdb-shelf="' + shelf.id + '" class="fdb-pager">‹ ' + escapeHTML(t(shelf.nameKey)) + '</button>'
+          + '<span class="text-sm font-semibold">' + (SUB_EMOJI[_view.sub] || '📁') + ' ' + escapeHTML(t('food.sub_' + _view.sub)) + '</span></div>';
+      }
+      html += renderProductGridHTML(list);
+      tree.innerHTML = html;
+    }
+    /** Render the kiosk (home / shelf / search / smart list). */
     function renderTree() {
       const tree = document.getElementById('food-db-tree');
       const empty = document.getElementById('food-db-empty');
       const count = document.getElementById('food-db-count');
       if (count) count.textContent = _filtered.length;
       if (!tree) return;
-
       if (_filtered.length === 0) {
         tree.innerHTML = '';
         if (empty) empty.classList.remove('hidden');
         return;
       }
       if (empty) empty.classList.add('hidden');
-
-      // Group by category
-      const groups = {};
-      _filtered.forEach(f => {
-        const cat = f.category || '';
-        if (!groups[cat]) groups[cat] = [];
-        groups[cat].push(f);
-      });
-
-      // Sort categories by translated label
-      const sortedCats = Object.keys(groups).sort((a, b) =>
-        categoryLabel(a).localeCompare(categoryLabel(b), localeString()));
-
-      let html = '';
-      sortedCats.forEach(cat => {
-        const foods = groups[cat];
-        const isExpanded = _expandedCats.has(cat);
-        const label = categoryLabel(cat);
-        const iconPath = categoryIcon(cat);
-        html += `<div class="bg-surface-2/50 border border-border rounded-xl overflow-hidden mb-1">
-          <button class="w-full flex items-center gap-2 p-2 hover:bg-border/30 transition" data-toggle-food-cat="${esc(cat)}">
-            <svg class="w-4 h-4 text-muted transition-transform ${isExpanded ? 'rotate-90' : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
-            <span class="text-lg shrink-0" style="width:1.5rem;text-align:center">${iconPath}</span>
-            <span class="flex-1 text-start text-sm font-semibold truncate">${esc(label)}</span>
-            <span class="text-[10px] text-muted font-mono">${foods.length}</span>
-          </button>
-          ${_editMode ? `<div class="flex gap-0.5 px-2 pb-1">
-            <button class="text-[10px] text-primary-2 hover:bg-primary/10 rounded px-2 py-0.5 transition" data-rename-cat="${esc(cat)}">${t('common.edit') || 'Edit'}</button>
-            <button class="text-[10px] text-danger hover:bg-danger/10 rounded px-2 py-0.5 transition" data-delete-cat="${esc(cat)}">${t('common.delete') || 'Delete'}</button>
-          </div>` : ''}`;
-        if (isExpanded) {
-          html += `<div class="space-y-0.5 p-1.5 pt-0">`;
-          // Sort foods by name (current lang)
-          const lang = currentLang();
-          foods.sort((a, b) => {
-            const na = (lang === 'he' ? (a.name_he || a.name_en) : (a.name_en || a.name_he)) || '';
-            const nb = (lang === 'he' ? (b.name_he || b.name_en) : (b.name_en || b.name_he)) || '';
-            return na.localeCompare(nb, localeString());
-          }).forEach(f => {
-            const name = (lang === 'he' ? (f.name_he || f.name_en) : (lang === 'ru' ? (f.name_ru || f.name_en || f.name_he) : (f.name_en || f.name_he))) || '?';
-            const n = f.nutrition || {};
-            const srcInfo = (typeof FOOD_SOURCE_INFO !== 'undefined' && FOOD_SOURCE_INFO[f.source]) || { badge: '?', class: 'bg-muted/15 text-muted' };
-            const srcBadge = srcInfo.badge;
-            const srcClass = srcInfo.class;
-            const img = `<span class="absolute text-[15px] opacity-60" aria-hidden="true">🥗</span>` + window.dkFoodImgTag(f, 'absolute inset-0 w-full h-full object-cover');
-            const editControls = _editMode ? `
-              <select class="text-[10px] bg-surface-2 border border-border rounded px-1 py-0.5 shrink-0" data-change-cat="${esc(f.id)}">
-                ${['bakery','dairy','meat','fish','fruit','vegetable','legumes','grains','nuts','greens','vegan','sauces','sweets','drinks','israeli','international','oils','eggs','protein','baby','other'].map(c =>
-                  `<option value="${c}" ${c === cat ? 'selected' : ''}>${categoryIcon(c)} ${escapeHTML(categoryLabel(c))}</option>`
-                ).join('')}
-              </select>
-              <button class="text-muted hover:text-danger transition w-5 h-5 grid place-items-center shrink-0" data-delete-food="${esc(f.id)}" title="${t('common.delete') || 'Delete'}">
-                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
-              </button>` : '';
-            html += `<div class="food-card flex items-center gap-2 bg-surface border border-border rounded-lg p-2 hover:bg-border/30 hover:border-primary/30 transition cursor-pointer" data-food-id="${esc(f.id)}">
-          <div class="relative w-9 h-9 rounded-lg shrink-0 overflow-hidden bg-surface-2 border border-border grid place-items-center">${img}</div>
-              <div class="flex-1 min-w-0">
-                <div class="text-sm font-medium truncate ${_archiveMode ? 'opacity-60' : ''}">${esc(name)}</div>
-                <div class="text-[10px] text-muted">${Math.round(n.calories || 0)} ${t('nutrition.kcal')} · ${t('nutrition.proteinShort')}:${Math.round(n.protein || 0)} ${t('nutrition.carbsShort')}:${Math.round(n.carbs || 0)} ${t('nutrition.fatShort')}:${Math.round(n.fat || 0)} ${t('nutrition.per100g')}</div>
-              </div>
-              ${_archiveMode ? `<button class="text-[10px] font-semibold text-success hover:bg-success/10 rounded px-2 py-1 transition shrink-0" data-restore-food="${esc(f.id)}" type="button">↩ ${t('exercise.restore') || 'Restore'}</button>` : editControls}
-              <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${srcClass} shrink-0">${srcBadge}</span>
-            </div>`;
-          });
-          html += `</div>`;
-        }
-        html += `</div>`;
-      });
-      tree.innerHTML = html;
-
-      // Wire toggle category
-      tree.querySelectorAll('[data-toggle-food-cat]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const cat = btn.getAttribute('data-toggle-food-cat');
-          if (_expandedCats.has(cat)) _expandedCats.delete(cat);
-          else _expandedCats.add(cat);
-          renderTree();
-        });
-      });
-      // Wire food click → open detail modal
-      tree.querySelectorAll('[data-food-id]').forEach(el => {
+      if (_search) {
+        tree.innerHTML = renderProductGridHTML(_filtered);
+      } else if (_categoryFilter !== 'all') {
+        tree.innerHTML = renderProductGridHTML(_filtered);
+      } else if (_smart) {
+        const smartFoods = smartShelfItems(_smart, _filtered);
+        const s = SMART_SHELVES.find((x) => x.id === _smart) || SMART_SHELVES[0];
+        tree.innerHTML = '<div class="flex items-center gap-2 flex-wrap mb-3">'
+          + '<button type="button" data-fdb-home class="fdb-pager">‹ ' + escapeHTML(t('food.backHome')) + '</button>'
+          + '<span class="text-sm font-semibold">' + s.emoji + ' ' + escapeHTML(t(s.nameKey)) + '</span>'
+          + '<span class="text-xs text-muted font-mono">' + smartFoods.length + '</span></div>' + renderProductGridHTML(smartFoods);
+      } else if (_view.kind === 'shelf') {
+        renderShelfView(tree);
+      } else {
+        renderHomeTiles(tree);
+      }
+      wireTree(tree);
+    }
+    function wireTree(tree) {
+      tree.querySelectorAll('[data-fdb-shelf]').forEach((b) => b.addEventListener('click', () => {
+        _view = { kind: 'shelf', shelf: b.getAttribute('data-fdb-shelf'), sub: '' }; _smart = ''; _page = 0; renderTree();
+      }));
+      tree.querySelectorAll('[data-fdb-home]').forEach((b) => b.addEventListener('click', () => {
+        _view = { kind: 'home', shelf: '', sub: '' }; _smart = ''; _page = 0; renderTree();
+      }));
+      tree.querySelectorAll('[data-fdb-smart]').forEach((b) => b.addEventListener('click', () => {
+        _smart = b.getAttribute('data-fdb-smart'); _view = { kind: 'home', shelf: '', sub: '' }; _page = 0; renderTree();
+      }));
+      tree.querySelectorAll('[data-fdb-sub]').forEach((b) => b.addEventListener('click', () => {
+        _view.sub = b.getAttribute('data-fdb-sub'); _page = 0; renderTree();
+      }));
+      tree.querySelectorAll('[data-fdb-page]').forEach((b) => b.addEventListener('click', () => {
+        _page += b.getAttribute('data-fdb-page') === 'next' ? 1 : -1; renderTree(); window.scrollTo({ top: 0, behavior: 'smooth' });
+      }));
+      tree.querySelectorAll('[data-food-id]').forEach((el) => {
         el.addEventListener('click', (e) => {
-          // Don't trigger if user clicked the restore button (archive mode)
-          if (e.target.closest('[data-restore-food]')) {
-            e.stopPropagation();
-            const restoreId = e.target.closest('[data-restore-food]').getAttribute('data-restore-food');
-            if (restoreId) restoreFood(restoreId);
-            return;
-          }
-          // Don't trigger if user clicked the category dropdown
+          if (e.target.closest('[data-delete-food]') || e.target.closest('[data-restore-food]')) return;
           if (e.target.closest('[data-change-cat]')) return;
-          // Don't trigger if user clicked the delete button
-          if (e.target.closest('[data-delete-food]')) return;
           const fid = el.getAttribute('data-food-id');
           if (fid && typeof openFoodDetailModal === 'function') openFoodDetailModal(fid);
         });
       });
-      // Wire category change dropdowns (edit mode)
-      tree.querySelectorAll('[data-change-cat]').forEach(sel => {
-        sel.addEventListener('change', async (e) => {
-          e.stopPropagation();
-          const fid = sel.getAttribute('data-change-cat');
-          const newCat = sel.value;
-          const food = _all.find(f => f.id === fid);
-          if (food && food.category !== newCat) {
-            food.category = newCat;
-            await db.put('food_database', food);
-            toast((t('food.saved') || 'Saved') + ' ✓', 'success', 1500);
-            applyFilters();
-          }
-        });
-        sel.addEventListener('click', (e) => e.stopPropagation());
-      });
-      // Wire rename category (edit mode)
-      tree.querySelectorAll('[data-rename-cat]').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-          e.stopPropagation();
-          const oldCat = btn.getAttribute('data-rename-cat');
-          const currentLabel = categoryLabel(oldCat);
-          const newName = prompt(t('food.renameCategory') || 'New category name:', currentLabel);
-          if (!newName || newName === currentLabel) return;
-          // Store custom label in settings
-          const settingKey = 'food_cat_label_' + oldCat;
-          await db.put('settings', { key: settingKey, value: newName });
-          toast((t('food.saved') || 'Saved') + ' ✓', 'success', 1500);
-          applyFilters();
-        });
-      });
-      // Wire delete category (edit mode) — moves all foods to 'other'
-      tree.querySelectorAll('[data-delete-cat]').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-          e.stopPropagation();
-          const cat = btn.getAttribute('data-delete-cat');
-          if (cat === 'other') { toast(t('food.cannotDeleteOther') || 'Cannot delete "Other"', 'warning'); return; }
-          const catFoods = _all.filter(f => f.category === cat);
-          if (!confirm((t('food.deleteCategoryConfirm') || 'Delete category and move all foods to "Other"?') + ` (${catFoods.length})`)) return;
-          for (const f of catFoods) {
-            f.category = 'other';
-            await db.put('food_database', f);
-          }
-          toast((t('food.categoryDeleted') || 'Category deleted') + ' ✓', 'warning', 2000);
-          await load();
-        });
-      });
-      // Wire delete food (edit mode)
-      tree.querySelectorAll('[data-delete-food]').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-          e.stopPropagation();
-          const fid = btn.getAttribute('data-delete-food');
-          if (!confirm(t('food.deleteConfirm') || 'Delete this food?')) return;
-          try { await db.del('food_database', fid); } catch(err) {}
-          toast((t('food.deleted') || 'Food deleted') + ' ✓', 'warning', 2000);
-          await load();
-        });
-      });
+      tree.querySelectorAll('[data-delete-food]').forEach((btn) => btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const fid = btn.getAttribute('data-delete-food');
+        if (!confirm(t('food.deleteConfirm') || 'Delete this food?')) return;
+        try { await db.del('food_database', fid); } catch (err) {}
+        toast(t('food.deleted') || 'Food deleted', 'warning', 2000);
+        await load();
+      }));
+      tree.querySelectorAll('[data-restore-food]').forEach((btn) => btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const rid = btn.getAttribute('data-restore-food');
+        if (rid) restoreFood(rid);
+      }));
+      tree.querySelectorAll('[data-rename-cat]').forEach((btn) => btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const oldCat = btn.getAttribute('data-rename-cat');
+        const currentLabel = categoryLabel(oldCat);
+        const newName = prompt(t('food.renameCategory') || 'New category name:', currentLabel);
+        if (!newName || newName === currentLabel) return;
+        await db.put('settings', { key: 'food_cat_label_' + oldCat, value: newName });
+        toast((t('food.saved') || 'Saved') + ' ✓', 'success', 1500);
+        _customCatLabels[oldCat] = newName;
+        applyFilters();
+      }));
+      tree.querySelectorAll('[data-delete-cat]').forEach((btn) => btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const cat = btn.getAttribute('data-delete-cat');
+        if (cat === 'other') { toast(t('food.cannotDeleteOther') || 'Cannot delete "Other"', 'warning'); return; }
+        const catFoods = _all.filter((f) => f.category === cat);
+        if (!confirm((t('food.deleteCategoryConfirm') || 'Delete category and move all foods to "Other"?') + ' (' + catFoods.length + ')')) return;
+        for (const f of catFoods) { f.category = 'other'; await db.put('food_database', f); }
+        toast((t('food.categoryDeleted') || 'Category deleted') + ' ✓', 'warning', 2000);
+        await load();
+      }));
     }
 
     function refresh() {
@@ -29837,6 +30014,19 @@ loadPanelTexture();
     if (foodDbArchiveBtn) foodDbArchiveBtn.addEventListener('click', () => {
       if (typeof foodDatabase !== 'undefined' && foodDatabase.toggleArchiveMode) foodDatabase.toggleArchiveMode();
     });
+    /* c162: badge explanations modal */
+    const fdbBadgesHelp = document.getElementById('food-db-badges-help');
+    if (fdbBadgesHelp) fdbBadgesHelp.addEventListener('click', () => {
+      const m = document.getElementById('food-badges-modal');
+      if (m) m.classList.remove('hidden');
+    });
+    ['food-badges-close', 'food-badges-ok'].forEach((id) => {
+      const b = document.getElementById(id);
+      if (b) b.addEventListener('click', () => {
+        const m = document.getElementById('food-badges-modal');
+        if (m) m.classList.add('hidden');
+      });
+    });
 
     // Food database edit mode toggle
     const foodDbEditBtn = document.getElementById('food-db-edit-mode-btn');
@@ -32839,7 +33029,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 161; /* numeric part of dk-build c161 */
+  var RUNNING = 162; /* numeric part of dk-build c162 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
