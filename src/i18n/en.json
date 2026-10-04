@@ -312,7 +312,8 @@
     "groupDeleted": "Group deleted — {n} client(s) moved to {g}",
     "moveToGroup": "Move to group",
     "sortGroup": "Group",
-    "waInviteApp": "👋 Hi {name}!\n\nYour David King Gym app is ready:\n👉 {url}\n\nSign in with your phone number and personal password. Open it on your phone and add it to the home screen!"
+    "waInviteApp": "👋 Hi {name}!\n\nYour David King Gym app is ready:\n👉 {url}\n\nSign in with your phone number and personal password. Open it on your phone and add it to the home screen!",
+    "waInviteAppPass": "👋 Hi {name}!\n\nYour personal training & nutrition plan is ready:\n👉 {url}\n\n🔑 Your password: {code} — enter it when you open the link (or sign in with your phone number)\n\nOpen it on your phone and save it to the home screen!"
   },
   "client": {
     "openInjuryList": "Open conditions list",
@@ -1639,7 +1640,8 @@
     "passSetNote": "The client set a personal password — sign in by phone + password",
     "resetDone": "New code ready — send it to the client",
     "phoneRegFail": "Could not register the phone — publish the database rules (Settings → Cloud); phone sign-in will not work without them",
-    "resetUseCard": "The password is set in the client card — change it there"
+    "resetUseCard": "The password is set in the client card — change it there",
+    "passLabel": "Client password"
   },
   "report": {
     "title": "Workout Report",

@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c166" />
+<meta name="dk-build" content="c167" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2874,7 +2874,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c166</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c167</p>
             </div>
           </div>
 
@@ -28109,6 +28109,7 @@ async function boot() {
          * unreachable — that one keeps the old code-encrypted format. */
         let clientUrl = '', shareMode = 'cloud', setupMode = true;
         let dirOk152 = null; /* c159: did the phone directory write actually land? */
+        let effPass160 = ''; /* c167: the effective secret shown/copied in the modal */
         try {
           const shareId = await portalShareId(clientId);
           let existing = null;
@@ -28124,6 +28125,7 @@ async function boot() {
           const cardPass160 = String(client.portal_pass || '').trim();
           if (cardPass160 && /^\d{4,10}$/.test(cardPass160)) {
             wsk = await dkWrapKey152(cardPass160, skBytes152); setup = false;
+            effPass160 = cardPass160;
           } else if (existing && existing.wsk && existing.setup === false && !(opts && opts.forceSetup)) {
             /* a password was set before (portal or trainer) - keep it working */
             wsk = existing.wsk; setup = false;
@@ -28169,8 +28171,12 @@ async function boot() {
 
         document.getElementById('portal-modal-client-name').textContent = client.full_name;
         document.getElementById('btn-open-portal-tab').href = clientUrl;
-        /* c152: setup code only while the client has no personal password */
-        document.getElementById('portal-access-code').textContent = setupMode ? accessCode : '••••••';
+        /* c152: setup code only while the client has no personal password.
+           c167: when the card holds the password, show it here — it is the
+           exact secret the client enters on the link screen and in phone login */
+        document.getElementById('portal-access-code').textContent = setupMode ? accessCode : (effPass160 || '••••••');
+        const _codeLabel167 = document.querySelector('#client-portal-modal [data-i18n="portal.accessCodeLabel"]');
+        if (_codeLabel167) _codeLabel167.textContent = (!setupMode && effPass160) ? t('portal.passLabel') : t('portal.accessCodeLabel');
         const _ph152 = dkNormPhone(client.phone);
         const _phStatus = document.getElementById('portal-phone-status');
         if (_phStatus) {
@@ -28248,10 +28254,11 @@ async function boot() {
         };
 
         document.getElementById('btn-copy-portal-code').onclick = () => {
-          navigator.clipboard.writeText(accessCode).then(() => {
+          const secret = setupMode ? accessCode : (effPass160 || accessCode);
+          navigator.clipboard.writeText(secret).then(() => {
             toast(t('portal.codeCopied'), 'success', 2000);
           }).catch(() => {
-            prompt(t('portal.copyCodeManually'), accessCode);
+            prompt(t('portal.copyCodeManually'), secret);
           });
         };
 
@@ -28260,7 +28267,9 @@ async function boot() {
           const msg = encodeURIComponent(
             setupMode
               ? t('clients.waInvite', { name: client.full_name || '', url: clientUrl, code: accessCode })
-              : t('clients.waInviteApp', { name: client.full_name || '', url: clientUrl })
+              : (effPass160
+                  ? t('clients.waInviteAppPass', { name: client.full_name || '', url: clientUrl, code: effPass160 })
+                  : t('clients.waInviteApp', { name: client.full_name || '', url: clientUrl }))
           );
           const waUrl = phone ? `https://wa.me/${phone}?text=${msg}` : `https://wa.me/?text=${msg}`;
           window.open(waUrl, '_blank');
@@ -33546,7 +33555,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 166; /* numeric part of dk-build c166 */
+  var RUNNING = 167; /* numeric part of dk-build c167 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
