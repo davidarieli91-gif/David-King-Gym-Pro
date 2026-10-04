@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c162" />
+<meta name="dk-build" content="c163" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2874,7 +2874,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c162</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c163</p>
             </div>
           </div>
 
@@ -3754,7 +3754,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                   <span data-i18n="workouts.newTemplate">New template</span>
                 </button>
               </div>
-              <div id="nutrition-templates-list" class="space-y-2"></div>
+              <div id="nutrition-templates-list"></div>
               <div id="nutrition-templates-empty" class="hidden text-center py-12">
                 <div class="inline-flex w-16 h-16 rounded-2xl bg-surface-2 border border-border grid place-items-center mb-4">
                   <svg class="w-7 h-7 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
@@ -18627,27 +18627,30 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             </div>
             ${items.length === 0
               ? `<div class="p-3 text-xs text-muted italic">${escapeHTML(t('nutrition.noFoodLogged'))}</div>`
-              : `<div class="divide-y divide-border">
-                  ${items.map((it, ii) => `
-                    <div class="p-3 flex items-center gap-3">
-                      <div class="flex-1 min-w-0">
-                        <div class="font-medium text-sm truncate">${escapeHTML(it.name || '?')}</div>
-                        <div class="text-[11px] text-muted truncate">
-                          ${fmtNumber(it.grams)}g
-                          ${it.brand ? ' · ' + escapeHTML(it.brand) : ''}
-                          · ${fmtNumber(it.calories)} ${t('nutrition.calories').toLowerCase()}
+              : `<div class="food-grid p-2.5">
+                  ${items.map((it, ii) => {
+                    const img = it.food_id
+                      ? window.dkFoodImgTag({ id: it.food_id, image_url: it.image_url }, 'absolute inset-0 w-full h-full object-cover')
+                      : `<span class="absolute inset-0 grid place-items-center text-lg opacity-50" aria-hidden="true">🥗</span>`;
+                    return `
+                    <div class="relative bg-surface border border-border rounded-xl overflow-hidden">
+                      <div class="relative aspect-[4/3] bg-surface-2 overflow-hidden">
+                        ${img}
+                        <button data-delete-food="${mi}.${ii}" class="food-tile-x" aria-label="${escapeHTML(t('aria.delete'))}">
+                          <svg class="w-3 h-3 mx-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                        </button>
+                      </div>
+                      <div class="p-1.5 min-w-0">
+                        <div class="food-tile-name text-[10px] font-semibold leading-tight">${escapeHTML(it.name || '?')}</div>
+                        <div class="text-[9px] text-muted mt-0.5">${fmtNumber(it.grams)}g · ${fmtNumber(it.calories)} ${escapeHTML(t('nutrition.calories').toLowerCase())}</div>
+                        <div class="flex flex-wrap gap-1 mt-1">
+                          <span class="food-badge" style="background:#10b981">${fmtNumber(it.protein)}P</span>
+                          <span class="food-badge" style="background:#f59e0b">${fmtNumber(it.carbs)}C</span>
+                          <span class="food-badge" style="background:#ef4444">${fmtNumber(it.fat)}F</span>
                         </div>
                       </div>
-                      <div class="text-end shrink-0 text-[11px] font-mono text-muted">
-                        <div>${fmtNumber(it.protein)}P</div>
-                        <div>${fmtNumber(it.carbs)}C</div>
-                        <div>${fmtNumber(it.fat)}F</div>
-                      </div>
-                      <button data-delete-food="${mi}.${ii}" class="w-7 h-7 grid place-items-center rounded-lg hover:bg-danger/15 hover:text-danger text-muted transition shrink-0" aria-label="${t('aria.delete')}">
-                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                      </button>
-                    </div>
-                  `).join('')}
+                    </div>`;
+                  }).join('')}
                 </div>`
             }
             <div class="p-2 border-t border-border">
@@ -19003,6 +19006,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const ratio = grams / 100;
       const entry = {
         id: db.uuid(),
+        food_id: _pendingFood.id || '',
+        image_url: _pendingFood.image_url || '',
         name: _pendingFood.name_en,
         brand: _pendingFood.brand || '',
         barcode: _pendingFood.barcode || '',
@@ -26076,28 +26081,45 @@ Select foods for each meal. Output as JSON only.`;
       }
       if (empty) empty.classList.add('hidden');
       const sorted = _all.slice().sort((a, b) => (b.created_at || 0) - (a.created_at || 0));
-      list.innerHTML = sorted.map(tpl => {
+      /* c163: templates are kiosk cards — photo collage, kcal, target chips */
+      const macroChip = (label, val, color) => '<span class="food-badge" style="background:' + color + '">' + escapeHTML(label) + ' ' + (Math.round(Number(val) || 0)) + '</span>';
+      list.innerHTML = '<div class="food-grid">' + sorted.map(tpl => {
         const meals = tpl.meals || [];
         const totalCal = meals.reduce((s, m) => s + (m.foods || []).reduce((ss, f) => ss + (f.nutrition?.calories || 0) * (f.grams || 0) / 100, 0), 0);
         const totalFoods = meals.reduce((s, m) => s + (m.foods || []).length, 0);
-        return `<div class="bg-surface border border-border rounded-xl shadow-card p-4 hover:border-primary/30 transition">
-          <div class="flex items-start gap-3">
-            <div class="w-10 h-10 rounded-lg bg-primary/15 text-primary-2 grid place-items-center shrink-0">
-              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            </div>
-            <div class="flex-1 min-w-0">
-              <div class="font-display font-bold text-sm truncate">${esc(tpl.name || (t('nutrition.untitledTemplate') || 'Untitled'))}</div>
-              <div class="text-[11px] text-muted mt-0.5">${Math.round(totalCal)} ${t('nutrition.kcal')} · ${totalFoods} ${t('nutrition.foods') || 'foods'} · ${meals.length} ${t('nutrition.meals') || 'meals'}</div>
-              <div class="text-[10px] text-muted mt-0.5">${t('nutrition.proteinShort')}:${tpl.target_protein || 0}g ${t('nutrition.carbsShort')}:${tpl.target_carbs || 0}g ${t('nutrition.fatShort')}:${tpl.target_fat || 0}g</div>
+        const imgs = [];
+        meals.forEach(m => (m.foods || []).forEach(f => { if (imgs.length < 4 && f && f.id) imgs.push(f); }));
+        const cells = [];
+        for (let i = 0; i < 4; i++) {
+          const f = imgs[i];
+          cells.push('<div class="relative overflow-hidden bg-surface-2">' + (f ? window.dkFoodImgTag(f, 'absolute inset-0 w-full h-full object-cover') : '') + '</div>');
+        }
+        const collage = '<div class="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-px">' + cells.join('') + '</div>'
+          + '<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>';
+        return `<div class="food-tile bg-surface border border-border rounded-2xl overflow-hidden hover:border-primary/40 transition">
+          <div class="relative aspect-[4/3] overflow-hidden">${collage}
+            <span class="absolute bottom-1.5 start-2 text-white drop-shadow">
+              <span class="font-display font-extrabold text-lg">${Math.round(totalCal)}</span>
+              <span class="text-[10px] text-white/80"> ${escapeHTML(t('nutrition.kcal'))}</span>
+            </span>
+            <span class="absolute top-1.5 end-2 text-[9px] font-bold px-1.5 py-0.5 rounded-lg bg-black/45 text-white/90">${totalFoods} ${escapeHTML(t('nutrition.foods') || '')}</span>
+          </div>
+          <div class="p-2.5 min-w-0">
+            <div class="font-display font-bold text-sm truncate">${esc(tpl.name || (t('nutrition.untitledTemplate') || 'Untitled'))}</div>
+            <div class="text-[10px] text-muted mt-0.5">${meals.length} ${escapeHTML(t('nutrition.meals') || '')}</div>
+            <div class="food-badges flex flex-wrap gap-1 mt-1.5">
+              ${macroChip(t('nutrition.proteinShort') || 'P', tpl.target_protein, '#10b981')}
+              ${macroChip(t('nutrition.carbsShort') || 'C', tpl.target_carbs, '#f59e0b')}
+              ${macroChip(t('nutrition.fatShort') || 'F', tpl.target_fat, '#ef4444')}
             </div>
           </div>
-          <div class="flex items-center gap-2 mt-3 pt-3 border-t border-border">
+          <div class="flex items-center gap-1 px-2.5 pb-2.5">
             <button class="text-[11px] font-semibold text-primary-2 hover:bg-primary/10 rounded-lg px-2.5 py-1 transition" data-nt-edit="${tpl.id}">${t('common.edit')}</button>
             <button class="text-[11px] font-semibold text-accent hover:bg-accent/10 rounded-lg px-2.5 py-1 transition" data-nt-apply="${tpl.id}">${t('nutrition.apply') || 'Apply'}</button>
-            <button class="text-[11px] font-semibold text-muted hover:text-danger transition ms-auto" data-nt-delete="${tpl.id}">${t('common.delete')}</button>
+            <button class="text-[11px] font-semibold text-muted hover:text-danger transition ms-auto" data-nt-delete="${tpl.id}">✕</button>
           </div>
         </div>`;
-      }).join('');
+      }).join('') + '</div>';
 
       list.querySelectorAll('[data-nt-edit]').forEach(b => b.addEventListener('click', () => openEditor(b.getAttribute('data-nt-edit'))));
       list.querySelectorAll('[data-nt-apply]').forEach(b => b.addEventListener('click', () => openApplyPicker(b.getAttribute('data-nt-apply'))));
@@ -33029,7 +33051,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 162; /* numeric part of dk-build c162 */
+  var RUNNING = 163; /* numeric part of dk-build c163 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
