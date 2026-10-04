@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c170" />
+<meta name="dk-build" content="c171" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2874,7 +2874,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c170</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c171</p>
             </div>
           </div>
 
@@ -24802,8 +24802,10 @@ Select foods for each meal. Output as JSON only.`;
       const q = String(query || '').trim();
       if (!q) {
         if (typeof foodDatabase !== 'undefined' && foodDatabase.pickerMount) {
-          foodDatabase.pickerMount(container, _foods);
-          wireFoodPickTiles(container);
+          /* c171: the pick callback survives every internal re-render */
+          foodDatabase.pickerMount(container, _foods, function (food) {
+            if (food && _fpCallback) showFpPortion(food);
+          });
           return;
         }
         container.innerHTML = '';
@@ -25636,7 +25638,8 @@ Select foods for each meal. Output as JSON only.`;
       const name = foodNameFor(f);
       const n = f.nutrition || {};
       const srcInfo = (typeof FOOD_SOURCE_INFO !== 'undefined' && FOOD_SOURCE_INFO[f.source]) || { badge: '?', class: 'bg-muted/15 text-muted' };
-      const img = '<span class="absolute text-lg opacity-60" aria-hidden="true">🥗</span>' + window.dkFoodImgTag(f, 'absolute inset-0 w-full h-full object-cover');
+      /* c171: object-contain — the whole photo stays visible, no crop */
+      const img = '<span class="absolute text-lg opacity-60" aria-hidden="true">🥗</span>' + window.dkFoodImgTag(f, 'absolute inset-0 w-full h-full object-contain');
       const del = _editMode ? '<button type="button" class="food-tile-x" data-delete-food="' + escapeAttr(f.id) + '" title="' + escapeAttr(t('common.delete') || 'Delete') + '">✕</button>' : '';
       const restore = _archiveMode ? '<button type="button" class="food-tile-restore" data-restore-food="' + escapeAttr(f.id) + '">↩</button>' : '';
       return '<div class="food-tile bg-surface border border-border rounded-2xl overflow-hidden hover:border-primary/40 transition cursor-pointer" data-food-id="' + escapeAttr(f.id) + '">'
@@ -25898,12 +25901,14 @@ Select foods for each meal. Output as JSON only.`;
        ===================================================================== */
     let _pickRoot = null;
     let _pickFoods = null;
+    let _pickOnPick = null; /* c171: called with the picked food — wired on EVERY render */
     let _pickView = { kind: 'home', shelf: '', sub: '', smart: '' };
     let _pickPage = 0;
     function pickerTileHTML(f) {
       const name = foodNameFor(f);
       const n = f.nutrition || {};
-      const img = '<span class="absolute text-lg opacity-60" aria-hidden="true">🥗</span>' + window.dkFoodImgTag(f, 'absolute inset-0 w-full h-full object-cover');
+      /* c171: object-contain — the WHOLE product photo is visible (no crop) */
+      const img = '<span class="absolute text-lg opacity-60" aria-hidden="true">🥗</span>' + window.dkFoodImgTag(f, 'absolute inset-0 w-full h-full object-contain');
       return '<button type="button" data-fp-pick="' + escapeAttr(f.id) + '" class="food-tile bg-surface border border-border rounded-2xl overflow-hidden hover:border-primary/40 transition text-start">'
         + '<div class="relative aspect-square bg-surface-2 overflow-hidden">' + img + '</div>'
         + '<div class="p-2 min-w-0">'
@@ -26003,10 +26008,20 @@ Select foods for each meal. Output as JSON only.`;
       root.querySelectorAll('[data-pfp-page]').forEach((b) => b.addEventListener('click', () => {
         _pickPage += b.getAttribute('data-pfp-page') === 'next' ? 1 : -1; pickerRender(); root.scrollTop = 0;
       }));
+      /* c171: product tiles must be clickable after EVERY render (shelf/sub/
+         smart/page navigation re-renders the whole view) */
+      root.querySelectorAll('[data-fp-pick]').forEach((el) => el.addEventListener('click', () => {
+        if (!_pickOnPick) return;
+        const id = el.getAttribute('data-fp-pick');
+        const pool = (_pickFoods || _all || []);
+        const food = pool.find((f) => f && f.id === id);
+        if (food) _pickOnPick(food);
+      }));
     }
-    function pickerMount(rootEl, foods) {
+    function pickerMount(rootEl, foods, onPick) {
       _pickRoot = rootEl || null;
       _pickFoods = foods || null;
+      _pickOnPick = (typeof onPick === 'function') ? onPick : null;
       _pickView = { kind: 'home', shelf: '', sub: '', smart: '' };
       _pickPage = 0;
       pickerRender();
@@ -27208,8 +27223,12 @@ async function boot() {
          • render() keeps the visible box equal to the ACTIVE filter, so the
            two can never disagree. */
     let _dkSearchArmed = false;
+    let _dkLastGesture = 0;
     function dkArmSearch() { _dkSearchArmed = true; }
+    function dkNoteGesture() { _dkLastGesture = Date.now(); }
     try {
+      ['pointerdown', 'keydown', 'touchstart'].forEach(ev =>
+        window.addEventListener(ev, dkNoteGesture, { capture: true, passive: true }));
       ['pointerdown', 'keydown', 'touchstart'].forEach(ev =>
         window.addEventListener(ev, dkArmSearch, { once: true, capture: true }));
     } catch (e) {}
@@ -27219,8 +27238,14 @@ async function boot() {
       try { screens.dashboard.setSearch(''); } catch (e) {}
     }
     function dkSearchGuard(e) {
-      if (_dkSearchArmed) return false;
-      if (e && e.target) { try { e.target.value = ''; } catch (err) {} }
+      const el = e && e.target;
+      /* c171: a GENUINE keystroke/typing is ALWAYS preceded by a touch/click
+         on the field (or a keydown) — i.e. a gesture within the last seconds.
+         A browser form-restore/autofill replaying «745351» long after boot
+         has no gesture behind it: wipe it and keep the filter empty. */
+      const recentGesture = (Date.now() - _dkLastGesture) < 10000;
+      if (_dkSearchArmed && recentGesture) return false;
+      if (el) { try { el.value = ''; } catch (err) {} }
       dkClearClientSearch();
       return true;
     }
@@ -27240,6 +27265,11 @@ async function boot() {
          restores keep the trainer's live state untouched */
       if (!e.persisted) dkClearClientSearch();
     });
+    /* c171: THE ROOT FIX — the browser saves form state when the page unloads
+       and replays it (with an input event) on the next load; if we empty the
+       boxes on the way out, there is nothing to restore in the first place */
+    window.addEventListener('beforeunload', dkClearClientSearch);
+    window.addEventListener('pagehide', dkClearClientSearch);
     [300, 1200, 3000].forEach(ms => setTimeout(dkClearClientSearch, ms));
 
     // Sort
@@ -33654,7 +33684,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 170; /* numeric part of dk-build c170 */
+  var RUNNING = 171; /* numeric part of dk-build c171 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

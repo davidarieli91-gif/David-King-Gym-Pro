@@ -28,7 +28,7 @@ function extractFn(src, name) {
 }
 
 /* ---------- STATIC: picker mounts the kiosk ---------- */
-ok('picker engine exists in the kiosk module', trainer.indexOf('function pickerMount(rootEl, foods)') >= 0 && trainer.indexOf('function pickerTileHTML(f)') >= 0 && trainer.indexOf('function pickerRender()') >= 0 && trainer.indexOf('function wirePicker()') >= 0);
+ok('picker engine exists in the kiosk module', trainer.indexOf('function pickerMount(rootEl, foods, onPick)') >= 0 && trainer.indexOf('function pickerTileHTML(f)') >= 0 && trainer.indexOf('function pickerRender()') >= 0 && trainer.indexOf('function wirePicker()') >= 0);
 ok('engine is exposed', trainer.indexOf('pickerMount, pickerTileHTML,') >= 0);
 ok('picker reuses the kiosk builders + data', (function () {
   const f = extractFn(trainer, 'pickerRender');
@@ -50,7 +50,7 @@ ok('wirePicker wires kiosk tiles as picker actions', (function () {
 /* ---------- STATIC: renderFoodResults uses it ---------- */
 ok('empty query mounts the kiosk into #fp-results', (function () {
   const f = extractFn(trainer, 'renderFoodResults');
-  return f.indexOf('foodDatabase.pickerMount(container, _foods)') >= 0 && f.indexOf('wireFoodPickTiles(container)') >= 0;
+  return f.indexOf('foodDatabase.pickerMount(container, _foods,') >= 0 && f.indexOf('wireFoodPickTiles(container)') >= 0;
 })());
 ok('search renders the same tiles (no more macro tree)', (function () {
   const f = extractFn(trainer, 'renderFoodResults');
@@ -66,8 +66,8 @@ ok('picker source chips removed too', trainer.indexOf('fp-src-btn') < 0 && train
 ok('search is disarmed until the first real gesture', trainer.indexOf('let _dkSearchArmed = false;') >= 0 && trainer.indexOf("['pointerdown', 'keydown', 'touchstart']") >= 0 && trainer.indexOf('setTimeout(dkArmSearch, 4000)') >= 0);
 ok('pre-gesture input is wiped and never arms the filter', (function () {
   const i = trainer.indexOf('function dkSearchGuard(e)');
-  const body = trainer.slice(i, i + 400);
-  return body.indexOf('_dkSearchArmed') >= 0 && body.indexOf('e.target.value = \'\'') >= 0 && body.indexOf('dkClearClientSearch()') >= 0;
+  const body = trainer.slice(i, i + 900);
+  return body.indexOf('_dkSearchArmed') >= 0 && body.indexOf('el.value = \'\'') >= 0 && body.indexOf('dkClearClientSearch()') >= 0;
 })());
 ok('both input handlers go through the guard', count(trainer, 'if (dkSearchGuard(e)) return;') === 2);
 ok('delayed sweeps clean late restores', trainer.indexOf('[300, 1200, 3000].forEach(ms => setTimeout(dkClearClientSearch, ms))') >= 0);
