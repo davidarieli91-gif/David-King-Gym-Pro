@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c163" />
+<meta name="dk-build" content="c164" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2874,7 +2874,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c163</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c164</p>
             </div>
           </div>
 
@@ -3895,7 +3895,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           <div id="recipe-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
             <div class="bg-surface w-full sm:max-w-lg max-h-[90vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
               <div class="p-4 border-b border-border flex items-center gap-3">
-                <h3 class="font-display font-bold text-base flex-1" data-i18n="food.newRecipe">New recipe</h3>
+                <h3 id="recipe-title" class="font-display font-bold text-base flex-1" data-i18n="food.newRecipe">New recipe</h3>
                 <button id="recipe-close" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-surface-2 text-muted" aria-label="Close" data-i18n-attr="aria-label:aria.close">
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
                 </button>
@@ -18881,6 +18881,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             <span class="absolute text-lg opacity-50">🥗</span>
             ${f.id ? window.dkFoodImgTag(f, 'absolute inset-0 w-full h-full object-cover') : ''}
             <button type="button" data-fav-toggle="${escapeAttr(String(f.id))}" class="absolute top-1 inset-inline-end-1 w-7 h-7 grid place-items-center rounded-lg bg-black/45 ${fav ? 'text-amber-400' : 'text-white/80'}" aria-label="${escapeAttr(fav ? t('food.favRemove') : t('food.favAdd'))}">${fav ? '★' : '☆'}</button>
+            ${f.source === 'recipe' ? `<button type="button" data-rec-edit="${escapeAttr(String(f.id))}" class="absolute bottom-1 inset-inline-end-1 w-7 h-7 grid place-items-center rounded-lg bg-black/45 text-white/85 hover:text-white" aria-label="${escapeAttr(t('common.edit'))}" title="${escapeAttr(t('food.recipeEditTitle'))}">✎</button>` : ''}
           </div>
           <div class="p-2 min-w-0">
             <div class="food-tile-name text-[11px] font-semibold text-text">${escapeHTML(name)}</div>
@@ -18914,6 +18915,18 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           btn.textContent = nowFav ? '★' : '☆';
           btn.className = 'absolute top-1 inset-inline-end-1 w-7 h-7 grid place-items-center rounded-lg bg-black/45 ' + (nowFav ? 'text-amber-400' : 'text-white/80');
           if (_foodFilter === 'fav' && !nowFav) showInitialFoodView();
+        });
+      });
+      /* c164: pencil on recipe cards — reopen the dish in the recipe editor */
+      (root || document).querySelectorAll('[data-rec-edit]').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const id = btn.getAttribute('data-rec-edit');
+          if (!id) return;
+          let item = null;
+          try { item = await db.get('food_base', id); } catch (err) {}
+          if (!item) { toast(t('food.notFound'), 'warning'); return; }
+          openRecipe(item);
         });
       });
     }
@@ -19147,7 +19160,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     }
 
         /* ===== c150: RECIPE BUILDER — combine products into a reusable dish ===== */
+        /* c164: recipes are EDITABLE — openRecipe(item) reopens a saved dish. */
     let _recipe = null;
+    let _recipeEditingId = null;
     /** Pure math: ingredient list → totals + per-100g values. */
     function recipeTotals(r) {
       const t0 = { grams: 0, calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
@@ -19166,10 +19181,63 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         per100: { calories: t0.calories * per, protein: t0.protein * per, carbs: t0.carbs * per, fat: t0.fat * per, fiber: t0.fiber * per }
       };
     }
-    function openRecipe() {
+    /** c164: honest processing badge for a dish — max NOVA of its ingredients
+     *  (only when every ingredient is known; otherwise no badge). */
+    function recipeNova(ingredients) {
+      let mx = null;
+      ((ingredients) || []).forEach(it => {
+        const n = Number(it && it.nova) || 0;
+        if (n >= 1 && n <= 4) mx = Math.max(mx || 0, n);
+      });
+      return mx;
+    }
+    /** c164: resolve a recipe ingredient's per-100g values from either store. */
+    async function resolveIngredient(it) {
+      let base = null, ref = null;
+      try { base = await db.get('food_base', it.id); } catch (e) {}
+      if (!base) { try { ref = await db.get('food_database', it.id); } catch (e) {} }
+      if (base) {
+        return {
+          id: it.id, name: it.name || base['name_' + currentLang()] || base.name_en || '?', grams: Number(it.grams) || 0,
+          calories: Number(base.calories) || 0, protein: Number(base.protein) || 0, carbs: Number(base.carbs) || 0,
+          fat: Number(base.fat) || 0, fiber: Number(base.fiber) || 0, nova: Number(base.nova) || null
+        };
+      }
+      if (ref) {
+        const n = ref.nutrition || {};
+        return {
+          id: it.id, name: it.name || ref['name_' + currentLang()] || ref.name_en || '?', grams: Number(it.grams) || 0,
+          calories: Number(n.calories) || 0, protein: Number(n.protein) || 0, carbs: Number(n.carbs) || 0,
+          fat: Number(n.fat) || 0, fiber: Number(n.fiber) || 0, nova: Number(ref.nova) || null
+        };
+      }
+      return {
+        id: it.id, name: it.name || '?', grams: Number(it.grams) || 0,
+        calories: Number(it.calories) || 0, protein: Number(it.protein) || 0, carbs: Number(it.carbs) || 0,
+        fat: Number(it.fat) || 0, fiber: Number(it.fiber) || 0, nova: Number(it.nova) || null, _gone: true
+      };
+    }
+    async function openRecipe(item) {
+      _recipeEditingId = null;
       _recipe = { name: '', ingredients: [] };
+      if (item && item.id) {
+        _recipeEditingId = item.id;
+        _recipe.name = item['name_' + currentLang()] || item.name_en || item.name_ru || item.name_he || '';
+        const thin = Array.isArray(item.ingredients) ? item.ingredients : [];
+        let gone = 0;
+        for (const it of thin) {
+          const full = await resolveIngredient(it);
+          if (full._gone) gone++;
+          _recipe.ingredients.push(full);
+        }
+        if (gone > 0) toast(t('food.recipeIngredientGone'), 'warning', 3500);
+      }
       const nameEl = document.getElementById('recipe-name');
-      if (nameEl) nameEl.value = '';
+      if (nameEl) nameEl.value = _recipe.name;
+      const titleEl = document.getElementById('recipe-title');
+      if (titleEl) titleEl.textContent = _recipeEditingId ? t('food.recipeEditTitle') : t('food.newRecipe');
+      const saveEl = document.getElementById('recipe-save');
+      if (saveEl) saveEl.textContent = _recipeEditingId ? t('food.recipeSaveEdit') : t('food.recipeSave');
       const searchEl = document.getElementById('recipe-search');
       if (searchEl) searchEl.value = '';
       const res = document.getElementById('recipe-search-results');
@@ -19203,8 +19271,10 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const el = document.getElementById('recipe-total');
       if (!el || !_recipe) return;
       const { totals, per100 } = recipeTotals(_recipe);
+      const nova = recipeNova(_recipe.ingredients);
       el.innerHTML = `${escapeHTML(t('food.recipeTotal'))}: <span class="font-mono font-semibold">${Math.round(totals.grams)} g · ${Math.round(totals.calories)} ${escapeHTML(t('nutrition.calories').toLowerCase())}</span>`
-        + (totals.grams > 0 ? ` · /100g: <span class="font-mono">${Math.round(per100.calories)} ${escapeHTML(t('nutrition.calories').toLowerCase())} · ${Math.round(per100.protein)}P ${Math.round(per100.carbs)}C ${Math.round(per100.fat)}F</span>` : '');
+        + (totals.grams > 0 ? ` · /100g: <span class="font-mono">${Math.round(per100.calories)} ${escapeHTML(t('nutrition.calories').toLowerCase())} · ${Math.round(per100.protein)}P ${Math.round(per100.carbs)}C ${Math.round(per100.fat)}F</span>` : '')
+        + (nova ? ` <span class="food-badge" style="background:${({ 1: '#1e8e3e', 2: '#74b816', 3: '#f5a623', 4: '#d93025' })[nova]}" title="${escapeAttr(t('food.badgesNovaShort'))}">N${nova}</span>` : '');
     }
     function recipeAddIngredient(f) {
       if (!_recipe) return;
@@ -19212,7 +19282,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         id: f.id, name: f['name_' + currentLang()] || f.name_en || f.name_ru || f.name_he || '?',
         grams: Number(f.serving_quantity) > 0 ? Math.round(Number(f.serving_quantity)) : 100,
         calories: Number(f.calories) || 0, protein: Number(f.protein) || 0,
-        carbs: Number(f.carbs) || 0, fat: Number(f.fat) || 0, fiber: Number(f.fiber) || 0
+        carbs: Number(f.carbs) || 0, fat: Number(f.fat) || 0, fiber: Number(f.fiber) || 0,
+        nova: Number(f.nova) || null
       });
       renderRecipe();
     }
@@ -19221,21 +19292,43 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const name = (document.getElementById('recipe-name').value || '').trim();
       if (!name) { toast(t('food.recipeNeedName'), 'warning'); return; }
       if (!_recipe.ingredients.length) { toast(t('food.recipeNeedItems'), 'warning'); return; }
+      const editing = !!_recipeEditingId;
       const { totals, per100 } = recipeTotals(_recipe);
+      let prev = null;
+      if (editing) { try { prev = await db.get('food_base', _recipeEditingId); } catch (e) {} }
       const item = {
-        id: 'recipe_' + db.uuid(),
+        id: _recipeEditingId || ('recipe_' + db.uuid()),
         name_en: name, name_ru: name, name_he: name,
         source: 'recipe', category: 'recipe', per_100g: true,
         calories: Math.round(per100.calories * 10) / 10, protein: Math.round(per100.protein * 10) / 10,
         carbs: Math.round(per100.carbs * 10) / 10, fat: Math.round(per100.fat * 10) / 10,
         fiber: Math.round(per100.fiber * 10) / 10,
+        nova: recipeNova(_recipe.ingredients),
         serving_quantity: Math.round(totals.grams), package_grams: Math.round(totals.grams),
-        ingredients: _recipe.ingredients.map(it => ({ id: it.id, name: it.name, grams: it.grams })),
-        created_at: Date.now()
+        ingredients: _recipe.ingredients.map(it => ({
+          id: it.id, name: it.name, grams: it.grams,
+          calories: Number(it.calories) || 0, protein: Number(it.protein) || 0,
+          carbs: Number(it.carbs) || 0, fat: Number(it.fat) || 0, fiber: Number(it.fiber) || 0,
+          nova: Number(it.nova) || null
+        })),
+        created_at: (prev && prev.created_at) || Date.now()
       };
+      if (editing) item.updated_at = Date.now();
       await db.put('food_base', item);
-      toast(t('food.recipeSaved'), 'success', 2500);
       document.getElementById('recipe-modal').classList.add('hidden');
+      if (editing) {
+        toast(t('food.recipeUpdated'), 'success', 2500);
+        _recipe = null;
+        _recipeEditingId = null;
+        const searchModal = document.getElementById('food-search-modal');
+        if (searchModal && !searchModal.classList.contains('hidden')) {
+          const inp = document.getElementById('food-search-input');
+          if (inp && inp.value.trim().length >= 2) performSearch(inp.value);
+          else showInitialFoodView();
+        }
+        return;
+      }
+      toast(t('food.recipeSaved'), 'success', 2500);
       _recipe = null;
       openPortionModal(dkFoodFlat(item));
     }
@@ -33051,7 +33144,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 163; /* numeric part of dk-build c163 */
+  var RUNNING = 164; /* numeric part of dk-build c164 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

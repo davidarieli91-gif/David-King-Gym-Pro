@@ -1131,7 +1131,11 @@
     "sub_teas": "Tea",
     "sub_eggs": "Eggs",
     "sub_oils": "Oils",
-    "sub_other": "Other"
+    "sub_other": "Other",
+    "recipeEditTitle": "Edit recipe",
+    "recipeSaveEdit": "Save changes",
+    "recipeUpdated": "Recipe updated",
+    "recipeIngredientGone": "Some ingredients were not found in the database — check the list"
   },
   "generator": {
     "title": "Smart program generator",

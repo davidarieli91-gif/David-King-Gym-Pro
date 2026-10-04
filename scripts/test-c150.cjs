@@ -68,7 +68,7 @@ ok('portion chips: 100 / Serving / Package labels', trainer.indexOf("t('food.por
 
 /* ---------- STATIC: recipe builder ---------- */
 ok('recipe modal skeleton', trainer.indexOf('id="recipe-modal"') >= 0 && trainer.indexOf('id="recipe-name"') >= 0 && trainer.indexOf('id="recipe-search"') >= 0 && trainer.indexOf('id="recipe-search-results"') >= 0 && trainer.indexOf('id="recipe-ingredients"') >= 0 && trainer.indexOf('id="recipe-total"') >= 0 && trainer.indexOf('id="recipe-save"') >= 0);
-ok('recipe builder functions', trainer.indexOf('function openRecipe()') >= 0 && trainer.indexOf('function renderRecipe()') >= 0 && trainer.indexOf('function recipeAddIngredient(f)') >= 0 && trainer.indexOf('async function saveRecipe()') >= 0 && trainer.indexOf('function wireRecipeSearch()') >= 0);
+ok('recipe builder functions', trainer.indexOf('async function openRecipe(item)') >= 0 && trainer.indexOf('function renderRecipe()') >= 0 && trainer.indexOf('function recipeAddIngredient(f)') >= 0 && trainer.indexOf('async function saveRecipe()') >= 0 && trainer.indexOf('function wireRecipeSearch()') >= 0);
 ok('recipe saved into food_base as source recipe', trainer.indexOf("source: 'recipe', category: 'recipe', per_100g: true") >= 0 && trainer.indexOf('ingredients: _recipe.ingredients.map') >= 0 && trainer.indexOf("await db.put('food_base', item)") >= 0);
 ok('recipe totals drive per100 + serving = total weight', trainer.indexOf('const { totals, per100 } = recipeTotals(_recipe);') >= 0 && trainer.indexOf('serving_quantity: Math.round(totals.grams), package_grams: Math.round(totals.grams)') >= 0);
 ok('recipe search dropdown reuses local search', trainer.indexOf('const items = await searchLocalFoods(q);') >= 0 && trainer.indexOf('data-rec-pick=') >= 0);
