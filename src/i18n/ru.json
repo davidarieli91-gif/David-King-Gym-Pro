@@ -1138,7 +1138,16 @@
     "recipeEditTitle": "Редактировать рецепт",
     "recipeSaveEdit": "Сохранить изменения",
     "recipeUpdated": "Рецепт обновлён",
-    "recipeIngredientGone": "Часть ингредиентов не найдена в базе — проверьте состав"
+    "recipeIngredientGone": "Часть ингредиентов не найдена в базе — проверьте состав",
+    "offFetch": "Загрузить бейджи из OpenFoodFacts",
+    "offNeedBarcode": "Сначала введите штрихкод",
+    "offLoading": "Ищу в OpenFoodFacts…",
+    "offNotFound": "Товар не найден в OpenFoodFacts",
+    "offFound": "Найдено:",
+    "offNoScores": "Товар найден, но бейджей у него нет",
+    "offOffline": "Нет связи с OpenFoodFacts — попробуйте позже",
+    "smartLowCal": "Низкая калорийность",
+    "smartEco": "Эко A/B"
   },
   "generator": {
     "title": "Умный генератор программ",

@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c167" />
+<meta name="dk-build" content="c168" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2874,7 +2874,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c167</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c168</p>
             </div>
           </div>
 
@@ -5580,6 +5580,15 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 <input name="barcode" class="w-full bg-surface-2 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
               </div>
             </div>
+            <!-- c168: manual barcode → OFF badges (Nutri/Green/NOVA/palm + sub-folder) -->
+            <div class="flex items-center gap-2 flex-wrap">
+              <button type="button" id="fd-off-fetch" class="bg-accent/15 hover:bg-accent/25 text-accent border border-accent/30 text-xs font-semibold px-3 py-2 rounded-lg transition inline-flex items-center gap-1.5 shrink-0">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                <span data-i18n="food.offFetch">Load badges from OpenFoodFacts</span>
+              </button>
+              <span id="fd-off-status" class="text-[11px] text-muted min-w-0"></span>
+            </div>
+            <input type="hidden" name="nutri" /><input type="hidden" name="eco" /><input type="hidden" name="nova" /><input type="hidden" name="forest" /><input type="hidden" name="sub" />
             <div>
               <label class="block text-[11px] uppercase tracking-wider text-muted font-semibold mb-1" data-i18n="food.imageUrl">Image URL</label>
               <input name="image_url" type="url" class="w-full bg-surface-2 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
@@ -25704,7 +25713,9 @@ Select foods for each meal. Output as JSON only.`;
       { id: 'favs', emoji: '⭐', nameKey: 'food.smartFavs' },
       { id: 'recent', emoji: '🕐', nameKey: 'food.smartRecent' },
       { id: 'healthy', emoji: '🟢', nameKey: 'food.smartHealthy' },
-      { id: 'proteinHigh', emoji: '💪', nameKey: 'food.smartProtein' }
+      { id: 'proteinHigh', emoji: '💪', nameKey: 'food.smartProtein' },
+      { id: 'lowCal', emoji: '💡', nameKey: 'food.smartLowCal' },
+      { id: 'ecoAB', emoji: '🌿', nameKey: 'food.smartEco' }
     ];
     let _view = { kind: 'home', shelf: '', sub: '' };
     let _smart = '';
@@ -25732,6 +25743,9 @@ Select foods for each meal. Output as JSON only.`;
       }
       if (id === 'healthy') return pool.filter((f) => f.nutri === 'a' || f.nutri === 'b');
       if (id === 'proteinHigh') return pool.filter((f) => Number((f.nutrition || {}).protein) >= 15);
+      /* c168: honest, computable-from-data shelves */
+      if (id === 'lowCal') return pool.filter((f) => { const c = Number((f.nutrition || {}).calories); return c > 0 && c <= 100; });
+      if (id === 'ecoAB') return pool.filter((f) => f.eco === 'a' || f.eco === 'b');
       return [];
     }
     function foodBadgeHTML(f) {
@@ -26207,6 +26221,14 @@ Select foods for each meal. Output as JSON only.`;
       form.elements.potassium.value = n.potassium || 0;
       form.elements.calcium.value = n.calcium || 0;
       form.elements.iron.value = n.iron || 0;
+      /* c168: keep the score badges + sub-folder through an edit */
+      if (form.elements.nutri) form.elements.nutri.value = food.nutri || '';
+      if (form.elements.eco) form.elements.eco.value = food.eco || '';
+      if (form.elements.nova) form.elements.nova.value = food.nova != null ? food.nova : '';
+      if (form.elements.forest) form.elements.forest.value = food.forest || '';
+      if (form.elements.sub) form.elements.sub.value = food.sub || '';
+      const offSt = document.getElementById('fd-off-status');
+      if (offSt) offSt.textContent = '';
       // Populate category datalist with new category keys
       const dl = document.getElementById('food-category-list-edit');
       if (dl) {
@@ -26248,6 +26270,72 @@ Select foods for each meal. Output as JSON only.`;
   function toggleFoodDetailEditMode() {
     _foodDetailEditMode = !_foodDetailEditMode;
     applyFoodDetailMode();
+  }
+
+  /* =====================================================================
+     c168: MANUAL BARCODE → OPENFOODFACTS BADGES. The curated base has ~230
+     products without a barcode (mostly the Israeli dictionary) and therefore
+     no Nutri/Green/NOVA/palm badges. The trainer can type the barcode in the
+     product card and pull the badges + the sub-folder straight from OFF
+     (same mapping the offline enrichment script uses).
+     ===================================================================== */
+  const FD_OFF_SUB_RULES = [
+    ['cheeses', ['cheese']], ['yogurts', ['yogurt']], ['milks', ['milk']], ['butter', ['butter']], ['creams', ['cream']],
+    ['poultry', ['poultr', 'chicken', 'turkey']], ['beef', ['beef']], ['pork', ['pork', 'ham', 'bacon']], ['sausages', ['sausage', 'salami', 'hot-dog']],
+    ['fish', ['fish', 'salmon', 'tuna', 'cod', 'herring', 'sardine', 'anchovy', 'mackerel']], ['seafood', ['seafood', 'shrimp', 'crab', 'lobster', 'mussel', 'oyster', 'squid']],
+    ['breads', ['bread']], ['pastas', ['pasta', 'noodle']], ['rices', ['rice']], ['cereals', ['cereal', 'oat', 'breakfast']],
+    ['chocolates', ['chocolate']], ['candies', ['candi', 'confection']], ['biscuits', ['biscuit', 'cookie', 'cracker']], ['cakes', ['cake', 'pastr', 'viennoiserie']], ['icecream', ['ice-cream']],
+    ['olive-oil', ['olive-oil', 'olive oil']], ['vegetable-oils', ['vegetable-oil', 'oil']],
+    ['nuts', ['nut']], ['seeds', ['seed']],
+    ['waters', ['water']], ['juices', ['juice']], ['sodas', ['soda', 'cola']], ['coffees', ['coffee']], ['teas', ['tea']]
+  ];
+  function fdOffGrade(v) { const s = String(v || '').toLowerCase(); return /^[a-e]$/.test(s) ? s : ''; }
+  function fdOffSubOf(tags) {
+    const txt = (Array.isArray(tags) ? tags : []).join(' ').toLowerCase();
+    if (!txt) return '';
+    for (const [key, kws] of FD_OFF_SUB_RULES) { for (const k of kws) if (txt.includes(k)) return key; }
+    return '';
+  }
+  async function fdFetchOffScores() {
+    const form = document.getElementById('food-detail-form');
+    const st = document.getElementById('fd-off-status');
+    const btn = document.getElementById('fd-off-fetch');
+    if (!form) return;
+    const bc = String(form.elements.barcode ? form.elements.barcode.value : '').replace(/\D/g, '');
+    if (!bc) { if (st) st.textContent = t('food.offNeedBarcode'); return; }
+    if (st) st.textContent = t('food.offLoading');
+    if (btn) btn.disabled = true;
+    try {
+      const res = await fetch('https://world.openfoodfacts.org/api/v2/product/' + encodeURIComponent(bc) +
+        '.json?fields=code,nutriscore_grade,nova_group,ecoscore_grade,categories_tags,ingredients_analysis_tags');
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const j = await res.json();
+      const p = (j && j.status === 1) ? j.product : null;
+      if (!p) { if (st) st.textContent = t('food.offNotFound'); return; }
+      const nutri = fdOffGrade(p.nutriscore_grade);
+      const eco = fdOffGrade(p.ecoscore_grade);
+      const nova = (Number(p.nova_group) >= 1 && Number(p.nova_group) <= 4) ? String(Number(p.nova_group)) : '';
+      let forest = '';
+      if (Array.isArray(p.ingredients_analysis_tags)) {
+        if (p.ingredients_analysis_tags.some(x => /palm-oil-free/.test(x))) forest = 'none';
+        else if (p.ingredients_analysis_tags.some(x => /palm-oil(?!-free)/.test(x))) forest = 'risk';
+      }
+      const sub = fdOffSubOf(p.categories_tags);
+      const set = (name, val) => { if (form.elements[name]) form.elements[name].value = val || ''; };
+      set('nutri', nutri); set('eco', eco); set('nova', nova); set('forest', forest); set('sub', sub);
+      const parts = [];
+      if (nutri) parts.push('Nutri ' + nutri.toUpperCase());
+      if (eco) parts.push('🌿' + eco.toUpperCase());
+      if (nova) parts.push('N' + nova);
+      if (forest === 'none') parts.push('🌳');
+      else if (forest === 'risk') parts.push('🌳⚠');
+      if (sub) parts.push(sub);
+      if (st) st.textContent = parts.length ? (t('food.offFound') + ' ' + parts.join(' · ')) : t('food.offNoScores');
+    } catch (e) {
+      if (st) st.textContent = t('food.offOffline');
+    } finally {
+      if (btn) btn.disabled = false;
+    }
   }
 
   async function saveFoodDetail() {
@@ -26294,6 +26382,12 @@ Select foods for each meal. Output as JSON only.`;
       image_url: obj.image_url || (food && food.image_url) || '',
       barcode: obj.barcode || '',
       brand: obj.brand || '',
+      /* c168: score badges + sub-folder (from the OFF fetch or the old record) */
+      nutri: obj.nutri || (food && food.nutri) || null,
+      eco: obj.eco || (food && food.eco) || null,
+      nova: Number(obj.nova) || (food && Number(food.nova)) || null,
+      forest: obj.forest || (food && food.forest) || null,
+      sub: obj.sub || (food && food.sub) || '',
       nutrition: Object.assign({}, food ? (food.nutrition || {}) : {}, nutrition),
       updated_at: Date.now()
     });
@@ -30588,6 +30682,8 @@ loadPanelTexture();
     });
     const fdSave = document.getElementById('food-detail-save');
     if (fdSave) fdSave.addEventListener('click', () => saveFoodDetail());
+    const fdOffBtn = document.getElementById('fd-off-fetch');
+    if (fdOffBtn && !fdOffBtn.dataset.wired168) { fdOffBtn.dataset.wired168 = '1'; fdOffBtn.addEventListener('click', () => fdFetchOffScores()); } /* c168 */
     const fdDelete = document.getElementById('food-detail-delete');
     if (fdDelete) fdDelete.addEventListener('click', () => deleteFoodDetail());
     const fdModal = document.getElementById('food-detail-modal');
@@ -33555,7 +33651,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 167; /* numeric part of dk-build c167 */
+  var RUNNING = 168; /* numeric part of dk-build c168 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

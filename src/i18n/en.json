@@ -1138,7 +1138,16 @@
     "recipeEditTitle": "Edit recipe",
     "recipeSaveEdit": "Save changes",
     "recipeUpdated": "Recipe updated",
-    "recipeIngredientGone": "Some ingredients were not found in the database — check the list"
+    "recipeIngredientGone": "Some ingredients were not found in the database — check the list",
+    "offFetch": "Load badges from OpenFoodFacts",
+    "offNeedBarcode": "Enter a barcode first",
+    "offLoading": "Looking up OpenFoodFacts…",
+    "offNotFound": "Product not found in OpenFoodFacts",
+    "offFound": "Found:",
+    "offNoScores": "Product found, but it has no scores",
+    "offOffline": "No connection to OpenFoodFacts — try again later",
+    "smartLowCal": "Low calorie",
+    "smartEco": "Green A/B"
   },
   "generator": {
     "title": "Smart program generator",

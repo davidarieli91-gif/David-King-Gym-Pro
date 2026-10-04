@@ -1138,7 +1138,16 @@
     "recipeEditTitle": "עריכת מתכון",
     "recipeSaveEdit": "שמור שינויים",
     "recipeUpdated": "המתכון עודכן",
-    "recipeIngredientGone": "חלק מהמרכיבים לא נמצאו במאגר — בדקו את הרשימה"
+    "recipeIngredientGone": "חלק מהמרכיבים לא נמצאו במאגר — בדקו את הרשימה",
+    "offFetch": "טען תגיות מ-OpenFoodFacts",
+    "offNeedBarcode": "הזן קודם ברקוד",
+    "offLoading": "מחפש ב-OpenFoodFacts…",
+    "offNotFound": "המוצר לא נמצא ב-OpenFoodFacts",
+    "offFound": "נמצא:",
+    "offNoScores": "המוצר נמצא, אך אין לו תוויות",
+    "offOffline": "אין חיבור ל-OpenFoodFacts — נסה שוב מאוחר יותר",
+    "smartLowCal": "קלוריות נמוכות",
+    "smartEco": "ירוק A/B"
   },
   "generator": {
     "title": "מחולל תוכניות חכם",
