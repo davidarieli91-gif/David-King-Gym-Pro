@@ -482,7 +482,8 @@
     "portalPassInvalid": "Password: 4–10 digits",
     "portalPassSaved": "Portal password saved — phone sign-in is ready",
     "portalPassLocal": "Password saved. Cloud unavailable — it will apply next time the portal is generated",
-    "portalPassNone": "not set"
+    "portalPassNone": "not set",
+    "birthDate": "Birth date"
   },
   "analytics": {
     "title": "Analytics",
@@ -1560,7 +1561,20 @@
       "orphanDefaultName": "Restored client",
       "fetchFailed": "Could not read the cloud copy of slot {n}: {e}. The cloud data is intact — check the connection and try again.",
       "restoreFailed": "Could not restore slot {n}: {e}. The current state was auto-saved into slot #1 (AUTO) — nothing is lost."
-    }
+    },
+    "remTitle": "Trainer reminders",
+    "remDesc": "Local notifications, no server: a morning digest of who trains today and client birthdays. Works while the app is installed.",
+    "remAgenda": "Morning digest: who trains today",
+    "remBirthdays": "Client birthdays",
+    "remTime": "Time",
+    "remEnable": "Allow notifications",
+    "remTest": "Test now",
+    "remAgendaTitle": "Training today: {n}",
+    "remBirthTitle": "🎂 Birthdays today",
+    "remAllowed": "Notifications allowed ✓",
+    "remDenied": "Notifications are blocked in the browser settings",
+    "remUnsupported": "This browser does not support notifications",
+    "remTestSent": "Test notification sent"
   },
   "backup": {
     "exportDone": "Backup exported ({n} records)",

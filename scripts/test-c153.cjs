@@ -78,7 +78,7 @@ ok('sw: due-check copy present', sw.indexOf('function dkReminderDueTs(rem, kind,
 ok('sw: localized reminder texts ×3', sw.indexOf('const DK_REM_I18N = {') >= 0 && sw.indexOf("ru: { workout:") >= 0 && sw.indexOf("en: { workout:") >= 0 && sw.indexOf("he: { workout:") >= 0);
 ok('sw: message handler syncs config + checks', sw.indexOf("self.addEventListener('message'") >= 0 && sw.indexOf("d.type === 'dk-rem-config'") >= 0 && sw.indexOf('await dkRemCheck();') >= 0);
 ok('sw: periodicsync handler', sw.indexOf("self.addEventListener('periodicsync'") >= 0 && sw.indexOf("event.tag === 'dk-reminders'") >= 0 && sw.indexOf('async function dkRemCheck()') >= 0);
-ok('sw: notificationclick focuses/opens the portal', sw.indexOf("self.addEventListener('notificationclick'") >= 0 && sw.indexOf("self.clients.openWindow('./client.html')") >= 0 && sw.indexOf("clients.matchAll({ type: 'window', includeUncontrolled: true })") >= 0);
+ok('sw: notificationclick focuses/opens the portal', sw.indexOf("self.addEventListener('notificationclick'") >= 0 && sw.indexOf("self.clients.openWindow(isTrainer ? './fitness-crm.html' : './client.html')") >= 0 && sw.indexOf("clients.matchAll({ type: 'window', includeUncontrolled: true })") >= 0);
 ok('sw: notifications carry tag/icon/badge', sw.indexOf("tag: 'dk-' + kind") >= 0 && sw.indexOf("icon: './icon-192.png'") >= 0);
 
 /* ---------- STATIC: i18n ×3 ---------- */

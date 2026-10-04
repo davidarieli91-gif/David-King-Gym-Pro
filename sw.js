@@ -121,9 +121,10 @@
 // v188: c161 — ONE CURATED FOOD DATABASE (user decision: quality over quantity, USDA to the trash): the merged 2344-item DB had one photo shared by up to 159 products, 1000 USDA items whose images were fuzzy-matched to OTHER products and 164 items with no photo at all. scripts/curate-food-db.cjs now keeps ONE product per unique image (best-of-group: Israeli DB > OFF IL > OFF Global, richest nutrition, cleanest name), requires calories > 0 and drops USDA entirely — 1253 products remain, every single one with its OWN photo; 927 duplicate/orphan images were deleted. scripts/upgrade-food-images.cjs re-downloaded the kept photos at 400px (OFF size segment swap, sharpen-safe resume), images folder 27.1 MB. scripts/enrich-food-db.cjs pulls per-barcode data from OpenFoodFacts (resume-safe cache, rate-limit aware): official Nutri-Score (nutri), Green-Score (eco), NOVA processing level, palm-oil/deforestation flag and REAL category remapping from OFF categories_tags + a second level `sub` (cheeses/yogurts/poultry/breads… with a 3-language name fallback) — the data behind the c162 kiosk design with score badges and smart grouping. The trainer reseeds automatically (seed flag v54 → v55). Versions: meta/footer/RUNNING c161, cache dk-gym-v188
 // v189: c162 — NUTRITION, REBUILT AS A KIOSK (user: «не полосочки, а круглые кубики на весь экран, как весы в супермаркете»): the Food database tab is now a bento of SHELF tiles — big hero cubes (Vegetables & greens / Fruits & berries / Protein / Dairy), wide medium cubes (Carbs / Drinks / Sweets / Legumes) and small cubes (Fats / Sauces / Baby / Israeli / International / Vegan / Other) — every cube shows a 2×2 photo collage of its products, the emoji, the name and the count; smart shelves (Favorites / Recent / Healthy A-B / High protein) sit above. A shelf opens sub-collections (milks/yogurts/cheeses/poultry/breads…) rendered as the same cubes, then a PAGED grid (60) of photo product tiles with kcal+P/C/F and the Nutri-Score / Green-Score / NOVA / deforestation badges; the «?» button opens a 3-language explainer of all badges. The picker modal's results are photo tiles with badges and the star overlay; the food search fills the grid directly. Everything is rem-based adaptive (auto-fill minmax) with html.dk-fs-big rules that fold the bento and grow the tiles; 69 new food.* i18n keys ×3. Versions: meta/footer/RUNNING c162, cache dk-gym-v189
 // v190: c163 — THE NUTRITION REDESIGN IS COMPLETE (user: finish the kiosk style across the whole nutrition section): the Meal templates tab is now a grid of kiosk cards — each template shows a 2×2 collage of its foods, total kcal, food/meal counts and its P/C/F target chips (green/amber/red, same colours as the day rings) with Edit / Apply / ✕ actions. The Daily log tab's meal entries are now photo mini-tiles (2/3-per-row: photo, name, grams+kcal, P/C/F badge chips, ✕ overlay) instead of the old text rows; log entries now store food_id/image_url (addPendingToMeal) so future entries carry their product photo; older entries show a plate placeholder. Versions: meta/footer/RUNNING c163, cache dk-gym-v190
+// v193: c166 — TRAINER REMINDERS, LOCAL, NO SERVER (user plan item: «сегодня тренировка у N клиентов», дни рождения): the trainer's Settings gained a «Напоминания тренеру» panel — a morning digest of WHO TRAINS TODAY (computed from each client's training_days) and client BIRTHDAYS (new birth_date field in the client form, shown in the profile card). The page builds the agenda snapshot from IndexedDB, stores it in the shared 'dk-sw' IDB and shows SW notifications (periodicsync repeats the check in the background; both sides share the same `last` map so nothing fires twice; notification taps open fitness-crm.html). One time-of-day for both (default 08:00), Allow-notifications + Test-now buttons, localized x3. dkTremBuildAgenda/dkTremDue are pure and unit-tested. Versions: meta/footer/RUNNING c166, cache dk-gym-v193
 // v192: c165 — PORTION CALCULATOR IN THE PLAN EDITOR (user: «пересчёт граммовок с подсказкой, сколько осталось до цели дня»): picking a food in the plan's food picker no longer dumps a blind 100 г — a portion bar opens inside the picker with the product's REAL serving pre-filled, quick chips (serving/50/100/150/200), a live macro readout, and — when the plan editor is behind it — an honest «после добавления останется» line per macro against the plan's daily targets (over-target values turn red with a + sign). The plan editor itself gained a day-progress strip under the targets («Итого: 1450/2000 ккал · P 120/150 …» plus «Осталось: −550 ккал −30P −110C −25F»), recomputed on every portion/unit/meal/target change and by the quick adjusters (npDayTotals/npRemaining are pure and unit-tested). Versions: meta/footer/RUNNING c165, cache dk-gym-v192
 // v191: c164 — RECIPES BECOME EDITABLE (user: «сейчас рецепт можно только создать — нужна правка состава и граммовок, и бейджи рецептам»): every recipe card in the picker (search results, Recipes filter, Favorites/Recent) now carries a pencil overlay that reopens the dish in the recipe editor — name, ingredient list and grams prefilled; the editor resolves each ingredient's live per-100g values from food_base or the reference DB, so legacy recipes saved without macros recompute correctly, and missing products are reported («часть ингредиентов не найдена»). Saving keeps the same food id, preserves created_at, stamps updated_at, and recipes now store full ingredient macros plus an HONEST processing badge — nova = max NOVA among ingredients (shown only when every ingredient is known, in the editor total line and on the kiosk/picker tiles; nutri/eco are NOT computed because the source data lacks sugars/salt). The save button/title switch to «Сохранить изменения»/«Редактировать рецепт»; after an edit the open search list refreshes in place instead of opening the portion modal. Versions: meta/footer/RUNNING c164, cache dk-gym-v191
-const CACHE_NAME = 'dk-gym-v192'; // c165
+const CACHE_NAME = 'dk-gym-v193'; // c166
 // v104: c77 — UI sizes can no longer change themselves (zoom-based gif/food/cards, wheel/touch slider guards) + hard pre-login lock (Add Client included) + header theme quick menu with all 33 themes
 // v103: c76 — Exercise DB tab = exact Quick Pick copy (star/eye/+ cards, favorites/recent tabs, View grouping, localized map tabs)
 // v102: c75 — 3D atlas 1.5x + Settings ▸ UI sizes (atlas slider, bodymap/exercise-panel fixes) + Exercise DB tab rebuilt as picker-style browse
@@ -292,6 +293,52 @@ async function dkRemCheck() {
     }
   } catch (e) {}
 }
+/* c166: TRAINER reminders — morning digest («who trains today») + client
+   birthdays. The page computes the agenda snapshot and stores it in the
+   shared 'dk-sw' IDB; this SW repeats the check in the background and both
+   sides compare the same `last` map, so nothing fires twice. */
+const DK_TREM_I18N = {
+  ru: { agendaT: 'Сегодня тренировка: {n}', birthT: '🎂 Дни рождения сегодня' },
+  en: { agendaT: 'Training today: {n}', birthT: '🎂 Birthdays today' },
+  he: { agendaT: 'אימונים היום: {n}', birthT: '🎂 ימי הולדת היום' }
+};
+function dkTremDateKey(d) {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+async function dkTremCheck() {
+  try {
+    const st = await dkSwKvGet('trem');
+    if (!st || !st.cfg || !st.items) return;
+    const cfg = st.cfg, items = st.items;
+    const now = new Date();
+    if (items.date !== dkTremDateKey(now)) return;
+    const m = /^(\d{1,2}):(\d{2})$/.exec(String(cfg.time || ''));
+    const mins = m ? parseInt(m[1], 10) * 60 + parseInt(m[2], 10) : 480;
+    if (now.getHours() * 60 + now.getMinutes() < mins) return;
+    const last = st.last || {};
+    const lang = DK_TREM_I18N[st.lang] ? st.lang : 'ru';
+    let changed = false;
+    if (cfg.agenda && cfg.agenda.on && items.training && items.training.length && last.agenda !== items.date) {
+      const n = items.training.length;
+      const title = (DK_TREM_I18N[lang].agendaT || DK_TREM_I18N.ru.agendaT).replace('{n}', n);
+      const body = items.training.slice(0, 5).join(', ') + (n > 5 ? ' +' + (n - 5) : '');
+      try { await self.registration.showNotification(title, { body: body, tag: 'dk-t-agenda', renotify: false, icon: './icon-192.png', badge: './icon-192.png' }); } catch (e) {}
+      last.agenda = items.date;
+      changed = true;
+    }
+    if (cfg.birth && cfg.birth.on && items.birthdays && items.birthdays.length && last.birth !== items.date) {
+      const title = DK_TREM_I18N[lang].birthT || DK_TREM_I18N.ru.birthT;
+      const body = items.birthdays.map((b) => b.name + (b.age ? ' (' + b.age + ')' : '')).join(', ');
+      try { await self.registration.showNotification(title, { body: body, tag: 'dk-t-birth', renotify: false, icon: './icon-192.png', badge: './icon-192.png' }); } catch (e) {}
+      last.birth = items.date;
+      changed = true;
+    }
+    if (changed) {
+      st.last = last; st.ts = Date.now();
+      await dkSwKvSet('trem', st);
+    }
+  } catch (e) {}
+}
 self.addEventListener('message', (event) => {
   const d = event.data || {};
   if (d.type === 'dk-rem-config') {
@@ -302,19 +349,39 @@ self.addEventListener('message', (event) => {
       await dkRemCheck();
     })());
   }
+  if (d.type === 'dk-trem-config') {
+    event.waitUntil((async () => {
+      const st = (await dkSwKvGet('trem')) || {};
+      await dkSwKvSet('trem', {
+        cfg: d.cfg || st.cfg || null,
+        lang: d.lang || st.lang || 'ru',
+        items: d.items || st.items || null,
+        last: d.last || st.last || {},
+        ts: Date.now()
+      });
+      await dkTremCheck();
+    })());
+  }
 });
 self.addEventListener('periodicsync', (event) => {
-  if (event.tag === 'dk-reminders') event.waitUntil(dkRemCheck());
+  if (event.tag === 'dk-reminders') event.waitUntil((async () => { await dkRemCheck(); await dkTremCheck(); })());
 });
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
+  const isTrainer = String(event.notification.tag || '').indexOf('dk-t-') === 0;
   event.waitUntil((async () => {
     try {
       const list = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
       for (const c of list) {
+        const url = String(c.url || '');
+        if (isTrainer && url.indexOf('fitness-crm') === -1) continue;
+        if (!isTrainer && url.indexOf('client.html') === -1) continue;
         if ('focus' in c) { try { await c.focus(); return; } catch (e) {} }
       }
-      await self.clients.openWindow('./client.html');
+      for (const c of list) {
+        if ('focus' in c) { try { await c.focus(); return; } catch (e) {} }
+      }
+      await self.clients.openWindow(isTrainer ? './fitness-crm.html' : './client.html');
     } catch (e) {}
   })());
 });

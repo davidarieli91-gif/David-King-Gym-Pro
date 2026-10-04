@@ -24,7 +24,7 @@ ok('reset refuses when the card has a password', trainer.indexOf("if (client.por
 
 /* ---------- trainer: profile card row ---------- */
 ok('profile card shows the password permanently', trainer.indexOf("rows.push([t('client.portalPassShort'), hasPass ? String(c.portal_pass) : t('client.portalPassNone'), 'lock']);") >= 0);
-ok('profile card renders even with only a password', trainer.indexOf('if (!c.phone && !c.email && !hasPass) return \'\';') >= 0);
+ok('profile card renders even with only a password', trainer.indexOf('if (!c.phone && !c.email && !hasPass && !c.birth_date) return \'\';') >= 0);
 ok('profile card labels translated (phone/email/pass)', trainer.indexOf("rows.push([t('client.phone'), c.phone, 'phone']);") >= 0 && trainer.indexOf("rows.push([t('client.email'), c.email, 'mail']);") >= 0);
 
 /* ---------- portal: client change removed ---------- */

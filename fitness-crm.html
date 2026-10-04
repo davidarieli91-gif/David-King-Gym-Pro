@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c165" />
+<meta name="dk-build" content="c166" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2874,7 +2874,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c165</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c166</p>
             </div>
           </div>
 
@@ -4930,6 +4930,34 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
               </div>
             </div>
 
+            <!-- c166: trainer reminders — local notifications, no server -->
+            <div class="bg-surface border border-border rounded-2xl shadow-card mb-4 settings-panel collapsed">
+              <div class="settings-panel-header p-5 pb-3">
+                <h3 class="font-display font-bold text-sm text-muted uppercase tracking-wider" data-i18n="settings.remTitle">Trainer reminders</h3>
+                <svg class="w-4 h-4 text-muted settings-panel-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+              </div>
+              <div class="settings-panel-body p-5 pt-0">
+                <p class="text-xs text-muted mb-3 leading-relaxed" data-i18n="settings.remDesc">Local notifications, no server: a morning digest of who trains today and client birthdays. Works while the app is installed.</p>
+                <label class="flex items-center gap-2 mb-2 cursor-pointer">
+                  <input type="checkbox" id="trem-agenda-on" class="w-4 h-4 accent-primary" />
+                  <span class="text-sm" data-i18n="settings.remAgenda">Morning digest: who trains today</span>
+                </label>
+                <label class="flex items-center gap-2 mb-2 cursor-pointer">
+                  <input type="checkbox" id="trem-birth-on" class="w-4 h-4 accent-primary" />
+                  <span class="text-sm" data-i18n="settings.remBirthdays">Client birthdays</span>
+                </label>
+                <div class="flex items-center gap-2 mb-3">
+                  <span class="text-xs text-muted" data-i18n="settings.remTime">Time</span>
+                  <input type="time" id="trem-time" value="08:00" class="bg-surface-2 border border-border rounded-lg px-2 py-1 text-sm" />
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  <button id="trem-enable" class="bg-primary/15 hover:bg-primary/25 text-primary-2 border border-primary/30 text-sm font-medium px-3.5 py-2 rounded-lg transition" data-i18n="settings.remEnable">Allow notifications</button>
+                  <button id="trem-test" class="bg-surface-2 hover:bg-border/40 border border-border text-sm font-medium px-3.5 py-2 rounded-lg transition" data-i18n="settings.remTest">Test now</button>
+                </div>
+                <div id="trem-status" class="text-[11px] text-muted mt-2"></div>
+              </div>
+            </div>
+
             <!-- Cloud account & online sync (collapsible, additive to local mode) -->
             <div class="bg-surface border border-border rounded-2xl shadow-card mb-4 settings-panel collapsed">
               <div class="settings-panel-header p-5 pb-3">
@@ -5799,10 +5827,14 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
             </div>
-            <div class="grid grid-cols-3 gap-2">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <div>
                 <label class="block text-xs font-semibold mb-1" data-i18n="client.age">Age</label>
                 <input name="age" type="number" min="10" max="100" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1" data-i18n="client.birthDate">Birth date</label>
+                <input name="birth_date" type="date" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
               </div>
               <div>
                 <label class="block text-xs font-semibold mb-1" data-i18n="client.weight">Weight (kg)</label>
@@ -9813,6 +9845,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       }
       if (form.elements.full_name) form.elements.full_name.value = c.full_name || c.name || '';
       form.elements.age.value    = c.age || '';
+      if (form.elements.birth_date) form.elements.birth_date.value = c.birth_date || ''; /* c166 */
       form.elements.weight.value = c.weight || '';
       form.elements.height.value = c.height || '';
       form.elements.phone.value  = c.phone || '';
@@ -10439,10 +10472,11 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     function personalInfoCard(c) {
       /* c160: the portal password is part of the personal data — always visible */
       const hasPass = !!(c.portal_pass && /^\d{4,10}$/.test(String(c.portal_pass)));
-      if (!c.phone && !c.email && !hasPass) return '';
+      if (!c.phone && !c.email && !hasPass && !c.birth_date) return '';
       const rows = [];
       if (c.phone) rows.push([t('client.phone'), c.phone, 'phone']);
       if (c.email) rows.push([t('client.email'), c.email, 'mail']);
+      if (c.birth_date) rows.push([t('client.birthDate'), c.birth_date, 'cake']); /* c166 */
       rows.push([t('client.portalPassShort'), hasPass ? String(c.portal_pass) : t('client.portalPassNone'), 'lock']);
       return `
         <div class="bg-surface border border-border rounded-2xl shadow-card p-5">
@@ -10452,7 +10486,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
               <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-lg bg-surface-2 grid place-items-center text-muted shrink-0">
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    ${icon === 'phone' ? '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>' : icon === 'lock' ? '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>' : '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>'}
+                    ${icon === 'phone' ? '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>' : icon === 'cake' ? '<path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8"/><path d="M4 16s.5-1 2-1 2.5 2 4 2 2.5-2 4-2 2.5 2 4 2 2-1 2-1"/><path d="M2 21h20"/><path d="M7 8v3M12 8v3M17 8v3"/><path d="M7 4h.01M12 4h.01M17 4h.01"/>' : icon === 'lock' ? '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>' : '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>'}
                   </svg>
                 </div>
                 <div class="min-w-0">
@@ -28677,6 +28711,8 @@ async function boot() {
       else alert(t('backup.pwaUnsupported'));
     });
 
+    
+
     // Google Drive save
     const gdriveSaveBtn = document.getElementById('settings-btn-gdrive-save');
     if (gdriveSaveBtn) gdriveSaveBtn.addEventListener('click', async () => {
@@ -29464,6 +29500,215 @@ loadPanelTexture();
       if (e.target === encModal) encModal.classList.add('hidden');
     });
   }
+
+/* =====================================================================
+       c166: TRAINER REMINDERS — local, no server. Morning digest («who trains
+       today» from clients' training_days) + client birthdays (birth_date).
+       The page builds the agenda snapshot, stores it in the shared 'dk-sw'
+       IDB and the service worker repeats the check in the background
+       (periodicsync); both sides compare the same `last` map so a reminder
+       is never doubled. Pure math (buildAgenda/due) is unit-tested.
+       ===================================================================== */
+    (function () {
+      const CFG_KEY = 'dk_trem_cfg';
+      function dkTremGetCfg() {
+        let c = null;
+        try { c = JSON.parse(localStorage.getItem(CFG_KEY) || 'null'); } catch (e) {}
+        if (!c || typeof c !== 'object') c = {};
+        if (!c.agenda || typeof c.agenda !== 'object') c.agenda = { on: false };
+        if (!c.birth || typeof c.birth !== 'object') c.birth = { on: false };
+        if (!/^\d{1,2}:\d{2}$/.test(String(c.time || ''))) c.time = '08:00';
+        return c;
+      }
+      function dkTremSaveCfg(c) { try { localStorage.setItem(CFG_KEY, JSON.stringify(c)); } catch (e) {} }
+      function dkTremYmd(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+      /* pure: clients + now → today's agenda snapshot */
+      function dkTremBuildAgenda(clients, now) {
+        const dow = now.getDay();
+        const today = dkTremYmd(now);
+        const mmdd = today.slice(5);
+        const training = [], birthdays = [];
+        (clients || []).forEach(c => {
+          if (!c || c.archived) return;
+          const name = c.full_name || '?';
+          if (Array.isArray(c.training_days) && c.training_days.map(Number).indexOf(dow) >= 0) training.push(name);
+          const bd = String(c.birth_date || '');
+          if (/^\d{4}-\d{2}-\d{2}$/.test(bd) && bd.slice(5) === mmdd) {
+            const y = parseInt(bd.slice(0, 4), 10);
+            birthdays.push({ name: name, age: y > 1900 ? now.getFullYear() - y : null });
+          }
+        });
+        return { date: today, training: training, birthdays: birthdays };
+      }
+      /* pure: what is due right now (never twice a day thanks to `last`) */
+      function dkTremDue(cfg, items, last, now) {
+        const due = [];
+        if (!cfg || !items || items.date !== dkTremYmd(now)) return due;
+        const m = /^(\d{1,2}):(\d{2})$/.exec(String(cfg.time || ''));
+        const mins = m ? parseInt(m[1], 10) * 60 + parseInt(m[2], 10) : 480;
+        if (now.getHours() * 60 + now.getMinutes() < mins) return due;
+        if (cfg.agenda && cfg.agenda.on && items.training.length && (last && last.agenda) !== items.date) due.push('agenda');
+        if (cfg.birth && cfg.birth.on && items.birthdays.length && (last && last.birth) !== items.date) due.push('birth');
+        return due;
+      }
+      function dkTremIdb() {
+        return new Promise(function (res, rej) {
+          try {
+            const r = indexedDB.open('dk-sw', 1);
+            r.onupgradeneeded = function () { try { r.result.createObjectStore('kv'); } catch (e) {} };
+            r.onsuccess = function () { res(r.result); };
+            r.onerror = function () { rej(r.error); };
+          } catch (e) { rej(e); }
+        });
+      }
+      function dkTremKvGet(k) {
+        return dkTremIdb().then(function (db) {
+          return new Promise(function (res, rej) {
+            const q = db.transaction('kv', 'readonly').objectStore('kv').get(k);
+            q.onsuccess = function () { res(q.result); };
+            q.onerror = function () { rej(q.error); };
+          });
+        }).catch(function () { return null; });
+      }
+      function dkTremKvSet(k, v) {
+        return dkTremIdb().then(function (db) {
+          return new Promise(function (res, rej) {
+            const tx = db.transaction('kv', 'readwrite');
+            tx.objectStore('kv').put(v, k);
+            tx.oncomplete = res;
+            tx.onerror = function () { rej(tx.error); };
+          });
+        }).catch(function () { return null; });
+      }
+      function dkTremTexts(kind, items) {
+        const n = items.training.length;
+        const title = kind === 'agenda'
+          ? (t('settings.remAgendaTitle', { n: n }) || ('Training today: ' + n))
+          : (t('settings.remBirthTitle') || '🎂 Birthdays today');
+        const body = kind === 'agenda'
+          ? items.training.slice(0, 5).join(', ') + (n > 5 ? ' +' + (n - 5) : '')
+          : items.birthdays.map(b => b.name + (b.age ? ' (' + b.age + ')' : '')).join(', ');
+        return { title: title, body: body };
+      }
+      function dkTremShow(kind, items) {
+        const m = dkTremTexts(kind, items);
+        const fallback = function () {
+          try { if (window.Notification && Notification.permission === 'granted') new Notification(m.title, { body: m.body, tag: 'dk-t-' + kind }); } catch (e) {}
+        };
+        let shown = false;
+        try {
+          if (navigator.serviceWorker && navigator.serviceWorker.ready) {
+            navigator.serviceWorker.ready.then(function (reg) {
+              if (shown) return;
+              shown = true;
+              if (reg && reg.showNotification) reg.showNotification(m.title, { body: m.body, tag: 'dk-t-' + kind, renotify: false, icon: './icon-192.png', badge: './icon-192.png' });
+            }).catch(function () {});
+            setTimeout(function () { if (!shown) { shown = true; fallback(); } }, 3000);
+            return;
+          }
+        } catch (e) {}
+        fallback();
+      }
+      function dkTremPushSw(st) {
+        try {
+          navigator.serviceWorker.ready.then(function (reg) {
+            if (reg.active) reg.active.postMessage({ type: 'dk-trem-config', cfg: st.cfg, lang: st.lang, items: st.items, last: st.last });
+          }).catch(function () {});
+        } catch (e) {}
+      }
+      async function dkTremTick() {
+        const cfg = dkTremGetCfg();
+        if (!cfg.agenda.on && !cfg.birth.on) return [];
+        let st = (await dkTremKvGet('trem')) || {};
+        let items = st.items || null;
+        const today = dkTremYmd(new Date());
+        if (!items || items.date !== today) {
+          let clients = [];
+          try { clients = await db.all('clients'); } catch (e) {}
+          items = dkTremBuildAgenda(clients, new Date());
+        }
+        const last = st.last || {};
+        const due = dkTremDue(cfg, items, last, new Date());
+        due.forEach(kind => { dkTremShow(kind, items); last[kind] = items.date; });
+        st.cfg = cfg;
+        st.lang = (typeof currentLang === 'function') ? currentLang() : 'ru';
+        st.items = items;
+        st.last = last;
+        st.ts = Date.now();
+        await dkTremKvSet('trem', st);
+        dkTremPushSw(st);
+        return due;
+      }
+      function dkTremPermission() {
+        return new Promise(function (res) {
+          try {
+            if (!('Notification' in window)) { res('unsupported'); return; }
+            if (Notification.permission === 'granted') { res('granted'); return; }
+            if (Notification.permission === 'denied') { res('denied'); return; }
+            Notification.requestPermission().then(function (p) { res(p); }).catch(function () { res('denied'); });
+          } catch (e) { res('denied'); }
+        });
+      }
+      function dkTremStatus(msg) {
+        const el = document.getElementById('trem-status');
+        if (el) el.textContent = msg || '';
+      }
+      function dkTremInit() {
+        const cfg = dkTremGetCfg();
+        const agendaEl = document.getElementById('trem-agenda-on');
+        const birthEl = document.getElementById('trem-birth-on');
+        const timeEl = document.getElementById('trem-time');
+        if (agendaEl) agendaEl.checked = !!cfg.agenda.on;
+        if (birthEl) birthEl.checked = !!cfg.birth.on;
+        if (timeEl) timeEl.value = cfg.time;
+        const sync = function () {
+          const c = dkTremGetCfg();
+          dkTremSaveCfg(c);
+          dkTremTick();
+        };
+        if (agendaEl && !agendaEl.dataset.wired166) { agendaEl.dataset.wired166 = '1'; agendaEl.addEventListener('change', () => { const c = dkTremGetCfg(); c.agenda.on = agendaEl.checked; dkTremSaveCfg(c); dkTremTick(); }); }
+        if (birthEl && !birthEl.dataset.wired166) { birthEl.dataset.wired166 = '1'; birthEl.addEventListener('change', () => { const c = dkTremGetCfg(); c.birth.on = birthEl.checked; dkTremSaveCfg(c); dkTremTick(); }); }
+        if (timeEl && !timeEl.dataset.wired166) { timeEl.dataset.wired166 = '1'; timeEl.addEventListener('change', () => { const c = dkTremGetCfg(); c.time = timeEl.value || '08:00'; dkTremSaveCfg(c); dkTremTick(); }); }
+        const enableEl = document.getElementById('trem-enable');
+        if (enableEl && !enableEl.dataset.wired166) {
+          enableEl.dataset.wired166 = '1';
+          enableEl.addEventListener('click', async () => {
+            const p = await dkTremPermission();
+            if (p === 'granted') {
+              dkTremStatus(t('settings.remAllowed') || 'Notifications allowed ✓');
+              sync();
+            } else if (p === 'unsupported') {
+              dkTremStatus(t('settings.remUnsupported') || 'This browser does not support notifications');
+            } else {
+              dkTremStatus(t('settings.remDenied') || 'Notifications blocked in the browser settings');
+            }
+          });
+        }
+        const testEl = document.getElementById('trem-test');
+        if (testEl && !testEl.dataset.wired166) {
+          testEl.dataset.wired166 = '1';
+          testEl.addEventListener('click', async () => {
+            let clients = [];
+            try { clients = await db.all('clients'); } catch (e) {}
+            const items = dkTremBuildAgenda(clients, new Date());
+            const kind = items.birthdays.length && cfg.birth.on ? 'birth' : 'agenda';
+            dkTremShow(kind, items);
+            dkTremStatus(t('settings.remTestSent') || 'Test notification sent');
+          });
+        }
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.ready.then(function (reg) {
+            if ('periodicSync' in reg) { try { reg.periodicSync.register('dk-reminders', { minInterval: 3600000 }); } catch (e) {} }
+          }).catch(function () {});
+        }
+        dkTremTick();
+        setInterval(dkTremTick, 60000);
+        document.addEventListener('visibilitychange', function () { if (!document.hidden) dkTremTick(); });
+      }
+      window.dkTrainerReminders = { init: dkTremInit, tick: dkTremTick, buildAgenda: dkTremBuildAgenda, due: dkTremDue, show: dkTremShow, getCfg: dkTremGetCfg };
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', dkTremInit);
+      else dkTremInit();
+    })();
 
   // === ENCYCLOPEDIA MODULE ===
   // Comprehensive illustrated guide for trainers and nutritionists.
@@ -33301,7 +33546,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 165; /* numeric part of dk-build c165 */
+  var RUNNING = 166; /* numeric part of dk-build c166 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
