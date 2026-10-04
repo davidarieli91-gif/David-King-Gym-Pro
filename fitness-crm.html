@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c164" />
+<meta name="dk-build" content="c165" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2874,7 +2874,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c164</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c165</p>
             </div>
           </div>
 
@@ -5154,6 +5154,8 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
             <input type="number" id="np-target-fat" class="w-full bg-surface-2 border border-border rounded-lg px-1 py-1 text-sm text-center font-bold" value="65" />
           </div>
         </div>
+        <!-- c165: day progress — consumed vs target, remaining to the goal -->
+        <div id="np-day-progress" class="px-3 py-2 border-b border-border flex flex-wrap gap-x-3 gap-y-1 text-[11px] shrink-0 bg-surface-2/30"></div>
         <!-- Quick macro adjustment toolbar -->
         <div class="p-2 border-b border-border flex gap-1 flex-wrap shrink-0 bg-surface-2/40">
           <span class="text-[10px] uppercase tracking-wider text-muted self-center me-1" data-i18n="nutrition.quickAdjust">Quick adjust</span>
@@ -5225,6 +5227,23 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
         </div>
         <!-- Results -->
         <div id="fp-results" class="flex-1 overflow-y-auto p-3 space-y-1.5"></div>
+        <!-- c165: portion calculator — how much to add + what stays to the day's target -->
+        <div id="fp-portion" class="hidden border-t border-border p-3 space-y-2 shrink-0">
+          <div class="flex items-center gap-2">
+            <span id="fp-portion-name" class="flex-1 min-w-0 text-xs font-semibold truncate"></span>
+            <button id="fp-portion-cancel" class="w-6 h-6 grid place-items-center rounded-lg hover:bg-surface-2 text-muted shrink-0" type="button" aria-label="Close">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <input type="number" id="fp-portion-grams" class="w-20 bg-surface-2 border border-border rounded-lg px-2 py-1.5 text-sm text-center font-mono" min="1" step="1" value="100" />
+            <span class="text-[10px] text-muted" data-i18n="nutrition.grams">g</span>
+            <div id="fp-portion-chips" class="flex gap-1 flex-wrap"></div>
+            <span id="fp-portion-macros" class="ms-auto text-[10px] font-mono text-muted"></span>
+          </div>
+          <div id="fp-portion-remain" class="text-[10px]"></div>
+          <button id="fp-portion-add" class="w-full bg-primary hover:bg-primary-2 text-white text-sm font-semibold py-2 rounded-xl transition shadow-card" type="button" data-i18n="nutrition.addFood">Add food</button>
+        </div>
       </div>
     </div>
 
@@ -24056,7 +24075,69 @@ Select foods for each meal. Output as JSON only.`;
       document.getElementById('np-target-protein').value = _editing.target_protein || 150;
       document.getElementById('np-target-carbs').value = _editing.target_carbs || 200;
       document.getElementById('np-target-fat').value = _editing.target_fat || 65;
+      /* c165: targets feed the day-progress strip live */
+      ['np-target-cal', 'np-target-protein', 'np-target-carbs', 'np-target-fat'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && !el.dataset.wired165) { el.dataset.wired165 = '1'; el.addEventListener('input', renderDayProgress); }
+      });
       renderMeals();
+    }
+
+    /* =====================================================================
+       c165: PORTION CALCULATOR — how much to add, and what is left to the
+       day's target after adding it. Pure math first, DOM after.
+       ===================================================================== */
+    function npDayTotals(meals) {
+      const t0 = { calories: 0, protein: 0, carbs: 0, fat: 0 };
+      (meals || []).forEach(m => (m.foods || []).forEach(f => {
+        const k = (Number(f.grams) || 0) / 100;
+        const n = f.nutrition || {};
+        t0.calories += (Number(n.calories) || 0) * k;
+        t0.protein += (Number(n.protein) || 0) * k;
+        t0.carbs += (Number(n.carbs) || 0) * k;
+        t0.fat += (Number(n.fat) || 0) * k;
+      }));
+      return t0;
+    }
+    function npRemaining(totals, targets, extra) {
+      const e = extra || {};
+      const t0 = totals || {};
+      const tg = targets || {};
+      return {
+        calories: (Number(tg.calories) || 0) - (Number(t0.calories) || 0) - (Number(e.calories) || 0),
+        protein: (Number(tg.protein) || 0) - (Number(t0.protein) || 0) - (Number(e.protein) || 0),
+        carbs: (Number(tg.carbs) || 0) - (Number(t0.carbs) || 0) - (Number(e.carbs) || 0),
+        fat: (Number(tg.fat) || 0) - (Number(t0.fat) || 0) - (Number(e.fat) || 0)
+      };
+    }
+    function npReadTargets() {
+      const v = id => { const el = document.getElementById(id); return el ? (parseFloat(el.value) || 0) : 0; };
+      return { calories: v('np-target-cal'), protein: v('np-target-protein'), carbs: v('np-target-carbs'), fat: v('np-target-fat') };
+    }
+    function npRemainGroup(rem) {
+      const fmt = (v, u) => {
+        const over = v < -0.5;
+        return '<span class="font-mono font-semibold ' + (over ? 'text-danger' : 'text-success') + '">' + (over ? '+' : '−') + Math.round(Math.abs(v)) + u + '</span>';
+      };
+      return '<span class="text-muted">' + escapeHTML(t('nutrition.remaining')) + ':</span>'
+        + ' <span>' + fmt(rem.calories, '') + ' ' + escapeHTML(t('nutrition.kcal')) + '</span>'
+        + ' <span>' + fmt(rem.protein, 'g') + ' ' + escapeHTML(t('nutrition.proteinShort')) + '</span>'
+        + ' <span>' + fmt(rem.carbs, 'g') + ' ' + escapeHTML(t('nutrition.carbsShort')) + '</span>'
+        + ' <span>' + fmt(rem.fat, 'g') + ' ' + escapeHTML(t('nutrition.fatShort')) + '</span>';
+    }
+    function renderDayProgress() {
+      const el = document.getElementById('np-day-progress');
+      if (!el || !_editing) return;
+      const tot = npDayTotals(_editing.meals);
+      const tg = npReadTargets();
+      if (!tg.calories && !tg.protein && !tg.carbs && !tg.fat) { el.innerHTML = ''; return; }
+      const rem = npRemaining(tot, tg, null);
+      el.innerHTML = '<span class="text-muted font-semibold">' + escapeHTML(t('nutrition.totals') || 'Total') + ':</span>'
+        + '<span>' + escapeHTML(t('nutrition.calories')) + ' <span class="font-mono">' + Math.round(tot.calories) + '/' + Math.round(tg.calories) + '</span></span>'
+        + '<span>' + escapeHTML(t('nutrition.proteinShort')) + ' <span class="font-mono">' + Math.round(tot.protein) + '/' + Math.round(tg.protein) + '</span></span>'
+        + '<span>' + escapeHTML(t('nutrition.carbsShort')) + ' <span class="font-mono">' + Math.round(tot.carbs) + '/' + Math.round(tg.carbs) + '</span></span>'
+        + '<span>' + escapeHTML(t('nutrition.fatShort')) + ' <span class="font-mono">' + Math.round(tot.fat) + '/' + Math.round(tg.fat) + '</span></span>'
+        + '<span class="ms-auto">' + npRemainGroup(rem) + '</span>';
     }
 
     function renderMeals() {
@@ -24291,15 +24372,95 @@ Select foods for each meal. Output as JSON only.`;
           renderMeals();
         });
       }
+
+      /* c165: keep the day-progress strip in sync with every portion change */
+      renderDayProgress();
     }
 
     function openFoodPicker(callback) {
       _fpCallback = callback;
+      _fpPendingFood = null;
+      hideFpPortion();
+      wireFpPortion();
       const modal = document.getElementById('food-picker-modal');
       modal.classList.remove('hidden');
       const search = document.getElementById('fp-search');
       if (search) { search.value = ''; search.focus(); }
       renderFoodResults('');
+    }
+
+    /* c165: portion calculator inside the picker — choose grams, see the
+       macros AND what remains to the plan's daily targets after adding. */
+    let _fpPendingFood = null;
+    function fpServingGrams(food) {
+      const s = Number(food && (food.serving_quantity || food.package_grams) || 0);
+      return s > 0 ? Math.round(s) : 100;
+    }
+    function hideFpPortion() {
+      _fpPendingFood = null;
+      const bar = document.getElementById('fp-portion');
+      if (bar) bar.classList.add('hidden');
+    }
+    function wireFpPortion() {
+      const add = document.getElementById('fp-portion-add');
+      if (!add || add.dataset.wired165) return;
+      add.dataset.wired165 = '1';
+      add.addEventListener('click', fpConfirmPortion);
+      const cancel = document.getElementById('fp-portion-cancel');
+      if (cancel) cancel.addEventListener('click', hideFpPortion);
+      const inp = document.getElementById('fp-portion-grams');
+      if (inp) { inp.addEventListener('input', fpUpdatePortion); inp.addEventListener('click', e => e.stopPropagation()); }
+    }
+    function showFpPortion(food) {
+      if (!food) return;
+      _fpPendingFood = food;
+      const bar = document.getElementById('fp-portion');
+      if (!bar) return;
+      const lang = (typeof currentLang === 'function') ? currentLang() : 'en';
+      document.getElementById('fp-portion-name').textContent = food['name_' + lang] || food.name_en || food.name_he || '?';
+      const serving = fpServingGrams(food);
+      document.getElementById('fp-portion-grams').value = serving;
+      const chips = document.getElementById('fp-portion-chips');
+      chips.innerHTML = '<button type="button" class="fdb-pager" data-fp-g="' + serving + '">' + escapeHTML(t('food.portionServing')) + ' ' + serving + '</button>'
+        + [50, 100, 150, 200].map(o => '<button type="button" class="fdb-pager" data-fp-g="' + o + '">' + o + '</button>').join('');
+      chips.querySelectorAll('[data-fp-g]').forEach(b => b.addEventListener('click', () => {
+        document.getElementById('fp-portion-grams').value = b.getAttribute('data-fp-g');
+        fpUpdatePortion();
+      }));
+      bar.classList.remove('hidden');
+      fpUpdatePortion();
+    }
+    function fpUpdatePortion() {
+      const f = _fpPendingFood;
+      if (!f) return;
+      const g = parseFloat(document.getElementById('fp-portion-grams').value) || 0;
+      const n = f.nutrition || {};
+      const k = g / 100;
+      const add = { calories: (Number(n.calories) || 0) * k, protein: (Number(n.protein) || 0) * k, carbs: (Number(n.carbs) || 0) * k, fat: (Number(n.fat) || 0) * k };
+      const macEl = document.getElementById('fp-portion-macros');
+      if (macEl) macEl.textContent = Math.round(add.calories) + ' ' + t('nutrition.kcal') + ' · ' + Math.round(add.protein) + 'P ' + Math.round(add.carbs) + 'C ' + Math.round(add.fat) + 'F';
+      const remEl = document.getElementById('fp-portion-remain');
+      if (remEl) {
+        if (_editing && _editing.meals) {
+          const tot = npDayTotals(_editing.meals);
+          const tg = npReadTargets();
+          const rem = npRemaining(tot, tg, add);
+          remEl.innerHTML = '<span class="text-muted">' + escapeHTML(t('nutrition.afterAdd')) + ':</span> ' + npRemainGroup(rem);
+        } else {
+          remEl.innerHTML = '';
+        }
+      }
+    }
+    function fpConfirmPortion() {
+      const f = _fpPendingFood;
+      if (!f) return;
+      const g = parseFloat(document.getElementById('fp-portion-grams').value) || 0;
+      if (g <= 0) return;
+      const cb = _fpCallback;
+      _fpCallback = null;
+      hideFpPortion();
+      document.getElementById('food-picker-modal').classList.add('hidden');
+      if (cb) cb(f, Math.round(g));
     }
 
     /** Scan barcode using device camera (BarcodeDetector API) or manual entry. */
@@ -24754,13 +24915,9 @@ Select foods for each meal. Output as JSON only.`;
           if (e.target.closest('[data-fp-view]')) return;
           const food = _foods.find(f => f.id === el.getAttribute('data-fp-pick'));
           if (food && _fpCallback) {
-            /* c146: start from the product's REAL serving (123 products carry
-               it) instead of always dumping 100 г */
-            const servingG = Number(food.serving_quantity || food.package_grams || 0);
-            const g = servingG > 0 ? Math.round(servingG) : 100;
-            _fpCallback(food, g);
-            document.getElementById('food-picker-modal').classList.add('hidden');
-            _fpCallback = null;
+            /* c165: instead of dumping a portion instantly, open the
+               portion calculator — grams + macros + remaining-to-target */
+            showFpPortion(food);
           }
         });
       });
@@ -33144,7 +33301,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 164; /* numeric part of dk-build c164 */
+  var RUNNING = 165; /* numeric part of dk-build c165 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

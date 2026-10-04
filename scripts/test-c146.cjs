@@ -89,7 +89,7 @@ ok('date input defaults to LOCAL today', trainer.indexOf('dateInput.value = dkLo
 ok('daily-log search reads BOTH stores + normalizes', trainer.indexOf("ref = await db.all('food_database')") >= 0 && trainer.indexOf('const normRef = f =>') >= 0);
 ok('adherence no longer reads actual_*', trainer.indexOf("n['actual_' + f]") === -1 && trainer.indexOf('actual.calories += (it.calories != null') >= 0);
 ok('calorie bands in calcMacros + calcTargetCalories', trainer.indexOf('Math.max(800, Math.min(6000, Math.round(calories || 0)))') >= 0 && trainer.indexOf('Math.max(800, Math.min(6000, Math.round(tdee * factor)))') >= 0);
-ok('picker uses real serving size', trainer.indexOf('Number(food.serving_quantity || food.package_grams || 0)') >= 0);
+ok('picker uses real serving size', trainer.indexOf('Number(food && (food.serving_quantity || food.package_grams) || 0)') >= 0);
 ok('unit_amount follows grams in both adjusters', count(trainer, 'f.unit_amount = Math.round(f.unit_amount * (newGrams / oldG) * 100) / 100;') >= 2);
 ok('plan targets validated + clamped', trainer.indexOf("const clampT = (id, min, max, dflt) =>") >= 0 && trainer.indexOf("_editing.target_calories = clampT('np-target-cal', 800, 6000, 2000);") >= 0);
 ok('food editor has the Russian-name field', trainer.indexOf('name="name_ru"') >= 0 && trainer.indexOf('form.elements.name_ru.value = food.name_ru') >= 0);
