@@ -831,8 +831,10 @@ const _mmEsc = (v) => String(v == null ? '' : v)
       <path class="bm-muscle" data-group="elbow_flexors" data-subgroup="Brachialis" d="M132,100 Q134,108 132,116 L128,116 Q130,108 130,100 Z" fill="url(#muscleG)" stroke="rgb(var(--c-border))" stroke-width="0.5"/>
       <!-- Left Forearm (flexors) -->
       <path class="bm-muscle" data-group="forearms" data-subgroup="Wrist Curls" d="M24,118 Q18,124 20,142 Q24,148 30,144 Q32,128 30,118 Z" fill="url(#muscleG)" stroke="rgb(var(--c-border))" stroke-width="1"/>
+<path class="bm-muscle" data-group="elbow_flexors" data-subgroup="Brachioradialis" d="M24,116 Q20,120 21,126 Q24,128 28,127 Q30,122 30,116 Z" fill="url(#muscleG)" stroke="rgb(var(--c-border))" stroke-width="0.8"/>
       <!-- Right Forearm -->
       <path class="bm-muscle" data-group="forearms" data-subgroup="Wrist Curls" d="M136,118 Q142,124 140,142 Q136,148 130,144 Q128,128 130,118 Z" fill="url(#muscleG)" stroke="rgb(var(--c-border))" stroke-width="1"/>
+<path class="bm-muscle" data-group="elbow_flexors" data-subgroup="Brachioradialis" d="M136,116 Q140,120 139,126 Q136,128 132,127 Q130,122 130,116 Z" fill="url(#muscleG)" stroke="rgb(var(--c-border))" stroke-width="0.8"/>
       <!-- Upper Abs (Rectus Abdominis — upper portion) -->
       <path class="bm-muscle" data-group="abdominals" data-subgroup="Upper" d="M58,108 L102,108 L102,124 Q80,128 58,124 Z" fill="url(#muscleG)" stroke="rgb(var(--c-border))" stroke-width="1"/>
       <!-- Middle Abs -->
@@ -915,7 +917,9 @@ const _mmEsc = (v) => String(v == null ? '' : v)
       <path class="bm-muscle" data-group="triceps" data-subgroup="Compound" d="M126,90 Q134,96 132,114 Q128,120 120,116 Q118,102 120,92 Z" fill="url(#muscleGB)" stroke="rgb(var(--c-border))" stroke-width="1"/>
       <!-- Left Forearm (extensors) -->
       <path class="bm-muscle" data-group="forearms" data-subgroup="Wrist Curls" d="M24,122 Q18,128 20,146 Q24,152 30,148 Q32,132 30,122 Z" fill="url(#muscleGB)" stroke="rgb(var(--c-border))" stroke-width="1"/>
+<path class="bm-muscle" data-group="elbow_flexors" data-subgroup="Brachioradialis" d="M24,120 Q20,124 21,130 Q24,132 28,131 Q30,126 30,120 Z" fill="url(#muscleGB)" stroke="rgb(var(--c-border))" stroke-width="0.8"/>
       <path class="bm-muscle" data-group="forearms" data-subgroup="Wrist Curls" d="M136,122 Q142,128 140,146 Q136,152 130,148 Q128,132 130,122 Z" fill="url(#muscleGB)" stroke="rgb(var(--c-border))" stroke-width="1"/>
+<path class="bm-muscle" data-group="elbow_flexors" data-subgroup="Brachioradialis" d="M136,120 Q140,124 139,130 Q136,132 132,131 Q130,126 130,120 Z" fill="url(#muscleGB)" stroke="rgb(var(--c-border))" stroke-width="0.8"/>
       <!-- Lower Back (Erector Spinae) -->
       <path class="bm-muscle" data-group="back" data-subgroup="Lower Back" d="M58,128 L102,128 L100,152 Q80,156 60,152 Z" fill="url(#muscleGB)" stroke="rgb(var(--c-border))" stroke-width="1"/>
       <!-- Left Erector Spinae (column along spine) -->
@@ -923,8 +927,10 @@ const _mmEsc = (v) => String(v == null ? '' : v)
       <path class="bm-muscle" data-group="back" data-subgroup="Lower Back" d="M92,130 Q94,144 90,156 L86,156 Q88,144 88,130 Z" fill="url(#muscleGB)" stroke="rgb(var(--c-border))" stroke-width="0.5"/>
       <!-- Left Gluteus Maximus -->
       <ellipse class="bm-muscle" data-group="legs" data-subgroup="Glutes" cx="62" cy="166" rx="18" ry="16" fill="url(#muscleGB)" stroke="rgb(var(--c-border))" stroke-width="1"/>
+<ellipse class="bm-muscle" data-group="legs" data-subgroup="Abductors" cx="42" cy="156" rx="6" ry="9" fill="url(#muscleGB)" stroke="rgb(var(--c-border))" stroke-width="0.8"/>
       <!-- Right Gluteus Maximus -->
       <ellipse class="bm-muscle" data-group="legs" data-subgroup="Glutes" cx="98" cy="166" rx="18" ry="16" fill="url(#muscleGB)" stroke="rgb(var(--c-border))" stroke-width="1"/>
+<ellipse class="bm-muscle" data-group="legs" data-subgroup="Abductors" cx="118" cy="156" rx="6" ry="9" fill="url(#muscleGB)" stroke="rgb(var(--c-border))" stroke-width="0.8"/>
       <!-- Glute crease -->
       <line x1="80" y1="156" x2="80" y2="180" stroke="rgb(var(--c-border))" stroke-width="0.5" opacity="0.3"/>
       <!-- Left Hamstring (Biceps Femoris) -->
@@ -986,6 +992,7 @@ const _mmEsc = (v) => String(v == null ? '' : v)
       <path class="bm-muscle" data-group="triceps" data-subgroup="Compound" d="M100,90 Q108,98 110,116 Q108,124 100,122 Q98,108 98,94 Z" fill="url(#muscleGS)" stroke="rgb(var(--c-border))" stroke-width="1"/>
       <!-- Forearm -->
       <path class="bm-muscle" data-group="forearms" data-subgroup="Wrist Curls" d="M90,124 Q96,130 100,148 Q102,156 96,156 Q92,142 88,128 Z" fill="url(#muscleGS)" stroke="rgb(var(--c-border))" stroke-width="1"/>
+<path class="bm-muscle" data-group="elbow_flexors" data-subgroup="Brachioradialis" d="M90,122 Q86,126 88,132 Q92,134 96,132 Q96,128 94,122 Z" fill="url(#muscleGS)" stroke="rgb(var(--c-border))" stroke-width="0.8"/>
       <!-- Abs (side view — front of torso) -->
       <path class="bm-muscle" data-group="abdominals" data-subgroup="Upper" d="M78,134 Q74,140 76,148 L84,148 Q82,140 82,134 Z" fill="url(#muscleGS)" stroke="rgb(var(--c-border))" stroke-width="1"/>
       <path class="bm-muscle" data-group="abdominals" data-subgroup="Lower" d="M76,148 Q74,156 78,164 L86,162 Q82,154 84,148 Z" fill="url(#muscleGS)" stroke="rgb(var(--c-border))" stroke-width="1"/>
@@ -995,6 +1002,7 @@ const _mmEsc = (v) => String(v == null ? '' : v)
       <path class="bm-muscle" data-group="back" data-subgroup="Lower Back" d="M92,148 Q98,154 98,164 L92,164 Q90,156 90,148 Z" fill="url(#muscleGS)" stroke="rgb(var(--c-border))" stroke-width="0.5"/>
       <!-- Glute (side view — buttock bulge) -->
       <ellipse class="bm-muscle" data-group="legs" data-subgroup="Glutes" cx="98" cy="174" rx="14" ry="14" fill="url(#muscleGS)" stroke="rgb(var(--c-border))" stroke-width="1"/>
+<ellipse class="bm-muscle" data-group="legs" data-subgroup="Abductors" cx="84" cy="166" rx="6" ry="9" fill="url(#muscleGS)" stroke="rgb(var(--c-border))" stroke-width="0.8"/>
       <!-- Hip Flexor (front of hip) -->
       <path class="bm-muscle" data-group="legs" data-subgroup="Hip Flexors" d="M78,164 Q74,172 78,180 L86,178 Q82,170 84,164 Z" fill="url(#muscleGS)" stroke="rgb(var(--c-border))" stroke-width="0.5"/>
       <!-- Quad (front of thigh) -->

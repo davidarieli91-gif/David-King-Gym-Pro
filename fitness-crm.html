@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c171" />
+<meta name="dk-build" content="c172" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2874,7 +2874,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c171</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c172</p>
             </div>
           </div>
 
@@ -6667,6 +6667,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     'Legs': { en: 'Legs', ru: 'Ноги', he: 'רגליים' },
     'Hip Flexors': { en: 'Hip Flexors', ru: 'Сгибатели бедра', he: 'כופפי ירך' },
     'Rotator Cuff': { en: 'Rotator Cuff', ru: 'Вращательная манжета', he: 'רוטציה בכתף' },
+    'Wrist Curls': { en: 'Wrist Curls', ru: 'Сгибатели запястья', he: 'כופפי כף יד' }, /* c172 */
   };
 
   /** Group display-name translations for all 3 languages.
@@ -13641,7 +13642,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const cachedEx = (ex.exercise_id && typeof lookupExerciseGlobal === 'function') ? lookupExerciseGlobal(ex.exercise_id) : null;
       const group = (cachedEx && cachedEx.group_canonical) || (ex.g && dkMuscleGroupKey(ex.g)) || dkMuscleGroupKey(rawGroup) || rawGroup || 'Unknown';
       const syn = (cachedEx && Array.isArray(cachedEx.synergists)) ? cachedEx.synergists.map(s => dkMuscleGroupKey(s) || s) : (Array.isArray(ex.syn) ? ex.syn.map(s => dkMuscleGroupKey(s) || s) : []);
-      return { group: group, synergists: syn };
+      const sub = (cachedEx && (cachedEx.subgroup_en || cachedEx.sE)) || ex.subgroup || ''; /* c172 */
+      return { group: group, synergists: syn, sub: sub };
     }
 
     /* c128: DAY drill-down — the trainer taps a workout day in the activity
@@ -20665,6 +20667,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     let _mode = 'recovery';  // 'recovery' | '7d' | '30d' | 'trend' (c124)
     let _view = 'front';     // 'front' | 'back' | 'side'
     let _data = null;        // cached result of computeForClient
+    let _subData = null;     // c172: per-subgroup recovery { 'legs:Quadriceps': {...} }
     /* c124: trend state — 14/30-day window + per-days cache of engine.trend();
        _ctx is ONE fetch/resolve context shared by computeForClient and
        computeTrendForClient so workout_history is read from IndexedDB once
@@ -20795,7 +20798,10 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             synergists: (ex.synergist_muscles || []).map(s => canonicalGroup(s) || s).filter(Boolean),
             /* c122: for the engine's bodyweight-pattern detection */
             name_en: ex.name_en || ex.name || '',
-            equipment_type: ex.equipment_type || ''
+            equipment_type: ex.equipment_type || '',
+            /* c172: the subgroup (Biceps / Quadriceps / …) — feeds the map's
+               per-subgroup recovery */
+            subgroup: ex.subgroup_en || ''
           };
         }
       }));
@@ -20827,12 +20833,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     function resolveExCtx(ex) {
       const c = (_ctx && ex.exercise_id && _ctx.exCache[ex.exercise_id]) || null;
       if (c && c.group) {
-        return { group: c.group, synergists: c.synergists,
+        return { group: c.group, synergists: c.synergists, sub: c.subgroup || '', /* c172 */
                  names: [ex.name, c.name_en], equipment: c.equipment_type };
       }
       const g = canonicalGroup(ex.muscle_group) || canonicalGroup(ex.group) || ex.group;
       if (!g) return null;
-      return { group: g, synergists: [], names: [ex.name], equipment: ex.equipment };
+      return { group: g, synergists: [], sub: ex.subgroup || ex.subgroup_en || '', names: [ex.name], equipment: ex.equipment };
     }
 
     /** c124: per-muscle daily series for the «Тренд» sparklines (14/30 days).
@@ -20868,7 +20874,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           empty[g] = { recovery: 100, lastTrainedDaysAgo: null, lastTrainedMs: null,
                        volume7d: 0, volume30d: 0, sets7d: 0, sets30d: 0, status: 'untrained' };
         });
-        return empty;
+        return { groups: empty, subgroups: {} };
       }
 
       /* c122: RECOVERY ENGINE v2 — the shared model (src/recovery-engine.js):
@@ -20890,7 +20896,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             resolveEx: resolveExCtx
           });
           ctx.tauMod = res122.meta.tauMod;  /* c125: for the personal strip */
-          return res122.groups;
+          /* c172: subgroups travel alongside the groups */
+          return { groups: res122.groups, subgroups: res122.subgroups || {} };
         }
       } catch (e122) {
         console.warn('[recovery] engine v2 failed → legacy time-based model:', e122);
@@ -20981,7 +20988,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           status: statusBucket(recovery, lastTrainedDaysAgo)
         };
       });
-      return result;
+      return { groups: result, subgroups: {} };
     }
 
     /** Pick a color for a muscle based on recovery %.
@@ -20991,6 +20998,13 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       if (recovery >= 85) return 'rgba(34,197,94,0.65)';   // success/green
       if (recovery >= 50) return 'rgba(245,158,11,0.65)';  // warning/yellow
       return 'rgba(239,68,68,0.75)';                       // danger/red
+    }
+
+    /** c172: localized subgroup label (SUBGROUP_I18N lives in this script). */
+    function subgroupLabel(sub) {
+      const lang = (typeof currentLang === 'function') ? currentLang() : 'en';
+      const e = (typeof SUBGROUP_I18N !== 'undefined') ? SUBGROUP_I18N[sub] : null;
+      return (e && (e[lang] || e.en)) || sub || '';
     }
 
     /** Pick a color for a muscle based on volume (0 to maxVolume). */
@@ -21030,9 +21044,16 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         const g = path.getAttribute('data-group');
         if (!g || !_data[g]) return;
         const info = _data[g];
+        /* c172: in RECOVERY mode the path follows its own SUBGROUP when the
+           engine has data for it (data-subgroup already lives on the path) */
+        const subName = path.getAttribute('data-subgroup') || '';
+        const skey = subName ? (g + ':' + subName) : '';
+        const infoSub = (_mode === 'recovery' && _subData && skey && _subData[skey]) ? _subData[skey] : null;
         let fill;
         if (_mode === 'recovery') {
-          fill = muscleFillColor(info.recovery, info.lastTrainedDaysAgo);
+          fill = infoSub
+            ? muscleFillColor(infoSub.recovery, infoSub.lastTrainedDaysAgo)
+            : muscleFillColor(info.recovery, info.lastTrainedDaysAgo);
         } else if (_mode === '7d') {
           fill = muscleVolumeColor(info.volume7d, maxVol);
         } else {
@@ -21044,16 +21065,17 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         // Add tooltip via title element
         const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
         const lbl = (GROUP_LABELS[g] && GROUP_LABELS[g][currentLang()]) || g;
-        let tip = lbl;
+        let tip = infoSub ? (lbl + ' · ' + subgroupLabel(subName)) : lbl;
         if (_mode === 'recovery') {
-          tip += '\n' + (t('recovery.recovery') || 'Recovery') + ': ' + info.recovery + '%';
-          if (info.lastTrainedDaysAgo !== null) {
-            tip += '\n' + (t('recovery.lastTrained') || 'Last trained') + ': ' + Math.round(info.lastTrainedDaysAgo) + 'd ago';
+          const rInfo = infoSub || info;
+          tip += '\n' + (t('recovery.recovery') || 'Recovery') + ': ' + rInfo.recovery + '%';
+          if (rInfo.lastTrainedDaysAgo !== null) {
+            tip += '\n' + (t('recovery.lastTrained') || 'Last trained') + ': ' + Math.round(rInfo.lastTrainedDaysAgo) + 'd ago';
           } else {
             tip += '\n' + (t('recovery.untrained') || 'Not trained yet');
           }
-          /* c123: advice line in the SVG tooltip */
-          if (adv123 && adv123.per && adv123.per[g]) {
+          /* c123: advice line in the SVG tooltip (group level) */
+          if (!infoSub && adv123 && adv123.per && adv123.per[g]) {
             const a123 = adv123.per[g];
             tip += '\n' + ADVICE_UI[a123.advice].icon + ' ' + adviceLabel(a123.advice);
             if (a123.setsBand) tip += ' · ' + info.sets7d + ' ' + (t('recovery.setsWeek') || 'sets/wk') + ' — ' + setsBandLabel(a123.setsBand);
@@ -21144,6 +21166,27 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           <div class="rec-bar"><div class="rec-bar-fill" style="width:${barPct}%;background:${barColor}"></div></div>
           ${adviceLine}
         </div>`;
+        /* c172: the SUBGROUP breakdown under each group (recovery mode) —
+           biceps / brachialis / brachioradialis, quads / glutes / hams /
+           calves / adductors / abductors, chest zones, back zones, delts… */
+        if (_mode === 'recovery' && _subData) {
+          const subs = Object.keys(_subData)
+            .map(k => _subData[k])
+            .filter(s => s && s.group === g && s.lastTrainedDaysAgo != null)
+            .sort((a, b) => a.lastTrainedDaysAgo - b.lastTrainedDaysAgo);
+          subs.forEach(s => {
+            const sLast = s.lastTrainedDaysAgo < 1 ? (t('recovery.today') || 'Today') : Math.round(s.lastTrainedDaysAgo) + 'd';
+            const sCol = s.status === 'fresh' ? 'rgb(var(--c-success))' : s.status === 'recovering' ? 'rgb(var(--c-warning))' : 'rgb(var(--c-danger))';
+            html += `<div class="rec-muscle-row rec-sub-row" style="margin-inline-start:0.9rem;padding-block:0.25rem">
+              <div class="flex items-center gap-2 mb-0.5">
+                <span class="text-[11px] flex-1 truncate text-muted">↳ ${esc(subgroupLabel(s.sub))}</span>
+                <span class="text-[10px] text-muted shrink-0">${esc(sLast)}</span>
+                <span class="text-[11px] font-mono font-bold shrink-0" style="min-width:60px;text-align:end">${s.recovery}%</span>
+              </div>
+              <div class="rec-bar" style="height:4px"><div class="rec-bar-fill" style="width:${s.recovery}%;background:${sCol}"></div></div>
+            </div>`;
+          });
+        }
       });
       listEl.innerHTML = html;
     }
@@ -21369,10 +21412,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
       // Compute recovery data
       try {
-        _data = await computeForClient(clientId);
+        const _r172 = await computeForClient(clientId);
+        _data = _r172 ? _r172.groups : null;
+        _subData = (_r172 && _r172.subgroups) || null; /* c172 */
       } catch (e) {
         console.error('[recovery] compute failed:', e);
-        _data = null;
+        _data = null; _subData = null;
       }
       if (!_data) {
         if (listEl) listEl.innerHTML = '<div class="text-center text-xs text-muted py-8">' + (t('recovery.error') || 'Failed to load') + '</div>';
@@ -21430,7 +21475,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         if (!e.target || e.target.id !== 'rec-energy-toggle') return;
         recSetEnergyMod(!!e.target.checked);
         _trendCache = {};
-        try { _data = await computeForClient(_clientId); } catch (e125) { console.warn('[recovery] recompute failed:', e125); }
+        try { const _r172b = await computeForClient(_clientId); _data = _r172b ? _r172b.groups : null; _subData = (_r172b && _r172b.subgroups) || null; } catch (e125) { console.warn('[recovery] recompute failed:', e125); }
         renderAll();
         if (_mode === 'trend') ensureTrend();
       });
@@ -33684,7 +33729,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 171; /* numeric part of dk-build c171 */
+  var RUNNING = 172; /* numeric part of dk-build c172 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

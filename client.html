@@ -5831,7 +5831,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     const info = recpExInfo(ex.key, ex);
     if (!info || !info.group || RECP_GROUPS.indexOf(info.group) === -1) return null;
     const exd = exerciseDB[ex.key] || exerciseDB[String(ex.key)] || null;
-    return { group: info.group, synergists: info.synergists || [],
+    /* c172: the subgroup travels from the share payload (subgroup field) */
+    return { group: info.group, synergists: info.synergists || [], sub: (exd && (exd.subgroup || exd.subgroup_en || exd.sE)) || '',
              names: [ex.name, exd && exd.name], equipment: exd && exd.equipment };
   }
   /* c125: the portal's body weight — the latest valid check-in (30..300 kg)

@@ -75,6 +75,24 @@
   var DAY_RATIO_CAP = 1.5;          // one day can never exceed 1.5 × capacity of fatigue
   var ENERGY_TAU_SPAN = 0.2;        // c125: energy 1→10 shifts τ by +10%…−10%
 
+  /* c172 — SUBGROUPS: the recovery map shows the muscle SUBGROUPS (Biceps /
+     Brachialis / Brachioradialis, Quadriceps / Glutes / Hamstrings / Calves /
+     Adductors / Abductors / Hip Flexors, Upper/Middle/Lower chest, Lats / Mid /
+     Lower back / Traps / Neck, Front/Side/Rear delts / Rotator cuff, Upper /
+     Lower abs / Obliques, Wrist curls) — taken from each exercise's own
+     subgroup field. Subgroups are computed for the 8 MAIN muscle groups only;
+     non-anatomical values (exercise positions like «Compound / Seated / Lying»,
+     «General», «Grip») are excluded so the map never shows a fake "muscle". */
+  var SUB_EXCLUDED = ['compound', 'seated', 'lying', 'general', 'grip', 'pullover',
+                      'row', 'pull-up', 'pull-up bar', 'arms', 'legs', 'full body',
+                      'glutes + quads', 'inner abs', 'upper abs'];
+  function subKeyFor(group, sub) {
+    var s = String(sub == null ? '' : sub).trim();
+    if (!s) return '';
+    if (SUB_EXCLUDED.indexOf(s.toLowerCase()) !== -1) return '';
+    return group + ':' + s;
+  }
+
   /** c125: optional energy → τ modifier (default OFF — apps opt in).
    *  energy 1 (exhausted) → ×1.1 (slower decay), 10 (fresh) → ×0.9.
    *  @param {(number|null)} energy  check-in energy 1–10
@@ -198,6 +216,9 @@
     var load = {}, vol = {}, sets = {};
     GROUPS.forEach(function (g) { load[g] = {}; vol[g] = {}; sets[g] = {}; });
     var anyTrainingDays = {};   // bucket → true (any group) — for the personal τ
+    /* c172: per-(group:subgroup, day) — primary muscle only, no synergist
+       credit (a synergist never tells us WHICH sub-belt it helped) */
+    var subLoad = {}, subSets = {}, subMeta = {};
 
     /* ---- PASS A: walk history → occurrences + per-exercise weight samples ---- */
     var perEx = {};             // exKey → { group, sum, n } (90d weight samples)
@@ -240,7 +261,10 @@
           });
         }
         anyTrainingDays[bucket] = true;
-        occurrences.push({ exKey: exKey, group: info.group, syn: syn, bucket: bucket, sets: doneSets, exAvg: 0 });
+        /* c172: the subgroup bucket (MAIN groups only, anatomical values only) */
+        var subKey = (MAIN_GROUPS.indexOf(info.group) !== -1) ? subKeyFor(info.group, info.sub) : '';
+        if (subKey && !subMeta[subKey]) subMeta[subKey] = { group: info.group, sub: String(info.sub).trim() };
+        occurrences.push({ exKey: exKey, group: info.group, syn: syn, bucket: bucket, sets: doneSets, exAvg: 0, subKey: subKey });
       });
     });
 
@@ -293,6 +317,12 @@
         load[occ.group][occ.bucket] = (load[occ.group][occ.bucket] || 0) + loadUnits;
         vol[occ.group][occ.bucket] = (vol[occ.group][occ.bucket] || 0) + volKg;
         sets[occ.group][occ.bucket] = (sets[occ.group][occ.bucket] || 0) + 1;
+        /* c172: the primary muscle's own subgroup gets the full load */
+        if (occ.subKey) {
+          if (!subLoad[occ.subKey]) { subLoad[occ.subKey] = {}; subSets[occ.subKey] = {}; }
+          subLoad[occ.subKey][occ.bucket] = (subLoad[occ.subKey][occ.bucket] || 0) + loadUnits;
+          subSets[occ.subKey][occ.bucket] = (subSets[occ.subKey][occ.bucket] || 0) + 1;
+        }
         occ.syn.forEach(function (sn) {
           load[sn][occ.bucket] = (load[sn][occ.bucket] || 0) + loadUnits * SYN_CREDIT;
           vol[sn][occ.bucket] = (vol[sn][occ.bucket] || 0) + volKg * SYN_CREDIT;
@@ -313,6 +343,7 @@
     if (tauMod125) tau = clamp(tau * tauMod125, 2.25, 3.85);
 
     return { load: load, vol: vol, sets: sets, dayNow: dayNow, now: now, tau: tau, bodyWeight: bodyWeight,
+             subLoad: subLoad, subSets: subSets, subMeta: subMeta,
              energy: (tauMod125 && isFinite(parseFloat(cfg.energy))) ? clamp(parseFloat(cfg.energy), 1, 10) : null,
              tauMod: tauMod125 };
   }
@@ -388,13 +419,71 @@
       };
     });
 
+    /* ---- PASS E (c172): per-SUBGROUP summary — same math, own capacity ---- */
+    var subs = {};
+    Object.keys(acc.subMeta).forEach(function (sk) {
+      var lm = acc.subLoad[sk] || {}, sm = acc.subSets[sk] || {};
+      var buckets = Object.keys(sm).map(Number).filter(function (b) { return (sm[b] || 0) > 0; });
+      var last = null;
+      buckets.forEach(function (b) { if (last === null || b > last) last = b; });
+      var lastMs = last !== null ? last * MS_PER_DAY : null;
+      var lastDaysAgo = lastMs !== null ? (now - lastMs) / MS_PER_DAY : null;
+      var s7 = 0, s30 = 0, l7 = 0, l30 = 0;
+      var dailyLoads90 = [];
+      buckets.forEach(function (b) {
+        var d = dayNow - b;
+        if (d < 0) return;
+        if (d < 7) { s7 += sm[b] || 0; l7 += lm[b] || 0; }
+        if (d < 30) { s30 += sm[b] || 0; l30 += lm[b] || 0; }
+        if (d < CAPACITY_WINDOW_DAYS && (lm[b] || 0) > 0) dailyLoads90.push(lm[b]);
+      });
+      dailyLoads90.sort(function (a, b2) { return a - b2; });
+      /* cold start (<3 load days): the subgroup's own hardest day ×1.5 —
+         DEFAULT_CAPACITY (40) would dwarf a small muscle like brachioradialis
+         and leave it «fresh» forever */
+      var capacity = DEFAULT_CAPACITY;
+      if (dailyLoads90.length >= CAPACITY_MIN_DAYS) capacity = percentile90(dailyLoads90);
+      else if (dailyLoads90.length) capacity = Math.max(2, dailyLoads90[dailyLoads90.length - 1] * 1.5);
+      if (!isFinite(capacity) || capacity <= 0) capacity = DEFAULT_CAPACITY;
+      var fatigue = 0;
+      if (last !== null) {
+        buckets.forEach(function (b) {
+          var d = dayNow - b;
+          if (d < 0 || d > FATIGUE_HORIZON_DAYS) return;
+          fatigue += clamp((lm[b] || 0) / capacity, 0, DAY_RATIO_CAP) * Math.exp(-d / tau);
+        });
+      }
+      var recovery = (lastDaysAgo === null) ? 100 : clamp(Math.round(100 * (1 - fatigue)), 0, 100);
+      var status;
+      if (lastDaysAgo === null) status = 'untrained';
+      else if (recovery >= 85) status = 'fresh';
+      else if (recovery >= 50) status = 'recovering';
+      else status = 'fatigued';
+      subs[sk] = {
+        group: acc.subMeta[sk].group,
+        sub: acc.subMeta[sk].sub,
+        recovery: recovery,
+        lastTrainedDaysAgo: lastDaysAgo,
+        lastTrainedMs: lastMs,
+        sets7d: s7,
+        sets30d: s30,
+        load7d: Math.round(l7 * 10) / 10,
+        load30d: Math.round(l30 * 10) / 10,
+        capacity: Math.round(capacity * 10) / 10,
+        fatigueNow: Math.round(fatigue * 100) / 100,
+        status: status
+      };
+    });
+
     return {
       groups: out,
+      subgroups: subs,
       meta: {
         bodyWeightKg: bodyWeight,
         tauDays: Math.round(tau * 100) / 100,
         capacitySource: capacitySource,
         groupsComputed: GROUPS.length,
+        subgroupsComputed: Object.keys(subs).length,
         /* c125 additive */
         energy: acc.energy,
         tauMod: acc.tauMod
