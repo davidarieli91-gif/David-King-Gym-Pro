@@ -5776,6 +5776,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   };
   const RECP_TAU_DAYS = 3.0, RECP_SYN_CREDIT = 0.30, RECP_MS_DAY = 86400000;
   let _recpData = null, _recpCount = 0, _recpMode = 'recovery', _recpView = 'front';
+  let _recpSub = null; /* c173: per-subgroup recovery from the shared engine */
   /* c125: personal context for the strip — body weight {bw,source,date,energy}
      + the τ modifier the last engine run actually applied */
   let _recpPers = null, _recpTauMod = null;
@@ -5879,10 +5880,11 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
           resolveEx: recpResolveEx
         });
         _recpTauMod = res.meta.tauMod;
-        return res.groups;
+        /* c173: subgroups travel alongside the groups (same shared engine) */
+        return { groups: res.groups, subgroups: res.subgroups || {} };
       }
     } catch (e) { console.warn('[recovery] portal engine v2 failed → legacy model:', e); }
-    return recpComputeLegacy();
+    return { groups: recpComputeLegacy(), subgroups: {} };
   }
   /* c124: per-muscle daily series for the «Тренд» sparklines (14/30 days).
      Same engine call shape as recpCompute (same resolver, same check-in
@@ -5971,6 +5973,39 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     if (currentLang === 'he') return t('mapAgo') + ' ' + n + ' ' + t('daysShort');
     return n + t('daysShort') + ' ' + t('mapAgo');
   }
+  /* c173: subgroup display names (same set as the trainer app) — the map now
+     breaks every group into its real muscles: biceps/brachialis/
+     brachioradialis, quads/glutes/hamstrings/calves/adductors/abductors… */
+  const RECP_SUB_I18N = {
+    'General': { en: 'General', ru: 'Общее', he: 'כללי' },
+    'Biceps': { en: 'Biceps', ru: 'Бицепс', he: 'ביצפס' },
+    'Brachialis': { en: 'Brachialis', ru: 'Брахиалис', he: 'ברכיאליס' },
+    'Brachioradialis': { en: 'Brachioradialis', ru: 'Брахорадиалис', he: 'ברכיורדיאליס' },
+    'Upper': { en: 'Upper', ru: 'Верхний', he: 'עליון' },
+    'Middle': { en: 'Middle', ru: 'Средний', he: 'אמצעי' },
+    'Lower': { en: 'Lower', ru: 'Нижний', he: 'תחתון' },
+    'Front': { en: 'Front', ru: 'Передний', he: 'קדמי' },
+    'Rear': { en: 'Rear', ru: 'Задний', he: 'אחורי' },
+    'Obliques': { en: 'Obliques', ru: 'Косые', he: 'אלכסוני' },
+    'Trapezius': { en: 'Trapezius', ru: 'Трапеции', he: 'טרפז' },
+    'Hamstrings': { en: 'Hamstrings', ru: 'Бицепс бедра', he: 'המסטרינג' },
+    'Quadriceps': { en: 'Quadriceps', ru: 'Квадрицепс', he: 'ארבע ראשי' },
+    'Calves': { en: 'Calves', ru: 'Икры', he: 'תאומים' },
+    'Glutes': { en: 'Glutes', ru: 'Ягодицы', he: 'עכוז' },
+    'Adductors': { en: 'Adductors', ru: 'Аддукторы', he: 'מקרבים' },
+    'Abductors': { en: 'Abductors', ru: 'Абдукторы', he: 'מרחיקים' },
+    'Lower Back': { en: 'Lower Back', ru: 'Поясница', he: 'גב תחתון' },
+    'Lats': { en: 'Lats', ru: 'Широчайшие', he: 'לטיסימוס' },
+    'Middle Back': { en: 'Middle Back', ru: 'Середина спины', he: 'גב אמצעי' },
+    'Neck': { en: 'Neck', ru: 'Шея', he: 'צוואר' },
+    'Hip Flexors': { en: 'Hip Flexors', ru: 'Сгибатели бедра', he: 'כופפי ירך' },
+    'Rotator Cuff': { en: 'Rotator Cuff', ru: 'Вращательная манжета', he: 'רוטציה בכתף' },
+    'Wrist Curls': { en: 'Wrist Curls', ru: 'Сгибатели запястья', he: 'כופפי כף יד' }
+  };
+  function recpSubLabel(sub) {
+    const e = RECP_SUB_I18N[sub];
+    return (e && (e[currentLang] || e.en)) || sub || '';
+  }
   function recpRenderBody() {
     const box = document.getElementById('recp-svg-container');
     if (!box || _recpMode === 'trend') return; /* c124: sparklines replace the body map */
@@ -5985,20 +6020,28 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       const g = path.getAttribute('data-group');
       if (!g || !_recpData[g]) return;
       const info = _recpData[g];
+      /* c173: in recovery mode each zone follows its OWN subgroup */
+      const subName = path.getAttribute('data-subgroup') || '';
+      const skey = subName ? (g + ':' + subName) : '';
+      const infoSub = (_recpMode === 'recovery' && _recpSub && skey && _recpSub[skey]) ? _recpSub[skey] : null;
       let fill;
-      if (_recpMode === 'recovery') fill = recpFillColor(info.recovery, info.lastTrainedDaysAgo);
-      else if (_recpMode === '7d') fill = recpVolColor(info.volume7d, maxV);
+      if (_recpMode === 'recovery') {
+        fill = infoSub
+          ? recpFillColor(infoSub.recovery, infoSub.lastTrainedDaysAgo)
+          : recpFillColor(info.recovery, info.lastTrainedDaysAgo);
+      } else if (_recpMode === '7d') fill = recpVolColor(info.volume7d, maxV);
       else fill = recpVolColor(info.volume30d, maxV);
       path.setAttribute('fill', fill);
       path.setAttribute('stroke', 'rgba(0,0,0,0.4)');
       path.setAttribute('stroke-width', '0.8');
       const lbl = (RECP_LABELS[g] && RECP_LABELS[g][currentLang]) || g;
-      let tip = lbl;
+      let tip = infoSub ? (lbl + ' · ' + recpSubLabel(subName)) : lbl;
       if (_recpMode === 'recovery') {
-        tip += '\n' + t('mapRecLabel') + ': ' + info.recovery + '%';
-        tip += '\n' + (info.lastTrainedDaysAgo !== null ? t('mapLastTrained') + ': ' + recpDaysStr(info.lastTrainedDaysAgo) : t('mapUntrained'));
-        /* c123: advice line in the tooltip */
-        if (advT123 && advT123.per && advT123.per[g]) {
+        const rInfo = infoSub || info;
+        tip += '\n' + t('mapRecLabel') + ': ' + rInfo.recovery + '%';
+        tip += '\n' + (rInfo.lastTrainedDaysAgo !== null ? t('mapLastTrained') + ': ' + recpDaysStr(rInfo.lastTrainedDaysAgo) : t('mapUntrained'));
+        /* c123: advice line in the tooltip (group level) */
+        if (!infoSub && advT123 && advT123.per && advT123.per[g]) {
           const aT = advT123.per[g];
           tip += '\n' + RECP_ADVICE_UI[aT.advice].icon + ' ' + recpAdviceLabel(aT.advice);
           if (aT.setsBand) tip += ' · ' + info.sets7d + ' ' + t('mapSetsWeek') + ' — ' + recpSetsBandLabel(aT.setsBand);
@@ -6064,6 +6107,25 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         '<div class="recp-bar"><div class="recp-bar-fill" style="width:' + barPct + '%;background:' + barColor + '"></div></div>' +
         adviceLine +
       '</div>';
+      /* c173: the SUBGROUP breakdown under each group (recovery mode) */
+      if (_recpMode === 'recovery' && _recpSub) {
+        Object.keys(_recpSub)
+          .map(k => _recpSub[k])
+          .filter(s => s && s.group === g && s.lastTrainedDaysAgo != null)
+          .sort((a, b) => a.lastTrainedDaysAgo - b.lastTrainedDaysAgo)
+          .forEach(s => {
+            const sWhen = s.lastTrainedDaysAgo < 1 ? t('mapToday') : recpDaysStr(s.lastTrainedDaysAgo);
+            const sCol = s.status === 'fresh' ? 'rgb(var(--c-success))' : s.status === 'recovering' ? 'rgb(var(--c-warning))' : 'rgb(var(--c-danger))';
+            html += '<div class="recp-muscle-row recp-st-' + s.status + '" style="margin-inline-start:0.9rem;padding-block:0.25rem">' +
+              '<div class="flex items-center gap-2 mb-0.5">' +
+                '<span class="text-[11px] flex-1 truncate text-muted">↳ ' + esc(recpSubLabel(s.sub)) + '</span>' +
+                '<span class="text-[10px] text-muted shrink-0">' + esc(sWhen) + '</span>' +
+                '<span class="text-[11px] font-mono font-bold shrink-0 text-text" style="min-width:64px;text-align:end">' + s.recovery + '%</span>' +
+              '</div>' +
+              '<div class="recp-bar" style="height:4px"><div class="recp-bar-fill" style="width:' + s.recovery + '%;background:' + sCol + '"></div></div>' +
+            '</div>';
+          });
+      }
     });
     list.innerHTML = html;
   }
@@ -6252,7 +6314,9 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     if (useCache && _recpData) { recpRenderAll(); return; }
     const sub = document.getElementById('txt-recovery-sub');
     if (sub && !_recpData) sub.textContent = t('mapLoading');
-    _recpData = recpCompute();
+    const _r173 = recpCompute();
+    _recpData = _r173 ? _r173.groups : null;
+    _recpSub = (_r173 && _r173.subgroups) || null; /* c173 */
     /* c99: an EMPTY map with a cloud doc available means the workout history
        has not landed yet (fresh browser / slow snapshot) — fetch & merge right
        now; dkHistMergeRemote refreshes this map the moment records arrive */
