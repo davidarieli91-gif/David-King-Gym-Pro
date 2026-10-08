@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c173" />
+<meta name="dk-build" content="c174" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2874,7 +2874,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c173</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c174</p>
             </div>
           </div>
 
@@ -20751,12 +20751,19 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       // Load all workouts for this client
       let workouts = await db.find('workout_history', 'by_clientId', clientId);
       /* c125: the profile body weight FIRST (fast IndexedDB read) — the
-         check-in weight fetched below overrides it when present */
+         check-in weight fetched below overrides it when present.
+         c174: the same for the BODY FAT % (client-card «Body fat %», 3..70) —
+         the recovery model scales the load ceiling and the decay speed by the
+         lean ratio; a check-in fat (the portal's smart-scale morning entry)
+         overrides the profile when present. */
       let bw = 75, bwSource = 'default';
+      let fat = null, fatSource = '';
       try {
         const cw = await db.get('clients', clientId);
         const wv = parseFloat(cw && cw.weight);
         if (wv > 30 && wv < 300) { bw = wv; bwSource = 'profile'; }
+        const fv = parseFloat(cw && cw.body_fat_pct);
+        if (isFinite(fv) && fv >= 3 && fv <= 70) { fat = fv; fatSource = 'profile'; }
       } catch (_) {}
       /* c98: merge the trainee portal's cloud history (ps_hist_<hash>) so the
          trainer's map includes portal-logged sessions — identical &
@@ -20814,6 +20821,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         if (lastCheck && lastCheck.weight > 30 && lastCheck.weight < 300) {
           bw = lastCheck.weight; bwSource = 'checkin';
         }
+        /* c174: the latest check-in that HAS a sane fat% (3..70) wins over
+           the profile — the smart-scale morning entry is the freshest */
+        for (let i = checks.length - 1; i >= 0; i--) {
+          const fv174 = parseFloat(checks[i] && checks[i].body_fat);
+          if (isFinite(fv174) && fv174 >= 3 && fv174 <= 70) { fat = fv174; fatSource = 'checkin'; break; }
+        }
       }
       /* c125: the latest check-in that HAS an energy value (1–10) — feeds
          the optional τ modifier (default OFF) */
@@ -20824,6 +20837,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       }
       _ctx = { clientId: clientId, workouts: workouts, exCache: exCache, bw: bw,
                bwSource: bwSource, bwDate: (checks.length ? (checks[checks.length - 1].date || '') : ''),
+               fat: fat, fatSource: fatSource,   /* c174: body composition */
                energy: energy, tauMod: null };
       return _ctx;
     }
@@ -20851,6 +20865,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         return window.dkRecoveryEngine.trend({
           workouts: ctx.workouts,
           bodyWeightKg: ctx.bw,
+          bodyFatPct: ctx.fat,           /* c174: body composition */
           now: Date.now(),
           days: days,
           energy: ctx.energy,            /* c125 */
@@ -20890,6 +20905,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           const res122 = window.dkRecoveryEngine.compute({
             workouts: workouts,
             bodyWeightKg: ctx.bw,
+            bodyFatPct: ctx.fat,         /* c174: body composition */
             now: Date.now(),
             energy: ctx.energy,            /* c125: latest check-in energy */
             energyTauMod: recEnergyModOn(),/* c125: opt-in τ modifier */
@@ -21366,7 +21382,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         const src = _ctx.bwSource === 'checkin'
           ? t('recovery.bwCheckin') + (_ctx.bwDate ? ' ' + String(_ctx.bwDate).slice(5).replace('-', '.') : '')
           : (_ctx.bwSource === 'profile' ? t('recovery.bwProfile') : '');
-        html += '<span title="' + esc(src) + '">⚖️ <b class="text-text">' + _ctx.bw + ' kg</b>' + (src ? ' · ' + esc(src) : '') + '</span>';
+        /* c174: the body fat% travels with the strip — the trainer sees WHICH
+           composition feeds the model (the title names the source field) */
+        const fatTxt = (_ctx.fat != null && isFinite(_ctx.fat))
+          ? ' · 🔥 <b class="text-text">' + (Math.round(_ctx.fat * 10) / 10) + '%</b>'
+          : '';
+        html += '<span title="' + esc((src ? src + ' · ' : '') + (t('client.bodyFatPct') || 'Body fat')) + '">⚖️ <b class="text-text">' + _ctx.bw + ' kg</b>' + (src ? ' · ' + esc(src) : '') + fatTxt + '</span>';
       }
       if (_ctx && _ctx.energy != null && isFinite(_ctx.energy)) {
         const on = recEnergyModOn();
@@ -27977,9 +27998,12 @@ async function boot() {
           .map(c => {
             /* c129: waist/hip travel with the check-in now (cm, 30..200
                sanity, the portal side enforces the same band) — the analytics
-               body card and the recovery body-weight strip share ONE source */
+               body card and the recovery body-weight strip share ONE source.
+               c174: body_fat % (3..70) rides the same doc — it feeds the
+               recovery model's composition scaling. */
             const cm = v => { const n = parseFloat(v); return (isFinite(n) && n >= 30 && n <= 200) ? Math.round(n * 10) / 10 : null; };
-            return {
+            const pf = v => { const n = parseFloat(v); return (isFinite(n) && n >= 3 && n <= 70) ? Math.round(n * 10) / 10 : null; };
+            const out174 = {
               ts: Number(c.ts),
               date: String(c.date || new Date(Number(c.ts)).toISOString().slice(0, 10)),
               weight: Number(c.weight),
@@ -27987,6 +28011,9 @@ async function boot() {
               waist: cm(c.waist),
               hip: cm(c.hip)
             };
+            const bf174 = pf(c.body_fat);
+            if (bf174 != null) out174.body_fat = bf174;
+            return out174;
           })
           .sort((a, b) => a.ts - b.ts);
       } catch (e) { console.warn('[hist-sync] CRM checks fetch failed', e); return []; }
@@ -28274,7 +28301,10 @@ async function boot() {
         }
 
         const payload = {
-          client: { full_name: client.full_name, goal: client.goal, weight: client.weight, target_weight: client.target_weight },
+          /* c174: body_fat travels so the portal's recovery model uses the SAME
+             composition as the trainer's (the check-in fat, when the client
+             logs one, still overrides on both sides) */
+          client: { full_name: client.full_name, goal: client.goal, weight: client.weight, target_weight: client.target_weight, body_fat: client.body_fat_pct },
           blind_voice: !!client.portal_blind, /* c135: auto-enable the voice coach in the portal */
           program: activeProg,
           programs: programs,
@@ -33729,7 +33759,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 173; /* numeric part of dk-build c173 */
+  var RUNNING = 174; /* numeric part of dk-build c174 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

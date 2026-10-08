@@ -2681,7 +2681,7 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
           <label class="block text-xs text-muted mb-1" id="lbl-morning-weight">Вес утром</label>
           <input type="number" step="0.1" id="input-checkin-weight" placeholder="78.4" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none" />
         </div>
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-3 gap-3">
           <div>
             <label class="block text-xs text-muted mb-1" id="lbl-waist">Талия (см)</label>
             <input type="number" step="0.5" id="input-checkin-waist" placeholder="78" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:outline-none" />
@@ -2689,6 +2689,12 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
           <div>
             <label class="block text-xs text-muted mb-1" id="lbl-hip">Бёдра (см)</label>
             <input type="number" step="0.5" id="input-checkin-hip" placeholder="98" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:outline-none" />
+          </div>
+          <div>
+            <!-- c174: the body fat % — feeds the recovery model's composition
+                 scaling (the trainer's client card value is the fallback) -->
+            <label class="block text-xs text-muted mb-1" id="lbl-checkin-fat">Жир (%)</label>
+            <input type="number" step="0.1" min="3" max="70" id="input-checkin-fat" placeholder="18.5" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm font-mono text-white focus:outline-none" />
           </div>
         </div>
         <div>
@@ -2862,7 +2868,7 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
       navWorkouts:'Тренировки',navNutrition:'Питание',navAnalytics:'Аналитика',navRecovery:'Восстановление',
       wunitExTitle:'Единица веса упражнения',wunitApplyAll:'Применить ко всем упражнениям тренировки',wunitDefaultTitle:'Единица веса по умолчанию (для новых упражнений)',
       recTitle:'Карта восстановления',
-mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMode30d:'Объём 30д',mapViewFront:'Спереди',mapViewBack:'Сзади',mapViewSide:'Сбоку',mapRecLabel:'Восстановление',mapLastTrained:'Последняя тренировка',mapUntrained:'Не тренирован',mapToday:'Сегодня',mapAgo:'назад',mapWorkouts:'тренировок',mapMuscles:'мышц',mapLoading:'Загрузка…',mapLegendRec:'🟢 Восстановлен · 🟡 Восстанавливается · 🔴 Утомлён · ⚪ Не тренирован',mapLegend7d:'Объём за 7 дней (кг)',mapLegend30d:'Объём за 30 дней (кг)',mapHint:'Модель v2: усталость = повторы × вес (кг) × уровень тяжести (RPE) относительно вашего личного потолка. Нет веса — средний ваш или вес тела. Синергисты 30%. Спад ~3 дня (личный).',mapReadiness:'Готовность к тренировке',mapAdvTrain:'Можно грузить',mapAdvModerate:'Умеренно',mapAdvReduce:'Снизить объём',mapAdvRest:'Отдых',mapAdvDormant:'Включить в план',mapSetsWeek:'сет/нед',mapSetsLow:'ниже цели 10–20',mapSetsOk:'в цели 10–20',mapSetsHigh:'выше цели 10–20',mapModeTrend:'Тренд',mapTrend14:'14 дней',mapTrend30:'30 дней',mapTrendLegendLoad:'нагрузка/день',mapTrendLegendRec:'восстановление',mapTrendNoData:'Нет данных за период',mapBwCheckin:'чек-ин',mapBwProfile:'профиль',mapEnergyToggle:'Энергия',daysShort:'д',
+mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMode30d:'Объём 30д',mapViewFront:'Спереди',mapViewBack:'Сзади',mapViewSide:'Сбоку',mapRecLabel:'Восстановление',mapLastTrained:'Последняя тренировка',mapUntrained:'Не тренирован',mapToday:'Сегодня',mapAgo:'назад',mapWorkouts:'тренировок',mapMuscles:'мышц',mapLoading:'Загрузка…',mapLegendRec:'🟢 Восстановлен · 🟡 Восстанавливается · 🔴 Утомлён · ⚪ Не тренирован',mapLegend7d:'Объём за 7 дней (кг)',mapLegend30d:'Объём за 30 дней (кг)',mapHint:'Модель v2: усталость = повторы × вес (кг) × уровень тяжести (RPE) относительно вашего личного потолка. Нет веса — средний ваш или вес тела. Синергисты 30%. Спад ~3 дня (личный). Состав тела (жир %) масштабирует потолок и скорость восстановления.',mapReadiness:'Готовность к тренировке',mapAdvTrain:'Можно грузить',mapAdvModerate:'Умеренно',mapAdvReduce:'Снизить объём',mapAdvRest:'Отдых',mapAdvDormant:'Включить в план',mapSetsWeek:'сет/нед',mapSetsLow:'ниже цели 10–20',mapSetsOk:'в цели 10–20',mapSetsHigh:'выше цели 10–20',mapModeTrend:'Тренд',mapTrend14:'14 дней',mapTrend30:'30 дней',mapTrendLegendLoad:'нагрузка/день',mapTrendLegendRec:'восстановление',mapTrendNoData:'Нет данных за период',mapBwCheckin:'чек-ин',mapBwProfile:'профиль',mapEnergyToggle:'Энергия',daysShort:'д',
       aTitle:'Личная аналитика',aRangeWeek:'Неделя',aRangeMonth:'Месяц',aRangeAll:'Всё',
       mWorkouts:'Тренировки',mActiveDays:'Активные дни',mStreak:'Серия',mVolume:'Объём',
       aTotal:'всего',aInRange:'за период',aDaysInRow:'дн. подряд',aNoStreak:'начните сегодня!',aMinutes:'мин',
@@ -2870,7 +2876,7 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       aDoneOnly:'Выполненные подходы · кг (фунты пересчитаны) · синергисты 30%',aSetsWord:'сет.',aTapDay:'Нажмите на день с тренировкой — откроется его аналитика',aRangeTotal:'Объём за период',aDayTitle:'Аналитика дня',aDayClose:'Закрыть',aDayExs:'Упражнения',aTrShort:'трен.',aNoSets:'Нет выполненных подходов',aMuscles:'Объём по группам мышц',aWeightT:'Динамика веса',aWeightNeed:'Нужно ≥ 2 чек-ина с весом для графика',aTarget:'цель',
       aRecent:'Последние тренировки',aNoWorkouts:'Пока нет тренировок — завершите первую!',aNoData:'Нет данных за период',
       aTrendT:'Динамика объёма · 8 недель',aProgressT:'Прогресс в упражнении',aProgressHint:'e1RM (Эпли) и лучший подход · выполненные подходы',aLastOcc:'Последний раз:',aNoWeight:'Вес не записан — упражнения с собственным весом не дают графика нагрузки',aPRsT:'Личные рекорды · 30 дней',aPRsEmpty:'Новых рекордов за последние 30 дней нет',aPRsPrev:'было',aRepsWord:'повт.',aRpeMix:'Интенсивность · 8 недель',aRpeLight:'лёгкие ≤6',aRpeMod:'средние 7–8',aRpeHard:'тяжёлые ≥9',aAllTime:'за всё время',
-      aWaist:'Талия (см)',aHip:'Бёдра (см)',aNote:'Заметка тренеру',checkinNotePh:'Сон, восстановление, аппетит...',
+      aWaist:'Талия (см)',aHip:'Бёдра (см)',aFat:'Жир (%)',aNote:'Заметка тренеру',checkinNotePh:'Сон, восстановление, аппетит...',
       noExercises:'Нет упражнений',noMeals:'План питания не назначен',technique:'Техника',
       targetMuscle:'Целевые',auxMuscle:'Вспомогательные',rest:'Отдых',
       liveBadge:'Идёт тренировка',statEx:'Упражнения',statSets:'Подходы',statVol:'Объём',
@@ -2923,7 +2929,7 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       navWorkouts:'Workouts',navNutrition:'Nutrition',navAnalytics:'Analytics',navRecovery:'Recovery',
       wunitExTitle:'Weight unit of this exercise',wunitApplyAll:'Apply to all exercises of this workout',wunitDefaultTitle:'Default unit for new exercises',
       recTitle:'Recovery map',
-mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:'Front',mapViewBack:'Back',mapViewSide:'Side',mapRecLabel:'Recovery',mapLastTrained:'Last trained',mapUntrained:'Not trained yet',mapToday:'Today',mapAgo:'ago',mapWorkouts:'workouts',mapMuscles:'muscles',mapLoading:'Loading…',mapLegendRec:'🟢 Fresh · 🟡 Recovering · 🔴 Fatigued · ⚪ Untrained',mapLegend7d:'7-day volume (kg)',mapLegend30d:'30-day volume (kg)',mapHint:'v2 model: fatigue = reps × weight (kg) × effort (RPE) vs your personal capacity. No weight? Your exercise average or body weight is used. Synergists 30%. ~3-day personal decay.',mapReadiness:'Training readiness',mapAdvTrain:'Ready to train',mapAdvModerate:'Moderate',mapAdvReduce:'Reduce volume',mapAdvRest:'Rest',mapAdvDormant:'Add to plan',mapSetsWeek:'sets/wk',mapSetsLow:'below 10–20 target',mapSetsOk:'in 10–20 target',mapSetsHigh:'above 10–20 target',mapModeTrend:'Trend',mapTrend14:'14 days',mapTrend30:'30 days',mapTrendLegendLoad:'load/day',mapTrendLegendRec:'recovery',mapTrendNoData:'No data for this period',mapBwCheckin:'check-in',mapBwProfile:'profile',mapEnergyToggle:'Energy',daysShort:'d',
+mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:'Front',mapViewBack:'Back',mapViewSide:'Side',mapRecLabel:'Recovery',mapLastTrained:'Last trained',mapUntrained:'Not trained yet',mapToday:'Today',mapAgo:'ago',mapWorkouts:'workouts',mapMuscles:'muscles',mapLoading:'Loading…',mapLegendRec:'🟢 Fresh · 🟡 Recovering · 🔴 Fatigued · ⚪ Untrained',mapLegend7d:'7-day volume (kg)',mapLegend30d:'30-day volume (kg)',mapHint:'v2 model: fatigue = reps × weight (kg) × effort (RPE) vs your personal capacity. No weight? Your exercise average or body weight is used. Synergists 30%. ~3-day personal decay. Body composition (fat %) scales the ceiling and the recovery speed.',mapReadiness:'Training readiness',mapAdvTrain:'Ready to train',mapAdvModerate:'Moderate',mapAdvReduce:'Reduce volume',mapAdvRest:'Rest',mapAdvDormant:'Add to plan',mapSetsWeek:'sets/wk',mapSetsLow:'below 10–20 target',mapSetsOk:'in 10–20 target',mapSetsHigh:'above 10–20 target',mapModeTrend:'Trend',mapTrend14:'14 days',mapTrend30:'30 days',mapTrendLegendLoad:'load/day',mapTrendLegendRec:'recovery',mapTrendNoData:'No data for this period',mapBwCheckin:'check-in',mapBwProfile:'profile',mapEnergyToggle:'Energy',daysShort:'d',
       aTitle:'My Analytics',aRangeWeek:'Week',aRangeMonth:'Month',aRangeAll:'All',
       mWorkouts:'Workouts',mActiveDays:'Active days',mStreak:'Streak',mVolume:'Volume',
       aTotal:'total',aInRange:'in range',aDaysInRow:'days streak',aNoStreak:'start today!',aMinutes:'min',
@@ -2931,7 +2937,7 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       aDoneOnly:'Completed sets only · kg (lb converted) · synergists 30%',aSetsWord:'sets',aTapDay:'Tap a workout day to open its analytics',aRangeTotal:'Period volume',aDayTitle:'Day analytics',aDayClose:'Close',aDayExs:'Exercises',aTrShort:'wkouts',aNoSets:'No completed sets',aMuscles:'Volume by Muscle Group',aWeightT:'Body Weight Trend',aWeightNeed:'Need at least 2 weight check-ins for the chart',aTarget:'target',
       aRecent:'Recent Workouts',aNoWorkouts:'No workouts yet — finish your first one!',aNoData:'No data for this period',
       aTrendT:'Volume trend · 8 weeks',aProgressT:'Exercise progress',aProgressHint:'e1RM (Epley) & top set · completed sets',aLastOcc:'Last time:',aNoWeight:'No weight recorded — bodyweight-only rows carry no load chart',aPRsT:'Personal records · 30 days',aPRsEmpty:'No new records in the last 30 days',aPRsPrev:'was',aRepsWord:'reps',aRpeMix:'Intensity · 8 weeks',aRpeLight:'light ≤6',aRpeMod:'moderate 7–8',aRpeHard:'hard ≥9',aAllTime:'all time',
-      aWaist:'Waist (cm)',aHip:'Hips (cm)',aNote:'Note to coach',checkinNotePh:'Sleep, recovery, appetite…',
+      aWaist:'Waist (cm)',aHip:'Hips (cm)',aFat:'Body fat (%)',aNote:'Note to coach',checkinNotePh:'Sleep, recovery, appetite…',
       noExercises:'No exercises',noMeals:'No nutrition plan',technique:'Technique',
       targetMuscle:'Target',auxMuscle:'Auxiliary',rest:'Rest',
       liveBadge:'Workout in progress',statEx:'Exercises',statSets:'Sets',statVol:'Volume',
@@ -2984,7 +2990,7 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       navWorkouts:'אימונים',navNutrition:'תזונה',navAnalytics:'אנליטיקה',navRecovery:'התאוששות', /* c99: physical recovery, not data restore */
       wunitExTitle:'יחידת משקל לתרגיל זה',wunitApplyAll:'החל על כל התרגילים באימון',wunitDefaultTitle:'יחידת משקל כברירת מחדל (לתרגילים חדשים)',
       recTitle:'מפת התאוששות',
-mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נפח 30 ימים',mapViewFront:'קדמי',mapViewBack:'אחורי',mapViewSide:'צד',mapRecLabel:'התאוששות',mapLastTrained:'אימון אחרון',mapUntrained:'טרם אומן',mapToday:'היום',mapAgo:'לפני',mapWorkouts:'אימונים',mapMuscles:'שרירים',mapLoading:'טוען…',mapLegendRec:'🟢 מחלים · 🟡 בהחלמה · 🔴 עייף · ⚪ לא מאומן',mapLegend7d:'נפח 7 ימים (ק״ג)',mapLegend30d:'נפח 30 ימים (ק״ג)',mapHint:'מודל v2: עייפות = חזרות × משקל (ק״ג) × מאמץ (RPE) מול הקיבולת האישית. אין משקל? הממוצע שלך בתרגיל או משקל גוף. שרירי עזר 30%. דעיכה אישית ~3 ימים.',mapReadiness:'מוכנות לאימון',mapAdvTrain:'מוכן לאימון',mapAdvModerate:'בינוני',mapAdvReduce:'הפחת נפח',mapAdvRest:'מנוחה',mapAdvDormant:'לשלב בתוכנית',mapSetsWeek:'סטים/שבוע',mapSetsLow:'מתחת ליעד 10–20',mapSetsOk:'ביעד 10–20',mapSetsHigh:'מעל היעד 10–20',mapModeTrend:'מגמה',mapTrend14:'14 יום',mapTrend30:'30 יום',mapTrendLegendLoad:'עומס/יום',mapTrendLegendRec:'התאוששות',mapTrendNoData:'אין נתונים לתקופה',mapBwCheckin:'צ׳ק-אין',mapBwProfile:'פרופיל',mapEnergyToggle:'אנרגיה',daysShort:'ימ׳',
+mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נפח 30 ימים',mapViewFront:'קדמי',mapViewBack:'אחורי',mapViewSide:'צד',mapRecLabel:'התאוששות',mapLastTrained:'אימון אחרון',mapUntrained:'טרם אומן',mapToday:'היום',mapAgo:'לפני',mapWorkouts:'אימונים',mapMuscles:'שרירים',mapLoading:'טוען…',mapLegendRec:'🟢 מחלים · 🟡 בהחלמה · 🔴 עייף · ⚪ לא מאומן',mapLegend7d:'נפח 7 ימים (ק״ג)',mapLegend30d:'נפח 30 ימים (ק״ג)',mapHint:'מודל v2: עייפות = חזרות × משקל (ק״ג) × מאמץ (RPE) מול הקיבולת האישית. אין משקל? הממוצע שלך בתרגיל או משקל גוף. שרירי עזר 30%. דעיכה אישית ~3 ימים. הרכב הגוף (אחוז שומן) מתאים את התקרה ואת מהירות ההתאוששות.',mapReadiness:'מוכנות לאימון',mapAdvTrain:'מוכן לאימון',mapAdvModerate:'בינוני',mapAdvReduce:'הפחת נפח',mapAdvRest:'מנוחה',mapAdvDormant:'לשלב בתוכנית',mapSetsWeek:'סטים/שבוע',mapSetsLow:'מתחת ליעד 10–20',mapSetsOk:'ביעד 10–20',mapSetsHigh:'מעל היעד 10–20',mapModeTrend:'מגמה',mapTrend14:'14 יום',mapTrend30:'30 יום',mapTrendLegendLoad:'עומס/יום',mapTrendLegendRec:'התאוששות',mapTrendNoData:'אין נתונים לתקופה',mapBwCheckin:'צ׳ק-אין',mapBwProfile:'פרופיל',mapEnergyToggle:'אנרגיה',daysShort:'ימ׳',
       aTitle:'האנליטיקה שלי',aRangeWeek:'שבוע',aRangeMonth:'חודש',aRangeAll:'הכול',
       mWorkouts:'אימונים',mActiveDays:'ימים פעילים',mStreak:'רצף',mVolume:'נפח',
       aTotal:'בסך הכול',aInRange:'בתקופה',aDaysInRow:'ימים ברצף',aNoStreak:'התחילו היום!',aMinutes:'דק׳',
@@ -2992,7 +2998,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       aDoneOnly:'סטים שבוצעו בלבד · ק״ג (lb הומר) · שרירי עזר 30%',aSetsWord:'סטים',aTapDay:'הקישו על יום אימון כדי לפתוח את האנליטיקה שלו',aRangeTotal:'נפח לתקופה',aDayTitle:'אנליטיקת היום',aDayClose:'סגירה',aDayExs:'תרגילים',aTrShort:'אימ.',aNoSets:'אין סטים שבוצעו',aMuscles:'נפח לפי קבוצות שרירים',aWeightT:'מגמת משקל',aWeightNeed:'צריך לפחות 2 צ׳ק-אינים עם משקל לגרף',aTarget:'יעד',
       aRecent:'אימונים אחרונים',aNoWorkouts:'עדיין אין אימונים — סיימו את הראשון!',aNoData:'אין נתונים לתקופה',
       aTrendT:'מגמת נפח · 8 שבועות',aProgressT:'התקדמות בתרגיל',aProgressHint:'e1RM (אפלי) והסט המוביל · סטים שבוצעו',aLastOcc:'פעם קודמת:',aNoWeight:'לא נרשם משקל — תרגילי משקל גוף אינם מייצרים גרף עומס',aPRsT:'שיאים אישיים · 30 יום',aPRsEmpty:'אין שיאים חדשים ב-30 הימים האחרונים',aPRsPrev:'היה',aRepsWord:'חזרות',aRpeMix:'עצימות · 8 שבועות',aRpeLight:'קל ≤6',aRpeMod:'בינוני 7–8',aRpeHard:'קשה ≥9',aAllTime:'כל התקופה',
-      aWaist:'מותן (ס״מ)',aHip:'ירכיים (ס״מ)',aNote:'פתק למאמן',checkinNotePh:'שינה, התאוששות, תיאבון…',
+      aWaist:'מותן (ס״מ)',aHip:'ירכיים (ס״מ)',aFat:'אחוז שומן',aNote:'פתק למאמן',checkinNotePh:'שינה, התאוששות, תיאבון…',
       noExercises:'אין תרגילים',noMeals:'אין תפריט',technique:'טכניקה',
       targetMuscle:'יעד',auxMuscle:'עזר',rest:'מנוחה',
       liveBadge:'אימון מתבצע',statEx:'תרגילים',statSets:'סטים',statVol:'נפח',
@@ -3955,7 +3961,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     try { dkSyncState(); } catch (e) {}
   }
   function applyDemo() {
-    currentClient = { full_name:'Демо Клиент', goal:'hypertrophy', weight:78.4, target_weight:84 };
+    currentClient = { full_name:'Демо Клиент', goal:'hypertrophy', weight:78.4, target_weight:84, body_fat:18.5 };
     programs = [
       { id:'demo-p1', name:'PPL Demo', split_type:'ppl', workout_days:[
         { day_letter:'A', name:'Push', exercises:[
@@ -4210,6 +4216,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     });
     document.getElementById('lbl-waist').textContent = t('aWaist');
     document.getElementById('lbl-hip').textContent = t('aHip');
+    const fatLbl174 = document.getElementById('lbl-checkin-fat'); if (fatLbl174) fatLbl174.textContent = t('aFat');
     document.getElementById('lbl-energy').textContent = t('reportEnergy');
     document.getElementById('lbl-note').textContent = t('aNote');
     document.getElementById('txt-history-title').textContent = t('historyTitle');
@@ -4436,6 +4443,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     else if (el.id === 'input-checkin-weight') text = t('morningWeight') + ', ' + voiceUnitLabel(dispUnitGet()) + (val ? ': ' + val : '');
     else if (el.id === 'input-checkin-waist') text = t('reportWaist') + (val ? ': ' + val : '');
     else if (el.id === 'input-checkin-hip') text = t('reportHip') + (val ? ': ' + val : '');
+    else if (el.id === 'input-checkin-fat') text = t('aFat') + (val ? ': ' + val : '');
     else if (el.id === 'input-checkin-note') text = t('aNote');
     else if (el.id === 'diary-food-search' || el.id === 'diary-food-name' || el.id === 'diary-food-grams') text = voiceFieldLabelNear(el);
     else if (el.tagName === 'SELECT') return; /* change announces the chosen option */
@@ -5321,11 +5329,13 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     const w = Number(c.weight);
     if (!(w >= 30 && w <= 300)) return null; /* c131: same kg band the trainer reads */
     const cm = v => { const n = parseFloat(v); return (isFinite(n) && n >= 30 && n <= 200) ? Math.round(n * 10) / 10 : null; };
+    const pf174 = v => { const n = parseFloat(v); return (isFinite(n) && n >= 3 && n <= 70) ? Math.round(n * 10) / 10 : null; };
     const out = { ts: Number(c.ts), date: c.date || '', weight: Math.round(w * 10) / 10,
                   energy: isFinite(parseInt(c.energy, 10)) ? parseInt(c.energy, 10) : null };
-    const wa = cm(c.waist), hi = cm(c.hip);
+    const wa = cm(c.waist), hi = cm(c.hip), bf = pf174(c.body_fat);
     if (wa != null) out.waist = wa;
     if (hi != null) out.hip = hi;
+    if (bf != null) out.body_fat = bf;   /* c174: feeds the trainer's composition model */
     return out;
   }
   function dkMergeCheckinPayload(cloudChecks, mine) {
@@ -5338,10 +5348,12 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       const local = byTs.get(ts);
       if (!local) return cc;
       /* c131: per-FIELD backfill — a check-in synced with waist but no hip
-         now gets the hip too (the old rule only fired when BOTH were absent) */
+         now gets the hip too (the old rule only fired when BOTH were absent);
+         c174: body_fat % backfills the same way (3..70 band) */
       let out = cc, changed = false;
       if (local.waist != null && !(cc.waist > 0)) { out = Object.assign({}, out, { waist: local.waist }); changed = true; }
       if (local.hip != null && !(cc.hip > 0)) { out = Object.assign({}, out, { hip: local.hip }); changed = true; }
+      if (local.body_fat != null && !(parseFloat(cc.body_fat) >= 3)) { out = Object.assign({}, out, { body_fat: local.body_fat }); changed = true; }
       if (changed) enriched++;
       return out;
     });
@@ -5510,6 +5522,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     const rec = { date:todayKey(), ts:Date.now(), weight:w,
       waist:num(document.getElementById('input-checkin-waist').value),
       hip:num(document.getElementById('input-checkin-hip').value),
+      body_fat:num(document.getElementById('input-checkin-fat').value),
       energy:parseInt(document.getElementById('slider-energy').value,10)||8,
       note:document.getElementById('input-checkin-note').value.trim().slice(0,500) };
     const list = loadCheckins().filter(r=>r.date!==rec.date); list.push(rec);
@@ -5535,6 +5548,11 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     if (r.weight && inp) { inp.value = dispW1(r.weight); inp.dataset.unitSync = dispUnitGet(); }
     if (r.waist) document.getElementById('input-checkin-waist').value = r.waist;
     if (r.hip) document.getElementById('input-checkin-hip').value = r.hip;
+    /* c174: fat% prefill — else fall back to the profile value from the
+       shared payload so the field suggests the known composition */
+    const fatInp174 = document.getElementById('input-checkin-fat');
+    if (r.body_fat && fatInp174) fatInp174.value = r.body_fat;
+    else if (fatInp174 && !fatInp174.value && currentClient && isFinite(parseFloat(currentClient.body_fat))) fatInp174.value = parseFloat(currentClient.body_fat);
     if (r.energy) { document.getElementById('slider-energy').value = r.energy; document.getElementById('slider-energy-val').textContent = r.energy+' / 10'; }
     if (r.note) document.getElementById('input-checkin-note').value = r.note;
   }
@@ -5551,7 +5569,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         if (d !== 0) delta = `<span class="${d>0?'text-amber-400':'text-emerald-400'} font-bold">${d>0?'+':''}${d}</span>`;
       }
       prev = r;
-      const m = [`<span class="font-mono text-white">${dispW1(r.weight)}</span> ${dispUnitShort()}`, r.waist?`${t('waistShort')} ${esc(r.waist)}`:'', r.hip?`${t('hipShort')} ${esc(r.hip)}`:''].filter(Boolean).join(' · ');
+      const m = [`<span class="font-mono text-white">${dispW1(r.weight)}</span> ${dispUnitShort()}`, r.waist?`${t('waistShort')} ${esc(r.waist)}`:'', r.hip?`${t('hipShort')} ${esc(r.hip)}`:'', r.body_fat?`🔥 ${esc(r.body_fat)}%`:''].filter(Boolean).join(' · ');
       return `<div class="flex items-center justify-between bg-surface-2/60 px-3 py-2 rounded-xl text-xs">
         <span class="font-mono text-muted w-11">${esc(r.date.slice(5))}</span>
         <span class="text-muted flex-1 mx-2 truncate">${m}${r.note?' · <em>'+esc(r.note)+'</em>':''}</span>
@@ -5838,9 +5856,15 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   }
   /* c125: the portal's body weight — the latest valid check-in (30..300 kg)
      → 75 kg default. ONE helper for the map, the trend AND the strip so all
-     three can never disagree. energy = the latest check-in that HAS one. */
+     three can never disagree. energy = the latest check-in that HAS one.
+     c174 — THE PROFILE FALLBACK (the «54 kg vs 75 kg» fix): when this device
+     has no check-in weight yet, the SHARED plan payload's client.weight (the
+     trainer's client card) is used with the «профиль» source label — the
+     portal can no longer disagree with the trainer's map. Body fat % follows
+     the same chain: the latest check-in fat (3..70) → payload client.body_fat
+     → null (the recovery model's composition scaling stays off without it). */
   function recpBodyWeight() {
-    let bw = 75, source = 'default', date = '', energy = null;
+    let bw = 75, source = 'default', date = '', energy = null, fat = null, fatSource = '';
     try {
       const cks = (typeof loadCheckins === 'function' ? loadCheckins() : [])
         .filter(function (c) { return c && Number(c.ts) > 0 && Number(c.weight) > 0; })
@@ -5853,8 +5877,24 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         const ev = cks[i] && cks[i].energy;
         if (ev != null && isFinite(ev)) { energy = ev; break; }
       }
+      /* c174: the latest check-in that HAS a sane fat% (3..70) */
+      for (let i = cks.length - 1; i >= 0; i--) {
+        const fv = parseFloat(cks[i] && cks[i].body_fat);
+        if (isFinite(fv) && fv >= 3 && fv <= 70) { fat = fv; fatSource = 'checkin'; break; }
+      }
+      /* c174: profile fallbacks from the SHARED payload (the trainer's client
+         card) — weight only when no check-in exists, fat always as the base */
+      const cc = (typeof currentClient !== 'undefined') ? currentClient : null;
+      if (source !== 'checkin' && cc) {
+        const pw = parseFloat(cc.weight);
+        if (isFinite(pw) && pw > 30 && pw < 300) { bw = pw; source = 'profile'; }
+      }
+      if (fatSource !== 'checkin' && cc) {
+        const pf = parseFloat(cc.body_fat);
+        if (isFinite(pf) && pf >= 3 && pf <= 70) { fat = pf; fatSource = 'profile'; }
+      }
     } catch (e) {}
-    return { bw: bw, source: source, date: date, energy: energy };
+    return { bw: bw, source: source, date: date, energy: energy, fat: fat, fatSource: fatSource };
   }
   /* c125: the shared opt-in for the check-in-energy τ modifier — same
      localStorage key as the trainer (a device-wide preference) */
@@ -5874,6 +5914,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         const res = window.dkRecoveryEngine.compute({
           workouts: hist,
           bodyWeightKg: pers125.bw,
+          bodyFatPct: pers125.fat,            /* c174: body composition */
           now: Date.now(),
           energy: pers125.energy,             /* c125: latest check-in energy */
           energyTauMod: recpEnergyModOn(),    /* c125: opt-in τ modifier */
@@ -5899,6 +5940,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       const res = window.dkRecoveryEngine.trend({
         workouts: hist,
         bodyWeightKg: pers125.bw,
+        bodyFatPct: pers125.fat,            /* c174: body composition */
         now: Date.now(),
         days: days,
         energy: pers125.energy,             /* c125 */
@@ -6288,15 +6330,24 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     });
     list.innerHTML = html;
   }
-  /* c125: personal strip — the body-weight source (the portal always uses its
-     own check-ins) + the opt-in energy τ modifier toggle. All modes. */
+  /* c125: personal strip — the body-weight source (check-in / profile /
+     default) + the opt-in energy τ modifier toggle. All modes.
+     c174: the «профиль» label finally RENDERS (the payload fallback above) and
+     the body fat % travels with the strip — the trainee sees the SAME weight
+     AND composition the trainer's map uses. */
   function recpRenderPersonal() {
     const el = document.getElementById('recp-personal');
     if (!el) return;
     const p = _recpPers || recpBodyWeight();
     let html = '';
+    const src174 = p.source === 'checkin'
+      ? esc(t('mapBwCheckin')) + (p.date ? ' ' + String(p.date).slice(5).replace('-', '.') : '')
+      : (p.source === 'profile' ? esc(t('mapBwProfile')) : '');
+    const fatTxt = (p.fat != null && isFinite(p.fat))
+      ? ' · 🔥 <b class="text-text">' + (Math.round(p.fat * 10) / 10) + '%</b>'
+      : '';
     html += '<span>⚖️ <b class="text-text">' + p.bw + ' kg</b>' +
-      (p.source === 'checkin' ? ' · ' + esc(t('mapBwCheckin')) + (p.date ? ' ' + String(p.date).slice(5).replace('-', '.') : '') : '') + '</span>';
+      (src174 ? ' · ' + src174 : '') + fatTxt + '</span>';
     if (p.energy != null && isFinite(p.energy)) {
       const on = recpEnergyModOn();
       html += '<label class="inline-flex items-center gap-1.5 cursor-pointer select-none" style="margin-inline-start:auto" title="' + esc(t('mapEnergyToggle')) + '">' +

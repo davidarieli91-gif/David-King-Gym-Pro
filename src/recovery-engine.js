@@ -52,12 +52,27 @@
    recovery), fresh (10) → τ×0.9 (faster). cfg.energy + cfg.energyTauMod;
    meta gains energy / tauMod (null when the modifier is off or unavailable).
 
+   c174 — BODY COMPOSITION (user request 2026-10-08): the model now reads the
+   client's BODY FAT % (cfg.bodyFatPct — the client-card «Body fat %» field,
+   or the portal check-in fat; null when unknown → EXACT v2 behavior):
+     • leanKg = bodyWeight × (1 − fat%/100) — the part of the body that
+       actually does and recovers the work (muscle, water, bone);
+     • the COLD-START capacity default scales by leanRatio (leanKg/bodyWeight
+       vs the 0.80 reference) — at the same body weight a fatter client has
+       less muscle per kg, so their load ceiling is lower;
+     • the personal decay τ is modulated by the same ratio (bounded ±15%,
+       the same 2.25–3.85 clamp band as the c125 energy modifier) — more
+       muscle per kg recovers FASTER, more fat SLOWER;
+     • the bodyweight-pattern LOAD stays the TOTAL body weight (physics:
+       push-ups move fat mass too) — only the ceiling and the speed adapt.
+   meta gains bodyFatPct / leanKg / compTauMod (null when fat is unknown).
+
    Public API:
-     dkRecoveryEngine.compute({ workouts, resolveEx, bodyWeightKg, now,
-                                energy, energyTauMod })
+     dkRecoveryEngine.compute({ workouts, resolveEx, bodyWeightKg, bodyFatPct,
+                                now, energy, energyTauMod })
        → { groups: { chest: {...}, ... },
-           meta: { bodyWeightKg, tauDays, capacitySource, groupsComputed,
-                   energy, tauMod } }
+           meta: { bodyWeightKg, bodyFatPct, leanKg, tauDays, capacitySource,
+                   groupsComputed, energy, tauMod, compTauMod } }
        resolveEx(ex, workout) →
          { group, synergists[], names[], equipment? } | null   (sync)
    ============================================================================ */
@@ -74,6 +89,19 @@
   var FATIGUE_HORIZON_DAYS = 60;    // older days contribute ~0 (e^-20)
   var DAY_RATIO_CAP = 1.5;          // one day can never exceed 1.5 × capacity of fatigue
   var ENERGY_TAU_SPAN = 0.2;        // c125: energy 1→10 shifts τ by +10%…−10%
+  var REF_LEAN_RATIO = 0.80;        // c174: reference composition (a typical fit client ≈20% fat) — the neutral point
+  var COMP_TAU_MIN = 0.90;          // c174: τ modulation bounds (±15% max)
+  var COMP_TAU_MAX = 1.15;
+  var COMP_CAP_MIN = 0.75;          // c174: cold-start capacity scaling bounds
+  var COMP_CAP_MAX = 1.25;
+  var FAT_MIN = 3;                  // c174: sane body-fat band (%)
+  var FAT_MAX = 70;
+
+  /* c174: sane fat% (typeof-checked — isFinite(null)/isFinite('') is true in JS) */
+  function fatOf(v) {
+    var f = (typeof v === 'number' && isFinite(v)) ? v : parseFloat(v);
+    return (isFinite(f) && f >= FAT_MIN && f <= FAT_MAX) ? f : null;
+  }
 
   /* c172 — SUBGROUPS: the recovery map shows the muscle SUBGROUPS (Biceps /
      Brachialis / Brachioradialis, Quadriceps / Glutes / Hamstrings / Calves /
@@ -174,8 +202,11 @@
     return 0.28;
   }
 
-  function percentile90(sortedAsc) {
-    if (!sortedAsc.length) return DEFAULT_CAPACITY;
+  /** percentile90 with a c174 configurable cold-start fallback.
+   *  @param {number[]} sortedAsc
+   *  @param {number} [fallback] — defaults to DEFAULT_CAPACITY */
+  function percentile90(sortedAsc, fallback) {
+    if (!sortedAsc.length) return (isNum(fallback) && fallback > 0) ? fallback : DEFAULT_CAPACITY;
     var idx = Math.ceil(0.9 * sortedAsc.length) - 1;
     if (idx < 0) idx = 0;
     return sortedAsc[idx];
@@ -201,8 +232,8 @@
   /**
    * Shared accumulation core (passes A–C + the personal τ). Used by BOTH
    * compute() and trend() — the single source for the per-(group, day) data.
-   * @param {{workouts:Array, resolveEx:Function, bodyWeightKg:(number|null), now:number}} cfg
-   * @returns {{load:Object, vol:Object, sets:Object, dayNow:number, now:number, tau:number, bodyWeight:number}}
+   * @param {{workouts:Array, resolveEx:Function, bodyWeightKg:(number|null), bodyFatPct:(number|null), now:number}} cfg
+   * @returns {{load:Object, vol:Object, sets:Object, dayNow:number, now:number, tau:number, bodyWeight:number, bodyFatPct:(number|null), leanKg:(number|null), compTauMod:(number|null), capacityDefault:number}}
    */
   function accumulate(cfg) {
     var workouts = (cfg && cfg.workouts) || [];
@@ -210,6 +241,19 @@
     var now = isNum(cfg && cfg.now) ? cfg.now : Date.now();
     var bodyWeight = (cfg && isNum(cfg.bodyWeightKg) && cfg.bodyWeightKg > 30 && cfg.bodyWeightKg < 300)
       ? cfg.bodyWeightKg : DEFAULT_BODY_WEIGHT;
+    /* c174: body composition — fat% (3..70) → lean ratio. Unknown fat → null
+       modifiers: the model stays EXACTLY v2 (no silent behavior change). */
+    var bodyFatPct = fatOf(cfg && cfg.bodyFatPct);
+    var leanKg = (bodyFatPct != null) ? bodyWeight * (1 - bodyFatPct / 100) : null;
+    var leanRatio = (leanKg != null && bodyWeight > 0) ? leanKg / bodyWeight : null;
+    /* c174: τ modulation — more muscle per kg recovers faster (τ↓), more fat
+       slower (τ↑). Neutral (×1.0) at the 0.80 reference, bounded ±15%. */
+    var compTauMod = (leanRatio != null) ? clamp(REF_LEAN_RATIO / leanRatio, COMP_TAU_MIN, COMP_TAU_MAX) : null;
+    /* c174: the cold-start capacity default scales WITH the lean ratio —
+       less muscle per kg → a lower load ceiling (neutral at the reference). */
+    var capacityDefault = (leanRatio != null)
+      ? DEFAULT_CAPACITY * clamp(leanRatio / REF_LEAN_RATIO, COMP_CAP_MIN, COMP_CAP_MAX)
+      : DEFAULT_CAPACITY;
     var dayNow = Math.floor(now / MS_PER_DAY);
 
     /* ---- per-(group, day) accumulators ---- */
@@ -341,20 +385,25 @@
     var tau = clamp(3.4 - 0.2 * (recentDays / 4), 2.5, 3.5);
     var tauMod125 = energyTauMod(cfg && cfg.energy, cfg && cfg.energyTauMod);
     if (tauMod125) tau = clamp(tau * tauMod125, 2.25, 3.85);
+    /* c174: the composition modifier stacks with the energy one (both null
+       when unknown → v2-identical); the same 2.25–3.85 clamp band. */
+    if (compTauMod) tau = clamp(tau * compTauMod, 2.25, 3.85);
 
     return { load: load, vol: vol, sets: sets, dayNow: dayNow, now: now, tau: tau, bodyWeight: bodyWeight,
+             bodyFatPct: bodyFatPct, leanKg: leanKg, compTauMod: compTauMod, capacityDefault: capacityDefault,
              subLoad: subLoad, subSets: subSets, subMeta: subMeta,
              energy: (tauMod125 && isFinite(parseFloat(cfg.energy))) ? clamp(parseFloat(cfg.energy), 1, 10) : null,
              tauMod: tauMod125 };
   }
 
   /**
-   * @param {{workouts:Array, resolveEx:Function, bodyWeightKg:(number|null), now:number}} cfg
+   * @param {{workouts:Array, resolveEx:Function, bodyWeightKg:(number|null), bodyFatPct:(number|null), now:number}} cfg
    */
   function compute(cfg) {
     var acc = accumulate(cfg);
     var now = acc.now, dayNow = acc.dayNow, tau = acc.tau, bodyWeight = acc.bodyWeight;
     var load = acc.load, vol = acc.vol, sets = acc.sets;
+    var capDefault = acc.capacityDefault;   /* c174: composition-scaled cold start */
 
     /* ---- PASS D: per-group summary (back-compatible + additive) ---- */
     var capacitySource = 'default';
@@ -379,9 +428,9 @@
         if (d < CAPACITY_WINDOW_DAYS && (lm[b] || 0) > 0) dailyLoads90.push(lm[b]);
       });
       dailyLoads90.sort(function (a, b2) { return a - b2; });
-      var capacity = DEFAULT_CAPACITY;
-      if (dailyLoads90.length >= CAPACITY_MIN_DAYS) { capacity = percentile90(dailyLoads90); capacitySource = 'personal'; }
-      if (!isFinite(capacity) || capacity <= 0) capacity = DEFAULT_CAPACITY;
+      var capacity = capDefault;
+      if (dailyLoads90.length >= CAPACITY_MIN_DAYS) { capacity = percentile90(dailyLoads90, capDefault); capacitySource = 'personal'; }
+      if (!isFinite(capacity) || capacity <= 0) capacity = capDefault;
 
       /* fatigue → recovery (v2 core) */
       var fatigue = 0;
@@ -439,12 +488,12 @@
       });
       dailyLoads90.sort(function (a, b2) { return a - b2; });
       /* cold start (<3 load days): the subgroup's own hardest day ×1.5 —
-         DEFAULT_CAPACITY (40) would dwarf a small muscle like brachioradialis
+         a small default would dwarf a small muscle like brachioradialis
          and leave it «fresh» forever */
-      var capacity = DEFAULT_CAPACITY;
-      if (dailyLoads90.length >= CAPACITY_MIN_DAYS) capacity = percentile90(dailyLoads90);
+      var capacity = capDefault;
+      if (dailyLoads90.length >= CAPACITY_MIN_DAYS) capacity = percentile90(dailyLoads90, capDefault);
       else if (dailyLoads90.length) capacity = Math.max(2, dailyLoads90[dailyLoads90.length - 1] * 1.5);
-      if (!isFinite(capacity) || capacity <= 0) capacity = DEFAULT_CAPACITY;
+      if (!isFinite(capacity) || capacity <= 0) capacity = capDefault;
       var fatigue = 0;
       if (last !== null) {
         buckets.forEach(function (b) {
@@ -480,6 +529,10 @@
       subgroups: subs,
       meta: {
         bodyWeightKg: bodyWeight,
+        /* c174 additive — composition (null when fat% is unknown) */
+        bodyFatPct: acc.bodyFatPct,
+        leanKg: (acc.leanKg != null) ? Math.round(acc.leanKg * 10) / 10 : null,
+        compTauMod: acc.compTauMod,
         tauDays: Math.round(tau * 100) / 100,
         capacitySource: capacitySource,
         groupsComputed: GROUPS.length,
@@ -493,13 +546,14 @@
 
   /**
    * c124: per-muscle daily series for the «Тренд» sparklines.
-   * @param {{workouts:Array, resolveEx:Function, bodyWeightKg:(number|null), now:number, days:number}} cfg
+   * @param {{workouts:Array, resolveEx:Function, bodyWeightKg:(number|null), bodyFatPct:(number|null), now:number, days:number}} cfg
    * @returns {{groups:{g:{daily:Array<{t:number,load:number,sets:number,recovery:number}>, capacity:number}},
-   *            meta:{bodyWeightKg:number, tauDays:number, days:number}}}
+   *            meta:{bodyWeightKg:number, bodyFatPct:(number|null), leanKg:(number|null), tauDays:number, days:number}}}
    */
   function trend(cfg) {
     var days = isNum(cfg && cfg.days) ? clamp(Math.round(cfg.days), 7, 60) : 14;
     var acc = accumulate(cfg);
+    var capDefault = acc.capacityDefault;   /* c174 */
     var out = {};
     GROUPS.forEach(function (g) {
       var lm = acc.load[g], sm = acc.sets[g];
@@ -511,9 +565,9 @@
         if (d >= 0 && d < CAPACITY_WINDOW_DAYS && (lm[b] || 0) > 0) dailyLoads90.push(lm[b]);
       });
       dailyLoads90.sort(function (a, b2) { return a - b2; });
-      var capacity = DEFAULT_CAPACITY;
-      if (dailyLoads90.length >= CAPACITY_MIN_DAYS) capacity = percentile90(dailyLoads90);
-      if (!isFinite(capacity) || capacity <= 0) capacity = DEFAULT_CAPACITY;
+      var capacity = capDefault;
+      if (dailyLoads90.length >= CAPACITY_MIN_DAYS) capacity = percentile90(dailyLoads90, capDefault);
+      if (!isFinite(capacity) || capacity <= 0) capacity = capDefault;
       var daily = [];
       for (var i = days - 1; i >= 0; i--) {
         var dNow = acc.dayNow - i;
@@ -532,8 +586,10 @@
       }
       out[g] = { daily: daily, capacity: Math.round(capacity * 10) / 10 };
     });
-    return { groups: out, meta: { bodyWeightKg: acc.bodyWeight, tauDays: Math.round(acc.tau * 100) / 100, days: days,
-                                  energy: acc.energy, tauMod: acc.tauMod } };
+    return { groups: out, meta: { bodyWeightKg: acc.bodyWeight, bodyFatPct: acc.bodyFatPct,
+                                  leanKg: (acc.leanKg != null) ? Math.round(acc.leanKg * 10) / 10 : null,
+                                  tauDays: Math.round(acc.tau * 100) / 100, days: days,
+                                  energy: acc.energy, tauMod: acc.tauMod, compTauMod: acc.compTauMod } };
   }
 
   /**

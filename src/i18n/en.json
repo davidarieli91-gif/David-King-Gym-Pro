@@ -227,7 +227,7 @@
     "volume7d": "7d volume",
     "volume30d": "30d volume",
     "openProfileFirst": "Open a client profile first",
-    "hint": "v2 model: fatigue = reps × weight (kg) × effort (RPE) vs your personal capacity. No weight? Your average for the exercise or body weight is used. Synergists 30%. ~3-day personal decay.",
+    "hint": "v2 model: fatigue = reps × weight (kg) × effort (RPE) vs your personal capacity. No weight? Your average for the exercise or body weight is used. Synergists 30%. ~3-day personal decay. Body composition (fat %) scales the ceiling and the recovery speed — muscle mass recovers faster.",
     "readiness": "Training readiness",
     "advTrain": "Ready to train",
     "advModerate": "Moderate",
@@ -246,7 +246,8 @@
     "trendNoData": "No data for this period",
     "bwCheckin": "check-in",
     "bwProfile": "profile",
-    "energyToggle": "Energy"
+    "energyToggle": "Energy",
+    "bwFat":  "fat"
   },
   "auth": {
     "login": "Sign In",
