@@ -519,7 +519,11 @@
     }
 
     * { -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; overscroll-behavior-y: none; }
+    html { height: 100%; }
+    /* c175: body must grow with content (min-height, not fixed height) —
+       otherwise the sticky app header breaks out of the 100%-tall body box
+       and slides away on long pages, exposing a gap above the workout dock. */
+    body { min-height: 100%; overscroll-behavior-y: none; }
     body {
       background-color: rgb(var(--c-bg));
       color: rgb(var(--c-text));
