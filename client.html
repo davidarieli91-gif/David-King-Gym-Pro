@@ -2258,11 +2258,9 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
     .mini-prog { height: 4px; border-radius: 999px; background: rgb(var(--c-border) / 0.35); overflow: hidden; }
     .mini-prog > div { height: 100%; background: rgb(var(--c-success)); border-radius: 999px; transition: width .4s ease; }
     #rest-banner { z-index: 60; }
-    /* c175: the workout header stays on screen — sticky dock right under the app
-       header. Transparent while the page is at the top (identical to the old
-       look), frosted only while it is actually stuck over scrolling content. */
-    #client-head-dock { position: sticky; top: var(--dk-hdrH, 60px); z-index: 30; margin-inline: -1rem; padding-inline: 1rem; padding-bottom: 0.5rem; transition: background .25s ease, box-shadow .25s ease; }
-    #client-head-dock.dk-stuck { background: rgb(var(--c-surface) / 0.90); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-bottom: 1px solid var(--glass-border); box-shadow: 0 10px 26px -14px rgba(0,0,0,.55); }
+    /* c177: the hero dock is NOT sticky anymore — the user wants only the THIN
+       app header (profile + lang + A-/A+ + theme) pinned; the workout hero card
+       scrolls away with the content like any other card (c175 revert). */
     #toast-box { z-index: 140; } /* c118: toasts stay visible above report (130) / exercise (110) / sheets (96) */
     /* Exercise animation + viewer */
     .ex-anim-container { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 12px; background: rgb(var(--c-surface-2)); }
@@ -2451,8 +2449,8 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
 
     <!-- ===== TAB: WORKOUTS ===== -->
     <section id="tab-workouts" class="space-y-3 fade-in">
-    <!-- c175: sticky dock — the workout header (timer, start/resume, progress, stats)
-         stays on screen while the trainee scrolls through the exercises -->
+    <!-- c177: plain wrapper (was a sticky dock in c175 — reverted); the hero card
+         scrolls away with the content, only the thin app header stays pinned -->
     <div id="client-head-dock">
     <!-- Hero card -->
     <div id="client-card" class="glass rounded-2xl p-4 relative overflow-hidden fade-in">
@@ -2506,7 +2504,7 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
         </div>
       </div>
     </div>
-    </div><!-- /client-head-dock (c175) -->
+    </div><!-- /client-head-dock (c177: plain wrapper) -->
       <div id="program-selector" class="hidden flex flex-wrap items-center gap-1.5 pb-1"></div>
       <div id="rotation-banner" class="hidden"></div>
       <div id="days-tabs-container" class="flex flex-wrap items-center gap-1.5 pb-1"></div>
@@ -8412,27 +8410,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     /* c131: network return → flush the pending queue and refresh the badge */
     window.addEventListener('online', function () { try { dkFlushPending(); } catch (e) {} try { dkPushChecks(); } catch (e) {} try { dkPushNutr(); } catch (e) {} try { dkSyncPendingWsk(); } catch (e) {} try { dkSyncState(); } catch (e) {} });
     window.addEventListener('offline', function () { try { dkSyncState(); } catch (e) {} });
-    /* c175: the workout header stays on screen — the app header's height feeds
-       --dk-hdrH (it wraps on phones and with big fonts), and the dock gets its
-       frosted background ONLY while it is actually stuck over scrolling content */
-    (function () {
-      const dock = document.getElementById('client-head-dock');
-      const hdr = document.querySelector('header');
-      if (!dock || !hdr) return;
-      let _tick = false;
-      const measure = () => { try { document.documentElement.style.setProperty('--dk-hdrH', hdr.offsetHeight + 'px'); } catch (e) {} };
-      const sync = () => {
-        if (_tick) return; _tick = true;
-        requestAnimationFrame(() => {
-          _tick = false;
-          try { dock.classList.toggle('dk-stuck', dock.getBoundingClientRect().top <= hdr.offsetHeight + 1); } catch (e) {}
-        });
-      };
-      measure(); sync();
-      window.addEventListener('scroll', sync, { passive: true });
-      window.addEventListener('resize', () => { measure(); sync(); });
-      if (window.ResizeObserver) { try { new ResizeObserver(() => { measure(); sync(); }).observe(hdr); } catch (e) {} }
-    })();
+    /* c177: the dock-sticky JS is gone — the hero card scrolls normally and the
+       app header (already sticky top-0) is the only pinned element. */
     // Move modals to body to escape stacking contexts (like CRM)
     ['exercise-modal','viewer-modal'].forEach(id=>{ const m=document.getElementById(id); if(m) document.body.appendChild(m); });
 

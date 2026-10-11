@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c176" />
+<meta name="dk-build" content="c177" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2570,15 +2570,16 @@ sliver inside the picker modal's map column (measured 142px vs SVG 488px). */
 }
 @keyframes dk-dot-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
 body.auth-locked #dk-dumbbell-btn { display: none; }
-/* c175: sticky live-workout head — the auto-scroll (next set / dumbbell) must
-   clear the app bar AND the pinned head block, whose real height is measured
-   into --dk-lw-headH by screens.liveWorkout */
-#live-workout-exercises [data-exercise-idx] { scroll-margin-top: calc(var(--dk-appH, 3.5rem) + var(--dk-lw-headH, 7.5rem) + 0.5rem); }
-/* c175: the live-workout head + rest banner pin right under the app bar — the
-   bar's real height is measured into --dk-appH (top-14 = 56px overshot the
-   actual 42px bar and let content peek through a 14px seam) */
+/* c177: the big workout head (name + duration + stats + progress) is NOT pinned
+   anymore — the user wants only the THIN app bar (dumbbell % + lang + A-/A+)
+   to stay on screen; this panel scrolls away with the exercises like any card.
+   The auto-scroll margin now clears just the fixed app bar. */
+#live-workout-exercises [data-exercise-idx] { scroll-margin-top: calc(var(--dk-appH, 3.5rem) + 0.5rem); }
+/* c177: the live-workout head unpinned (was sticky top — c175); the rest banner
+   stays FIXED right under the app bar — the bar's real height is measured into
+   --dk-appH (top-14 = 56px overshot the actual 42px bar and let content peek
+   through a 14px seam) */
 #live-workout-head, #rest-timer { border-left: 0; border-right: 0; }
-#live-workout-head { top: var(--dk-appH, 3.5rem); }
 #rest-timer { top: var(--dk-appH, 3.5rem); }
 /* c175: portal-parity bits for the narrow rest banner (same classes as client.html) */
 @keyframes dk-pulse-ring { 0%,100% { box-shadow: 0 0 0 0 rgba(99,102,241,.4); } 50% { box-shadow: 0 0 0 8px rgba(99,102,241,0); } }
@@ -2892,7 +2893,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c176</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c177</p>
             </div>
           </div>
 
@@ -3140,10 +3141,10 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
               </div>
             </div>
 
-            <!-- c175: STICKY HEAD — back + name + duration + stats + progress bar
-                 stay on screen while the trainer scrolls the exercises (the same
-                 thing the client portal's dock does for the hero card) -->
-            <div id="live-workout-head" class="sticky top-14 z-10 glass" style="border-top: 0;">
+            <!-- c177: NOT sticky anymore — the big head (back + name + duration +
+                 stats + progress) scrolls away with the exercises; only the thin
+                 app bar above it stays pinned (c177 user correction to c175) -->
+            <div id="live-workout-head" class="relative z-0" style="border-top: 0;">
               <div class="max-w-3xl xl:max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-3">
                 <div class="flex items-center gap-2">
                   <button id="live-workout-back" class="w-9 h-9 grid place-items-center rounded-lg bg-surface-2 hover:bg-border/40 border border-border transition shrink-0" aria-label="Back" data-i18n-attr="aria-label:aria.back">
@@ -16305,14 +16306,13 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
     function startDurationTimer() {
       stopDurationTimer();
-      /* c175: the sticky head's height feeds the auto-scroll margin — re-measure
-         when the viewport or font scale changes (registered once per session) */
+      /* c177: only the app bar height feeds the rest-banner top offset now —
+         re-measure when the viewport or font scale changes (once per session).
+         The workout head is no longer pinned, so its height is not needed. */
       if (!startDurationTimer._r175) {
         startDurationTimer._r175 = true;
         window.addEventListener('resize', () => {
           try {
-            const h = document.getElementById('live-workout-head');
-            if (h && h.offsetHeight > 0) document.documentElement.style.setProperty('--dk-lw-headH', h.offsetHeight + 'px');
             const bar = document.querySelector('header');
             if (bar && bar.offsetHeight > 0) document.documentElement.style.setProperty('--dk-appH', bar.offsetHeight + 'px');
           } catch (e) {}
@@ -16422,12 +16422,10 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
       updateStats();
       updateProgressBar();
-      /* c175: measure the sticky head once per render — the auto-scroll margin
-         (scroll-margin-top on exercise blocks) reads --dk-lw-headH. A hidden
-         screen measures 0 — keep the previous value instead of writing it. */
+      /* c177: only --dk-appH is measured per render (rest-banner top offset).
+         The workout head is no longer pinned (c177) — no head-height variable
+         exists anymore. A hidden screen measures 0 — keep the previous value. */
       try {
-        const _head175 = document.getElementById('live-workout-head');
-        if (_head175 && _head175.offsetHeight > 0) document.documentElement.style.setProperty('--dk-lw-headH', _head175.offsetHeight + 'px');
         const _bar175 = document.querySelector('header');
         if (_bar175 && _bar175.offsetHeight > 0) document.documentElement.style.setProperty('--dk-appH', _bar175.offsetHeight + 'px');
       } catch (_e175) {}
@@ -33826,7 +33824,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 176; /* numeric part of dk-build c176 */
+  var RUNNING = 177; /* numeric part of dk-build c177 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

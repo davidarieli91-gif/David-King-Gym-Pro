@@ -1,5 +1,8 @@
-/* c175 unit test — sticky workout headers (portal + trainer) and the narrow
-   trainer rest banner (portal parity). Static checks + inline JS syntax. */
+/* c177 unit test — the big workout heads are NOT pinned anymore (c175 revert):
+   only the THIN app bar (dumbbell % + lang + A-/A+ + theme) stays sticky, the
+   workout hero / live head scroll away like normal content. The trainer's
+   narrow rest banner (portal parity) stays fixed under the app bar.
+   Static checks + inline JS syntax. */
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
@@ -9,23 +12,21 @@ const trainer = fs.readFileSync(path.join(root, 'fitness-crm.html'), 'utf8');
 const sw = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
 let pass = 0, fail = 0;
 function ok(name, cond) { if (cond) { pass++; console.log('PASS ' + name); } else { fail++; console.log('FAIL ' + name); } }
-function count(s, needle) { return s.split(needle).length - 1; }
 
-/* ---------- 1. client portal — sticky workout header ---------- */
-ok('portal: dock wrapper present', html.indexOf('<div id="client-head-dock">') >= 0 && html.indexOf('</div><!-- /client-head-dock (c175) -->') >= 0);
+/* ---------- 1. client portal — the hero card is a plain wrapper again ---------- */
+ok('portal: dock wrapper still present (plain)', html.indexOf('<div id="client-head-dock">') >= 0 && html.indexOf('/client-head-dock (c177: plain wrapper)') >= 0);
 ok('portal: dock wraps the hero card (client-card inside)', (() => {
   const a = html.indexOf('<div id="client-head-dock">');
   const b = html.indexOf('<div id="client-card"');
-  const c = html.indexOf('/client-head-dock (c175)');
+  const c = html.indexOf('/client-head-dock (c177: plain wrapper)');
   return a >= 0 && b > a && c > b;
 })());
-ok('portal: sticky CSS (top from --dk-hdrH, frosted stuck state)', html.indexOf('#client-head-dock { position: sticky; top: var(--dk-hdrH, 60px); z-index: 30;') >= 0 && html.indexOf('#client-head-dock.dk-stuck { background: rgb(var(--c-surface) / 0.90);') >= 0);
-ok('portal: header height measured into --dk-hdrH', html.indexOf("document.documentElement.style.setProperty('--dk-hdrH', hdr.offsetHeight + 'px')") >= 0);
-ok('portal: stuck state synced on scroll (rAF-throttled)', html.indexOf("dock.classList.toggle('dk-stuck', dock.getBoundingClientRect().top <= hdr.offsetHeight + 1)") >= 0 && html.indexOf("window.addEventListener('scroll', sync, { passive: true })") >= 0);
-ok('portal: ResizeObserver re-measures the wrapping header', html.indexOf('new ResizeObserver(() => { measure(); sync(); }).observe(hdr)') >= 0);
+ok('portal: NO sticky CSS on the dock (c175 reverted)', html.indexOf('#client-head-dock { position: sticky') < 0 && html.indexOf('#client-head-dock.dk-stuck') < 0);
+ok('portal: NO dk-stuck scroll JS left', html.indexOf("dock.classList.toggle('dk-stuck'") < 0 && html.indexOf("setProperty('--dk-hdrH'") < 0);
+ok('portal: thin app header stays sticky', html.indexOf('<header class="sticky top-0 z-40 glass-strong') >= 0);
 
-/* ---------- 2. trainer live workout — sticky head ---------- */
-ok('trainer: sticky head block exists', trainer.indexOf('<div id="live-workout-head" class="sticky top-14 z-10 glass"') >= 0);
+/* ---------- 2. trainer live workout — the big head is NOT pinned ---------- */
+ok('trainer: head block exists and is NOT sticky', trainer.indexOf('<div id="live-workout-head" class="relative z-0"') >= 0 && trainer.indexOf('id="live-workout-head" class="sticky') < 0);
 ok('trainer: head holds back + name + duration + stats + progress', (() => {
   const a = trainer.indexOf('<div id="live-workout-head"');
   const b = trainer.indexOf('<div class="p-4 sm:p-6 lg:p-8 max-w-3xl xl:max-w-5xl mx-auto pt-3">');
@@ -33,11 +34,10 @@ ok('trainer: head holds back + name + duration + stats + progress', (() => {
   const seg = trainer.slice(a, b);
   return ['id="live-workout-back"', 'id="live-workout-name"', 'id="live-workout-duration"', 'id="live-stat-exercises"', 'id="live-stat-sets"', 'id="live-stat-volume"', 'id="workout-progress-bar"', 'id="workout-progress-label"', 'id="workout-progress-pct"'].every(s => seg.indexOf(s) >= 0);
 })());
-ok('trainer: scroll-margin reads app bar + measured head height', trainer.indexOf('#live-workout-exercises [data-exercise-idx] { scroll-margin-top: calc(var(--dk-appH, 3.5rem) + var(--dk-lw-headH, 7.5rem) + 0.5rem); }') >= 0);
-ok('trainer: head + rest banner pin to the measured app bar (--dk-appH)', trainer.indexOf('#live-workout-head { top: var(--dk-appH, 3.5rem); }') >= 0 && trainer.indexOf('#rest-timer { top: var(--dk-appH, 3.5rem); }') >= 0 && trainer.indexOf("document.documentElement.style.setProperty('--dk-appH', _bar175.offsetHeight + 'px')") >= 0);
-ok('trainer: head height measured in render() with hidden-screen guard', trainer.indexOf("if (_head175 && _head175.offsetHeight > 0) document.documentElement.style.setProperty('--dk-lw-headH', _head175.offsetHeight + 'px');") >= 0);
-ok('trainer: head re-measured on resize', trainer.indexOf("startDurationTimer._r175") >= 0 && trainer.indexOf("'--dk-lw-headH', h.offsetHeight + 'px'") >= 0);
-ok('trainer: progress bar now really renders (element + pct)', trainer.indexOf('<div class="prog-bar"><div id="workout-progress-bar" class="prog-bar-fill" style="width:0%"></div></div>') >= 0 && trainer.indexOf("if (pctEl) pctEl.textContent = pct + '%'; /* c175: portal-hero parity */") >= 0);
+ok('trainer: auto-scroll margin clears ONLY the app bar (no head height)', trainer.indexOf('#live-workout-exercises [data-exercise-idx] { scroll-margin-top: calc(var(--dk-appH, 3.5rem) + 0.5rem); }') >= 0 && trainer.indexOf('--dk-lw-headH') < 0);
+ok('trainer: NO head pin rule left, rest banner still pinned to app bar', trainer.indexOf('#live-workout-head { top:') < 0 && trainer.indexOf('#rest-timer { top: var(--dk-appH, 3.5rem); }') >= 0 && trainer.indexOf("document.documentElement.style.setProperty('--dk-appH', _bar175.offsetHeight + 'px')") >= 0);
+ok('trainer: thin app header stays sticky', trainer.indexOf('<header class="sticky top-0 z-30 glass"') >= 0);
+ok('trainer: progress bar still renders inside the (scrolling) head', trainer.indexOf('<div class="prog-bar"><div id="workout-progress-bar" class="prog-bar-fill" style="width:0%"></div></div>') >= 0 && trainer.indexOf("if (pctEl) pctEl.textContent = pct + '%'; /* c175: portal-hero parity */") >= 0);
 
 /* ---------- 3. trainer rest banner — the portal's narrow design ---------- */
 ok('rest banner: fixed narrow strip (portal parity)', trainer.indexOf('<div id="rest-timer" class="hidden fixed top-14 inset-x-0 z-40 glass px-4 py-2"') >= 0);
@@ -56,9 +56,9 @@ ok('trainer: old tall gradient banner is gone', trainer.indexOf('bg-gradient-to-
 });
 
 /* ---------- 5. versions ---------- */
-ok('sw cache bumped to v203', sw.indexOf("const CACHE_NAME = 'dk-gym-v203'; // c176") >= 0 && sw.indexOf('// v203: c176') >= 0);
-ok('trainer build c176 (meta + footer + RUNNING)', trainer.indexOf('content="c176"') >= 0 && trainer.indexOf('· c176</p>') >= 0 && /var RUNNING = 176;/.test(trainer));
-ok('body grows with content (sticky breakout fix, both portals)', /html \{ height: 100%; \}/.test(html) && /body \{ min-height: 100%; overscroll-behavior-y: none; \}/.test(html) && /html \{ height: 100%; \}/.test(trainer) && /body \{ min-height: 100%; overscroll-behavior-y: none; \}/.test(trainer));
+ok('sw cache bumped to v204', sw.indexOf("const CACHE_NAME = 'dk-gym-v204'; // c177") >= 0 && sw.indexOf('// v204: c177') >= 0);
+ok('trainer build c177 (meta + footer + RUNNING)', trainer.indexOf('content="c177"') >= 0 && trainer.indexOf('· c177</p>') >= 0 && /var RUNNING = 177;/.test(trainer));
+ok('body grows with content (c176 sticky breakout fix intact, both portals)', /html \{ height: 100%; \}/.test(html) && /body \{ min-height: 100%; overscroll-behavior-y: none; \}/.test(html) && /html \{ height: 100%; \}/.test(trainer) && /body \{ min-height: 100%; overscroll-behavior-y: none; \}/.test(trainer));
 
 /* ---------- 6. inline JS syntax of the touched script blocks ---------- */
 function scriptBlocks(src) {
@@ -68,7 +68,7 @@ function scriptBlocks(src) {
   while ((m = re.exec(src)) !== null) out.push(m[1]);
   return out;
 }
-[['portal', html, ['client-head-dock', "--dk-hdrH"]], ['trainer', trainer, ['btn-timer-minus15', '--dk-appH']]].forEach(([name, src, markers]) => {
+[['portal', html, ['initWater']], ['trainer', trainer, ['btn-timer-minus15', '--dk-appH']]].forEach(([name, src, markers]) => {
   const blocks = scriptBlocks(src).filter(b => markers.some(mk => b.indexOf(mk) >= 0));
   ok(name + ': touched script blocks found (' + blocks.length + ')', blocks.length >= 1);
   blocks.forEach((b, i) => {
