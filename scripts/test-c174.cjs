@@ -105,13 +105,13 @@ ok('trainer i18n: recovery.bwFat ×3', ru.recovery.bwFat === 'жир' && en.reco
 ok('trainer i18n: hint mentions composition ×3', ru.recovery.hint.indexOf('Состав тела') >= 0 && en.recovery.hint.indexOf('Body composition') >= 0 && he.recovery.hint.indexOf('הרכב הגוף') >= 0);
 
 /* ---------- versions ---------- */
-ok('sw cache v201 (c174)', (function () { const m = sw.match(/CACHE_NAME = 'dk-gym-v(\d+)'/); return !!m && Number(m[1]) === 201; })());
+ok('sw cache at least v201 (c174+)', (function () { const m = sw.match(/CACHE_NAME = 'dk-gym-v(\d+)'/); return !!m && Number(m[1]) >= 201; })());
 ok('sw keeps the c173 history line + adds v201', sw.indexOf('// v200: c173') >= 0 && sw.indexOf('// v201: c174') >= 0);
-ok('RUNNING / dk-build = c174', (function () {
+ok('RUNNING / dk-build at least c174', (function () {
   const r = trainer.match(/var RUNNING = (\d+)/), b = trainer.match(/content="c(\d+)"/);
-  return !!r && !!b && Number(r[1]) === 174 && Number(b[1]) === 174;
+  return !!r && !!b && Number(r[1]) >= 174 && Number(b[1]) >= 174;
 })());
-ok('footer shows c174', trainer.indexOf('· c174') >= 0);
+ok('footer shows c174 or later', /· c1(7[4-9]|8\d|9\d|\d{3})/.test(trainer));
 
 /* ---------- ENGINE regressions (spot re-run of the c122 math) ---------- */
 ok('recovery math unchanged without fat (spot: push-ups at 82.5 kg)', (function () {

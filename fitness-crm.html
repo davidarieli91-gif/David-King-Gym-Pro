@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c174" />
+<meta name="dk-build" content="c175" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2566,7 +2566,21 @@ sliver inside the picker modal's map column (measured 142px vs SVG 488px). */
 }
 @keyframes dk-dot-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
 body.auth-locked #dk-dumbbell-btn { display: none; }
-#live-workout-exercises [data-exercise-idx] { scroll-margin-top: 4.25rem; }
+/* c175: sticky live-workout head — the auto-scroll (next set / dumbbell) must
+   clear the app bar AND the pinned head block, whose real height is measured
+   into --dk-lw-headH by screens.liveWorkout */
+#live-workout-exercises [data-exercise-idx] { scroll-margin-top: calc(var(--dk-appH, 3.5rem) + var(--dk-lw-headH, 7.5rem) + 0.5rem); }
+/* c175: the live-workout head + rest banner pin right under the app bar — the
+   bar's real height is measured into --dk-appH (top-14 = 56px overshot the
+   actual 42px bar and let content peek through a 14px seam) */
+#live-workout-head, #rest-timer { border-left: 0; border-right: 0; }
+#live-workout-head { top: var(--dk-appH, 3.5rem); }
+#rest-timer { top: var(--dk-appH, 3.5rem); }
+/* c175: portal-parity bits for the narrow rest banner (same classes as client.html) */
+@keyframes dk-pulse-ring { 0%,100% { box-shadow: 0 0 0 0 rgba(99,102,241,.4); } 50% { box-shadow: 0 0 0 8px rgba(99,102,241,0); } }
+.pulse-ring { animation: dk-pulse-ring 2s ease-in-out infinite; }
+.prog-bar { height: 6px; border-radius: 999px; background: rgb(var(--c-border) / 0.30); overflow: hidden; }
+.prog-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, rgb(var(--c-primary)), rgb(var(--c-accent))); transition: width .5s cubic-bezier(.4,0,.2,1); }
 .dk-pos-flash { animation: dk-pos-flash-kf 2.4s ease; }
 @keyframes dk-pos-flash-kf {
   0%, 55% { box-shadow: 0 0 0 3px rgb(var(--c-primary) / .55); }
@@ -2874,7 +2888,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c174</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c175</p>
             </div>
           </div>
 
@@ -3099,58 +3113,72 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
 
           <!-- ============= LIVE WORKOUT SCREEN (Steps 20-21) ============= -->
           <div data-screen="live-workout" class="hidden min-h-[calc(100vh-3.5rem)]">
-            <!-- Floating rest timer (top) -->
-            <div id="rest-timer" class="hidden sticky top-14 z-20 bg-gradient-to-r from-primary to-accent text-white px-4 py-3 shadow-float">
+            <!-- c175: NARROW REST BANNER — the client portal's exact design
+                 (glass strip, one row, −15/+30/✕ chips, thin progress bar).
+                 Fixed over the sticky head so it never fights it for space. -->
+            <div id="rest-timer" class="hidden fixed top-14 inset-x-0 z-40 glass px-4 py-2" style="border-top: 0;">
               <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-white/20 grid place-items-center font-mono font-bold text-sm" id="rest-timer-icon">
-                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-cyan-400 grid place-items-center shrink-0 pulse-ring" id="rest-timer-icon">
+                  <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <div class="text-[11px] uppercase tracking-wider opacity-80" data-i18n="workouts.rest">Rest</div>
-                  <div class="font-mono font-bold text-lg" id="rest-timer-display">0:00</div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[9px] font-bold uppercase tracking-wider text-muted" data-i18n="workouts.rest">Rest</span>
+                    <span id="rest-timer-display" class="font-mono font-extrabold text-lg text-cyan-300 leading-none">01:30</span>
+                  </div>
+                  <div class="prog-bar mt-1"><div id="rest-timer-progress" class="prog-bar-fill" style="width: 100%"></div></div>
                 </div>
-                <button id="rest-timer-skip" class="text-xs font-semibold bg-white/20 hover:bg-white/30 rounded-lg px-3 py-1.5 transition" data-i18n="workouts.skipRest">Skip</button>
-                <button id="rest-timer-add30" class="text-xs font-semibold bg-white/20 hover:bg-white/30 rounded-lg px-3 py-1.5 transition" data-i18n="workouts.add30s">+30s</button>
-              </div>
-              <div class="mt-2 h-1 bg-white/20 rounded-full overflow-hidden">
-                <div id="rest-timer-progress" class="h-full bg-white rounded-full transition-all" style="width: 100%"></div>
+                <div class="flex items-center gap-1 shrink-0">
+                  <button id="btn-timer-minus15" class="bg-surface-2/90 px-2 py-1.5 rounded-lg text-[10px] font-bold text-muted border border-border" data-i18n-attr="aria-label:workouts.restMinus15" aria-label="−15s">−15</button>
+                  <button id="rest-timer-add30" class="bg-surface-2/90 px-2 py-1.5 rounded-lg text-[10px] font-bold text-muted border border-border" data-i18n="workouts.add30s">+30</button>
+                  <button id="rest-timer-skip" class="bg-surface-2/90 px-2 py-1.5 rounded-lg text-[10px] font-bold text-muted border border-border" data-i18n-attr="aria-label:workouts.skipRest" aria-label="Skip">✕</button>
+                </div>
               </div>
             </div>
 
-            <!-- Live workout content -->
-            <div class="p-4 sm:p-6 lg:p-8 max-w-3xl xl:max-w-5xl mx-auto">
-              <!-- Header -->
-              <div class="flex items-center gap-2 mb-4">
-                <button id="live-workout-back" class="w-9 h-9 grid place-items-center rounded-lg bg-surface-2 hover:bg-border/40 border border-border transition shrink-0" aria-label="Back" data-i18n-attr="aria-label:aria.back">
-                  <svg class="w-4 h-4 flip-rtl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
-                </button>
-                <input type="text" id="live-workout-name" data-i18n-ph="workouts.workoutName" class="flex-1 min-w-0 bg-transparent border-none focus:outline-none font-display font-extrabold text-xl tracking-tight" />
-                <div class="text-end shrink-0">
-                  <div class="font-mono font-bold text-lg" id="live-workout-duration">0:00</div>
-                  <div class="text-[10px] text-muted uppercase tracking-wider" data-i18n="workouts.duration">Duration</div>
+            <!-- c175: STICKY HEAD — back + name + duration + stats + progress bar
+                 stay on screen while the trainer scrolls the exercises (the same
+                 thing the client portal's dock does for the hero card) -->
+            <div id="live-workout-head" class="sticky top-14 z-10 glass" style="border-top: 0;">
+              <div class="max-w-3xl xl:max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-3">
+                <div class="flex items-center gap-2">
+                  <button id="live-workout-back" class="w-9 h-9 grid place-items-center rounded-lg bg-surface-2 hover:bg-border/40 border border-border transition shrink-0" aria-label="Back" data-i18n-attr="aria-label:aria.back">
+                    <svg class="w-4 h-4 flip-rtl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+                  </button>
+                  <input type="text" id="live-workout-name" data-i18n-ph="workouts.workoutName" class="flex-1 min-w-0 bg-transparent border-none focus:outline-none font-display font-extrabold text-xl tracking-tight" />
+                  <div class="text-end shrink-0">
+                    <div class="font-mono font-bold text-lg" id="live-workout-duration">0:00</div>
+                    <div class="text-[10px] text-muted uppercase tracking-wider" data-i18n="workouts.duration">Duration</div>
+                  </div>
+                </div>
+                <div class="grid grid-cols-3 gap-2 mt-3">
+                  <div class="bg-surface border border-border rounded-xl p-2.5 text-center">
+                    <div class="text-[10px] uppercase tracking-wider text-muted" data-i18n="workouts.exercises">Exercises</div>
+                    <div class="font-mono font-bold text-lg" id="live-stat-exercises">0</div>
+                  </div>
+                  <div class="bg-surface border border-border rounded-xl p-2.5 text-center">
+                    <div class="text-[10px] uppercase tracking-wider text-muted" data-i18n="workouts.sets">Sets</div>
+                    <div class="font-mono font-bold text-lg" id="live-stat-sets">0</div>
+                  </div>
+                  <div class="bg-surface border border-border rounded-xl p-2.5 text-center">
+                    <div class="text-[10px] uppercase tracking-wider text-muted" data-i18n="workouts.totalVolume">Volume</div>
+                    <div class="font-mono font-bold text-lg text-primary-2" id="live-stat-volume">0</div>
+                  </div>
+                </div>
+                <!-- c175: the portal's hero progress bar — the ids already existed
+                     and were fed by updateProgressBar(), but no element ever
+                     rendered them; now the head shows real set progress too -->
+                <div class="mt-3">
+                  <div class="flex justify-between text-[10px] text-muted mb-1">
+                    <span id="workout-progress-label">0 / 0</span>
+                    <span id="workout-progress-pct">0%</span>
+                  </div>
+                  <div class="prog-bar"><div id="workout-progress-bar" class="prog-bar-fill" style="width:0%"></div></div>
                 </div>
               </div>
+            </div>
 
-              <!-- c141: the client selector and the global kg/lb chip are gone —
-                   inside a live workout the client is fixed and the weight unit
-                   is a per-exercise concern (real-device feedback: both controls
-                   did nothing useful here) -->
-
-              <!-- Stats row -->
-              <div class="grid grid-cols-3 gap-2 mb-4">
-                <div class="bg-surface border border-border rounded-xl p-3 text-center">
-                  <div class="text-[10px] uppercase tracking-wider text-muted" data-i18n="workouts.exercises">Exercises</div>
-                  <div class="font-mono font-bold text-lg" id="live-stat-exercises">0</div>
-                </div>
-                <div class="bg-surface border border-border rounded-xl p-3 text-center">
-                  <div class="text-[10px] uppercase tracking-wider text-muted" data-i18n="workouts.sets">Sets</div>
-                  <div class="font-mono font-bold text-lg" id="live-stat-sets">0</div>
-                </div>
-                <div class="bg-surface border border-border rounded-xl p-3 text-center">
-                  <div class="text-[10px] uppercase tracking-wider text-muted" data-i18n="workouts.totalVolume">Volume</div>
-                  <div class="font-mono font-bold text-lg text-primary-2" id="live-stat-volume">0</div>
-                </div>
-              </div>
+            <div class="p-4 sm:p-6 lg:p-8 max-w-3xl xl:max-w-5xl mx-auto pt-3">
 
               <!-- Exercise groups (rendered dynamically) -->
               <div id="live-workout-exercises" class="space-y-4 mb-4"></div>
@@ -15873,7 +15901,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const display = document.getElementById('rest-timer-display');
       const progress = document.getElementById('rest-timer-progress');
       if (display) {
-        display.textContent = formatDuration(_remaining);
+        /* c175: portal parity — «01:30» with padded minutes, same as client.html */
+        const r = Math.max(0, _remaining);
+        display.textContent = String(Math.floor(r / 60)).padStart(2, '0') + ':' + String(r % 60).padStart(2, '0');
       }
       if (progress && _total > 0) {
         const pct = Math.max(0, (_remaining / _total) * 100);
@@ -16000,8 +16030,14 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       _remaining += 30;
       updateDisplay();
     }
+    /* c175: portal parity — the «−15» chip (client.html semantics: trims the
+       remaining time only; the next tick completes when it reaches zero) */
+    function minus15() {
+      _remaining = Math.max(0, _remaining - 15);
+      updateDisplay();
+    }
 
-    return { start, stop, skip, add30 };
+    return { start, stop, skip, add30, minus15 };
   })();
 
   /* =====================================================================
@@ -16265,6 +16301,19 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
     function startDurationTimer() {
       stopDurationTimer();
+      /* c175: the sticky head's height feeds the auto-scroll margin — re-measure
+         when the viewport or font scale changes (registered once per session) */
+      if (!startDurationTimer._r175) {
+        startDurationTimer._r175 = true;
+        window.addEventListener('resize', () => {
+          try {
+            const h = document.getElementById('live-workout-head');
+            if (h && h.offsetHeight > 0) document.documentElement.style.setProperty('--dk-lw-headH', h.offsetHeight + 'px');
+            const bar = document.querySelector('header');
+            if (bar && bar.offsetHeight > 0) document.documentElement.style.setProperty('--dk-appH', bar.offsetHeight + 'px');
+          } catch (e) {}
+        });
+      }
       const update = () => {
         if (!_workout || !_workout.started_at) return;
         const elapsed = Math.floor((Date.now() - _workout.started_at) / 1000);
@@ -16369,6 +16418,15 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
       updateStats();
       updateProgressBar();
+      /* c175: measure the sticky head once per render — the auto-scroll margin
+         (scroll-margin-top on exercise blocks) reads --dk-lw-headH. A hidden
+         screen measures 0 — keep the previous value instead of writing it. */
+      try {
+        const _head175 = document.getElementById('live-workout-head');
+        if (_head175 && _head175.offsetHeight > 0) document.documentElement.style.setProperty('--dk-lw-headH', _head175.offsetHeight + 'px');
+        const _bar175 = document.querySelector('header');
+        if (_bar175 && _bar175.offsetHeight > 0) document.documentElement.style.setProperty('--dk-appH', _bar175.offsetHeight + 'px');
+      } catch (_e175) {}
     }
 
     /** Build HTML for a single exercise block — c103: PORTAL-IDENTICAL card.
@@ -17213,8 +17271,10 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const pct = totalSets > 0 ? Math.round((doneSets / totalSets) * 100) : 0;
       const bar = document.getElementById('workout-progress-bar');
       const label = document.getElementById('workout-progress-label');
+      const pctEl = document.getElementById('workout-progress-pct'); /* c175 */
       if (bar) bar.style.width = pct + '%';
       if (label) label.textContent = t('workouts.setsCompleted', { done: doneSets, total: totalSets });
+      if (pctEl) pctEl.textContent = pct + '%'; /* c175: portal-hero parity */
       /* c119: mirror the completion % into the header dumbbell (runs on every set ✓/✕) */
       try { if (typeof dkDumbbellPctSync === 'function') dkDumbbellPctSync(); } catch (_e) {}
     }
@@ -30572,6 +30632,9 @@ loadPanelTexture();
     if (restSkip) restSkip.addEventListener('click', () => restTimer.skip());
     const restAdd30 = document.getElementById('rest-timer-add30');
     if (restAdd30) restAdd30.addEventListener('click', () => restTimer.add30());
+    /* c175: the portal's «−15» chip */
+    const restMinus15 = document.getElementById('btn-timer-minus15');
+    if (restMinus15) restMinus15.addEventListener('click', () => restTimer.minus15());
   }
 
   /** Wire the Nutrition screen — client/date selectors, search, modals. */
@@ -33759,7 +33822,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 174; /* numeric part of dk-build c174 */
+  var RUNNING = 175; /* numeric part of dk-build c175 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
