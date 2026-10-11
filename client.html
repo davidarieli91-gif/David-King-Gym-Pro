@@ -2178,7 +2178,9 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
       -webkit-tap-highlight-color: transparent;
       user-select: none;
       min-height: 100dvh;
-      padding-top: var(--sat);
+      /* c178: padding-top: var(--sat) moved into the sticky app bar itself
+         (trainer parity) — the bar must clear the notch WHEN STUCK at top:0,
+         and its measured height (--dk-appH) then places the rest banner below */
       padding-bottom: var(--sab);
     }
     .glass { background: var(--glass-bg); backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur)); border: 1px solid var(--glass-border); }
@@ -2257,9 +2259,21 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
     @keyframes ex-flash { 0%,100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } 30% { box-shadow: 0 0 0 3px rgba(16,185,129,.55); } }
     .mini-prog { height: 4px; border-radius: 999px; background: rgb(var(--c-border) / 0.35); overflow: hidden; }
     .mini-prog > div { height: 100%; background: rgb(var(--c-success)); border-radius: 999px; transition: width .4s ease; }
-    #rest-banner { z-index: 60; }
+    /* ===== c178: TOP PANELS = TRAINER PARITY =====
+       The client portal now uses the trainer's exact scheme (c177): ONE thin
+       app bar (dumbbell % + language + A-/A+ + theme + settings) pinned on top,
+       the profile identity scrolls away with the content, and the rest banner
+       is FIXED right under the bar — the bar's real height is measured into
+       --dk-appH (top-14 = 56px would overshot/undershoot across font scales
+       and notch insets and let content peek through a seam). */
+    body > header.sticky { padding-top: var(--sat); } /* the notch inset lives in the bar (trainer: #app > header.sticky) */
+    html .dk-topbar-row { height: auto; min-height: 2.5rem; }
+    html.dk-fs-big .dk-topbar-row, html.dk-fs-big .dk-topbar-row > div { flex-wrap: wrap; }
+    /* auto-scroll targets stop right below the thin bar (trainer: exercise cards) */
+    #tab-workouts, #client-card { scroll-margin-top: calc(var(--dk-appH, 3.5rem) + 0.5rem); }
+    #rest-banner { z-index: 60; top: var(--dk-appH, 3.5rem); border-top: 0; border-left: 0; border-right: 0; }
     /* c177: the hero dock is NOT sticky anymore — the user wants only the THIN
-       app header (profile + lang + A-/A+ + theme) pinned; the workout hero card
+       app header (lang + A-/A+ + theme + dumbbell %) pinned; the workout hero card
        scrolls away with the content like any other card (c175 revert). */
     #toast-box { z-index: 140; } /* c118: toasts stay visible above report (130) / exercise (110) / sheets (96) */
     /* Exercise animation + viewer */
@@ -2323,45 +2337,49 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
 </head>
 <body class="flex flex-col">
 
-  <!-- ============= HEADER ============= -->
-  <header class="sticky top-0 z-40 glass-strong px-4 py-3 flex flex-wrap items-center justify-between gap-y-2">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-cyan-400 grid place-items-center font-display font-extrabold text-white text-base shadow-lg shadow-indigo-500/20">DK</div>
-      <div>
-        <h1 id="hdr-name" class="font-display font-bold text-sm leading-tight truncate max-w-[160px] max-[379px]:max-w-[110px]">Мой Портал</h1>
-        <p id="hdr-goal" class="text-[11px] text-muted truncate max-w-[160px] max-[379px]:max-w-[110px]">David King Gym</p>
-      </div>
-    </div>
-    <div class="flex items-center gap-1.5">
-      <!-- c85: dumbbell — one-tap return to the workout (same as the trainer app header) -->
-      <button id="dk-dumbbell-btn" class="shrink-0" aria-label="Back to workout" title="Back to workout">
-        <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z"/><path d="m21.5 21.5-1.4-1.4"/><path d="M3.9 3.9 2.5 2.5"/><path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z"/></svg>
-        <span id="dk-dumbbell-dot" class="hidden" aria-hidden="true"></span>
-        <span id="dk-dumbbell-pct" aria-hidden="true">0%</span>
-      </button>
-      <select id="lang-select" class="bg-surface-2 border border-border text-xs rounded-lg px-2 py-1.5 text-text outline-none cursor-pointer">
-        <option value="ru">RU</option><option value="en">EN</option><option value="he">HE</option>
-      </select>
-      <!-- c85: same font stepper as the trainer app -->
-      <button id="font-dec-btn" class="h-9 px-2 grid place-items-center rounded-lg bg-surface-2 hover:opacity-80 transition border border-border text-sm font-bold" aria-label="Decrease font size" title="A−">A−</button>
-      <button id="font-inc-btn" class="h-9 px-2 grid place-items-center rounded-lg bg-surface-2 hover:opacity-80 transition border border-border text-sm font-bold" aria-label="Increase font size" title="A+">A+</button>
-      <!-- c85: theme quick menu — 33 themes, same as the trainer app -->
-      <div class="relative">
-        <button id="theme-toggle" class="w-9 h-9 grid place-items-center rounded-lg bg-surface-2 hover:opacity-80 transition border border-border" aria-label="Toggle theme" aria-haspopup="menu" aria-expanded="false">
-          <svg id="cp-theme-icon-sun" class="w-4.5 h-4.5 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-          <svg id="cp-theme-icon-moon" class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  <!-- ============= HEADER (c178: THIN APP BAR — trainer parity) =============
+       One row, controls only (dumbbell % + language + A−/A+ + theme + settings),
+       always pinned — same scheme as the trainer's app bar (c177). The profile
+       identity (DK avatar + name + gym) moved into the scrolling content below. -->
+  <header class="sticky top-0 z-40 glass-strong">
+    <div class="dk-topbar-row flex items-center gap-2 px-3">
+      <div class="ms-auto flex items-center gap-1.5">
+        <!-- c85: dumbbell — one-tap return to the workout (same as the trainer app header) -->
+        <button id="dk-dumbbell-btn" class="shrink-0" aria-label="Back to workout" title="Back to workout">
+          <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z"/><path d="m21.5 21.5-1.4-1.4"/><path d="M3.9 3.9 2.5 2.5"/><path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z"/></svg>
+          <span id="dk-dumbbell-dot" class="hidden" aria-hidden="true"></span>
+          <span id="dk-dumbbell-pct" aria-hidden="true">0%</span>
         </button>
-        <div id="theme-menu" class="hidden absolute end-0 top-full mt-2 w-60 max-h-[70vh] overflow-y-auto rounded-xl border border-border bg-[rgb(var(--c-surface))] shadow-float z-50 p-1.5" role="menu" aria-label="Choose theme"></div>
+        <!-- c178: language selector — trainer look (custom chevron, appearance-none) -->
+        <div class="relative">
+          <select id="lang-select" class="appearance-none bg-surface-2 hover:opacity-80 transition rounded-lg text-xs font-semibold py-1.5 ps-3 pe-7 border border-border focus:outline-none cursor-pointer">
+            <option value="ru">RU</option><option value="en">EN</option><option value="he">HE</option>
+          </select>
+          <svg class="pointer-events-none absolute end-2 top-1/2 -translate-y-1/2 w-3 h-3 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <!-- c85: same font stepper as the trainer app -->
+        <button id="font-dec-btn" class="h-9 px-2 grid place-items-center rounded-lg bg-surface-2 hover:opacity-80 transition border border-border text-sm font-bold" aria-label="Decrease font size" title="A−">A−</button>
+        <button id="font-inc-btn" class="h-9 px-2 grid place-items-center rounded-lg bg-surface-2 hover:opacity-80 transition border border-border text-sm font-bold" aria-label="Increase font size" title="A+">A+</button>
+        <!-- c85: theme quick menu — 33 themes, same as the trainer app -->
+        <div class="relative">
+          <button id="theme-toggle" class="w-9 h-9 grid place-items-center rounded-lg bg-surface-2 hover:opacity-80 transition border border-border" aria-label="Toggle theme" aria-haspopup="menu" aria-expanded="false">
+            <svg id="cp-theme-icon-sun" class="w-4.5 h-4.5 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+            <svg id="cp-theme-icon-moon" class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+          </button>
+          <div id="theme-menu" class="hidden absolute end-0 top-full mt-2 w-60 max-h-[70vh] overflow-y-auto rounded-xl border border-border bg-[rgb(var(--c-surface))] shadow-float z-50 p-1.5" role="menu" aria-label="Choose theme"></div>
+        </div>
+        <!-- c85: settings — themes, texture effects and opacity (same engine as the trainer app) -->
+        <button id="portal-settings-btn" class="w-9 h-9 grid place-items-center rounded-lg bg-surface-2 hover:opacity-80 transition border border-border" aria-label="Settings" title="Settings">
+          <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
       </div>
-      <!-- c85: settings — themes, texture effects and opacity (same engine as the trainer app) -->
-      <button id="portal-settings-btn" class="w-9 h-9 grid place-items-center rounded-lg bg-surface-2 hover:opacity-80 transition border border-border" aria-label="Settings" title="Settings">
-        <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      </button>
     </div>
   </header>
 
-  <!-- ============= REST TIMER BANNER (sticky, CRM-style) ============= -->
-  <div id="rest-banner" class="hidden fixed top-0 inset-x-0 glass-strong border-b border-indigo-500/30 px-4 flex items-center gap-3" style="padding-top: calc(0.5rem + var(--sat)); padding-bottom: 0.5rem;">
+  <!-- ============= REST TIMER BANNER (c178: FIXED under the thin app bar — trainer parity) =============
+       Same narrow strip the trainer's live workout got in c175; it parks exactly
+       under the app bar via #rest-banner { top: var(--dk-appH) } (measured). -->
+  <div id="rest-banner" class="hidden fixed inset-x-0 glass-strong px-4 py-2 flex items-center gap-3">
     <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-cyan-400 grid place-items-center shrink-0 pulse-ring">
       <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg>
     </div>
@@ -2446,6 +2464,16 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
 
   <!-- ============= MAIN ============= -->
   <main class="flex-1 max-w-lg mx-auto w-full px-4 pt-4 pb-28 space-y-4">
+
+    <!-- c178: profile identity (was pinned inside the app bar — the trainer's bar
+         holds controls only) — now a normal scrolling row, visible on every tab -->
+    <div class="flex items-center gap-3 fade-in">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-cyan-400 grid place-items-center font-display font-extrabold text-white text-base shadow-lg shadow-indigo-500/20 shrink-0">DK</div>
+      <div class="min-w-0">
+        <h1 id="hdr-name" class="font-display font-bold text-sm leading-tight truncate max-w-[160px] max-[379px]:max-w-[110px]">Мой Портал</h1>
+        <p id="hdr-goal" class="text-[11px] text-muted truncate max-w-[160px] max-[379px]:max-w-[110px]">David King Gym</p>
+      </div>
+    </div>
 
     <!-- ===== TAB: WORKOUTS ===== -->
     <section id="tab-workouts" class="space-y-3 fade-in">
@@ -6810,10 +6838,28 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       render();
     }, 1000);
   }
+  /* ===== c178: thin app bar height → --dk-appH (trainer c177 parity) =====
+     The fixed rest banner parks exactly under the bar; the bar's height varies
+     with the notch inset and the font scale (0.62×…2.4×), so it is measured on
+     load, on resize/orientation change, on every font-scale change and every
+     time a rest starts (a hidden bar measures 0 — keep the previous value). */
+  function measureAppH() {
+    try {
+      const _bar = document.querySelector('header');
+      if (_bar && _bar.offsetHeight > 0) document.documentElement.style.setProperty('--dk-appH', _bar.offsetHeight + 'px');
+    } catch (e178) {}
+  }
+  try { window.dkMeasureAppH = measureAppH; } catch (e178b) {} /* harness/tests + applyFontScale (script #2) */
+  if (document.readyState !== 'loading') measureAppH(); else document.addEventListener('DOMContentLoaded', measureAppH);
+  window.addEventListener('load', measureAppH);
+  window.addEventListener('resize', measureAppH);
+  window.addEventListener('orientationchange', measureAppH);
+
   function startRest(sec) {
     clearInterval(timerInterval);
     timerTotal = Math.max(5, sec||90); timerSecondsLeft = timerTotal;
     const banner = document.getElementById('rest-banner');
+    measureAppH(); /* c178: park the banner exactly under the bar even if the font scale just changed */
     banner.classList.remove('hidden');
     /* c136: the narrator announces the rest */
     try { if (voiceOn()) voiceSay(t('voiceRest') + ' ' + timerTotal + ' ' + t('voiceRestSec'), 'info'); } catch (e136) {}
@@ -8790,6 +8836,9 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         document.documentElement.classList.toggle('dk-fs-small', best <= 0.8);
       } catch (e158) {}
       try { localStorage.setItem('dk_portal_font', String(best)); } catch (e) {}
+      /* c178: the app bar height follows the font scale → re-measure --dk-appH
+         so the fixed rest banner keeps parking exactly under the bar */
+      try { if (window.dkMeasureAppH) window.dkMeasureAppH(); } catch (e178) {}
     }
     window.dkPortalFont = applyFontScale; /* tests/harness */
     function stepFont(dir) {

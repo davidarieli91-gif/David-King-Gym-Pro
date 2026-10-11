@@ -56,8 +56,8 @@ ok('trainer: old tall gradient banner is gone', trainer.indexOf('bg-gradient-to-
 });
 
 /* ---------- 5. versions ---------- */
-ok('sw cache bumped to v204', sw.indexOf("const CACHE_NAME = 'dk-gym-v204'; // c177") >= 0 && sw.indexOf('// v204: c177') >= 0);
-ok('trainer build c177 (meta + footer + RUNNING)', trainer.indexOf('content="c177"') >= 0 && trainer.indexOf('· c177</p>') >= 0 && /var RUNNING = 177;/.test(trainer));
+ok('sw cache bumped to v205', sw.indexOf("const CACHE_NAME = 'dk-gym-v205'; // c178") >= 0 && sw.indexOf('// v205: c178') >= 0);
+ok('trainer build c178 (meta + footer + RUNNING)', trainer.indexOf('content="c178"') >= 0 && trainer.indexOf('· c178</p>') >= 0 && /var RUNNING = 178;/.test(trainer));
 ok('body grows with content (c176 sticky breakout fix intact, both portals)', /html \{ height: 100%; \}/.test(html) && /body \{ min-height: 100%; overscroll-behavior-y: none; \}/.test(html) && /html \{ height: 100%; \}/.test(trainer) && /body \{ min-height: 100%; overscroll-behavior-y: none; \}/.test(trainer));
 
 /* ---------- 6. inline JS syntax of the touched script blocks ---------- */
