@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c178" />
+<meta name="dk-build" content="c179" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2893,7 +2893,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c178</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c179</p>
             </div>
           </div>
 
@@ -6795,7 +6795,20 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     'stretching|general': 'stretching',
     'warmup|general': 'warmup',
     'stretching|arms': 'stretching',
-    'stretching|legs': 'stretching'
+    'stretching|legs': 'stretching',
+    /* c179: cardio/balance — cardio has only General; balance subgroups are the
+       stabilising muscle of planche/handstand/bosu moves → nearest real anatomy file */
+    'cardio|general': 'cardio',
+    'balance|general': 'balance',
+    'balance|front': 'shoulders-front',
+    'balance|middle': 'shoulders-middle',
+    'balance|biceps': 'elbow_flexors',
+    'balance|upper': 'abdominals-upper',
+    'balance|quadriceps': 'legs-quadriceps',
+    'balance|lats': 'back-lats',
+    'balance|abductors': 'legs-abductors',
+    'balance|glutes': 'legs-glutes',
+    'balance|calves': 'legs-calves'
   };
 
   /** Emoji-фолбэк для подгрупп (прошлые иконки — только при ошибке загрузки). */
@@ -6809,7 +6822,10 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     'abdominals|upper abs': '⬆️', 'abdominals|lower abs': '⬇️', 'abdominals|obliques': '↔️', 'abdominals|inner abs': '🎯', 'abdominals|general': '⭐',
     'legs|quadriceps': '🦵', 'legs|hamstrings': '🦿', 'legs|calves': '🦶', 'legs|glutes': '🍑',
     'legs|glutes + quads': '🍑', 'legs|adductors': '↔️', 'legs|abductors': '↔️', 'legs|hip flexors': '🔄',
-    'calisthenics|pull-up bar': '🧗', 'stretching|arms': '🙆', 'stretching|legs': '🧘'
+    'calisthenics|pull-up bar': '🧗', 'stretching|arms': '🙆', 'stretching|legs': '🧘',
+    'cardio|general': '🏃', 'balance|general': '⚖️', 'balance|front': '🔼', 'balance|middle': '⏺️',
+    'balance|biceps': '💪', 'balance|upper': '⬆️', 'balance|quadriceps': '🦵', 'balance|lats': '🦅',
+    'balance|abductors': '↔️', 'balance|glutes': '🍑', 'balance|calves': '🦶'
   };
 
   /** Глобальный обработчик ошибки загрузки: прячем <img>, показываем emoji-фолбэк рядом. */
@@ -33824,7 +33840,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 178; /* numeric part of dk-build c178 */
+  var RUNNING = 179; /* numeric part of dk-build c179 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
