@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c179" />
+<meta name="dk-build" content="c180" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2757,7 +2757,8 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
             <img src="logo-web.webp" alt="David King Gym" class="h-10 w-auto max-w-[200px] object-contain mx-auto mb-3" />
         <div class="relative">
             <svg class="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-              <input type="search" id="aside-search" placeholder="Search clients…" autocomplete="off"
+              <input type="search" id="aside-search" placeholder="Search clients…" autocomplete="off" readonly
+                autocorrect="off" autocapitalize="off" spellcheck="false" data-1p-ignore data-lpignore="true"
                 class="w-full bg-surface-2 border border-border rounded-xl ps-9 pe-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60"
                 data-i18n-ph="aside.searchPlaceholder" />
           </div>
@@ -2893,7 +2894,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c179</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c180</p>
             </div>
           </div>
 
@@ -2924,7 +2925,9 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
             <div class="flex flex-col sm:flex-row gap-2 mb-3">
               <div class="relative flex-1">
                 <svg class="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-                  <input type="search" id="dash-search" autocomplete="off" data-i18n-ph="clients.search" class="w-full bg-surface-2 border border-border rounded-xl ps-9 pe-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
+                  <input type="search" id="dash-search" autocomplete="off" readonly
+                    autocorrect="off" autocapitalize="off" spellcheck="false" data-1p-ignore data-lpignore="true"
+                    data-i18n-ph="clients.search" class="w-full bg-surface-2 border border-border rounded-xl ps-9 pe-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
               </div>
               <select id="dash-sort" class="bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60 cursor-pointer">
                 <option value="created" data-i18n="clients.sortCreated">Date added</option>
@@ -5834,13 +5837,26 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           <!-- Section: Profile -->
           <fieldset class="space-y-3">
             <legend class="text-[11px] uppercase tracking-wider text-muted font-semibold mb-1" data-i18n="clients.title">Client</legend>
-            <!-- Client photo (Sprint 3+) -->
+            <!-- Client photo (Sprint 3+; c180: view / replace / delete) -->
             <div class="flex items-center gap-3">
-              <div id="client-photo-preview" class="w-16 h-16 rounded-2xl shrink-0 overflow-hidden bg-surface-2 border border-border grid place-items-center cursor-pointer relative group" title="Click to upload photo">
-                <div id="client-photo-placeholder" class="font-display font-bold text-2xl text-muted">?</div>
-                <img id="client-photo-img" class="w-full h-full object-cover hidden" alt="" />
-                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition grid place-items-center">
-                  <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              <div class="flex flex-col items-center gap-1.5 shrink-0">
+                <div id="client-photo-preview" class="w-16 h-16 rounded-2xl shrink-0 overflow-hidden bg-surface-2 border border-border grid place-items-center cursor-pointer relative group" title="Click to upload photo">
+                  <div id="client-photo-placeholder" class="font-display font-bold text-2xl text-muted">?</div>
+                  <img id="client-photo-img" class="w-full h-full object-cover hidden" alt="" />
+                  <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition grid place-items-center">
+                    <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1" role="group" aria-label="Photo actions">
+                  <button type="button" id="client-photo-upload-btn" class="w-7 h-7 grid place-items-center rounded-lg bg-surface-2 hover:bg-primary/15 hover:text-primary text-muted transition border border-border" data-i18n-attr="title:clients.photoReplace,aria-label:clients.photoReplace" title="Replace photo" aria-label="Replace photo">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </button>
+                  <button type="button" id="client-photo-view-btn" class="w-7 h-7 grid place-items-center rounded-lg bg-surface-2 hover:bg-primary/15 hover:text-primary text-muted transition border border-border hidden" data-i18n-attr="title:clients.photoView,aria-label:clients.photoView" title="View photo" aria-label="View photo">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                  <button type="button" id="client-photo-delete-btn" class="w-7 h-7 grid place-items-center rounded-lg bg-surface-2 hover:bg-danger/15 hover:text-danger text-muted transition border border-border hidden" data-i18n-attr="title:clients.photoDelete,aria-label:clients.photoDelete" title="Delete photo" aria-label="Delete photo">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg>
+                  </button>
                 </div>
               </div>
               <input type="file" id="client-photo-input" accept="image/*" class="hidden" />
@@ -6149,6 +6165,14 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           <button type="button" id="client-form-save" class="flex-1 bg-primary hover:bg-primary-2 text-white text-sm font-semibold py-2.5 rounded-xl transition shadow-card" data-i18n="common.save">Save</button>
         </div>
       </div>
+    </div>
+
+    <!-- ============= CLIENT PHOTO VIEWER (c180: fullscreen view / replace / delete) ============= -->
+    <div id="client-photo-viewer" class="hidden fixed inset-0 z-[70] bg-black/85 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Client photo">
+      <img id="client-photo-viewer-img" class="max-h-[85vh] max-w-[92vw] rounded-2xl shadow-float object-contain" alt="" />
+      <button type="button" id="client-photo-viewer-close" class="absolute top-3 end-3 w-9 h-9 grid place-items-center rounded-xl bg-white/10 hover:bg-white/25 text-white transition" aria-label="Close" data-i18n-attr="aria-label:aria.close">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
     </div>
 
     <!-- ============= CLIENT GROUPS MANAGER (c105) ============= -->
@@ -9414,6 +9438,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     let _sortBy = 'created';
     let _groupFilter = 'all';   /* c105: was _goalFilter — now a client-GROUP id (or 'all') */
     let _pendingClientPhoto = null;  // Sprint 3+: compressed photo dataURL, set on file select
+    let _pendingClientPhotoRemove = false;  // c180: user explicitly deleted the photo in the form
 
     /* === c105: CLIENT GROUPS (Спортзал / Друзья / Семья + custom CRUD) ===
        Built-in groups get i18n labels; custom groups are trainer-created and
@@ -9868,12 +9893,14 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       document.getElementById('client-modal-title').textContent = t('clients.add');
       document.getElementById('client-form-delete').classList.add('hidden');
       document.getElementById('client-form-error').classList.add('hidden');
-      // Reset photo preview (Sprint 3+)
+      // Reset photo preview (Sprint 3+; c180 reset also clears the remove flag)
       _pendingClientPhoto = null;
+      _pendingClientPhotoRemove = false;
       const photoImg = document.getElementById('client-photo-img');
       const photoPlaceholder = document.getElementById('client-photo-placeholder');
       if (photoImg) { photoImg.classList.add('hidden'); photoImg.src = ''; }
       if (photoPlaceholder) photoPlaceholder.classList.remove('hidden');
+      if (window._dkSyncClientPhotoActions) window._dkSyncClientPhotoActions();
       modal.classList.remove('hidden');
       setTimeout(() => form.elements.full_name && form.elements.full_name.focus(), 100);
     }
@@ -9945,8 +9972,9 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       document.getElementById('client-modal-title').textContent = t('clients.edit');
       document.getElementById('client-form-delete').classList.remove('hidden');
       document.getElementById('client-form-error').classList.add('hidden');
-      // Load existing photo if any (Sprint 3+)
+      // Load existing photo if any (Sprint 3+; c180: reset remove flag + sync actions)
       _pendingClientPhoto = c.photo_url || null;
+      _pendingClientPhotoRemove = false;
       const photoImg2 = document.getElementById('client-photo-img');
       const photoPlaceholder2 = document.getElementById('client-photo-placeholder');
       if (c.photo_url && photoImg2) {
@@ -9957,6 +9985,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
         if (photoImg2) { photoImg2.classList.add('hidden'); photoImg2.src = ''; }
         if (photoPlaceholder2) photoPlaceholder2.classList.remove('hidden');
       }
+      if (window._dkSyncClientPhotoActions) window._dkSyncClientPhotoActions();
       modal.classList.remove('hidden');
     }
 
@@ -9996,13 +10025,17 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
         return;
       }
       // Photo (Sprint 3+): store compressed dataURL if user selected a new photo
-      // Bridge: photo upload handler (outside IIFE) sets window._pendingClientPhotoData
+      // c180: an explicit delete in the form clears the stored photo even when
+      // no new photo was picked (photo_url = null → record is replaced in IDB)
       const photoData = window._pendingClientPhotoData || _pendingClientPhoto;
       if (photoData) {
         obj.photo_url = photoData;
+      } else if (_pendingClientPhotoRemove) {
+        obj.photo_url = null;
       }
       // Clear the bridge
       window._pendingClientPhotoData = null;
+      _pendingClientPhotoRemove = false;
       // Validate
       if (!obj.full_name) {
         showFormError(t('client.fullName') + ' — ' + t('common.required'));
@@ -10090,7 +10123,9 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     
     return { load, refresh, applyFilters, openCreate, openEdit, openEditById, closeModal,
              saveFromForm, deleteFromForm, setSearch, setSort, setGoalFilter, setGroupFilter,
-             renderGroupChips, moveClientToGroup, openCgroupsModal };
+             renderGroupChips, moveClientToGroup, openCgroupsModal,
+             /* c180: photo-delete bridge — the trash button lives outside the IIFE */
+             markPhotoRemoved: function () { _pendingClientPhotoRemove = true; _pendingClientPhoto = null; } };
   })();
 
   /* =====================================================================
@@ -27416,6 +27451,28 @@ async function boot() {
     window.addEventListener('pagehide', dkClearClientSearch);
     [300, 1200, 3000].forEach(ms => setTimeout(dkClearClientSearch, ms));
 
+    /* c180: MANUAL-ONLY SEARCH — both client-search boxes ship readonly.
+       Browsers do not open the autofill/form-history dropdown for readonly
+       fields, so the popup with previously typed values can never appear and
+       nothing can be inserted «by itself». The field unlocks on the trainer's
+       own gesture: a tap/click (pointerdown → preventDefault, drop readonly,
+       focus() so the mobile keyboard opens) or any keydown (Tab focus + first
+       keystroke lands in the now-editable field). The c170 guard above stays
+       as the second line of defence. */
+    [dashSearch, asideSearch].forEach(inp => {
+      if (!inp) return;
+      const unlock = () => {
+        if (inp.hasAttribute('readonly')) {
+          inp.removeAttribute('readonly');
+          if (document.activeElement !== inp) inp.focus();
+        }
+      };
+      inp.addEventListener('pointerdown', (e) => {
+        if (inp.hasAttribute('readonly')) { e.preventDefault(); unlock(); }
+      });
+      inp.addEventListener('keydown', unlock);
+    });
+
     // Sort
     const dashSort = document.getElementById('dash-sort');
     if (dashSort) dashSort.addEventListener('change', (e) => {
@@ -27475,11 +27532,59 @@ async function boot() {
       if (inp) { inp.value = String(Math.floor(100000 + Math.random() * 900000)); inp.focus(); }
     });
 
-    // Client photo upload (Sprint 3+): click preview to open file picker, compress on select
+    // Client photo (Sprint 3+; c180): upload/replace, fullscreen view, delete.
+    // Click on the preview still opens the file picker (old habit preserved).
     const photoPreview = document.getElementById('client-photo-preview');
     const photoInput = document.getElementById('client-photo-input');
+    const photoUploadBtn = document.getElementById('client-photo-upload-btn');
+    const photoViewBtn = document.getElementById('client-photo-view-btn');
+    const photoDeleteBtn = document.getElementById('client-photo-delete-btn');
+
+    /* c180: eye/trash buttons are visible only while a photo is in the preview */
+    function _dkSyncClientPhotoActions() {
+      const img = document.getElementById('client-photo-img');
+      const has = !!(img && img.src && !img.classList.contains('hidden'));
+      [photoViewBtn, photoDeleteBtn].forEach(b => { if (b) b.classList.toggle('hidden', !has); });
+    }
+    window._dkSyncClientPhotoActions = _dkSyncClientPhotoActions;
+
+    /* c180: fullscreen photo viewer (click anywhere / ✕ / Escape to close) */
+    const photoViewer = document.getElementById('client-photo-viewer');
+    const photoViewerImg = document.getElementById('client-photo-viewer-img');
+    function openPhotoViewer(src) {
+      if (!photoViewer || !photoViewerImg || !src) return;
+      photoViewerImg.src = src;
+      photoViewer.classList.remove('hidden');
+    }
+    function closePhotoViewer() {
+      if (!photoViewer) return;
+      photoViewer.classList.add('hidden');
+      if (photoViewerImg) photoViewerImg.src = '';
+    }
+    if (photoViewer) {
+      photoViewer.addEventListener('click', closePhotoViewer);
+      const viewerClose = document.getElementById('client-photo-viewer-close');
+      if (viewerClose) viewerClose.addEventListener('click', (e) => { e.stopPropagation(); closePhotoViewer(); });
+    }
+
     if (photoPreview && photoInput) {
       photoPreview.addEventListener('click', () => photoInput.click());
+      if (photoUploadBtn) photoUploadBtn.addEventListener('click', () => photoInput.click());
+      if (photoViewBtn) photoViewBtn.addEventListener('click', () => {
+        const img = document.getElementById('client-photo-img');
+        if (img && img.src && !img.classList.contains('hidden')) openPhotoViewer(img.src);
+      });
+      if (photoDeleteBtn) photoDeleteBtn.addEventListener('click', () => {
+        const img = document.getElementById('client-photo-img');
+        const placeholder = document.getElementById('client-photo-placeholder');
+        if (img) { img.classList.add('hidden'); img.src = ''; }
+        if (placeholder) placeholder.classList.remove('hidden');
+        // Both bridges must be cleared: a pending NEW upload and the OLD saved photo
+        window._pendingClientPhotoData = null;
+        if (screens.dashboard) screens.dashboard.markPhotoRemoved();
+        _dkSyncClientPhotoActions();
+        toast(t('clients.photoDeleted') || 'Photo deleted', 'warning', 1800);
+      });
       photoInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -27487,11 +27592,6 @@ async function boot() {
           // Use vault.compressImage for consistent quality + size
           const result = await vault.compressImage(file, { maxDim: 256, quality: 0.80 });
           // Store as pending — will be saved with the form
-          if (typeof screens !== 'undefined' && screens.dashboard) {
-            // Access the private _pendingClientPhoto via a small bridge
-            // Since _pendingClientPhoto is inside the dashboard IIFE, we set it via a public setter
-            screens.dashboard._setPendingPhoto = function(url) { /* will be assigned below */ };
-          }
           // Directly set the preview
           const img = document.getElementById('client-photo-img');
           const placeholder = document.getElementById('client-photo-placeholder');
@@ -27499,6 +27599,7 @@ async function boot() {
           if (placeholder) placeholder.classList.add('hidden');
           // Store on window for dashboard IIFE to pick up (simpler than exposing internals)
           window._pendingClientPhotoData = result.dataUrl;
+          _dkSyncClientPhotoActions();
           toast(t('clients.photoUploaded') || 'Photo uploaded', 'success', 1500);
         } catch (err) {
           console.error('[client-photo] compress failed:', err);
@@ -27517,6 +27618,12 @@ async function boot() {
 
     // Close modal on Escape
     document.addEventListener('keydown', (e) => {
+      /* c180: the photo viewer sits ABOVE the client modal (z-70 vs z-40) —
+         Escape closes the viewer first; the underlying form stays open */
+      if (e.key === 'Escape' && photoViewer && !photoViewer.classList.contains('hidden')) {
+        closePhotoViewer();
+        return;
+      }
       if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
         screens.dashboard.closeModal();
       }
@@ -30033,18 +30140,24 @@ loadPanelTexture();
       title: { en: 'Overview', ru: 'Обзор', he: 'סקירה' },
       sections: [
         {
-          heading: { en: 'What is David King Gym CRM?', ru: 'Что такое David King Gym CRM?', he: 'מה זה David King Gym CRM?' },
-          body: { en: 'A complete CRM system for personal trainers and nutritionists. Manage clients, create workout programs and nutrition plans, track progress, and analyze recovery — all in one app that works offline as a PWA.',
-                  ru: 'Полная CRM-система для персональных тренеров и диетологов. Управляйте клиентами, создавайте программы тренировок и планы питания, отслеживайте прогресс и анализируйте восстановление — всё в одном приложении, работающем офлайн как PWA.',
-                  he: 'מערכת CRM מלאה למאמנים אישיים ותזונאים. נהל מתאמנים, צור תוכניות אימון ותזונה, עקוב אחר התקדמות ונתח התאוששות — הכל באפליקציה אחת שעובדת אופליין כ-PWA.' }
+          heading: { en: 'What is David King Gym Pro?', ru: 'Что такое David King Gym Pro?', he: 'מה זה David King Gym Pro?' },
+          body: { en: 'A working station for a personal trainer: clients with full profiles, workout programs, nutrition plans, recovery tracking and analytics — plus a separate portal where each client sees their own workouts, nutrition and progress. Everything lives in one app that installs on the phone and works offline.',
+                  ru: 'Рабочая станция персонального тренера: клиенты с полными профилями, программы тренировок, планы питания, карта восстановления и аналитика — плюс отдельный портал, где каждый подопечный видит свои тренировки, питание и прогресс. Всё в одном приложении, которое ставится на телефон и работает офлайн.',
+                  he: 'תחנת עבודה למאמן אישי: מתאמנים עם פרופילים מלאים, תוכניות אימון, תפריטי תזונה, מפת התאוששות ואנליטיקה — ובנוסף פורטל נפרד שבו כל מתאמן רואה את האימונים, התזונה וההתקדמות שלו. הכל באפליקציה אחת שמותקנת בטלפון ועובדת אופליין.' }
         },
         {
-          heading: { en: 'Key Features', ru: 'Ключевые возможности', he: 'תכונות עיקריות' },
+          heading: { en: 'Inside the app', ru: 'Что внутри', he: 'מה בפנים' },
           list: {
-            en: ['1660+ exercises with 3-language names, photos, and technique descriptions', 'Interactive body map (front/back/side) for visual exercise selection', 'Compound/Isolation classification and force-type (push/pull/static) filters', 'Auto-arrange exercises by compound-first, push-pull-legs, or large-to-small strategies', 'Drag-and-drop exercise reordering', 'Set types: Normal, Warmup, Drop, Failure, AMRAP', 'Recovery heat-map with 6-day decay model and synergist muscle tracking', 'Nutrition plans with 2172+ foods, macro-group organization, micronutrient analysis', 'PWA: installable, works offline, auto-syncs on reconnect'],
-            ru: ['1660+ упражнений с названиями на 3 языках, фото и описанием техники', 'Интерактивная карта тела (спереди/сзади/сбоку) для визуального выбора упражнений', 'Классификация Compound/Isolation и фильтр по типу усилия (push/pull/static)', 'Авто-сортировка упражнений: базовые-изолирующие, жим-тяга-ноги, большие-малые', 'Drag-and-drop изменение порядка упражнений', 'Типы подходов: Normal, Warmup, Drop, Failure, AMRAP', 'Карта восстановления с 6-дневной моделью затухания и учётом синергистов', 'Планы питания с 2172+ продуктами, макро-группами, анализом микронутриентов', 'PWA: устанавливается, работает офлайн, синхронизация при подключении'],
-            he: ['1660+ תרגילים עם שמות ב-3 שפות, תמונות ותיאורי טכניקה', 'מפת גוף אינטראקטיבית (קדימה/אחורה/צד) לבחירת תרגילים ויזואלית', 'סיווג Compound/Isolation וסינון לפי סוג כוח (push/pull/static)', 'סידור אוטומטי: בסיסי-בידוד, דחיפה-משיכה-רגליים, גדול-קטן', 'Drag-and-drop לסידור תרגילים מחדש', 'סוגי סטים: Normal, Warmup, Drop, Failure, AMRAP', 'מפת התאוששות עם מודל דעיכה 6-יומי ומעקב שרירים סינרגיסטים', 'תוכניות תזונה עם 2172+ מזונות, ארגון מאקרו-קבוצות, ניתוח מיקרו-נוטריאנטים', 'PWA: ניתן להתקנה, עובד אופליין, סנכרון אוטומטי']
+            en: ['5623 exercises: photo, technique text, checkpoints and typical mistakes — names in Russian, English and Hebrew', '1253 curated foods: every product with its own photo, plus Nutri-Score, Green-Score and NOVA processing badges', 'Recovery model v2: per-muscle-group and subgroup map that understands synergists and body composition', 'Client portal: share link + phone + 4-10 digit password, live workouts with a rest timer, check-ins', 'Analytics, trainer reminders, 3D atlas, body map, 33 themes — and full offline mode'],
+            ru: ['5623 упражнения: фото, текст техники, контрольные точки и типичные ошибки — названия на русском, английском и иврите', '1253 отобранных продукта: у каждого своё фото, плюс бейджи Nutri-Score, Green-Score и степени обработки NOVA', 'Модель восстановления v2: карта по группам и подгруппам мышц, понимает синергисты и состав тела', 'Портал подопечного: ссылка + телефон + пароль из 4–10 цифр, живые тренировки с таймером отдыха, чек-ины', 'Аналитика, напоминания тренеру, 3D-атлас, карта тела, 33 темы — и полный офлайн-режим'],
+            he: ['5623 תרגילים: תמונה, טכניקה, נקודות בקרה וטעויות נפוצות — שמות ברוסית, אנגלית ועברית', '1253 מזונות מסוננים: לכל מוצר תמונה משלו, ובנוסף ציוני Nutri-Score, Green-Score ודרגת עיבוד NOVA', 'מודל התאוששות v2: מפה לפי קבוצות ותתי-קבוצות שרירים, כולל שרירים סינרגיסטים והרכב גוף', 'פורטל מתאמן: קישור + טלפון + סיסמה בת 4-10 ספרות, אימונים חיים עם טיימר מנוחה, צ׳ק-אין', 'אנליטיקה, תזכורות למאמן, אטלס תלת-מימדי, מפת גוף, 33 ערכות נושא — ומצב אופליין מלא']
           }
+        },
+        {
+          heading: { en: 'How it is organised', ru: 'Как это устроено', he: 'איך זה מאורגן' },
+          body: { en: 'Clients live on the dashboard; open a client to see their profile with programs, nutrition and progress. The Exercise Database and the Food Database are shared libraries used by every program and plan. Analytics, Settings and the Encyclopedia sit in the side menu.',
+                  ru: 'Клиенты живут на дашборде; откройте подопечного — увидите профиль с программами, питанием и прогрессом. База упражнений и база продуктов — общие библиотеки, их используют все программы и планы. Аналитика, настройки и энциклопедия — в боковом меню.',
+                  he: 'המתאמנים נמצאים בלוח הראשי; פתחו מתאמן כדי לראות את הפרופיל עם התוכניות, התזונה וההתקדמות. מאגר התרגילים ומאגר המזונות הם ספריות משותפות שכל תוכנית משתמשת בהן. אנליטיקה, הגדרות והאנציקלופדיה נמצאות בתפריט הצד.' }
         }
       ]
     },
@@ -30054,138 +30167,190 @@ loadPanelTexture();
       title: { en: 'Clients', ru: 'Клиенты', he: 'מתאמנים' },
       sections: [
         {
-          heading: { en: 'Managing Clients', ru: 'Управление клиентами', he: 'ניהול מתאמנים' },
-          body: { en: 'Add clients with full profile: name, age, weight, height, goal (hypertrophy, strength, fat loss, endurance, rehab), training split, frequency, equipment available, injuries, and notes. Each client can have a photo for quick identification.',
-                  ru: 'Добавляйте клиентов с полным профилем: имя, возраст, вес, рост, цель (гипертрофия, сила, похудение, выносливость, реабилитация), сплит, частота, доступный инвентарь, травмы и заметки. У каждого клиента может быть фото для быстрой идентификации.',
-                  he: 'הוסף מתאמנים עם פרופיל מלא: שם, גיל, משקל, גובה, מטרה, פיצול אימון, תדירות, ציוד זמין, פציעות והערות. לכל מתאמן יכולה להיות תמונה לזיהוי מהיר.' }
+          heading: { en: 'Full profile', ru: 'Полный профиль', he: 'פרופיל מלא' },
+          body: { en: 'A client card keeps everything: age and birth date, weight and height, body composition (body fat, visceral fat, muscle, bone and water mass, metabolic age), eight body measurements, fitness level and experience, available equipment, training days, food preferences (cuisine, budget, cooking time, liked and disliked foods), allergies, injuries and notes.',
+                  ru: 'Карточка клиента хранит всё: возраст и дату рождения, вес и рост, состав тела (жир, висцеральный жир, мышцы, кости, вода, метаболический возраст), восемь обмеров, уровень подготовки и стаж, доступный инвентарь, дни тренировок, пищевые предпочтения (кухня, бюджет, время готовки, любимые и нелюбимые продукты), аллергии, травмы и заметки.',
+                  he: 'כרטיס המתאמן שומר הכל: גיל ותאריך לידה, משקל וגובה, הרכב גוף (שומן, שומן ויסצרלי, שריר, עצם, מים, גיל מטבולי), שמונה מדידות גוף, רמת כושר וותק, ציוד זמין, ימי אימון, העדפות תזונה (מטבח, תקציב, זמן בישול, מאכלים אהובים ודחויים), אלרגיות, פציעות והערות.' }
         },
         {
-          heading: { en: 'Client Photo', ru: 'Фото клиента', he: 'תמונת מתאמן' },
-          body: { en: 'Click the photo placeholder in the client form to upload a photo. The image is automatically compressed to 256px and stored as base64 — it survives backup/restore and works offline.',
-                  ru: 'Нажмите на placeholder фото в форме клиента, чтобы загрузить фото. Изображение автоматически сжимается до 256px и сохраняется как base64 — оно переживает backup/restore и работает офлайн.',
-                  he: 'לחץ על מקום התמונה בטופס המתאמן כדי להעלות תמונה. התמונה נדחסת אוטומטית ל-256px ונשמרת כ-base64 — היא שורדת גיבוי/שחזור ועובדת אופליין.' }
+          heading: { en: 'Client photo: view, replace, delete', ru: 'Фото клиента: просмотр, замена, удаление', he: 'תמונת מתאמן: תצוגה, החלפה, מחיקה' },
+          body: { en: 'In the client form the photo has three buttons under it: the camera replaces the picture, the eye opens it fullscreen, the bin deletes it. A photo is compressed to 256px and stored offline — it shows in the client list and on the profile, and survives backup and restore.',
+                  ru: 'В форме клиента под фото три кнопки: фотоаппарат заменяет картинку, глаз открывает её на весь экран, корзина удаляет. Фото сжимается до 256px и хранится офлайн — оно видно в списке клиентов и в профиле, переживает резервное копирование и восстановление.',
+                  he: 'בטופס המתאמן יש שלושה כפתורים מתחת לתמונה: המצלמה מחליפה את התמונה, העין פותחת אותה במסך מלא, הפח נמחק אותה. התמונה נדחסת ל-256px ונשמרת אופליין — היא מופיעה ברשימת המתאמנים ובפרופיל, ושורדת גיבוי ושחזור.' }
+        },
+        {
+          heading: { en: 'Manual-only search', ru: 'Поиск — только вручную', he: 'חיפוש — ידני בלבד' },
+          body: { en: 'The client search fields ignore browser autofill: no suggestions popup, nothing is inserted by itself. Tap the field once — it unlocks and you type. The filter stays in sync between the dashboard and the side panel.',
+                  ru: 'Поля поиска клиентов игнорируют автозаполнение браузера: никакой выпадашки с подсказками, ничего не подставляется само. Коснитесь поля — оно разблокируется, и вы вводите текст вручную. Фильтр синхронизирован между дашбордом и боковой панелью.',
+                  he: 'שדות חיפוש המתאמנים מתעלמים מהשלמה אוטומטית של הדפדפן: אין חלון הצעות ושום דבר לא נכנס מעצמו. הקישו על השדה — הוא ננעל-הפוך ואתם מקלידים בעצמכם. המסנן מסונכרן בין הלוח הראשי לפאנל הצד.' }
+        },
+        {
+          heading: { en: 'Portal access lives in the card', ru: 'Доступ к порталу — в карточке', he: 'גישה לפורטל — בכרטיס' },
+          body: { en: 'The portal password (4-10 digits) is a field of the client card with a generate button. On save it is published to the client share, so phone + password login works right away. The share modal shows the QR/link and the WhatsApp invite; the card is the single source of truth.',
+                  ru: 'Пароль портала (4–10 цифр) — поле карточки клиента с кнопкой генерации. При сохранении он публикуется в общий доступ подопечного, поэтому вход по телефону и паролю работает сразу. Модалка «Показать портал» показывает QR/ссылку и приглашение в WhatsApp; карточка — единственный источник правды.',
+                  he: 'סיסמת הפורטל (4-10 ספרות) היא שדה בכרטיס המתאמן עם כפתור יצירה. בשמירה היא מתפרסמת לשיתוף של המתאמן, כך שכניסה בטלפון וסיסמה עובדת מיד. חלון השיתוף מציג QR/קישור והזמנת וואטסאפ; הכרטיס הוא מקור האמת היחיד.' }
+        },
+        {
+          heading: { en: 'Groups and archive', ru: 'Группы и архив', he: 'קבוצות וארכיון' },
+          body: { en: 'Clients are organised in color groups (built-in and custom). Drag a card onto a group chip to move it, or use the folder button on the card. Deleting a client asks for confirmation; the list can be sorted by date added or by name.',
+                  ru: 'Клиенты разложены по цветным группам (встроенным и своим). Перетащите карточку на чип группы — клиент переедет; есть и кнопка-папка на карточке. Удаление клиента требует подтверждения; список сортируется по дате добавления или по имени.',
+                  he: 'המתאמנים מאורגנים בקבוצות צבעוניות (מובנות ומותאמות). גררו כרטיס על צ׳יפ של קבוצה כדי להעביר אותו, או השתמשו בכפתור התיקייה. מחיקת מתאמן דורשת אישור; הרשימה ממוינת לפי תאריך הוספה או לפי שם.' }
         }
       ]
     },
     {
-      id: 'programs',
+      id: 'workouts',
       icon: '🏋️',
-      title: { en: 'Workout Programs', ru: 'Программы тренировок', he: 'תוכניות אימון' },
+      title: { en: 'Workouts', ru: 'Тренировки', he: 'אימונים' },
       sections: [
         {
-          heading: { en: 'Creating a Program', ru: 'Создание программы', he: 'יצירת תוכנית' },
-          body: { en: 'Click "New program" on the client profile. Choose a split type (Full body, A/B, A/B/C, etc.). Each day can be assigned to a day of the week. Add exercises via the Body Map Picker — click a muscle on the SVG body to filter exercises by that muscle group.',
-                  ru: 'Нажмите "Новая программа" в профиле клиента. Выберите тип сплита (Full body, A/B, A/B/C и т.д.). Каждый день можно назначить на день недели. Добавляйте упражнения через Body Map Picker — кликните на мышцу на SVG теле, чтобы отфильтровать упражнения по этой мышечной группе.',
-                  he: 'לחץ "תוכנית חדשה" בפרופיל המתאמן. בחר סוג פיצול. כל יום ניתן להקצות ליום בשבוע. הוסף תרגילים דרך Body Map Picker — לחץ על שריר בגוף ה-SVG כדי לסנן תרגילים.' }
+          heading: { en: 'Programs and days', ru: 'Программы и дни', he: 'תוכניות וימים' },
+          body: { en: 'Each client has workout programs. A program is built from days (Full body, A/B, A/B/C and other splits); every day can be bound to a day of the week. Inside a day you add exercises, group them into sets, and write weight, reps and RPE.',
+                  ru: 'У каждого подопечного — программы тренировок. Программа собирается из дней (Full body, A/B, A/B/C и другие сплиты); каждый день можно привязать к дню недели. Внутри дня добавляйте упражнения, группируйте их в подходы, пишите вес, повторы и RPE.',
+                  he: 'לכל מתאמן יש תוכניות אימון. תוכנית בנויה מימים (Full body, A/B, A/B/C ופיצולים נוספים); כל יום ניתן לקשר ליום בשבוע. בתוך יום מוסיפים תרגילים, מקבצים אותם לסטים ורושמים משקל, חזרות ו-RPE.' }
         },
         {
-          heading: { en: 'Auto-Arrange', ru: 'Авто-сортировка', he: 'סידור אוטומטי' },
-          body: { en: 'The "Auto-arrange" button reorders exercises in the active day using one of three strategies: Compound → Isolation (multi-joint first), Push → Pull → Legs, or Large → Small muscle groups. No competitor app offers this feature.',
-                  ru: 'Кнопка "Авто-сортировка" переупорядочивает упражнения в активном дне по одной из трёх стратегий: Базовые → Изолирующие, Жим → Тяга → Ноги, или Большие → Малые мышцы. Ни одно приложение-конкурент не предлагает эту функцию.',
-                  he: 'כפתור "סידור אוטומטי" מסדר מחדש תרגילים ביום הפעיל לפי אחת מ-3 אסטרטגיות: בסיסי → בידוד, דחיפה → משיכה → רגליים, או גדול → קטן.' }
+          heading: { en: 'Exercise picker with body map', ru: 'Пикер упражнений и карта тела', he: 'בורר תרגילים ומפת גוף' },
+          body: { en: 'The picker searches all 5623 exercises and filters them by equipment, mechanic (compound or isolation), force (push, pull, static), level and category. The interactive body map has front, back and side views — tap a muscle to see only the exercises for that subgroup. Favorites, recent items and folders keep your own structure on top of the shared database.',
+                  ru: 'Пикер ищет по всем 5623 упражнениям и фильтрует по инвентарю, механике (базовое/изолирующее), усилию (жим/тяга/статика), уровню и категории. Интерактивная карта тела имеет виды спереди, сзади и сбоку — коснитесь мышцы, и останутся только упражнения на эту подгруппу. Избранное, недавние и папки хранят вашу собственную структуру поверх общей базы.',
+                  he: 'הבורר מחפש בכל 5623 התרגילים ומסנן לפי ציוד, מכניקה (בסיסי/בידוד), כוח (דחיפה/משיכה/סטטי), רמה וקטגוריה. מפת הגוף האינטראקטיבית מציגה קדמי, אחורי וצד — הקישו על שריר ויישארו רק תרגילים לאותה תת-קבוצה. מועדפים, אחרונים ותיקיות שומרים על המבנה האישי שלכם מעל מאגר המשותף.' }
         },
         {
-          heading: { en: 'Set Types', ru: 'Типы подходов', he: 'סוגי סטים' },
-          body: { en: 'Each set can be tagged: Normal (default), Warmup (🔥 yellow), Drop (📉 cyan), Failure (💥 red), AMRAP (∞ blue). Click the sun icon next to each set to cycle through types.',
-                  ru: 'Каждый подход можно отметить: Normal (по умолчанию), Warmup (🔥 жёлтый), Drop (📉 голубой), Failure (💥 красный), AMRAP (∞ синий). Нажмите на иконку солнца рядом с подходом для переключения типа.',
-                  he: 'כל סט ניתן לסימון: Normal, Warmup (🔥), Drop (📉), Failure (💥), AMRAP (∞). לחץ על סמל השמש ליד כל סט כדי לעבור בין הסוגים.' }
+          heading: { en: 'Set types and ordering', ru: 'Типы подходов и порядок', he: 'סוגי סטים וסדר' },
+          body: { en: 'Every set is tagged: Normal, Warmup, Drop, Failure or AMRAP — tap the tag icon to cycle. Drag exercises by the handle to reorder; auto-arrange sorts a day by three strategies: compound first, push-pull-legs, or large-to-small muscles. Exercise cards include checkpoints and typical mistakes from the technique text.',
+                  ru: 'Каждый подход помечен: Normal, Warmup, Drop, Failure или AMRAP — нажмите на иконку тега для переключения. Перетаскивайте упражнения за «ручку» для смены порядка; авто-сортировка выстраивает день по трём стратегиям: базовые сначала, жим-тяга-ноги или большие мышцы вперёд. В карточке упражнения — контрольные точки и типичные ошибки из текста техники.',
+                  he: 'כל סט מתויג: Normal, Warmup, Drop, Failure או AMRAP — הקישו על סמל התג כדי לעבור בין הסוגים. גררו תרגילים מהידית כדי לסדר מחדש; סידור אוטומטי בונה את היום לפי שלוש אסטרטגיות: בסיסי קודם, דחיפה-משיכה-רגליים, או שרירים גדולים בהתחלה. כרטיס התרגיל כולל נקודות בקרה וטעויות נפוצות מתוך טקסט הטכניקה.' }
         },
         {
-          heading: { en: 'Drag & Drop', ru: 'Перетаскивание', he: 'גרירה ושחרור' },
-          body: { en: 'Drag exercises by the grip handle (6-dot icon) to reorder them within a day. Drop above or below the target card to insert before or after. Set data (weight, reps, RPE) is preserved during moves.',
-                  ru: 'Перетаскивайте упражнения за grip handle (иконка с 6 точками), чтобы изменить порядок внутри дня. Бросайте выше или ниже целевой карточки для вставки до или после. Данные подходов сохраняются при перемещении.',
-                  he: 'גרור תרגילים מסמל 6 הנקודות כדי לשנות סדר ביום. השלך מעל או מתחת לכרטיס היעד. נתוני הסטים נשמרים בעת ההזזה.' }
+          heading: { en: 'Live workout and rest timer', ru: 'Живая тренировка и таймер отдыха', he: 'אימון חי וטיימר מנוחה' },
+          body: { en: 'A workout runs set by set: check a set, and the app scrolls to the next one and starts the rest timer. The thin top bar shows workout progress as a percentage; the narrow rest banner sits under it with minus 15 seconds, plus 30 and close. The same session opens in the client portal with a big timer and progress, so the trainee always knows what is next.',
+                  ru: 'Тренировка идёт подход за подходом: отметьте подход — приложение проскроллит к следующему и запустит таймер отдыха. Тонкая верхняя панель показывает прогресс тренировки в процентах; под ней — узкий баннер отдыха с «−15 с», «+30 с» и закрытием. Та же сессия открывается в портале подопечного с большим таймером и прогрессом — подопечный всегда знает, что дальше.',
+                  he: 'האימון מתנהל סט אחרי סט: סמנו סט והאפליקציה תגלול לסט הבא ותפעיל את טיימר המנוחה. הפס העליון הדק מציג את התקדמות האימון באחוזים; מתחתיו פס מנוחה צר עם «−15 שנ׳», «+30 שנ׳» וסגירה. אותה חזרה נפתחת בפורטל המתאמן עם טיימר גדול והתקדמות — המתאמן תמיד יודע מה הלאה.' }
         }
       ]
     },
     {
       id: 'nutrition',
       icon: '🥗',
-      title: { en: 'Nutrition Plans', ru: 'Планы питания', he: 'תוכניות תזונה' },
+      title: { en: 'Nutrition', ru: 'Питание', he: 'תזונה' },
       sections: [
         {
-          heading: { en: 'Creating a Nutrition Plan', ru: 'Создание плана питания', he: 'יצירת תוכנית תזונה' },
-          body: { en: 'Click "New nutrition plan" on the client profile. Set target calories and macros (protein/carbs/fat). Add foods via the Food Picker — foods are organized into 4 macro-groups: Proteins (🥩), Carbohydrates (🍞), Fats (🥜), Other (⭐). Each group expands to show food categories.',
-                  ru: 'Нажмите "Новый план питания" в профиле клиента. Установите целевые калории и макросы (белки/углеводы/жиры). Добавляйте продукты через Food Picker — продукты организованы в 4 макро-группы: Белки (🥩), Углеводы (🍞), Жиры (🥜), Другое (⭐). Каждая группа раскрывается, показывая категории продуктов.',
-                  he: 'לחץ "תוכנית תזונה חדשה" בפרופיל המתאמן. הגדר קלוריות יעד ומאקרו. הוסף מזונות דרך Food Picker — המזונות מאורגנים ב-4 קבוצות מאקרו: חלבונים (🥩), פחמימות (🍞), שומנים (🥜), אחר (⭐).' }
+          heading: { en: 'Food database', ru: 'База продуктов', he: 'מאגר המזונות' },
+          body: { en: 'The food database is a store shelf: 1253 curated products, each with its own photo, grouped into big and small cubes by category. Smart shelves collect favorites, recent items, healthy A-B choices and high-protein foods. Quality badges on every product: Nutri-Score, Green-Score, NOVA processing level and a palm-oil flag. Deleted products go to the archive and can be restored.',
+                  ru: 'База продуктов устроена как магазинная полка: 1253 отобранных продукта, у каждого своё фото, сгруппированы в большие и малые кубы по категориям. Умные полки собирают избранное, недавние, полезные A-B и белковые продукты. У каждого продукта — бейджи качества: Nutri-Score, Green-Score, степень обработки NOVA и флаг пальмового масла. Удалённые продукты попадают в архив и восстанавливаются.',
+                  he: 'מאגר המזונות בנוי כמדף חנות: 1253 מוצרים מסוננים, לכל אחד תמונה משלו, מקובצים בקוביות גדולות וקטנות לפי קטגוריה. מדפים חכמים אוספים מועדפים, אחרונים, בריאים A-B ועתירי חלבון. לכל מוצר תגי איכות: Nutri-Score, Green-Score, דרגת עיבוד NOVA ודגל שמן דקלים. מוצרים שנמחקו עוברים לארכיון וניתנים לשחזור.' }
         },
         {
-          heading: { en: 'Micronutrient Analysis', ru: 'Анализ микронутриентов', he: 'ניתוח מיקרו-נוטריאנטים' },
-          body: { en: 'Click "Micronutrients" to see vitamin, mineral, and amino acid coverage for the plan. Each nutrient shows a progress bar with percentage of RDI. The "Suggest foods" button finds foods richest in the most deficient nutrients.',
-                  ru: 'Нажмите "Микронутриенты", чтобы увидеть покрытие витаминов, минералов и аминокислот в плане. Каждый нутриент показывает прогресс-бар с процентом от RDI. Кнопка "Подобрать продукты" находит продукты, богатые самыми дефицитными нутриентами.',
-                  he: 'לחץ "מיקרו-נוטריאנטים" כדי לראות כיסוי ויטמינים, מינרלים וחומצות אמינו. כל נוטריאנט מציג פס התקדמות עם אחוז מ-RDI.' }
+          heading: { en: 'Plans and portions', ru: 'Планы и граммовки', he: 'תוכניות ומנות' },
+          body: { en: 'A nutrition plan sets daily targets for calories, protein, carbs and fat. Foods go into meals; the portion bar pre-fills the real serving, offers quick chips (serving, 50, 100, 150, 200 g) and shows what remains to the daily targets — the day progress strip updates totals and leftovers on every change.',
+                  ru: 'План питания задаёт дневные цели по калориям, белкам, углеводам и жирам. Продукты раскладываются по приёмам пищи; панель граммовки подставляет реальную порцию, даёт быстрые чипы (порция, 50, 100, 150, 200 г) и показывает, сколько осталось до целей дня — полоса прогресса дня обновляет итоги и остатки при каждом изменении.',
+                  he: 'תוכנית תזונה קובעת יעדים יומיים לקלוריות, חלבון, פחמימות ושומן. המזונות מחולקים לארוחות; פס המנות ממלא מראש את המנה האמיתית, מציע צ׳יפים מהירים (מנה, 50, 100, 150, 200 ג׳) ומראה כמה נשאר ליעדי היום — פס התקדמות היום מעדכן סיכומים ויתרות בכל שינוי.' }
+        },
+        {
+          heading: { en: 'Templates, recipes and the log', ru: 'Шаблоны, рецепты и дневник', he: 'תבניות, מתכונים ויומן' },
+          body: { en: 'Meal templates are cards with a photo collage, total calories and macro chips — one tap applies them to a day. Recipes are fully editable: change the name, ingredients and grams, and the macros recompute; the processing badge stays honest (it is calculated from the ingredients). The daily log shows each entry as a photo tile with grams, calories and P/C/F.',
+                  ru: 'Шаблоны приёмов — карточки с фотоколлажем, итоговыми калориями и чипами макросов — применяются к дню одним нажатием. Рецепты полностью редактируемые: меняйте название, состав и граммовки — макросы пересчитаются; бейдж обработки честный (считается по ингредиентам). Дневник показывает каждую запись фотоплиткой с граммами, калориями и Б/Ж/У.',
+                  he: 'תבניות ארוחות הן כרטיסים עם קולאז׳ תמונות, סך קלוריות וצ׳יפים של מאקרו — לחיצה אחת מיישמת אותן ליום. מתכונים ניתנים לעריכה מלאה: שנו שם, מרכיבים וגרמים — המאקרו יחושב מחדש; תג העיבוד נשאר כן (מחושב מהמרכיבים). היומן היומי מציג כל רישום כאריח תמונה עם גרמים, קלוריות וחלבון/פחמימות/שומן.' }
+        },
+        {
+          heading: { en: 'Micronutrients', ru: 'Микронутриенты', he: 'מיקרו-נוטריאנטים' },
+          body: { en: 'The micronutrient screen shows how the plan covers vitamins, minerals and amino acids against recommended daily intake, with a progress bar per nutrient. The suggest-foods button finds the products richest in the most deficient nutrients.',
+                  ru: 'Экран микронутриентов показывает, насколько план покрывает витамины, минералы и аминокислоты относительно суточных норм, с прогресс-баром по каждому нутриенту. Кнопка подбора продуктов находит самые богатые источники самых дефицитных нутриентов.',
+                  he: 'מסך המיקרו-נוטריאנטים מציג עד כמה התוכנית מכסה ויטמינים, מינרלים וחומצות אמינו מול הצריכה היומית המומלצת, עם פס התקדמות לכל נוטריאנט. כפתור הצעת המזונות מוצא את המוצרים העשירים ביותר בנוטריאנטים החסרים.' }
         }
       ]
     },
     {
       id: 'recovery',
       icon: '📊',
-      title: { en: 'Recovery Map', ru: 'Карта восстановления', he: 'מפת התאוששות' },
+      title: { en: 'Recovery and analytics', ru: 'Восстановление и аналитика', he: 'התאוששות ואנליטיקה' },
       sections: [
         {
-          heading: { en: 'How Recovery Works', ru: 'Как работает восстановление', he: 'איך עובד ההתאוששות' },
-          body: { en: 'The Recovery Map shows per-muscle recovery percentage using a 6-day exponential decay model. After each workout, the exercised muscles start at 0% recovery and gradually recover: ~63% after 3 days, ~86% after 6 days. Synergist muscles (e.g. triceps during bench press) receive 30% fatigue credit.',
-                  ru: 'Карта восстановления показывает процент восстановления каждой мышцы по 6-дневной модели экспоненциального затухания. После каждой тренировки тренируемые мышцы начинают с 0% и постепенно восстанавливаются: ~63% через 3 дня, ~86% через 6 дней. Синергисты (например, трицепс при жиме лёжа) получают 30% усталости.',
-                  he: 'מפת ההתאוששות מציגה אחוז התאוששות לכל שריר במודל דעיכה מעריכית 6-יומי. לאחר כל אימון, השרירים מתחילים מ-0% ומתאוששים בהדרגה: ~63% לאחר 3 ימים, ~86% לאחר 6 ימים. שרירים סינרגיסטים מקבלים 30% עייפות.' }
+          heading: { en: 'Recovery model v2', ru: 'Модель восстановления v2', he: 'מודל התאוששות v2' },
+          body: { en: 'The recovery map colors every muscle and its subgroups (upper abs, lower abs, obliques and so on) by a 6-day exponential decay: about 63% recovered after 3 days, about 86% after 6. Synergist muscles get 30% of the fatigue — triceps remember the bench press. The model knows body composition: body fat percentage scales the capacity and the personal decay speed, and the body weight is taken from check-ins or, if there are none, from the client profile.',
+                  ru: 'Карта восстановления раскрашивает каждую мышцу и её подгруппы (верх пресса, низ, косые и так далее) по 6-дневному экспоненциальному затуханию: примерно 63% восстановления через 3 дня, примерно 86% через 6. Синергисты получают 30% усталости — трицепс помнит жим лёжа. Модель знает состав тела: процент жира масштабирует ёмкость и личную скорость восстановления, а вес берётся из чек-инов или, если их нет, из профиля клиента.',
+                  he: 'מפת ההתאוששות צובעת כל שריר ותתי-קבוצותיו (בטן עליונה, תחתונה, אלכסוניות וכו) לפי דעיכה מעריכית של 6 ימים: כ-63% התאוששות אחרי 3 ימים, כ-86% אחרי 6. שרירים סינרגיסטים מקבלים 30% מהעייפות — הטריצפס זוכר לחיצת חזה. המודל מכיר את הרכב הגוף: אחוז שומן מתאים את הקיבולת וקצב ההתאוששות האישי, והמשקל נלקח מצ׳ק-אין או, אם אין, מפרופיל המתאמן.' }
         },
         {
-          heading: { en: 'Three Modes', ru: 'Три режима', he: 'שלושה מצבים' },
-          list: {
-            en: ['Recovery: color-coded muscles (red=fatigued, yellow=recovering, green=fresh)', '7d Volume: total training volume per muscle in the last 7 days', '30d Volume: total training volume per muscle in the last 30 days'],
-            ru: ['Восстановление: цветные мышцы (красный=утомлена, жёлтый=восстанавливается, зелёный=свежая)', 'Объём за 7 дней: общий тренировочный объём на мышцу за 7 дней', 'Объём за 30 дней: общий тренировочный объём на мышцу за 30 дней'],
-            he: ['התאוששות: שרירים צבעוניים (אדום=עייף, צהוב=מתאושש, ירוק=רענן)', 'נפח 7 ימים: נפח אימון כולל לכל שריר ב-7 ימים האחרונים', 'נפח 30 ימים: נפח אימון כולל לכל שריר ב-30 ימים האחרונים']
-          }
-        }
-      ]
-    },
-    {
-      id: 'archive',
-      icon: '📦',
-      title: { en: 'Archive System', ru: 'Система архива', he: 'מערכת ארכיון' },
-      sections: [
-        {
-          heading: { en: 'Soft Delete & Restore', ru: 'Мягкое удаление и восстановление', he: 'מחיקה רכה ושחזור' },
-          body: { en: 'When you delete an exercise or food, it is not permanently removed — it moves to the Archive. Click the Archive button (📦) in the Exercises or Food Database toolbar to view archived items. Each item shows a "Restore" button (↩). Archive mode auto-disables when you switch screens.',
-                  ru: 'При удалении упражнения или продукта оно не удаляется навсегда — оно перемещается в Архив. Нажмите кнопку Архив (📦) в панели инструментов упражнений или базы продуктов, чтобы увидеть архивные элементы. У каждого элемента есть кнопка "Восстановить" (↩). Режим архива автоматически отключается при переключении экранов.',
-                  he: 'בעת מחיקת תרגיל או מזון, הם אינם נמחקים לצמיתות — הם עוברים לארכיון. לחץ על כפתור הארכיון (📦) בסרגל הכלים של תרגילים או מסד המזונות. לכל פריט יש כפתור "שחזר" (↩). מצב ארכיון מתנתק אוטומטית בעת מעבר בין מסכים.' }
-        }
-      ]
-    },
-    {
-      id: 'bodymap',
-      icon: '🗺️',
-      title: { en: 'Body Map', ru: 'Карта тела', he: 'מפת גוף' },
-      sections: [
-        {
-          heading: { en: 'Three Views', ru: 'Три вида', he: 'שלושה תצפיות' },
-          body: { en: 'The body map has 3 SVG views: Front (36 muscle zones), Back (27 zones), and Side (22 zones). Each muscle is color-coded by group. Click a muscle to filter exercises for that specific subgroup. The body map is available in both the Exercise Database screen and the Program Builder picker.',
-                  ru: 'Карта тела имеет 3 SVG-вида: Спереди (36 мышечных зон), Сзади (27 зон) и Сбоку (22 зоны). Каждая мышца окрашена по группе. Кликните на мышцу, чтобы отфильтровать упражнения для этой подгруппы. Карта тела доступна как в базе упражнений, так и в пикере построения программ.',
-                  he: 'מפת הגוף כוללת 3 תצפיות SVG: קדימה (36 אזורי שרירים), אחורה (27), וצד (22). כל שריר צבוע לפי קבוצה. לחץ על שריר כדי לסנן תרגילים לאזור זה.' }
+          heading: { en: 'Three modes and check-ins', ru: 'Три режима и чек-ины', he: 'שלושה מצבים וצ׳ק-אין' },
+          body: { en: 'Switch the map between Recovery, 7-day volume and 30-day volume. The client feeds the model from their portal: a check-in with weight, waist, hips and body fat updates both the trainer map and the client map — they can never disagree.',
+                  ru: 'Переключайте карту между «Восстановление», «Объём за 7 дней» и «Объём за 30 дней». Подопечный питает модель из своего портала: чек-ин с весом, талией, бёдрами и жиром обновляет карту и у тренера, и у клиента — они никогда не расходятся.',
+                  he: 'החליפו את המפה בין התאוששות, נפח 7 ימים ונפח 30 ימים. המתאמן מזין את המודל מהפורטל שלו: צ׳ק-אין עם משקל, מותן, ירכיים ושומן מעדכן את המפה אצל המאמן ואצל המתאמן — הן אף פעם לא סותרות.' }
         },
         {
-          heading: { en: 'Classification Filters', ru: 'Фильтры классификации', he: 'מסנני סיווג' },
-          body: { en: 'In the program builder picker, 4 classification filter rows appear below the equipment chips: Mechanic (Compound/Isolation), Force (Push/Pull/Static), Level (Beginner/Intermediate/Expert), and Category (Strength/Plyometrics/Stretching/etc.). Each chip shows the count of matching exercises.',
-                  ru: 'В пикере построения программ под чипами инвентаря появляются 4 строки фильтров классификации: Механика (Базовые/Изолирующие), Усилие (Жим/Тяга/Статика), Уровень (Начальный/Средний/Эксперт) и Категория (Сила/Плиометрика/Растяжка и т.д.). Каждый чип показывает количество подходящих упражнений.',
-                  he: 'בבורר בניית התוכניות, מתחת לשבבי הציוד מופיעים 4 שורות סינון: מכניקה, כוח, רמה וקטגוריה. כל שבב מציג את מספר התרגילים התואמים.' }
+          heading: { en: 'Analytics', ru: 'Аналитика', he: 'אנליטיקה' },
+          body: { en: 'The analytics screen shows per-client training trends: completed workouts, volume by muscle group, and progress over the chosen range — day, week or month. Use it to spot stalled clients and unbalanced programs.',
+                  ru: 'Экран аналитики показывает тренировочные тренды по каждому клиенту: выполненные тренировки, объём по группам мышц и прогресс за выбранный диапазон — день, неделя или месяц. Используйте его, чтобы замечать застоявшихся клиентов и несбалансированные программы.',
+                  he: 'מסך האנליטיקה מציג מגמות אימון לכל מתאמן: אימונים שהושלמו, נפח לפי קבוצות שרירים והתקדמות לטווח שנבחר — יום, שבוע או חודש. השתמשו בו כדי לזהות מתאמנים שנתקעו ותוכניות לא מאוזנות.' }
         }
       ]
     },
     {
-      id: 'backup',
+      id: 'portal',
+      icon: '📱',
+      title: { en: 'Client portal', ru: 'Портал подопечного', he: 'פורטל המתאמן' },
+      sections: [
+        {
+          heading: { en: 'What the client sees', ru: 'Что видит подопечный', he: 'מה המתאמן רואה' },
+          body: { en: 'The portal is a separate app for the trainee: thin top bar with the workout percentage, language and font controls; workouts with a live mode, big timer and rest banner; the recovery map with check-ins; and the nutrition plan for the day. Everything is translated to Russian, English and Hebrew.',
+                  ru: 'Портал — отдельное приложение для подопечного: тонкая верхняя панель с процентами тренировки, языком и размером шрифта; тренировки с живым режимом, большим таймером и баннером отдыха; карта восстановления с чек-инами; план питания на день. Всё переведено на русский, английский и иврит.',
+                  he: 'הפורטל הוא אפליקציה נפרדת למתאמן: פס עליון דק עם אחוזי האימון, שפה וגודל גופן; אימונים עם מצב חי, טיימר גדול ופס מנוחה; מפת התאוששות עם צ׳ק-אין; ותוכנית התזונה ליום. הכל מתורגם לרוסית, אנגלית ועברית.' }
+        },
+        {
+          heading: { en: 'Sharing and access', ru: 'Доступ и шаринг', he: 'שיתוף וגישה' },
+          body: { en: 'The «Show portal» button opens the share modal: QR code, link, the card password and a WhatsApp invite. The client logs in with phone and the 4-10 digit password from the card. Changing the password in the card updates the access on save; the client cannot change it from their side.',
+                  ru: 'Кнопка «Показать портал» открывает модалку шаринга: QR-код, ссылка, пароль из карточки и приглашение в WhatsApp. Подопечный входит по телефону и паролю из карточки (4–10 цифр). Смена пароля в карточке обновляет доступ при сохранении; клиент не может сменить его со своей стороны.',
+                  he: 'כפתור «הצג פורטל» פותח חלון שיתוף: קוד QR, קישור, הסיסמה מהכרטיס והזמנת וואטסאפ. המתאמן נכנס עם טלפון והסיסמה מהכרטיס (4-10 ספרות). שינוי הסיסמה בכרטיס מעדכן את הגישה בשמירה; המתאמן לא יכול לשנות אותה מצדו.' }
+        }
+      ]
+    },
+    {
+      id: 'settings',
+      icon: '⚙️',
+      title: { en: 'Settings', ru: 'Настройки', he: 'הגדרות' },
+      sections: [
+        {
+          heading: { en: 'Look and feel', ru: 'Внешний вид', he: 'מראה ותחושה' },
+          body: { en: 'Choose one of 33 themes with light and dark variants, pick a glass texture for modal panels and tune its transparency. The UI sizes panel scales fonts from 0.62 to 2.4 times (the A- and A+ buttons in the top bar do the same) and resizes the 3D atlas. The interface language switches between Russian, English and Hebrew at any moment.',
+                  ru: 'Выберите одну из 33 тем со светлым и тёмным вариантами, подберите стеклянную текстуру для панелей модалок и её прозрачность. Панель размеров интерфейса масштабирует шрифты от 0.62 до 2.4 раза (кнопки A− и A+ в верхней панели делают то же) и меняет размер 3D-атласа. Язык интерфейса переключается на русский, английский и иврит в любой момент.',
+                  he: 'בחרו אחת מ-33 ערכות נושא עם גרסאות בהירות וכהות, בחרו טקסטורת זכוכית לפאנלים של חלונות וכוונו את שקיפותה. פאנל גדלי הממשק משנה גופנים מ-0.62 עד 2.4 (כפתורי A- ו-A+ בפס העליון עושים זאת) ומתאים את האטלס התלת-מימדי. שפת הממשק מתחלפת בין רוסית, אנגלית ועברית בכל רגע.' }
+        },
+        {
+          heading: { en: 'Trainer reminders', ru: 'Напоминания тренеру', he: 'תזכורות למאמן' },
+          body: { en: 'In Settings there is a reminders panel: a morning digest of who trains today (built from the training days of every client) and client birthdays. The time is configurable; notifications come from the service worker and repeat on their schedule — no server involved.',
+                  ru: 'В настройках есть панель напоминаний: утренняя сводка «кто тренируется сегодня» (собирается из дней тренировок всех клиентов) и дни рождения подопечных. Время настраивается; уведомления приходят от сервис-воркера и повторяются по расписанию — сервер не нужен.',
+                  he: 'בהגדרות יש פאנל תזכורות: סיכום בוקר «מי מתאמן היום» (נבנה מימי האימון של כל המתאמנים) וימי הולדת של המתאמנים. השעה ניתנת להגדרה; ההתראות מגיעות מה-service worker וחוזרות לפי הלוח — בלי שרת.' }
+        },
+        {
+          heading: { en: 'Accounts and security', ru: 'Аккаунты и безопасность', he: 'חשבונות ואבטחה' },
+          body: { en: 'The trainer account is protected by a password hashed with PBKDF2 (100,000 iterations + SHA-256); old hashes upgrade automatically on login. Client portal passwords are simple 4-10 digit codes by design — they guard a workout portal, not a bank.',
+                  ru: 'Аккаунт тренера защищён паролем, хешированным PBKDF2 (100 000 итераций + SHA-256); старые хеши обновляются автоматически при входе. Пароли портала подопечных — простые коды из 4–10 цифр специально: они охраняют тренировочный портал, а не банк.',
+                  he: 'חשבון המאמן מוגן בסיסמה המוצפנת PBKDF2 (100,000 איטרציות + SHA-256); הצפנות ישנות משתדרגות אוטומטית בכניסה. סיסמאות פורטל המתאמנים הן קודים פשוטים של 4-10 ספרות בכוונה — הן שומרות על פורטל אימונים, לא על בנק.' }
+        }
+      ]
+    },
+    {
+      id: 'data',
       icon: '💾',
-      title: { en: 'Backup & Security', ru: 'Резервное копирование и безопасность', he: 'גיבוי ואבטחה' },
+      title: { en: 'Data and offline', ru: 'Данные и офлайн', he: 'נתונים ואופליין' },
       sections: [
         {
-          heading: { en: 'Password Protection', ru: 'Защита паролем', he: 'הגנת סיסמה' },
-          body: { en: 'The app uses PBKDF2 (100,000 iterations + SHA-256) for password hashing. Old SHA-256 passwords are automatically upgraded on first login. No password is stored in plaintext.',
-                  ru: 'Приложение использует PBKDF2 (100,000 итераций + SHA-256) для хеширования пароля. Старые пароли SHA-256 автоматически обновляются при первом входе. Никакой пароль не хранится в открытом виде.',
-                  he: 'האפליקציה משתמשת ב-PBKDF2 (100,000 איטרציות + SHA-256) להצפנת סיסמה. סיסמאות ישנות משודרגות אוטומטית בכניסה הראשונה.' }
+          heading: { en: 'Offline first', ru: 'Офлайн — прежде всего', he: 'אופליין קודם כל' },
+          body: { en: 'The app is a PWA: install it from the browser and it opens full-screen without an address bar. All data lives in the local IndexedDB, the service worker caches the app shell, so workouts and nutrition work with no network at all — in the gym basement or on a plane.',
+                  ru: 'Приложение — PWA: установите его из браузера, и оно откроется на весь экран без адресной строки. Все данные живут в локальном IndexedDB, сервис-воркер кэширует оболочку приложения, поэтому тренировки и питание работают совсем без сети — в подвале зала или в самолёте.',
+                  he: 'האפליקציה היא PWA: התקינו אותה מהדפדפן והיא תיפתח במסך מלא בלי שורת כתובת. כל הנתונים חיים ב-IndexedDB המקומי, ה-service worker שומר את מעטפת האפליקציה, ולכן אימונים ותזונה עובדים בלי רשת בכלל — במרתף החדר כושר או במטוס.' }
         },
         {
-          heading: { en: 'Export & Import', ru: 'Экспорт и импорт', he: 'ייצוא וייבוא' },
-          body: { en: 'Use Settings → Backup to export all data as a JSON file. Import restores from a backup file. All data is stored locally in IndexedDB — no cloud server required. The app works fully offline.',
-                  ru: 'Используйте Настройки → Резервное копирование для экспорта всех данных в JSON-файл. Импорт восстанавливает из файла резервной копии. Все данные хранятся локально в IndexedDB — облачный сервер не требуется. Приложение полностью работает офлайн.',
-                  he: 'השתמש בהגדרות → גיבוי כדי לייצא את כל הנתונים כקובץ JSON. ייבוא משחזר מקובץ גיבוי. כל הנתונים מאוחסנים מקומית ב-IndexedDB.' }
+          heading: { en: 'Backup and restore', ru: 'Резервная копия', he: 'גיבוי ושחזור' },
+          body: { en: 'Settings → Backup exports everything (clients, programs, plans, logs, databases) into one JSON file. Import restores from that file on any device. Make a backup before switching phones — it is the only transport between devices.',
+                  ru: 'Настройки → Резервная копия выгружает всё (клиентов, программы, планы, дневники, базы) в один JSON-файл. Импорт восстанавливает из этого файла на любом устройстве. Делайте бэкап перед сменой телефона — это единственный способ переноса между устройствами.',
+                  he: 'הגדרות → גיבוי מייצאת הכל (מתאמנים, תוכניות, תפריטים, יומנים, מאגרים) לקובץ JSON אחד. ייבוא משחזר מהקובץ בכל מכשיר. גבו לפני החלפת טלפון — זו הדרך היחידה להעביר נתונים בין מכשירים.' }
+        },
+        {
+          heading: { en: 'Archive instead of delete', ru: 'Архив вместо удаления', he: 'ארכיון במקום מחיקה' },
+          body: { en: 'Deleting an exercise or a food never destroys it — the item moves to the archive. Open the archive mode from the toolbar (the box icon) to see hidden items and restore the ones you need with one tap.',
+                  ru: 'Удаление упражнения или продукта никогда не уничтожает его — элемент уезжает в архив. Откройте режим архива с панели инструментов (иконка коробки), чтобы увидеть скрытое и вернуть нужное одним нажатием.',
+                  he: 'מחיקת תרגיל או מזון לא הורסת אותו לעולם — הפריט עובר לארכיון. פתחו מצב ארכיון מסרגל הכלים (סמל הקופסה) כדי לראות פריטים מוסתרים ולהחזיר את מה שצריך בהקשה אחת.' }
         }
       ]
     }
@@ -33840,7 +34005,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 179; /* numeric part of dk-build c179 */
+  var RUNNING = 180; /* numeric part of dk-build c180 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
