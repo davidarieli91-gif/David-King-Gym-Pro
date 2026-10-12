@@ -1465,6 +1465,7 @@
     "cloudAccErrIncomplete": "The cloud copy is incomplete — some data chunks are missing. Press “Save to cloud” on the primary device (the app will repair the copy), then try “Restore from cloud” here again.",
     "cloudAccErrEmptyLocal": "This device has no data but the cloud does — saving was cancelled to protect the cloud copy. Tap “Restore from cloud” instead.",
     "cloudAccSaved": "✓ Saved to cloud: {n} records, {kb} KB",
+    "cloudAccStale": "Cloud has newer data (updated from another device) — upload cancelled to protect it. Open Settings → “Cloud” and choose “Restore from cloud” or “Save to cloud”.",
     "cloudAccInitial": "First upload of your data to the account (may take a minute)…",
     "cloudAccRestored": "✓ Data restored from cloud. Reloading…",
     "cloudAccNoCloud": "Nothing in the cloud yet",

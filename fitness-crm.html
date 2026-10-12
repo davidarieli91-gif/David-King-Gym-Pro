@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c180" />
+<meta name="dk-build" content="c181" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2894,7 +2894,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c180</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c181</p>
             </div>
           </div>
 
@@ -32124,6 +32124,22 @@ document.addEventListener('DOMContentLoaded', function () {
     var _dirty = {}, _dirtyTimer = null, _busy = false, _savingQueued = false;
     var _autosync = true, _lastSync = 0, _lastMeta = null, _syncedFor = null;
     var _ready = null;
+    /* c181: last time the «cloud newer» stale toast was shown (ms epoch).
+     * Persisted in localStorage so the throttle survives reloads — during a
+     * live workout autosync retries the fenced upload every DEBOUNCE_MS and
+     * the old code toasted a 10-second wall of English text on EVERY set
+     * logged (user screenshot 2026-10-12, mid-workout toast spam). */
+    var STALE_TOAST_KEY = 'dk_cloud_stale_toast_at';
+    var STALE_TOAST_GAP = 30 * 60 * 1000; /* 30 minutes */
+    var _staleToastAt = 0;
+    try { _staleToastAt = Number(localStorage.getItem(STALE_TOAST_KEY)) || 0; } catch (eS0) {}
+    function staleToastDue() {
+      var now = Date.now();
+      if (now - _staleToastAt < STALE_TOAST_GAP) return false;
+      _staleToastAt = now;
+      try { localStorage.setItem(STALE_TOAST_KEY, String(now)); } catch (eS1) {}
+      return true;
+    }
 
     function $(id) { return document.getElementById(id); }
     function T(key, vars) {
@@ -32493,7 +32509,12 @@ document.addEventListener('DOMContentLoaded', function () {
           if (prev && prev.updated_at && Number(prev.updated_at) > _lastOk94 + 1500) {
             log('cloud-newer fence: cloud.updated_at', prev.updated_at, '> last completed sync', _lastOk94, '— refusing to overwrite unseen cloud data');
             try { var cf94 = $('cloud-conflict'); if (cf94) cf94.classList.remove('hidden'); } catch (eF94) {}
-            toastMsg(T('settings.cloudAccStale') || 'Cloud was updated from another device — upload cancelled so newer data is not overwritten. Use «Restore from cloud» to load it, or «Save to cloud» again to overwrite with this device.', 'warning', 10000);
+            /* c181: toast at most once per 30 min (persisted). The banner in
+             * Settings + this single toast are the notification; repeated
+             * per-set toasts during a live workout were pure spam. */
+            if (staleToastDue()) {
+              toastMsg(T('settings.cloudAccStale') || 'Cloud has newer data (updated from another device) — upload cancelled to protect it. In Settings → “Cloud”, choose “Restore from cloud” or “Save to cloud”.', 'warning', 10000);
+            }
             return { ok: false, error: 'cloud_newer' };
           }
         }
@@ -33110,14 +33131,18 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (e) {}
       });
 
+      /* c181: cloud_newer joins busy in the silent list here — the fence
+       * already toasts (throttled) and shows the conflict banner; a red
+       * «Cloud error: cloud_newer» raw-code toast on every screen lock
+       * mid-workout told the trainer nothing. */
       window.addEventListener('online', function () {
         if (_user && _autosync && Object.keys(_dirty).length && !_busy) {
-          saveNow().then(function (r) { if (r && !r.ok && r.error !== 'busy') errMsg(r.error); }).catch(function () {});
+          saveNow().then(function (r) { if (r && !r.ok && r.error !== 'busy' && r.error !== 'cloud_newer') errMsg(r.error); }).catch(function () {});
         }
       });
       document.addEventListener('visibilitychange', function () {
         if (document.hidden && _user && _autosync && Object.keys(_dirty).length && !_busy) {
-          saveNow().then(function (r) { if (r && !r.ok && r.error !== 'busy') errMsg(r.error); }).catch(function () {});
+          saveNow().then(function (r) { if (r && !r.ok && r.error !== 'busy' && r.error !== 'cloud_newer') errMsg(r.error); }).catch(function () {});
         }
       });
     }
@@ -34005,7 +34030,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 180; /* numeric part of dk-build c180 */
+  var RUNNING = 181; /* numeric part of dk-build c181 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
