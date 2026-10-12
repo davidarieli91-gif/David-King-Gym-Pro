@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c181" />
+<meta name="dk-build" content="c182" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2459,6 +2459,13 @@ sliver inside the picker modal's map column (measured 142px vs SVG 488px). */
 /* c74: DKBody3D embedded widget */
 .b3d-box { position: relative; }
 .b3d-canvas { width: 100%; height: 100%; display: block; touch-action: none; }
+/* c182: studio stage behind the alpha canvas — warm key glow above the chest
+ * + soft vignette; shows through the transparent WebGL canvas in both themes */
+#atlas-canvas-box, .b3d-box {
+  background-image:
+    radial-gradient(85% 58% at 50% 30%, rgba(199, 62, 52, 0.11), transparent 66%),
+    radial-gradient(135% 105% at 50% 50%, transparent 58%, rgba(0, 0, 0, 0.15) 100%);
+}
 .b3d-load { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .5rem; color: rgb(var(--c-muted)); font-size: 12px; text-align: center; padding: .5rem; }
 .b3d-spin { width: 22px; height: 22px; border-radius: 9999px; border: 2px solid rgb(var(--c-border)); border-top-color: #dc2626; animation: b3dspin 1s linear infinite; }
 @keyframes b3dspin { to { transform: rotate(360deg); } }
@@ -2894,7 +2901,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c181</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c182</p>
             </div>
           </div>
 
@@ -34030,7 +34037,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 181; /* numeric part of dk-build c181 */
+  var RUNNING = 182; /* numeric part of dk-build c182 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
@@ -34465,6 +34472,45 @@ document.addEventListener('input', function (e) {
   var CDN = 'https://cdn.jsdelivr.net/npm/three@0.170.0';
   var HILITE = 0xdc2626; /* red-600 */
 
+  /* ---------------- c182: anatomical muscle palette ----------------
+   * The GLB ships with NO materials — the old code painted every mesh the
+   * same gray 0xb9bcc4, which read as a «white blob» (user report + screen
+   * of Anatomyka-style red anatomy as the target look). Mesh names carry the
+   * full taxonomy, so: muscles get name-hash-varied anatomical reds (stable
+   * per muscle, symmetric L/R), tendons/sheaths/ligaments/cartilage go ivory.
+   * Deep muscles run darker, facial muscles lighter/pinker. */
+  var CONNECTIVE_RE = /(tendon|ligament|fascia|aponeurosis|retinaculum|sheath|cartilage|tarsus|trochlea|raphe|bursa|capsule|linea alba|fibrous|sacrotuberous|sacrospinous|transverse carpal|flexor retinac)/i;
+  var DEEP_RE = /(multifidus|rotatores|intertransversarii|levator ani|suboccipital|obliquus capitis|rectus capitis|scalenus|geniohyoid|mylohyoid|sternohyoid|sternothyroid|thyrohyoid|omohyoid|pterygoid|subscapularis|subclavius|transversus|interossei|quadratus|obturator|gemellus|piriformis|coccygeus|sphincter|tibialis posterior|popliteus|diaphragm|plantaris)/i;
+  var FACE_RE = /(orbicularis|zygomaticus|buccinator|frontalis|occipitalis|nasalis|mentalis|risorius|depressor anguli|levator anguli|levator labii|depressor labii|corrugator|procerus|platysma|temporalis|masseter)/i;
+  function dkHash(s) {
+    var h = 2166136261;
+    for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  }
+  function muscleTintHex(THREE, base) {
+    var n = String(base || '').toLowerCase();
+    var c = new THREE.Color();
+    if (CONNECTIVE_RE.test(n)) return c.setHex(0xd4c8ba).getHex(); /* ivory tendon */
+    var h = dkHash(n);
+    var hue = 0.992 + ((h & 31) / 31) * 0.014 - 0.010; /* 0.982–0.996 — red */
+    var sat = 0.50 + (((h >> 5) & 15) / 15) * 0.14;    /* 0.50–0.64 */
+    var lig = 0.35 + (((h >> 9) & 15) / 15) * 0.12;    /* 0.35–0.47 — deep anatomy red */
+    if (DEEP_RE.test(n)) { lig -= 0.06; sat += 0.04; }
+    if (FACE_RE.test(n)) { lig += 0.07; sat -= 0.08; }
+    c.setHSL(hue, Math.max(0.30, Math.min(0.70, sat)), Math.max(0.30, Math.min(0.55, lig)), THREE.SRGBColorSpace); /* c182 fix: explicit sRGB — setHSL defaults to the WORKING (linear) space, which washed the muscles toward pink */
+    return c.getHex();
+  }
+  function dkNewMuscleMaterial(THREE, base) {
+    var n = String(base || '').toLowerCase();
+    var tint = muscleTintHex(THREE, base);
+    if (CONNECTIVE_RE.test(n)) {
+      /* tendons: glossy ivory strands */
+      return new THREE.MeshPhysicalMaterial({ color: tint, roughness: 0.38, metalness: 0, clearcoat: 0.5, clearcoatRoughness: 0.4 });
+    }
+    /* muscles: wet-flesh look — mid roughness + light clearcoat */
+    return new THREE.MeshPhysicalMaterial({ color: tint, roughness: 0.52, metalness: 0, clearcoat: 0.22, clearcoatRoughness: 0.55 });
+  }
+
   /* ---------------- state ---------------- */
   var S = {
     inited: false, initing: false, open: false,
@@ -34541,7 +34587,39 @@ document.addEventListener('input', function (e) {
       S._OrbitControls = m[1].OrbitControls;
       S._GLTFLoader = m[2].GLTFLoader;
       S._DRACOLoader = m[3].DRACOLoader;
+      /* c182: IBL environment for the studio look — OPTIONAL: if this extra
+       * import fails the atlas still boots with the light rig only. */
+      return import(CDN + '/examples/jsm/environments/RoomEnvironment.js/+esm').then(function (e) {
+        S._RoomEnvironment = e.RoomEnvironment || null;
+      }).catch(function () { S._RoomEnvironment = null; });
     });
+  }
+
+  /* ---------------- c182: studio lighting helpers ---------------- */
+  function applyStudioRenderer(renderer) {
+    var THREE = S.THREE;
+    try {
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.0;
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+    } catch (e) {}
+  }
+  function applyStudioEnv(renderer, scene) {
+    var THREE = S.THREE;
+    try {
+      if (!S._RoomEnvironment || !THREE.PMREMGenerator) return;
+      var pm = new THREE.PMREMGenerator(renderer);
+      scene.environment = pm.fromScene(new S._RoomEnvironment(), 0.04).texture;
+      if ('environmentIntensity' in scene) scene.environmentIntensity = 0.72;
+      pm.dispose();
+    } catch (e) {}
+  }
+  function addStudioLights(scene) {
+    var THREE = S.THREE;
+    var hemi = new THREE.HemisphereLight(0xfff2ee, 0x2c1d1c, 0.35); scene.add(hemi);
+    var key = new THREE.DirectionalLight(0xfff1e6, 1.05); key.position.set(2.5, 4, 3); scene.add(key);
+    var rim = new THREE.DirectionalLight(0xd6e6ff, 0.85); rim.position.set(-3, 1.5, -2.5); scene.add(rim);
+    var fill = new THREE.DirectionalLight(0xffffff, 0.25); fill.position.set(0, -3, -2); scene.add(fill);
   }
 
   function initScene() {
@@ -34556,11 +34634,12 @@ document.addEventListener('input', function (e) {
     S.camera = new THREE.PerspectiveCamera(40, 1, 0.05, 60);
     S.camera.position.set(0, 0.15, 3.2);
 
-    var hemi = new THREE.HemisphereLight(0xffffff, 0x444455, 1.05);
-    S.scene.add(hemi);
-    var key = new THREE.DirectionalLight(0xffffff, 1.5); key.position.set(2.5, 4, 3); S.scene.add(key);
-    var rim = new THREE.DirectionalLight(0xdbeafe, 0.7); rim.position.set(-3, 1.5, -2.5); S.scene.add(rim);
-    var fill = new THREE.DirectionalLight(0xffffff, 0.5); fill.position.set(0, -3, -2); S.scene.add(fill);
+    /* c182: studio look — ACES tone mapping + IBL RoomEnvironment + warm
+     * key / cool rim / low fill. If the optional RoomEnvironment import
+     * failed, the light rig alone still gives a decent staged look. */
+    applyStudioRenderer(renderer);
+    applyStudioEnv(renderer, S.scene);
+    addStudioLights(S.scene);
 
     var Controls = S._OrbitControls;
     var controls = new Controls(S.camera, canvasEl);
@@ -34617,20 +34696,14 @@ document.addEventListener('input', function (e) {
   function prepareModel(gltf) {
     var THREE = S.THREE;
     var root = gltf.scene;
-    /* unify look */
+    /* c182: per-mesh anatomical material — the GLB has no materials at all,
+     * the old code painted everything gray (the «white blob»). dkNewMuscle-
+     * Material reads the muscle name and returns a FRESH instance per mesh,
+     * which also keeps the c68 rule (x-ray ghosting must not leak). */
     root.traverse(function (o) {
       if (o.isMesh) {
         o.castShadow = false; o.receiveShadow = false;
-        var mat = o.material;
-        if (mat) {
-          mat.metalness = 0; mat.roughness = 0.75;
-          if (!mat.color || (mat.color.r === 1 && mat.color.g === 1 && mat.color.b === 1)) mat.color.setHex(0xb9bcc4);
-          if (!mat.color) mat.color = new THREE.Color(0xb9bcc4);
-        } else {
-          o.material = new THREE.MeshStandardMaterial({ color: 0xb9bcc4, roughness: 0.75, metalness: 0 });
-        }
-        /* c68: unique material per mesh — x-ray ghosting must not leak to neighbours */
-        if (o.material.clone) o.material = o.material.clone();
+        o.material = dkNewMuscleMaterial(THREE, baseOf(resolveRawName(o)));
       }
     });
 
@@ -34834,7 +34907,7 @@ document.addEventListener('input', function (e) {
     }
     applyXray();
   }
-  var GHOST_C = 0x3a4150; /* dim shell colour — grey layers stack into a solid look, dark ones stay glassy */
+  var GHOST_C = 0x453032; /* c182: dim flesh-shell — a desaturated dark red-brown that reads as «ghost of a red muscle», not as a gray blob */
   function applyXray() {
     if (!S.THREE) return;
     var op = S.xrayOp || 0.16;
@@ -34842,8 +34915,8 @@ document.addEventListener('input', function (e) {
     S.parts.forEach(function (m) {
       var mat = m.userData.origMat; if (!mat) return;
       var ghost = S.xray && m.visible && sel.indexOf(m) < 0;
-      if (ghost && m.userData._c0 == null) m.userData._c0 = mat.color ? mat.color.getHex() : 0xb9bcc4;
-      if (mat.color) mat.color.setHex(ghost ? GHOST_C : (m.userData._c0 != null ? m.userData._c0 : 0xb9bcc4));
+      if (ghost && m.userData._c0 == null) m.userData._c0 = mat.color ? mat.color.getHex() : 0xa8484c;
+      if (mat.color) mat.color.setHex(ghost ? GHOST_C : (m.userData._c0 != null ? m.userData._c0 : 0xa8484c));
       mat.transparent = ghost;
       mat.opacity = ghost ? op : 1;
       mat.depthWrite = !ghost;
@@ -35111,14 +35184,9 @@ document.addEventListener('input', function (e) {
         var raw = last || o.name || 'part';
         o.userData.base = baseOf(raw);
         o.userData.side = sideOf(raw);
-        var mat = o.material;
-        if (mat) {
-          mat.metalness = 0; mat.roughness = 0.75;
-          if (!mat.color || (mat.color.r === 1 && mat.color.g === 1 && mat.color.b === 1)) mat.color.setHex(0xb9bcc4);
-          if (!mat.color) mat.color = new THREE.Color(0xb9bcc4);
-        } else {
-          o.material = new THREE.MeshStandardMaterial({ color: 0xb9bcc4, roughness: 0.75, metalness: 0 });
-        }
+        /* c182: anatomical material per mesh (fresh instance — same recipe
+         * as prepareModel; widgets inherit the realistic reds) */
+        o.material = dkNewMuscleMaterial(THREE, o.userData.base);
       });
       /* orientation auto-fix + ground + height ~1.7 (same recipe as prepareModel) */
       var box = new THREE.Box3().setFromObject(root);
@@ -35192,9 +35260,10 @@ document.addEventListener('input', function (e) {
     st.renderer = renderer;
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(40, 1, 0.05, 60);
-    scene.add(new THREE.HemisphereLight(0xffffff, 0x444455, 1.05));
-    var key = new THREE.DirectionalLight(0xffffff, 1.5); key.position.set(2.5, 4, 3); scene.add(key);
-    var rim = new THREE.DirectionalLight(0xdbeafe, 0.7); rim.position.set(-3, 1.5, -2.5); scene.add(rim);
+    /* c182: studio look in the embedded widgets too (same recipe as atlas) */
+    applyStudioRenderer(renderer);
+    applyStudioEnv(renderer, scene);
+    addStudioLights(scene);
     var root = tpl.root.clone(true);
     var meshes = [];
     root.traverse(function (o) {
@@ -35293,7 +35362,9 @@ document.addEventListener('input', function (e) {
         m.material.color.setHex(HILITE);
         if (m.material.emissive) m.material.emissive.setHex(0x3a0808);
       } else if (dim) {
-        m.material.color.setHex(0xc0666a);
+        /* c182: muted desaturated rose-gray — clearly «same family, not lit»
+         * against the anatomical reds (was 0xc0666a, too close to the new base) */
+        m.material.color.setHex(0x8d7576);
         if (m.material.emissive) m.material.emissive.setHex(0x000000);
       } else {
         m.material.color.setHex(m.userData._c0);
