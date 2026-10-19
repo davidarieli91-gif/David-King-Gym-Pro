@@ -17,9 +17,9 @@
    layer c128–c130 charts will be built on.
 
    Definitions (documented, no magic coefficients):
-     • A set COUNTS iff it exists and s.done !== false (the same tolerant
-       rule as the recovery engine: legacy records without the flag count,
-       explicit undone prescriptions never do).
+     • A set COUNTS iff it was PERFORMED: performed = done OR touched
+       (new records), with legacy fallback done !== false. The same rule is
+       used by the recovery engine through muscle-core.
      • Tonnage kg = weight(kg) × reps. lb → kg ×0.45359237 (per-exercise
        `unit`, exactly as recorded since c96). Cardio rows (time/dist) add
        0 tonnage but still count as sets.
@@ -38,22 +38,58 @@
   var LB_TO_KG = 0.45359237;
   var SYNERGIST_CREDIT = 0.3;
   var DAY_MS = 86400000;
+  var CORE = (typeof window !== 'undefined' && window.dkMuscleCore)
+    || (typeof globalThis !== 'undefined' && globalThis.dkMuscleCore)
+    || null;
 
   /* ---------- primitives ---------- */
 
   function toKg(weight, unit) {
+    if (CORE) return CORE.toKg(weight, unit);
     var w = Number(weight);
     if (!isFinite(w)) return 0;
     return unit === 'lb' ? w * LB_TO_KG : w;
   }
 
-  /* Tolerant done-only filter (recovery-engine parity): skip ONLY explicit
-     done === false — pre-flag legacy records keep counting. */
+  /* c184: performed = done OR touched (new records) with legacy done fallback.
+     The SAME rule is used by the recovery engine through muscle-core. */
   function doneSets(sets) {
-    return (sets || []).filter(function (s) { return s && s.done !== false; });
+    if (CORE) return CORE.performedSets(sets);
+    return (sets || []).filter(function (s) {
+      if (!s) return false;
+      if (s.performed != null) return !!s.performed;
+      if (s.touched === true) return true;
+      return s.done !== false;
+    });
+  }
+  /* Progress metrics (PR / e1RM / top set) ignore warm-up sets. */
+  function workingSets(sets) {
+    if (CORE) return CORE.workingSets(sets);
+    return doneSets(sets).filter(function (s) { return s && s.type !== 'warmup'; });
+  }
+  function attributionOf(res, ex) {
+    if (CORE) return CORE.attribution(res || {}, ex || {});
+    var primary = (res && res.group) || '';
+    var syn = (res && res.synergists) || [];
+    return primary ? {
+      primary: primary,
+      synergists: syn.map(function (g) { return { group: g, credit: SYNERGIST_CREDIT }; }),
+      stabilizers: []
+    } : null;
+  }
+  /* c184: ONE effective-kg rule for both engines: external kg, or bodyweight ×
+     pattern + added weight for bodyweight movements. */
+  function metricKg(ex, s, opts, rec) {
+    if (!CORE && !toKg) return 0;
+    if (CORE) {
+      var info = (opts && typeof opts.resolveEx === 'function') ? opts.resolveEx(ex, rec) : null;
+      return CORE.setMetrics(ex, s, info, opts).effectiveKg;
+    }
+    return toKg(s.weight, ex.unit);
   }
 
   function isCardioRow(s) {
+    if (CORE) return CORE.isCardioRow(s);
     return s && (s.time != null || s.dist != null) && !Number(s.weight);
   }
 
@@ -80,13 +116,14 @@
 
   /* ---------- volume (honest, kg-normalized) ---------- */
 
-  /* Per-exercise stats over DONE sets: { volumeKg, setsDone, warmupKg }.
+  /* Per-exercise stats over PERFORMED sets: { volumeKg, setsDone, warmupKg }.
      Cardio rows contribute sets but zero tonnage. */
-  function exStatsKg(ex) {
+  function exStatsKg(ex, opts) {
     var volumeKg = 0, setsDone = 0, warmupKg = 0;
     doneSets(ex && ex.sets).forEach(function (s) {
       setsDone++;
-      var w = toKg(s.weight, ex && ex.unit), r = Number(s.reps) || 0;
+      var w = metricKg(ex, s, opts, null);
+      var r = Number(s.reps) || 0;
       if (isCardioRow(s) || !w || !r) return; /* cardio / empty row */
       var v = w * r;
       volumeKg += v;
@@ -95,18 +132,19 @@
     return { volumeKg: volumeKg, setsDone: setsDone, warmupKg: warmupKg };
   }
 
-  /* Whole-record tonnage in kg (done sets only) — what a workout actually
-     lifted. Replaces the old ALL-sets raw-unit sums. */
-  function recVolumeKg(rec) {
+  /* Whole-record tonnage in effective kg (performed sets only, bodyweight
+     included for bodyweight movements). Replaces the old ALL-sets raw-unit sums. */
+  function recVolumeKg(rec, opts) {
     var v = 0;
-    ((rec && rec.exercises) || []).forEach(function (ex) { v += exStatsKg(ex).volumeKg; });
+    ((rec && rec.exercises) || []).forEach(function (ex) { v += exStatsKg(ex, opts).volumeKg; });
     return Math.round(v);
   }
 
-  function _addTo(map, g, volKg, sets, ts) {
-    if (!map[g]) map[g] = { volumeKg: 0, sets: 0, lastTs: 0 };
+  function _addTo(map, g, volKg, sets, ts, kind) {
+    if (!map[g]) map[g] = { volumeKg: 0, sets: 0, lastTs: 0, primaryKg: 0, synergistKg: 0, stabilizerKg: 0 };
     map[g].volumeKg += volKg;
     if (g && sets) map[g].sets += sets;
+    if (kind) map[g][kind + 'Kg'] = (map[g][kind + 'Kg'] || 0) + volKg;
     if (ts && ts > map[g].lastTs) map[g].lastTs = ts;
   }
 
@@ -114,30 +152,44 @@
      opts.resolveEx(ex, rec) → { group, synergists } | null  (the app keeps
      its own group resolver — engine stays UI-agnostic).
      opts.synergistFactor — default 0.3 (map parity), 0 disables.
-     Returns { byGroup: {g: {volumeKg, sets, lastTs}}, totalKg, totalSets }.
-     byGroup includes the synergist credit (bars/map consistency); totalKg /
-     totalSets are the PURE primary tonnage / set count of the work done. */
+     Returns { byGroup: {g: {volumeKg, sets, lastTs, primaryKg,
+     synergistKg, stabilizerKg}}, totalKg, totalSets }.
+     byGroup includes synergist 30% + stabilizer 10% credit (bars/map
+     consistency); totalKg / totalSets are the PURE primary tonnage / set count. */
   function volumeByMuscle(workouts, opts) {
     opts = opts || {};
     var synF = opts.synergistFactor == null ? SYNERGIST_CREDIT : opts.synergistFactor;
+    var stabF = opts.stabilizerFactor == null ? 0.10 : opts.stabilizerFactor;
     var resolve = opts.resolveEx || function () { return null; };
     var byGroup = {}, totalKg = 0, totalSets = 0;
     (workouts || []).forEach(function (rec) {
+      var ts = tsOf(rec);
       ((rec && rec.exercises) || []).forEach(function (ex) {
-        var st = exStatsKg(ex);
-        if (!st.setsDone && !st.volumeKg) return;
         var res = resolve(ex, rec) || {};
-        var g = res.group || 'other';
-        var ts = tsOf(rec);
-        _addTo(byGroup, g, st.volumeKg, st.setsDone, ts);
-        totalKg += st.volumeKg;
-        totalSets += st.setsDone;
-        if (synF > 0) {
-          (res.synergists || []).forEach(function (syn) {
-            if (!syn || syn === g) return;
-            _addTo(byGroup, syn, st.volumeKg * synF, st.setsDone, ts); /* sets counted full — map parity */
-          });
-        }
+        var att = attributionOf(res, ex) || { primary: (res.group || 'other'), synergists: [], stabilizers: [] };
+        if (!att || !att.primary) return;
+        var sets = doneSets(ex.sets);
+        if (!sets.length) return;
+        sets.forEach(function (s) {
+          if (!s) return;
+          var vol = isCardioRow(s) ? 0 : (metricKg(ex, s, opts, rec) * (Number(s.reps) || 0));
+          _addTo(byGroup, att.primary, vol, 1, ts, 'primary');
+          totalKg += vol;
+          totalSets++;
+          if (synF > 0 && att.synergists && att.synergists.length) {
+            att.synergists.forEach(function (a) {
+              if (!a || !a.group || a.group === att.primary) return;
+              _addTo(byGroup, a.group, vol * synF, 1, ts, 'synergist');
+            });
+          }
+          if (stabF > 0 && att.stabilizers && att.stabilizers.length) {
+            var each = stabF / att.stabilizers.length;
+            att.stabilizers.forEach(function (a) {
+              if (!a || !a.group || a.group === att.primary) return;
+              _addTo(byGroup, a.group, vol * each, 0, ts, 'stabilizer');
+            });
+          }
+        });
       });
     });
     return { byGroup: byGroup, totalKg: totalKg, totalSets: totalSets };
@@ -148,7 +200,8 @@
      [{ weekStart, groups: {g: kg}, totalKg, sets }] */
   function volumeWeekly(workouts, opts, weeks) {
     opts = opts || {};
-    var res = volumeByMuscle(workouts, opts);
+    var synF = opts.synergistFactor == null ? SYNERGIST_CREDIT : opts.synergistFactor;
+    var stabF = opts.stabilizerFactor == null ? 0.10 : opts.stabilizerFactor;
     var n = Math.max(1, Math.min(52, weeks || 8));
     var base = weekStartOf(opts.now || Date.now());
     var out = [];
@@ -162,15 +215,31 @@
       var idx = out.findIndex(function (w) { return ts >= w.weekStart && ts < w.weekStart + 7 * DAY_MS; });
       if (idx < 0) return;
       ((rec && rec.exercises) || []).forEach(function (ex) {
-        var st = exStatsKg(ex);
         var r = (opts.resolveEx || function () { return null; })(ex, rec) || {};
-        var g = r.group || 'other';
-        out[idx].groups[g] = (out[idx].groups[g] || 0) + st.volumeKg;
-        out[idx].totalKg += st.volumeKg;
-        out[idx].sets += st.setsDone;
+        var att = attributionOf(r, ex) || { primary: (r.group || 'other'), synergists: [], stabilizers: [] };
+        if (!att || !att.primary) return;
+        doneSets(ex.sets).forEach(function (s) {
+          if (!s) return;
+          var vol = isCardioRow(s) ? 0 : (metricKg(ex, s, opts, rec) * (Number(s.reps) || 0));
+          out[idx].groups[att.primary] = (out[idx].groups[att.primary] || 0) + vol;
+          out[idx].totalKg += vol;
+          out[idx].sets++;
+          if (synF > 0 && att.synergists && att.synergists.length) {
+            att.synergists.forEach(function (a) {
+              if (!a || !a.group || a.group === att.primary) return;
+              out[idx].groups[a.group] = (out[idx].groups[a.group] || 0) + vol * synF;
+            });
+          }
+          if (stabF > 0 && att.stabilizers && att.stabilizers.length) {
+            var each = stabF / att.stabilizers.length;
+            att.stabilizers.forEach(function (a) {
+              if (!a || !a.group || a.group === att.primary) return;
+              out[idx].groups[a.group] = (out[idx].groups[a.group] || 0) + vol * each;
+            });
+          }
+        });
       });
     });
-    Object.keys(res.byGroup).forEach(function (g) { void g; }); /* byGroup available via volumeByMuscle */
     return out;
   }
 
@@ -185,16 +254,17 @@
   /* ---------- per-exercise progress series (THE progress metrics) ---------- */
 
   /* opts.match(ex, rec) → bool. One point per workout occurrence that has at
-     least one DONE working set (reps > 0). Sorted oldest → newest. */
+     least one PERFORMED working set (reps > 0; warm-ups excluded). Sorted
+     oldest → newest. */
   function exerciseSeries(workouts, opts) {
     var match = (opts && opts.match) || function () { return false; };
     var pts = [];
     (workouts || []).slice().sort(function (a, b) { return tsOf(a) - tsOf(b); }).forEach(function (rec) {
       ((rec && rec.exercises) || []).forEach(function (ex) {
         if (!match(ex, rec)) return;
-        var sets = doneSets(ex && ex.sets).map(function (s) {
+        var sets = workingSets(ex && ex.sets).map(function (s) {
           return {
-            w: toKg(s.weight, ex.unit),
+            w: metricKg(ex, s, opts, rec),
             r: Number(s.reps) || 0,
             rpe: s.rpe != null && s.rpe !== '' ? Number(s.rpe) : null,
             type: s.type || 'normal'
@@ -242,8 +312,8 @@
       ((rec && rec.exercises) || []).forEach(function (ex) {
         var key = exKeyOf(ex);
         if (!key) return;
-        var sets = doneSets(ex && ex.sets).map(function (s) {
-          return { w: toKg(s.weight, ex.unit), r: Number(s.reps) || 0 };
+        var sets = workingSets(ex && ex.sets).map(function (s) {
+          return { w: metricKg(ex, s, opts, rec), r: Number(s.reps) || 0 };
         }).filter(function (s) { return s.w > 0 && s.r > 0; });
         if (!sets.length) return;
         var topW = sets.reduce(function (m, s) { return Math.max(m, s.w); }, 0);
@@ -507,11 +577,12 @@
 
   /* ---------- exports ---------- */
   var api = {
-    version: 'c133',
+    version: 'c184',
     LB_TO_KG: LB_TO_KG,
     SYNERGIST_CREDIT: SYNERGIST_CREDIT,
     toKg: toKg,
     doneSets: doneSets,
+    workingSets: workingSets,
     exStatsKg: exStatsKg,
     recVolumeKg: recVolumeKg,
     volumeByMuscle: volumeByMuscle,

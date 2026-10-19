@@ -87,6 +87,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
   <script type="module" src="src/muscle-map.js"></script>
+  <!-- c184: shared muscle core — ONE performed/units/attribution model for both engines -->
+  <script src="src/muscle-core.js"></script>
   <!-- c122: shared recovery engine v2 — ONE model for the portal map AND the trainer's map -->
   <script type="module" src="src/recovery-engine.js"></script>
   <!-- c127: shared analytics engine — ONE honest analytics core for BOTH apps (done-only, kg-normalized, e1RM, PRs) -->
@@ -4820,7 +4822,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
      trainer CRM (identical engine), legacy formula only as a fallback. */
   function aRecVolume(r) {
     if (window.dkAnalyticsEngine && typeof window.dkAnalyticsEngine.recVolumeKg === 'function') {
-      try { return window.dkAnalyticsEngine.recVolumeKg(r); } catch (e127) { console.warn('[analytics] recVolumeKg failed → legacy:', e127); }
+      try { return window.dkAnalyticsEngine.recVolumeKg(r, { bodyWeightKg: (currentClient && Number(currentClient.weight)) || 75, resolveEx: aResolveEx }); } catch (e127) { console.warn('[analytics] recVolumeKg failed → legacy:', e127); }
     }
     let v = 0;
     ((r && r.exercises) || []).forEach(ex => {
@@ -4955,16 +4957,27 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       </div>`;
     }).join('');
   }
+  function aResolveEx(ex) {
+    const exd = exerciseDB[ex.key] || exerciseDB[String(ex.key)] || exerciseDB[ex.exercise_id] || null;
+    return {
+      group: aGroupOf(ex),
+      synergists: Array.isArray(ex.syn) ? ex.syn.map(s => mgKeyOf(s) || s) : [],
+      names: [ex.name, exd && (exd.name_en || exd.name)].filter(Boolean),
+      equipment: exd && (exd.equipment_en || exd.equipment || exd.eE),
+      mt: (exd && exd.mt) || '',
+      stabilizers: (exd && Array.isArray(exd.stabilizers)) ? exd.stabilizers : []
+    };
+  }
   function renderAMuscles(a, hist) {
     const box = document.getElementById('analytics-muscles'); if (!box) return;
     /* c127: the SHARED engine — done-only, kg-normalized, synergists 30%
        (map parity). The old ALL-sets formula (which counted prescriptions
        from skipped sets and lb as kg) only stays as a fallback. */
     const eng = window.dkAnalyticsEngine;
-    const resolveEx = ex => ({ group: aGroupOf(ex), synergists: Array.isArray(ex.syn) ? ex.syn.map(s => mgKeyOf(s) || s) : [] });
+    const resolveEx = aResolveEx;
     function byMuscle(recs) {
       if (eng && typeof eng.volumeByMuscle === 'function') {
-        try { return eng.volumeByMuscle(recs, { resolveEx }); } catch (e128) { console.warn('[analytics] volumeByMuscle failed → legacy:', e128); }
+        try { return eng.volumeByMuscle(recs, { resolveEx, bodyWeightKg: recpBodyWeight().bw }); } catch (e128) { console.warn('[analytics] volumeByMuscle failed → legacy:', e128); }
       }
       const bg = {}; let tk = 0, ts = 0;
       recs.forEach(r => (r.exercises || []).forEach(ex => {
@@ -5131,8 +5144,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       return;
     }
     try {
-      const resolveEx = ex => ({ group: aGroupOf(ex), synergists: Array.isArray(ex.syn) ? ex.syn.map(s => mgKeyOf(s) || s) : [] });
-      const weeks = eng.volumeWeekly(H, { resolveEx }, 8);
+      const resolveEx = aResolveEx;
+      const weeks = eng.volumeWeekly(H, { resolveEx, bodyWeightKg: recpBodyWeight().bw }, 8);
       /* c128: bars follow the display unit (kg ⇄ lb) */
       const svg = eng.sparkBarsSVG(weeks.map(w => ({ v: dispVolKg(w.totalKg), label: aWeekLbl(w.weekStart) })), { fmt: v => aNum(v), ariaLabel: t('aTrendT') });
       box.innerHTML = svg || '<p class="text-xs text-muted text-center py-4">' + esc(t('aNoWorkouts')) + '</p>';
@@ -5176,7 +5189,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     sel.innerHTML = list.map(o => '<option value="' + esc(o.key) + '">' + esc(o.name) + ' (' + o.count + ')</option>').join('');
     sel.value = list.some(o => o.key === prev) ? prev : list[0].key;
     const key130 = sel.value;
-    const pts = eng.exerciseSeries(H, { match: ex => ((eng.exKeyOf ? eng.exKeyOf(ex) : '') === key130) }).slice(-12);
+    const pts = eng.exerciseSeries(H, { match: ex => ((eng.exKeyOf ? eng.exKeyOf(ex) : '') === key130), resolveEx: aResolveEx, bodyWeightKg: recpBodyWeight().bw }).slice(-12);
     if (!pts.length) { box.innerHTML = '<p class="text-xs text-muted text-center py-4">' + esc(t('aNoWorkouts')) + '</p>'; return; }
     /* c130: bodyweight-only rows — a flat zero line would look broken */
     if (pts.every(p => !p.topKg && !p.e1rm)) {
@@ -5204,7 +5217,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       return;
     }
     try {
-      const res = eng.prs(H, { windowDays: 30 });
+      const res = eng.prs(H, { windowDays: 30, resolveEx: aResolveEx, bodyWeightKg: recpBodyWeight().bw });
       if (!res.recent.length) {
         box.innerHTML = '<p class="text-xs text-muted text-center py-4">' + esc(t('aPRsEmpty')) + '</p>';
         return;
@@ -5324,6 +5337,9 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     hist.sort((a, b) => (a.ts || 0) - (b.ts || 0));
     saveHistory(hist);
     renderAnalytics();
+    /* c183: trainer history may arrive AFTER the session was built — refresh
+       the Prev column without touching the client's current inputs. */
+    try { psRefreshPrev(); } catch (ePrev) {}
     try { if (window.dkPortalRecMap && typeof window.dkPortalRecMap.refresh === 'function') window.dkPortalRecMap.refresh(); } catch (e) {} /* c99: the recovery map re-renders the MOMENT cloud workouts land — no more “empty map until tab re-open” */
     console.info('[hist-sync] merged ' + added + ' workout(s) from the trainer');
     return true;
@@ -5746,19 +5762,28 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
            «Пред.» hints as if the trainee had lifted them. Same rule the
            recovery engine uses: skip only EXPLICIT done === false, so legacy
            records without the flag still count. */
-        const ds126 = he && he.sets ? he.sets.filter(s => s && s.done !== false) : [];
-        if (he && ds126.length) {
-          return { unit: he.unit === 'lb' ? 'lb' : 'kg', sets: ds126, ts: Number(r.ts) || 0 };
+        /* c183: keep ALL sets so the set NUMBER stays aligned. A skipped set
+           must leave a hole, not shift set 3 into set 2. */
+        const allSets = he && Array.isArray(he.sets) ? he.sets : [];
+        if (he && allSets.some(psSetPerformed)) {
+          return { unit: he.unit === 'lb' ? 'lb' : 'kg', sets: allSets, ts: Number(r.ts) || 0 };
         }
       }
     }
     return null;
   }
+  /* c183: performed = checked OR touched; legacy records fall back to done. */
+  function psSetPerformed(s) {
+    if (!s) return false;
+    if (s.performed != null) return !!s.performed;
+    if (s.touched === true) return true;
+    return s.done !== false;
+  }
   function findPrev(programName, dayLetter, key, setIndex, curName) {
     const hit = dkPFindLastEx(programName, dayLetter, key, curName);
     if (!hit) return null;
-    const s = hit.sets[Math.min(setIndex, hit.sets.length - 1)];
-    if (!s) return null;
+    const s = hit.sets[setIndex]; /* c183: EXACT same set number */
+    if (!s || !psSetPerformed(s)) return null;
     return { weight: s.weight, reps: s.reps, rpe: s.rpe, time: s.time, dist: s.dist, unit: hit.unit }; /* c96: unit of the history exercise */
   }
 
@@ -5891,7 +5916,8 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     const exd = exerciseDB[ex.key] || exerciseDB[String(ex.key)] || null;
     /* c172: the subgroup travels from the share payload (subgroup field) */
     return { group: info.group, synergists: info.synergists || [], sub: (exd && (exd.subgroup || exd.subgroup_en || exd.sE)) || '',
-             names: [ex.name, exd && exd.name], equipment: exd && exd.equipment };
+             names: [ex.name, exd && exd.name], equipment: exd && (exd.equipment || exd.equipment_en),
+             mt: (exd && exd.mt) || '', stabilizers: (exd && Array.isArray(exd.stabilizers)) ? exd.stabilizers : [] };
   }
   /* c125: the portal's body weight — the latest valid check-in (30..300 kg)
      → 75 kg default. ONE helper for the map, the trend AND the strip so all
@@ -6522,14 +6548,19 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         ss_link: ex.ss_link === true, /* c140: superset link model (this + next) */
         sets: (ex.sets||[]).map((s, si) => {
           const hist = findPrev(progName, letter, exKey(ex), si, _name121);
-          const pw = hist ? dkPConv(hist.weight, hist.unit || 'kg', exUnit0) : (Number(s.weight)||null); /* c96: prev converts into the session unit */
-          const pr = hist ? hist.reps : (Number(s.reps)||null);
+          /* c183: prescription fallback ONLY when this exercise has no history
+             at all. If history exists but this set was skipped / missing, the
+             Prev cell stays blank instead of showing a program target. */
+          const _noHist = !_lastEx121;
+          const pw = hist ? dkPConv(hist.weight, hist.unit || 'kg', exUnit0) : (_noHist ? (Number(s.weight)||null) : null); /* c96: prev converts into the session unit */
+          const pr = hist ? hist.reps : (_noHist ? (Number(s.reps)||null) : null);
           /* c90: also carry the last workout's effort + cardio time/dist */
           return { weight:null, reps:null, time:null, dist:null, rpe:null, type:'normal', done:false,
+                   touched:false, performed:false,
                    prev_weight:pw, prev_reps:pr,
                    prev_rpe: hist && hist.rpe != null ? hist.rpe : null,
-                   prev_time: hist && hist.time != null ? hist.time : (Number(s.time)||null), /* c102: stretch programs prescribe a hold time */
-                   prev_dist: hist && hist.dist != null ? hist.dist : (Number(s.dist)||null) };
+                   prev_time: hist && hist.time != null ? hist.time : (_noHist ? (Number(s.time)||null) : null), /* c102: stretch programs prescribe a hold time */
+                   prev_dist: hist && hist.dist != null ? hist.dist : (_noHist ? (Number(s.dist)||null) : null) };
         })
         };
       })
@@ -6613,7 +6644,12 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
           const ex = exs[k];
           while (ex.sets.length > 0 && ex.sets.length < max) {
             const last = ex.sets[ex.sets.length - 1];
-            ex.sets.push(Object.assign({}, last, { done: false, rpe: null, prev_rpe: null }));
+            ex.sets.push(Object.assign({}, last, {
+              done: false, touched: false, performed: false, rpe: null,
+              /* c183: never clone the previous set's Prev values */
+              prev_weight: null, prev_reps: null, prev_rpe: null,
+              prev_time: null, prev_dist: null
+            }));
           }
         }
         i = j + 1;
@@ -6621,12 +6657,60 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     }
   }
 
+  /* c183: rebuild Prev from history WITHOUT touching the current weight/reps
+     inputs. Used after add-set, superset padding, and when the trainer's
+     cloud history arrives after the session was built. */
+  function psPrevCellHTML(s, isCardioEx, isTimeFirstEx) {
+    const hasPrev = (s.prev_weight != null || s.prev_reps != null || s.prev_time != null || s.prev_dist != null);
+    if (!hasPrev) return '—';
+    const txt = isCardioEx
+      ? `${s.prev_time != null ? Number(s.prev_time) : '—'}×${s.prev_dist != null ? Number(s.prev_dist) : '—'}`
+      : isTimeFirstEx
+      ? `${s.prev_time != null ? Number(s.prev_time) : '—'}×${s.prev_weight != null ? Number(s.prev_weight) : '—'}×${s.prev_reps != null ? Number(s.prev_reps) : '—'}`
+      : `${s.prev_weight != null ? Number(s.prev_weight) : '—'}×${s.prev_reps != null ? Number(s.prev_reps) : '—'}`;
+    const badge = (s.prev_rpe != null)
+      ? `<span class="prev-rpe" style="background:${RPE_COLORS[s.prev_rpe-1]||'#666'}" title="RPE ${s.prev_rpe}">${s.prev_rpe}</span>`
+      : '';
+    return esc(txt) + badge;
+  }
+  function psRefreshPrev(sess, dayIdx) {
+    sess = sess || getSession(activeDayIndex);
+    if (!sess) return;
+    const idx = (dayIdx == null) ? activeDayIndex : dayIdx;
+    const day = dayInfo(idx);
+    if (!day) return;
+    const progName = (currentProgram && currentProgram.name) || '';
+    const letter = day.day_letter || String(idx + 1);
+    (sess.exercises || []).forEach((lex, ei) => {
+      const dayEx = (day.exercises || [])[ei] || {};
+      const exData = getExData(dayEx);
+      const key = exKey(dayEx) || lex.exercise_id || '';
+      const nm = dayEx['name_' + currentLang] || dayEx.name_en || dayEx.name || '';
+      const lastEx = dkPFindLastEx(progName, letter, key, nm);
+      /* No history at all -> keep the prescription fallback from buildSession. */
+      if (!lastEx) return;
+      const isCardio = (dayEx.cardio === true) || !!(exData && exData.category === 'cardio');
+      const isTimeFirst = !!((exData && (exData.category === 'stretching' || exData.group === 'stretching')) || (exData && exData.group === 'warmup'));
+      (lex.sets || []).forEach((s, si) => {
+        const r = lastEx.sets[si]; /* exact same set number */
+        const ok = psSetPerformed(r);
+        s.prev_weight = ok ? dkPConv(r.weight, lastEx.unit || 'kg', exUnitOf(lex)) : null;
+        s.prev_reps = ok ? r.reps : null;
+        s.prev_rpe = ok && r.rpe != null ? r.rpe : null;
+        s.prev_time = ok && r.time != null ? r.time : null;
+        s.prev_dist = ok && r.dist != null ? r.dist : null;
+        const cell = document.querySelector(`[data-exercise-card="${ei}"] .set-row[data-si="${si}"] [data-prev-cell]`);
+        if (cell) cell.innerHTML = psPrevCellHTML(s, isCardio, isTimeFirst);
+      });
+    });
+  }
   function ensureSession(dayIdx){
     if (sessions[dayIdx]) return sessions[dayIdx];
     const s = buildSession(dayIdx, false);
     if (!s) return null;
-    s.exercises.forEach(ex=>{ if(!ex.sets.length) ex.sets.push({weight:null,reps:null,time:null,dist:null,rpe:null,type:'normal',done:false,prev_weight:null,prev_reps:null,prev_rpe:null,prev_time:null,prev_dist:null}); });
+    s.exercises.forEach(ex=>{ if(!ex.sets.length) ex.sets.push({weight:null,reps:null,time:null,dist:null,rpe:null,type:'normal',done:false,touched:false,performed:false,prev_weight:null,prev_reps:null,prev_rpe:null,prev_time:null,prev_dist:null}); });
     psEqualizeSupersets(s.exercises); /* c107: partners start with equal set counts */
+    psRefreshPrev(s, dayIdx); /* c183: cloned sets get exact historical Prev */
     sessions[dayIdx]=s;
     saveDraft(true);
     return s;
@@ -6643,6 +6727,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       sess = buildSession(idx, true);
       if (!sess) return;
       psEqualizeSupersets(sess.exercises); /* c107: partners start with equal set counts */
+      psRefreshPrev(sess, idx); /* c183: exact historical Prev for every set */
       sessions[idx]=sess;
       saveDraft(true);
     } else if (!sess.started_at) {
@@ -6674,7 +6759,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
      tile, the saved record or the WhatsApp share) */
   function sessionVolume(sess) {
     if (window.dkAnalyticsEngine && typeof window.dkAnalyticsEngine.recVolumeKg === 'function') {
-      try { return window.dkAnalyticsEngine.recVolumeKg({ exercises: (sess && sess.exercises) || [] }); } catch (e127) { console.warn('[analytics] session recVolumeKg failed → legacy:', e127); }
+      try { return window.dkAnalyticsEngine.recVolumeKg({ exercises: (sess && sess.exercises) || [] }, { bodyWeightKg: (currentClient && Number(currentClient.weight)) || 75, resolveEx: aResolveEx }); } catch (e127) { console.warn('[analytics] session recVolumeKg failed → legacy:', e127); }
     }
     let v = 0;
     (sess && sess.exercises || []).forEach(ex => (ex.sets || []).forEach(s => { if (s && s.done === false) return; v += (Number(s.weight) || 0) * (Number(s.reps) || 0); }));
@@ -7179,6 +7264,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         else if (f === 'dist') set.dist = v === '' ? null : parseFloat(v);
         else if (f === 'speed' || f === 'incline' || f === 'level') set[f] = v === '' ? null : parseFloat(v); /* c143: cardio machine fields */
         else set.rpe = v === '' ? null : parseFloat(v);
+        set.touched = true; /* c183: entered by the client, even if not checked yet */
         // live-update the set volume readout next to the RPE buttons
         const card = inp.closest('[data-exercise-card]');
         const vr = card && card.querySelector('[data-rpe-row="' + ei + '-' + si + '"] .rpe-vol');
@@ -7212,6 +7298,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         const set = ((sess0.exercises||[])[ei]||{}).sets?.[si];
         if (!set) return;
         set.rpe = (set.rpe === v) ? null : v;
+        set.touched = true; /* c183 */
         const row = btn.closest('[data-rpe-row]');
         if (row) row.querySelectorAll('[data-rpe-btn]').forEach(b => { const on = +b.dataset.v === set.rpe; b.classList.toggle('sel', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); }); /* c133: aria-pressed stays true to the state */
         /* c138: the effort on the 1–10 scale, and its clearing */
@@ -7245,59 +7332,16 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
           const pBtn = document.querySelector(`[data-exercise-card="${p}"] .set-row[data-si="${si}"] [data-toggle-set]`);
           if (pBtn) pBtn.setAttribute('aria-pressed', pSet.done ? 'true' : 'false');
           updateMiniProgress(p);
-          if (pSet.done) {
-            /* chain the partner's next-set prev too (CRM parity) */
-            const pNext = pEx.sets[si+1];
-            if (pNext) {
-              pNext.prev_weight = pSet.weight != null ? pSet.weight : pNext.prev_weight;
-              pNext.prev_reps = pSet.reps != null ? pSet.reps : pNext.prev_reps;
-              pNext.prev_rpe = pSet.rpe != null ? pSet.rpe : pNext.prev_rpe;
-              const pExD = ((dayInfo(activeDayIndex)||{}).exercises||[])[p] || {};
-              const pExDataC = getExData(pExD);
-              const pCardio = (pExD.cardio === true) || !!(pExDataC && pExDataC.category === 'cardio');
-              const pStretch = !!((pExDataC && (pExDataC.category === 'stretching' || pExDataC.group === 'stretching')) || (pExDataC && pExDataC.group === 'warmup'));
-              if (pCardio || pStretch) pNext.prev_time = pSet.time != null ? pSet.time : pNext.prev_time;
-              if (pCardio) pNext.prev_dist = pSet.dist != null ? pSet.dist : pNext.prev_dist;
-              const pRow2 = document.querySelector(`[data-exercise-card="${p}"] .set-row[data-si="${si+1}"] [data-prev-cell]`);
-              if (pRow2) {
-                const ptxt = pCardio
-                  ? `${pSet.time!=null?pSet.time:'—'}×${pSet.dist!=null?pSet.dist:'—'}`
-                  : pStretch
-                  ? `${pSet.time!=null?pSet.time:'—'}×${pSet.weight!=null?pSet.weight:'—'}×${pSet.reps!=null?pSet.reps:'—'}`
-                  : `${pSet.weight!=null?pSet.weight:'—'}×${pSet.reps!=null?pSet.reps:'—'}`;
-                pRow2.innerHTML = esc(ptxt) + (pSet.rpe != null ? `<span class="prev-rpe" style="background:${RPE_COLORS[pSet.rpe-1]||'#666'}" title="RPE ${pSet.rpe}">${pSet.rpe}</span>` : '');
-              }
-            }
-          }
+          pSet.touched = true; /* c183 */
+          /* c183: NO chain — the partner's Prev column stays its own
+             same-set-number value from the last workout. */
         });
         if (set.done) {
-          // copy current values into next set's prev (CRM parity)
-          const next = ex.sets[si+1];
-          if (next) {
-            next.prev_weight = set.weight != null ? set.weight : next.prev_weight;
-            next.prev_reps = set.reps != null ? set.reps : next.prev_reps;
-            next.prev_rpe = set.rpe != null ? set.rpe : next.prev_rpe; /* c90 */
-            const dayExC = ((dayInfo(activeDayIndex)||{}).exercises||[])[ei] || {};
-            const exDataC = getExData(dayExC);
-            const cardioC = (dayExC.cardio === true) || !!(exDataC && exDataC.category === 'cardio');
-            const stretchC = !!((exDataC && (exDataC.category === 'stretching' || exDataC.group === 'stretching')) || (exDataC && exDataC.group === 'warmup')); /* c102+c105: stretch AND warm-up chain their hold time */
-            if (cardioC || stretchC) {
-              next.prev_time = set.time != null ? set.time : next.prev_time;
-            }
-            if (cardioC) {
-              next.prev_dist = set.dist != null ? set.dist : next.prev_dist;
-            }
-            const row = btn.closest('[data-exercise-card]').querySelector(`.set-row[data-si="${si+1}"] [data-prev-cell]`);
-            if (row) {
-              const txt = cardioC
-                ? `${set.time!=null?set.time:'—'}×${set.dist!=null?set.dist:'—'}`
-                : stretchC
-                ? `${set.time!=null?set.time:'—'}×${set.weight!=null?set.weight:'—'}×${set.reps!=null?set.reps:'—'}`
-                : `${set.weight!=null?set.weight:'—'}×${set.reps!=null?set.reps:'—'}`;
-              row.innerHTML = esc(txt) + (set.rpe != null ? `<span class="prev-rpe" style="background:${RPE_COLORS[set.rpe-1]||'#666'}" title="RPE ${set.rpe}">${set.rpe}</span>` : '');
-            }
-          }
+          /* c183: NO chain — the Next set's Prev stays historical. */
+          set.touched = true;
           startRest(ex.rest_sec || 90);
+        } else {
+          set.touched = true;
         }
         const row = btn.closest('.set-row');
         row.classList.toggle('set-row-done', set.done);
@@ -7375,11 +7419,14 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
           time: last && last.time != null ? last.time : null,
           dist: last && last.dist != null ? last.dist : null,
           rpe: null, type: last ? last.type : 'normal', done: false,
-          prev_weight: last ? last.weight : null,
-          prev_reps: last ? last.reps : null,
+          touched: false, performed: false,
+          /* c183: Prev only from the SAME set number last workout.
+             If last workout had no set #N, stay blank. */
+          prev_weight: null,
+          prev_reps: null,
           prev_rpe: null,
-          prev_time: last && last.time != null ? last.time : null,
-          prev_dist: last && last.dist != null ? last.dist : null
+          prev_time: null,
+          prev_dist: null
         });
         /* c107: superset sync — the new set lands on every partner too */
         psSupGroup(sess0.exercises, ei).forEach(p => {
@@ -7387,6 +7434,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
           if (pEx) pEx.sets.push(Object.assign({}, ex.sets[ex.sets.length - 1]));
         });
         ensureStarted(sess0); saveDraft(); renderExercises();
+        psRefreshPrev(); /* c183: exact historical set for the new row */
         try { if (voiceFull()) voiceSay(t('voiceSetAdded'), 'info'); } catch (e136) {}
         const rows = document.querySelectorAll(`[data-exercise-card="${ei}"] .set-row`);
         if (rows.length) {
@@ -7523,7 +7571,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     /* c128: the tile shows the honest ENGINE tonnage (kg-normalized) in the
        display unit — not the raw mixed-units sum */
     const vol = (window.dkAnalyticsEngine && typeof window.dkAnalyticsEngine.recVolumeKg === 'function')
-      ? window.dkAnalyticsEngine.recVolumeKg(rec)
+      ? window.dkAnalyticsEngine.recVolumeKg(rec, { bodyWeightKg: (currentClient && Number(currentClient.weight)) || 75, resolveEx: aResolveEx })
       : rec.exercises.reduce((s, ex) => s + exDoneVolume(ex.sets).v, 0);
     const mins = Math.round(rec.duration_sec / 60);
     const partial = done < total;
@@ -7683,7 +7731,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
           unit: (lex.unit === 'lb') ? 'lb' : 'kg',
           g: exData ? (recpCanonical(exData.group) || '') : '', /* c98: canonical group for the recovery map */
           syn: exData ? (exData.synergists || []).map(recpCanonical).filter(Boolean) : [], /* c98: canonical synergists (30% credit) */
-          sets: (lex.sets || []).map(s => ({ weight: s.weight, reps: s.reps, time: s.time != null ? s.time : null, dist: s.dist != null ? s.dist : null, speed: s.speed != null ? s.speed : null, incline: s.incline != null ? s.incline : null, level: s.level != null ? s.level : null, rpe: s.rpe, type: s.type, done: !!s.done }))
+          sets: (lex.sets || []).map(s => ({ weight: s.weight, reps: s.reps, time: s.time != null ? s.time : null, dist: s.dist != null ? s.dist : null, speed: s.speed != null ? s.speed : null, incline: s.incline != null ? s.incline : null, level: s.level != null ? s.level : null, rpe: s.rpe, type: s.type, done: !!s.done, touched: !!s.touched, performed: !!(s.done || s.touched) }))
         };
       })
     };

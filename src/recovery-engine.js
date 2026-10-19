@@ -96,6 +96,9 @@
   var COMP_CAP_MAX = 1.25;
   var FAT_MIN = 3;                  // c174: sane body-fat band (%)
   var FAT_MAX = 70;
+  var CORE = (typeof window !== 'undefined' && window.dkMuscleCore)
+    || (typeof globalThis !== 'undefined' && globalThis.dkMuscleCore)
+    || null;
 
   /* c174: sane fat% (typeof-checked — isFinite(null)/isFinite('') is true in JS) */
   function fatOf(v) {
@@ -211,6 +214,18 @@
     if (idx < 0) idx = 0;
     return sortedAsc[idx];
   }
+  /* c184: a bucket is valid when it has EITHER working sets (primary/synergist)
+     OR load (stabilizer credit). Stabilizers must appear on the map without
+     inflating the working-set count. */
+  function bucketKeys(setsMap, loadMap) {
+    var seen = {};
+    Object.keys(setsMap || {}).forEach(function (b) { if ((setsMap[b] || 0) > 0) seen[b] = 1; });
+    Object.keys(loadMap || {}).forEach(function (b) { if ((loadMap[b] || 0) > 0) seen[b] = 1; });
+    return Object.keys(seen).map(Number);
+  }
+  function daysAgo(now, dayMs) {
+    return CORE ? CORE.dayDiff(now, dayMs) : (now - dayMs) / MS_PER_DAY;
+  }
 
   function exKeyOf(ex) {
     return String((ex && ex.exercise_id) || '') ||
@@ -254,11 +269,12 @@
     var capacityDefault = (leanRatio != null)
       ? DEFAULT_CAPACITY * clamp(leanRatio / REF_LEAN_RATIO, COMP_CAP_MIN, COMP_CAP_MAX)
       : DEFAULT_CAPACITY;
-    var dayNow = Math.floor(now / MS_PER_DAY);
+    var dayNow = CORE ? CORE.dayStart(now) : Math.floor(now / MS_PER_DAY);
 
     /* ---- per-(group, day) accumulators ---- */
     var load = {}, vol = {}, sets = {};
-    GROUPS.forEach(function (g) { load[g] = {}; vol[g] = {}; sets[g] = {}; });
+    var roleLoad = {}; /* c184: per-group role breakdown (primary/synergist/stabilizer) */
+    GROUPS.forEach(function (g) { load[g] = {}; vol[g] = {}; sets[g] = {}; roleLoad[g] = {}; });
     var anyTrainingDays = {};   // bucket → true (any group) — for the personal τ
     /* c172: per-(group:subgroup, day) — primary muscle only, no synergist
        credit (a synergist never tells us WHICH sub-belt it helped) */
@@ -273,7 +289,7 @@
       if (!isFinite(ts) || ts <= 0) ts = Date.parse(w.date);
       if (!isFinite(ts) || ts <= 0) ts = Number(w.ts);
       if (!isFinite(ts) || ts <= 0) return;
-      var bucket = Math.floor(ts / MS_PER_DAY);
+      var bucket = CORE ? CORE.dayStart(ts) : Math.floor(ts / MS_PER_DAY);
       w.exercises.forEach(function (ex) {
         if (!ex) return;
         var info = null;
@@ -282,12 +298,17 @@
         var syn = (Array.isArray(info.synergists) ? info.synergists : [])
           .filter(function (s) { return s && GROUPS.indexOf(s) !== -1 && s !== info.group; });
         syn = syn.filter(function (s, i) { return syn.indexOf(s) === i; });
-        var patternF = bwPatternFraction(info.names, info.equipment);
+        var patternF = CORE
+          ? CORE.bodyweightPatternFraction(info.names, info.equipment)
+          : bwPatternFraction(info.names, info.equipment);
         var doneSets = [];
         (ex.sets || []).forEach(function (s) {
-          if (!s || s.done === false) return;   /* live-undone sets are skipped (v1 rule) */
+          if (!s) return;
+          var performed = CORE ? CORE.setPerformed(s) : (s.done !== false);
+          if (!performed) return;   /* c184: performed = done OR touched */
           doneSets.push({
-            wKg: toKg(s.weight, ex.unit),       /* 0 when missing / bodyweight */
+            raw: s,
+            wKg: toKg(s.weight, ex.unit),       /* external kg (0 for bodyweight) */
             reps: parseReps(s),
             rpe: s.rpe,
             time: (s.time != null ? s.time : null),
@@ -301,14 +322,18 @@
           var rec = perEx[exKey];
           if (!rec) { rec = perEx[exKey] = { group: info.group, sum: 0, n: 0 }; }
           doneSets.forEach(function (ds) {
-            if (ds.wKg > 0 && (dayNow - bucket) <= CAPACITY_WINDOW_DAYS) { rec.sum += ds.wKg; rec.n++; }
+            var age = CORE ? CORE.dayDiff(dayNow, bucket) : (dayNow - bucket);
+            if (ds.wKg > 0 && age <= CAPACITY_WINDOW_DAYS) { rec.sum += ds.wKg; rec.n++; }
           });
         }
         anyTrainingDays[bucket] = true;
         /* c172: the subgroup bucket (MAIN groups only, anatomical values only) */
         var subKey = (MAIN_GROUPS.indexOf(info.group) !== -1) ? subKeyFor(info.group, info.sub) : '';
         if (subKey && !subMeta[subKey]) subMeta[subKey] = { group: info.group, sub: String(info.sub).trim() };
-        occurrences.push({ exKey: exKey, group: info.group, syn: syn, bucket: bucket, sets: doneSets, exAvg: 0, subKey: subKey });
+        occurrences.push({
+          exKey: exKey, ex: ex, info: info, group: info.group, syn: syn,
+          bucket: bucket, sets: doneSets, exAvg: 0, subKey: subKey
+        });
       });
     });
 
@@ -331,10 +356,13 @@
     /* ---- PASS C: per-set load (kg-normalized, personal fallbacks) ---- */
     occurrences.forEach(function (occ) {
       occ.sets.forEach(function (ds) {
-        var wKg = ds.wKg;
-        if (wKg <= 0 && ds.patternF > 0) {
-          /* bodyweight pattern: body weight × fraction (+ added external load) */
-          wKg = bodyWeight * ds.patternF + (ds.wKg > 0 ? ds.wKg : 0);
+        /* c184: effective load uses the SAME core as analytics:
+           external kg, or bodyweight × pattern + added weight for bodyweight
+           movements. Weighted pull-ups therefore count body + added kg. */
+        var metrics = CORE ? CORE.setMetrics(occ.ex, ds.raw, occ.info, { bodyWeightKg: bodyWeight }) : null;
+        var wKg = metrics ? metrics.effectiveKg : ds.wKg;
+        if (!metrics && wKg <= 0 && ds.patternF > 0) {
+          wKg = bodyWeight * ds.patternF; /* legacy fallback */
         }
         var volKg = 0;
         var loadUnits;
@@ -358,19 +386,49 @@
             loadUnits = ds.reps * 0.05;
           }
         }
-        load[occ.group][occ.bucket] = (load[occ.group][occ.bucket] || 0) + loadUnits;
-        vol[occ.group][occ.bucket] = (vol[occ.group][occ.bucket] || 0) + volKg;
-        sets[occ.group][occ.bucket] = (sets[occ.group][occ.bucket] || 0) + 1;
+
+        /* c184: ONE attribution model — primary 100%, synergists 30% each,
+           stabilizers 10% TOTAL split equally. */
+        var att = CORE ? CORE.attribution(occ.info, occ.ex) : null;
+        if (!att) {
+          att = {
+            primary: occ.group,
+            synergists: (occ.syn || []).map(function (g) { return { group: g, credit: SYN_CREDIT }; }),
+            stabilizers: []
+          };
+        }
+        var primary = att.primary;
+        if (primary && GROUPS.indexOf(primary) !== -1) {
+          load[primary][occ.bucket] = (load[primary][occ.bucket] || 0) + loadUnits;
+          vol[primary][occ.bucket] = (vol[primary][occ.bucket] || 0) + volKg;
+          sets[primary][occ.bucket] = (sets[primary][occ.bucket] || 0) + 1;
+          var rbp = roleLoad[primary][occ.bucket] || (roleLoad[primary][occ.bucket] = { pL: 0, sL: 0, stL: 0, pV: 0, sV: 0, stV: 0 });
+          rbp.pL += loadUnits; rbp.pV += volKg;
+        }
         /* c172: the primary muscle's own subgroup gets the full load */
         if (occ.subKey) {
           if (!subLoad[occ.subKey]) { subLoad[occ.subKey] = {}; subSets[occ.subKey] = {}; }
           subLoad[occ.subKey][occ.bucket] = (subLoad[occ.subKey][occ.bucket] || 0) + loadUnits;
           subSets[occ.subKey][occ.bucket] = (subSets[occ.subKey][occ.bucket] || 0) + 1;
         }
-        occ.syn.forEach(function (sn) {
-          load[sn][occ.bucket] = (load[sn][occ.bucket] || 0) + loadUnits * SYN_CREDIT;
-          vol[sn][occ.bucket] = (vol[sn][occ.bucket] || 0) + volKg * SYN_CREDIT;
-          sets[sn][occ.bucket] = (sets[sn][occ.bucket] || 0) + 1;
+        (att.synergists || []).forEach(function (a) {
+          if (!a || !a.group || a.group === primary || GROUPS.indexOf(a.group) === -1) return;
+          var cr = (a.credit != null ? a.credit : SYN_CREDIT);
+          load[a.group][occ.bucket] = (load[a.group][occ.bucket] || 0) + loadUnits * cr;
+          vol[a.group][occ.bucket] = (vol[a.group][occ.bucket] || 0) + volKg * cr;
+          sets[a.group][occ.bucket] = (sets[a.group][occ.bucket] || 0) + 1;
+          var rbs = roleLoad[a.group][occ.bucket] || (roleLoad[a.group][occ.bucket] = { pL: 0, sL: 0, stL: 0, pV: 0, sV: 0, stV: 0 });
+          rbs.sL += loadUnits * cr; rbs.sV += volKg * cr;
+        });
+        (att.stabilizers || []).forEach(function (a) {
+          if (!a || !a.group || a.group === primary || GROUPS.indexOf(a.group) === -1) return;
+          var cr2 = (a.credit || 0);
+          load[a.group][occ.bucket] = (load[a.group][occ.bucket] || 0) + loadUnits * cr2;
+          vol[a.group][occ.bucket] = (vol[a.group][occ.bucket] || 0) + volKg * cr2;
+          var rbt = roleLoad[a.group][occ.bucket] || (roleLoad[a.group][occ.bucket] = { pL: 0, sL: 0, stL: 0, pV: 0, sV: 0, stV: 0 });
+          rbt.stL += loadUnits * cr2; rbt.stV += volKg * cr2;
+          /* stabilizers receive load/volume credit, but are not counted as
+             working sets — they never inflate the 10–20 sets/week band. */
         });
       });
     });
@@ -389,7 +447,7 @@
        when unknown → v2-identical); the same 2.25–3.85 clamp band. */
     if (compTauMod) tau = clamp(tau * compTauMod, 2.25, 3.85);
 
-    return { load: load, vol: vol, sets: sets, dayNow: dayNow, now: now, tau: tau, bodyWeight: bodyWeight,
+    return { load: load, vol: vol, sets: sets, roleLoad: roleLoad, dayNow: dayNow, now: now, tau: tau, bodyWeight: bodyWeight,
              bodyFatPct: bodyFatPct, leanKg: leanKg, compTauMod: compTauMod, capacityDefault: capacityDefault,
              subLoad: subLoad, subSets: subSets, subMeta: subMeta,
              energy: (tauMod125 && isFinite(parseFloat(cfg.energy))) ? clamp(parseFloat(cfg.energy), 1, 10) : null,
@@ -412,19 +470,28 @@
       var lm = load[g], vm = vol[g], sm = sets[g];
       /* a bucket counts when the muscle got DONE SETS (v2 fix: not tonnage>0,
          so bodyweight sessions are no longer invisible) */
-      var buckets = Object.keys(sm).map(Number).filter(function (b) { return (sm[b] || 0) > 0; });
+      var buckets = bucketKeys(sm, lm);
       var last = null;
       buckets.forEach(function (b) { if (last === null || b > last) last = b; });
-      var lastMs = last !== null ? last * MS_PER_DAY : null;
-      var lastDaysAgo = lastMs !== null ? (now - lastMs) / MS_PER_DAY : null;
+      var lastMs = last !== null ? last : null;
+      var lastDaysAgo = lastMs !== null ? daysAgo(now, lastMs) : null;
 
       var v7 = 0, v30 = 0, s7 = 0, s30 = 0, l7 = 0, l30 = 0;
+      var role = { pL7: 0, sL7: 0, stL7: 0, pV7: 0, sV7: 0, stV7: 0,
+                   pL30: 0, sL30: 0, stL30: 0, pV30: 0, sV30: 0, stV30: 0 };
       var dailyLoads90 = [];
       buckets.forEach(function (b) {
-        var d = dayNow - b;
+        var d = CORE ? CORE.dayDiff(dayNow, b) : (dayNow - b);
         if (d < 0) return;
         if (d < 7)  { v7 += vm[b] || 0; s7 += sm[b] || 0; l7 += lm[b] || 0; }
         if (d < 30) { v30 += vm[b] || 0; s30 += sm[b] || 0; l30 += lm[b] || 0; }
+        var rb = acc.roleLoad[g] && acc.roleLoad[g][b];
+        if (rb) {
+          if (d < 7)  { role.pL7 += rb.pL || 0; role.sL7 += rb.sL || 0; role.stL7 += rb.stL || 0;
+                        role.pV7 += rb.pV || 0; role.sV7 += rb.sV || 0; role.stV7 += rb.stV || 0; }
+          if (d < 30) { role.pL30 += rb.pL || 0; role.sL30 += rb.sL || 0; role.stL30 += rb.stL || 0;
+                        role.pV30 += rb.pV || 0; role.sV30 += rb.sV || 0; role.stV30 += rb.stV || 0; }
+        }
         if (d < CAPACITY_WINDOW_DAYS && (lm[b] || 0) > 0) dailyLoads90.push(lm[b]);
       });
       dailyLoads90.sort(function (a, b2) { return a - b2; });
@@ -436,7 +503,7 @@
       var fatigue = 0;
       if (last !== null) {
         buckets.forEach(function (b) {
-          var d = dayNow - b;
+          var d = CORE ? CORE.dayDiff(dayNow, b) : (dayNow - b);
           if (d < 0 || d > FATIGUE_HORIZON_DAYS) return;
           fatigue += clamp((lm[b] || 0) / capacity, 0, DAY_RATIO_CAP) * Math.exp(-d / tau);
         });
@@ -462,6 +529,19 @@
         /* --- v2 additive --- */
         load7d: Math.round(l7 * 10) / 10,
         load30d: Math.round(l30 * 10) / 10,
+        /* c184: explicit primary / synergist / stabilizer credit (load + volume) */
+        primaryLoad7d: Math.round(role.pL7 * 10) / 10,
+        synergistLoad7d: Math.round(role.sL7 * 10) / 10,
+        stabilizerLoad7d: Math.round(role.stL7 * 10) / 10,
+        primaryLoad30d: Math.round(role.pL30 * 10) / 10,
+        synergistLoad30d: Math.round(role.sL30 * 10) / 10,
+        stabilizerLoad30d: Math.round(role.stL30 * 10) / 10,
+        primaryVolume7d: Math.round(role.pV7),
+        synergistVolume7d: Math.round(role.sV7),
+        stabilizerVolume7d: Math.round(role.stV7),
+        primaryVolume30d: Math.round(role.pV30),
+        synergistVolume30d: Math.round(role.sV30),
+        stabilizerVolume30d: Math.round(role.stV30),
         capacity: Math.round(capacity * 10) / 10,
         tauDays: Math.round(tau * 100) / 100,
         fatigueNow: Math.round(fatigue * 100) / 100
@@ -472,15 +552,15 @@
     var subs = {};
     Object.keys(acc.subMeta).forEach(function (sk) {
       var lm = acc.subLoad[sk] || {}, sm = acc.subSets[sk] || {};
-      var buckets = Object.keys(sm).map(Number).filter(function (b) { return (sm[b] || 0) > 0; });
+      var buckets = bucketKeys(sm, lm);
       var last = null;
       buckets.forEach(function (b) { if (last === null || b > last) last = b; });
-      var lastMs = last !== null ? last * MS_PER_DAY : null;
-      var lastDaysAgo = lastMs !== null ? (now - lastMs) / MS_PER_DAY : null;
+      var lastMs = last !== null ? last : null;
+      var lastDaysAgo = lastMs !== null ? daysAgo(now, lastMs) : null;
       var s7 = 0, s30 = 0, l7 = 0, l30 = 0;
       var dailyLoads90 = [];
       buckets.forEach(function (b) {
-        var d = dayNow - b;
+        var d = CORE ? CORE.dayDiff(dayNow, b) : (dayNow - b);
         if (d < 0) return;
         if (d < 7) { s7 += sm[b] || 0; l7 += lm[b] || 0; }
         if (d < 30) { s30 += sm[b] || 0; l30 += lm[b] || 0; }
@@ -497,7 +577,7 @@
       var fatigue = 0;
       if (last !== null) {
         buckets.forEach(function (b) {
-          var d = dayNow - b;
+          var d = CORE ? CORE.dayDiff(dayNow, b) : (dayNow - b);
           if (d < 0 || d > FATIGUE_HORIZON_DAYS) return;
           fatigue += clamp((lm[b] || 0) / capacity, 0, DAY_RATIO_CAP) * Math.exp(-d / tau);
         });
@@ -539,7 +619,8 @@
         subgroupsComputed: Object.keys(subs).length,
         /* c125 additive */
         energy: acc.energy,
-        tauMod: acc.tauMod
+        tauMod: acc.tauMod,
+        attribution: CORE ? CORE.CREDITS : { primary: 1, synergist: 0.3, stabilizer: 0.1 }
       }
     };
   }
@@ -557,11 +638,11 @@
     var out = {};
     GROUPS.forEach(function (g) {
       var lm = acc.load[g], sm = acc.sets[g];
-      var buckets = Object.keys(sm).map(Number).filter(function (b) { return (sm[b] || 0) > 0; });
+      var buckets = bucketKeys(sm, lm);
       /* personal capacity — the SAME p90-of-90d the map summary uses */
       var dailyLoads90 = [];
       buckets.forEach(function (b) {
-        var d = acc.dayNow - b;
+        var d = CORE ? CORE.dayDiff(acc.dayNow, b) : (acc.dayNow - b);
         if (d >= 0 && d < CAPACITY_WINDOW_DAYS && (lm[b] || 0) > 0) dailyLoads90.push(lm[b]);
       });
       dailyLoads90.sort(function (a, b2) { return a - b2; });
@@ -570,10 +651,10 @@
       if (!isFinite(capacity) || capacity <= 0) capacity = capDefault;
       var daily = [];
       for (var i = days - 1; i >= 0; i--) {
-        var dNow = acc.dayNow - i;
+        var dNow = CORE ? CORE.addDays(acc.dayNow, -i) : (acc.dayNow - i);
         var fatigue = 0;
         for (var k = 0; k < buckets.length; k++) {
-          var dd = dNow - buckets[k];
+          var dd = CORE ? CORE.dayDiff(dNow, buckets[k]) : (dNow - buckets[k]);
           if (dd < 0 || dd > FATIGUE_HORIZON_DAYS) continue;
           fatigue += clamp((lm[buckets[k]] || 0) / capacity, 0, DAY_RATIO_CAP) * Math.exp(-dd / acc.tau);
         }
@@ -645,7 +726,7 @@
     return s;
   }
 
-  var api = { compute: compute, GROUPS: GROUPS, KG_PER_LB: KG_PER_LB };
+  var api = { version: 'c184', compute: compute, GROUPS: GROUPS, KG_PER_LB: KG_PER_LB };
 
   /* ============================================================================
      c123 — ADVICE LAYER («что больше / что меньше включать»)
@@ -711,7 +792,10 @@
       var a = adviceFor(r);
       per[g] = { advice: a, setsBand: setsBandFor(r, a) };
       counts[a]++;
-      if (MAIN_GROUPS.indexOf(g) !== -1 && r.lastTrainedDaysAgo != null && isFinite(r.lastTrainedDaysAgo)) {
+      if (MAIN_GROUPS.indexOf(g) !== -1 && r.lastTrainedDaysAgo != null && isFinite(r.lastTrainedDaysAgo)
+          && (r.sets30d || 0) > 0) {
+        /* c184: stabilizer-only groups have load credit but no working sets —
+           they must not skew overall readiness. */
         readyAll.push(r.recovery);
         if (r.lastTrainedDaysAgo <= READINESS_WINDOW_DAYS) ready7.push(r.recovery);
       }

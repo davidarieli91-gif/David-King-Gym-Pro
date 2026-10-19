@@ -140,7 +140,19 @@
 // v193: c166 — TRAINER REMINDERS, LOCAL, NO SERVER (user plan item: «сегодня тренировка у N клиентов», дни рождения): the trainer's Settings gained a «Напоминания тренеру» panel — a morning digest of WHO TRAINS TODAY (computed from each client's training_days) and client BIRTHDAYS (new birth_date field in the client form, shown in the profile card). The page builds the agenda snapshot from IndexedDB, stores it in the shared 'dk-sw' IDB and shows SW notifications (periodicsync repeats the check in the background; both sides share the same `last` map so nothing fires twice; notification taps open fitness-crm.html). One time-of-day for both (default 08:00), Allow-notifications + Test-now buttons, localized x3. dkTremBuildAgenda/dkTremDue are pure and unit-tested. Versions: meta/footer/RUNNING c166, cache dk-gym-v193
 // v192: c165 — PORTION CALCULATOR IN THE PLAN EDITOR (user: «пересчёт граммовок с подсказкой, сколько осталось до цели дня»): picking a food in the plan's food picker no longer dumps a blind 100 г — a portion bar opens inside the picker with the product's REAL serving pre-filled, quick chips (serving/50/100/150/200), a live macro readout, and — when the plan editor is behind it — an honest «после добавления останется» line per macro against the plan's daily targets (over-target values turn red with a + sign). The plan editor itself gained a day-progress strip under the targets («Итого: 1450/2000 ккал · P 120/150 …» plus «Осталось: −550 ккал −30P −110C −25F»), recomputed on every portion/unit/meal/target change and by the quick adjusters (npDayTotals/npRemaining are pure and unit-tested). Versions: meta/footer/RUNNING c165, cache dk-gym-v192
 // v191: c164 — RECIPES BECOME EDITABLE (user: «сейчас рецепт можно только создать — нужна правка состава и граммовок, и бейджи рецептам»): every recipe card in the picker (search results, Recipes filter, Favorites/Recent) now carries a pencil overlay that reopens the dish in the recipe editor — name, ingredient list and grams prefilled; the editor resolves each ingredient's live per-100g values from food_base or the reference DB, so legacy recipes saved without macros recompute correctly, and missing products are reported («часть ингредиентов не найдена»). Saving keeps the same food id, preserves created_at, stamps updated_at, and recipes now store full ingredient macros plus an HONEST processing badge — nova = max NOVA among ingredients (shown only when every ingredient is known, in the editor total line and on the kiosk/picker tiles; nutri/eco are NOT computed because the source data lacks sugars/salt). The save button/title switch to «Сохранить изменения»/«Редактировать рецепт»; after an edit the open search list refreshes in place instead of opening the portion modal. Versions: meta/footer/RUNNING c164, cache dk-gym-v191
-const CACHE_NAME = 'dk-gym-v209'; // c182
+// v210: c183 — PREV COLUMN INTEGRITY: the Prev cell is ALWAYS the SAME set
+// number from the last workout that actually contains the exercise. Removed
+// lwChainPrev / portal chain-copy (a done set no longer overwrites the next
+// set's Prev with current-session values), add-set no longer copies the last
+// current set into Prev, skipped sets keep their hole instead of shifting
+// set 3 into set 2, and remote trainer history refreshes the portal Prev
+// column when it arrives. New history rows carry performed/touched for
+// entered-but-unchecked sets.
+// v211: c184 — ONE MUSCLE CORE for analytics + recovery: performed = done OR
+// touched, kg/bodyweight effective load, primary 100% / synergist 30% /
+// stabilizer 10% (split) attribution, local calendar days, warm-up excluded
+// from PR/e1RM, weighted bodyweight fixed, post-workout report kg-normalized.
+const CACHE_NAME = 'dk-gym-v211'; // c184
 // v104: c77 — UI sizes can no longer change themselves (zoom-based gif/food/cards, wheel/touch slider guards) + hard pre-login lock (Add Client included) + header theme quick menu with all 33 themes
 // v103: c76 — Exercise DB tab = exact Quick Pick copy (star/eye/+ cards, favorites/recent tabs, View grouping, localized map tabs)
 // v102: c75 — 3D atlas 1.5x + Settings ▸ UI sizes (atlas slider, bodymap/exercise-panel fixes) + Exercise DB tab rebuilt as picker-style browse
@@ -166,6 +178,7 @@ const APP_SHELL = [
   './manifest-portal.json',
   './src/input.css',
   './src/muscle-map.js',
+  './src/muscle-core.js',
   './src/recovery-engine.js',
   './src/analytics-engine.js',
   './src/voice-coach.js',

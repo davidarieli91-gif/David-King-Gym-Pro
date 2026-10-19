@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c182" />
+<meta name="dk-build" content="c184" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -54,6 +54,8 @@
   <link rel="stylesheet" href="src/input.css" />
   <!-- i18n dictionaries as bundled ES module (executes before DOMContentLoaded) -->
   <script type="module" src="src/i18n.js"></script>
+  <!-- c184: shared muscle core — ONE performed/units/attribution model for both engines -->
+  <script src="src/muscle-core.js"></script>
   <!-- c122: shared recovery engine v2 — ONE model for the trainer map AND the portal map -->
   <script type="module" src="src/recovery-engine.js"></script>
   <!-- c127: shared analytics engine — ONE honest analytics core for BOTH apps (done-only, kg-normalized, e1RM, PRs) -->
@@ -2901,7 +2903,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">—</span> · IndexedDB · 3 languages · c182</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c184</p>
             </div>
           </div>
 
@@ -9376,6 +9378,15 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     }
     return null;
   }
+  /* c184: minimal resolver for effective volume (bodyweight detection) */
+  window.dkResolveExRecord = function (ex) {
+    const b = (ex && ex.exercise_id && typeof lookupExerciseGlobal === 'function') ? lookupExerciseGlobal(ex.exercise_id) : null;
+    return {
+      names: [ex && ex.name, b && (b.name_en || b.name)].filter(Boolean),
+      equipment: b && (b.equipment_type || b.equipment_en || b.equipment),
+      mt: b && b.mt
+    };
+  };
   function globalExImage(ex) {
     if (!ex || !ex.exercise_id) return '';
     const cached = lookupExerciseGlobal(ex.exercise_id);
@@ -13728,13 +13739,25 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     }
     /* c128: shared group/synergist resolver — ONE source for the volume panel
        AND the day drill-down (was inline in renderVolume only) */
+    function analyticsBodyWeight() {
+      const c = (_clients || []).find(x => x && x.id === _clientId);
+      const w = c && Number(c.weight);
+      return (isFinite(w) && w > 30 && w < 300) ? w : 75;
+    }
     function resolveExCrm(ex) {
       const rawGroup = ex.muscle_group || ex.group || '';
       const cachedEx = (ex.exercise_id && typeof lookupExerciseGlobal === 'function') ? lookupExerciseGlobal(ex.exercise_id) : null;
       const group = (cachedEx && cachedEx.group_canonical) || (ex.g && dkMuscleGroupKey(ex.g)) || dkMuscleGroupKey(rawGroup) || rawGroup || 'Unknown';
       const syn = (cachedEx && Array.isArray(cachedEx.synergists)) ? cachedEx.synergists.map(s => dkMuscleGroupKey(s) || s) : (Array.isArray(ex.syn) ? ex.syn.map(s => dkMuscleGroupKey(s) || s) : []);
       const sub = (cachedEx && (cachedEx.subgroup_en || cachedEx.sE)) || ex.subgroup || ''; /* c172 */
-      return { group: group, synergists: syn, sub: sub };
+      return {
+        group: group, synergists: syn, sub: sub,
+        /* c184: shared attribution inputs — bodyweight patterns, stabilizers */
+        names: [ex.name, cachedEx && (cachedEx.name_en || cachedEx.name)].filter(Boolean),
+        equipment: (cachedEx && (cachedEx.equipment_type || cachedEx.equipment_en || cachedEx.equipment)) || ex.equipment || '',
+        mt: (cachedEx && cachedEx.mt) || ex.mt || '',
+        stabilizers: (cachedEx && Array.isArray(cachedEx.stabilizers)) ? cachedEx.stabilizers : []
+      };
     }
 
     /* c128: DAY drill-down — the trainer taps a workout day in the activity
@@ -13758,7 +13781,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       let totalKg = 0, totalSets = 0, bars = '';
       if (eng && typeof eng.volumeByMuscle === 'function') {
         try {
-          const res = eng.volumeByMuscle(recs, { resolveEx: resolveExCrm });
+          const res = eng.volumeByMuscle(recs, { resolveEx: resolveExCrm, bodyWeightKg: analyticsBodyWeight() });
           totalKg = res.totalKg; totalSets = res.totalSets;
           const sorted = Object.keys(res.byGroup).map(g => [g, res.byGroup[g].volumeKg, res.byGroup[g].sets]).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1]);
           const max = sorted.length ? sorted[0][1] : 1;
@@ -13943,7 +13966,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         return;
       }
       try {
-        const weeks = eng.volumeWeekly(workouts, { resolveEx: resolveExCrm }, 8);
+        const weeks = eng.volumeWeekly(workouts, { resolveEx: resolveExCrm, bodyWeightKg: analyticsBodyWeight() }, 8);
         const fmtD = ts => { const d = new Date(ts); return String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0'); };
         const svg = eng.sparkBarsSVG(weeks.map(w => ({ v: w.totalKg, label: fmtD(w.weekStart) })), { fmt: v => fmtNumber(Math.round(v)) });
         box.innerHTML = svg || '<div class="text-center py-6 text-sm text-muted">' + escapeHTML(t('analytics.noData')) + '</div>';
@@ -13992,7 +14015,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       sel.value = stillThere ? prev : list[0].key;
       if (!stillThere && !prev && list.length) sel.value = list[0].key;
       const key130 = sel.value;
-      const pts = eng.exerciseSeries(workouts, { match: ex => ((eng.exKeyOf ? eng.exKeyOf(ex) : '') === key130) }).slice(-12);
+      const pts = eng.exerciseSeries(workouts, { match: ex => ((eng.exKeyOf ? eng.exKeyOf(ex) : '') === key130), resolveEx: resolveExCrm, bodyWeightKg: analyticsBodyWeight() }).slice(-12);
       if (!pts.length) { box.innerHTML = '<div class="text-center py-6 text-sm text-muted">' + escapeHTML(t('analytics.noData')) + '</div>'; return; }
       /* c130: bodyweight-only rows (no external weight anywhere) carry no
          load — a flat zero line would look broken, so say it honestly */
@@ -14022,7 +14045,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         return;
       }
       try {
-        const res = eng.prs(workouts, { windowDays: 30 });
+        const res = eng.prs(workouts, { windowDays: 30, resolveEx: resolveExCrm, bodyWeightKg: analyticsBodyWeight() });
         if (!res.recent.length) {
           box.innerHTML = '<div class="text-center py-4 text-xs text-muted">' + escapeHTML(t('analytics.prsEmpty')) + '</div>';
           return;
@@ -14071,7 +14094,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const eng = window.dkAnalyticsEngine;
       if (eng && typeof eng.volumeByMuscle === 'function') {
         try {
-          const res = eng.volumeByMuscle(workouts, { resolveEx: resolveExCrm });
+          const res = eng.volumeByMuscle(workouts, { resolveEx: resolveExCrm, bodyWeightKg: analyticsBodyWeight() });
           Object.keys(res.byGroup).forEach(g => {
             groupVolumes.set(g, res.byGroup[g].volumeKg);
             setsByGroup.set(g, res.byGroup[g].sets);
@@ -16157,7 +16180,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           tunit: ex.tunit === 'min' || ex.tunit === 'sec' ? ex.tunit : null, /* c107 */
           is_superset: ex.is_superset === true, /* c107: superset pairs survive template → live */
           ss_link: ex.ss_link === true, /* c140 */
-          sets: (ex.sets || []).map(s => ({ ...s, done: false }))
+          sets: (ex.sets || []).map(s => ({ ...s, done: false, touched: false, performed: false }))
         })),
         started_at: Date.now()
       };
@@ -16201,7 +16224,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             level: s.level != null ? s.level : null,
             rpe: s.rpe || null,
             type: s.type || 'normal',
-            done: false
+            done: false,
+            touched: false,
+            performed: false
           })),
           rest_sec: ex.rest_sec != null ? ex.rest_sec : 90
         })),
@@ -16254,6 +16279,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
        to ORPHAN records (client_id matching no existing client) so previous
        working weights still show up. */
     let _lastRefMap = null;
+    let _lastBw = 75; /* c184: body weight for bodyweight effective volume in the report */
     async function fetchLastRef(clientId) {
       let rows = [];
       try { rows = (await db.find('workout_history', 'by_clientId', clientId)) || []; } catch (_) { rows = []; }
@@ -16300,9 +16326,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const _norm121 = s => String(s == null ? '' : s).trim().toLowerCase().replace(/\s+/g, ' ');
       sorted.forEach(rec => {
         (rec.exercises || []).forEach(ex => {
-          const ds126 = (ex.sets || []).filter(s => s && s.done !== false);
-          if (!ds126.length) return; /* prescription-only / fully skipped → no fake prev from it */
-          const payload = { unit: ex.unit === 'lb' ? 'lb' : 'kg', sets: ds126 };
+          /* c183: keep ALL sets so the set NUMBER stays aligned. Filtering only
+             done sets shifted set 3 into set 2 whenever set 2 was skipped. */
+          const allSets = Array.isArray(ex.sets) ? ex.sets : [];
+          if (!allSets.some(lwSetPerformed)) return; /* fully skipped -> no fake prev */
+          const payload = { unit: ex.unit === 'lb' ? 'lb' : 'kg', sets: allSets };
           const idKey = String(ex.exercise_id || '');
           if (idKey && !map['id:' + idKey]) map['id:' + idKey] = payload;
           const nmKey = _norm121(ex.name);
@@ -16311,8 +16339,31 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       });
       return map;
     }
-    /* Fill prev_* (last workout) into every set that has no prev yet.
-       Sets already chain-filled from a just-completed set keep their values. */
+
+    /* c183: a set counts as "actually performed" for the Prev column when:
+       - the new `performed` flag says so (done OR touched by the trainer);
+       - or it was touched (weights/reps/RPE entered) in a current session;
+       - or, for legacy history, it was not explicitly left undone.
+       Prescriptions sitting in untouched sets are still ignored. */
+    function lwSetPerformed(s) {
+      if (!s) return false;
+      if (s.performed != null) return !!s.performed;
+      if (s.touched === true) return true;
+      return s.done !== false;
+    }
+    function lwClearPrev(s) {
+      let changed = false;
+      ['prev_weight', 'prev_reps', 'prev_rpe', 'prev_time', 'prev_dist'].forEach(k => {
+        if (s[k] != null) { s[k] = null; changed = true; }
+      });
+      return changed;
+    }
+
+    /* Fill prev_* from the SAME set index of the LAST workout that actually
+       has this exercise. Never from the current session's previous set. */
+    /* c183: the old comment said "sets already chain-filled keep their values";
+       chain-filling is removed, so applyLastRef always rewrites prev_* from
+       history (and clears it when that set was skipped / does not exist). */
     function applyLastRef() {
       if (!_workout || !_lastRefMap) return;
       let touched = false;
@@ -16320,34 +16371,42 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         const _key121 = String(ex.exercise_id || '');
         const _nm121 = String(ex.name || '').trim().toLowerCase().replace(/\s+/g, ' ');
         const refEx = _lastRefMap[_key121 ? 'id:' + _key121 : ''] || _lastRefMap[_nm121 ? 'nm:' + _nm121 : ''] || null;
-        if (!refEx) return;
-        const ref = refEx.sets;
-        /* c121: unit persistence — an exercise WITHOUT a program-prescribed
-           unit adopts the unit the trainee actually worked in last time
-           (kg stays kg, lb stays lb, even when half the workout is in lb).
-           Already-present values (program prescriptions, prev values) are
-           converted the same way the manual unit switcher does. */
+        /* No history for this exercise -> the Prev column must be blank.
+           Chain values from the current session are never allowed to remain. */
+        if (!refEx) {
+          (ex.sets || []).forEach(s => { if (lwClearPrev(s)) touched = true; });
+          return;
+        }
+        const ref = Array.isArray(refEx.sets) ? refEx.sets : [];
+        const refUnit = refEx.unit === 'lb' ? 'lb' : 'kg';
+        /* c121: an exercise WITHOUT a program-prescribed unit adopts the unit
+           the trainee actually worked in last time. */
         const oldUnit = ex.unit === 'lb' ? 'lb' : (ex.unit === 'kg' ? 'kg' : dkWUnitGet());
-        if (ex.unit_src !== 'program' && refEx.unit && refEx.unit !== oldUnit) {
+        if (ex.unit_src !== 'program' && refUnit !== oldUnit) {
           (ex.sets || []).forEach(s => {
-            if (s.weight != null) s.weight = dkWConv(s.weight, oldUnit, refEx.unit);
-            if (s.prev_weight != null) s.prev_weight = dkWConv(s.prev_weight, oldUnit, refEx.unit);
+            if (s.weight != null) s.weight = dkWConv(s.weight, oldUnit, refUnit);
+            if (s.prev_weight != null) s.prev_weight = dkWConv(s.prev_weight, oldUnit, refUnit);
           });
-          ex.unit = refEx.unit;
+          ex.unit = refUnit;
           touched = true;
         }
         const exUnit = ex.unit === 'lb' ? 'lb' : (ex.unit === 'kg' ? 'kg' : dkWUnitGet());
         (ex.sets || []).forEach((s, si) => {
-          const r = ref[Math.min(si, ref.length - 1)];
-          if (!r) return;
-          if (s.prev_weight == null && s.prev_reps == null && (r.weight != null || r.reps != null)) {
-            s.prev_weight = dkWConv(r.weight, refEx.unit, exUnit); /* c96: prev converts into THIS exercise's unit */
-            s.prev_reps = r.reps;
-            touched = true;
-          }
-          if (s.prev_rpe == null && r.rpe != null) { s.prev_rpe = r.rpe; touched = true; }
-          if (s.prev_time == null && r.time != null) { s.prev_time = r.time; touched = true; }
-          if (s.prev_dist == null && r.dist != null) { s.prev_dist = r.dist; touched = true; }
+          if (!s) return;
+          /* c183: EXACT SAME SET NUMBER from the last workout — never the
+             previous set of this workout, never Math.min(last) for extra sets. */
+          const r = ref[si];
+          const ok = lwSetPerformed(r);
+          const pw = ok && r.weight != null ? dkWConv(r.weight, refUnit, exUnit) : null;
+          const pr = ok && r.reps != null ? r.reps : null;
+          const prpe = ok && r.rpe != null ? r.rpe : null;
+          const ptime = ok && r.time != null ? r.time : null;
+          const pdist = ok && r.dist != null ? r.dist : null;
+          if (s.prev_weight !== pw) { s.prev_weight = pw; touched = true; }
+          if (s.prev_reps !== pr) { s.prev_reps = pr; touched = true; }
+          if (s.prev_rpe !== prpe) { s.prev_rpe = prpe; touched = true; }
+          if (s.prev_time !== ptime) { s.prev_time = ptime; touched = true; }
+          if (s.prev_dist !== pdist) { s.prev_dist = pdist; touched = true; }
         });
       });
       if (touched) render();
@@ -16440,6 +16499,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           render();
           router.show('live-workout');
           startDurationTimer();
+          ensureLastRef(); /* c183: a restored draft also gets its historical Prev */
           toast(t('workouts.draftRestoredToast'), 'success', 2000);
         } else {
           await db.put('settings', { key: 'workout_draft', value: null });
@@ -16779,7 +16839,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             const ex = exs[k];
             while (ex.sets.length > 0 && ex.sets.length < max) {
               const last = ex.sets[ex.sets.length - 1];
-              ex.sets.push(Object.assign({}, last, { done: false, rpe: null, prev_rpe: null }));
+              ex.sets.push(Object.assign({}, last, {
+                done: false, touched: false, performed: false, rpe: null,
+                /* c183: never clone the previous set's Prev values */
+                prev_weight: null, prev_reps: null, prev_rpe: null,
+                prev_time: null, prev_dist: null
+              }));
             }
           }
           i = j + 1;
@@ -16836,6 +16901,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       window.dkNormalizeSupersets(exs);
       markStruct('ss');
       render();
+      applyLastRef(); /* c183: fill any newly cloned sets from history */
     }
 
     /* c141: move an exercise up/down inside the live workout (a just-added
@@ -16861,39 +16927,15 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       return true;
     }
 
-    /* chain the just-done set's values into the next set's «prev» (shared by
-       the primary exercise and its superset partners) */
-    function lwChainPrev(exIdx, si) {
-      const ex = _workout && _workout.exercises[exIdx];
-      if (!ex || si + 1 >= ex.sets.length) return;
-      const curr = ex.sets[si];
-      const nxt = ex.sets[si + 1];
-      nxt.prev_weight = curr.weight;
-      nxt.prev_reps = curr.reps;
-      nxt.prev_rpe = curr.rpe; /* c90: chain the effort too */
-      const cEx = exIsCardio(ex);
-      const sEx = exIsStretch(ex) || exIsWarmup(ex); /* c102+c105 */
-      if (cEx || sEx) nxt.prev_time = curr.time;
-      if (cEx) nxt.prev_dist = curr.dist;
-      const nextRow = document.querySelector(`[data-set-row="${exIdx}.${si + 1}"]`);
-      if (nextRow) {
-        const prevCell = nextRow.querySelector('[data-prev-cell]');
-        if (prevCell) {
-          const txt = cEx
-            ? `${curr.time != null ? curr.time : '—'}×${curr.dist != null ? curr.dist : '—'}`
-            : sEx
-            ? `${curr.time != null ? curr.time : '—'}×${curr.weight != null ? curr.weight : '—'}×${curr.reps != null ? curr.reps : '—'}`
-            : `${curr.weight != null ? curr.weight : '—'}×${curr.reps != null ? curr.reps : '—'}`;
-          prevCell.innerHTML = escapeHTML(txt) + (curr.rpe != null ? prevRpeBadgeHTML(curr.rpe) : '');
-        }
-      }
-    }
+    /* c183: chain-filling removed on purpose. The Prev column is ALWAYS the
+       same set number from the last workout that actually contains this
+       exercise — not the current session's previous set. */
 
     /** Build HTML for a single set row. */
     function setRowHTML(exIdx, setIdx, set) {
-      /* c90: prev column = last workout's values (prefilled on start / client
-         pick from workout_history), then the chain value of the set just done
-         (Hevy parity). The colored badge shows the 1–10 effort of that set. */
+      /* c183: prev column = the SAME set number from the last workout
+         (prefilled on start / client pick from workout_history). The colored
+         badge shows the 1–10 effort of that set. */
       const isC = exIsCardio(_workout && _workout.exercises[exIdx]);
       /* c143: which cardio machine (treadmill → speed+incline, others → level) */
       const _liveExRef = _workout && _workout.exercises[exIdx];
@@ -16985,7 +17027,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           const [exIdx, setIdx, field] = e.target.getAttribute('data-set-input').split('.');
           const val = e.target.value;
           if (_workout && _workout.exercises[exIdx] && _workout.exercises[exIdx].sets[setIdx]) {
-            _workout.exercises[exIdx].sets[setIdx][field] = val === '' ? null : (field === 'reps' || field === 'rpe' || field === 'incline' || field === 'level' ? parseInt(val, 10) : parseFloat(val));
+            const _setObj = _workout.exercises[exIdx].sets[setIdx];
+            _setObj[field] = val === '' ? null : (field === 'reps' || field === 'rpe' || field === 'incline' || field === 'level' ? parseInt(val, 10) : parseFloat(val));
+            _setObj.touched = true; /* c183: entered by the trainer, even if not checked yet */
             updateStats();
             // live-update the set volume readout next to the RPE buttons
             const st = _workout.exercises[exIdx].sets[setIdx];
@@ -17029,6 +17073,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           if (_workout && _workout.exercises[exIdx] && _workout.exercises[exIdx].sets[setIdx]) {
             const set = _workout.exercises[exIdx].sets[setIdx];
             set.rpe = (set.rpe === v) ? null : v;
+            set.touched = true; /* c183 */
             const strip = btn.closest('[data-rpe-strip]');
             if (strip) strip.querySelectorAll('[data-lw-rpe]').forEach(b => b.classList.toggle('sel', Number(b.getAttribute('data-v')) === set.rpe));
             updateStats();
@@ -17045,6 +17090,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           if (_workout && _workout.exercises[exIdx] && _workout.exercises[exIdx].sets[setIdx]) {
             const set = _workout.exercises[exIdx].sets[setIdx];
             set.done = !set.done;
+            set.touched = true; /* c183: checked = performed, even if left unchecked later */
             const ex = _workout.exercises[exIdx];
             const xi = parseInt(exIdx, 10);
             const si = parseInt(setIdx);
@@ -17054,8 +17100,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             if (set.done) {
               /* c144: progress must be heard */
               try { window.dkLiveProgressCheck(set); } catch (e144) {}
-              // c107: chain prev values (primary exercise)
-              lwChainPrev(xi, si);
+              /* c183: the Prev column stays the SAME set from the last workout.
+                 Do NOT copy this set's values into the next set. */
               // c107: superset sync — the ✓ lands on the SAME set of every partner
               lwSupersetGroup(xi).forEach(p => {
                 const pEx = _workout.exercises[p];
@@ -17065,7 +17111,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
                 const pRow = document.querySelector(`[data-set-row="${p}.${si}"]`);
                 if (pRow) pRow.classList.add('set-row-done');
                 updateMiniProgress(p);
-                lwChainPrev(p, si);
+                pSet.touched = true;
+                /* c183: no chain — partner's Prev stays its own last-workout set */
               });
               // Start rest timer — use per-exercise rest if set, else 90
               const restSec = ex.rest_sec != null ? ex.rest_sec : 90;
@@ -17171,12 +17218,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               dist: lastSet && lastSet.dist != null ? lastSet.dist : null,
               rpe: null,
               type: lastSet ? lastSet.type : 'normal',
-              done: false,
-              prev_weight: lastSet ? lastSet.weight : null,
-              prev_reps: lastSet ? lastSet.reps : null,
-              prev_time: lastSet && lastSet.time != null ? lastSet.time : null,
-              prev_dist: lastSet && lastSet.dist != null ? lastSet.dist : null,
-              prev_rpe: null
+              done: false, touched: false, performed: false,
+              /* c183: Prev is filled ONLY from the same set number of the last
+                 workout. If that workout had no set #N, the cell stays blank. */
+              prev_weight: null, prev_reps: null, prev_time: null,
+              prev_dist: null, prev_rpe: null
             });
             /* c107: superset sync — the new set lands on every partner too */
             const ns = ex.sets[ex.sets.length - 1];
@@ -17186,6 +17232,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             });
             markStruct('sets'); /* c117: set count is program structure */
             render();
+            applyLastRef(); /* c183: exact historical set for the new row */
           }
         });
       });
@@ -17196,11 +17243,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           const idx = parseInt(btn.getAttribute('data-done-all'), 10);
           if (!_workout || !_workout.exercises[idx]) return;
           const ex = _workout.exercises[idx];
-          ex.sets.forEach(s => { s.done = true; });
+          ex.sets.forEach(s => { s.done = true; s.touched = true; });
           /* c107: «Сделал всё» lands on the superset partners too */
           lwSupersetGroup(idx).forEach(p => {
             const pEx = _workout.exercises[p];
-            if (pEx) pEx.sets.forEach(s => { s.done = true; });
+            if (pEx) pEx.sets.forEach(s => { s.done = true; s.touched = true; });
           });
           saveDraft();
           render();
@@ -17559,12 +17606,22 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       }
 
       const duration = Math.floor((Date.now() - _workout.started_at) / 1000);
-      /* c127: honest stored volume — DONE sets only, lb → kg via the
-         exercise's recorded unit (prescriptions sitting in skipped sets no
-         longer inflate total_volume; the shared analytics engine recomputes
-         from the sets anyway) */
+      /* c184: per-client body weight for effective volume (bodyweight moves). */
+      let _volBw = 75;
+      try {
+        const _vc = await db.get('clients', _workout.client_id);
+        const _vw = _vc && Number(_vc.weight);
+        if (isFinite(_vw) && _vw > 30 && _vw < 300) _volBw = _vw;
+      } catch (_eBw) {}
+      _lastBw = _volBw;
+      /* c127: honest stored volume — PERFORMED sets only, lb → kg / bodyweight
+         via the shared core (prescriptions sitting in skipped sets never
+         inflate total_volume). */
       const volume = (window.dkAnalyticsEngine && typeof window.dkAnalyticsEngine.recVolumeKg === 'function')
-        ? window.dkAnalyticsEngine.recVolumeKg({ exercises: _workout.exercises })
+        ? window.dkAnalyticsEngine.recVolumeKg({ exercises: _workout.exercises }, { bodyWeightKg: _volBw, resolveEx: ex => {
+            const b = (typeof lookupExerciseGlobal === 'function') ? lookupExerciseGlobal(ex.exercise_id) : null;
+            return { names: [ex.name, b && b.name_en].filter(Boolean), equipment: b && (b.equipment_type || b.equipment_en), mt: b && b.mt };
+          } })
         : _workout.exercises.reduce((s, ex) =>
             s + (ex.sets || []).reduce((ss, set) => ss + (set.done === false ? 0 : (set.weight || 0) * (set.reps || 0)), 0), 0);
 
@@ -17598,7 +17655,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             level: s.level != null ? s.level : null,
             rpe: s.rpe || null,
             type: s.type || 'normal',
-            done: !!s.done
+            done: !!s.done,
+            /* c183: performed = checked OR actually edited. Used ONLY for the
+               Prev column, so untouched program prescriptions never fake a
+               previous workout; analytics still uses `done`. */
+            touched: !!s.touched,
+            performed: !!(s.done || s.touched)
           }))
         }))
       };
@@ -17638,12 +17700,28 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       openLiveReportModal(record, prev, lastMap);
     }
 
-    function liveDoneVolume(exSets) {
+    function liveDoneVolume(exSets, unit, ex) {
       let v = 0, r = 0, d = 0;
-      /* c126: done !== false — current sessions always carry explicit flags
-         (behavior identical), legacy history rows without the flag count
-         instead of vanishing into a fake «новое» / «▲ full volume» diff */
-      (exSets || []).forEach(s => { if (s && s.done !== false) { v += (Number(s.weight) || 0) * (Number(s.reps) || 0); r += (Number(s.reps) || 0); d++; } });
+      const core = window.dkMuscleCore;
+      const perf = core ? core.setPerformed : (s => s && s.done !== false);
+      const b = ex && ex.exercise_id
+        ? ((_exMap && _exMap.get(ex.exercise_id)) || (typeof lookupExerciseGlobal === 'function' ? lookupExerciseGlobal(ex.exercise_id) : null))
+        : null;
+      const info = {
+        names: [ex && ex.name, b && (b.name_en || b.name)].filter(Boolean),
+        equipment: b && (b.equipment_type || b.equipment_en || b.equipment),
+        mt: b && b.mt
+      };
+      /* c184: performed = done OR touched; effective kg (lb → kg, bodyweight
+         + added) so the report, history and analytics all use ONE unit. */
+      (exSets || []).forEach(s => {
+        if (!s || !perf(s)) return;
+        const w = core
+          ? core.setMetrics({ unit: unit, name: ex && ex.name }, s, info, { bodyWeightKg: _lastBw }).effectiveKg
+          : (unit === 'lb' ? (Number(s.weight) || 0) * 0.45359237 : (Number(s.weight) || 0));
+        v += w * (Number(s.reps) || 0);
+        r += (Number(s.reps) || 0); d++;
+      });
       return { v: Math.round(v), r, d };
     }
 
@@ -17663,21 +17741,21 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     function openLiveReportModal(record, prev, lastMap) {
       closeLiveReportModal();
       const total = record.exercises.reduce((s, ex) => s + (ex.sets || []).length, 0);
-      const done = record.exercises.reduce((s, ex) => s + liveDoneVolume(ex.sets).d, 0);
-      const reps = record.exercises.reduce((s, ex) => s + liveDoneVolume(ex.sets).r, 0);
-      const vol = record.exercises.reduce((s, ex) => s + liveDoneVolume(ex.sets).v, 0);
+      const done = record.exercises.reduce((s, ex) => s + liveDoneVolume(ex.sets, ex.unit, ex).d, 0);
+      const reps = record.exercises.reduce((s, ex) => s + liveDoneVolume(ex.sets, ex.unit, ex).r, 0);
+      const vol = record.exercises.reduce((s, ex) => s + liveDoneVolume(ex.sets, ex.unit, ex).v, 0);
       const mins = Math.round(record.duration / 60);
       const partial = done < total;
-      const maxV = Math.max(1, ...record.exercises.map(ex => liveDoneVolume(ex.sets).v));
+      const maxV = Math.max(1, ...record.exercises.map(ex => liveDoneVolume(ex.sets, ex.unit, ex).v));
       const tile = (v, l) => `<div class="bg-surface-2 border border-border rounded-2xl py-3 px-1 text-center"><div class="font-mono font-extrabold text-lg">${esc(String(v))}</div><div class="text-[10px] text-muted mt-0.5">${esc(l)}</div></div>`;
       const rows = record.exercises.map(ex => {
-        const ev = liveDoneVolume(ex.sets).v;
+        const ev = liveDoneVolume(ex.sets, ex.unit, ex).v;
         const pct = Math.round(ev / maxV * 100);
         return `<div class="flex items-center gap-2 py-1">
           <span class="text-[11px] truncate flex-1 min-w-0">${esc(globalExName(ex))}</span>
           <span class="w-2 h-2 rounded-full shrink-0" style="background:#f43f5e"></span>
           <span class="flex-1 h-1.5 rounded-full bg-surface-2 overflow-hidden"><span class="block h-full rounded-full" style="width:${pct}%;background:linear-gradient(90deg,#f43f5e,#fb7185)"></span></span>
-          <span class="font-mono text-[11px] font-bold w-10 text-end shrink-0">${ev}</span>
+          <span class="font-mono text-[11px] font-bold w-10 text-end shrink-0">${dispVolKg(ev)}</span>
         </div>`;
       }).join('');
       let cmp = '';
@@ -17691,15 +17769,17 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
            and the RPE he rated. */
         const _norm121 = s => String(s == null ? '' : s).trim().toLowerCase().replace(/\s+/g, ' ');
         cmp = record.exercises.map(ex => {
-          const ev = liveDoneVolume(ex.sets).v;
+          const ev = liveDoneVolume(ex.sets, ex.unit, ex).v;
           const _idK = String(ex.exercise_id || '');
           const _nmK = _norm121(ex.name);
           const occ = (lastMap && ((_idK && lastMap['id:' + _idK]) || (_nmK && lastMap['nm:' + _nmK]))) || null;
-          const pv = occ ? liveDoneVolume(occ.sets).v : null;
+          const pv = occ ? liveDoneVolume(occ.sets, occ.unit, { exercise_id: ex.exercise_id, name: ex.name }).v : null;
+          const evDisp = dispVolKg(ev);
+          const pvDisp = pv == null ? null : dispVolKg(pv);
           let chip;
           if (pv == null) chip = `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-accent/15 text-accent shrink-0">${esc(t('report.newBadge'))}</span>`;
-          else if (ev > pv) chip = `<span class="font-mono text-[11px] font-bold text-success shrink-0">▲ +${ev - pv}</span>`;
-          else if (ev < pv) chip = `<span class="font-mono text-[11px] font-bold text-danger shrink-0">▼ ${ev - pv}</span>`;
+          else if (ev > pv) chip = `<span class="font-mono text-[11px] font-bold text-success shrink-0">▲ +${Math.round(evDisp - pvDisp)}</span>`;
+          else if (ev < pv) chip = `<span class="font-mono text-[11px] font-bold text-danger shrink-0">▼ ${Math.round(evDisp - pvDisp)}</span>`;
           else chip = `<span class="font-mono text-[11px] font-bold text-muted shrink-0">=</span>`;
           let prevLine = '';
           if (occ) {
@@ -17735,7 +17815,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         <div class="grid grid-cols-4 gap-2 mt-3">
           ${tile(done + '/' + total, t('report.sets'))}
           ${tile(reps, t('report.reps'))}
-          ${tile(Number(vol).toLocaleString(localeString()), t('report.volume'))}
+          ${tile(Number(dispVolKg(vol)).toLocaleString(localeString()), t('report.volume') + ' · ' + dispUnitShort())}
           ${tile(mins, t('report.minutes'))}
         </div>
         <div class="mt-3 bg-surface-2/50 border border-border rounded-2xl p-3">
@@ -18011,7 +18091,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           tunit: ex.tunit === 'min' || ex.tunit === 'sec' ? ex.tunit : null, /* c107 */
           is_superset: ex.is_superset === true, /* c107: superset pairs survive template → live */
           ss_link: ex.ss_link === true, /* c140 */
-          sets: (ex.sets || []).map(s => ({ ...s, done: false }))
+          sets: (ex.sets || []).map(s => ({ ...s, done: false, touched: false, performed: false }))
         })),
         started_at: Date.now()
       };
@@ -20925,7 +21005,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             synergists: (ex.synergist_muscles || []).map(s => canonicalGroup(s) || s).filter(Boolean),
             /* c122: for the engine's bodyweight-pattern detection */
             name_en: ex.name_en || ex.name || '',
-            equipment_type: ex.equipment_type || '',
+            equipment_type: ex.equipment_type || ex.equipment_en || ex.equipment || '',
+            mt: ex.mt || '',
+            stabilizers: Array.isArray(ex.stabilizers) ? ex.stabilizers : [],
             /* c172: the subgroup (Biceps / Quadriceps / …) — feeds the map's
                per-subgroup recovery */
             subgroup: ex.subgroup_en || ''
@@ -20968,7 +21050,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const c = (_ctx && ex.exercise_id && _ctx.exCache[ex.exercise_id]) || null;
       if (c && c.group) {
         return { group: c.group, synergists: c.synergists, sub: c.subgroup || '', /* c172 */
-                 names: [ex.name, c.name_en], equipment: c.equipment_type };
+                 names: [ex.name, c.name_en], equipment: c.equipment_type,
+                 mt: c.mt || '', stabilizers: c.stabilizers || [] };
       }
       const g = canonicalGroup(ex.muscle_group) || canonicalGroup(ex.group) || ex.group;
       if (!g) return null;
@@ -21215,6 +21298,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             const a123 = adv123.per[g];
             tip += '\n' + ADVICE_UI[a123.advice].icon + ' ' + adviceLabel(a123.advice);
             if (a123.setsBand) tip += ' · ' + info.sets7d + ' ' + (t('recovery.setsWeek') || 'sets/wk') + ' — ' + setsBandLabel(a123.setsBand);
+          }
+          /* c184: explicit credit split — primary / synergist / stabilizer */
+          if (Number(info.primaryVolume7d) || Number(info.synergistVolume7d) || Number(info.stabilizerVolume7d)) {
+            tip += '\n' + (t('recovery.primaryRole') || 'Primary') + ': ' + Math.round(Number(info.primaryVolume7d) || 0) + 'kg';
+            tip += '\n' + (t('recovery.synergistRole') || 'Synergist') + ': ' + Math.round(Number(info.synergistVolume7d) || 0) + 'kg';
+            tip += '\n' + (t('recovery.stabilizerRole') || 'Stabilizers') + ': ' + Math.round(Number(info.stabilizerVolume7d) || 0) + 'kg';
           }
         } else if (_mode === '7d') {
           tip += '\n' + (t('recovery.volume7d') || '7d volume') + ': ' + info.volume7d + 'kg\n' + info.sets7d + ' sets';
@@ -28150,7 +28239,7 @@ async function boot() {
             duration: Number(r.duration_sec) || 0,
             /* c127: done-only, kg-normalized (engine) — honest stored volume for remote records too */
             total_volume: (window.dkAnalyticsEngine && typeof window.dkAnalyticsEngine.recVolumeKg === 'function')
-              ? window.dkAnalyticsEngine.recVolumeKg({ exercises: exs })
+              ? window.dkAnalyticsEngine.recVolumeKg({ exercises: exs }, { bodyWeightKg: 75, resolveEx: window.dkResolveExRecord })
               : exs.reduce((s, ex) => s + (ex.sets || []).reduce((ss, st) => ss + (st.done === false ? 0 : (Number(st.weight) || 0) * (Number(st.reps) || 0)), 0), 0),
             name: r.program || '', _remote: true,
             exercises: exs.map(ex => ({
@@ -28268,7 +28357,13 @@ async function boot() {
           day_index: (typeof record.day_idx === 'number' && record.day_idx >= 0) ? record.day_idx : -1,
           day_letter: record.day_letter || '',
           duration_sec: record.duration || 0,
-          volume: record.total_volume || exs.reduce((s, ex) => s + (ex.sets || []).reduce((ss, st) => ss + (Number(st.weight) || 0) * (Number(st.reps) || 0), 0), 0),
+          /* c184: never fall back to ALL sets (skipped prescriptions + raw lb).
+             Use the shared engine's performed-only, kg-normalized volume. */
+          volume: (record.total_volume != null)
+            ? record.total_volume
+            : ((window.dkAnalyticsEngine && typeof window.dkAnalyticsEngine.recVolumeKg === 'function')
+              ? window.dkAnalyticsEngine.recVolumeKg({ exercises: exs }, { bodyWeightKg: 75, resolveEx: window.dkResolveExRecord })
+              : exs.reduce((s, ex) => s + (ex.sets || []).reduce((ss, st) => (st && st.done === false ? ss : ss + (Number(st.weight) || 0) * (Number(st.reps) || 0)), 0), 0)),
           done_sets: doneSets, total_sets: totSets,
           exercises: exs.map(ex => ({
             key: ex.exercise_id,
@@ -28282,7 +28377,7 @@ async function boot() {
             g: (exInfo && exInfo[ex.exercise_id] && exInfo[ex.exercise_id].g) || '',
             syn: (exInfo && exInfo[ex.exercise_id] && exInfo[ex.exercise_id].syn) || [],
             unit: ex.unit === 'lb' ? 'lb' : 'kg',
-            sets: (ex.sets || []).map(s => ({ weight: s.weight || 0, reps: s.reps || 0, time: s.time != null ? s.time : null, dist: s.dist != null ? s.dist : null, speed: s.speed != null ? s.speed : null, incline: s.incline != null ? s.incline : null, level: s.level != null ? s.level : null, rpe: s.rpe || null, type: s.type || 'normal', done: !!s.done }))
+            sets: (ex.sets || []).map(s => ({ weight: s.weight || 0, reps: s.reps || 0, time: s.time != null ? s.time : null, dist: s.dist != null ? s.dist : null, speed: s.speed != null ? s.speed : null, incline: s.incline != null ? s.incline : null, level: s.level != null ? s.level : null, rpe: s.rpe || null, type: s.type || 'normal', done: !!s.done, touched: !!s.touched, performed: s.performed != null ? !!s.performed : !!(s.done || s.touched) }))
           }))
         };
       } catch (e) { return null; }
@@ -33839,7 +33934,7 @@ document.addEventListener('input', function (e) {
        still counted prescriptions from skipped sets and lb rows as kg. */
     var eng = (typeof window !== 'undefined') ? window.dkAnalyticsEngine : null;
     var volOf = function (h) {
-      if (eng && typeof eng.recVolumeKg === 'function') return eng.recVolumeKg(h);
+      if (eng && typeof eng.recVolumeKg === 'function') return eng.recVolumeKg(h, { bodyWeightKg: 75, resolveEx: window.dkResolveExRecord });
       return Math.round(h.total_volume || 0);
     };
     var last30 = 0, prev30 = 0, last30Vol = 0, prev30Vol = 0, totalVol = 0, totalDur = 0;
@@ -33927,7 +34022,7 @@ document.addEventListener('input', function (e) {
     var eng = (typeof window !== 'undefined') ? window.dkAnalyticsEngine : null;
     var vol = 0;
     hist.forEach(function (h) {
-      vol += (eng && typeof eng.recVolumeKg === 'function') ? eng.recVolumeKg(h) : Math.round(h.total_volume || 0);
+      vol += (eng && typeof eng.recVolumeKg === 'function') ? eng.recVolumeKg(h, { bodyWeightKg: 75, resolveEx: window.dkResolveExRecord }) : Math.round(h.total_volume || 0);
     });
     var lines = ["🏋️ " + s.title + (client ? " — " + client : "")];
     lines.push(s.workouts + ": " + hist.length);
@@ -34037,7 +34132,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 182; /* numeric part of dk-build c182 */
+  var RUNNING = 184; /* numeric part of dk-build c184 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
