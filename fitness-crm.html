@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c185" />
+<meta name="dk-build" content="c186" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -6375,7 +6375,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       let _exerciseDbLoaded = false;
       // Bump EXERCISE_DB_BUST when exercise-db.json changes — defeats SW/browser
       // cache-first staleness so reseed always unpacks the deployed dataset.
-      const EXERCISE_DB_BUST = 'v53';
+      const EXERCISE_DB_BUST = 'v54';
       async function loadExerciseDbExternal() {
         try {
           const resp = await fetch('exercise-db.json?v=' + EXERCISE_DB_BUST);
@@ -7495,7 +7495,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
   window.__dkMigrateExerciseGroups = migrateExerciseGroups;
 
   /* =====================================================================
-     TAXONOMY MIGRATION (c185) - 2026-10
+     TAXONOMY MIGRATION (c185/c186) - 2026-10
      The exercise DB had a class of primary/synergist inversions: abdominal
      exercises were filed under legs/chest/back with "core" in synergists
      (the reported weighted abdominal hip thrust was the clearest case), and
@@ -7506,7 +7506,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
      ===================================================================== */
   async function migrateExerciseTaxonomyC185() {
     try {
-      const FLAG = 'migrated_taxonomy_c185';
+      const FLAG = 'migrated_taxonomy_c186';
       const done = await db.get('settings', FLAG);
       if (done && done.value) return 0;
       if (typeof _exerciseDbLoaded !== 'undefined' && !_exerciseDbLoaded) {
@@ -34218,7 +34218,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 185; /* numeric part of dk-build c185 */
+  var RUNNING = 186; /* numeric part of dk-build c186 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

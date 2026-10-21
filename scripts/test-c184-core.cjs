@@ -17,7 +17,7 @@ function eq(name, got, want, tol) {
   else { fail++; console.log('FAIL ' + name + ' got ' + got + ' want ' + want); }
 }
 
-ok('core exported', !!CORE && CORE.version === 'c185');
+ok('core exported', !!CORE && CORE.version === 'c186');
 ok('analytics engine version', A.version === 'c184');
 ok('recovery engine version', R.version === 'c184');
 

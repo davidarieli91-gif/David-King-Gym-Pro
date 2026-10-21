@@ -152,12 +152,12 @@
 // touched, kg/bodyweight effective load, primary 100% / synergist 30% /
 // stabilizer 10% (split) attribution, local calendar days, warm-up excluded
 // from PR/e1RM, weighted bodyweight fixed, post-workout report kg-normalized.
-// v212: c185 - EXERCISE TAXONOMY AUDIT: 45 records corrected (34 abdominal
+// v213: c186 - EXERCISE TAXONOMY AUDIT: 45 records corrected (34 abdominal
 // exercises filed under legs/chest/back, incl. both abdominal hip thrusts;
 // 5 opposite-direction inversions; 6 subgroup fixes from Quadriceps to hip
 // flexors/glutes), corrected at the DB source, migrated in place, and applied
 // to old portal snapshots by exercise id.
-const CACHE_NAME = 'dk-gym-v212'; // c185
+const CACHE_NAME = 'dk-gym-v213'; // c186
 // v104: c77 — UI sizes can no longer change themselves (zoom-based gif/food/cards, wheel/touch slider guards) + hard pre-login lock (Add Client included) + header theme quick menu with all 33 themes
 // v103: c76 — Exercise DB tab = exact Quick Pick copy (star/eye/+ cards, favorites/recent tabs, View grouping, localized map tabs)
 // v102: c75 — 3D atlas 1.5x + Settings ▸ UI sizes (atlas slider, bodymap/exercise-panel fixes) + Exercise DB tab rebuilt as picker-style browse

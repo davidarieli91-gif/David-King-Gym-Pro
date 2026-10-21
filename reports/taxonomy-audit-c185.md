@@ -1,4 +1,8 @@
-# Exercise taxonomy audit - c185 (2026-10-21)
+# Exercise taxonomy audit - c185/c186 (2026-10-21)
+
+> c185 corrected the 39 inversions. c186 added the six subgroup fixes, bumped
+> the migration flag to `migrated_taxonomy_c186`, the DB cache-bust to v54 and
+> the SW cache to v213 so already-updated devices receive the second pass too.
 
 ## Scope
 
