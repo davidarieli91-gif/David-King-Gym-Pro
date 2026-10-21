@@ -23,7 +23,9 @@ const SUBGROUPS = {
   Quadriceps: { s: 'Quadriceps', sE: 'Quadriceps', sR: 'Квадрицепс',   sH: 'ארבע ראשי' },
   Middle:     { s: 'Middle',     sE: 'Middle',     sR: 'Средний',      sH: 'אמצעי' },
   Front:      { s: 'Front',      sE: 'Front',      sR: 'Передний',     sH: 'קדמי' },
-  Lats:       { s: 'Lats',       sE: 'Lats',       sR: 'Широчайшие',   sH: 'רחבת גב' }
+  Lats:       { s: 'Lats',       sE: 'Lats',       sR: 'Широчайшие',   sH: 'רחבת גב' },
+  HipFlexors: { s: 'Hip Flexors', sE: 'Hip Flexors', sR: 'Сгибатели бедра', sH: 'כופפי ירך' },
+  Glutes:     { s: 'Glutes',     sE: 'Glutes',     sR: 'Ягодицы',      sH: 'ישבן' }
 };
 
 /* id, group, subgroup, synergists, category */
@@ -94,7 +96,23 @@ const FIXES = [
   { id: 'gi_4162', group: 'chest',     sub: 'Middle',     cat: 'other',
     syn: ['triceps', 'shoulders', 'abdominals'] },
   { id: 'gi_6017', group: 'back',      sub: 'Lats',       cat: 'other',
-    syn: ['biceps', 'shoulders', 'glutes'] }
+    syn: ['biceps', 'shoulders', 'glutes'] },
+
+  /* --- same audit, subgroup corrections: the primary GROUP (legs) was right
+         but the target was filed under Quadriceps instead of the hip flexors
+         or glutes named by the technique ------------------------------- */
+  { id: 'gi_4287', group: 'legs', sub: 'HipFlexors', cat: 'subgroup',
+    syn: ['abdominals'] },
+  { id: 'gi_10753', group: 'legs', sub: 'HipFlexors', cat: 'subgroup',
+    syn: ['abdominals'] },
+  { id: 'gi_0459', group: 'legs', sub: 'Glutes', cat: 'subgroup',
+    syn: ['hamstrings'] },
+  { id: 'gi_1179', group: 'legs', sub: 'Glutes', cat: 'subgroup',
+    syn: ['hamstrings'] },
+  { id: 'gi_4779', group: 'legs', sub: 'Glutes', cat: 'subgroup',
+    syn: ['hamstrings'] },
+  { id: 'gi_4980', group: 'legs', sub: 'Glutes', cat: 'subgroup',
+    syn: ['hamstrings'] }
 ];
 
 module.exports = { version: 'c185', GROUPS, SUBGROUPS, FIXES };

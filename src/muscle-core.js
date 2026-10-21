@@ -240,7 +240,13 @@
   "gi_10183": { group: "shoulders", groupEn: "Shoulders", groupRu: "Плечи", groupHe: "כתפיים", subgroup: "Front", subgroupEn: "Front", subgroupRu: "Передний", subgroupHe: "קדמי", synergists: ["abdominals"] },
   "gv_0778": { group: "chest", groupEn: "Chest", groupRu: "Грудь", groupHe: "חזה", subgroup: "Middle", subgroupEn: "Middle", subgroupRu: "Средний", subgroupHe: "אמצעי", synergists: ["triceps","shoulders","abdominals"] },
   "gi_4162": { group: "chest", groupEn: "Chest", groupRu: "Грудь", groupHe: "חזה", subgroup: "Middle", subgroupEn: "Middle", subgroupRu: "Средний", subgroupHe: "אמצעי", synergists: ["triceps","shoulders","abdominals"] },
-  "gi_6017": { group: "back", groupEn: "Back", groupRu: "Спина", groupHe: "גב", subgroup: "Lats", subgroupEn: "Lats", subgroupRu: "Широчайшие", subgroupHe: "רחבת גב", synergists: ["biceps","shoulders","glutes"] }
+  "gi_6017": { group: "back", groupEn: "Back", groupRu: "Спина", groupHe: "גב", subgroup: "Lats", subgroupEn: "Lats", subgroupRu: "Широчайшие", subgroupHe: "רחבת גב", synergists: ["biceps","shoulders","glutes"] },
+  "gi_4287": { group: "legs", groupEn: "Legs", groupRu: "Ноги", groupHe: "רגליים", subgroup: "Hip Flexors", subgroupEn: "Hip Flexors", subgroupRu: "Сгибатели бедра", subgroupHe: "כופפי ירך", synergists: ["abdominals"] },
+  "gi_10753": { group: "legs", groupEn: "Legs", groupRu: "Ноги", groupHe: "רגליים", subgroup: "Hip Flexors", subgroupEn: "Hip Flexors", subgroupRu: "Сгибатели бедра", subgroupHe: "כופפי ירך", synergists: ["abdominals"] },
+  "gi_0459": { group: "legs", groupEn: "Legs", groupRu: "Ноги", groupHe: "רגליים", subgroup: "Glutes", subgroupEn: "Glutes", subgroupRu: "Ягодицы", subgroupHe: "ישבן", synergists: ["hamstrings"] },
+  "gi_1179": { group: "legs", groupEn: "Legs", groupRu: "Ноги", groupHe: "רגליים", subgroup: "Glutes", subgroupEn: "Glutes", subgroupRu: "Ягодицы", subgroupHe: "ישבן", synergists: ["hamstrings"] },
+  "gi_4779": { group: "legs", groupEn: "Legs", groupRu: "Ноги", groupHe: "רגליים", subgroup: "Glutes", subgroupEn: "Glutes", subgroupRu: "Ягодицы", subgroupHe: "ישבן", synergists: ["hamstrings"] },
+  "gi_4980": { group: "legs", groupEn: "Legs", groupRu: "Ноги", groupHe: "רגליים", subgroup: "Glutes", subgroupEn: "Glutes", subgroupRu: "Ягодицы", subgroupHe: "ישבן", synergists: ["hamstrings"] }
   };
   function taxonomyFix(id) {
     return TAXONOMY_FIXES[String(id == null ? '' : id)] || null;

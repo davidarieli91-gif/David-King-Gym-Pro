@@ -6,10 +6,6 @@ const { GROUPS, SUBGROUPS, FIXES } = require('./taxonomy-fixes-c185.cjs');
 
 const file = 'src/muscle-core.js';
 let core = fs.readFileSync(file, 'utf8');
-if (core.includes('/* c185 taxonomy overrides */')) {
-  console.log('core already contains c185 taxonomy overrides');
-  process.exit(0);
-}
 
 const q = v => JSON.stringify(v);
 const entries = FIXES.map(f => {
@@ -32,7 +28,15 @@ ${entries}
   }
 
 `;
-core = core.replace('  var api = {', block + '  var api = {');
-core = core.replace('    clamp: clamp,', '    clamp: clamp,\n    taxonomyFix: taxonomyFix,');
+const start = core.indexOf('  /* c185 taxonomy overrides */');
+const apiAt = core.indexOf('  var api = {', start >= 0 ? start : 0);
+if (start >= 0 && apiAt > start) {
+  core = core.slice(0, start) + block + core.slice(apiAt);
+} else {
+  core = core.replace('  var api = {', block + '  var api = {');
+}
+if (!core.includes('    taxonomyFix: taxonomyFix,')) {
+  core = core.replace('    clamp: clamp,', '    clamp: clamp,\n    taxonomyFix: taxonomyFix,');
+}
 fs.writeFileSync(file, core);
 console.log('embedded', FIXES.length, 'taxonomy fixes in', file);

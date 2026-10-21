@@ -26,7 +26,10 @@ bench dips, reverse curls, loaded carries, side-lying abduction, etc.).
   pattern in the reported screenshot.
 - **5 opposite-direction inversions** were corrected where abs was stored as
   the primary group but the real prime mover is legs, shoulders, chest or back.
-- **39 records total** were changed at the source in `exercise-db.json`.
+- **6 subgroup corrections** were made where the primary group (legs) was
+  right but the target was filed under Quadriceps instead of the hip flexors
+  or glutes named by the technique.
+- **45 records total** were changed at the source in `exercise-db.json`.
 - Ambiguous cases were left alone (see below).
 
 ## The reported exercise
@@ -83,6 +86,12 @@ lower back from arching; the legs are stabilizers, not the target.
 | `gv_0778` | spider crawl push up | Chest / Middle | triceps, shoulders, abdominals | other inversion |
 | `gi_4162` | Push up to Knee Tap | Chest / Middle | triceps, shoulders, abdominals | other inversion |
 | `gi_6017` | Stepback Pulldown | Back / Lats | biceps, shoulders, glutes | other inversion |
+| `gi_4287` | Knee Raise | Legs / Hip Flexors | abdominals | subgroup |
+| `gi_10753` | Resistance Band Seated Knee Raise | Legs / Hip Flexors | abdominals | subgroup |
+| `gi_0459` | Flutter Kicks | Legs / Glutes | hamstrings | subgroup |
+| `gi_1179` | Flutter Kicks (version 2) | Legs / Glutes | hamstrings | subgroup |
+| `gi_4779` | Reverse Flutter Kick on Floor (hand under head) | Legs / Glutes | hamstrings | subgroup |
+| `gi_4980` | Reverse Flutter Kick on Floor (hand under head) | Legs / Glutes | hamstrings | subgroup |
 
 ## Deliberately not changed (examples)
 
@@ -93,7 +102,9 @@ audit left their taxonomy intact:
   `gi_3264` Side Plank Leg raise, `gi_3268` Lying Leg Raise to Side,
   `gi_9849` Side Plank Clamshell - abduction work, not abs.
 - `gi_3460` / `gv_1775` Side Plank Hip Adduction - adductors, not abs.
-- `gi_0459`, `gi_4779`, `gi_4980` prone flutter kicks - glutes/hamstrings.
+- `gi_0459`, `gi_1179`, `gi_4779`, `gi_4980` prone flutter kicks were not
+  abdominal exercises; their group stayed legs, but their target was corrected
+  from Quadriceps to Glutes (subgroup fix).
 - `gi_6423` Bodyweight Triceps Extension from Plank - triceps.
 - `gi_3266` Elbow Push up - actually a forearm plank hold; abs is correct.
 - `gi_10097` Weighted Plate Side-up Squat - the technique is a side crunch;
@@ -109,7 +120,7 @@ audit left their taxonomy intact:
   quads, hamstrings, calves, adductors and hip flexors. A group-level engine
   cannot show a 10% leg stabilizer separately from a 30% leg synergist; the
   primary/secondary inversion is fixed, but sub-group credit is still coarse.
-- Some `gi_` imports remain suspicious outside the audited 39 (for example
+- Some `gi_` imports remain suspicious outside the audited 45 (for example
   exercise-name mismatches in compound carries/throws). They were not changed
   without a clear technique/label match. The full candidate list is in
   `reports/taxonomy-candidates.txt`.
@@ -119,7 +130,7 @@ audit left their taxonomy intact:
 
 ## Verification
 
-- `node scripts/test-c185-taxonomy.cjs` - 192 assertions, 0 failed.
+- `node scripts/test-c185-taxonomy.cjs` - 220 assertions, 0 failed.
 - Existing unit/static suite re-run; all 52 test files green.
 - `exercise-db.json` still parses and `JSON.stringify(parsed)` is byte-identical
   to the written file.

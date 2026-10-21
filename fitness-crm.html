@@ -7502,7 +7502,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
      a few exercises had the opposite problem (a lunge/push-up/pulldown filed
      under abs/legs). New seeds read the corrected JSON; already-seeded
      devices are healed IN PLACE so trainer edits, images and names survive.
-     Only the 39 audited ids below are touched.
+     Only the 45 audited ids below are touched (39 inversions + 6 subgroup fixes).
      ===================================================================== */
   async function migrateExerciseTaxonomyC185() {
     try {
@@ -7529,7 +7529,8 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
         'gi_3512', 'gi_0622', 'gi_1244', 'gi_2891', 'gi_3890', 'gi_3891',
         'gi_3962', 'gi_4373', 'gi_4766', 'gi_4767', 'gi_4768', 'gi_6810',
         'gi_8873', 'gi_9321',
-        'gv_1688', 'gi_10183', 'gv_0778', 'gi_4162', 'gi_6017'
+        'gv_1688', 'gi_10183', 'gv_0778', 'gi_4162', 'gi_6017',
+        'gi_4287', 'gi_10753', 'gi_0459', 'gi_1179', 'gi_4779', 'gi_4980'
       ]);
       const all = await db.all('exercise_base');
       const changed = [];

@@ -39,3 +39,11 @@ would change 39 (abs inversions 34, other inversions 5)
 {"cat":"other","before":{"id":"gi_4162","src":"gi","g":"legs","s":"Quadriceps","nE":"Push up to Knee Tap","nR":"╨Ю╤В╨╢╨╕╨╝╨░╨╜╨╕╤П ╤Б ╨║╨░╤Б╨░╨╜╨╕╨╡╨╝ ╨║╨╛╨╗╨╡╨╜","syn":[]},"after":{"g":"chest","s":"Middle","syn":["triceps","shoulders","abdominals"]}}
 {"cat":"other","before":{"id":"gi_6017","src":"gi","g":"legs","s":"Quadriceps","nE":"Stepback Pulldown","nR":"╨в╤П╨│╨░ ╤Б ╤И╨░╨│╨╛╨╝ ╨╜╨░╨╖╨░╨┤","syn":[]},"after":{"g":"back","s":"Lats","syn":["biceps","shoulders","glutes"]}}
 WROTE exercise-db.json
+
+/* second pass: subgroup corrections */
+{"cat":"subgroup","before":{"id":"gi_4287","src":"gi","g":"legs","s":"Quadriceps","nE":"Knee Raise","nR":"Подъёмы колен","syn":[]},"after":{"g":"legs","s":"Hip Flexors","syn":["abdominals"]}}
+{"cat":"subgroup","before":{"id":"gi_10753","src":"gi","g":"legs","s":"Quadriceps","nE":"Resistance Band Seated Knee Raise","nR":"Подъёмы колен сидя с лентой","syn":[]},"after":{"g":"legs","s":"Hip Flexors","syn":["abdominals"]}}
+{"cat":"subgroup","before":{"id":"gi_0459","src":"gi","g":"legs","s":"Quadriceps","nE":"Flutter Kicks","nR":"Ножницы лёжа","syn":[]},"after":{"g":"legs","s":"Glutes","syn":["hamstrings"]}}
+{"cat":"subgroup","before":{"id":"gi_1179","src":"gi","g":"legs","s":"Quadriceps","nE":"Flutter Kicks (version 2)","nR":"Ножницы лёжа (вариант 2)","syn":[]},"after":{"g":"legs","s":"Glutes","syn":["hamstrings"]}}
+{"cat":"subgroup","before":{"id":"gi_4779","src":"gi","g":"legs","s":"Quadriceps","nE":"Reverse Flutter Kick on Floor (hand under head)","nR":"Обратные ножницы на полу (рука под головой)","syn":[]},"after":{"g":"legs","s":"Glutes","syn":["hamstrings"]}}
+{"cat":"subgroup","before":{"id":"gi_4980","src":"gi","g":"legs","s":"Quadriceps","nE":"Reverse Flutter Kick on Floor (hand under head)","nR":"Обратные ножницы на полу (рука под головой)","syn":[]},"after":{"g":"legs","s":"Glutes","syn":["hamstrings"]}}

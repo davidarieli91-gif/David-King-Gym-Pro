@@ -31,7 +31,8 @@ for (const fix of FIXES) {
 
 const abs = changed.filter(c => c.cat === 'abs');
 const other = changed.filter(c => c.cat === 'other');
-console.log(`would change ${changed.length} (abs inversions ${abs.length}, other inversions ${other.length})`);
+const subgroup = changed.filter(c => c.cat === 'subgroup');
+console.log(`would change ${changed.length} (abs inversions ${abs.length}, other inversions ${other.length}, subgroup ${subgroup.length})`);
 for (const c of changed) console.log(JSON.stringify(c));
 if (missing.length) {
   console.error('MISSING IDS:', missing.join(', '));

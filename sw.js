@@ -152,11 +152,11 @@
 // touched, kg/bodyweight effective load, primary 100% / synergist 30% /
 // stabilizer 10% (split) attribution, local calendar days, warm-up excluded
 // from PR/e1RM, weighted bodyweight fixed, post-workout report kg-normalized.
-// v212: c185 - EXERCISE TAXONOMY AUDIT: 39 unambiguous primary/synergist
-// inversions corrected (34 abdominal exercises filed under legs/chest/back,
-// incl. both abdominal hip thrusts; 5 opposite-direction cases), corrected
-// at the DB source, migrated in place, and applied to old portal snapshots
-// by exercise id.
+// v212: c185 - EXERCISE TAXONOMY AUDIT: 45 records corrected (34 abdominal
+// exercises filed under legs/chest/back, incl. both abdominal hip thrusts;
+// 5 opposite-direction inversions; 6 subgroup fixes from Quadriceps to hip
+// flexors/glutes), corrected at the DB source, migrated in place, and applied
+// to old portal snapshots by exercise id.
 const CACHE_NAME = 'dk-gym-v212'; // c185
 // v104: c77 — UI sizes can no longer change themselves (zoom-based gif/food/cards, wheel/touch slider guards) + hard pre-login lock (Add Client included) + header theme quick menu with all 33 themes
 // v103: c76 — Exercise DB tab = exact Quick Pick copy (star/eye/+ cards, favorites/recent tabs, View grouping, localized map tabs)

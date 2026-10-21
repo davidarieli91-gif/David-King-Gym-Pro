@@ -24,9 +24,10 @@ const CORE = ctx.window.dkMuscleCore;
 ok('DB still parses', db.length === 5623, db.length);
 ok('DB round-trips byte-identically', JSON.stringify(db) === raw);
 ok('core c185', CORE && CORE.version === 'c185');
-ok('39 curated fixes', FIXES.length === 39, FIXES.length);
+ok('45 curated fixes', FIXES.length === 45, FIXES.length);
 ok('34 abs inversions', FIXES.filter(f => f.cat === 'abs').length === 34);
 ok('5 other inversions', FIXES.filter(f => f.cat === 'other').length === 5);
+ok('6 subgroup fixes', FIXES.filter(f => f.cat === 'subgroup').length === 6);
 
 for (const fix of FIXES) {
   const r = byId.get(fix.id);
@@ -57,9 +58,6 @@ const untouched = [
   ['gi_9849', 'Side Plank Clamshell', 'legs', 'Abductors'],
   ['gi_3460', 'Side Plank Hip Adduction (bent knee)', 'legs', 'Adductors'],
   ['gv_1775', 'side plank hip adduction', 'legs', 'Adductors'],
-  ['gi_0459', 'Flutter Kicks', 'legs', 'Quadriceps'],
-  ['gi_4779', 'Reverse Flutter Kick on Floor (hand under head)', 'legs', 'Quadriceps'],
-  ['gi_4980', 'Reverse Flutter Kick on Floor (hand under head)', 'legs', 'Quadriceps'],
   ['gi_6423', 'Bodyweight Triceps Extension from Plank Position', 'triceps', 'Compound'],
   ['gi_3266', 'Elbow Push up', 'abdominals', 'Upper'],       /* forearm plank hold */
   ['gi_10097', 'Weighted Plate Side-up Squat', 'abdominals', 'Obliques'] /* technique = side crunch */
@@ -67,6 +65,21 @@ const untouched = [
 for (const [id, name, g, s] of untouched) {
   const r = byId.get(id);
   ok('untouched ' + name, r && r.g === g && (r.sE || r.s) === s,
+    r ? r.g + '/' + (r.sE || r.s) : 'missing');
+}
+
+/* subgroup corrections: group stayed legs, target moved to hip flexors/glutes */
+const subgroup = [
+  ['gi_4287', 'Knee Raise', 'Hip Flexors'],
+  ['gi_10753', 'Resistance Band Seated Knee Raise', 'Hip Flexors'],
+  ['gi_0459', 'Flutter Kicks', 'Glutes'],
+  ['gi_1179', 'Flutter Kicks (version 2)', 'Glutes'],
+  ['gi_4779', 'Reverse Flutter Kick on Floor (hand under head)', 'Glutes'],
+  ['gi_4980', 'Reverse Flutter Kick on Floor (hand under head)', 'Glutes']
+];
+for (const [id, name, s] of subgroup) {
+  const r = byId.get(id);
+  ok('subgroup fixed ' + name, r && r.g === 'legs' && (r.sE || r.s) === s,
     r ? r.g + '/' + (r.sE || r.s) : 'missing');
 }
 
