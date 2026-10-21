@@ -38,6 +38,8 @@
   var LB_TO_KG = 0.45359237;
   var SYNERGIST_CREDIT = 0.3;
   var DAY_MS = 86400000;
+  var GROUPS = ['chest', 'back', 'shoulders', 'elbow_flexors', 'triceps',
+                'forearms', 'abdominals', 'legs'];
   var CORE = (typeof window !== 'undefined' && window.dkMuscleCore)
     || (typeof globalThis !== 'undefined' && globalThis.dkMuscleCore)
     || null;
@@ -173,21 +175,33 @@
         sets.forEach(function (s) {
           if (!s) return;
           var vol = isCardioRow(s) ? 0 : (metricKg(ex, s, opts, rec) * (Number(s.reps) || 0));
-          _addTo(byGroup, att.primary, vol, 1, ts, 'primary');
           totalKg += vol;
           totalSets++;
-          if (synF > 0 && att.synergists && att.synergists.length) {
-            att.synergists.forEach(function (a) {
-              if (!a || !a.group || a.group === att.primary) return;
-              _addTo(byGroup, a.group, vol * synF, 1, ts, 'synergist');
+          /* c188: the role model's per-muscle shares replace the old fixed
+             100 / 30 / 10 credits (legacy resolvers still use the fallback). */
+          if (att.contributions && att.contributions.length) {
+            att.contributions.forEach(function (c) {
+              if (!c || !c.group || GROUPS.indexOf(c.group) === -1) return;
+              var credit = (c.credit != null) ? c.credit : ((Number(c.pct) || 0) / 100);
+              if (credit <= 0) return;
+              _addTo(byGroup, c.group, vol * credit, c.role === 'primary' ? 1 : 0, ts,
+                c.role === 'primary' ? 'primary' : (c.role === 'stabilizer' ? 'stabilizer' : 'synergist'));
             });
-          }
-          if (stabF > 0 && att.stabilizers && att.stabilizers.length) {
-            var each = stabF / att.stabilizers.length;
-            att.stabilizers.forEach(function (a) {
-              if (!a || !a.group || a.group === att.primary) return;
-              _addTo(byGroup, a.group, vol * each, 0, ts, 'stabilizer');
-            });
+          } else {
+            _addTo(byGroup, att.primary, vol, 1, ts, 'primary');
+            if (synF > 0 && att.synergists && att.synergists.length) {
+              att.synergists.forEach(function (a) {
+                if (!a || !a.group || a.group === att.primary) return;
+                _addTo(byGroup, a.group, vol * synF, 1, ts, 'synergist');
+              });
+            }
+            if (stabF > 0 && att.stabilizers && att.stabilizers.length) {
+              var each = stabF / att.stabilizers.length;
+              att.stabilizers.forEach(function (a) {
+                if (!a || !a.group || a.group === att.primary) return;
+                _addTo(byGroup, a.group, vol * each, 0, ts, 'stabilizer');
+              });
+            }
           }
         });
       });
@@ -221,21 +235,30 @@
         doneSets(ex.sets).forEach(function (s) {
           if (!s) return;
           var vol = isCardioRow(s) ? 0 : (metricKg(ex, s, opts, rec) * (Number(s.reps) || 0));
-          out[idx].groups[att.primary] = (out[idx].groups[att.primary] || 0) + vol;
           out[idx].totalKg += vol;
           out[idx].sets++;
-          if (synF > 0 && att.synergists && att.synergists.length) {
-            att.synergists.forEach(function (a) {
-              if (!a || !a.group || a.group === att.primary) return;
-              out[idx].groups[a.group] = (out[idx].groups[a.group] || 0) + vol * synF;
+          if (att.contributions && att.contributions.length) {
+            att.contributions.forEach(function (c) {
+              if (!c || !c.group || GROUPS.indexOf(c.group) === -1) return;
+              var credit = (c.credit != null) ? c.credit : ((Number(c.pct) || 0) / 100);
+              if (credit <= 0) return;
+              out[idx].groups[c.group] = (out[idx].groups[c.group] || 0) + vol * credit;
             });
-          }
-          if (stabF > 0 && att.stabilizers && att.stabilizers.length) {
-            var each = stabF / att.stabilizers.length;
-            att.stabilizers.forEach(function (a) {
-              if (!a || !a.group || a.group === att.primary) return;
-              out[idx].groups[a.group] = (out[idx].groups[a.group] || 0) + vol * each;
-            });
+          } else {
+            out[idx].groups[att.primary] = (out[idx].groups[att.primary] || 0) + vol;
+            if (synF > 0 && att.synergists && att.synergists.length) {
+              att.synergists.forEach(function (a) {
+                if (!a || !a.group || a.group === att.primary) return;
+                out[idx].groups[a.group] = (out[idx].groups[a.group] || 0) + vol * synF;
+              });
+            }
+            if (stabF > 0 && att.stabilizers && att.stabilizers.length) {
+              var each = stabF / att.stabilizers.length;
+              att.stabilizers.forEach(function (a) {
+                if (!a || !a.group || a.group === att.primary) return;
+                out[idx].groups[a.group] = (out[idx].groups[a.group] || 0) + vol * each;
+              });
+            }
           }
         });
       });
@@ -577,7 +600,7 @@
 
   /* ---------- exports ---------- */
   var api = {
-    version: 'c184',
+    version: 'c188',
     LB_TO_KG: LB_TO_KG,
     SYNERGIST_CREDIT: SYNERGIST_CREDIT,
     toKg: toKg,

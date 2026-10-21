@@ -58,7 +58,7 @@ ok('subgroup capacity falls back to hardest day ×1.5', engineSrc.indexOf('daily
 /* ---------- STATIC: trainer app ---------- */
 ok('exCache carries the subgroup', trainer.indexOf("subgroup: ex.subgroup_en || ''") >= 0);
 ok('resolveExCtx passes sub', (function () { const i = trainer.indexOf('function resolveExCtx(ex)'); return trainer.slice(i, i + 600).indexOf("sub: c.subgroup || ''") >= 0; })());
-ok('resolveExCrm passes sub', (function () { const i = trainer.indexOf('function resolveExCrm(ex)'); return trainer.slice(i, i + 1000).indexOf('sub: sub') >= 0; })());
+ok('resolveExCrm passes sub', (function () { const i = trainer.indexOf('function resolveExCrm(ex)'); return trainer.slice(i, i + 1800).indexOf('sub: sub') >= 0; })());
 ok('map keeps _subData from the engine result', trainer.indexOf('let _subData = null;') >= 0 && trainer.indexOf('subgroups: res122.subgroups || {}') >= 0);
 ok('SVG paths are filled by their own subgroup', (function () {
   /* two renderBodySVG definitions exist — take the recovery map's one */

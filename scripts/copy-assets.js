@@ -30,6 +30,7 @@ const assets = [
   'models',
   'src/muscle-map.js',
   'src/muscle-core.js',
+  'src/muscle-roles.js',
   'src/recovery-engine.js',
   'src/analytics-engine.js',
   'src/voice-coach.js',

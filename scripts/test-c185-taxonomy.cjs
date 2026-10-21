@@ -23,7 +23,7 @@ const CORE = ctx.window.dkMuscleCore;
 
 ok('DB still parses', db.length === 5623, db.length);
 ok('DB round-trips byte-identically', JSON.stringify(db) === raw);
-ok('core c186', CORE && CORE.version === 'c186');
+ok('core c188', CORE && CORE.version === 'c188');
 ok('45 curated fixes', FIXES.length === 45, FIXES.length);
 ok('34 abs inversions', FIXES.filter(f => f.cat === 'abs').length === 34);
 ok('5 other inversions', FIXES.filter(f => f.cat === 'other').length === 5);
@@ -90,15 +90,15 @@ const sw = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
 ok('trainer has c185 migration', crm.includes('migrateExerciseTaxonomyC185'));
 ok('trainer migration flag', crm.includes("migrated_taxonomy_c186"));
 ok('trainer boot calls migration', crm.includes('await migrateExerciseTaxonomyC185()'));
-ok('trainer build c186', crm.includes('name="dk-build" content="c186"'));
-ok('trainer RUNNING 186', crm.includes('var RUNNING = 186'));
+ok('trainer build c188', crm.includes('name="dk-build" content="c188"'));
+ok('trainer RUNNING 187', crm.includes('var RUNNING = 188'));
 ok('trainer DB cache-bust v54', crm.includes("EXERCISE_DB_BUST = 'v54'"));
 ok('portal applies old-snapshot fixes', portal.includes('applyTaxonomyFixesToDB'));
 ok('portal has dkTaxFix', portal.includes('function dkTaxFix'));
 ok('portal dedupes override synergist groups', portal.includes('Array.from(new Set(fix185.synergists'));
 ok('portal analytics resolves fixed id first', /function aGroupOf\(ex\)[\s\S]{0,350}dkTaxFix\(ex\.exercise_id/.test(portal));
 ok('portal recovery resolves fixed id', /function recpExInfo\(key, ex\)[\s\S]{0,350}dkTaxFix\(key\)/.test(portal));
-ok('SW cache v213', sw.includes("dk-gym-v213"));
+ok('SW cache v215', sw.includes("dk-gym-v215"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 if (fail) process.exitCode = 1;

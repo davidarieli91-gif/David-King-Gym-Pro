@@ -399,37 +399,68 @@
         }
         var primary = att.primary;
         if (primary && GROUPS.indexOf(primary) !== -1) {
-          load[primary][occ.bucket] = (load[primary][occ.bucket] || 0) + loadUnits;
-          vol[primary][occ.bucket] = (vol[primary][occ.bucket] || 0) + volKg;
+          /* the 10-20 sets/week band counts the target's working sets only */
           sets[primary][occ.bucket] = (sets[primary][occ.bucket] || 0) + 1;
-          var rbp = roleLoad[primary][occ.bucket] || (roleLoad[primary][occ.bucket] = { pL: 0, sL: 0, stL: 0, pV: 0, sV: 0, stV: 0 });
-          rbp.pL += loadUnits; rbp.pV += volKg;
         }
-        /* c172: the primary muscle's own subgroup gets the full load */
-        if (occ.subKey) {
-          if (!subLoad[occ.subKey]) { subLoad[occ.subKey] = {}; subSets[occ.subKey] = {}; }
-          subLoad[occ.subKey][occ.bucket] = (subLoad[occ.subKey][occ.bucket] || 0) + loadUnits;
-          subSets[occ.subKey][occ.bucket] = (subSets[occ.subKey][occ.bucket] || 0) + 1;
+        if (att.contributions && att.contributions.length) {
+          /* c188: per-muscle work shares - every listed muscle (including
+             stabilizers) gets load/volume and its own subgroup bucket */
+          att.contributions.forEach(function (c) {
+            if (!c || !c.group || GROUPS.indexOf(c.group) === -1) return;
+            var cr = (c.credit != null) ? c.credit : ((Number(c.pct) || 0) / 100);
+            if (!(cr > 0)) return;
+            load[c.group][occ.bucket] = (load[c.group][occ.bucket] || 0) + loadUnits * cr;
+            vol[c.group][occ.bucket] = (vol[c.group][occ.bucket] || 0) + volKg * cr;
+            var rk = c.role === 'primary' ? 'p' : (c.role === 'stabilizer' ? 'st' : 's');
+            var rb = roleLoad[c.group][occ.bucket] || (roleLoad[c.group][occ.bucket] = { pL: 0, sL: 0, stL: 0, pV: 0, sV: 0, stV: 0 });
+            if (rk === 'p') { rb.pL += loadUnits * cr; rb.pV += volKg * cr; }
+            else if (rk === 'st') { rb.stL += loadUnits * cr; rb.stV += volKg * cr; }
+            else { rb.sL += loadUnits * cr; rb.sV += volKg * cr; }
+            if (c.sub) {
+              var sk = subKeyFor(c.group, c.sub);
+              if (sk) {
+                if (!subLoad[sk]) { subLoad[sk] = {}; subSets[sk] = {}; }
+                if (!subMeta[sk]) subMeta[sk] = { group: c.group, sub: String(c.sub).trim() };
+                subLoad[sk][occ.bucket] = (subLoad[sk][occ.bucket] || 0) + loadUnits * cr;
+                if (c.role === 'primary') {
+                  subSets[sk][occ.bucket] = (subSets[sk][occ.bucket] || 0) + 1;
+                }
+              }
+            }
+          });
+        } else {
+          if (primary && GROUPS.indexOf(primary) !== -1) {
+            load[primary][occ.bucket] = (load[primary][occ.bucket] || 0) + loadUnits;
+            vol[primary][occ.bucket] = (vol[primary][occ.bucket] || 0) + volKg;
+            var rbp = roleLoad[primary][occ.bucket] || (roleLoad[primary][occ.bucket] = { pL: 0, sL: 0, stL: 0, pV: 0, sV: 0, stV: 0 });
+            rbp.pL += loadUnits; rbp.pV += volKg;
+          }
+          /* c172: the primary muscle's own subgroup gets the full load */
+          if (occ.subKey) {
+            if (!subLoad[occ.subKey]) { subLoad[occ.subKey] = {}; subSets[occ.subKey] = {}; }
+            subLoad[occ.subKey][occ.bucket] = (subLoad[occ.subKey][occ.bucket] || 0) + loadUnits;
+            subSets[occ.subKey][occ.bucket] = (subSets[occ.subKey][occ.bucket] || 0) + 1;
+          }
+          (att.synergists || []).forEach(function (a) {
+            if (!a || !a.group || a.group === primary || GROUPS.indexOf(a.group) === -1) return;
+            var cr = (a.credit != null ? a.credit : SYN_CREDIT);
+            load[a.group][occ.bucket] = (load[a.group][occ.bucket] || 0) + loadUnits * cr;
+            vol[a.group][occ.bucket] = (vol[a.group][occ.bucket] || 0) + volKg * cr;
+            sets[a.group][occ.bucket] = (sets[a.group][occ.bucket] || 0) + 1;
+            var rbs = roleLoad[a.group][occ.bucket] || (roleLoad[a.group][occ.bucket] = { pL: 0, sL: 0, stL: 0, pV: 0, sV: 0, stV: 0 });
+            rbs.sL += loadUnits * cr; rbs.sV += volKg * cr;
+          });
+          (att.stabilizers || []).forEach(function (a) {
+            if (!a || !a.group || a.group === primary || GROUPS.indexOf(a.group) === -1) return;
+            var cr2 = (a.credit || 0);
+            load[a.group][occ.bucket] = (load[a.group][occ.bucket] || 0) + loadUnits * cr2;
+            vol[a.group][occ.bucket] = (vol[a.group][occ.bucket] || 0) + volKg * cr2;
+            var rbt = roleLoad[a.group][occ.bucket] || (roleLoad[a.group][occ.bucket] = { pL: 0, sL: 0, stL: 0, pV: 0, sV: 0, stV: 0 });
+            rbt.stL += loadUnits * cr2; rbt.stV += volKg * cr2;
+            /* stabilizers receive load/volume credit, but are not counted as
+               working sets - they never inflate the 10-20 sets/week band. */
+          });
         }
-        (att.synergists || []).forEach(function (a) {
-          if (!a || !a.group || a.group === primary || GROUPS.indexOf(a.group) === -1) return;
-          var cr = (a.credit != null ? a.credit : SYN_CREDIT);
-          load[a.group][occ.bucket] = (load[a.group][occ.bucket] || 0) + loadUnits * cr;
-          vol[a.group][occ.bucket] = (vol[a.group][occ.bucket] || 0) + volKg * cr;
-          sets[a.group][occ.bucket] = (sets[a.group][occ.bucket] || 0) + 1;
-          var rbs = roleLoad[a.group][occ.bucket] || (roleLoad[a.group][occ.bucket] = { pL: 0, sL: 0, stL: 0, pV: 0, sV: 0, stV: 0 });
-          rbs.sL += loadUnits * cr; rbs.sV += volKg * cr;
-        });
-        (att.stabilizers || []).forEach(function (a) {
-          if (!a || !a.group || a.group === primary || GROUPS.indexOf(a.group) === -1) return;
-          var cr2 = (a.credit || 0);
-          load[a.group][occ.bucket] = (load[a.group][occ.bucket] || 0) + loadUnits * cr2;
-          vol[a.group][occ.bucket] = (vol[a.group][occ.bucket] || 0) + volKg * cr2;
-          var rbt = roleLoad[a.group][occ.bucket] || (roleLoad[a.group][occ.bucket] = { pL: 0, sL: 0, stL: 0, pV: 0, sV: 0, stV: 0 });
-          rbt.stL += loadUnits * cr2; rbt.stV += volKg * cr2;
-          /* stabilizers receive load/volume credit, but are not counted as
-             working sets — they never inflate the 10–20 sets/week band. */
-        });
       });
     });
 
@@ -726,7 +757,7 @@
     return s;
   }
 
-  var api = { version: 'c184', compute: compute, GROUPS: GROUPS, KG_PER_LB: KG_PER_LB };
+  var api = { version: 'c188', compute: compute, GROUPS: GROUPS, KG_PER_LB: KG_PER_LB };
 
   /* ============================================================================
      c123 — ADVICE LAYER («что больше / что меньше включать»)

@@ -58,7 +58,7 @@ ok('settings close gets aria-label in fillLabels', html.indexOf("document.queryS
 ok('shade palette group gets aria-label', html.indexOf("pc.setAttribute('aria-label', T('ptexColor'))") >= 0);
 
 /* ---------- 7. engines ---------- */
-ok('analytics engine version c184', engine.indexOf("version: 'c184'") >= 0);
+ok('analytics engine version c188', engine.indexOf("version: 'c188'") >= 0);
 ok('sparkBars honors opts.ariaLabel', engine.indexOf("(opts.ariaLabel ? ' aria-label=\"' + escTxt(opts.ariaLabel)") >= 0);
 ok('both builders support ariaLabel', count(engine, 'aria-label="\x27 + escTxt(opts.ariaLabel)') === 2 || count(engine, "aria-label=\"' + escTxt(opts.ariaLabel)") === 2);
 ok('recovery sparkline LTR', rec.indexOf('style="display:block;direction:ltr"') >= 0);

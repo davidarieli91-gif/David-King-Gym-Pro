@@ -153,12 +153,80 @@
     }).slice(0, 3);
   }
 
+  /* c188: normalize the shared muscle-role contributions. The model lives in
+     src/muscle-roles.js; this core only consumes its {key,group,sub,role,pct}
+     list so both engines share one credit model. */
+  function contributionList(info) {
+    if (!info || !Array.isArray(info.contributions) || !info.contributions.length) return null;
+    var by = {}, order = [];
+    info.contributions.forEach(function (c) {
+      if (!c || !c.group) return;
+      var pct = Number(c.pct);
+      if (!isFinite(pct) || pct <= 0) return;
+      var key = String(c.key || c.group) + '|' + c.group + '|' + String(c.sub || '');
+      if (!by[key]) {
+        by[key] = { key: c.key || c.group, group: c.group, sub: c.sub || '',
+                    role: c.role || 'synergist', pct: 0 };
+        order.push(key);
+      }
+      by[key].pct += pct;
+      if (c.role === 'primary') by[key].role = 'primary';
+      else if (c.role === 'stabilizer' && by[key].role !== 'primary') by[key].role = 'stabilizer';
+    });
+    var list = order.map(function (k) { return by[k]; });
+    var sum = list.reduce(function (s, c) { return s + c.pct; }, 0);
+    if (!list.length || sum <= 0) return null;
+    list.forEach(function (c) { c.pct = c.pct / sum * 100; });
+    var primary = list.filter(function (c) { return c.role === 'primary'; })
+      .sort(function (a, b) { return b.pct - a.pct; })[0];
+    if (!primary) primary = list.slice().sort(function (a, b) { return b.pct - a.pct; })[0];
+    list.forEach(function (c) {
+      c.role = (c.key === primary.key && c.group === primary.group) ? 'primary'
+        : (c.role === 'stabilizer' ? 'stabilizer' : 'synergist');
+      c.credit = c.pct / 100;
+    });
+    return { list: list, primary: primary };
+  }
+
+  /* c188: per-muscle shares are the source of truth. Legacy resolvers without
+     contributions keep the old additive fallback below. */
+  function attribution(info, ex) {
+    var cm = contributionList(info);
+    if (cm) {
+      var primary = cm.primary.group;
+      var gm = {};
+      cm.list.forEach(function (c) {
+        if (!gm[c.group]) gm[c.group] = { pct: 0, role: 'synergist' };
+        gm[c.group].pct += c.pct;
+        if (c.group === primary) gm[c.group].role = 'primary';
+        else if (c.role === 'stabilizer' && gm[c.group].role !== 'primary') gm[c.group].role = 'stabilizer';
+      });
+      var syn = [], stab = [];
+      Object.keys(gm).forEach(function (g) {
+        if (g === primary) return;
+        var row = { group: g, credit: gm[g].pct / 100, pct: gm[g].pct };
+        if (gm[g].role === 'stabilizer') stab.push(row); else syn.push(row);
+      });
+      return {
+        primary: primary,
+        contributions: cm.list,
+        synergists: syn,
+        stabilizers: stab,
+        credits: CREDITS,
+        model: 'pct'
+      };
+    }
+    return legacyAttribution(info, ex);
+  }
+
+  /* Legacy additive model (kept for old custom records / tests):
+       primary 100%, synergist 30% each, stabilizer 10% total. */
   /* One attribution model for both engines:
        primary   100%
        synergist  30% each (unchanged, map parity)
        stabilizer 10% TOTAL split equally
      The credits are additive (shared stress), not a partition of 100%. */
-  function attribution(info, ex) {
+  function legacyAttribution(info, ex) {
     if (!info || !info.group) return null;
     var primary = info.group;
     var syn = unique(info.synergists || []).filter(function (g) {
@@ -174,7 +242,8 @@
       primary: primary,
       synergists: syn.map(function (g) { return { group: g, credit: CREDITS.synergist }; }),
       stabilizers: stab.map(function (g) { return { group: g, credit: stabCredit }; }),
-      credits: CREDITS
+      credits: CREDITS,
+      model: 'legacy'
     };
   }
 
@@ -253,7 +322,7 @@
   }
 
   var api = {
-    version: 'c186',
+    version: 'c188',
     LB_TO_KG: LB_TO_KG,
     DEFAULT_BW: DEFAULT_BW,
     CREDITS: CREDITS,

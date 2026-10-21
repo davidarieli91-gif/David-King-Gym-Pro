@@ -157,7 +157,13 @@
 // 5 opposite-direction inversions; 6 subgroup fixes from Quadriceps to hip
 // flexors/glutes), corrected at the DB source, migrated in place, and applied
 // to old portal snapshots by exercise id.
-const CACHE_NAME = 'dk-gym-v213'; // c186
+// v215: c188 - MUSCLE WORK MODEL: shared src/muscle-roles.js derives an
+// approximate per-muscle work share (primary / synergists / stabilizers,
+// sum 100) for every exercise, renders the full breakdown on trainer and
+// portal cards, and feeds the same shares into analytics + recovery
+// (including the subgroup map). Legacy data without roles keeps the old
+// 100/30/10 fallback.
+const CACHE_NAME = 'dk-gym-v215'; // c188
 // v104: c77 — UI sizes can no longer change themselves (zoom-based gif/food/cards, wheel/touch slider guards) + hard pre-login lock (Add Client included) + header theme quick menu with all 33 themes
 // v103: c76 — Exercise DB tab = exact Quick Pick copy (star/eye/+ cards, favorites/recent tabs, View grouping, localized map tabs)
 // v102: c75 — 3D atlas 1.5x + Settings ▸ UI sizes (atlas slider, bodymap/exercise-panel fixes) + Exercise DB tab rebuilt as picker-style browse
@@ -184,6 +190,7 @@ const APP_SHELL = [
   './src/input.css',
   './src/muscle-map.js',
   './src/muscle-core.js',
+  './src/muscle-roles.js',
   './src/recovery-engine.js',
   './src/analytics-engine.js',
   './src/voice-coach.js',

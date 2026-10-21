@@ -120,6 +120,15 @@ const _mmEsc = (v) => String(v == null ? '' : v)
       let L = lang || ((typeof document !== 'undefined' && document.documentElement && document.documentElement.lang) || 'en');
       L = String(L).slice(0, 2).toLowerCase();
       if (L !== 'ru' && L !== 'he') L = 'en';
+      /* c187: the shared role model renders the full primary / synergist /
+         stabilizer breakdown with approximate percentages. The old two-chip
+         renderer below remains only as an offline/legacy fallback. */
+      try {
+        if (typeof window !== 'undefined' && window.dkMuscleRoles &&
+            typeof window.dkMuscleRoles.renderChips === 'function') {
+          return window.dkMuscleRoles.renderChips(ex, L, opts);
+        }
+      } catch (e187) {}
       let primary = 'other', aux = [];
       try {
         const r = getExerciseMuscleGroups(ex) || {};
