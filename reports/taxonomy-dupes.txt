@@ -1,0 +1,102 @@
+duplicate name groups with different primary: 20
+
+### push up -> chest / warmup
+{"id":"bf_push-up","src":"bf","g":"chest","gE":"Chest","s":"Middle","sE":"Middle","nR":"╨Ю╤В╨╢╨╕╨╝╨░╨╜╨╕╨╡","syn":["triceps","shoulders","core"]}
+{"id":"gv_0653","src":"gv","g":"chest","gE":"Chest","s":"Middle","sE":"Middle","nR":"╨Ю╤В╨╢╨╕╨╝╨░╨╜╨╕╤П ╨╜╨░ ╨▒╨╛╤Б╤Г","syn":["triceps","shoulders","core"]}
+{"id":"gv_0655","src":"gv","g":"chest","gE":"Chest","s":"Middle","sE":"Middle","nR":"╨Ю╤В╨╢╨╕╨╝╨░╨╜╨╕╤П ╨╜╨░ ╤Д╨╕╤В╨▒╨╛╨╗╨╡","syn":["triceps","shoulders","core"]}
+{"id":"gv_0656","src":"gv","g":"chest","gE":"Chest","s":"Middle","sE":"Middle","nR":"╨Ю╤В╨╢╨╕╨╝╨░╨╜╨╕╤П ╨╜╨░ ╤Д╨╕╤В╨▒╨╛╨╗╨╡","syn":["triceps","shoulders","core"]}
+{"id":"gv_0659","src":"gv","g":"chest","gE":"Chest","s":"Middle","sE":"Middle","nR":"╨Ю╤В╨╢╨╕╨╝╨░╨╜╨╕╤П ╨╛╤В ╤Б╤В╨╡╨╜╤Л","syn":["triceps","deltoids"]}
+{"id":"gi_2881","src":"gi","g":"chest","gE":"Chest","s":"Middle","sE":"Middle","nR":"╨Ю╤В╨╢╨╕╨╝╨░╨╜╨╕╤П ╨╕╨╖ ╤Б╤В╨╛╨╣╨║╨╕","syn":[]}
+{"id":"gi_0654","src":"gi","g":"warmup","gE":"Warmup","s":"General","sE":"General","nR":"╨Ю╤В╨╢╨╕╨╝╨░╨╜╨╕╤П (╨║╨╛╨╗╨╡╨╜╨╛ ╨║ ╨│╤А╤Г╨┤╨╕)","syn":[]}
+{"id":"gi_0657","src":"gi","g":"chest","gE":"Chest","s":"Middle","sE":"Middle","nR":"╨Ю╤В╨╢╨╕╨╝╨░╨╜╨╕╤П (╨╛╨┤╨╜╨░ ╤А╤Г╨║╨░ ╨╜╨░ ╤Д╨╕╤В╨▒╨╛╨╗╨╡)","syn":["Deltoid Anterior","Triceps Brachii"]}
+{"id":"gi_0658","src":"gi","g":"chest","gE":"Chest","s":"Middle","sE":"Middle","nR":"╨Ю╤В╨╢╨╕╨╝╨░╨╜╨╕╤П ╤Г ╤Б╤В╨╡╨╜╤Л (╨▓╨░╤А╨╕╨░╨╜╤В 2)","syn":["Deltoid Anterior","Triceps Brachii"]}
+{"id":"gi_1486","src":"gi","g":"chest","gE":"Chest","s":"Middle","sE":"Middle","nR":"╨Ю╤В╨╢╨╕╨╝╨░╨╜╨╕╤П (╨╜╨░ ╤Г╨┐╨╛╤А╨░╤Е)","syn":["Deltoid Anterior","Triceps Brachii"]}
+
+### warming up in lunge -> back / legs / chest
+{"id":"gi_3465","src":"gi","g":"back","gE":"Back","s":"Lats","sE":"Lats","nR":"╨а╨░╨╖╨╝╨╕╨╜╨║╨░ ╨▓ ╨▓╤Л╨┐╨░╨┤╨╡ (╨┐╤П╤В╤М)","syn":[]}
+{"id":"gi_3464","src":"gi","g":"legs","gE":"Legs","s":"Quadriceps","sE":"Quadriceps","nR":"╨а╨░╨╖╨╝╨╕╨╜╨║╨░ ╨▓ ╨▓╤Л╨┐╨░╨┤╨╡ (╤З╨╡╤В╤Л╤А╨╡)","syn":[]}
+{"id":"gi_3461","src":"gi","g":"back","gE":"Back","s":"Lats","sE":"Lats","nR":"╨а╨░╨╖╨╝╨╕╨╜╨║╨░ ╨▓ ╨▓╤Л╨┐╨░╨┤╨╡ (╤А╨░╨╖)","syn":[]}
+{"id":"gi_3467","src":"gi","g":"back","gE":"Back","s":"Lats","sE":"Lats","nR":"╨а╨░╨╖╨╝╨╕╨╜╨║╨░ ╨▓ ╨▓╤Л╨┐╨░╨┤╨╡ (╤Б╨╡╨╝╤М)","syn":[]}
+{"id":"gi_3466","src":"gi","g":"legs","gE":"Legs","s":"Quadriceps","sE":"Quadriceps","nR":"╨а╨░╨╖╨╝╨╕╨╜╨║╨░ ╨▓ ╨▓╤Л╨┐╨░╨┤╨╡ (╤И╨╡╤Б╤В╤М)","syn":[]}
+{"id":"gi_3463","src":"gi","g":"chest","gE":"Chest","s":"Middle","sE":"Middle","nR":"╨а╨░╨╖╨╝╨╕╨╜╨║╨░ ╨▓ ╨▓╤Л╨┐╨░╨┤╨╡ (╤В╤А╨╕)","syn":[]}
+{"id":"gi_3462","src":"gi","g":"back","gE":"Back","s":"Lats","sE":"Lats","nR":"╨а╨░╨╖╨╝╨╕╨╜╨║╨░ ╨▓ ╨▓╤Л╨┐╨░╨┤╨╡ (╨┤╨▓╨░)","syn":[]}
+
+### pike push up -> shoulders / chest
+{"id":"bf_pike-push-up","src":"bf","g":"shoulders","gE":"Shoulders","s":"Middle","sE":"Front","nR":"╨Ю╤В╨╢╨╕╨╝╨░╨╜╨╕╤П ╨▓ ╨┐╨╗╨░╨╜╨║╨╡","syn":["chest","triceps"]}
+{"id":"gi_3401","src":"gi","g":"shoulders","gE":"Shoulders","s":"Middle","sE":"Front","nR":"╨Ю╤В╨╢╨╕╨╝╨░╨╜╨╕╤П ╤Й╤Г╤З╨║╨╛╨╣ (╨╝╨╡╨╢╨┤╤Г ╤Б╨║╨░╨╝╤М╤П╨╝╨╕)","syn":["Pectoralis Major Clavicular Head","Pectoralis Major Sternal Head","Serratus Anterior","Trapezius Lower Fibers","Trapezius Middle Fibers","Triceps Brachii"]}
+{"id":"gi_3402","src":"gi","g":"shoulders","gE":"Shoulders","s":"Middle","sE":"Front","nR":"╨Ю╤В╨╢╨╕╨╝╨░╨╜╨╕╤П ╤Й╤Г╤З╨║╨╛╨╣ (╨╝╨╡╨╢╨┤╤Г ╤Б╤В╤Г╨╗╤М╤П╨╝╨╕)","syn":["Pectoralis Major Clavicular Head","Pectoralis Major Sternal Head","Serratus Anterior","Triceps Brachii"]}
+{"id":"gi_2831","src":"gi","g":"chest","gE":"Chest","s":"Middle","sE":"Middle","nR":"╨Ю╤В╨╢╨╕╨╝╨░╨╜╨╕╤П ╤Й╤Г╤З╨║╨╛╨╣ (╨╜╨░ ╤Б╨║╨░╨╝╤М╨╡)","syn":[]}
+{"id":"gi_3383","src":"gi","g":"chest","gE":"Chest","s":"Middle","sE":"Middle","nR":"╨Ю╤В╨╢╨╕╨╝╨░╨╜╨╕╤П ╤Й╤Г╤З╨║╨╛╨╣ (╨╜╨░ ╤Б╨║╨░╨╝╤М╨╡, ╨▓╨░╤А╨╕╨░╨╜╤В 2)","syn":["Deltoid Anterior","Deltoid Lateral","Triceps Brachii"]}
+
+### side bridge -> abdominals / legs
+{"id":"gi_0706","src":"gi","g":"abdominals","gE":"Abdominals","s":"Obliques","sE":"Obliques","nR":"╨С╨╛╨║╨╛╨▓╨╛╨╣ ╨╝╨╛╤Б╤В╨╕╨║","syn":["Adductor Brevis","Adductor Longus","Gluteus Medius","Gracilis","Iliopsoas","Levator Scapulae","Pectineous","Serratus Anterior","Tensor Fasciae Latae"]}
+{"id":"gi_0701","src":"gi","g":"legs","gE":"Legs","s":"Glutes","sE":"Glutes","nR":"╨С╨╛╨║╨╛╨▓╨╛╨╣ ╨╝╨╛╤Б╤В╨╕╨║ (╨║╨╛╨╗╨╡╨╜╨╛ ╤Б╨╛╨│╨╜╤Г╤В╨╛)","syn":["Obliques"]}
+{"id":"gi_0702","src":"gi","g":"legs","gE":"Legs","s":"Glutes","sE":"Glutes","nR":"╨С╨╛╨║╨╛╨▓╨╛╨╣ ╨╝╨╛╤Б╤В╨╕╨║ (╨║╨╛╨╗╨╡╨╜╨╕ ╨┐╨╛╨┤╤В╤П╨╜╤Г╤В╤Л)","syn":["Obliques"]}
+{"id":"gi_0705","src":"gi","g":"abdominals","gE":"Abdominals","s":"Obliques","sE":"Obliques","nR":"╨С╨╛╨║╨╛╨▓╨╛╨╣ ╨╝╨╛╤Б╤В╨╕╨║ (╨▓╨░╤А╨╕╨░╨╜╤В 2)","syn":["Adductor Brevis","Adductor Longus","Deltoid Lateral","Gluteus Medius","Gracilis","Iliopsoas","Pectineous","Serratus Anterior","Tensor Fasciae Latae"]}
+
+### dead bug -> abdominals / legs
+{"id":"bf_dead-bug","src":"bf","g":"abdominals","gE":"Abdominals","s":"Lower","sE":"Lower","nR":"╨Ь╨╡╤А╤В╨▓╤Л╨╣ ╨╢╤Г╨║","syn":["hip flexors"]}
+{"id":"gi_1243","src":"gi","g":"legs","gE":"Legs","s":"Quadriceps","sE":"Quadriceps","nR":"╨Ь╤С╤А╤В╨▓╤Л╨╣ ╨╢╤Г╨║ (╨▓╨░╤А╨╕╨░╨╜╤В 2)","syn":["Rectus Abdominis"]}
+{"id":"gi_7839","src":"gi","g":"abdominals","gE":"Abdominals","s":"Upper","sE":"Upper","nR":"╨Ь╤С╤А╤В╨▓╤Л╨╣ ╨╢╤Г╨║ (╨▓╨░╤А╨╕╨░╨╜╤В 3)","syn":[]}
+
+### bent knee lying twist -> legs / abdominals
+{"id":"gv_3639","src":"gv","g":"legs","gE":"Legs","s":"Quadriceps","sE":"Quadriceps","nR":"╨Я╨╛╨▓╨╛╤А╨╛╤В ╨╗╤С╨╢╨░ ╤Б ╤Б╨╛╨│╨╜╤Г╤В╤Л╨╝╨╕ ╨║╨╛╨╗╨╡╨╜╤П╨╝╨╕","syn":["obliques"]}
+{"id":"gi_3639","src":"gi","g":"legs","gE":"Legs","s":"Quadriceps","sE":"Quadriceps","nR":"╨б╨║╤А╤Г╤В╨║╨╕ ╨╗╤С╨╢╨░ ╤Б ╤Б╨╛╨│╨╜╤Г╤В╤Л╨╝╨╕ ╨║╨╛╨╗╨╡╨╜╤П╨╝╨╕","syn":["Obliques"]}
+{"id":"gi_0131","src":"gi","g":"abdominals","gE":"Abdominals","s":"Obliques","sE":"Obliques","nR":"╨б╨║╤А╤Г╤В╨║╨╕ ╨╗╤С╨╢╨░ ╤Б ╤Б╨╛╨│╨╜╤Г╤В╤Л╨╝╨╕ ╨║╨╛╨╗╨╡╨╜╤П╨╝╨╕ (╨╜╨░ ╤Д╨╕╤В╨▒╨╛╨╗╨╡)","syn":[]}
+
+### cable pushdown -> triceps / back
+{"id":"gv_0201","src":"gv","g":"triceps","gE":"Triceps","s":"Compound","sE":"Compound","nR":"╨а╨░╨╖╨│╨╕╨▒╨░╨╜╨╕╨╡ ╨▓╨╜╨╕╨╖ ╨╜╨░ ╨▒╨╗╨╛╨║╨╡","syn":["forearms"]}
+{"id":"gv_0200","src":"gv","g":"triceps","gE":"Triceps","s":"Compound","sE":"Compound","nR":"╨а╨░╨╖╨│╨╕╨▒╨░╨╜╨╕╨╡ ╨▓╨╜╨╕╨╖ ╤Б ╨║╨░╨╜╨░╤В╨╛╨╝ ╨╜╨░ ╨▒╨╗╨╛╨║╨╡","syn":["forearms"]}
+{"id":"gi_0199","src":"gi","g":"back","gE":"Back","s":"Lats","sE":"Lats","nR":"╨в╤П╨│╨░ ╨▓╨╜╨╕╨╖ ╨┐╤А╤П╨╝╤Л╨╝╨╕ ╤А╤Г╨║╨░╨╝╨╕ ╨╜╨░ ╨▒╨╗╨╛╨║╨╡ (╨▓╨░╤А╨╕╨░╨╜╤В 2)","syn":["Deltoid Posterior","Pectoralis Major Sternal Head","Triceps Brachii"]}
+
+### inchworm -> fullbody / chest
+{"id":"bf_inchworm","src":"bf","g":"fullbody","gE":"Full Body","s":"General","sE":"General","nR":"╨Ь╤Г╤А╨░╨▓╨╡╨╣","syn":["shoulders","chest","hamstrings","calves"]}
+{"id":"gi_3698","src":"gi","g":"chest","gE":"Chest","s":"Middle","sE":"Middle","nR":"╨У╤Г╤Б╨╡╨╜╨╕╤Ж╨░ (╨▓╨░╤А╨╕╨░╨╜╤В 2)","syn":["Adductor Magnus","Deltoid Anterior","Deltoid Lateral","Gluteus Maximus","Hamstrings","Quadriceps","Trapezius Lower Fibers","Trapezius Middle Fibers","Trapezius Upper Fibers","Iliopsoas","Obliques","Rectus Abdominis"]}
+
+### basic toe touch -> legs / back
+{"id":"gv_3212","src":"gv","g":"legs","gE":"Legs","s":"Quadriceps","sE":"Quadriceps","nR":"╨Ъ╨░╤Б╨░╨╜╨╕╨╡ ╨╜╨╛╤Б╨║╨╛╨▓","syn":[]}
+{"id":"gi_3212","src":"gi","g":"back","gE":"Back","s":"Lats","sE":"Lats","nR":"╨Ъ╨░╤Б╨░╨╜╨╕╤П ╨╜╨╛╤Б╨║╨╛╨▓ ╤Б╤В╨╛╤П","syn":["Deltoid Anterior","Deltoid Lateral","Gastrocnemius","Obliques","Pectoralis Major Clavicular Head","Serratus Anterior","Soleus","Gluteus Maximus","Hamstrings","Rectus Abdominis"]}
+
+### bear crawl -> warmup / legs
+{"id":"gv_3360","src":"gv","g":"warmup","gE":"Warmup","s":"General","sE":"General","nR":"╨Ь╨╡╨┤╨▓╨╡╨╢╤М╤П ╨┐╨╛╤Е╨╛╨┤╨║╨░","syn":["core","shoulders","triceps"]}
+{"id":"gi_6599","src":"gi","g":"legs","gE":"Legs","s":"Quadriceps","sE":"Quadriceps","nR":"╨Ь╨╡╨┤╨▓╨╡╨╢╤М╤П ╨┐╨╛╤Е╨╛╨┤╨║╨░ (╨╜╨╕╨╖╨║╨╕╨╣ ╤В╨░╨╖)","syn":[]}
+
+### cable high row -> back / shoulders
+{"id":"gv_0167","src":"gv","g":"back","gE":"Back","s":"Middle Back","sE":"Middle Back","nR":"╨Т╨╡╤А╤Е╨╜╤П╤П ╤В╤П╨│╨░ ╨╜╨░ ╨║╨╛╨╗╨╡╨╜╤П╤Е ╨╜╨░ ╨▒╨╗╨╛╨║╨╡","syn":["biceps","shoulders"]}
+{"id":"gi_2244","src":"gi","g":"shoulders","gE":"Shoulders","s":"Middle","sE":"Middle","nR":"╨Т╤Л╤Б╨╛╨║╨░╤П ╤В╤П╨│╨░ ╨╜╨░ ╨║╨╛╨╗╨╡╨╜╤П╤Е ╤Б ╨║╨░╨╜╨░╤В╨╛╨╝ ╨╜╨░ ╨▒╨╗╨╛╨║╨╡","syn":[]}
+
+### dumbbell one arm snatch -> fullbody / legs
+{"id":"gv_3888","src":"gv","g":"fullbody","gE":"Full Body","s":"General","sE":"General","nR":"╨а╤Л╨▓╨╛╨║ ╨╛╨┤╨╜╨╛╨╣ ╤А╤Г╨║╨╛╨╣ ╤Б ╨│╨░╨╜╤В╨╡╨╗╤М╤О","syn":["core"]}
+{"id":"gi_6152","src":"gi","g":"legs","gE":"Legs","s":"Quadriceps","sE":"Quadriceps","nR":"╨а╤Л╨▓╨╛╨║ ╨╛╨┤╨╜╨╛╨╣ ╤А╤Г╨║╨╛╨╣ ╤Б ╨│╨░╨╜╤В╨╡╨╗╤П╨╝╨╕ (╤Б╨╗╨╡╨▓╨░)","syn":[]}
+
+### lever pullover -> back / chest
+{"id":"gv_2285","src":"gv","g":"back","gE":"Back","s":"Lats","sE":"Lats","nR":"╨Я╤Г╨╗╨╛╨▓╨╡╤А ╨╜╨░ ╤В╤А╨╡╨╜╨░╨╢╤С╤А╨╡","syn":["triceps","shoulders"]}
+{"id":"gi_2285","src":"gi","g":"chest","gE":"Chest","s":"Middle","sE":"Middle","nR":"╨Я╤Г╨╗╨╛╨▓╨╡╤А ╨╜╨░ ╤А╤Л╤З╨░╨╢╨╜╨╛╨╝ (╤Б╨╛ ╤Б╨▓╨╛╨▒╨╛╨┤╨╜╤Л╨╝ ╨▓╨╡╤Б╨╛╨╝)","syn":["Deltoid Posterior","Latissimus Dorsi","Teres Major","Triceps Brachii"]}
+
+### smith bent over row -> back / shoulders
+{"id":"gv_1359","src":"gv","g":"back","gE":"Back","s":"Middle Back","sE":"Middle Back","nR":"╨в╤П╨│╨░ ╨▓ ╨╜╨░╨║╨╗╨╛╨╜╨╡ ╨▓ ╨б╨╝╨╕╤В╨╡","syn":["biceps","forearms"]}
+{"id":"gi_0762","src":"gi","g":"shoulders","gE":"Shoulders","s":"Rear","sE":"Rear","nR":"╨в╤П╨│╨░ ╨▓ ╨╜╨░╨║╨╗╨╛╨╜╨╡ ╨▓ ╨б╨╝╨╕╤В╨╡ (╨▓╨░╤А╨╕╨░╨╜╤В 2)","syn":["Brachialis","Brachioradialis","Infraspinatus","Teres Minor","Trapezius Lower Fibers","Trapezius Middle Fibers"]}
+
+### two toe touch -> stretching / back
+{"id":"gv_3231","src":"gv","g":"stretching","gE":"Stretching","s":"General","sE":"General","nR":"╨Ъ╨░╤Б╨░╨╜╨╕╨╡ ╨┤╨▓╤Г╤Е ╨╜╨╛╤Б╨║╨╛╨▓","syn":["hamstrings","glutes"]}
+{"id":"gi_3231","src":"gi","g":"back","gE":"Back","s":"Lats","sE":"Lats","nR":"╨Ъ╨░╤Б╨░╨╜╨╕╤П ╨┤╨▓╤Г╤Е ╨╜╨╛╤Б╨║╨╛╨▓","syn":[]}
+
+### dumbbell rear delt row -> back / shoulders
+{"id":"gi_3755","src":"gi","g":"back","gE":"Back","s":"Middle Back","sE":"Middle Back","nR":"╨в╤П╨│╨░ ╨╜╨░ ╨╖╨░╨┤╨╜╤О╤О ╨┤╨╡╨╗╤М╤В╤Г ╤Б ╨│╨░╨╜╤В╨╡╨╗╤П╨╝╨╕","syn":["Brachialis","Brachioradialis","Deltoid Posterior"]}
+{"id":"gi_0377","src":"gi","g":"shoulders","gE":"Shoulders","s":"Rear","sE":"Rear","nR":"╨в╤П╨│╨░ ╨╜╨░ ╨╖╨░╨┤╨╜╤О╤О ╨┤╨╡╨╗╤М╤В╤Г ╤Б ╨│╨░╨╜╤В╨╡╨╗╤П╨╝╨╕","syn":["Brachialis","Brachioradialis","Infraspinatus","Teres Minor","Trapezius Lower Fibers","Trapezius Middle Fibers"]}
+
+### high knee squat -> warmup / legs
+{"id":"gi_3092","src":"gi","g":"warmup","gE":"Warmup","s":"General","sE":"General","nR":"╨Я╤А╨╕╤Б╨╡╨┤ ╤Б ╨▓╤Л╤Б╨╛╨║╨╕╨╝ ╨║╨╛╨╗╨╡╨╜╨╛╨╝","syn":[]}
+{"id":"gi_4435","src":"gi","g":"legs","gE":"Legs","s":"Quadriceps","sE":"Quadriceps","nR":"╨Я╤А╨╕╤Б╨╡╨┤ ╤Б ╨▓╤Л╤Б╨╛╨║╨╕╨╝ ╨║╨╛╨╗╨╡╨╜╨╛╨╝ (╨▓╨░╤А╨╕╨░╨╜╤В 2)","syn":[]}
+
+### resistance band air bike -> legs / abdominals
+{"id":"gi_2420","src":"gi","g":"legs","gE":"Legs","s":"Quadriceps","sE":"Quadriceps","nR":"╨Р╤Н╤А╨╛╨▒╨░╨╣╨║ ╤Б ╨╗╨╡╨╜╤В╨╛╨╣","syn":["Rectus Abdominis","Obliques"]}
+{"id":"gi_7212","src":"gi","g":"abdominals","gE":"Abdominals","s":"Upper","sE":"Upper","nR":"╨Р╤Н╤А╨╛╨▒╨░╨╣╨║ ╤Б ╨╗╨╡╨╜╤В╨╛╨╣ (╨▓╨░╤А╨╕╨░╨╜╤В 2)","syn":[]}
+
+### stationary bike run -> legs / cardio
+{"id":"gi_2138","src":"gi","g":"legs","gE":"Legs","s":"Quadriceps","sE":"Quadriceps","nR":"╨Ч╨░╨╡╨╖╨┤╤Л ╨╜╨░ ╨▓╨╡╨╗╨╛╤В╤А╨╡╨╜╨░╨╢╤С╤А╨╡ (╨▓╨░╤А╨╕╨░╨╜╤В 3)","syn":[]}
+{"id":"gi_2279","src":"gi","g":"cardio","gE":"Cardio","s":"General","sE":"General","nR":"╨Ч╨░╨╡╨╖╨┤╤Л ╨╜╨░ ╨▓╨╡╨╗╨╛╤В╤А╨╡╨╜╨░╨╢╤С╤А╨╡ (╨▓╨░╤А╨╕╨░╨╜╤В 4)","syn":[]}
+
+### swimmer kicks -> legs / back
+{"id":"gi_3227","src":"gi","g":"legs","gE":"Legs","s":"Quadriceps","sE":"Quadriceps","nR":"╨г╨┤╨░╤А╤Л ╨┐╨╗╨╛╨▓╤Ж╨░","syn":[]}
+{"id":"gi_3433","src":"gi","g":"back","gE":"Back","s":"Lats","sE":"Lats","nR":"╨г╨┤╨░╤А╤Л ╨┐╨╗╨╛╨▓╤Ж╨░ (╨▓╨░╤А╨╕╨░╨╜╤В 2)","syn":["Gluteus Maximus","Hamstrings"]}

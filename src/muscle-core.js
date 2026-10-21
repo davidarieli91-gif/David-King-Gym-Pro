@@ -196,8 +196,58 @@
     return d.getTime();
   }
 
+  /* c185 taxonomy overrides */
+  /* The exercise DB is corrected at the source + migrated into exercise_base.
+     This map lets the portal correct OLD share snapshots and history records
+     by exercise id, without waiting for a re-share. Keep in sync with
+     scripts/taxonomy-fixes-c185.cjs (verified by test-c185-taxonomy.cjs). */
+  var TAXONOMY_FIXES = {
+  "bf_abdominal-hip-thrust": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Lower", subgroupEn: "Lower", subgroupRu: "Нижний", subgroupHe: "תחתון", synergists: ["hip flexors","glutes","hamstrings"] },
+  "bf_weighted-abdominal-hip-thrust": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Lower", subgroupEn: "Lower", subgroupRu: "Нижний", subgroupHe: "תחתון", synergists: ["hip flexors","glutes","hamstrings"] },
+  "gi_0103": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Upper", subgroupEn: "Upper", subgroupRu: "Верхний", subgroupHe: "עליון", synergists: ["Deltoid Posterior","Levator Scapulae","Teres Major"] },
+  "gi_1193": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Obliques", subgroupEn: "Obliques", subgroupRu: "Obliques", subgroupHe: "Obliques", synergists: ["Gluteus Maximus","shoulders"] },
+  "gi_1478": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Upper", subgroupEn: "Upper", subgroupRu: "Верхний", subgroupHe: "עליון", synergists: ["Deltoid Anterior","Gluteus Maximus","Tensor Fasciae Latae","Triceps Brachii","Gluteus Medius"] },
+  "gi_2152": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Upper", subgroupEn: "Upper", subgroupRu: "Верхний", subgroupHe: "עליון", synergists: ["Deltoid Anterior","Hamstrings","Quadriceps","Tensor Fasciae Latae","Gluteus Maximus"] },
+  "gi_2793": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Upper", subgroupEn: "Upper", subgroupRu: "Верхний", subgroupHe: "עליון", synergists: ["shoulders","triceps"] },
+  "gi_3337": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Obliques", subgroupEn: "Obliques", subgroupRu: "Obliques", subgroupHe: "Obliques", synergists: ["shoulders"] },
+  "gi_5047": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Obliques", subgroupEn: "Obliques", subgroupRu: "Obliques", subgroupHe: "Obliques", synergists: ["shoulders"] },
+  "gi_5497": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Upper", subgroupEn: "Upper", subgroupRu: "Верхний", subgroupHe: "עליון", synergists: ["Deltoid Anterior","Deltoid Lateral","Deltoid Posterior","Gluteus Maximus","Gluteus Medius","Infraspinatus","Tensor Fasciae Latae","Teres Major","Teres Minor","Trapezius Middle Fibers","Triceps Brachii"] },
+  "gi_0701": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Obliques", subgroupEn: "Obliques", subgroupRu: "Obliques", subgroupHe: "Obliques", synergists: ["shoulders"] },
+  "gi_0702": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Obliques", subgroupEn: "Obliques", subgroupRu: "Obliques", subgroupHe: "Obliques", synergists: ["shoulders"] },
+  "gi_1243": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Lower", subgroupEn: "Lower", subgroupRu: "Нижний", subgroupHe: "תחתון", synergists: ["hip flexors"] },
+  "gi_1246": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Lower", subgroupEn: "Lower", subgroupRu: "Нижний", subgroupHe: "תחתון", synergists: ["hip flexors"] },
+  "gi_2838": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Obliques", subgroupEn: "Obliques", subgroupRu: "Obliques", subgroupHe: "Obliques", synergists: ["hip flexors"] },
+  "gi_3336": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Lower", subgroupEn: "Lower", subgroupRu: "Нижний", subgroupHe: "תחתון", synergists: ["hip flexors"] },
+  "gi_3515": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Obliques", subgroupEn: "Obliques", subgroupRu: "Obliques", subgroupHe: "Obliques", synergists: ["hip flexors"] },
+  "gi_4250": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Lower", subgroupEn: "Lower", subgroupRu: "Нижний", subgroupHe: "תחתון", synergists: ["hip flexors"] },
+  "gi_4535": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Upper", subgroupEn: "Upper", subgroupRu: "Верхний", subgroupHe: "עליון", synergists: ["hip flexors","shoulders"] },
+  "gi_4982": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Lower", subgroupEn: "Lower", subgroupRu: "Нижний", subgroupHe: "תחתון", synergists: ["hip flexors","glutes"] },
+  "gi_3512": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Upper", subgroupEn: "Upper", subgroupRu: "Верхний", subgroupHe: "עליון", synergists: ["Deltoid Posterior","Latissimus Dorsi","Teres Major","Teres Minor","hip flexors"] },
+  "gi_0622": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Lower", subgroupEn: "Lower", subgroupRu: "Нижний", subgroupHe: "תחתון", synergists: ["hip flexors"] },
+  "gi_1244": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Lower", subgroupEn: "Lower", subgroupRu: "Нижний", subgroupHe: "תחתון", synergists: ["hip flexors"] },
+  "gi_2891": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Lower", subgroupEn: "Lower", subgroupRu: "Нижний", subgroupHe: "תחתון", synergists: ["hip flexors"] },
+  "gi_3890": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Lower", subgroupEn: "Lower", subgroupRu: "Нижний", subgroupHe: "תחתון", synergists: ["hip flexors","forearms"] },
+  "gi_3891": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Lower", subgroupEn: "Lower", subgroupRu: "Нижний", subgroupHe: "תחתון", synergists: ["hip flexors","forearms"] },
+  "gi_3962": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Lower", subgroupEn: "Lower", subgroupRu: "Нижний", subgroupHe: "תחתון", synergists: ["hip flexors"] },
+  "gi_4373": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Lower", subgroupEn: "Lower", subgroupRu: "Нижний", subgroupHe: "תחתון", synergists: ["hip flexors","forearms"] },
+  "gi_4766": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Lower", subgroupEn: "Lower", subgroupRu: "Нижний", subgroupHe: "תחתון", synergists: ["hip flexors","forearms"] },
+  "gi_4767": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Lower", subgroupEn: "Lower", subgroupRu: "Нижний", subgroupHe: "תחתון", synergists: ["hip flexors","forearms"] },
+  "gi_4768": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Lower", subgroupEn: "Lower", subgroupRu: "Нижний", subgroupHe: "תחתון", synergists: ["hip flexors"] },
+  "gi_6810": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Lower", subgroupEn: "Lower", subgroupRu: "Нижний", subgroupHe: "תחתון", synergists: ["hip flexors"] },
+  "gi_8873": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Lower", subgroupEn: "Lower", subgroupRu: "Нижний", subgroupHe: "תחתון", synergists: ["hip flexors"] },
+  "gi_9321": { group: "abdominals", groupEn: "Abdominals", groupRu: "Мышцы кора", groupHe: "בטן", subgroup: "Lower", subgroupEn: "Lower", subgroupRu: "Нижний", subgroupHe: "תחתון", synergists: ["hip flexors"] },
+  "gv_1688": { group: "legs", groupEn: "Legs", groupRu: "Ноги", groupHe: "רגליים", subgroup: "Quadriceps", subgroupEn: "Quadriceps", subgroupRu: "Квадрицепс", subgroupHe: "ארבע ראשי", synergists: ["glutes","hamstrings","obliques"] },
+  "gi_10183": { group: "shoulders", groupEn: "Shoulders", groupRu: "Плечи", groupHe: "כתפיים", subgroup: "Front", subgroupEn: "Front", subgroupRu: "Передний", subgroupHe: "קדמי", synergists: ["abdominals"] },
+  "gv_0778": { group: "chest", groupEn: "Chest", groupRu: "Грудь", groupHe: "חזה", subgroup: "Middle", subgroupEn: "Middle", subgroupRu: "Средний", subgroupHe: "אמצעי", synergists: ["triceps","shoulders","abdominals"] },
+  "gi_4162": { group: "chest", groupEn: "Chest", groupRu: "Грудь", groupHe: "חזה", subgroup: "Middle", subgroupEn: "Middle", subgroupRu: "Средний", subgroupHe: "אמצעי", synergists: ["triceps","shoulders","abdominals"] },
+  "gi_6017": { group: "back", groupEn: "Back", groupRu: "Спина", groupHe: "גב", subgroup: "Lats", subgroupEn: "Lats", subgroupRu: "Широчайшие", subgroupHe: "רחבת גב", synergists: ["biceps","shoulders","glutes"] }
+  };
+  function taxonomyFix(id) {
+    return TAXONOMY_FIXES[String(id == null ? '' : id)] || null;
+  }
+
   var api = {
-    version: 'c184',
+    version: 'c185',
     LB_TO_KG: LB_TO_KG,
     DEFAULT_BW: DEFAULT_BW,
     CREDITS: CREDITS,
@@ -217,6 +267,7 @@
     dayDiff: dayDiff,
     addDays: addDays,
     clamp: clamp,
+    taxonomyFix: taxonomyFix,
     unique: unique
   };
   if (typeof window !== 'undefined') window.dkMuscleCore = api;

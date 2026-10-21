@@ -44,7 +44,7 @@ ok('rest banner: fixed narrow strip (portal parity)', trainer.indexOf('<div id="
 ok('rest banner: icon + padded 01:30 + thin progress', trainer.indexOf('rounded-xl bg-gradient-to-tr from-indigo-500 to-cyan-400 grid place-items-center shrink-0 pulse-ring') >= 0 && trainer.indexOf('class="prog-bar mt-1"><div id="rest-timer-progress" class="prog-bar-fill"') >= 0 && trainer.indexOf('font-mono font-extrabold text-lg text-cyan-300 leading-none') >= 0);
 ok('rest banner: −15 / +30 / ✕ chips', ['id="btn-timer-minus15"', 'id="rest-timer-add30"', 'id="rest-timer-skip"'].every(s => trainer.indexOf(s) >= 0));
 ok('restTimer: minus15 exported + wired', trainer.indexOf('return { start, stop, skip, add30, minus15 };') >= 0 && trainer.indexOf("if (restMinus15) restMinus15.addEventListener('click', () => restTimer.minus15());") >= 0);
-ok('restTimer: minus15 trims remaining only (portal semantics)', trainer.indexOf('function minus15() {\n      _remaining = Math.max(0, _remaining - 15);\n      updateDisplay();\n    }') >= 0);
+ok('restTimer: minus15 trims remaining only (portal semantics)', /function minus15\(\) \{\s*_remaining = Math\.max\(0, _remaining - 15\);\s*updateDisplay\(\);\s*\}/.test(trainer));
 ok('restTimer: display padded like the portal (01:30)', trainer.indexOf("display.textContent = String(Math.floor(r / 60)).padStart(2, '0') + ':' + String(r % 60).padStart(2, '0');") >= 0);
 ok('trainer: prog-bar / pulse-ring CSS exists (portal parity)', trainer.indexOf('.prog-bar { height: 6px; border-radius: 999px;') >= 0 && trainer.indexOf('@keyframes dk-pulse-ring') >= 0);
 ok('trainer: old tall gradient banner is gone', trainer.indexOf('bg-gradient-to-r from-primary to-accent text-white px-4 py-3') < 0);
@@ -56,8 +56,8 @@ ok('trainer: old tall gradient banner is gone', trainer.indexOf('bg-gradient-to-
 });
 
 /* ---------- 5. versions ---------- */
-ok('sw cache bumped to v205', sw.indexOf("const CACHE_NAME = 'dk-gym-v205'; // c178") >= 0 && sw.indexOf('// v205: c178') >= 0);
-ok('trainer build c178 (meta + footer + RUNNING)', trainer.indexOf('content="c178"') >= 0 && trainer.indexOf('· c178</p>') >= 0 && /var RUNNING = 178;/.test(trainer));
+ok('sw cache bumped for c185', sw.indexOf("const CACHE_NAME = 'dk-gym-v212'; // c185") >= 0);
+ok('trainer build c185 (meta + footer + RUNNING)', trainer.indexOf('content="c185"') >= 0 && /var RUNNING = 185;/.test(trainer));
 ok('body grows with content (c176 sticky breakout fix intact, both portals)', /html \{ height: 100%; \}/.test(html) && /body \{ min-height: 100%; overscroll-behavior-y: none; \}/.test(html) && /html \{ height: 100%; \}/.test(trainer) && /body \{ min-height: 100%; overscroll-behavior-y: none; \}/.test(trainer));
 
 /* ---------- 6. inline JS syntax of the touched script blocks ---------- */

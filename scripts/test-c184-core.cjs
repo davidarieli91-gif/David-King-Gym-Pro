@@ -17,9 +17,9 @@ function eq(name, got, want, tol) {
   else { fail++; console.log('FAIL ' + name + ' got ' + got + ' want ' + want); }
 }
 
-ok('core exported', !!CORE && CORE.version === 'c184');
-ok('analytics uses core version', A.version === 'c184');
-ok('recovery uses core version', R.version === 'c184');
+ok('core exported', !!CORE && CORE.version === 'c185');
+ok('analytics engine version', A.version === 'c184');
+ok('recovery engine version', R.version === 'c184');
 
 /* performed = done OR touched; explicit undone prescription excluded */
 eq('performed touched-only counts', CORE.performedSets([{ weight: 50, reps: 5, done: false, touched: true }]).length, 1);

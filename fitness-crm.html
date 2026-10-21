@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c184" />
+<meta name="dk-build" content="c185" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -6375,7 +6375,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       let _exerciseDbLoaded = false;
       // Bump EXERCISE_DB_BUST when exercise-db.json changes — defeats SW/browser
       // cache-first staleness so reseed always unpacks the deployed dataset.
-      const EXERCISE_DB_BUST = 'v52';
+      const EXERCISE_DB_BUST = 'v53';
       async function loadExerciseDbExternal() {
         try {
           const resp = await fetch('exercise-db.json?v=' + EXERCISE_DB_BUST);
@@ -7493,6 +7493,89 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     }
   }
   window.__dkMigrateExerciseGroups = migrateExerciseGroups;
+
+  /* =====================================================================
+     TAXONOMY MIGRATION (c185) - 2026-10
+     The exercise DB had a class of primary/synergist inversions: abdominal
+     exercises were filed under legs/chest/back with "core" in synergists
+     (the reported weighted abdominal hip thrust was the clearest case), and
+     a few exercises had the opposite problem (a lunge/push-up/pulldown filed
+     under abs/legs). New seeds read the corrected JSON; already-seeded
+     devices are healed IN PLACE so trainer edits, images and names survive.
+     Only the 39 audited ids below are touched.
+     ===================================================================== */
+  async function migrateExerciseTaxonomyC185() {
+    try {
+      const FLAG = 'migrated_taxonomy_c185';
+      const done = await db.get('settings', FLAG);
+      if (done && done.value) return 0;
+      if (typeof _exerciseDbLoaded !== 'undefined' && !_exerciseDbLoaded) {
+        await loadExerciseDbExternal();
+      }
+      let shipped = null;
+      try {
+        const raw = unpackExerciseDB();
+        if (raw && raw.length) {
+          shipped = Object.create(null);
+          for (let i = 0; i < raw.length; i++) shipped[raw[i].id] = raw[i];
+        }
+      } catch (_) { return 0; }
+      if (!shipped) return 0;
+      const IDS = new Set([
+        'bf_abdominal-hip-thrust', 'bf_weighted-abdominal-hip-thrust',
+        'gi_0103', 'gi_1193', 'gi_1478', 'gi_2152', 'gi_2793', 'gi_3337',
+        'gi_5047', 'gi_5497', 'gi_0701', 'gi_0702', 'gi_1243', 'gi_1246',
+        'gi_2838', 'gi_3336', 'gi_3515', 'gi_4250', 'gi_4535', 'gi_4982',
+        'gi_3512', 'gi_0622', 'gi_1244', 'gi_2891', 'gi_3890', 'gi_3891',
+        'gi_3962', 'gi_4373', 'gi_4766', 'gi_4767', 'gi_4768', 'gi_6810',
+        'gi_8873', 'gi_9321',
+        'gv_1688', 'gi_10183', 'gv_0778', 'gi_4162', 'gi_6017'
+      ]);
+      const all = await db.all('exercise_base');
+      const changed = [];
+      for (let i = 0; i < all.length; i++) {
+        const r = all[i];
+        const sh = r && IDS.has(r.id) ? shipped[r.id] : null;
+        if (!sh) continue;
+        const before = JSON.stringify([
+          r.group_canonical, r.group_en, r.group_ru, r.group_he,
+          r.subgroup_en, r.subgroup_ru, r.subgroup_he, r.synergist_muscles
+        ]);
+        r.group_canonical = sh.group_canonical;
+        r.group_en = sh.group_en;
+        r.group_ru = sh.group_ru;
+        r.group_he = sh.group_he;
+        r.subgroup_en = sh.subgroup_en;
+        r.subgroup_ru = sh.subgroup_ru;
+        r.subgroup_he = sh.subgroup_he;
+        r.synergist_muscles = Array.isArray(sh.synergist_muscles)
+          ? sh.synergist_muscles.slice() : [];
+        const subFolder = String(sh.subgroup_en || 'general').toLowerCase().replace(/\s+/g, '_');
+        if (Array.isArray(r.folder_path) && r.folder_path.length) {
+          r.folder_path[0] = sh.group_canonical;
+          r.folder_path[1] = subFolder;
+        } else {
+          r.folder_path = [sh.group_canonical, subFolder, r.equipment_type || 'other'];
+        }
+        r.updated_at = Date.now();
+        const after = JSON.stringify([
+          r.group_canonical, r.group_en, r.group_ru, r.group_he,
+          r.subgroup_en, r.subgroup_ru, r.subgroup_he, r.synergist_muscles
+        ]);
+        if (before !== after) changed.push(r);
+      }
+      if (changed.length) {
+        await db.bulkPut('exercise_base', changed);
+        console.info('[taxonomy-migr] corrected exercise taxonomy:', changed.length, '(c185)');
+      }
+      await db.put('settings', { key: FLAG, value: true });
+      return changed.length;
+    } catch (e) {
+      console.warn('[taxonomy-migr] failed:', e);
+      return 0;
+    }
+  }
+  window.__dkMigrateExerciseTaxonomy = migrateExerciseTaxonomyC185;
 
 
   /* =====================================================================
@@ -27016,6 +27099,8 @@ async function boot() {
       try { await healExerciseImagePaths(); } catch (_) {}
       // c105: re-map canonical groups in place (cardio split from warm-up + balance)
       try { await migrateExerciseGroups(); } catch (_) {}
+      // c185: heal the audited primary/synergist inversions in already-seeded bases
+      try { await migrateExerciseTaxonomyC185(); } catch (_) {}
       // Shared exercise cache for localized name/group/image lookups in ANY
       // screen (preview modal, live workout, history) — independent of the
       // program builder being open.
@@ -34132,7 +34217,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 184; /* numeric part of dk-build c184 */
+  var RUNNING = 185; /* numeric part of dk-build c185 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

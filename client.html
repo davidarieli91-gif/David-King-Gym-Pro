@@ -87,7 +87,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
   <script type="module" src="src/muscle-map.js"></script>
-  <!-- c184: shared muscle core — ONE performed/units/attribution model for both engines -->
+  <!-- c184/c185: shared muscle core - ONE performed/units/attribution model for both engines -->
   <script src="src/muscle-core.js"></script>
   <!-- c122: shared recovery engine v2 — ONE model for the portal map AND the trainer's map -->
   <script type="module" src="src/recovery-engine.js"></script>
@@ -3962,6 +3962,32 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     currentProgram = programs[activeProgramIdx] || null;
     currentPlan = plans[activePlanIdx] || null;
   }
+  /* c185: old share payloads were built before the exercise DB taxonomy was
+     corrected. Apply the shared override map by exercise id so both the card
+     labels and every analytics/recovery resolver see the corrected primary /
+     synergist split without waiting for a re-share. */
+  function dkTaxFix(id) {
+    try {
+      const core = window.dkMuscleCore;
+      return (core && typeof core.taxonomyFix === 'function') ? core.taxonomyFix(id) : null;
+    } catch (e185) { return null; }
+  }
+  function applyTaxonomyFixesToDB() {
+    try {
+      Object.keys(exerciseDB || {}).forEach(function (id) {
+        const fix = dkTaxFix(id);
+        if (!fix) return;
+        const ex = exerciseDB[id];
+        if (!ex) return;
+        ex.group = fix.group;
+        ex.group_en = fix.groupEn; ex.group_ru = fix.groupRu; ex.group_he = fix.groupHe;
+        ex.subgroup = fix.subgroup;
+        ex.subgroup_en = fix.subgroupEn; ex.subgroup_ru = fix.subgroupRu; ex.subgroup_he = fix.subgroupHe;
+        ex.synergists = fix.synergists.slice();
+        ex.syn = fix.synergists.slice();
+      });
+    } catch (e185) {}
+  }
   function applyData(d) {
     currentClient = d.client || null;
     /* c135: the trainer may mark this client as blind (blind_voice in the
@@ -3983,6 +4009,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     activeProgramIdx = 0; activePlanIdx = 0; activeDayIndex = 0;
     syncCurrentRefs();
     exerciseDB = d.exercises || {};
+    applyTaxonomyFixesToDB(); /* c185: correct old share snapshots by id */
     _aExNameIdx = null; _aExHistIdx = null; /* c156: rebuild the analytics name indexes */
     sessions = {};
     renderAll();
@@ -4789,7 +4816,11 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
      from other programs stuck in the «Other» bucket) →
      reverse map over the exercise name → other */
   function aGroupOf(ex) {
-    /* c127: the canonical group snapshot saved at log time (ex.g) wins — it
+    /* c185: a corrected exercise id wins over the old snapshot - history
+       logged before the taxonomy fix must not keep crediting the wrong group */
+    const fix185 = dkTaxFix(ex.exercise_id || ex.id || ex.key);
+    if (fix185 && fix185.group) return fix185.group;
+    /* c127: the canonical group snapshot saved at log time (ex.g) wins - it
        survives without any DB/program dependency, exactly like the trainer's
        own group snapshot */
     if (ex.g != null && String(ex.g).trim() !== '') { const gk = mgKeyOf(ex.g) || String(ex.g).trim(); if (gk) return gk; }
@@ -4959,9 +4990,11 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   }
   function aResolveEx(ex) {
     const exd = exerciseDB[ex.key] || exerciseDB[String(ex.key)] || exerciseDB[ex.exercise_id] || null;
+    const fix185 = dkTaxFix(ex.exercise_id || ex.id || ex.key);
     return {
       group: aGroupOf(ex),
-      synergists: Array.isArray(ex.syn) ? ex.syn.map(s => mgKeyOf(s) || s) : [],
+      synergists: fix185 ? Array.from(new Set(fix185.synergists.map(s => mgKeyOf(s) || s)))
+                         : (Array.isArray(ex.syn) ? ex.syn.map(s => mgKeyOf(s) || s) : []),
       names: [ex.name, exd && (exd.name_en || exd.name)].filter(Boolean),
       equipment: exd && (exd.equipment_en || exd.equipment || exd.eE),
       mt: (exd && exd.mt) || '',
@@ -5889,6 +5922,11 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
      then the record's own canonical g/syn (c98-enriched CRM backfills and
      new portal saves), then the record's group string */
   function recpExInfo(key, ex) {
+    /* c185: corrected id wins over an old share snapshot */
+    const fix185 = dkTaxFix(key) || dkTaxFix(ex && (ex.exercise_id || ex.id));
+    if (fix185 && fix185.group) {
+      return { group: fix185.group, synergists: Array.from(new Set(fix185.synergists.map(recpCanonical).filter(Boolean))) };
+    }
     const exd = exerciseDB[key] || exerciseDB[String(key)] || null;
     if (exd && exd.group) {
       const g = recpCanonical(exd.group);
@@ -5913,9 +5951,10 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   function recpResolveEx(ex) {
     const info = recpExInfo(ex.key, ex);
     if (!info || !info.group || RECP_GROUPS.indexOf(info.group) === -1) return null;
+    const fix185 = dkTaxFix(ex.key) || dkTaxFix(ex.exercise_id || ex.id);
     const exd = exerciseDB[ex.key] || exerciseDB[String(ex.key)] || null;
     /* c172: the subgroup travels from the share payload (subgroup field) */
-    return { group: info.group, synergists: info.synergists || [], sub: (exd && (exd.subgroup || exd.subgroup_en || exd.sE)) || '',
+    return { group: info.group, synergists: info.synergists || [], sub: (fix185 && fix185.subgroup) || (exd && (exd.subgroup || exd.subgroup_en || exd.sE)) || '',
              names: [ex.name, exd && exd.name], equipment: exd && (exd.equipment || exd.equipment_en),
              mt: (exd && exd.mt) || '', stabilizers: (exd && Array.isArray(exd.stabilizers)) ? exd.stabilizers : [] };
   }

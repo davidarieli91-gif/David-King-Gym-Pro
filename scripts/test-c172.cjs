@@ -76,7 +76,7 @@ ok('muscle list shows indented subgroup rows', (function () { const i = trainer.
 ok('Wrist Curls label added', trainer.indexOf("'Wrist Curls': { en: 'Wrist Curls'") >= 0);
 
 /* ---------- STATIC: portal resolver ---------- */
-ok('portal passes the subgroup through', portal.indexOf('sub: (exd && (exd.subgroup || exd.subgroup_en || exd.sE))') >= 0);
+ok('portal passes the subgroup through', /sub:\s*\(fix185 && fix185\.subgroup\)\s*\|\|\s*\(exd && \(exd\.subgroup \|\| exd\.subgroup_en \|\| exd\.sE\)\)/.test(portal));
 
 /* ---------- STATIC: SVG zones ---------- */
 eq('Brachioradialis zones drawn (front×2, back×2, side×1)', count(muscleMap, 'data-subgroup="Brachioradialis"'), 5);
