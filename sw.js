@@ -163,7 +163,13 @@
 // portal cards, and feeds the same shares into analytics + recovery
 // (including the subgroup map). Legacy data without roles keeps the old
 // 100/30/10 fallback.
-const CACHE_NAME = 'dk-gym-v215'; // c188
+// v216: c189 - WORKOUT FINISH/SAVE + PORTAL HISTORY: trainer report modal no
+// longer throws on the missing portal-only dispVolKg/dispUnitShort helpers;
+// Save is guarded, re-enabled on failure and reports an error. Portal cloud
+// workouts are now merged into the trainer's Workouts history (stable
+// remote id/client_id), last_active is updated and history tonnage/sets use
+// performed sets + effective kg instead of skipped prescriptions.
+const CACHE_NAME = 'dk-gym-v216'; // c189
 // v104: c77 — UI sizes can no longer change themselves (zoom-based gif/food/cards, wheel/touch slider guards) + hard pre-login lock (Add Client included) + header theme quick menu with all 33 themes
 // v103: c76 — Exercise DB tab = exact Quick Pick copy (star/eye/+ cards, favorites/recent tabs, View grouping, localized map tabs)
 // v102: c75 — 3D atlas 1.5x + Settings ▸ UI sizes (atlas slider, bodymap/exercise-panel fixes) + Exercise DB tab rebuilt as picker-style browse

@@ -6823,7 +6823,10 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   }
   function sessionSetCount(sess, onlyDone) {
     let total = 0, done = 0;
-    (sess.exercises||[]).forEach(ex => (ex.sets||[]).forEach(s => { total++; if (s.done) done++; }));
+    const perf = (window.dkMuscleCore && typeof window.dkMuscleCore.setPerformed === 'function')
+      ? window.dkMuscleCore.setPerformed
+      : (s => !!(s && (s.done || s.touched)));
+    (sess.exercises||[]).forEach(ex => (ex.sets||[]).forEach(s => { total++; if (perf(s)) done++; }));
     return onlyDone ? done : total;
   }
 
@@ -7604,7 +7607,10 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     /* c126: done !== false — current sessions always carry explicit flags
        (behavior identical), legacy history rows without the flag count
        instead of producing a fake «новое» / «▲ full volume» diff */
-    (exSets || []).forEach(s => { if (s && s.done !== false) { v += (Number(s.weight) || 0) * (Number(s.reps) || 0); r += (Number(s.reps) || 0); d++; } });
+    const perf = (window.dkMuscleCore && typeof window.dkMuscleCore.setPerformed === 'function')
+      ? window.dkMuscleCore.setPerformed
+      : (s => !!(s && (s.done || s.touched)));
+    (exSets || []).forEach(s => { if (perf(s)) { v += (Number(s.weight) || 0) * (Number(s.reps) || 0); r += (Number(s.reps) || 0); d++; } });
     return { v: Math.round(v), r, d };
   }
   function fmtDay(d) {

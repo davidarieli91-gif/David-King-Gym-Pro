@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c188" />
+<meta name="dk-build" content="c189" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -15827,6 +15827,73 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     let _all = [];
     let _clients = [];
     let _filter = 'all';
+    let _remoteBusy = false;
+    let _remoteAt = 0;
+
+    /* c189: history used raw prescriptions from skipped sets for its tonnage
+       and set counts. Use the same performed/effective-kg engine as analytics
+       and the post-workout report. */
+    function histPerformed(s) {
+      if (!s) return false;
+      if (s.performed != null) return !!s.performed;
+      if (s.touched === true) return true;
+      return s.done !== false;
+    }
+    function histPerformedCount(w) {
+      return (w && w.exercises || []).reduce(function (n, ex) {
+        return n + (ex.sets || []).filter(histPerformed).length;
+      }, 0);
+    }
+    function histBw(clientId) {
+      const c = _clients.find(x => x && x.id === clientId);
+      const w = c && Number(c.weight);
+      return (isFinite(w) && w > 30 && w < 300) ? w : 75;
+    }
+    function histVolumeOf(w) {
+      if (!w) return 0;
+      const eng = window.dkAnalyticsEngine;
+      if (eng && typeof eng.recVolumeKg === 'function') {
+        try {
+          const calculated = eng.recVolumeKg({ exercises: w.exercises || [] }, {
+            bodyWeightKg: histBw(w.client_id),
+            resolveEx: window.dkResolveExRecord
+          });
+          if (isFinite(calculated) && calculated > 0) return calculated;
+        } catch (_) {}
+      }
+      const stored = Number(w.total_volume);
+      if (isFinite(stored) && stored > 0) return Math.round(stored);
+      let v = 0;
+      (w.exercises || []).forEach(ex => {
+        const unit = ex.unit === 'lb' ? 'lb' : 'kg';
+        (ex.sets || []).forEach(s => {
+          if (!histPerformed(s)) return;
+          const kg = unit === 'lb' ? (Number(s.weight) || 0) * 0.45359237 : (Number(s.weight) || 0);
+          v += kg * (Number(s.reps) || 0);
+        });
+      });
+      return Math.round(v);
+    }
+    function histExVolume(ex, clientId) {
+      if (!ex) return 0;
+      const eng = window.dkAnalyticsEngine;
+      if (eng && typeof eng.recVolumeKg === 'function') {
+        try {
+          return eng.recVolumeKg({ exercises: [ex] }, {
+            bodyWeightKg: histBw(clientId),
+            resolveEx: window.dkResolveExRecord
+          });
+        } catch (_) {}
+      }
+      const unit = ex.unit === 'lb' ? 'lb' : 'kg';
+      let v = 0;
+      (ex.sets || []).forEach(s => {
+        if (!histPerformed(s)) return;
+        const kg = unit === 'lb' ? (Number(s.weight) || 0) * 0.45359237 : (Number(s.weight) || 0);
+        v += kg * (Number(s.reps) || 0);
+      });
+      return Math.round(v);
+    }
 
     async function load() {
       _all = await db.all('workout_history');
@@ -15834,6 +15901,73 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       _clients = await db.all('clients');
       updateClientFilter();
       applyFilter();
+      /* c189: the portal's cloud sessions are merged into the history list
+         too (analytics/recovery already read them). Background + throttled:
+         the local list paints immediately, cloud rows append when they land. */
+      mergeRemoteHistory();
+    }
+
+    async function mergeRemoteHistory() {
+      if (_remoteBusy || !_clients.length) return;
+      const now = Date.now();
+      if (now - _remoteAt < 30000) return;
+      _remoteAt = now;
+      _remoteBusy = true;
+      try {
+        const candidates = _clients.filter(c => c && c.portal_sk);
+        if (_filter !== 'all') {
+          const one = _clients.find(c => c.id === _filter);
+          if (one && !candidates.some(c => c.id === one.id)) candidates.push(one);
+        }
+        if (!candidates.length) return;
+        const fetched = await Promise.race([
+          Promise.all(candidates.map(async c => {
+            let rows = [];
+            try { rows = await window.dkFetchClientHistory(c.id) || []; } catch (_) { rows = []; }
+            return { clientId: c.id, rows: rows };
+          })),
+          new Promise(resolve => setTimeout(() => resolve([]), 6500))
+        ]);
+        if (!Array.isArray(fetched) || !fetched.length) return;
+        const seen = new Set(_all.map(w => String(w.client_id || '') + '|' + (Number(w.date || w.created_at) || 0)));
+        const latest = {};
+        let added = 0;
+        fetched.forEach(item => {
+          (item.rows || []).forEach(r => {
+            const ts = Number(r.date || r.created_at) || 0;
+            if (!ts) return;
+            const key = item.clientId + '|' + ts;
+            if (seen.has(key)) return;
+            seen.add(key);
+            _all.push(Object.assign({}, r, {
+              client_id: item.clientId,
+              id: r.id || ('remote_' + item.clientId + '_' + ts),
+              _remote: true
+            }));
+            added++;
+            if (!latest[item.clientId] || ts > latest[item.clientId]) latest[item.clientId] = ts;
+          });
+        });
+        if (!added) return;
+        _all.sort((a, b) => (b.date || b.created_at || 0) - (a.date || a.created_at || 0));
+        /* the dashboard's <last active> should reflect the portal session too */
+        for (const id of Object.keys(latest)) {
+          const c = _clients.find(x => x.id === id);
+          if (!c) continue;
+          if (!c.last_active || latest[id] > c.last_active) {
+            c.last_active = latest[id];
+            try { await db.put('clients', c); } catch (_) {}
+          }
+        }
+        applyFilter();
+        /* c189: the dashboard's last-active and today's activity tile should
+           reflect the portal session without a second manual refresh */
+        try { if (screens.dashboard && typeof screens.dashboard.refresh === 'function') screens.dashboard.refresh(); } catch (_) {}
+      } catch (e) {
+        console.warn('[history] portal merge failed:', e);
+      } finally {
+        _remoteBusy = false;
+      }
     }
 
     function updateClientFilter() {
@@ -15890,9 +16024,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         `${t('workouts.clientLabel')}: ${clientName} · ${t('workouts.dateLabel')}: ${date} · ${t('workouts.durationLabel')}: ${duration}`;
 
       const exCount = (w.exercises || []).length;
-      const setCount = (w.exercises || []).reduce((s, ex) => s + (ex.sets || []).length, 0);
-      const volume = (w.exercises || []).reduce((s, ex) =>
-        s + (ex.sets || []).reduce((ss, set) => ss + (set.weight || 0) * (set.reps || 0), 0), 0);
+      const setCount = histPerformedCount(w);
+      const volume = histVolumeOf(w);
       document.getElementById('workout-detail-exercises').textContent = exCount;
       document.getElementById('workout-detail-sets').textContent = setCount;
       document.getElementById('workout-detail-volume').textContent = fmtNumber(volume);
@@ -15904,7 +16037,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       } else {
         body.innerHTML = (w.exercises || []).map((ex, ei) => {
           const sets = ex.sets || [];
-          const exVolume = sets.reduce((s, set) => s + (set.weight || 0) * (set.reps || 0), 0);
+          const exVolume = histExVolume(ex, w.client_id);
           return `
             <div class="bg-surface-2 border border-border rounded-xl p-3">
               <div class="flex items-center gap-2 mb-2">
@@ -15959,9 +16092,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const clientName = client ? (client.full_name || client.name) : t('workouts.noClientSelected');
       const date = w.date || w.created_at ? fmtDate(w.date || w.created_at) : '—';
       const exerciseCount = (w.exercises || []).length;
-      const totalSets = (w.exercises || []).reduce((sum, ex) => sum + (ex.sets || []).length, 0);
-      const volume = (w.exercises || []).reduce((sum, ex) =>
-        sum + (ex.sets || []).reduce((s, set) => s + (set.weight || 0) * (set.reps || 0), 0), 0);
+      const totalSets = histPerformedCount(w);
+      const volume = histVolumeOf(w);
       const duration = w.duration ? formatDuration(w.duration) : '—';
       const name = w.name || t('workouts.historyWorkout');
 
@@ -16002,7 +16134,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
     // formatDuration is now global (deduplication 2026-08 QA Sprint 2 #5).
 
-    function setFilter(v) { _filter = v; applyFilter(); }
+    function setFilter(v) {
+      _filter = v;
+      applyFilter();
+      mergeRemoteHistory(); /* c189: selecting a client also pulls his portal sessions */
+    }
     function refresh() { return load(); }
 
 
@@ -16376,6 +16512,16 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
        working weights still show up. */
     let _lastRefMap = null;
     let _lastBw = 75; /* c184: body weight for bodyweight effective volume in the report */
+    /* c189: the live report was still calling the PORTAL helpers
+       dispVolKg()/dispUnitShort(), which do not exist in the trainer scope -
+       openLiveReportModal threw before rendering, so Finish/Save looked dead.
+       These are the trainer equivalents (kg canonical -> display unit). */
+    function dispVolKg(v) {
+      return dkWConv(Number(v) || 0, 'kg', dkWUnitGet());
+    }
+    function dispUnitShort() {
+      return dkWUnitShort(dkWUnitGet());
+    }
     async function fetchLastRef(clientId) {
       let rows = [];
       try { rows = (await db.find('workout_history', 'by_clientId', clientId)) || []; } catch (_) { rows = []; }
@@ -17926,7 +18072,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       </div>`;
       document.body.appendChild(ov);
       ov.addEventListener('click', (e) => { if (e.target === ov) closeLiveReportModal(); });
-      document.getElementById('live-report-save').addEventListener('click', async () => {
+      const _liveSaveBtn = document.getElementById('live-report-save');
+      _liveSaveBtn.addEventListener('click', async () => {
+        if (_liveSaveBtn.disabled) return;
+        _liveSaveBtn.disabled = true;
+        _liveSaveBtn.classList.add('opacity-60', 'pointer-events-none');
+        try {
         /* c117: the session came from a program day and its STRUCTURE was
            edited (exercises/sets/supersets) → ask «Сохранить изменения?».
            Yes → the new structure is written into the client's working
@@ -17972,6 +18123,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         // Refresh history + analytics
         if (screens.history) screens.history.refresh();
         if (screens.dashboard) screens.dashboard.refresh();
+        } catch (eSave) {
+          console.error('[live-report] save failed:', eSave);
+          _liveSaveBtn.disabled = false;
+          _liveSaveBtn.classList.remove('opacity-60', 'pointer-events-none');
+          toast(t('workouts.saveFailed') || 'Could not save the workout - please try again', 'danger', 5000);
+        }
       });
       document.getElementById('live-report-continue').addEventListener('click', closeLiveReportModal);
       document.getElementById('live-report-wa').addEventListener('click', () => {
@@ -28337,6 +28494,11 @@ async function boot() {
           const ts = Number(r.ts) || Date.parse(r.date) || 0;
           const exs = r.exercises || [];
           return {
+            /* c189: stable identity for the history list/detail modal -
+               remote records used to arrive without id/client_id, so the
+               history screen could not render or open them */
+            id: 'remote_' + String(clientId) + '_' + ts,
+            client_id: clientId,
             date: ts, created_at: ts,
             duration: Number(r.duration_sec) || 0,
             /* c127: done-only, kg-normalized (engine) — honest stored volume for remote records too */
@@ -34234,7 +34396,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 188; /* numeric part of dk-build c188 */
+  var RUNNING = 189; /* numeric part of dk-build c189 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
