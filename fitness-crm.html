@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c189" />
+<meta name="dk-build" content="c190" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -10391,13 +10391,23 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
   screens.profile = (function () {
     let _clientId = null;
     let _client = null;
+    /* c190: guards against an OLD profile load finishing after the trainer
+       switched clients (async db.get / program query / exercise cache).
+       Without this, client A's programs could paint into client B's card. */
+    let _renderSeq = 0;
+    let _programsSeq = 0;
     let _pfMove = null;    // { key, suppressClickUntil } while panel move mode is active
     let _pfEscWired = false;
     const PF_HOLD_MS = 5000; // long-press duration to pick up a panel
 
     async function load(clientId) {
+      const seq = ++_renderSeq;
+      const requestedId = String(clientId || '');
       _clientId = clientId;
-      _client = await db.get('clients', clientId);
+      const client = await db.get('clients', clientId);
+      /* a newer load already started - this response is stale */
+      if (seq !== _renderSeq || String(_clientId || '') !== requestedId) return;
+      _client = client;
       if (!_client) {
         toast(t('clients.notFoundToast'), 'danger');
         router.show('dashboard');
@@ -10408,12 +10418,15 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
 
     function render() {
       // Async (panel layout loads from settings); callers don't await.
-      renderAsync().catch(e => console.error('[profile render]', e));
+      const seq = ++_renderSeq;
+      renderAsync(seq).catch(e => console.error('[profile render]', e));
     }
 
-    async function renderAsync() {
+    async function renderAsync(seq) {
       if (!_client) return;
       const c = _client;
+      const requestedId = String(_clientId || '');
+      if (seq !== _renderSeq || String(_clientId || '') !== requestedId) return;
       const name = c.full_name || c.name || '?';
 
       // Header
@@ -10424,6 +10437,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       // Saved custom order (from 5-sec long-press moves) overrides the base.
       const desktopLayout = window.matchMedia('(min-width: 1280px)').matches;
       const layout = await pfLoadLayout(desktopLayout);
+      if (seq !== _renderSeq || String(_clientId || '') !== requestedId) return;
       pfPaint(c, name, layout, desktopLayout);
     }
 
@@ -10554,7 +10568,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       _pfMove = null;
       try { toast(t('profile.moved'), 'success', 1500); } catch (_) {}
       const y = window.scrollY;
-      try { await renderAsync(); } catch (_) {}
+      try { await renderAsync(++_renderSeq); } catch (_) {}
       requestAnimationFrame(() => { try { window.scrollTo(0, y); } catch (_) {} });
     }
 
@@ -10827,23 +10841,33 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     }
 
     async function loadPrograms(clientId) {
-      const all = await db.find('client_programs', 'by_clientId', clientId);
+      /* c190: never let a slow load for client A paint into client B's card */
+      const targetId = String(clientId || '');
+      if (!targetId || targetId !== String(_clientId || '')) return;
+      const seq = ++_programsSeq;
+      const activeSection = document.getElementById('programs-active-section');
+      if (!activeSection || !activeSection.isConnected) return;
+      const still = () => seq === _programsSeq &&
+        String(_clientId || '') === targetId && activeSection.isConnected;
+      const all = await db.find('client_programs', 'by_clientId', targetId);
+      if (!still()) return;
       // Load exercise cache for thumbnails in program list (Fix: _pb is null here)
       if (!_profileExerciseCache) {
         try {
           _profileExerciseCache = await db.all('exercise_base');
           _profileExMap = buildExerciseIndex(_profileExerciseCache);
         } catch (e) { console.warn('[loadPrograms] exercise cache load failed', e); }
+        if (!still()) return;
       }
       const actives = all.filter(p => p.status === 'active').sort((a,b) => (b.created_at||0) - (a.created_at||0));
       const archived = all.filter(p => p.status === 'archived').sort((a,b) => (b.archived_at||0) - (a.archived_at||0));
-      const activeSection = document.getElementById('programs-active-section');
 
       if (activeSection) {
         if (actives.length > 0) {
           /* c120: rotation info per program (parallel; read-only) */
           const rotByProg = {};
           await Promise.all(actives.map(async p => { try { rotByProg[p.id] = await dkRotationFor(p, clientId); } catch (_) { rotByProg[p.id] = { lastIdx: -1, lastDate: 0, nextIdx: -1 }; } }));
+          if (!still()) return;
           activeSection.innerHTML = actives.map((prog, pi) => {
             const days = prog.workout_days || [];
             const totalEx = days.reduce((s, d) => s + (d.exercises || []).length, 0);
@@ -11001,6 +11025,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       }
 
       // Archived programs — also collapsible
+      if (!still()) return;
       const histSection = document.getElementById('programs-history-section');
       if (histSection) {
         if (archived.length > 0) {
@@ -24461,6 +24486,8 @@ Select foods for each meal. Output as JSON only.`;
      ===================================================================== */
   const nutritionPlans = (function () {
     let _all = [];
+    let _plansSeq = 0;
+    let _plansClientId = null;
     let _foods = [];
     let _editing = null;
     let _fpCallback = null;
@@ -24540,12 +24567,19 @@ Select foods for each meal. Output as JSON only.`;
     }
 
     async function loadPlans(clientId) {
-      const all = await db.find('nutrition_plans', 'by_clientId', clientId);
+      /* c190: same client-switch race guard as programs/nutrition */
+      const targetId = String(clientId || '');
+      const seq = ++_plansSeq;
+      const all = await db.find('nutrition_plans', 'by_clientId', targetId);
+      if (seq !== _plansSeq) return;
+      _plansClientId = targetId;
       _all = all.sort((a, b) => (b.created_at || 0) - (a.created_at || 0));
-      renderPlansList(clientId);
+      renderPlansList(targetId);
     }
 
     function renderPlansList(clientId) {
+      const targetId = String(clientId || '');
+      if (targetId && _plansClientId && targetId !== String(_plansClientId)) return;
       const section = document.getElementById('nutrition-plans-section');
       if (!section) return;
       const lang = (typeof currentLang === 'function') ? currentLang() : 'en';
@@ -34396,7 +34430,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 189; /* numeric part of dk-build c189 */
+  var RUNNING = 190; /* numeric part of dk-build c190 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

@@ -169,7 +169,11 @@
 // workouts are now merged into the trainer's Workouts history (stable
 // remote id/client_id), last_active is updated and history tonnage/sets use
 // performed sets + effective kg instead of skipped prescriptions.
-const CACHE_NAME = 'dk-gym-v216'; // c189
+// v217: c190 - PROFILE CLIENT-SWITCH RACE: async load/render/program queries
+// are token-guarded per client, so a slow response for client A can no longer
+// paint A's programs into client B's profile (new client showing other
+// clients' workouts).
+const CACHE_NAME = 'dk-gym-v217'; // c190
 // v104: c77 — UI sizes can no longer change themselves (zoom-based gif/food/cards, wheel/touch slider guards) + hard pre-login lock (Add Client included) + header theme quick menu with all 33 themes
 // v103: c76 — Exercise DB tab = exact Quick Pick copy (star/eye/+ cards, favorites/recent tabs, View grouping, localized map tabs)
 // v102: c75 — 3D atlas 1.5x + Settings ▸ UI sizes (atlas slider, bodymap/exercise-panel fixes) + Exercise DB tab rebuilt as picker-style browse
