@@ -173,7 +173,11 @@
 // are token-guarded per client, so a slow response for client A can no longer
 // paint A's programs into client B's profile (new client showing other
 // clients' workouts).
-const CACHE_NAME = 'dk-gym-v217'; // c190
+// v218: c191 - PROFILE OPEN HOTFIX: load and render now use separate tokens.
+// router.show('profile') refreshes the screen while load() is still waiting
+// for db.get; the shared token used to cancel that load and leave every client
+// card blank. New c191 regression covers the real open sequence.
+const CACHE_NAME = 'dk-gym-v218'; // c191
 // v104: c77 — UI sizes can no longer change themselves (zoom-based gif/food/cards, wheel/touch slider guards) + hard pre-login lock (Add Client included) + header theme quick menu with all 33 themes
 // v103: c76 — Exercise DB tab = exact Quick Pick copy (star/eye/+ cards, favorites/recent tabs, View grouping, localized map tabs)
 // v102: c75 — 3D atlas 1.5x + Settings ▸ UI sizes (atlas slider, bodymap/exercise-panel fixes) + Exercise DB tab rebuilt as picker-style browse

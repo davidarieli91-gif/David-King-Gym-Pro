@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c190" />
+<meta name="dk-build" content="c191" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -10393,7 +10393,10 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     let _client = null;
     /* c190: guards against an OLD profile load finishing after the trainer
        switched clients (async db.get / program query / exercise cache).
-       Without this, client A's programs could paint into client B's card. */
+       Load and render use SEPARATE tokens: router.show('profile') calls
+       render() while a new load is still awaiting db.get, and that refresh
+       must not cancel the load itself (otherwise every card opens blank). */
+    let _loadSeq = 0;
     let _renderSeq = 0;
     let _programsSeq = 0;
     let _pfMove = null;    // { key, suppressClickUntil } while panel move mode is active
@@ -10401,12 +10404,15 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     const PF_HOLD_MS = 5000; // long-press duration to pick up a panel
 
     async function load(clientId) {
-      const seq = ++_renderSeq;
+      const seq = ++_loadSeq;
       const requestedId = String(clientId || '');
       _clientId = clientId;
+      /* do not let a router refresh paint the previous client in the gap */
+      if (_client && String(_client.id || '') !== requestedId) _client = null;
       const client = await db.get('clients', clientId);
-      /* a newer load already started - this response is stale */
-      if (seq !== _renderSeq || String(_clientId || '') !== requestedId) return;
+      /* a newer LOAD already started - this response is stale. Render tokens
+         are deliberately not part of this check (see comment above). */
+      if (seq !== _loadSeq || String(_clientId || '') !== requestedId) return;
       _client = client;
       if (!_client) {
         toast(t('clients.notFoundToast'), 'danger');
@@ -10426,6 +10432,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       if (!_client) return;
       const c = _client;
       const requestedId = String(_clientId || '');
+      if (String(c.id || '') !== requestedId) return;
       if (seq !== _renderSeq || String(_clientId || '') !== requestedId) return;
       const name = c.full_name || c.name || '?';
 
@@ -34430,7 +34437,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 190; /* numeric part of dk-build c190 */
+  var RUNNING = 191; /* numeric part of dk-build c191 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

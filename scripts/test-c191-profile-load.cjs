@@ -1,4 +1,4 @@
-/* c190 profile client-switch race regression.
+/* c191 profile client-switch race regression.
    A slow async load/render/program query for client A must never paint into
    client B's profile after the trainer switches clients. */
 const fs = require('fs');
@@ -29,11 +29,14 @@ function bodyOf(src, signature) {
 const profileStart = crm.indexOf('screens.profile = (function');
 const profile = crm.slice(profileStart, profileStart + 90000);
 ok('profile has render token', has(profile, 'let _renderSeq = 0;'));
+ok('profile has separate load token', has(profile, 'let _loadSeq = 0;'));
 ok('profile has programs token', has(profile, 'let _programsSeq = 0;'));
 
 const load = bodyOf(profile, 'async function load(clientId)');
 ok('load captures requested id', has(load, 'const requestedId = String(clientId || \'\');'));
-ok('load checks newer load', has(load, 'if (seq !== _renderSeq || String(_clientId || \'\') !== requestedId) return;'));
+ok('load checks newer load (not render)', has(load, 'if (seq !== _loadSeq || String(_clientId || \'\') !== requestedId) return;'));
+ok('router render cannot cancel an in-flight load', !load.includes('seq !== _renderSeq'));
+ok('load drops previous client in the gap', has(load, "if (_client && String(_client.id || '') !== requestedId) _client = null;"));
 ok('load sets client only after guard', has(load, '_client = client;'));
 
 const render = bodyOf(profile, 'function render()');
@@ -41,6 +44,7 @@ ok('render starts a new token', has(render, 'const seq = ++_renderSeq;'));
 ok('render passes token', has(render, 'renderAsync(seq)'));
 
 const renderAsync = bodyOf(profile, 'async function renderAsync(seq)');
+ok('renderAsync rejects a record for another client', has(renderAsync, "if (String(c.id || '') !== requestedId) return;"));
 ok('renderAsync checks token before header', has(renderAsync, 'if (seq !== _renderSeq || String(_clientId || \'\') !== requestedId) return;'));
 ok('renderAsync re-checks after layout await', (renderAsync.match(/if \(seq !== _renderSeq/g) || []).length >= 2);
 ok('renderAsync checks before pfPaint', /if \(seq !== _renderSeq \|\| String\(_clientId \|\| ''\) !== requestedId\) return;\s*pfPaint/.test(renderAsync));
@@ -63,9 +67,9 @@ ok('nutrition plans guard stale query', (function () {
 })());
 
 ok('profile render still wires programs', has(crm, 'loadPrograms(c.id);'));
-ok('trainer build c190', has(crm, 'name="dk-build" content="c190"'));
-ok('trainer RUNNING 190', has(crm, 'var RUNNING = 190;'));
-ok('SW cache v217', has(sw, "CACHE_NAME = 'dk-gym-v217'"));
+ok('trainer build c191', has(crm, 'name="dk-build" content="c191"'));
+ok('trainer RUNNING 191', has(crm, 'var RUNNING = 191;'));
+ok('SW cache v218', has(sw, "CACHE_NAME = 'dk-gym-v218'"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 if (fail) process.exitCode = 1;
