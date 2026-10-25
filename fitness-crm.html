@@ -3654,7 +3654,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           </div>
           <div class="flex items-center gap-2 mb-3">
             <span class="v2-pill v2-pill-live"><span class="w-1.5 h-1.5 rounded-full bg-success"></span> <span data-i18n="clients.online">Online</span></span>
-            <span class="v2-pill" id="v2-side-version">c196</span>
+            <span class="v2-pill" id="v2-side-version">c197</span>
           </div>
         </div>
 
@@ -33214,6 +33214,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const results = document.getElementById('v2-search-results');
     const menuBtn = document.getElementById('v2-menu-btn');
     const aside = document.getElementById('aside');
+    const versionPill = document.getElementById('v2-side-version');
+    if (versionPill) {
+      const buildMeta = document.querySelector('meta[name="dk-build"]');
+      if (buildMeta && buildMeta.content) versionPill.textContent = buildMeta.content;
+    }
     let clientsCache = null;
 
     function closeProfile() {
