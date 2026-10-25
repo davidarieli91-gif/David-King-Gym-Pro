@@ -92,6 +92,15 @@ on boot and backup restore. Theme choice persists.
 - Desktop 1440: dashboard, exercise DB, 3D atlas, nutrition, tools, analytics,
   settings, profile, login checked.
 
+## Deploy
+
+- Commit `4377fe3` pushed; GitHub Actions run **40213827758** — success.
+- Small PWA install-prompt styling follow-up `dcc75c1`; run **40214208573** —
+  success.
+- Live page verified: build **c196**, SW **dk-gym-v223**, six Vision themes,
+  live dashboard in Russian, mobile layout, portal theme cards, no console
+  errors.
+
 ## Still to deepen in the next pass
 
 The whole app now inherits Vision V2. The next visual pass can go further on:
