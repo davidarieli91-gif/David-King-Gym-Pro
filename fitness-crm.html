@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c192" />
+<meta name="dk-build" content="c193" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -806,6 +806,10 @@
     .bm-ex-card img, .bm-ex-card .ex-anim-container img { object-fit: contain !important; }
     #exercise-gif-slot { aspect-ratio: 1 / 1 !important; max-height: 60vh; }
     @media (max-width: 640px) { #exercise-gif-slot { max-height: 50vh; } }
+    /* c192: RepDB cards were shrinking the image slot to a small square on
+       short/mobile viewports because aspect-ratio + max-height shrinks WIDTH.
+       The modal already scrolls; let the slot use the full card width. */
+    #exercise-gif-slot { width: 100%; max-height: none !important; }
     .bm-chip { transition: all .12s; }
     .bm-chip.active { background: rgb(var(--c-primary)); color: #fff; border-color: rgb(var(--c-primary)); }
     .bm-class-chip { transition: all .12s; border-color: rgb(var(--c-border)); }
@@ -2352,6 +2356,8 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
       [class*="fixed inset-0"] .p-4 { padding: 0.5rem !important; }
       [class*="fixed inset-0"] .p-3 { padding: 0.5rem !important; }
       #exercise-gif-slot { max-height: 34vh !important; }
+      /* c192b: do not shrink the RepDB image to a tiny square in landscape */
+      #exercise-gif-slot { max-height: none !important; }
     }
 
     /* --- Очень узкие экраны (<360px): уплотнение чипсов и сеток ---
@@ -6386,7 +6392,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       let _exerciseDbRdbLoaded = false;
       // Bump EXERCISE_DB_BUST when exercise-db.json changes - defeats SW/browser
       // cache-first staleness so reseed always unpacks the deployed dataset.
-      const EXERCISE_DB_BUST = 'v55';
+      const EXERCISE_DB_BUST = 'v56';
       async function loadExerciseDbExternal() {
         try {
           const resp = await fetch('exercise-db.json?v=' + EXERCISE_DB_BUST);
@@ -6802,19 +6808,19 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     'Cable': {en:'Cable',ru:'Кроссовер',he:'כבל'},
     'Machine': {en:'Machine',ru:'Тренажёр',he:'מכשיר'},
     'Bodyweight': {en:'Bodyweight',ru:'Вес тела',he:'משקל גוף'},
-    'Pull-up Bar': {en:'Pull-up Bar',ru:'??????',he:'???'},
-    'Dip Station': {en:'Dip Station',ru:'??????',he:'???????'},
-    'Rings': {en:'Rings',ru:'??????',he:'?????'},
-    'Rope': {en:'Rope',ru:'?????',he:'???'},
-    'Bench': {en:'Bench',ru:'??????',he:'????'},
-    'Box': {en:'Box',ru:'?????',he:'????'},
-    'Ab Wheel': {en:'Ab Wheel',ru:'?????? ??? ??????',he:'????? ???'},
-    'Battle Rope': {en:'Battle Rope',ru:'?????? ?????',he:'??? ???'},
-    'Medicine Ball': {en:'Medicine Ball',ru:'??????',he:'???? ???'},
-    'Stability Ball': {en:'Stability Ball',ru:'??????',he:'???? ??????'},
-    'Suspension': {en:'Suspension',ru:'?????',he:'?????? ?????'},
-    'Trap Bar': {en:'Trap Bar',ru:'????-????',he:'??? ????'},
-    'Cardio Machine': {en:'Cardio Machine',ru:'??????????????',he:'????? ???????'},
+    'Pull-up Bar': {en:'Pull-up Bar',ru:'Турник',he:'מתח'},
+    'Dip Station': {en:'Dip Station',ru:'Брусья',he:'מקבילים'},
+    'Rings': {en:'Rings',ru:'Кольца',he:'טבעות'},
+    'Rope': {en:'Rope',ru:'Канат',he:'חבל'},
+    'Bench': {en:'Bench',ru:'Скамья',he:'ספסל'},
+    'Box': {en:'Box',ru:'Тумба',he:'ארגז'},
+    'Ab Wheel': {en:'Ab Wheel',ru:'Колесо для пресса',he:'גלגלת בטן'},
+    'Battle Rope': {en:'Battle Rope',ru:'Боевой канат',he:'חבל קרב'},
+    'Medicine Ball': {en:'Medicine Ball',ru:'Медбол',he:'כדור כוח'},
+    'Stability Ball': {en:'Stability Ball',ru:'Фитбол',he:'כדור יציבות'},
+    'Suspension': {en:'Suspension',ru:'Петли',he:'רצועות תלייה'},
+    'Trap Bar': {en:'Trap Bar',ru:'Трап-гриф',he:'מוט טרפז'},
+    'Cardio Machine': {en:'Cardio Machine',ru:'Кардиотренажёр',he:'מכונה אירובית'},
     'Kettlebell': {en:'Kettlebell',ru:'Гиря',he:'קטלבל'},
     'Band': {en:'Band',ru:'Резинка',he:'גומייה'},
     'EZ-Bar': {en:'EZ-Bar',ru:'EZ-гриф',he:'EZ בר'},
@@ -7424,11 +7430,28 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       console.warn('[seed] RepDB records missing from exercise-db-rdb.json');
       return 0;
     }
-    const have = new Set(all.filter(e => e.source === 'repdb').map(e => e.id));
-    const missing = force ? records : records.filter(e => !have.has(e.id));
-    if (missing.length) await db.bulkPut('exercise_base', missing);
+    const byId = new Map(all.filter(e => e.source === 'repdb').map(e => [e.id, e]));
+    const missing = [];
+    const updates = [];
+    for (const rec of records) {
+      const cur = byId.get(rec.id);
+      if (!cur) { missing.push(rec); continue; }
+      /* c193: refresh only translated/display fields; preserve trainer edits
+         (custom media, archive state, etc.). */
+      const patch = {};
+      for (const k of ['name_ru', 'name_he', 'technique_ru', 'technique_he', 'group_ru', 'group_he', 'equipment_ru', 'equipment_he', 'attribution', 'source_url']) {
+        if (cur[k] !== rec[k]) patch[k] = rec[k];
+      }
+      if (Object.keys(patch).length) updates.push(Object.assign({}, cur, patch));
+    }
+    if (force) {
+      await db.bulkPut('exercise_base', records);
+    } else {
+      if (missing.length) await db.bulkPut('exercise_base', missing);
+      if (updates.length) await db.bulkPut('exercise_base', updates);
+    }
     await db.put('settings', { key: 'seeded_repdb_v1', value: true });
-    if (missing.length) console.info(`[seed] RepDB added: ${missing.length}/${records.length} (source=repdb, total base=${all.length + missing.length})`);
+    if (missing.length || updates.length) console.info(`[seed] RepDB sync: +${missing.length} missing, ${updates.length} translation updates (source=repdb, total base=${all.length + missing.length})`);
     return records.length;
   }
 
@@ -20625,19 +20648,19 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         cable: { en: 'Cable', ru: 'Кроссовер', he: 'כבלים' },
         machine: { en: 'Machine', ru: 'Тренажёр', he: 'מכונה' },
         bodyweight: { en: 'Bodyweight', ru: 'Вес тела', he: 'משקל גוף' },
-      pull_up_bar: { en: 'Pull-up Bar', ru: '??????', he: '???' },
-      dip_station: { en: 'Dip Station', ru: '??????', he: '???????' },
-      rings: { en: 'Rings', ru: '??????', he: '?????' },
-      rope: { en: 'Rope', ru: '?????', he: '???' },
-      bench: { en: 'Bench', ru: '??????', he: '????' },
-      box: { en: 'Box', ru: '?????', he: '????' },
-      ab_wheel: { en: 'Ab Wheel', ru: '?????? ??? ??????', he: '????? ???' },
-      battle_rope: { en: 'Battle Rope', ru: '?????? ?????', he: '??? ???' },
-      medicine_ball: { en: 'Medicine Ball', ru: '??????', he: '???? ???' },
-      stability_ball: { en: 'Stability Ball', ru: '??????', he: '???? ??????' },
-      suspension: { en: 'Suspension', ru: '?????', he: '?????? ?????' },
-      trap_bar: { en: 'Trap Bar', ru: '????-????', he: '??? ????' },
-      cardio_machine: { en: 'Cardio Machine', ru: '??????????????', he: '????? ???????' },
+      pull_up_bar: { en: 'Pull-up Bar', ru: 'Турник', he: 'מתח' },
+      dip_station: { en: 'Dip Station', ru: 'Брусья', he: 'מקבילים' },
+      rings: { en: 'Rings', ru: 'Кольца', he: 'טבעות' },
+      rope: { en: 'Rope', ru: 'Канат', he: 'חבל' },
+      bench: { en: 'Bench', ru: 'Скамья', he: 'ספסל' },
+      box: { en: 'Box', ru: 'Тумба', he: 'ארגז' },
+      ab_wheel: { en: 'Ab Wheel', ru: 'Колесо для пресса', he: 'גלגלת בטן' },
+      battle_rope: { en: 'Battle Rope', ru: 'Боевой канат', he: 'חבל קרב' },
+      medicine_ball: { en: 'Medicine Ball', ru: 'Медбол', he: 'כדור כוח' },
+      stability_ball: { en: 'Stability Ball', ru: 'Фитбол', he: 'כדור יציבות' },
+      suspension: { en: 'Suspension', ru: 'Петли', he: 'רצועות תלייה' },
+      trap_bar: { en: 'Trap Bar', ru: 'Трап-гриф', he: 'מוט טרפז' },
+      cardio_machine: { en: 'Cardio Machine', ru: 'Кардиотренажёр', he: 'מכונה אירובית' },
         kettlebell: { en: 'Kettlebells', ru: 'Гири', he: 'קטלבלים' },
         kettlebells: { en: 'Kettlebells', ru: 'Гири', he: 'קטלבלים' },
         band: { en: 'Bands', ru: 'Резинки', he: 'גומיות' },
@@ -34535,7 +34558,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 192; /* numeric part of dk-build c192 */
+  var RUNNING = 193; /* numeric part of dk-build c193 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
@@ -36037,6 +36060,18 @@ document.addEventListener('input', function (e) {
       cable: { en: 'Cable', ru: 'Кроссовер', he: 'כבלים' },
       machine: { en: 'Machine', ru: 'Тренажёр', he: 'מכונה' },
       bodyweight: { en: 'Bodyweight', ru: 'Вес тела', he: 'משקל גוף' },
+      pull_up_bar: { en: 'Pull-up Bar', ru: 'Турник', he: 'מתח' },
+      dip_station: { en: 'Dip Station', ru: 'Брусья', he: 'מקבילים' },
+      rings: { en: 'Rings', ru: 'Кольца', he: 'טבעות' },
+      rope: { en: 'Rope', ru: 'Канат', he: 'חבל' },
+      bench: { en: 'Bench', ru: 'Скамья', he: 'ספסל' },
+      box: { en: 'Box', ru: 'Тумба', he: 'ארגז' },
+      ab_wheel: { en: 'Ab Wheel', ru: 'Колесо для пресса', he: 'גלגלת בטן' },
+      battle_rope: { en: 'Battle Rope', ru: 'Боевой канат', he: 'חבל קרב' },
+      stability_ball: { en: 'Stability Ball', ru: 'Фитбол', he: 'כדור יציבות' },
+      suspension: { en: 'Suspension', ru: 'Петли', he: 'רצועות תלייה' },
+      trap_bar: { en: 'Trap Bar', ru: 'Трап-гриф', he: 'מוט טרפז' },
+      cardio_machine: { en: 'Cardio Machine', ru: 'Кардиотренажёр', he: 'מכונה אירובית' },
       kettlebell: { en: 'Kettlebells', ru: 'Гири', he: 'קטלבלים' },
       kettlebells: { en: 'Kettlebells', ru: 'Гири', he: 'קטלבלים' },
       band: { en: 'Bands', ru: 'Резинки', he: 'גומיות' },
