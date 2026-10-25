@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c194" />
+<meta name="dk-build" content="c195" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2928,7 +2928,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c194</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c195</p>
             </div>
           </div>
 
@@ -6405,7 +6405,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       let _exerciseDbRdbLoaded = false;
       // Bump EXERCISE_DB_BUST when exercise-db.json changes - defeats SW/browser
       // cache-first staleness so reseed always unpacks the deployed dataset.
-      const EXERCISE_DB_BUST = 'v56';
+      const EXERCISE_DB_BUST = 'v57';
       async function loadExerciseDbExternal() {
         try {
           const resp = await fetch('exercise-db.json?v=' + EXERCISE_DB_BUST);
@@ -6667,49 +6667,15 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
         return 'General';
       }
 
-      // EQUIPMENT_I18N moved to top-level scope (was here, caused ReferenceError in _populateFormSelects)
-
-      const EQUIPMENT_CANONICAL = {
-        'barbell': 'Barbell',
-        'dumbbells': 'Dumbbell', 'dumbbell': 'Dumbbell',
-        'cable': 'Cable',
-        'machine': 'Machine', 'smith': 'Machine',
-        'bodyweight': 'Bodyweight',
-        'pull_up_bar': 'Pull-up Bar',
-        'dip_station': 'Dip Station',
-        'rings': 'Rings',
-        'rope': 'Rope',
-        'climbing_rope': 'Rope',
-        'bench': 'Bench', 'flat_bench': 'Bench',
-        'box': 'Box', 'plyo_box': 'Box',
-        'ab_wheel': 'Ab Wheel',
-        'battle_rope': 'Battle Rope',
-        'medicine_ball': 'Medicine Ball', 'slam_ball': 'Medicine Ball',
-        'stability_ball': 'Stability Ball',
-        'suspension': 'Suspension', 'suspension_trainer': 'Suspension',
-        'trap_bar': 'Trap Bar',
-        'cardio_machine': 'Cardio Machine',
-        'exercise_ball': 'Bodyweight', 'bosu': 'Bodyweight',
-        'foam_roll': 'Bodyweight',
-        'kettlebells': 'Kettlebell', 'kettlebell': 'Kettlebell',
-        'bands': 'Band', 'band': 'Band',
-        'ez_bar': 'EZ-Bar', 'ez-bar': 'EZ-Bar',
-        'plate': 'Plate', 'plates': 'Plate',
-        'other': 'Other'
-      };
-
-      function normalizeEquipment(e) {
-        const key = String(e || '').toLowerCase();
-        return EQUIPMENT_CANONICAL[key] || 'Bodyweight';
-      }
-
       return raw.map(e => {
         const subgroup = assignSubgroup(e);
-        const equipmentName = normalizeEquipment(e.e);
+        /* c195: one canonical equipment key for every source. */
+        const equipmentKey = canonicalEquipmentKey(e.e, e.nE, e.is_bodyweight);
+        const equipment = EQUIPMENT_TAXONOMY[equipmentKey] || EQUIPMENT_TAXONOMY.other;
         const folderPath = [
           e.g,
           subgroup.toLowerCase().replace(/\s+/g, '_'),
-          equipmentName.toLowerCase().replace(/[^a-z0-9]+/g, '_')
+          equipmentKey
         ];
         const groupRu = GROUP_RU_OVERRIDES[e.g] || e.gR;
         const groupHe = GROUP_HE_OVERRIDES[e.g] || e.gH;
@@ -6724,10 +6690,10 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           group_canonical: e.g,
           group_en: e.gE, group_ru: groupRu, group_he: groupHe,
           subgroup_en: subgroup, subgroup_ru: subgroup, subgroup_he: subgroup,
-          equipment_type: equipmentName.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
-          equipment_en: equipmentName,
-          equipment_ru: EQUIPMENT_I18N[equipmentName] ? EQUIPMENT_I18N[equipmentName].ru : equipmentName,
-          equipment_he: EQUIPMENT_I18N[equipmentName] ? EQUIPMENT_I18N[equipmentName].he : equipmentName,
+          equipment_type: equipmentKey,
+          equipment_en: equipment.en,
+          equipment_ru: equipment.ru,
+          equipment_he: equipment.he,
           name_en: e.nE, name_ru: e.nR, name_he: e.nH,
           technique_en: e.t || '',
           technique_ru: e.tRu || '',
@@ -6793,6 +6759,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     'Hip Flexors': { en: 'Hip Flexors', ru: 'Сгибатели бедра', he: 'כופפי ירך' },
     'Rotator Cuff': { en: 'Rotator Cuff', ru: 'Вращательная манжета', he: 'רוטציה בכתף' },
     'Wrist Curls': { en: 'Wrist Curls', ru: 'Сгибатели запястья', he: 'כופפי כף יד' }, /* c172 */
+    'Grip': { en: 'Grip', ru: 'Хват', he: 'אחיזה' },
   };
 
   /** Group display-name translations for all 3 languages.
@@ -6814,32 +6781,185 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     'calisthenics':  { en: 'Calisthenics',ru: 'Калистеника',   he: 'משקל גוף' },
   };
 
-  /** Equipment display-name translations (moved to top-level for exercise form access). */
-  const EQUIPMENT_I18N = {
-    'Barbell': {en:'Barbell',ru:'Штанга',he:'מוט'},
-    'Dumbbell': {en:'Dumbbell',ru:'Гантели',he:'משקולות'},
-    'Cable': {en:'Cable',ru:'Кроссовер',he:'כבל'},
-    'Machine': {en:'Machine',ru:'Тренажёр',he:'מכשיר'},
-    'Bodyweight': {en:'Bodyweight',ru:'Вес тела',he:'משקל גוף'},
-    'Pull-up Bar': {en:'Pull-up Bar',ru:'Турник',he:'מתח'},
-    'Dip Station': {en:'Dip Station',ru:'Брусья',he:'מקבילים'},
-    'Rings': {en:'Rings',ru:'Кольца',he:'טבעות'},
-    'Rope': {en:'Rope',ru:'Канат',he:'חבל'},
-    'Bench': {en:'Bench',ru:'Скамья',he:'ספסל'},
-    'Box': {en:'Box',ru:'Тумба',he:'ארגז'},
-    'Ab Wheel': {en:'Ab Wheel',ru:'Колесо для пресса',he:'גלגלת בטן'},
-    'Battle Rope': {en:'Battle Rope',ru:'Боевой канат',he:'חבל קרב'},
-    'Medicine Ball': {en:'Medicine Ball',ru:'Медбол',he:'כדור כוח'},
-    'Stability Ball': {en:'Stability Ball',ru:'Фитбол',he:'כדור יציבות'},
-    'Suspension': {en:'Suspension',ru:'Петли',he:'רצועות תלייה'},
-    'Trap Bar': {en:'Trap Bar',ru:'Трап-гриф',he:'מוט טרפז'},
-    'Cardio Machine': {en:'Cardio Machine',ru:'Кардиотренажёр',he:'מכונה אירובית'},
-    'Kettlebell': {en:'Kettlebell',ru:'Гиря',he:'קטלבל'},
-    'Band': {en:'Band',ru:'Резинка',he:'גומייה'},
-    'EZ-Bar': {en:'EZ-Bar',ru:'EZ-гриф',he:'EZ בר'},
-    'Plate': {en:'Plate',ru:'Блин',he:'צלחת'},
-    'Other': {en:'Other',ru:'Другое',he:'אחר'}
+  /** c195: canonical equipment taxonomy — one source of truth for every base.
+   *  `key` is stored in equipment_type; `en/ru/he` are the chip/form labels.
+   *  Aliases normalise the inconsistent raw labels from bf/gv/gi/RepDB. */
+  const EQUIPMENT_TAXONOMY = {
+    barbell: { en: 'Barbell', ru: 'Штанга', he: 'מוט', aliases: ['barbell', 'barbells'] },
+    ez_bar: { en: 'EZ-Bar', ru: 'EZ-гриф', he: 'מוט EZ', aliases: ['ez_bar', 'ezbar', 'ez'] },
+    trap_bar: { en: 'Trap Bar', ru: 'Трап-гриф', he: 'מוט טרפז', aliases: ['trap_bar', 'trapbar', 'hex_bar'] },
+    plate: { en: 'Plate', ru: 'Диски', he: 'דיסקיות', aliases: ['plate', 'plates', 'weight_plate'] },
+    dumbbell: { en: 'Dumbbell', ru: 'Гантели', he: 'משקולות', aliases: ['dumbbell', 'dumbbells', 'db'] },
+    kettlebell: { en: 'Kettlebell', ru: 'Гири', he: 'קטלבלים', aliases: ['kettlebell', 'kettlebells', 'kb'] },
+    cable: { en: 'Cable', ru: 'Кроссовер', he: 'כבלים', aliases: ['cable', 'cables', 'crossover', 'cable_machine', 'pulley'] },
+    machine: {
+      en: 'Machine', ru: 'Тренажёр', he: 'מכשיר',
+      aliases: [
+        'machine', 'machines', 'smith', 'smith_machine', 'leg_press',
+        'hack_squat', 'pec_deck', 'leg_curl', 'leg_extension',
+        'glute_ham_developer', 'hip_abduction_machine', 'hip_adduction_machine',
+        'hip_thrust_machine', 'standing_calf_raise_machine',
+        'seated_calf_raise_machine', 'donkey_calf_raise_machine',
+        'lat_pulldown_machine', 'seated_row_machine', 'assisted_pullup_machine',
+        'dip_machine', 'chest_press_machine', 'chest_fly_machine',
+        'shoulder_press_machine', 'reverse_fly_machine', 'bicep_curl_machine',
+        'preacher_curl_machine', 'tricep_extension_machine',
+        'back_extension_machine', 'ab_crunch_machine', 'shrug_machine',
+        'plate_loaded_lateral_raise_machine', 'plate_loaded_dip_machine',
+        'vibrate_plate', 'vibration_plate'
+      ]
+    },
+    bench: { en: 'Bench', ru: 'Скамья', he: 'ספסל', aliases: ['bench', 'flat_bench'] },
+    box: { en: 'Box', ru: 'Тумба', he: 'ארגז', aliases: ['box', 'plyo_box'] },
+    bodyweight: { en: 'Bodyweight', ru: 'Вес тела', he: 'משקל גוף', aliases: ['bodyweight', 'body_weight', 'none', 'body_only'] },
+    weighted: { en: 'Weighted', ru: 'С доп. весом', he: 'עם משקל נוסף', aliases: ['weighted', 'weight', 'weighted_vest', 'vest'] },
+    assisted: { en: 'Assisted', ru: 'С поддержкой', he: 'בעזרה', aliases: ['assisted', 'assistance', 'partner_assisted'] },
+    pull_up_bar: { en: 'Pull-up Bar', ru: 'Турник', he: 'מתח', aliases: ['pull_up_bar', 'pullup_bar', 'pullupbar', 'dip_cage'] },
+    dip_station: { en: 'Dip Station', ru: 'Брусья', he: 'מקבילים', aliases: ['dip_station', 'dip_bars', 'parallel_bars'] },
+    rings: { en: 'Rings', ru: 'Кольца', he: 'טבעות', aliases: ['rings', 'ring'] },
+    band: { en: 'Band', ru: 'Резинки', he: 'גומיות', aliases: ['band', 'bands', 'resistance_band', 'resistance_bands', 'loop_band', 'bar_band'] },
+    suspension: { en: 'Suspension', ru: 'Петли', he: 'רצועות תלייה', aliases: ['suspension', 'suspension_trainer', 'suspender', 'trx'] },
+    medicine_ball: { en: 'Medicine Ball', ru: 'Медбол', he: 'כדור כוח', aliases: ['medicine_ball', 'med_ball', 'slam_ball', 'wall_ball'] },
+    stability_ball: { en: 'Stability Ball', ru: 'Фитбол', he: 'כדור יציבות', aliases: ['stability_ball', 'exercise_ball', 'fitball', 'swiss_ball'] },
+    bosu: { en: 'Bosu', ru: 'Босу', he: 'בוסו', aliases: ['bosu', 'bosu_ball', 'half_ball'] },
+    ab_wheel: { en: 'Ab Wheel', ru: 'Колесо для пресса', he: 'גלגלת בטן', aliases: ['ab_wheel', 'abwheel', 'wheel_roller', 'wheel'] },
+    rope: { en: 'Rope', ru: 'Канат', he: 'חבל', aliases: ['rope', 'climbing_rope', 'climb_rope'] },
+    battle_rope: { en: 'Battle Rope', ru: 'Боевой канат', he: 'חבל קרב', aliases: ['battle_rope', 'battling_rope', 'battling_ropes', 'battle_ropes'] },
+    jump_rope: { en: 'Jump Rope', ru: 'Скакалка', he: 'חבל קפיצה', aliases: ['jump_rope', 'skipping_rope'] },
+    cardio_machine: {
+      en: 'Cardio Machine', ru: 'Кардиотренажёр', he: 'מכונה אירובית',
+      aliases: ['cardio_machine', 'cardio', 'bicycle', 'air_bike', 'treadmill', 'elliptical', 'rower', 'ski_erg', 'stair_climber', 'stationary_bike']
+    },
+    sled: { en: 'Sled', ru: 'Сани', he: 'מזחלת', aliases: ['sled', 'sled_machine', 'power_sled'] },
+    foam_roller: { en: 'Foam Roller', ru: 'Массажный ролл', he: 'רולר עיסוי', aliases: ['foam_roller', 'foam_roll', 'roller'] },
+    mobility_stick: { en: 'Mobility Stick', ru: 'Гимнастическая палка', he: 'מקל התעמלות', aliases: ['mobility_stick', 'stick', 'pvc', 'pvc_pipe'] },
+    strongman: { en: 'Strongman', ru: 'Стронгмен', he: 'סטרונגמן', aliases: ['strongman', 'strongman_implement', 'atlas_stone', 'yoke'] },
+    sandbag: { en: 'Sandbag', ru: 'Мешок с песком', he: 'שק חול', aliases: ['sandbag', 'sand_bag'] },
+    wrist_roller: { en: 'Wrist Roller', ru: 'Роллер для запястий', he: 'רולר פרקים', aliases: ['wrist_roller', 'wrist_rollerer'] },
+    other: { en: 'Other', ru: 'Другое', he: 'אחר', aliases: ['other', 'misc', 'unknown'] }
   };
+
+  /** Display order shared by all four source tabs (free weights first). */
+  const EQUIPMENT_ORDER = [
+    'barbell', 'ez_bar', 'trap_bar', 'plate', 'dumbbell', 'kettlebell',
+    'cable', 'machine', 'bench', 'box',
+    'bodyweight', 'weighted', 'assisted',
+    'pull_up_bar', 'dip_station', 'rings',
+    'band', 'suspension',
+    'medicine_ball', 'stability_ball', 'bosu', 'ab_wheel',
+    'rope', 'battle_rope', 'jump_rope',
+    'cardio_machine', 'sled', 'foam_roller',
+    'mobility_stick', 'strongman', 'sandbag', 'wrist_roller',
+    'other'
+  ];
+
+  const EQUIPMENT_ALIASES = (() => {
+    const map = Object.create(null);
+    Object.keys(EQUIPMENT_TAXONOMY).forEach(key => {
+      map[key] = key;
+      EQUIPMENT_TAXONOMY[key].aliases.forEach(alias => { map[alias] = key; });
+    });
+    return map;
+  })();
+
+  /** Map any raw source label (or legacy equipment_type) to a canonical key. */
+  function canonicalEquipmentKey(raw, nameEn, isBodyweight) {
+    const name = String(nameEn || '').toLowerCase();
+    const norm = String(raw == null ? '' : raw).toLowerCase().trim()
+      .replace(/[\s-]+/g, '_').replace(/[^a-z0-9_]/g, '');
+    let key = EQUIPMENT_ALIASES[norm] || '';
+
+    if (!key || key === 'other') {
+      if (/\bbar band\b/.test(name)) key = 'band';
+      else if (/battling ropes|battle ropes?/.test(name)) key = 'battle_rope';
+      else if (/jump rope|skipping rope/.test(name)) key = 'jump_rope';
+      else if (/^suspender\b|^suspension\b/.test(name)) key = 'suspension';
+      else if (/^ring\b/.test(name)) key = 'rings';
+      else if (/\bstick\b|\bpvc\b/.test(name)) key = 'mobility_stick';
+      else if (/vibrat(e|ion) plate/.test(name)) key = 'machine';
+      else if (/\bsled\b/.test(name)) key = 'sled';
+      else if (/wrist roller/.test(name)) key = 'wrist_roller';
+      else if (/wheel roller|wheel rollout|ab wheel/.test(name)) key = 'ab_wheel';
+      else if (/strongman|sledge ?hammer/.test(name)) key = 'strongman';
+      else if (/sandbag/.test(name)) key = 'sandbag';
+      else if (/weighted plate|plate (press|pinch)|^plate /.test(name)) key = 'plate';
+      else if (/^weighted\b/.test(name)) key = 'weighted';
+      else key = isBodyweight ? 'bodyweight' : 'other';
+    }
+
+    if (key === 'rope') {
+      if (/battling|battle ropes?/.test(name)) key = 'battle_rope';
+      else if (/jump rope|skipping/.test(name)) key = 'jump_rope';
+    }
+    if (key === 'foam_roller' && /wheel roller|wheel rollout|ab wheel/.test(name)) key = 'ab_wheel';
+    if (key === 'weighted') {
+      if (/strongman|sledge ?hammer/.test(name)) key = 'strongman';
+      else if (/sandbag/.test(name)) key = 'sandbag';
+      else if (/kettlebell/.test(name)) key = 'kettlebell';
+      else if (/resistance band|\bband\b/.test(name)) key = 'band';
+      else if (/weighted ball|medicine ball/.test(name)) key = 'medicine_ball';
+      else if (/weighted plate|plate (press|pinch)|standing plate/.test(name)) key = 'plate';
+    }
+    return key || (isBodyweight ? 'bodyweight' : 'other');
+  }
+
+  /** Equipment display-name translations (form select + legacy lookups). */
+  const EQUIPMENT_I18N = Object.fromEntries(
+    Object.keys(EQUIPMENT_TAXONOMY).map(key => {
+      const v = EQUIPMENT_TAXONOMY[key];
+      return [v.en, { en: v.en, ru: v.ru, he: v.he }];
+    })
+  );
+
+  /** One group order for the body-map picker and the Exercises tree. */
+  const GROUP_ORDER = [
+    'chest', 'back', 'shoulders', 'elbow_flexors', 'triceps', 'forearms',
+    'abdominals', 'legs', 'fullbody', 'calisthenics', 'stretching', 'warmup',
+    'cardio', 'balance', 'other'
+  ];
+
+  /** Group-specific subgroup order (legs now reads Quads → Hams → Glutes...). */
+  const SUBGROUP_ORDER_BY_GROUP = {
+    chest: ['Upper', 'Middle', 'Lower'],
+    back: ['Lats', 'Middle Back', 'Trapezius', 'Lower Back', 'Neck'],
+    shoulders: ['Front', 'Middle', 'Rear', 'Rotator Cuff', 'Trapezius'],
+    elbow_flexors: ['Biceps', 'Brachialis', 'Brachioradialis'],
+    triceps: ['Compound', 'Lying', 'Seated'],
+    forearms: ['Wrist Curls', 'Grip'],
+    abdominals: ['Upper', 'Lower', 'Obliques', 'Inner Abs', 'Upper Abs'],
+    legs: ['Quadriceps', 'Hamstrings', 'Glutes', 'Adductors', 'Abductors', 'Calves', 'Hip Flexors', 'Glutes + Quads'],
+    fullbody: ['General'],
+    calisthenics: ['Pull-up Bar', 'Pull-up', 'General'],
+    stretching: ['General'],
+    warmup: ['General'],
+    cardio: ['General'],
+    balance: ['General', 'Front', 'Middle', 'Upper', 'Biceps', 'Quadriceps', 'Lats', 'Abductors', 'Glutes', 'Calves']
+  };
+  const SUBGROUP_ORDER_FALLBACK = [
+    'Upper', 'Middle', 'Lower', 'Front', 'Rear', 'Biceps', 'Brachialis',
+    'Brachioradialis', 'Seated', 'Lying', 'Compound', 'Upper Abs', 'Obliques',
+    'Inner Abs', 'Row', 'Pullover', 'Pull-up', 'Lats', 'Middle Back',
+    'Trapezius', 'Lower Back', 'Rotator Cuff', 'Quadriceps', 'Hamstrings',
+    'Glutes', 'Adductors', 'Abductors', 'Calves', 'Hip Flexors',
+    'Glutes + Quads', 'Pull-up Bar', 'Arms', 'Legs', 'Neck', 'General'
+  ];
+
+  function subgroupOrderIndex(group, subgroup) {
+    const order = SUBGROUP_ORDER_BY_GROUP[group] || SUBGROUP_ORDER_FALLBACK;
+    return order.indexOf(subgroup);
+  }
+
+  /** Folder paths store subgroup keys (lowercase/underscores); recover the
+   *  canonical display key so the subgroup order stays readable. */
+  function canonicalSubgroupName(name) {
+    const spaced = String(name || '').replace(/_/g, ' ').trim();
+    if (!spaced) return '';
+    const lower = spaced.toLowerCase();
+    for (const key in SUBGROUP_I18N) {
+      if (key.toLowerCase() === lower) return key;
+    }
+    return spaced.replace(/\b\w/g, c => c.toUpperCase());
+  }
 
   /** Get group display name in current language.
    *  @param {string} g — canonical group key (e.g., 'chest', 'back') */
@@ -7449,11 +7569,18 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     for (const rec of records) {
       const cur = byId.get(rec.id);
       if (!cur) { missing.push(rec); continue; }
-      /* c193: refresh only translated/display fields; preserve trainer edits
-         (custom media, archive state, etc.). */
+      /* c193/c195: refresh only translated/display fields; preserve trainer
+         edits (custom media, archive state, etc.). Subgroup + folder_path are
+         included so the corrected RepDB leg split reaches existing devices. */
       const patch = {};
-      for (const k of ['name_ru', 'name_he', 'technique_ru', 'technique_he', 'group_ru', 'group_he', 'equipment_ru', 'equipment_he', 'attribution', 'source_url']) {
-        if (cur[k] !== rec[k]) patch[k] = rec[k];
+      const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+      for (const k of [
+        'name_ru', 'name_he', 'technique_ru', 'technique_he',
+        'group_ru', 'group_he', 'subgroup_en', 'subgroup_ru', 'subgroup_he',
+        'folder_path', 'equipment_type', 'equipment_en', 'equipment_ru',
+        'equipment_he', 'attribution', 'source_url'
+      ]) {
+        if (!same(cur[k], rec[k])) patch[k] = rec[k];
       }
       if (Object.keys(patch).length) updates.push(Object.assign({}, cur, patch));
     }
@@ -7687,6 +7814,91 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     }
   }
   window.__dkMigrateExerciseTaxonomy = migrateExerciseTaxonomyC185;
+
+  /* =====================================================================
+     EQUIPMENT/SUBGROUP MIGRATION (c195) - 2026-10
+     Sources historically used 23 inconsistent raw labels; several categories
+     (exercise_ball, bosu, foam_roll, assisted, weighted, sled, wheel roller,
+     bar band, suspension, rings...) collapsed into Bodyweight/Other. Repair
+     already-seeded devices IN PLACE:
+       • every matched row gets the canonical equipment fields from the JSON;
+       • RepDB rows also get the corrected subgroup + folder_path (the leg
+         split: squat/lunge → Quadriceps, hinge/curl → Hamstrings, etc.).
+     Names, technique, media, archive state and trainer edits survive.
+     ===================================================================== */
+  async function migrateExerciseTaxonomyC195() {
+    try {
+      const FLAG = 'migrated_taxonomy_c195';
+      const done = await db.get('settings', FLAG);
+      if (done && done.value) return 0;
+      if (typeof _exerciseDbLoaded !== 'undefined' && !_exerciseDbLoaded) {
+        await loadExerciseDbExternal();
+      }
+      let shipped = null;
+      try {
+        const raw = unpackExerciseDB();
+        if (raw && raw.length) {
+          shipped = Object.create(null);
+          for (let i = 0; i < raw.length; i++) shipped[raw[i].id] = raw[i];
+        }
+      } catch (_) { return 0; }
+      if (!shipped) return 0;
+
+      const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+      const all = await db.all('exercise_base');
+      const changed = [];
+      for (let i = 0; i < all.length; i++) {
+        const r = all[i];
+        if (!r) continue;
+        const sh = shipped[r.id];
+        let dirty = false;
+
+        if (sh) {
+          for (const k of ['equipment_type', 'equipment_en', 'equipment_ru', 'equipment_he']) {
+            if (!same(r[k], sh[k])) { r[k] = sh[k]; dirty = true; }
+          }
+          if ((r.source || sh.source) === 'repdb') {
+            for (const k of ['subgroup_en', 'subgroup_ru', 'subgroup_he']) {
+              if (!same(r[k], sh[k])) { r[k] = sh[k]; dirty = true; }
+            }
+            const subFolder = String(sh.subgroup_en || 'general').toLowerCase().replace(/\s+/g, '_');
+            const nextPath = [sh.group_canonical || r.group_canonical, subFolder, sh.equipment_type || r.equipment_type || 'other'];
+            if (!same(r.folder_path, nextPath)) { r.folder_path = nextPath; dirty = true; }
+          }
+        } else {
+          /* Custom exercise (not in any shipped DB): normalise what we have. */
+          const key = canonicalEquipmentKey(
+            r.equipment_type || r.equipment_en || r.e,
+            r.name_en || r.name_ru || '',
+            r.is_bodyweight
+          );
+          const eq = EQUIPMENT_TAXONOMY[key] || EQUIPMENT_TAXONOMY.other;
+          if (r.equipment_type !== key || r.equipment_en !== eq.en || r.equipment_ru !== eq.ru || r.equipment_he !== eq.he) {
+            r.equipment_type = key;
+            r.equipment_en = eq.en;
+            r.equipment_ru = eq.ru;
+            r.equipment_he = eq.he;
+            dirty = true;
+          }
+        }
+
+        if (dirty) {
+          r.updated_at = Date.now();
+          changed.push(r);
+        }
+      }
+      if (changed.length) {
+        await db.bulkPut('exercise_base', changed);
+        console.info('[equipment-migr] normalised equipment/subgroups:', changed.length, '(c195)');
+      }
+      await db.put('settings', { key: FLAG, value: true });
+      return changed.length;
+    } catch (e) {
+      console.warn('[equipment-migr] failed:', e);
+      return 0;
+    }
+  }
+  window.__dkMigrateExerciseTaxonomyC195 = migrateExerciseTaxonomyC195;
 
 
   /* =====================================================================
@@ -11657,12 +11869,18 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       abcde: [['chest'],['back'],['legs'],['shoulders'],['elbow_flexors','triceps','abdominals']],
     };
 
-    /** Equipment → allowed equipment types */
+    /** Equipment → allowed canonical equipment keys (c195). */
     const EQUIPMENT_MAP = {
-      gym: ['barbell','dumbbells','cable','machine','ez_bar','kettlebells','medicine_ball','exercise_ball','bands','foam_roll','other'],
-      home: ['dumbbells','bands','other','bodyweight'],
-      bodyweight: ['bodyweight','other'],
-      bands: ['bands','bodyweight','other'],
+      gym: [
+        'barbell','ez_bar','trap_bar','plate','dumbbell','kettlebell','cable',
+        'machine','bench','box','bodyweight','weighted','assisted','pull_up_bar',
+        'dip_station','rings','band','suspension','medicine_ball','stability_ball',
+        'bosu','ab_wheel','rope','battle_rope','jump_rope','cardio_machine',
+        'sled','foam_roller','mobility_stick','strongman','sandbag','wrist_roller','other'
+      ],
+      home: ['dumbbell','band','bodyweight','weighted','assisted','bench','other'],
+      bodyweight: ['bodyweight','weighted','assisted','other'],
+      bands: ['band','bodyweight','weighted','assisted','other'],
     };
 
     /** Main auto-generate function */
@@ -11774,8 +11992,8 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
         const compoundPool = mainPool.sort((a, b) => {
           const aEq = (a.equipment_type || a.e || '');
           const bEq = (b.equipment_type || b.e || '');
-          const aCompound = ['barbell','dumbbells','bodyweight'].includes(aEq) ? 0 : 1;
-          const bCompound = ['barbell','dumbbells','bodyweight'].includes(bEq) ? 0 : 1;
+          const aCompound = ['barbell','dumbbell','kettlebell','bodyweight'].includes(aEq) ? 0 : 1;
+          const bCompound = ['barbell','dumbbell','kettlebell','bodyweight'].includes(bEq) ? 0 : 1;
           return aCompound - bCompound;
         });
 
@@ -14512,7 +14730,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
     /** Move a group up or down in the custom order. */
     async function moveGroup(groupKey, direction) {
-      const DEFAULT_ORDER = ['legs','chest','back','shoulders','elbow_flexors','triceps','forearms','abdominals','stretching','warmup','cardio','balance','calisthenics','other'];
+      const DEFAULT_ORDER = GROUP_ORDER;
       if (!_customGroupOrder) {
         // Build from current tree + defaults
         const root = { children: {} };
@@ -14680,9 +14898,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
       // Render recursively
       let html = '';
-      // Sort by custom order (if defined), otherwise by label
-      const GROUP_ORDER = ['legs','chest','back','shoulders','elbow_flexors','triceps','forearms','abdominals','stretching','warmup','cardio','balance','calisthenics','other'];
-      // Check if user has custom order in settings
+      // Canonical group order (c195) — same order in every source tab.
+      // A trainer-defined custom order still wins when present.
       const customOrder = _customGroupOrder || GROUP_ORDER;
       const sortedChildren = Object.values(root.children).sort((a, b) => {
         const aIdx = customOrder.indexOf(a.name);
@@ -14772,9 +14989,16 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
       if (isExpanded) {
         html += `<div class="space-y-0.5">`;
-        // Render subfolders
-        const sortedChildren = Object.values(node.children).sort((a, b) =>
-          getFolderLabel(a.name).localeCompare(getFolderLabel(b.name), localeString()));
+        // Render subfolders in the same canonical order as the body-map tree
+        const parentGroup = depth === 0 ? node.name : '';
+        const sortedChildren = Object.values(node.children).sort((a, b) => {
+          const ia = subgroupOrderIndex(parentGroup, canonicalSubgroupName(a.name));
+          const ib = subgroupOrderIndex(parentGroup, canonicalSubgroupName(b.name));
+          if (ia !== -1 && ib !== -1) return ia - ib;
+          if (ia !== -1) return -1;
+          if (ib !== -1) return 1;
+          return getFolderLabel(a.name).localeCompare(getFolderLabel(b.name), localeString());
+        });
         sortedChildren.forEach(child => {
           html += renderFolderNode(child, depth + 1);
         });
@@ -15531,6 +15755,15 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             if (!obj.source) obj.source = existing.src === 'bf' ? 'burnfit' : (existing.src === 'gv' ? 'gymvisual' : (existing.src === 'gi' ? 'gymimpulse' : (existing.src === 'mm' ? 'muscle_motion' : 'custom')));
           }
         } catch (_e) {}
+      }
+      /* c195: keep custom/existing records inside the canonical equipment map. */
+      if (obj.equipment_en) {
+        const eqKey = canonicalEquipmentKey(obj.equipment_en, obj.name_en, obj.is_bodyweight);
+        const eq = EQUIPMENT_TAXONOMY[eqKey] || EQUIPMENT_TAXONOMY.other;
+        obj.equipment_type = eqKey;
+        obj.equipment_en = eq.en;
+        obj.equipment_ru = eq.ru;
+        obj.equipment_he = eq.he;
       }
       try {
         await db.put('exercise_base', obj);
@@ -20283,6 +20516,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     function setGroupFilter(group, subgroup) {
       _activeGroup = group || null;
       _activeSubgroup = subgroup || null;
+      _equipFilter = 'all'; // c195: external muscle jump starts with all equipment
       if (_activeGroup) _expandedGroups.add(_activeGroup);
       renderAll();
     }
@@ -20423,6 +20657,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               _activeGroup = group; _activeSubgroup = subgroup || null;
               _expandedGroups.add(group);
             }
+            _equipFilter = 'all'; // c195: body-map selection resets equipment
             renderBodySVG(); renderGroupTree(); renderEquipChips(); renderClassChips(); renderExerciseGrid();
           });
           if (subgroup) el.setAttribute('title', subgroup + ' (' + group + ')');
@@ -20457,6 +20692,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         if (_activeGroup) _expandedGroups.add(_activeGroup);
       }
       if (_p3d && !_p3d.dead && _p3d.inited) _p3d.setFilter(_activeGroup || '', _activeSubgroup || '');
+      _equipFilter = 'all'; // c195: 3D body selection resets equipment
       renderBodySVG(); renderGroupTree(); renderEquipChips(); renderClassChips(); renderExerciseGrid();
     }
     function applyPickerBmMode() {
@@ -20499,29 +20735,26 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       _cache.filter(e => matchSource(e) && matchFav(e)).forEach(e => {
         const g = e.group_canonical || e.g;
         if (!g) return;
-        if (!groups[g]) groups[g] = { count: 0, subgroups: new Set() };
+        if (!groups[g]) groups[g] = { count: 0, subgroups: new Map() };
         groups[g].count++;
         const s = e.subgroup_en || e.sE || '';
         if (s && s.toLowerCase() !== 'general') {
-          groups[g].subgroups.add(s);
+          groups[g].subgroups.set(s, (groups[g].subgroups.get(s) || 0) + 1);
         }
       });
-      // Sort subgroups within each group
-      const SUBGROUP_ORDER = ['Upper', 'Middle', 'Lower', 'Front', 'Rear', 'Biceps', 'Brachialis', 'Brachioradialis',
-                              'Seated', 'Lying', 'Compound', 'Upper Abs', 'Obliques', 'Inner Abs',
-                              'Row', 'Pullover', 'Pull-up', 'Lats', 'Middle Back', 'Trapezius', 'Lower Back',
-                              'Rotator Cuff', 'Quadriceps', 'Hamstrings', 'Calves', 'Glutes',
-                              'Glutes + Quads', 'Adductors', 'Abductors', 'Hip Flexors',
-                              'Pull-up Bar', 'Arms', 'Legs', 'Neck'];
-      Object.values(groups).forEach(g => {
-        g.subgroups = [...g.subgroups].sort((a, b) => {
-          const ia = SUBGROUP_ORDER.indexOf(a);
-          const ib = SUBGROUP_ORDER.indexOf(b);
-          if (ia !== -1 && ib !== -1) return ia - ib;
-          if (ia !== -1) return -1;
-          if (ib !== -1) return 1;
-          return a.localeCompare(b);
-        });
+      // Sort subgroups within each group by the shared canonical order and
+      // keep the real count so no empty subgroup can be rendered.
+      Object.keys(groups).forEach(groupKey => {
+        groups[groupKey].subgroups = [...groups[groupKey].subgroups.entries()]
+          .map(([name, count]) => ({ name, count }))
+          .sort((a, b) => {
+            const ia = subgroupOrderIndex(groupKey, a.name);
+            const ib = subgroupOrderIndex(groupKey, b.name);
+            if (ia !== -1 && ib !== -1) return ia - ib;
+            if (ia !== -1) return -1;
+            if (ib !== -1) return 1;
+            return a.name.localeCompare(b.name);
+          });
       });
       return groups;
     }
@@ -20534,9 +20767,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const tree = document.getElementById('bm-group-tree');
       if (!tree) return;
       const groups = getGroupsWithSubgroups();
-      // Display order for groups
-      const GROUP_ORDER = ['chest', 'back', 'shoulders', 'elbow_flexors', 'triceps', 'forearms',
-                           'abdominals', 'legs', 'fullbody', 'calisthenics', 'stretching', 'warmup', 'cardio', 'balance'];
+      // Same canonical group order as the Exercises tree.
       const orderedGroups = Object.keys(groups).sort((a, b) => {
         const ia = GROUP_ORDER.indexOf(a);
         const ib = GROUP_ORDER.indexOf(b);
@@ -20563,7 +20794,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           </div>`;
         if (hasSubgroups && isExpanded) {
           html += `<div class="bm-subgroups ps-3 mt-0.5 space-y-0.5">`;
-          info.subgroups.forEach(s => {
+          info.subgroups.forEach(item => {
+            const s = item.name;
             const sgLabel = (typeof subgroupName === 'function') ? subgroupName(s) : s;
             const sgActive = _activeGroup === g && _activeSubgroup === s;
             const sgActiveClass = sgActive ? 'bg-primary/30 text-primary-2 border-primary/40' : 'bg-surface hover:bg-primary/10 border-transparent';
@@ -20571,6 +20803,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             html += `<div class="bm-subgroup-btn flex items-center gap-1.5 text-[10px] font-medium rounded-md border ${sgActiveClass} transition cursor-pointer" data-group="${esc(g)}" data-subgroup="${esc(s)}">
               <span class="mg-icon-box shrink-0">${sgIcon}</span>
               <span class="flex-1 truncate">${esc(sgLabel)}</span>
+              <span class="opacity-60 shrink-0 font-semibold"> ${item.count}</span>
             </div>`;
           });
           html += `</div>`;
@@ -20602,6 +20835,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             _activeSubgroup = null;
             _expandedGroups.add(g);
           }
+          _equipFilter = 'all'; // c195: never keep an equipment chip across groups
           renderBodySVG();
           renderGroupTree();
           renderEquipChips();
@@ -20622,6 +20856,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             _activeGroup = g;
             _activeSubgroup = s;
           }
+          _equipFilter = 'all'; // c195: subgroup switch resets equipment
           renderBodySVG();
           renderGroupTree();
           renderEquipChips();
@@ -20633,11 +20868,33 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
     function updateViewToggle() {}
 
-    /** Get unique equipment types from filtered exercises. */
+    /** Canonical equipment key of a record (works for legacy + custom rows). */
+    function equipOf(e) {
+      if (!e) return 'other';
+      return canonicalEquipmentKey(
+        e.equipment_type || e.equipment_en || e.e,
+        e.name_en || e.name_ru || '',
+        e.is_bodyweight
+      );
+    }
+
+    /** Unique equipment types with counts, sorted by the canonical order. */
     function getEquipTypes(exercises) {
-      const types = new Set();
-      exercises.forEach(e => types.add(e.equipment_type || e.e || 'other'));
-      return [...types].sort();
+      const counts = new Map();
+      exercises.forEach(e => {
+        const key = equipOf(e);
+        counts.set(key, (counts.get(key) || 0) + 1);
+      });
+      return [...counts.entries()]
+        .map(([type, count]) => ({ type, count }))
+        .sort((a, b) => {
+          const ia = EQUIPMENT_ORDER.indexOf(a.type);
+          const ib = EQUIPMENT_ORDER.indexOf(b.type);
+          if (ia !== -1 && ib !== -1) return ia - ib;
+          if (ia !== -1) return -1;
+          if (ib !== -1) return 1;
+          return equipLabel(a.type).localeCompare(equipLabel(b.type), currentLang());
+        });
     }
 
     /** Subgroup match with tolerance: records without subgroup info (empty/'General',
@@ -20654,41 +20911,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     /** Equipment label in current language. */
     function equipLabel(type) {
       const lang = currentLang();
-      const map = {
-        dumbbell: { en: 'Dumbbells', ru: 'Гантели', he: 'משקולות' },
-        dumbbells: { en: 'Dumbbells', ru: 'Гантели', he: 'משקולות' },
-        barbell: { en: 'Barbell', ru: 'Штанга', he: 'מוט' },
-        cable: { en: 'Cable', ru: 'Кроссовер', he: 'כבלים' },
-        machine: { en: 'Machine', ru: 'Тренажёр', he: 'מכונה' },
-        bodyweight: { en: 'Bodyweight', ru: 'Вес тела', he: 'משקל גוף' },
-      pull_up_bar: { en: 'Pull-up Bar', ru: 'Турник', he: 'מתח' },
-      dip_station: { en: 'Dip Station', ru: 'Брусья', he: 'מקבילים' },
-      rings: { en: 'Rings', ru: 'Кольца', he: 'טבעות' },
-      rope: { en: 'Rope', ru: 'Канат', he: 'חבל' },
-      bench: { en: 'Bench', ru: 'Скамья', he: 'ספסל' },
-      box: { en: 'Box', ru: 'Тумба', he: 'ארגז' },
-      ab_wheel: { en: 'Ab Wheel', ru: 'Колесо для пресса', he: 'גלגלת בטן' },
-      battle_rope: { en: 'Battle Rope', ru: 'Боевой канат', he: 'חבל קרב' },
-      medicine_ball: { en: 'Medicine Ball', ru: 'Медбол', he: 'כדור כוח' },
-      stability_ball: { en: 'Stability Ball', ru: 'Фитбол', he: 'כדור יציבות' },
-      suspension: { en: 'Suspension', ru: 'Петли', he: 'רצועות תלייה' },
-      trap_bar: { en: 'Trap Bar', ru: 'Трап-гриф', he: 'מוט טרפז' },
-      cardio_machine: { en: 'Cardio Machine', ru: 'Кардиотренажёр', he: 'מכונה אירובית' },
-        kettlebell: { en: 'Kettlebells', ru: 'Гири', he: 'קטלבלים' },
-        kettlebells: { en: 'Kettlebells', ru: 'Гири', he: 'קטלבלים' },
-        band: { en: 'Bands', ru: 'Резинки', he: 'גומיות' },
-        bands: { en: 'Bands', ru: 'Резинки', he: 'גומיות' },
-        plate: { en: 'Plate', ru: 'Блины', he: 'דיסקיות' },
-        medicine_ball: { en: 'Medicine ball', ru: 'Медбол', he: 'כדור משקולת' },
-        exercise_ball: { en: 'Exercise ball', ru: 'Фитбол', he: 'כדור פיטבול' },
-        foam_roll: { en: 'Foam roll', ru: 'Ролл', he: 'רולר' },
-        bosu: { en: 'Bosu', ru: 'Босу', he: 'בוסו' },
-        pull_up_bar: { en: 'Pull-up bar', ru: 'Турник', he: 'מוט משיכה' },
-        ez_bar: { en: 'EZ Bar', ru: 'EZ-гриф', he: 'מוט W' },
-        smith: { en: 'Smith', ru: 'Смит', he: "סמית'" },
-        other: { en: 'Other', ru: 'Другое', he: 'אחר' },
-      };
-      return (map[type] && map[type][lang]) || type;
+      const entry = EQUIPMENT_TAXONOMY[type];
+      if (entry) return entry[lang] || entry.en || type;
+      const legacy = EQUIPMENT_I18N[type];
+      if (legacy) return legacy[lang] || legacy.en || type;
+      return type;
     }
 
     function renderEquipChips() {
@@ -20702,11 +20929,17 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         filtered = filtered.filter(matchSubgroup);
       }
       const types = getEquipTypes(filtered);
+      /* c195: a chip only exists when it has exercises. If a previously picked
+         type disappeared (group/subgroup/source change), drop the stale filter
+         instead of showing an empty grid. */
+      if (_equipFilter !== 'all' && !types.some(t => t.type === _equipFilter)) {
+        _equipFilter = 'all';
+      }
       const allLabel = (typeof t === 'function' && t('common.all')) ? t('common.all') : 'All';
       let html = `<button class="bm-chip text-[13px] font-semibold px-3 py-1.5 rounded-full border ${_equipFilter === 'all' ? 'active' : 'bg-surface-2 text-muted border-border'}" data-equip="all">${esc(allLabel)}</button>`;
-      html += types.map(t => {
-        const isActive = _equipFilter === t;
-        return `<button class="bm-chip text-[13px] font-semibold px-3 py-1.5 rounded-full border ${isActive ? 'active' : 'bg-surface-2 text-muted border-border'}" data-equip="${esc(t)}">${esc(equipLabel(t))}</button>`;
+      html += types.map(item => {
+        const isActive = _equipFilter === item.type;
+        return `<button class="bm-chip text-[13px] font-semibold px-3 py-1.5 rounded-full border ${isActive ? 'active' : 'bg-surface-2 text-muted border-border'}" data-equip="${esc(item.type)}">${esc(equipLabel(item.type))}<span class="opacity-50 ms-1 text-[11px]"> ${item.count}</span></button>`;
       }).join('');
       container.innerHTML = html;
       container.querySelectorAll('[data-equip]').forEach(btn => {
@@ -20742,7 +20975,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         baseFiltered = baseFiltered.filter(matchSubgroup);
       }
       if (_equipFilter !== 'all') {
-        baseFiltered = baseFiltered.filter(e => (e.equipment_type || e.e) === _equipFilter);
+        baseFiltered = baseFiltered.filter(e => equipOf(e) === _equipFilter);
       }
 
       const lang = (typeof currentLang === 'function') ? currentLang() : 'en';
@@ -20819,7 +21052,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       }
       // Equipment filter
       if (_equipFilter !== 'all') {
-        filtered = filtered.filter(e => (e.equipment_type || e.e) === _equipFilter);
+        filtered = filtered.filter(e => equipOf(e) === _equipFilter);
       }
       // Classification filters (force / level / mechanic / category)
       ['force', 'level', 'mechanic', 'category'].forEach(k => {
@@ -22196,8 +22429,19 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       return GROUP_ALIASES[lower] || GROUP_ALIASES[g] || lower;
     }
 
-    /** Get the equipment type of an exercise (canonical). */
+    /** Get the equipment type of an exercise (canonical key first, c195). */
     function getEquipmentType(e) {
+      const key = e.equipment_type || '';
+      if (key === 'dumbbell') return 'dumbbells';
+      if (key === 'barbell' || key === 'trap_bar' || key === 'plate') return 'barbell';
+      if (key === 'ez_bar') return 'ez_bar';
+      if (key === 'band') return 'bands';
+      /* weighted/assisted are bodyweight variants; gymnastics equipment also
+         counts as bodyweight for the simple home/bodyweight availability rule. */
+      if (key === 'bodyweight' || key === 'weighted' || key === 'assisted' ||
+          key === 'pull_up_bar' || key === 'dip_station' || key === 'rings' || key === 'bench' || key === 'box') {
+        return 'bodyweight';
+      }
       const eq = (e.equipment_en || '').toLowerCase();
       if (eq.includes('dumbbell')) return 'dumbbells';
       if (eq.includes('barbell')) return 'barbell';
@@ -27450,6 +27694,8 @@ async function boot() {
       try { await migrateExerciseGroups(); } catch (_) {}
       // c185: heal the audited primary/synergist inversions in already-seeded bases
       try { await migrateExerciseTaxonomyC185(); } catch (_) {}
+      // c195: one canonical equipment taxonomy + corrected RepDB leg subgroups
+      try { await migrateExerciseTaxonomyC195(); } catch (_) {}
       // Shared exercise cache for localized name/group/image lookups in ANY
       // screen (preview modal, live workout, history) — independent of the
       // program builder being open.
@@ -34571,7 +34817,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 194; /* numeric part of dk-build c194 */
+  var RUNNING = 195; /* numeric part of dk-build c195 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
@@ -36064,38 +36310,9 @@ document.addEventListener('input', function (e) {
   (function () {
     var HINT = { en: 'Tap a muscle to filter', ru: 'Нажмите на мышцу для фильтра', he: 'הקש על שריר לסינון' };
     var UNIT = { en: 'exercises', ru: 'упр.', he: 'תרגילים' };
-    var ORDER = ['chest', 'back', 'shoulders', 'elbow_flexors', 'triceps', 'forearms', 'abdominals',
-                 'legs', 'fullbody', 'calisthenics', 'stretching', 'warmup', 'cardio', 'balance', 'other'];
-    var EQUIP = {
-      dumbbell: { en: 'Dumbbells', ru: 'Гантели', he: 'משקולות' },
-      dumbbells: { en: 'Dumbbells', ru: 'Гантели', he: 'משקולות' },
-      barbell: { en: 'Barbell', ru: 'Штанга', he: 'מוט' },
-      cable: { en: 'Cable', ru: 'Кроссовер', he: 'כבלים' },
-      machine: { en: 'Machine', ru: 'Тренажёр', he: 'מכונה' },
-      bodyweight: { en: 'Bodyweight', ru: 'Вес тела', he: 'משקל גוף' },
-      pull_up_bar: { en: 'Pull-up Bar', ru: 'Турник', he: 'מתח' },
-      dip_station: { en: 'Dip Station', ru: 'Брусья', he: 'מקבילים' },
-      rings: { en: 'Rings', ru: 'Кольца', he: 'טבעות' },
-      rope: { en: 'Rope', ru: 'Канат', he: 'חבל' },
-      bench: { en: 'Bench', ru: 'Скамья', he: 'ספסל' },
-      box: { en: 'Box', ru: 'Тумба', he: 'ארגז' },
-      ab_wheel: { en: 'Ab Wheel', ru: 'Колесо для пресса', he: 'גלגלת בטן' },
-      battle_rope: { en: 'Battle Rope', ru: 'Боевой канат', he: 'חבל קרב' },
-      stability_ball: { en: 'Stability Ball', ru: 'Фитбол', he: 'כדור יציבות' },
-      suspension: { en: 'Suspension', ru: 'Петли', he: 'רצועות תלייה' },
-      trap_bar: { en: 'Trap Bar', ru: 'Трап-гриф', he: 'מוט טרפז' },
-      cardio_machine: { en: 'Cardio Machine', ru: 'Кардиотренажёр', he: 'מכונה אירובית' },
-      kettlebell: { en: 'Kettlebells', ru: 'Гири', he: 'קטלבלים' },
-      kettlebells: { en: 'Kettlebells', ru: 'Гири', he: 'קטלבלים' },
-      band: { en: 'Bands', ru: 'Резинки', he: 'גומיות' },
-      bands: { en: 'Bands', ru: 'Резинки', he: 'גומיות' },
-      plate: { en: 'Plate', ru: 'Блины', he: 'דיסקיות' },
-      medicine_ball: { en: 'Medicine ball', ru: 'Медбол', he: 'כדור משקולת' },
-      exercise_ball: { en: 'Exercise ball', ru: 'Фитбол', he: 'כדור התעמלות' },
-      foam_roll: { en: 'Foam roll', ru: 'Ролик', he: 'רולר' },
-      none: { en: 'None', ru: 'Без инвентаря', he: 'ללא' },
-      other: { en: 'Other', ru: 'Другое', he: 'אחר' }
-    };
+    /* c195: same group/equipment order and labels as the shared Quick Pick. */
+    var ORDER = (typeof GROUP_ORDER !== 'undefined') ? GROUP_ORDER : ['chest', 'back', 'shoulders', 'elbow_flexors', 'triceps', 'forearms', 'abdominals', 'legs', 'fullbody', 'calisthenics', 'stretching', 'warmup', 'cardio', 'balance', 'other'];
+    var EQ_ORDER = (typeof EQUIPMENT_ORDER !== 'undefined') ? EQUIPMENT_ORDER : [];
     var CLASS_DIMS = [
       { key: 'mechanic', icon: '⚙️', label: { en: 'Mechanic', ru: 'Механика', he: 'מכניקה' }, values: [
         { v: 'compound', label: { en: 'Compound', ru: 'Базовое', he: 'בסיסי' } },
@@ -36175,8 +36392,18 @@ document.addEventListener('input', function (e) {
     function gIcon(g) { try { return (typeof muscleGroupIcon === 'function') ? muscleGroupIcon(g) : ''; } catch (e) { return ''; } }
     function sIcon(g, sv) { try { return (typeof subgroupIcon === 'function') ? subgroupIcon(g, sv) : ''; } catch (e) { return ''; } }
     function exName(e) { var L = lang(); return e['name_' + L] || e.name_en || '?'; }
-    function equipOf(e) { return e.equipment_type || e.e || ''; }
-    function equipLabel(t) { var d = EQUIP[t]; return d ? tr(d) : String(t).replace(/_/g, ' '); }
+    function equipOf(e) {
+      try {
+        return canonicalEquipmentKey(e.equipment_type || e.equipment_en || e.e, e.name_en || e.name_ru || '', e.is_bodyweight);
+      } catch (err) { return e.equipment_type || e.e || 'other'; }
+    }
+    function equipLabel(tp) {
+      try {
+        var d = EQUIPMENT_TAXONOMY[tp];
+        if (d) return d[lang()] || d.en || tp;
+      } catch (err) {}
+      return String(tp).replace(/_/g, ' ');
+    }
     function counts(items) {
       var map = {};
       (items || []).forEach(function (e) {
@@ -36217,7 +36444,14 @@ document.addEventListener('input', function (e) {
           '</div>';
         if (hasSub && open) {
           html += '<div class="bm-subgroups ps-3 mt-0.5 space-y-0.5">';
-          Object.keys(info.sub).forEach(function (sv) {
+          Object.keys(info.sub).sort(function (x, y) {
+            var ix = (typeof subgroupOrderIndex === 'function') ? subgroupOrderIndex(g, x) : -1;
+            var iy = (typeof subgroupOrderIndex === 'function') ? subgroupOrderIndex(g, y) : -1;
+            if (ix !== -1 && iy !== -1) return ix - iy;
+            if (ix !== -1) return -1;
+            if (iy !== -1) return 1;
+            return x.localeCompare(y);
+          }).forEach(function (sv) {
             var sAct = a.group === g && a.subgroup === sv;
             var sCls = sAct ? 'bg-primary/30 text-primary-2 border-primary/40' : 'bg-surface hover:bg-primary/10 border-transparent';
             html += '<div class="bm-subgroup-btn flex items-center gap-1.5 text-[10px] font-medium rounded-md border ' + sCls + ' transition cursor-pointer" data-exb-sub="' + esc(sv) + '" data-exb-group="' + esc(g) + '">' +
@@ -36241,12 +36475,14 @@ document.addEventListener('input', function (e) {
         var sub = ev.target.closest ? ev.target.closest('[data-exb-sub]') : null;
         var hdr = sub ? null : (ev.target.closest ? ev.target.closest('[data-exb-group]') : null);
         if (sub) {
+          _equip = 'all'; /* c195: muscle selection always starts with all equipment */
           try { screens.exercises.setBodyMapFilter(sub.getAttribute('data-exb-group'), sub.getAttribute('data-exb-sub')); } catch (e) {}
           return;
         }
         if (hdr) {
           var g = hdr.getAttribute('data-exb-group');
           var a = api();
+          _equip = 'all';
           if (a && a.group === g && !a.subgroup) {
             _open[g] = false;
             try { screens.exercises.clearBodyMapFilter(); } catch (e) {}
@@ -36264,11 +36500,19 @@ document.addEventListener('input', function (e) {
       if (eq) {
         var types = {};
         (a.items || []).forEach(function (e) { var t = equipOf(e); if (t) types[t] = (types[t] || 0) + 1; });
+        /* c195: drop a chip that no longer has exercises in this scope. */
+        if (_equip !== 'all' && !types[_equip]) _equip = 'all';
         var allL = 'All';
         try { allL = (typeof t === 'function' && t('common.all')) || 'All'; } catch (e) {}
         var html = '<button class="bm-chip text-[13px] font-semibold px-3 py-1.5 rounded-full border ' + (_equip === 'all' ? 'active' : 'bg-surface-2 text-muted border-border') + '" data-exb-equip="all">' + esc(allL) + '</button>';
-        Object.keys(types).sort().forEach(function (tp) {
-          html += '<button class="bm-chip text-[13px] font-semibold px-3 py-1.5 rounded-full border ' + (_equip === tp ? 'active' : 'bg-surface-2 text-muted border-border') + '" data-exb-equip="' + esc(tp) + '">' + esc(equipLabel(tp)) + '</button>'; /* c78: counts dropped — picker parity */
+        Object.keys(types).sort(function (x, y) {
+          var ix = EQ_ORDER.indexOf(x), iy = EQ_ORDER.indexOf(y);
+          if (ix !== -1 && iy !== -1) return ix - iy;
+          if (ix !== -1) return -1;
+          if (iy !== -1) return 1;
+          return equipLabel(x).localeCompare(equipLabel(y));
+        }).forEach(function (tp) {
+          html += '<button class="bm-chip text-[13px] font-semibold px-3 py-1.5 rounded-full border ' + (_equip === tp ? 'active' : 'bg-surface-2 text-muted border-border') + '" data-exb-equip="' + esc(tp) + '">' + esc(equipLabel(tp)) + '<span class="opacity-50 ms-1 text-[11px]"> ' + types[tp] + '</span></button>';
         });
         eq.innerHTML = html;
       }
@@ -36553,6 +36797,7 @@ document.addEventListener('input', function (e) {
           }
           var goingBack = (_tab !== 'source');
           _tab = goingBack ? 'source' : (fav ? 'favorites' : 'recent');
+          _equip = 'all'; /* c195: tab/source change resets equipment */
           if (_tab === 'source') {
             document.querySelectorAll('.ex-src-btn').forEach(function (x) {
               var on = x.getAttribute('data-exercise-source') === _lastSrc;
@@ -36569,6 +36814,7 @@ document.addEventListener('input', function (e) {
         }
         if (src) {
           _tab = 'source';
+          _equip = 'all';
           renderTabs();
         }
       }, true);

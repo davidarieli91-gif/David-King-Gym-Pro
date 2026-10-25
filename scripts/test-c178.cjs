@@ -52,8 +52,8 @@ ok('trainer: thin app bar + live head + rest banner unchanged', trainer.indexOf(
 ok('trainer: --dk-appH rules + measuring intact', trainer.indexOf('#rest-timer { top: var(--dk-appH, 3.5rem); }') >= 0 && trainer.indexOf("document.documentElement.style.setProperty('--dk-appH', _bar175.offsetHeight + 'px')") >= 0);
 
 /* ---------- 6. versions ---------- */
-ok('sw cache bumped for c194', sw.indexOf("const CACHE_NAME = 'dk-gym-v221'; // c194") >= 0);
-ok('trainer build c194 (meta + footer + RUNNING)', trainer.indexOf('content="c194"') >= 0 && /var RUNNING = 194;/.test(trainer));
+ok('sw cache bumped for c195', sw.indexOf("const CACHE_NAME = 'dk-gym-v222'; // c195") >= 0);
+ok('trainer build c195 (meta + footer + RUNNING)', trainer.indexOf('content="c195"') >= 0 && /var RUNNING = 195;/.test(trainer));
 ok('c176 sticky breakout fix intact (both portals)', /html \{ height: 100%; \}/.test(html) && /body \{ min-height: 100%; overscroll-behavior-y: none; \}/.test(html) && /html \{ height: 100%; \}/.test(trainer) && /body \{ min-height: 100%; overscroll-behavior-y: none; \}/.test(trainer));
 
 /* ---------- 7. inline JS syntax of the touched script blocks ---------- */

@@ -22,6 +22,7 @@ const sourceJson = path.join(srcDir, 'free.json');
 const sourceImages = path.join(srcDir, 'images', 'flat');
 const outJson = path.join(root, 'exercise-db-rdb.json');
 const outImages = path.join(root, 'images', 'rdb');
+const { EQUIPMENT_TAXONOMY, canonicalEquipment, legSubgroup } = require('./exercise-taxonomy.cjs');
 
 if (!fs.existsSync(sourceJson)) {
   console.error('Missing RepDB free.json at ' + sourceJson);
@@ -54,88 +55,13 @@ function groupLabel(g) {
   return groupLabels[g] || fallbackGroups[g] || { en: g, ru: g, he: g };
 }
 
-/* Equipment: preserve pull-up bar / dip station / rings as their own filters. */
-const EQ = {
-  none:                 ['bodyweight', 'Bodyweight', 'Вес тела', 'משקל גוף'],
-  bodyweight:           ['bodyweight', 'Bodyweight', 'Вес тела', 'משקל גוף'],
-  pull_up_bar:          ['pull_up_bar', 'Pull-up Bar', 'Турник', 'מתח'],
-  dip_station:          ['dip_station', 'Dip Station', 'Брусья', 'מקבילים'],
-  rings:                ['rings', 'Rings', 'Кольца', 'טבעות'],
-  climbing_rope:        ['rope', 'Rope', 'Канат', 'חבל'],
-  flat_bench:           ['bench', 'Bench', 'Скамья', 'ספסל'],
-  plyo_box:             ['box', 'Box', 'Тумба', 'ארגז'],
-  ab_wheel:             ['ab_wheel', 'Ab Wheel', 'Колесо для пресса', 'גלגלת בטן'],
-  battle_rope:          ['battle_rope', 'Battle Rope', 'Боевой канат', 'חבל קרב'],
-  medicine_ball:        ['medicine_ball', 'Medicine Ball', 'Медбол', 'כדור כוח'],
-  slam_ball:            ['medicine_ball', 'Medicine Ball', 'Медбол', 'כדור כוח'],
-  plates:               ['plate', 'Plate', 'Блин', 'צלחת'],
-  stability_ball:       ['stability_ball', 'Stability Ball', 'Фитбол', 'כדור יציבות'],
-  resistance_band:      ['band', 'Band', 'Резинка', 'גומי'],
-  loop_band:            ['band', 'Band', 'Резинка', 'גומי'],
-  dumbbell:             ['dumbbell', 'Dumbbell', 'Гантель', 'משקולת'],
-  barbell:              ['barbell', 'Barbell', 'Штанга', 'מוט'],
-  ez_bar:               ['ez_bar', 'EZ-Bar', 'EZ-гриф', 'מוט EZ'],
-  trap_bar:             ['trap_bar', 'Trap Bar', 'Трап-гриф', 'מוט טרפז'],
-  kettlebell:           ['kettlebell', 'Kettlebell', 'Гиря', 'קטלבל'],
-  cable:                ['cable', 'Cable', 'Кроссовер', 'כבל'],
-  suspension_trainer:   ['suspension', 'Suspension', 'Петли', 'רצועות תלייה'],
-  smith_machine:        ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  dip_machine:          ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  assisted_pullup_machine: ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  lat_pulldown_machine: ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  seated_row_machine:   ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  leg_press:            ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  hack_squat:           ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  leg_curl:             ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  leg_extension:        ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  chest_press_machine:  ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  chest_fly_machine:    ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  pec_deck:             ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  shoulder_press_machine: ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  reverse_fly_machine:  ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  bicep_curl_machine:   ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  preacher_curl_machine:['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  tricep_extension_machine: ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  back_extension_machine: ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  ab_crunch_machine:    ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  hip_abduction_machine:['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  hip_adduction_machine:['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  hip_thrust_machine:   ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  standing_calf_raise_machine: ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  seated_calf_raise_machine: ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  donkey_calf_raise_machine: ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  leg_press_machine:    ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  glute_ham_developer:  ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  shrug_machine:        ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  plate_loaded_lateral_raise_machine: ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  plate_loaded_dip_machine: ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  seated_row_machine:   ['machine', 'Machine', 'Тренажёр', 'מכשיר'],
-  bicycle:              ['cardio_machine', 'Cardio Machine', 'Кардиотренажёр', 'מכונה אירובית'],
-  air_bike:             ['cardio_machine', 'Cardio Machine', 'Кардиотренажёр', 'מכונה אירובית'],
-  treadmill:            ['cardio_machine', 'Cardio Machine', 'Кардиотренажёр', 'מכונה אירובית'],
-  elliptical:           ['cardio_machine', 'Cardio Machine', 'Кардиотренажёр', 'מכונה אירובית'],
-  rower:                ['cardio_machine', 'Cardio Machine', 'Кардиотренажёр', 'מכונה אירובית'],
-  ski_erg:              ['cardio_machine', 'Cardio Machine', 'Кардиотренажёр', 'מכונה אירובית'],
-  stair_climber:        ['cardio_machine', 'Cardio Machine', 'Кардиотренажёр', 'מכונה אירובית'],
-  stationary_bike:      ['cardio_machine', 'Cardio Machine', 'Кардиотренажёр', 'מכונה אירובית'],
-  sled:                 ['other', 'Other', 'Другое', 'אחר'],
-  wall_ball:            ['medicine_ball', 'Medicine Ball', 'Медбол', 'כדור כוח'],
-  jump_rope:            ['other', 'Other', 'Другое', 'אחר'],
-  wrist_roller:         ['other', 'Other', 'Другое', 'אחר']
-};
-function equipmentFor(key) {
-  if (!key) key = 'none';
-  if (EQ[key]) return EQ[key];
-  const k = String(key).toLowerCase();
-  if (/machine|leg_press|hack_squat|pec_deck|leg_curl|leg_extension|glute_ham_developer|donkey_calf/.test(k)) {
-    return ['machine', 'Machine', 'Тренажёр', 'מכשיר'];
-  }
-  if (/bicycle|air_bike|treadmill|elliptical|rower|ski_erg|stair_climber|stationary_bike/.test(k)) {
-    return ['cardio_machine', 'Cardio Machine', 'Кардиотренажёр', 'מכונה אירובית'];
-  }
-  if (/band/.test(k)) return ['band', 'Band', 'Резинка', 'גומי'];
-  if (/ball/.test(k)) return ['medicine_ball', 'Medicine Ball', 'Медбол', 'כדור כוח'];
-  return ['other', 'Other', 'Другое', 'אחר'];
+/* Equipment: use the shared canonical taxonomy (c195). Raw labels are
+   aliases; name-based refinement separates categories the sources lumped
+   into "other" (bar bands, battling ropes, suspension, rings, sticks...). */
+function equipmentFor(key, nameEn, isBodyweight) {
+  const canonical = canonicalEquipment(key, nameEn, isBodyweight);
+  const t = EQUIPMENT_TAXONOMY[canonical] || EQUIPMENT_TAXONOMY.other;
+  return [canonical, t.en, t.ru, t.he];
 }
 
 function muscleGroup(m) {
@@ -194,15 +120,7 @@ function subgroupFor(x) {
     if (n.includes('shrug')) return 'Trapezius';
     return 'Middle';
   }
-  if (g === 'legs') {
-    if (/adductor/.test(p)) return 'Adductors';
-    if (/abductor|gluteus_medius/.test(p)) return 'Abductors';
-    if (/gastrocnemius|soleus|tibialis/.test(p)) return 'Calves';
-    if (/gluteus/.test(p)) return 'Glutes';
-    if (/hamstring/.test(p)) return 'Hamstrings';
-    if (/hip_flexors/.test(p)) return 'Hip Flexors';
-    return 'Quadriceps';
-  }
+  if (g === 'legs') return legSubgroup(x.name_en, x.primary_muscles);
   if (g === 'abdominals') {
     if (/obliques/.test(p) || /twist|side bend|bicycle|russian/.test(n)) return 'Obliques';
     if (/hanging|leg raise|knee raise|reverse crunch/.test(n)) return 'Lower';
@@ -273,7 +191,7 @@ for (const x of repdb.exercises) {
   const g = groupFor(x);
   const gl = groupLabel(g);
   const sub = subgroupFor(x);
-  const [eqKey, eqEn, eqRu, eqHe] = equipmentFor(x.equipment);
+  const [eqKey, eqEn, eqRu, eqHe] = equipmentFor(x.equipment, x.name_en, x.is_bodyweight);
   const hit = translated(x);
   const stepsEn = [...(x.instructions_en || [])];
   if (x.tips_en && x.tips_en.length) stepsEn.push('Tip: ' + x.tips_en.join(' '));

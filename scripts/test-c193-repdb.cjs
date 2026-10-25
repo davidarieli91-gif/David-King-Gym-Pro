@@ -40,7 +40,7 @@ ok('trainer has RepDB source key', has(crm, 'sourceRepDB'));
 ok('trainer fetches separate JSON', has(crm, "fetch('exercise-db-rdb.json"));
 ok('trainer unpacks separate JSON', has(crm, 'EXERCISE_DB_RDB_RAW'));
 ok('trainer seeds RepDB separately', has(crm, 'seedRepDBBase'));
-ok('seed syncs translation fields into existing RepDB rows', crm.includes("['name_ru', 'name_he', 'technique_ru', 'technique_he'") && crm.includes("if (updates.length) await db.bulkPut('exercise_base', updates);"));
+ok('seed syncs translation/subgroup/equipment fields into existing RepDB rows', crm.includes("'name_ru', 'name_he', 'technique_ru', 'technique_he'") && crm.includes("'subgroup_en', 'subgroup_ru', 'subgroup_he'") && crm.includes("'equipment_type', 'equipment_en', 'equipment_ru'") && crm.includes("if (updates.length) await db.bulkPut('exercise_base', updates);"));
 ok('trainer maps source repdb', has(crm, "e.src === 'rdb' ? 'repdb'"));
 ok('trainer filters source repdb', has(crm, "_sourceFilter = 'repdb'"));
 ok('trainer tree has RepDB root', has(crm, "repdb: { name: 'repdb'"));
@@ -52,7 +52,7 @@ ok('exercise media slot no longer shrinks to a small square', crm.includes('#exe
 ok('exercise media slot has a hard full-width inline fallback', crm.includes('style="width:100%;max-height:none;aspect-ratio:1/1"'));
 ok('mobile media column is explicitly full width', crm.includes('#exercise-view:not(.em2col) > .em-media'));
 ok('modal media child stretches instead of shrinking in grid centering', crm.includes('#exercise-gif-slot { display: flex !important; flex-direction: column; align-items: stretch; justify-content: center; }') && crm.includes('#exercise-gif-slot > .ex-anim-container'));
-ok('login build label is current', crm.includes('3 languages · c194'));
+ok('login build label is current', crm.includes('3 languages · c195'));
 
 for (const lang of ['en', 'ru', 'he']) {
   const d = JSON.parse(fs.readFileSync(path.join(root, 'src', 'i18n', lang + '.json'), 'utf8'));
@@ -60,8 +60,8 @@ for (const lang of ['en', 'ru', 'he']) {
 }
 ok('copy-assets ships RepDB JSON', has(copy, "'exercise-db-rdb.json'"));
 ok('SW precaches RepDB JSON', has(sw, "'./exercise-db-rdb.json'"));
-ok('trainer build c194', has(crm, 'name="dk-build" content="c194"'));
-ok('SW cache v221', has(sw, "CACHE_NAME = 'dk-gym-v221'"));
+ok('trainer build c195', has(crm, 'name="dk-build" content="c195"'));
+ok('SW cache v222', has(sw, "CACHE_NAME = 'dk-gym-v222'"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 if (fail) process.exitCode = 1;
