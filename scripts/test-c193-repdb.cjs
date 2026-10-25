@@ -1,4 +1,4 @@
-/* c193 RepDB Free — separate fourth exercise source.
+/* c194 RepDB Free — separate fourth exercise source.
    Validates the generated dataset, its media, and the UI/seed wiring. */
 const fs = require('fs');
 const path = require('path');
@@ -49,6 +49,10 @@ ok('trainer cache refresh before picker', /async function openPicker\(\)/.test(c
 ok('RepDB equipment labels are real UTF-8', crm.includes("ru: 'Брусья'") && crm.includes("ru: 'Кольца'") && crm.includes("ru: 'Турник'"));
 ok('no corrupted question-mark equipment labels', !/ru:'\?{3,}'/.test(crm) && !/ru: '\?{3,}'/.test(crm));
 ok('exercise media slot no longer shrinks to a small square', crm.includes('#exercise-gif-slot { width: 100%; max-height: none !important; }'));
+ok('exercise media slot has a hard full-width inline fallback', crm.includes('style="width:100%;max-height:none;aspect-ratio:1/1"'));
+ok('mobile media column is explicitly full width', crm.includes('#exercise-view:not(.em2col) > .em-media'));
+ok('modal media child stretches instead of shrinking in grid centering', crm.includes('#exercise-gif-slot { display: flex !important; flex-direction: column; align-items: stretch; justify-content: center; }') && crm.includes('#exercise-gif-slot > .ex-anim-container'));
+ok('login build label is current', crm.includes('3 languages · c194'));
 
 for (const lang of ['en', 'ru', 'he']) {
   const d = JSON.parse(fs.readFileSync(path.join(root, 'src', 'i18n', lang + '.json'), 'utf8'));
@@ -56,8 +60,8 @@ for (const lang of ['en', 'ru', 'he']) {
 }
 ok('copy-assets ships RepDB JSON', has(copy, "'exercise-db-rdb.json'"));
 ok('SW precaches RepDB JSON', has(sw, "'./exercise-db-rdb.json'"));
-ok('trainer build c193', has(crm, 'name="dk-build" content="c193"'));
-ok('SW cache v220', has(sw, "CACHE_NAME = 'dk-gym-v220'"));
+ok('trainer build c194', has(crm, 'name="dk-build" content="c194"'));
+ok('SW cache v221', has(sw, "CACHE_NAME = 'dk-gym-v221'"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 if (fail) process.exitCode = 1;

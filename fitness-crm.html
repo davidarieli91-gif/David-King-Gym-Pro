@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c193" />
+<meta name="dk-build" content="c194" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -810,6 +810,15 @@
        short/mobile viewports because aspect-ratio + max-height shrinks WIDTH.
        The modal already scrolls; let the slot use the full card width. */
     #exercise-gif-slot { width: 100%; max-height: none !important; }
+    /* c194: the slot is a CSS grid with place-items:center; a percentage
+       height on its media child therefore resolved to auto, leaving the
+       RepDB illustration as a small centered square. Make the slot a column
+       flex box and stretch the media child to fill it. */
+    #exercise-gif-slot { display: flex !important; flex-direction: column; align-items: stretch; justify-content: center; }
+    #exercise-gif-slot > .ex-anim-container,
+    #exercise-gif-slot > img,
+    #exercise-gif-slot > .relative { flex: 1 1 auto; width: 100%; min-height: 0; height: 100%; }
+    #exercise-gif-slot > p { flex: 0 0 auto; text-align: center; }
     .bm-chip { transition: all .12s; }
     .bm-chip.active { background: rgb(var(--c-primary)); color: #fff; border-color: rgb(var(--c-primary)); }
     .bm-class-chip { transition: all .12s; border-color: rgb(var(--c-border)); }
@@ -897,6 +906,10 @@
        На мобильных — прежний вертикальный стек.
        ============================================================ */
     .em2col > .em-media, .em2col > .em-info { min-width: 0; }
+    /* c193b: in the stacked (mobile) exercise modal the media column must never
+       shrink to its content; the RepDB illustration then fills the card. */
+    #exercise-view:not(.em2col) > .em-media,
+    #exercise-view:not(.em2col) #exercise-gif-slot { width: 100%; min-width: 0; }
     @media (min-width: 1024px) {
       .em2col { display: grid !important; grid-template-columns: minmax(0,1fr) minmax(0,1.15fr); gap: 1rem; align-items: start; }
       .em2col > .em-media { position: sticky; top: 72px; display: flex; flex-direction: column; gap: 1rem; align-self: start; }
@@ -2915,7 +2928,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c184</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c194</p>
             </div>
           </div>
 
@@ -5379,7 +5392,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
         <div id="exercise-view" class="p-4 space-y-4 overflow-y-auto">
           <div class="em-media space-y-4">
           <!-- Photos slot (2 images + animate button) -->
-          <div id="exercise-gif-slot" class="aspect-video rounded-xl bg-surface-2 border border-border grid place-items-center overflow-hidden relative">
+          <div id="exercise-gif-slot" class="aspect-video rounded-xl bg-surface-2 border border-border grid place-items-center overflow-hidden relative" style="width:100%;max-height:none;aspect-ratio:1/1">
           </div>
 
           <!-- Video player (YouTube embed) -->
@@ -34558,7 +34571,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 193; /* numeric part of dk-build c193 */
+  var RUNNING = 194; /* numeric part of dk-build c194 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
