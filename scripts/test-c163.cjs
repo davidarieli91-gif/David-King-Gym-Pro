@@ -38,7 +38,7 @@ ok('old icon+row template card removed', tplList.indexOf('w-10 h-10 rounded-lg b
 
 /* ---------- STATIC: daily log meals → photo mini-tiles ---------- */
 const rm = extractFn(trainer, 'renderMeals');
-ok('meal items render as photo mini-tiles grid', rm.indexOf('food-grid p-2.5') >= 0);
+ok('meal items render as photo mini-tiles grid', rm.indexOf('class="food-grid${items.length < 3') >= 0 && rm.indexOf('v2-food-grid--rows') >= 0);
 ok('log tile: photo by stored food_id, plate placeholder for legacy entries', rm.indexOf('it.food_id') >= 0 && rm.indexOf('window.dkFoodImgTag') >= 0 && rm.indexOf('🥗') >= 0);
 ok('log tile: grams · kcal line + P/C/F badge chips', rm.indexOf('fmtNumber(it.grams)') >= 0 && rm.indexOf('${fmtNumber(it.protein)}P') >= 0 && rm.indexOf('${fmtNumber(it.carbs)}C') >= 0 && rm.indexOf('${fmtNumber(it.fat)}F') >= 0);
 ok('log tile: ✕ overlay delete keeps data-delete-food', rm.indexOf('data-delete-food=') >= 0 && rm.indexOf('food-tile-x') >= 0);

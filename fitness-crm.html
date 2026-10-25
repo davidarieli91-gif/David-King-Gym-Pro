@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c198" />
+<meta name="dk-build" content="c199" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -3344,12 +3344,351 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
   html[data-ui="v2"] .v2-icon-box { box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 0 22px rgb(var(--v2-glow) / .12); }
   html[data-ui="v2"] .v2-section-title { text-shadow: 0 1px 18px rgba(0,0,0,.35); }
 
-  /* nutrition macro rings */
-  html[data-ui="v2"] #nutrition-rings > div {
-    padding: 10px 6px; border-radius: 16px;
+  /* ===== c199 — nutrition bento ===== */
+  html[data-ui="v2"] .v2-nutri-toolbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  html[data-ui="v2"] .v2-nutri-selects { display: flex; gap: 8px; flex-wrap: wrap; margin-inline-end: auto; }
+  html[data-ui="v2"] .v2-nutri-select,
+  html[data-ui="v2"] .v2-nutri-date {
+    background: var(--v2-input-bg); border: 1px solid var(--v2-border); border-radius: 12px;
+    min-height: 40px; padding: 8px 12px; color: rgb(var(--c-text)); font-size: 12.5px;
+    outline: none; transition: border-color .16s, box-shadow .16s;
+  }
+  html[data-ui="v2"] .v2-nutri-select { min-width: 190px; cursor: pointer; }
+  html[data-ui="v2"] .v2-nutri-select:focus { border-color: rgb(var(--c-primary-2) / .65); box-shadow: 0 0 0 3px rgb(var(--c-primary) / .16); }
+  html[data-ui="v2"] .v2-nutri-date-wrap {
+    display: flex; align-items: center; gap: 1px; padding: 2px;
+    background: var(--v2-input-bg); border: 1px solid var(--v2-border); border-radius: 12px;
+  }
+  html[data-ui="v2"] .v2-nutri-date-wrap .v2-nutri-date {
+    background: transparent; border: 0; border-radius: 8px; width: 122px; min-height: 34px; padding: 4px 5px; font-size: 11.5px;
+  }
+  html[data-ui="v2"] .v2-nutri-date-wrap .v2-nutri-date:focus { box-shadow: none; }
+  html[data-ui="v2"] .v2-day-arrow {
+    width: 26px; height: 34px; flex: none; display: grid; place-items: center; border-radius: 8px;
+    color: rgb(var(--c-muted)); transition: background .14s, color .14s;
+  }
+  html[data-ui="v2"] .v2-day-arrow:hover { background: rgba(255,255,255,.07); color: rgb(var(--c-text)); }
+  html[data-ui="v2"] .v2-day-arrow svg { width: 13px; height: 13px; }
+  html[data-ui="v2"] .v2-day-today {
+    height: 27px; padding: 0 8px; margin-inline-start: 2px; border-radius: 8px;
+    font-size: 8.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+    color: rgb(var(--c-accent)); background: rgb(var(--c-accent) / .08); border: 1px solid rgb(var(--c-accent) / .22);
+  }
+  html[data-ui="v2"] .v2-day-today:hover { background: rgb(var(--c-accent) / .15); }
+  html[data-ui="v2"] .v2-nutri-add { flex: none; }
+  html[data-ui="v2"] .v2-nutri-empty {
+    padding: 46px 24px; text-align: center;
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+  }
+  html[data-ui="v2"] .v2-nutri-empty-orb {
+    width: 64px; height: 64px; border-radius: 20px; display: grid; place-items: center;
+    color: rgb(var(--c-accent)); background: radial-gradient(circle at 35% 25%, rgb(var(--c-accent) / .22), rgba(255,255,255,.03));
+    border: 1px solid var(--v2-border-strong); box-shadow: 0 18px 40px -20px rgb(var(--v2-glow) / .55), inset 0 1px 0 rgba(255,255,255,.1);
+  }
+  html[data-ui="v2"] #nutrition-content { display: flex; flex-direction: column; gap: 14px; }
+  html[data-ui="v2"] #nutrition-content > * { animation: v2NutriRise .48s var(--v2-ease) both; }
+  html[data-ui="v2"] #nutrition-content > *:nth-child(2) { animation-delay: .04s; }
+  html[data-ui="v2"] #nutrition-content > *:nth-child(3) { animation-delay: .08s; }
+  html[data-ui="v2"] #nutrition-content > *:nth-child(4) { animation-delay: .12s; }
+  html[data-ui="v2"] #nutrition-content > *:nth-child(5) { animation-delay: .16s; }
+  html[data-ui="v2"] #nutrition-content > *:nth-child(n+6) { animation-delay: .2s; }
+  @keyframes v2NutriRise { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: none; } }
+
+  html[data-ui="v2"] .v2-nutri-hero {
+    position: relative; overflow: hidden; isolation: isolate;
+    display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+    padding: 22px 24px; border-radius: 24px;
+    background:
+      radial-gradient(ellipse 70% 130% at 0% 0%, rgb(var(--c-primary) / .22), transparent 58%),
+      radial-gradient(ellipse 60% 120% at 100% 100%, rgb(var(--c-accent) / .13), transparent 60%),
+      var(--v2-glass-bg);
+    border: 1px solid var(--v2-border-strong);
+    box-shadow: var(--v2-glass-shadow), inset 0 1px 0 rgba(255,255,255,.08);
+  }
+  html[data-ui="v2"] .v2-nutri-hero::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size: 34px 34px; opacity: .5;
+    mask-image: radial-gradient(ellipse 80% 100% at 30% 50%, #000, transparent 78%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 100% at 30% 50%, #000, transparent 78%);
+  }
+  html[data-ui="v2"] .v2-nutri-hero::after {
+    content: ""; position: absolute; top: -60%; bottom: -60%; left: -30%; width: 24%; z-index: -1;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,.09), transparent);
+    transform: skewX(-16deg) translateX(-120%);
+    animation: v2NutriSheen 9s var(--v2-ease) infinite; pointer-events: none;
+  }
+  @keyframes v2NutriSheen { 0%, 58% { transform: skewX(-16deg) translateX(-120%); } 80%, 100% { transform: skewX(-16deg) translateX(680%); } }
+  html[data-ui="v2"] .v2-nutri-hero-copy { min-width: 0; flex: 1 1 300px; }
+  html[data-ui="v2"] .v2-nutri-big { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+  html[data-ui="v2"] .v2-nutri-big > span {
+    font-family: var(--font-display, inherit); font-size: clamp(38px, 6vw, 58px); line-height: .95;
+    font-weight: 700; letter-spacing: -.055em;
+    background: linear-gradient(120deg, rgb(var(--c-text)), rgb(var(--c-accent)) 115%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    text-shadow: 0 0 38px rgb(var(--v2-glow) / .28);
+  }
+  html[data-ui="v2"] .v2-nutri-hero.is-over .v2-nutri-big > span { background: linear-gradient(120deg, rgb(var(--c-text)), rgb(var(--c-danger)) 115%); -webkit-background-clip: text; background-clip: text; }
+  html[data-ui="v2"] .v2-nutri-big em { font-style: normal; font-size: 10px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: rgb(var(--c-muted)); padding-bottom: 6px; }
+  html[data-ui="v2"] .v2-nutri-sub { font-size: 12px; color: rgb(var(--c-muted)); margin-top: 7px; min-height: 18px; }
+  html[data-ui="v2"] .v2-nutri-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
+  html[data-ui="v2"] .v2-nutri-chip {
+    display: inline-flex; align-items: center; gap: 7px; padding: 6px 10px; border-radius: 10px;
+    background: rgba(255,255,255,.04); border: 1px solid var(--v2-border);
+    font-size: 11px; color: rgb(var(--c-muted));
+  }
+  html[data-ui="v2"] .v2-nutri-chip small { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+  html[data-ui="v2"] .v2-nutri-chip b { font-family: var(--font-mono); color: rgb(var(--c-text)); font-size: 11.5px; }
+  html[data-ui="v2"] .v2-nutri-orb {
+    width: 120px; height: 120px; border-radius: 9999px; flex: none; position: relative; display: grid; place-items: center;
+    background: conic-gradient(from -90deg, rgb(var(--c-accent)) var(--p, 0%), rgba(255,255,255,.08) 0);
+    box-shadow: 0 0 42px rgb(var(--c-accent) / .2), inset 0 0 0 1px rgba(255,255,255,.06);
+    transition: background .5s var(--v2-ease);
+  }
+  html[data-ui="v2"] .v2-nutri-orb::before { content: ""; position: absolute; inset: 8px; border-radius: 9999px; background: rgb(var(--c-bg)); box-shadow: inset 0 0 28px rgba(0,0,0,.48); }
+  html[data-ui="v2"] .v2-nutri-orb::after { content: ""; position: absolute; inset: -4px; border-radius: 9999px; border: 1px dashed rgba(255,255,255,.12); animation: v2OrbSpin 38s linear infinite; }
+  @keyframes v2OrbSpin { to { transform: rotate(360deg); } }
+  html[data-ui="v2"] .v2-nutri-orb-in { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; }
+  html[data-ui="v2"] .v2-nutri-orb-in b { font-family: var(--font-mono); font-size: 24px; line-height: 1; letter-spacing: -.04em; }
+  html[data-ui="v2"] .v2-nutri-orb-in small { margin-top: 4px; font-size: 8px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+
+  html[data-ui="v2"] .v2-nutri-section { padding: 18px; }
+  html[data-ui="v2"] .v2-nutri-section-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 13px; flex-wrap: wrap; }
+  html[data-ui="v2"] .v2-section-title-sm { font-family: var(--font-display, inherit); font-size: 15px; font-weight: 700; letter-spacing: -.02em; margin-top: 2px; }
+  html[data-ui="v2"] .v2-nutri-section-head .v2-text-link { margin-top: 0; padding: 5px 9px; border-radius: 9px; background: rgba(255,255,255,.04); border: 1px solid var(--v2-border); }
+  html[data-ui="v2"] .v2-nutri-section-head .v2-text-link:hover { background: rgba(255,255,255,.07); }
+
+  html[data-ui="v2"] .v2-macro-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+  html[data-ui="v2"] .v2-macro-tile {
+    --tone: var(--c-primary-2);
+    position: relative; overflow: hidden; min-width: 0;
+    padding: 12px 12px 11px; border-radius: 16px;
+    background: linear-gradient(150deg, rgb(var(--tone) / .09), rgba(255,255,255,.018) 62%);
+    border: 1px solid var(--v2-border); transition: border-color .18s, transform .18s, box-shadow .18s;
+  }
+  html[data-ui="v2"] .v2-macro-tile:hover { border-color: rgb(var(--tone) / .4); transform: translateY(-2px); box-shadow: 0 16px 34px -24px rgb(var(--tone) / .55); }
+  html[data-ui="v2"] .v2-macro-tile[data-macro="calories"] { --tone: var(--c-primary-2); }
+  html[data-ui="v2"] .v2-macro-tile[data-macro="protein"] { --tone: var(--c-success); }
+  html[data-ui="v2"] .v2-macro-tile[data-macro="carbs"] { --tone: var(--c-warning); }
+  html[data-ui="v2"] .v2-macro-tile[data-macro="fat"] { --tone: var(--c-danger); }
+  html[data-ui="v2"] .v2-macro-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 9px; }
+  html[data-ui="v2"] .v2-macro-name { font-size: 9px; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; color: rgb(var(--c-muted)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  html[data-ui="v2"] .v2-macro-pct { flex: none; font-family: var(--font-mono); font-size: 9.5px; font-weight: 700; color: rgb(var(--tone)); padding: 2px 5px; border-radius: 9999px; background: rgb(var(--tone) / .12); }
+  html[data-ui="v2"] .v2-macro-row { display: flex; align-items: center; gap: 10px; }
+  html[data-ui="v2"] .v2-macro-ring { width: 56px; height: 56px; flex: none; }
+  html[data-ui="v2"] .v2-macro-ring .v2-ring-bg { stroke: rgba(255,255,255,.075); }
+  html[data-ui="v2"] .v2-macro-ring .v2-ring-tick { stroke: rgba(255,255,255,.12); }
+  html[data-ui="v2"] .v2-macro-ring .v2-ring-val { stroke: rgb(var(--tone)); filter: drop-shadow(0 0 5px rgb(var(--tone) / .55)); transition: stroke-dashoffset .55s var(--v2-ease); }
+  html[data-ui="v2"] .v2-macro-copy { min-width: 0; display: flex; flex-direction: column; }
+  html[data-ui="v2"] .v2-macro-copy b { font-family: var(--font-mono); font-size: 15px; line-height: 1.1; letter-spacing: -.03em; white-space: nowrap; }
+  html[data-ui="v2"] .v2-macro-copy span { font-family: var(--font-mono); font-size: 9px; color: rgb(var(--c-muted)); white-space: nowrap; }
+  html[data-ui="v2"] .v2-macro-copy small { margin-top: 3px; font-size: 8.5px; color: rgb(var(--tone)); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  html[data-ui="v2"] .v2-macro-copy small.is-over { color: rgb(var(--c-danger)); }
+  html[data-ui="v2"] .v2-macro-bar { height: 3px; margin-top: 10px; border-radius: 9999px; background: rgba(255,255,255,.07); overflow: hidden; }
+  html[data-ui="v2"] .v2-macro-bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, rgb(var(--tone) / .55), rgb(var(--tone))); box-shadow: 0 0 10px rgb(var(--tone) / .5); }
+
+  html[data-ui="v2"] .v2-nutri-duo { display: grid; grid-template-columns: minmax(0,1.25fr) minmax(0,1fr); gap: 14px; }
+  html[data-ui="v2"] .v2-nutri-gauge, html[data-ui="v2"] .v2-nutri-split { padding: 17px; }
+  html[data-ui="v2"] .v2-gauge-num { display: flex; align-items: baseline; gap: 5px; flex-wrap: wrap; }
+  html[data-ui="v2"] .v2-gauge-num b { font-family: var(--font-mono); font-size: 27px; letter-spacing: -.045em; }
+  html[data-ui="v2"] .v2-gauge-num > span { font-family: var(--font-mono); font-size: 12px; color: rgb(var(--c-muted)); }
+  html[data-ui="v2"] .v2-gauge-num small { margin-inline-start: 5px; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+  html[data-ui="v2"] .v2-gauge { position: relative; height: 10px; margin-top: 12px; border-radius: 9999px; background: rgba(255,255,255,.07); overflow: hidden; }
+  html[data-ui="v2"] .v2-gauge i { display: block; height: 100%; border-radius: inherit; background: var(--v2-primary-grad); box-shadow: 0 0 20px rgb(var(--v2-glow) / .6); transition: width .6s var(--v2-ease); }
+  html[data-ui="v2"] .v2-gauge i.is-over { background: linear-gradient(90deg, rgb(var(--c-warning)), rgb(var(--c-danger))); box-shadow: 0 0 20px rgb(var(--c-danger) / .55); }
+  html[data-ui="v2"] .v2-gauge-foot { display: flex; justify-content: space-between; gap: 8px; margin-top: 8px; font-size: 9.5px; color: rgb(var(--c-muted)); }
+  html[data-ui="v2"] .v2-gauge-foot #nutrition-daybar-side { font-family: var(--font-mono); font-weight: 700; color: rgb(var(--c-text)); }
+  html[data-ui="v2"] .v2-splitbar { display: flex; height: 12px; border-radius: 9999px; overflow: hidden; background: rgba(255,255,255,.07); margin-top: 4px; }
+  html[data-ui="v2"] .v2-splitbar i { display: block; height: 100%; transition: width .55s var(--v2-ease); }
+  html[data-ui="v2"] .v2-splitbar i.p, html[data-ui="v2"] .v2-split-legend .p i { background: rgb(var(--c-success)); }
+  html[data-ui="v2"] .v2-splitbar i.c, html[data-ui="v2"] .v2-split-legend .c i { background: rgb(var(--c-warning)); }
+  html[data-ui="v2"] .v2-splitbar i.f, html[data-ui="v2"] .v2-split-legend .f i { background: rgb(var(--c-danger)); }
+  html[data-ui="v2"] .v2-splitbar i.p { box-shadow: 0 0 14px rgb(var(--c-success) / .5); }
+  html[data-ui="v2"] .v2-splitbar i.c { box-shadow: 0 0 14px rgb(var(--c-warning) / .5); }
+  html[data-ui="v2"] .v2-splitbar i.f { box-shadow: 0 0 14px rgb(var(--c-danger) / .5); }
+  html[data-ui="v2"] .v2-split-legend { display: flex; flex-wrap: wrap; gap: 10px 16px; margin-top: 13px; }
+  html[data-ui="v2"] .v2-split-legend > span { display: inline-flex; align-items: center; gap: 6px; font-size: 9.5px; font-weight: 700; color: rgb(var(--c-muted)); text-transform: uppercase; letter-spacing: .07em; }
+  html[data-ui="v2"] .v2-split-legend i { width: 7px; height: 7px; border-radius: 9999px; flex: none; }
+  html[data-ui="v2"] .v2-split-legend b { font-family: var(--font-mono); font-size: 10px; color: rgb(var(--c-text)); }
+
+  html[data-ui="v2"] .v2-nutri-meals-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-top: 4px; }
+  html[data-ui="v2"] .v2-meal-timeline { position: relative; display: flex; flex-direction: column; gap: 10px; padding-inline-start: 18px; }
+  html[data-ui="v2"] .v2-meal-timeline::before {
+    content: ""; position: absolute; top: 10px; bottom: 10px; inset-inline-start: 4px; width: 1px;
+    background: linear-gradient(to bottom, rgb(var(--c-accent) / .5), rgb(var(--c-primary) / .32) 40%, transparent);
+  }
+  html[data-ui="v2"] .v2-meal-card {
+    position: relative; border-radius: 18px; overflow: hidden;
+    background: var(--v2-glass-bg); border: 1px solid var(--v2-border);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+    transition: border-color .18s, box-shadow .18s;
+  }
+  html[data-ui="v2"] .v2-meal-card:hover { border-color: var(--v2-border-strong); box-shadow: 0 16px 38px -30px rgb(var(--v2-glow) / .6); }
+  html[data-ui="v2"] .v2-meal-card::before {
+    content: ""; position: absolute; inset-inline-start: -18px; top: 22px; width: 9px; height: 9px; border-radius: 9999px;
+    background: rgb(var(--c-bg)); border: 2px solid rgb(var(--c-primary-2)); box-shadow: 0 0 12px rgb(var(--v2-glow) / .75);
+  }
+  html[data-ui="v2"] .v2-meal-head { display: flex; align-items: center; gap: 10px; padding: 12px 13px 10px; }
+  html[data-ui="v2"] .v2-meal-icon {
+    width: 34px; height: 34px; border-radius: 11px; flex: none; display: grid; place-items: center;
+    background: rgb(var(--c-primary) / .12); color: rgb(var(--c-primary-2)); border: 1px solid var(--v2-border);
+  }
+  html[data-ui="v2"] .v2-meal-icon svg { width: 16px; height: 16px; }
+  html[data-ui="v2"] .v2-meal-icon[data-tone="amber"] { background: rgb(var(--c-warning) / .11); color: rgb(var(--c-warning)); }
+  html[data-ui="v2"] .v2-meal-icon[data-tone="emerald"] { background: rgb(var(--c-success) / .11); color: rgb(var(--c-success)); }
+  html[data-ui="v2"] .v2-meal-icon[data-tone="cyan"] { background: rgb(var(--c-accent) / .11); color: rgb(var(--c-accent)); }
+  html[data-ui="v2"] .v2-meal-icon[data-tone="rose"] { background: rgb(var(--c-danger) / .11); color: rgb(var(--c-danger)); }
+  html[data-ui="v2"] .v2-meal-title { min-width: 0; flex: 1; }
+  html[data-ui="v2"] .v2-meal-name { font-family: var(--font-display, inherit); font-size: 13px; font-weight: 700; letter-spacing: -.01em; }
+  html[data-ui="v2"] .v2-meal-meta { margin-top: 2px; font-size: 9px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+  html[data-ui="v2"] .v2-meal-kcal { text-align: end; flex: none; }
+  html[data-ui="v2"] .v2-meal-kcal b { display: block; font-family: var(--font-mono); font-size: 19px; line-height: 1; letter-spacing: -.04em; }
+  html[data-ui="v2"] .v2-meal-kcal small { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: rgb(var(--c-muted)); }
+  html[data-ui="v2"] .v2-meal-progress { height: 2px; background: rgba(255,255,255,.06); }
+  html[data-ui="v2"] .v2-meal-progress i { display: block; height: 100%; background: linear-gradient(90deg, rgb(var(--c-primary)), rgb(var(--c-accent))); box-shadow: 0 0 9px rgb(var(--c-accent) / .5); }
+  html[data-ui="v2"] .v2-meal-body { padding: 10px 12px 12px; }
+  html[data-ui="v2"] .v2-meal-macros { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  html[data-ui="v2"] .v2-meal-macros span { font-family: var(--font-mono); font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 9999px; background: rgba(255,255,255,.045); border: 1px solid var(--v2-border); color: rgb(var(--c-muted)); }
+  html[data-ui="v2"] .v2-meal-macros span.p { color: rgb(var(--c-success)); border-color: rgb(var(--c-success) / .28); background: rgb(var(--c-success) / .07); }
+  html[data-ui="v2"] .v2-meal-macros span.c { color: rgb(var(--c-warning)); border-color: rgb(var(--c-warning) / .28); background: rgb(var(--c-warning) / .07); }
+  html[data-ui="v2"] .v2-meal-macros span.f { color: rgb(var(--c-danger)); border-color: rgb(var(--c-danger) / .28); background: rgb(var(--c-danger) / .07); }
+  html[data-ui="v2"] #nutrition-content.hidden,
+  html[data-ui="v2"] #nutrition-empty.hidden,
+  html[data-ui="v2"] .v2-nutri-empty.hidden { display: none !important; }
+  html[data-ui="v2"] .v2-meal-body-grid { display: grid; grid-template-columns: minmax(0,1fr) 168px; gap: 10px; align-items: start; }
+  html[data-ui="v2"] #nutrition-meals .food-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; padding: 0; }
+  html[data-ui="v2"] .v2-meal-rail {
+    display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 13px;
+    background: rgba(255,255,255,.025); border: 1px solid var(--v2-border);
+  }
+  html[data-ui="v2"] .v2-meal-rail-title { font-size: 8px; font-weight: 800; letter-spacing: .16em; color: rgb(var(--c-muted)); }
+  html[data-ui="v2"] .v2-meal-macro { display: grid; grid-template-columns: 11px minmax(0,1fr) auto; align-items: center; gap: 6px; }
+  html[data-ui="v2"] .v2-meal-macro > span { font-family: var(--font-mono); font-size: 9px; font-weight: 700; }
+  html[data-ui="v2"] .v2-meal-macro > b { font-family: var(--font-mono); font-size: 9.5px; font-weight: 700; }
+  html[data-ui="v2"] .v2-meal-macro.p > span, html[data-ui="v2"] .v2-meal-macro.p > b { color: rgb(var(--c-success)); }
+  html[data-ui="v2"] .v2-meal-macro.c > span, html[data-ui="v2"] .v2-meal-macro.c > b { color: rgb(var(--c-warning)); }
+  html[data-ui="v2"] .v2-meal-macro.f > span, html[data-ui="v2"] .v2-meal-macro.f > b { color: rgb(var(--c-danger)); }
+  html[data-ui="v2"] .v2-meal-macro .bar { height: 4px; border-radius: 9999px; background: rgba(255,255,255,.06); overflow: hidden; }
+  html[data-ui="v2"] .v2-meal-macro .bar i { display: block; height: 100%; border-radius: inherit; }
+  html[data-ui="v2"] .v2-meal-macro .bar i.p { background: rgb(var(--c-success)); box-shadow: 0 0 8px rgb(var(--c-success) / .45); }
+  html[data-ui="v2"] .v2-meal-macro .bar i.c { background: rgb(var(--c-warning)); box-shadow: 0 0 8px rgb(var(--c-warning) / .45); }
+  html[data-ui="v2"] .v2-meal-macro .bar i.f { background: rgb(var(--c-danger)); box-shadow: 0 0 8px rgb(var(--c-danger) / .45); }
+  html[data-ui="v2"] .v2-meal-share { margin-top: 2px; padding-top: 7px; border-top: 1px solid var(--v2-border); display: flex; align-items: baseline; gap: 4px; }
+  html[data-ui="v2"] .v2-meal-share span { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: rgb(var(--c-accent)); }
+  html[data-ui="v2"] .v2-meal-share small { font-size: 7.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+  html[data-ui="v2"] #nutrition-meals .food-grid > div {
+    background: rgba(255,255,255,.028); border: 1px solid var(--v2-border) !important; border-radius: 12px !important;
+    transition: transform .16s, border-color .16s, box-shadow .16s;
+  }
+  html[data-ui="v2"] #nutrition-meals .food-grid > div:hover { transform: translateY(-2px); border-color: var(--v2-border-strong) !important; box-shadow: 0 12px 26px -18px rgba(0,0,0,.9); }
+  html[data-ui="v2"] #nutrition-meals .food-grid .aspect-\[4\/3\] { aspect-ratio: 16 / 10; }
+  html[data-ui="v2"] #nutrition-meals .food-grid.v2-food-grid--rows { display: flex; flex-direction: column; gap: 8px; }
+  html[data-ui="v2"] #nutrition-meals .v2-food-grid--rows > div { display: flex; align-items: stretch; min-height: 98px; }
+  html[data-ui="v2"] #nutrition-meals .v2-food-grid--rows > div > div:first-child {
+    width: 106px; flex: none; aspect-ratio: auto !important; min-height: 98px;
+  }
+  html[data-ui="v2"] #nutrition-meals .v2-food-grid--rows > div > div:last-child {
+    flex: 1; display: grid; grid-template-columns: minmax(0,1fr) auto; grid-template-rows: auto auto;
+    align-content: center; column-gap: 14px; row-gap: 2px; padding: 10px 12px;
+  }
+  html[data-ui="v2"] #nutrition-meals .v2-food-grid--rows .food-tile-name { grid-column: 1; grid-row: 1; font-size: 11.5px; }
+  html[data-ui="v2"] #nutrition-meals .v2-food-grid--rows .text-\[9px\] { grid-column: 1; grid-row: 2; font-size: 10px; margin-top: 0; }
+  html[data-ui="v2"] #nutrition-meals .v2-food-grid--rows > div > div:last-child > .flex.flex-wrap {
+    grid-column: 2; grid-row: 1 / span 2; align-self: center; justify-content: flex-end; margin-top: 0;
+  }
+  html[data-ui="v2"] #nutrition-meals .v2-food-grid--rows .food-badge { font-size: 8.5px; }
+  html[data-ui="v2"] #nutrition-meals .food-tile-name { font-size: 10.5px; }
+  html[data-ui="v2"] .v2-meal-empty {
+    display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 11px;
+    border: 1px dashed var(--v2-border); background: rgba(255,255,255,.014);
+    font-size: 10.5px; color: rgb(var(--c-muted));
+  }
+  html[data-ui="v2"] .v2-meal-empty svg { width: 14px; height: 14px; opacity: .7; }
+  html[data-ui="v2"] .v2-meal-add {
+    margin-top: 9px; width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 7px 10px; border-radius: 10px; border: 1px dashed rgb(var(--c-primary-2) / .3);
+    color: rgb(var(--c-primary-2)); font-size: 10px; font-weight: 700;
+    background: rgb(var(--c-primary) / .05); transition: background .15s, border-color .15s;
+  }
+  html[data-ui="v2"] .v2-meal-add:hover { background: rgb(var(--c-primary) / .13); border-color: rgb(var(--c-primary-2) / .55); }
+  html[data-ui="v2"] .v2-meal-add svg { width: 13px; height: 13px; }
+
+  html[data-ui="v2"] .v2-nutri-totals { padding: 16px 18px; }
+  html[data-ui="v2"] .v2-nutri-total-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  html[data-ui="v2"] .v2-total-item {
+    display: flex; flex-direction: column; gap: 1px; min-width: 78px; padding: 7px 11px; border-radius: 11px;
     background: rgba(255,255,255,.035); border: 1px solid var(--v2-border);
   }
-  html[data-ui="v2"] #nutrition-rings svg circle:last-child { filter: drop-shadow(0 0 6px rgb(var(--v2-glow) / .35)); }
+  html[data-ui="v2"] .v2-total-item small { font-size: 8px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+  html[data-ui="v2"] .v2-total-item b { font-family: var(--font-mono); font-size: 15px; letter-spacing: -.03em; }
+  html[data-ui="v2"] .v2-total-item em { font-style: normal; font-size: 9px; color: rgb(var(--c-muted)); margin-inline-start: 2px; }
+  html[data-ui="v2"] .v2-total-item.p b { color: rgb(var(--c-success)); }
+  html[data-ui="v2"] .v2-total-item.c b { color: rgb(var(--c-warning)); }
+  html[data-ui="v2"] .v2-total-item.f b { color: rgb(var(--c-danger)); }
+
+  /* nutrition modals — the food workflow uses the same deep glass */
+  html[data-ui="v2"] #food-search-modal > .bg-surface,
+  html[data-ui="v2"] #food-portion-modal > .bg-surface,
+  html[data-ui="v2"] #custom-food-modal > .bg-surface,
+  html[data-ui="v2"] #food-badges-modal > .bg-surface,
+  html[data-ui="v2"] #food-picker-modal > .bg-surface,
+  html[data-ui="v2"] #food-detail-modal > .bg-surface {
+    background: var(--v2-glass-bg) !important; border: 1px solid var(--v2-border-strong) !important;
+    box-shadow: var(--v2-glass-shadow) !important; backdrop-filter: blur(28px) saturate(135%);
+  }
+  html[data-ui="v2"] #food-search-modal .bg-surface-2,
+  html[data-ui="v2"] #food-portion-modal .bg-surface-2,
+  html[data-ui="v2"] #custom-food-modal .bg-surface-2 { background: var(--v2-input-bg) !important; border-color: var(--v2-border) !important; }
+  html[data-ui="v2"] .food-source-btn,
+  html[data-ui="v2"] .food-filter-btn { border-radius: 9px; }
+
+  /* light themes — white-alpha tracks would vanish on pearl glass */
+  html[data-ui="v2"][data-mode="light"] .v2-macro-bar,
+  html[data-ui="v2"][data-mode="light"] .v2-gauge,
+  html[data-ui="v2"][data-mode="light"] .v2-splitbar,
+  html[data-ui="v2"][data-mode="light"] .v2-meal-progress,
+  html[data-ui="v2"][data-mode="light"] .v2-meal-macro .bar { background: rgba(70,20,65,.11); }
+  html[data-ui="v2"][data-mode="light"] .v2-nutri-orb {
+    background: conic-gradient(from -90deg, rgb(var(--c-accent)) var(--p, 0%), rgba(70,20,65,.1) 0);
+  }
+  html[data-ui="v2"][data-mode="light"] .v2-nutri-orb::after { border-color: rgba(100,40,90,.16); }
+  html[data-ui="v2"][data-mode="light"] .v2-meal-rail { background: rgba(255,255,255,.5); }
+  html[data-ui="v2"][data-mode="light"] .v2-atlas-dock,
+  html[data-ui="v2"][data-mode="light"] .v2-atlas-hud { background: rgba(5,10,22,.7); }
+
+  @media (prefers-reduced-motion: reduce) {
+    html[data-ui="v2"] #nutrition-content > *,
+    html[data-ui="v2"] .v2-nutri-hero::after,
+    html[data-ui="v2"] .v2-nutri-orb::after,
+    html[data-ui="v2"] #atlas-info:not(.hidden),
+    html[data-ui="v2"] #atlas-scan { animation: none !important; }
+  }
+
+  @media (max-width: 1100px) { html[data-ui="v2"] .v2-macro-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+  @media (max-width: 860px) { html[data-ui="v2"] .v2-nutri-duo { grid-template-columns: minmax(0,1fr); } }
+  @media (max-width: 640px) {
+    html[data-ui="v2"] .v2-nutri-hero { padding: 18px; border-radius: 20px; gap: 16px; }
+    html[data-ui="v2"] .v2-nutri-orb { width: 94px; height: 94px; }
+    html[data-ui="v2"] .v2-nutri-orb-in b { font-size: 19px; }
+    html[data-ui="v2"] .v2-nutri-big > span { font-size: 40px; }
+    html[data-ui="v2"] .v2-nutri-selects { width: 100%; }
+    html[data-ui="v2"] .v2-nutri-select { flex: 1 1 150px; min-width: 0; }
+    html[data-ui="v2"] .v2-nutri-date-wrap { flex: 1 1 190px; }
+    html[data-ui="v2"] .v2-nutri-date-wrap .v2-nutri-date { flex: 1; width: auto; min-width: 0; }
+    html[data-ui="v2"] .v2-nutri-add { width: 100%; }
+    html[data-ui="v2"] .v2-macro-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    html[data-ui="v2"] .v2-macro-tile { padding: 10px; }
+    html[data-ui="v2"] .v2-macro-ring { width: 48px; height: 48px; }
+    html[data-ui="v2"] .v2-meal-timeline { padding-inline-start: 14px; }
+    html[data-ui="v2"] .v2-meal-card::before { inset-inline-start: -14px; }
+    html[data-ui="v2"] .v2-meal-body-grid { grid-template-columns: minmax(0,1fr); }
+    html[data-ui="v2"] #nutrition-meals .food-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    html[data-ui="v2"] .v2-meal-rail { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 7px 10px; }
+    html[data-ui="v2"] .v2-meal-rail-title,
+    html[data-ui="v2"] .v2-meal-share { display: none; }
+    html[data-ui="v2"] .v2-nutri-total-grid { width: 100%; }
+    html[data-ui="v2"] .v2-total-item { flex: 1 1 calc(25% - 8px); min-width: 0; padding: 7px 8px; }
+  }
 
   /* live workout focus mode */
   html[data-ui="v2"] .v2-live-ring {
@@ -3421,7 +3760,17 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
   html[data-ui="v2"] [id$="-modal"] .sticky { background: var(--v2-glass-bg) !important; backdrop-filter: blur(20px); }
 
   /* atlas */
-  html[data-ui="v2"] #atlas-modal { background: rgba(3,7,18,.92) !important; backdrop-filter: blur(18px); }
+  html[data-ui="v2"] #atlas-modal { background: rgba(3,7,18,.92) !important; backdrop-filter: blur(18px); color: rgb(var(--c-text)); }
+  /* the anatomy lab is a dark room in every theme — override the light palette locally */
+  html[data-ui="v2"][data-mode="light"] #atlas-modal {
+    color: rgb(var(--c-text));
+    --c-text: 226 232 240; --c-muted: 148 163 184;
+    --c-bg: 4 7 18; --c-surface: 8 14 30; --c-surface-2: 14 23 44; --c-border: 44 56 82;
+    --c-primary: 124 92 255; --c-primary-2: 167 139 250; --c-accent: 34 211 238;
+    --c-success: 52 211 153; --c-warning: 251 191 36; --c-danger: 251 113 133;
+    --v2-glass-bg: rgba(7,13,30,.74); --v2-border: rgba(255,255,255,.1); --v2-border-strong: rgba(255,255,255,.18);
+    --v2-input-bg: rgba(8,16,36,.8); --v2-glow: 124 92 255;
+  }
   html[data-ui="v2"] #atlas-modal > .bg-surface { background: transparent !important; border: 0 !important; box-shadow: none !important; }
   html[data-ui="v2"] #atlas-panel { background: var(--v2-glass-bg) !important; border-color: var(--v2-border) !important; backdrop-filter: blur(24px); }
   html[data-ui="v2"] .atlas-region-btn { border-radius: 11px; }
@@ -3443,6 +3792,22 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
   html[data-ui="v2"] #atlas-panel { width: 232px; }
   html[data-ui="v2"] #atlas-panel .p-2 { padding: 10px; }
   html[data-ui="v2"] #atlas-search { background: var(--v2-input-bg) !important; border-color: var(--v2-border) !important; border-radius: 11px; }
+  html[data-ui="v2"] .v2-atlas-search { position: relative; }
+  html[data-ui="v2"] .v2-atlas-search-ic { position: absolute; inset-inline-start: 10px; top: 50%; transform: translateY(-50%); width: 13px; height: 13px; color: rgb(var(--c-muted)); pointer-events: none; }
+  html[data-ui="v2"] .v2-atlas-search-clear {
+    position: absolute; inset-inline-end: 6px; top: 50%; transform: translateY(-50%);
+    width: 22px; height: 22px; display: grid; place-items: center; border-radius: 7px;
+    color: rgb(var(--c-muted)); background: rgba(255,255,255,.05);
+  }
+  html[data-ui="v2"] .v2-atlas-search-clear:hover { color: rgb(var(--c-danger)); background: rgb(var(--c-danger) / .12); }
+  html[data-ui="v2"] .v2-atlas-search-clear svg { width: 11px; height: 11px; }
+  html[data-ui="v2"] .v2-atlas-search-clear.hidden { display: none; }
+  html[data-ui="v2"] .v2-atlas-empty {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    padding: 26px 14px; font-size: 10.5px; color: rgb(var(--c-muted));
+  }
+  html[data-ui="v2"] .v2-atlas-empty svg { width: 20px; height: 20px; opacity: .55; }
+  html[data-ui="v2"] .v2-atlas-empty.hidden { display: none; }
   html[data-ui="v2"] #atlas-list { padding: 8px; }
   html[data-ui="v2"] .atlas-region-btn { padding: 7px 8px; }
   html[data-ui="v2"] .atlas-region-btn .atlas-region-c { color: rgb(var(--c-muted)); }
@@ -3451,6 +3816,159 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
   }
   html[data-ui="v2"] #atlas-canvas, html[data-ui="v2"] .b3d-canvas {
     filter: saturate(.9) hue-rotate(-6deg) brightness(1.04) drop-shadow(0 0 28px rgba(34,211,238,.18));
+  }
+
+  /* ===== c199 — anatomy lab chrome ===== */
+  html[data-ui="v2"] .v2-atlas-head {
+    background: linear-gradient(180deg, rgba(255,255,255,.045), transparent), var(--v2-glass-bg) !important;
+    border-color: var(--v2-border) !important; backdrop-filter: blur(22px) saturate(130%);
+  }
+  html[data-ui="v2"] .v2-atlas-mark {
+    width: 38px; height: 38px; border-radius: 12px; flex: none; display: grid; place-items: center;
+    color: rgb(var(--c-accent));
+    background: radial-gradient(circle at 35% 25%, rgb(var(--c-accent) / .28), rgb(var(--c-primary) / .12));
+    border: 1px solid rgb(var(--c-accent) / .3);
+    box-shadow: 0 0 24px rgb(var(--c-accent) / .18), inset 0 1px 0 rgba(255,255,255,.12);
+  }
+  html[data-ui="v2"] .v2-atlas-eyebrow {
+    display: flex; align-items: center; gap: 6px; font-size: 8px; font-weight: 800;
+    letter-spacing: .17em; text-transform: uppercase; color: rgb(var(--c-muted));
+  }
+  html[data-ui="v2"] .v2-atlas-divider { opacity: .35; }
+  html[data-ui="v2"] .v2-atlas-model-chip {
+    display: inline-flex; align-items: center; gap: 6px; flex: none;
+    height: 24px; padding: 0 9px; border-radius: 9999px;
+    font-family: var(--font-mono); font-size: 8.5px; font-weight: 700; letter-spacing: .09em;
+    color: rgb(var(--c-accent)); border: 1px solid rgb(var(--c-accent) / .28); background: rgb(var(--c-accent) / .07);
+  }
+  html[data-ui="v2"] .v2-atlas-model-chip .v2-live-dot { width: 4px; height: 4px; }
+  html[data-ui="v2"] .v2-atlas-icon-btn {
+    width: 34px; height: 34px; flex: none; display: grid; place-items: center; border-radius: 10px;
+    color: rgb(var(--c-muted)); background: rgba(255,255,255,.04); border: 1px solid var(--v2-border);
+    font-size: 10px; font-weight: 800; letter-spacing: .06em; transition: background .15s, color .15s, border-color .15s;
+  }
+  html[data-ui="v2"] .v2-atlas-icon-btn:hover { background: rgba(255,255,255,.08); color: rgb(var(--c-text)); border-color: var(--v2-border-strong); }
+  html[data-ui="v2"] .v2-atlas-panel-head { background: linear-gradient(180deg, rgba(255,255,255,.03), transparent); }
+  html[data-ui="v2"] .v2-atlas-panel-lbl { font-size: 8.5px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+  html[data-ui="v2"] .v2-atlas-count {
+    min-width: 22px; height: 20px; padding: 0 7px; display: inline-grid; place-items: center; border-radius: 9999px;
+    background: rgb(var(--c-primary) / .13); border: 1px solid var(--v2-border);
+    font-family: var(--font-mono); font-size: 9px; font-weight: 700; color: rgb(var(--c-primary-2));
+  }
+  html[data-ui="v2"] .v2-atlas-hud {
+    position: absolute; top: 14px; inset-inline-start: 14px; z-index: 8; pointer-events: none;
+    display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 9999px;
+    background: rgba(3,7,18,.5); border: 1px solid var(--v2-border);
+    backdrop-filter: blur(14px); box-shadow: 0 10px 28px -18px rgba(0,0,0,.9);
+  }
+  html[data-ui="v2"] .v2-hud-live { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 8px; font-weight: 700; letter-spacing: .14em; color: rgb(var(--c-accent)); }
+  html[data-ui="v2"] .v2-hud-live i { width: 5px; height: 5px; border-radius: 9999px; background: rgb(var(--c-accent)); box-shadow: 0 0 9px rgb(var(--c-accent)); animation: v2HudPulse 2.2s ease-in-out infinite; }
+  @keyframes v2HudPulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.8); } }
+  html[data-ui="v2"] .v2-hud-sep { width: 1px; height: 10px; background: rgba(255,255,255,.14); }
+  html[data-ui="v2"] .v2-hud-model { font-family: var(--font-mono); font-size: 8px; letter-spacing: .09em; color: rgb(var(--c-muted)); }
+  html[data-ui="v2"] .v2-atlas-scan {
+    position: absolute; left: 0; right: 0; top: 8%; height: 1px; z-index: 7; pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgb(var(--c-accent) / .7), transparent);
+    box-shadow: 0 0 16px 1px rgb(var(--c-accent) / .35);
+    animation: v2AtlasScan 11s linear infinite; opacity: 0;
+  }
+  @keyframes v2AtlasScan {
+    0% { top: 7%; opacity: 0; } 8% { opacity: .5; } 48% { top: 90%; opacity: .28; } 56%,100% { top: 7%; opacity: 0; }
+  }
+  html[data-ui="v2"] .v2-atlas-hover {
+    position: absolute; z-index: 12; pointer-events: none; max-width: 220px;
+    padding: 5px 9px; border-radius: 9px; font-size: 10.5px; font-weight: 700; white-space: nowrap;
+    background: rgba(4,9,22,.86); border: 1px solid rgb(var(--c-accent) / .35); color: rgb(var(--c-text));
+    box-shadow: 0 10px 26px -14px rgba(0,0,0,.9), 0 0 18px rgb(var(--c-accent) / .12);
+    backdrop-filter: blur(14px);
+  }
+  html[data-ui="v2"] .v2-atlas-hover::before {
+    content: ""; display: inline-block; width: 5px; height: 5px; margin-inline-end: 6px; border-radius: 9999px;
+    background: rgb(var(--c-accent)); box-shadow: 0 0 7px rgb(var(--c-accent)); vertical-align: 1px;
+  }
+  html[data-ui="v2"] .v2-atlas-dock {
+    width: fit-content; margin-inline: auto; bottom: 14px !important;
+    padding: 5px !important; gap: 0 !important; border-radius: 9999px;
+    background: var(--v2-glass-bg); border: 1px solid var(--v2-border-strong);
+    backdrop-filter: blur(22px) saturate(130%); box-shadow: 0 18px 44px -24px rgba(0,0,0,.95), inset 0 1px 0 rgba(255,255,255,.07);
+  }
+  html[data-ui="v2"] .v2-atlas-dock .atlas-btn {
+    height: 32px; padding: 0 10px; border: 0; border-radius: 9999px; background: transparent;
+    box-shadow: none; backdrop-filter: none; font-size: 10px; font-weight: 700; color: rgb(var(--c-muted));
+  }
+  html[data-ui="v2"] .v2-atlas-dock .atlas-btn:hover { background: rgba(255,255,255,.07); color: rgb(var(--c-text)); }
+  html[data-ui="v2"] .v2-atlas-dock .atlas-btn.on { background: rgb(var(--c-accent) / .14); color: rgb(var(--c-accent)); border: 1px solid rgb(var(--c-accent) / .3); }
+  html[data-ui="v2"] .v2-atlas-dock .atlas-btn svg { width: 13px; height: 13px; }
+  html[data-ui="v2"] .v2-atlas-dock .atlas-btn + .atlas-btn { box-shadow: inset 1px 0 0 rgba(255,255,255,.07); border-radius: 0 9999px 9999px 0; }
+  html[data-ui="v2"] #atlas-hint {
+    bottom: 58px; width: fit-content; margin-inline: auto; padding: 4px 10px; border-radius: 9999px;
+    background: rgba(4,9,22,.42); border: 1px solid var(--v2-border); backdrop-filter: blur(12px);
+    font-size: 9.5px; letter-spacing: .03em;
+  }
+  html[data-ui="v2"] #atlas-credit { border-color: var(--v2-border); background: rgba(3,7,18,.35); letter-spacing: .03em; }
+  html[data-ui="v2"] #atlas-hidden { background: var(--v2-glass-bg); border-color: var(--v2-border); border-radius: 12px; }
+
+  /* atlas muscle rail */
+  html[data-ui="v2"] .atlas-region { margin-bottom: 1px; }
+  html[data-ui="v2"] .atlas-region-btn { position: relative; gap: 6px; }
+  html[data-ui="v2"] .atlas-region-btn .truncate { flex: 1; text-align: start; }
+  html[data-ui="v2"] .atlas-region-btn[aria-expanded="true"] .atlas-region-c { transform: rotate(180deg); }
+  html[data-ui="v2"] .v2-region-dot {
+    width: 5px; height: 5px; border-radius: 9999px; flex: none;
+    background: hsl(var(--rg) 85% 62%); box-shadow: 0 0 7px hsl(var(--rg) 85% 62% / .6);
+  }
+  html[data-ui="v2"] .atlas-region-n {
+    flex: none; font-family: var(--font-mono); font-size: 8px; color: rgb(var(--c-muted));
+    padding: 1px 5px; border-radius: 9999px; background: rgba(255,255,255,.04); border: 1px solid var(--v2-border);
+  }
+  html[data-ui="v2"] .atlas-region[data-rg] .atlas-row-dot { background: hsl(var(--rg) 85% 62%); box-shadow: 0 0 7px hsl(var(--rg) 85% 62% / .55); }
+  html[data-ui="v2"] .atlas-row { position: relative; transition: background .13s, color .13s; }
+  html[data-ui="v2"] .atlas-row:hover { background: rgba(255,255,255,.055); }
+  html[data-ui="v2"] .atlas-row.sel {
+    background: linear-gradient(90deg, rgb(var(--c-accent) / .13), rgb(var(--c-primary) / .08));
+    color: rgb(var(--c-text));
+  }
+  html[data-ui="v2"] .atlas-row.sel .atlas-row-dot { background: rgb(var(--c-accent)); box-shadow: 0 0 8px rgb(var(--c-accent)); }
+  html[data-ui="v2"] .atlas-row.hid { opacity: .4; }
+
+  /* atlas inspector */
+  html[data-ui="v2"] #atlas-info { width: min(318px, 35vw); padding: 15px; border-radius: 18px; }
+  html[data-ui="v2"] #atlas-info:not(.hidden) { animation: v2InspIn .26s var(--v2-ease) both; }
+  @keyframes v2InspIn { from { opacity: 0; transform: translateY(-5px) scale(.98); } to { opacity: 1; transform: none; } }
+  html[data-ui="v2"] .v2-insp-eyebrow { display: flex; align-items: center; gap: 6px; font-size: 8px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: rgb(var(--c-accent)); }
+  html[data-ui="v2"] .v2-insp-name { font-family: var(--font-display, inherit); font-size: 15px; font-weight: 700; letter-spacing: -.02em; line-height: 1.25; margin-top: 4px; padding-inline-end: 26px; }
+  html[data-ui="v2"] .v2-insp-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-top: 9px; }
+  html[data-ui="v2"] .v2-insp-chip {
+    display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 9999px;
+    font-size: 9px; font-weight: 700; color: rgb(var(--c-primary-2));
+    background: rgb(var(--c-primary) / .1); border: 1px solid rgb(var(--c-primary) / .22);
+  }
+  html[data-ui="v2"] .v2-insp-chip.side { color: rgb(var(--c-accent)); background: rgb(var(--c-accent) / .08); border-color: rgb(var(--c-accent) / .22); }
+  html[data-ui="v2"] .v2-insp-chip.muted { color: rgb(var(--c-muted)); background: rgba(255,255,255,.035); border-color: var(--v2-border); font-family: var(--font-mono); }
+  html[data-ui="v2"] .v2-inspector-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 12px; }
+  html[data-ui="v2"] .v2-inspector-actions .atlas-ex-btn { margin-top: 0; min-height: 28px; padding: 4px 10px; font-size: 9.5px; }
+  html[data-ui="v2"] .v2-inspector-actions .atlas-hide-btn { background: rgba(255,255,255,.045); border-color: var(--v2-border); }
+  html[data-ui="v2"] .v2-insp-clear {
+    margin-inline-start: auto; width: 27px; height: 27px; flex: none; display: grid; place-items: center; border-radius: 8px;
+    color: rgb(var(--c-muted)); background: rgba(255,255,255,.04); border: 1px solid var(--v2-border);
+    transition: color .15s, background .15s;
+  }
+  html[data-ui="v2"] .v2-insp-clear:hover { color: rgb(var(--c-danger)); background: rgb(var(--c-danger) / .1); }
+  html[data-ui="v2"] .v2-insp-clear svg { width: 12px; height: 12px; }
+
+  @media (max-width: 640px) {
+    html[data-ui="v2"] .v2-atlas-model-chip { display: none; }
+    html[data-ui="v2"] .v2-atlas-head { padding: 8px 10px; gap: 8px; }
+    html[data-ui="v2"] .v2-atlas-eyebrow { font-size: 7px; letter-spacing: .12em; }
+    html[data-ui="v2"] #atlas-info { width: auto; }
+    html[data-ui="v2"] .v2-atlas-hud { top: 10px; inset-inline-start: 10px; padding: 5px 8px; }
+    html[data-ui="v2"] .v2-hud-model, html[data-ui="v2"] .v2-hud-sep { display: none; }
+    html[data-ui="v2"] .v2-atlas-dock { max-width: calc(100vw - 20px); padding: 4px !important; }
+    html[data-ui="v2"] .v2-atlas-dock .atlas-btn { height: 29px; padding: 0 7px; font-size: 9px; }
+    html[data-ui="v2"] .v2-atlas-dock .atlas-btn-txt { display: none; }
+    html[data-ui="v2"] .v2-atlas-dock #atlas-front .atlas-btn-txt,
+    html[data-ui="v2"] .v2-atlas-dock #atlas-back .atlas-btn-txt { display: inline; }
+    html[data-ui="v2"] #atlas-hint { bottom: 50px; font-size: 8.5px; max-width: calc(100% - 24px); }
   }
 
   /* exercise modal — the same neon plate as the cards, not a white lightbox */
@@ -3721,7 +4239,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           </div>
           <div class="flex items-center gap-2 mb-3">
             <span class="v2-pill v2-pill-live"><span class="w-1.5 h-1.5 rounded-full bg-success"></span> <span data-i18n="clients.online">Online</span></span>
-            <span class="v2-pill" id="v2-side-version">c198</span>
+            <span class="v2-pill" id="v2-side-version">c199</span>
           </div>
         </div>
 
@@ -3868,7 +4386,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c198</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c199</p>
             </div>
           </div>
 
@@ -4840,45 +5358,126 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
 
             <!-- ===== Tab: Daily log ===== -->
             <div data-nutrition-panel="log" class="hidden">
-              <button id="nutrition-add-food-btn" class="bg-primary hover:bg-primary-2 text-white text-sm font-semibold px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1.5 shadow-card">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-                <span data-i18n="nutrition.log">Log food</span>
-              </button>
-              <!-- Client + date selector -->
-              <div class="flex flex-col sm:flex-row gap-2 mb-4">
-                <select id="nutrition-client-select" class="flex-1 bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60 cursor-pointer">
-                  <option value="" data-i18n="analytics.selectClient">Select client…</option>
-                </select>
-                <input type="date" id="nutrition-date" class="bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
+              <div class="v2-nutri-toolbar">
+                <div class="v2-nutri-selects">
+                  <select id="nutrition-client-select" class="v2-nutri-select" aria-label="Client">
+                    <option value="" data-i18n="analytics.selectClient">Select client…</option>
+                  </select>
+                  <div class="v2-nutri-date-wrap">
+                    <button type="button" id="nutrition-prev-day" class="v2-day-arrow" aria-label="Previous day">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <input type="date" id="nutrition-date" class="v2-nutri-date" aria-label="Date" />
+                    <button type="button" id="nutrition-next-day" class="v2-day-arrow" aria-label="Next day">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 18 6-6-6-6"/></svg>
+                    </button>
+                    <button type="button" id="nutrition-today" class="v2-day-today" data-i18n="nutrition.today">Today</button>
+                  </div>
+                </div>
+                <button id="nutrition-add-food-btn" class="v2-btn-primary v2-nutri-add">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                  <span data-i18n="nutrition.log">Log food</span>
+                </button>
               </div>
               <!-- Empty state (no client selected) -->
-              <div id="nutrition-empty" class="bg-surface border border-border rounded-2xl shadow-card p-8 text-center">
-                <div class="inline-flex w-16 h-16 rounded-2xl bg-surface-2 border border-border grid place-items-center mb-4">
-                  <svg class="w-7 h-7 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zM12 8v4M12 16h.01"/></svg>
+              <div id="nutrition-empty" class="v2-panel v2-nutri-empty">
+                <div class="v2-nutri-empty-orb">
+                  <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zM12 8v4M12 16h.01"/></svg>
                 </div>
                 <p class="text-sm text-muted" data-i18n="nutrition.selectClientHint">Select a client above to track their daily nutrition.</p>
               </div>
               <!-- Nutrition content (shown when client selected) -->
-              <div id="nutrition-content" class="hidden space-y-4">
-                <div class="bg-surface border border-border rounded-2xl shadow-card p-5">
-                  <div class="flex items-center gap-2 mb-4">
-                    <h3 class="font-display font-bold text-sm" data-i18n="nutrition.target">Daily target</h3>
-                    <button id="nutrition-set-targets" class="ms-auto text-xs font-semibold text-primary-2 hover:bg-primary/10 rounded-lg px-2.5 py-1 transition" data-i18n="nutrition.editTargets">Edit targets</button>
-                  </div>
-                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="nutrition-rings"></div>
-                </div>
-                <div id="nutrition-meals" class="space-y-3"></div>
-                <div class="bg-surface border border-border rounded-2xl shadow-card p-4">
-                  <div class="flex items-center justify-between flex-wrap gap-2">
-                    <span class="font-display font-bold text-sm" data-i18n="nutrition.totals">Totals</span>
-                    <div class="flex items-center gap-4 text-xs font-mono">
-                      <span><span class="text-muted" data-i18n="nutrition.calories">Cal</span> <span id="total-cal" class="font-bold">0</span></span>
-                      <span><span class="text-muted" data-i18n="nutrition.protein">P</span> <span id="total-protein" class="font-bold">0</span>g</span>
-                      <span><span class="text-muted" data-i18n="nutrition.carbs">C</span> <span id="total-carbs" class="font-bold">0</span>g</span>
-                      <span><span class="text-muted" data-i18n="nutrition.fat">F</span> <span id="total-fat" class="font-bold">0</span>g</span>
+              <div id="nutrition-content" class="hidden">
+                <section class="v2-nutri-hero">
+                  <div class="v2-nutri-hero-copy">
+                    <div class="v2-eyebrow"><span class="v2-live-dot"></span><span data-i18n="nutrition.daySummary">Day summary</span></div>
+                    <div class="v2-nutri-big">
+                      <span id="nutrition-remaining-hero">—</span>
+                      <em id="nutrition-remaining-unit" data-i18n="nutrition.kcalLeft">kcal left</em>
+                    </div>
+                    <p id="nutrition-hero-sub" class="v2-nutri-sub" data-i18n="nutrition.setTargetsHint">Set daily targets to unlock the full dashboard.</p>
+                    <div class="v2-nutri-chips">
+                      <span class="v2-nutri-chip"><small data-i18n="nutrition.consumed">Consumed</small><b id="nutrition-consumed-hero">0</b></span>
+                      <span class="v2-nutri-chip"><small data-i18n="nutrition.targetShort">Target</small><b id="nutrition-target-hero">—</b></span>
+                      <span class="v2-nutri-chip"><small data-i18n="nutrition.mealsLogged">Meals</small><b id="nutrition-meal-count">0/0</b></span>
+                      <span class="v2-nutri-chip"><small data-i18n="nutrition.foodsLogged">Foods</small><b id="nutrition-food-count">0</b></span>
                     </div>
                   </div>
+                  <div class="v2-nutri-orb" id="nutrition-orb" style="--p:0%">
+                    <div class="v2-nutri-orb-in">
+                      <b id="nutrition-hero-pct">0%</b>
+                      <small data-i18n="nutrition.ofTarget">of target</small>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="v2-panel v2-nutri-section">
+                  <div class="v2-nutri-section-head">
+                    <div class="min-w-0">
+                      <div class="v2-eyebrow"><span data-i18n="nutrition.macrosEyebrow">Macro engine</span></div>
+                      <h4 class="v2-section-title-sm" data-i18n="nutrition.target">Daily target</h4>
+                    </div>
+                    <button id="nutrition-set-targets" class="v2-text-link" data-i18n="nutrition.editTargets">Edit targets</button>
+                  </div>
+                  <div id="nutrition-rings" class="v2-macro-grid"></div>
+                </section>
+
+                <div class="v2-nutri-duo">
+                  <section class="v2-panel v2-nutri-gauge">
+                    <div class="v2-nutri-section-head">
+                      <div class="min-w-0">
+                        <div class="v2-eyebrow"><span data-i18n="nutrition.energyEyebrow">Fuel gauge</span></div>
+                        <h4 class="v2-section-title-sm" data-i18n="nutrition.energyBalance">Energy balance</h4>
+                      </div>
+                      <span id="nutrition-daybar-pct" class="v2-pill">0%</span>
+                    </div>
+                    <div class="v2-gauge-num"><b id="nutrition-daybar-consumed">0</b><span>/</span><span id="nutrition-daybar-target">—</span><small data-i18n="nutrition.calories">Calories</small></div>
+                    <div class="v2-gauge"><i id="nutrition-daybar-fill" style="width:0%"></i></div>
+                    <div class="v2-gauge-foot"><span id="nutrition-daybar-note">—</span><span id="nutrition-daybar-side">0%</span></div>
+                  </section>
+                  <section class="v2-panel v2-nutri-split">
+                    <div class="v2-nutri-section-head">
+                      <div class="min-w-0">
+                        <div class="v2-eyebrow"><span data-i18n="nutrition.macrosEyebrow">Macro engine</span></div>
+                        <h4 class="v2-section-title-sm" data-i18n="nutrition.macroSplit">Macro split</h4>
+                      </div>
+                    </div>
+                    <div class="v2-splitbar" aria-hidden="true">
+                      <i class="p" id="nutrition-split-p" style="width:0%"></i>
+                      <i class="c" id="nutrition-split-c" style="width:0%"></i>
+                      <i class="f" id="nutrition-split-f" style="width:0%"></i>
+                    </div>
+                    <div class="v2-split-legend">
+                      <span class="p"><i></i><span data-i18n="nutrition.protein">Protein</span><b id="nutrition-split-p-pct">0%</b></span>
+                      <span class="c"><i></i><span data-i18n="nutrition.carbs">Carbs</span><b id="nutrition-split-c-pct">0%</b></span>
+                      <span class="f"><i></i><span data-i18n="nutrition.fat">Fat</span><b id="nutrition-split-f-pct">0%</b></span>
+                    </div>
+                  </section>
                 </div>
+
+                <div class="v2-nutri-meals-head">
+                  <div class="min-w-0">
+                    <div class="v2-eyebrow"><span data-i18n="nutrition.timelineEyebrow">Intake timeline</span></div>
+                    <h4 class="v2-section-title-sm" data-i18n="nutrition.mealTimeline">Meal timeline</h4>
+                  </div>
+                  <span id="nutrition-meal-progress" class="v2-pill">0/0</span>
+                </div>
+                <div id="nutrition-meals" class="v2-meal-timeline"></div>
+
+                <section class="v2-panel v2-nutri-totals">
+                  <div class="flex items-center justify-between flex-wrap gap-2">
+                    <div class="min-w-0">
+                      <div class="v2-eyebrow"><span data-i18n="nutrition.totalsEyebrow">Day totals</span></div>
+                      <span class="font-display font-bold text-sm" data-i18n="nutrition.totals">Totals</span>
+                    </div>
+                    <div class="v2-nutri-total-grid">
+                      <span class="v2-total-item"><small data-i18n="nutrition.calories">Calories</small><b><span id="total-cal">0</span></b></span>
+                      <span class="v2-total-item p"><small data-i18n="nutrition.protein">Protein</small><b><span id="total-protein">0</span><em>g</em></b></span>
+                      <span class="v2-total-item c"><small data-i18n="nutrition.carbs">Carbs</small><b><span id="total-carbs">0</span><em>g</em></b></span>
+                      <span class="v2-total-item f"><small data-i18n="nutrition.fat">Fat</small><b><span id="total-fat">0</span><em>g</em></b></span>
+                    </div>
+                  </div>
+                </section>
               </div>
             </div>
           </div>
@@ -20233,6 +20832,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     /** Select a client + load their log for the current date. */
     async function selectClient(clientId) {
       _clientId = clientId || null;
+      const clientSel = document.getElementById('nutrition-client-select');
+      if (clientSel) clientSel.value = clientId || '';
       const empty = document.getElementById('nutrition-empty');
       const content = document.getElementById('nutrition-content');
       if (!_clientId) {
@@ -20253,6 +20854,26 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         await loadLog();
         render();
       }
+    }
+
+    /** c199: step the daily log one day back/forward. */
+    async function shiftDay(delta) {
+      const input = document.getElementById('nutrition-date');
+      const base = _date || (input && input.value) || dkLogDateKey(new Date());
+      const parts = String(base).split('-').map(Number);
+      const d = new Date(parts[0] || 1970, (parts[1] || 1) - 1, parts[2] || 1);
+      d.setDate(d.getDate() + Number(delta || 0));
+      const key = dkLogDateKey(d);
+      if (input) input.value = key;
+      await selectDate(key);
+    }
+
+    /** c199: jump back to today. */
+    async function gotoToday() {
+      const input = document.getElementById('nutrition-date');
+      const key = dkLogDateKey(new Date());
+      if (input) input.value = key;
+      await selectDate(key);
     }
 
     /** c146: LOCAL calendar key YYYY-MM-DD. toISOString() is UTC — in UTC+2/+3
@@ -20313,16 +20934,90 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       renderTotals();
     }
 
+    /** c199: fill the remaining-calorie hero, gauge and macro split. */
+    function renderNutritionSummary(totals) {
+      const target = Number(_log.target_calories) || 0;
+      const cal = Math.round(totals.calories || 0);
+      const pctRaw = target > 0 ? (cal / target) * 100 : 0;
+      const pct = Math.max(0, Math.min(100, Math.round(pctRaw)));
+      const remaining = target - cal;
+      const over = target > 0 && remaining < 0;
+      const meals = _log.meals || [];
+      const loggedMeals = meals.filter(m => (m.items || []).length > 0).length;
+      const foodCount = meals.reduce((s, m) => s + (m.items || []).length, 0);
+
+      setText('nutrition-consumed-hero', fmtNumber(cal));
+      setText('nutrition-target-hero', target > 0 ? fmtNumber(target) : '—');
+      setText('nutrition-meal-count', loggedMeals + '/' + meals.length);
+      setText('nutrition-food-count', String(foodCount));
+      setText('nutrition-hero-pct', pct + '%');
+      setText('nutrition-remaining-hero', target > 0 ? (over ? '+' + fmtNumber(Math.abs(remaining)) : fmtNumber(Math.max(0, remaining))) : '—');
+
+      const hero = document.querySelector('.v2-nutri-hero');
+      if (hero) hero.classList.toggle('is-over', over);
+      const orb = document.getElementById('nutrition-orb');
+      if (orb) orb.style.setProperty('--p', pct + '%');
+      const remUnit = document.getElementById('nutrition-remaining-unit');
+      if (remUnit) {
+        const unitKey = over ? 'nutrition.kcalOver' : 'nutrition.kcalLeft';
+        remUnit.setAttribute('data-i18n', unitKey);
+        remUnit.textContent = t(unitKey);
+      }
+
+      const sub = document.getElementById('nutrition-hero-sub');
+      if (sub) {
+        if (target <= 0) sub.textContent = t('nutrition.setTargetsHint');
+        else if (over) sub.textContent = t('nutrition.overBy', { n: fmtNumber(Math.abs(remaining)) });
+        else sub.textContent = t('nutrition.consumedOf', { c: fmtNumber(cal), t: fmtNumber(target) });
+      }
+
+      /* energy gauge */
+      setText('nutrition-daybar-consumed', fmtNumber(cal));
+      setText('nutrition-daybar-target', target > 0 ? fmtNumber(target) : '—');
+      setText('nutrition-daybar-pct', Math.round(pctRaw) + '%');
+      setText('nutrition-daybar-side', target > 0 ? t('nutrition.targetShort') + ' ' + fmtNumber(target) : '—');
+      setText('nutrition-daybar-note', target > 0
+        ? (over ? fmtNumber(Math.abs(remaining)) + ' ' + t('nutrition.over').toLowerCase() : fmtNumber(Math.max(0, remaining)) + ' ' + t('nutrition.kcalLeft'))
+        : t('nutrition.setTargetsHintShort'));
+      const fill = document.getElementById('nutrition-daybar-fill');
+      if (fill) {
+        fill.style.width = pct + '%';
+        fill.classList.toggle('is-over', over);
+      }
+
+      /* macro split by calories (P/C = 4 kcal/g, F = 9 kcal/g) */
+      const pKcal = (totals.protein || 0) * 4;
+      const cKcal = (totals.carbs || 0) * 4;
+      const fKcal = (totals.fat || 0) * 9;
+      const sum = pKcal + cKcal + fKcal;
+      const share = (v) => sum > 0 ? Math.round((v / sum) * 100) : 0;
+      const pPct = share(pKcal), cPct = share(cKcal), fPct = share(fKcal);
+      const setSplit = (id, v) => { const el = document.getElementById(id); if (el) el.style.width = v + '%'; };
+      setSplit('nutrition-split-p', pPct);
+      setSplit('nutrition-split-c', cPct);
+      setSplit('nutrition-split-f', fPct);
+      setText('nutrition-split-p-pct', pPct + '%');
+      setText('nutrition-split-c-pct', cPct + '%');
+      setText('nutrition-split-f-pct', fPct + '%');
+
+      const mealProgress = document.getElementById('nutrition-meal-progress');
+      if (mealProgress) {
+        mealProgress.textContent = loggedMeals + '/' + meals.length;
+        mealProgress.style.color = loggedMeals === meals.length && meals.length ? 'rgb(var(--c-success))' : '';
+      }
+    }
+
     /** Render the 4 macro rings (calories / protein / carbs / fat). */
     function renderRings() {
       const container = document.getElementById('nutrition-rings');
       if (!container) return;
       const totals = computeTotals();
+      renderNutritionSummary(totals);
       const macros = [
-        { key: 'calories', label: t('nutrition.calories'), consumed: totals.calories, target: _log.target_calories, color: 'primary', unit: '' },
-        { key: 'protein',  label: t('nutrition.protein'),  consumed: totals.protein,  target: _log.target_protein,  color: 'success', unit: 'g' },
-        { key: 'carbs',    label: t('nutrition.carbs'),    consumed: totals.carbs,    target: _log.target_carbs,    color: 'warning', unit: 'g' },
-        { key: 'fat',      label: t('nutrition.fat'),      consumed: totals.fat,      target: _log.target_fat,      color: 'danger',  unit: 'g' }
+        { key: 'calories', label: t('nutrition.calories'), consumed: totals.calories, target: _log.target_calories, unit: '' },
+        { key: 'protein',  label: t('nutrition.protein'),  consumed: totals.protein,  target: _log.target_protein,  unit: 'g' },
+        { key: 'carbs',    label: t('nutrition.carbs'),    consumed: totals.carbs,    target: _log.target_carbs,    unit: 'g' },
+        { key: 'fat',      label: t('nutrition.fat'),      consumed: totals.fat,      target: _log.target_fat,      unit: 'g' }
       ];
 
       const hasTargets = _log.target_calories || _log.target_protein || _log.target_carbs || _log.target_fat;
@@ -20332,34 +21027,41 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       }
 
       container.innerHTML = macros.map(m => {
-        const target = m.target || 0;
+        const target = Number(m.target) || 0;
         const consumed = Math.round(m.consumed || 0);
-        const pct = target > 0 ? Math.min(100, (consumed / target) * 100) : 0;
+        const rawPct = target > 0 ? (consumed / target) * 100 : 0;
+        const pct = Math.min(100, rawPct);
         const over = target > 0 && consumed > target;
         const remaining = target > 0 ? Math.max(0, target - consumed) : 0;
-        const circumference = 2 * Math.PI * 28;
+        const unit = m.unit === 'g' ? t('nutrition.gramShort') : m.unit;
+        const circumference = 2 * Math.PI * 27;
         const dashOffset = circumference * (1 - pct / 100);
+        const status = over
+          ? `+${fmtNumber(consumed - target)}${unit} ${t('nutrition.over').toLowerCase()}`
+          : target > 0
+            ? `${fmtNumber(remaining)}${unit} ${t('nutrition.remaining').toLowerCase()}`
+            : '—';
 
         return `
-          <div class="flex flex-col items-center">
-            <div class="relative w-20 h-20">
-              <svg class="w-20 h-20 -rotate-90" viewBox="0 0 64 64">
-                <circle cx="32" cy="32" r="28" fill="none" stroke="rgb(var(--c-surface-2))" stroke-width="6"/>
-                <circle cx="32" cy="32" r="28" fill="none" stroke="rgb(var(--c-${m.color}))" stroke-width="6"
-                        stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}" stroke-linecap="round" class="transition-all duration-500"/>
+          <div class="v2-macro-tile" data-macro="${m.key}">
+            <div class="v2-macro-top">
+              <span class="v2-macro-name">${escapeHTML(m.label)}</span>
+              <span class="v2-macro-pct">${Math.round(rawPct)}%</span>
+            </div>
+            <div class="v2-macro-row">
+              <svg class="v2-macro-ring" viewBox="0 0 64 64" aria-hidden="true">
+                <circle class="v2-ring-bg" cx="32" cy="32" r="27" fill="none" stroke-width="5"/>
+                <circle class="v2-ring-tick" cx="32" cy="32" r="31.5" fill="none" stroke-width="1" stroke-dasharray="1 5"/>
+                <circle class="v2-ring-val" cx="32" cy="32" r="27" fill="none" stroke-width="5" stroke-linecap="round"
+                        stroke-dasharray="${circumference.toFixed(1)}" stroke-dashoffset="${dashOffset.toFixed(1)}" transform="rotate(-90 32 32)"/>
               </svg>
-              <div class="absolute inset-0 flex flex-col items-center justify-center">
-                <div class="font-mono font-bold text-sm ${over ? 'text-danger' : ''}">${fmtNumber(consumed)}</div>
-                <div class="text-[9px] text-muted">/ ${target > 0 ? fmtNumber(target) : '—'}${m.unit}</div>
+              <div class="v2-macro-copy">
+                <b>${fmtNumber(consumed)}</b>
+                <span>/ ${target > 0 ? fmtNumber(target) : '—'}${unit}</span>
+                <small class="${over ? 'is-over' : ''}">${status}</small>
               </div>
             </div>
-            <div class="text-[10px] uppercase tracking-wider text-muted mt-1.5 font-semibold">${escapeHTML(m.label)}</div>
-            ${over
-              ? `<div class="text-[10px] text-danger font-semibold">${fmtNumber(consumed - target)}${m.unit} ${t('nutrition.over').toLowerCase()}</div>`
-              : target > 0
-                ? `<div class="text-[10px] text-muted">${fmtNumber(remaining)}${m.unit} ${t('nutrition.remaining').toLowerCase()}</div>`
-                : `<div class="text-[10px] text-muted">—</div>`
-            }
+            <div class="v2-macro-bar"><i style="width:${pct}%"></i></div>
           </div>
         `;
       }).join('');
@@ -20377,6 +21079,16 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         pre_workout: t('nutrition.mealPreWorkout'),
         post_workout: t('nutrition.mealPostWorkout')
       };
+      const mealIcons = {
+        breakfast: { tone: 'amber', path: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>' },
+        lunch:     { tone: 'emerald', path: '<path d="M4 11h16a8 8 0 0 1-16 0Z"/><path d="M8 7c0-2 1-3 2-3M12 7c0-2 1-3 2-3"/>' },
+        dinner:    { tone: 'cyan', path: '<path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z"/>' },
+        snack:     { tone: 'rose', path: '<path d="M12 8c-1.5-2.5-5-2.7-6 .2-.9 2.6 1.9 8.9 4.6 9.5 1 .2 1.9-.5 2.4-.5s1.4.7 2.4.5c2.7-.6 5.5-6.9 4.6-9.5-1-2.9-4.5-2.7-6-.2Z"/><path d="M12 8V5"/>' },
+        pre_workout: { tone: 'cyan', path: '<path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/>' },
+        post_workout:{ tone: 'emerald', path: '<path d="M12 3c3 4 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 3-7 6-11Z"/>' }
+      };
+      const dayTarget = Number(_log.target_calories) || 0;
+      const gram = t('nutrition.gramShort');
 
       container.innerHTML = (_log.meals || []).map((meal, mi) => {
         const items = meal.items || [];
@@ -20384,48 +21096,69 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         const mealP = items.reduce((s, it) => s + (it.protein || 0), 0);
         const mealC = items.reduce((s, it) => s + (it.carbs || 0), 0);
         const mealF = items.reduce((s, it) => s + (it.fat || 0), 0);
+        const mealPct = dayTarget > 0 ? Math.min(100, (mealCals / dayTarget) * 100) : 0;
+        const icon = mealIcons[meal.type] || mealIcons.lunch;
+        const pCal = mealP * 4, cCal = mealC * 4, fCal = mealF * 9;
+        const macroSum = pCal + cCal + fCal;
+        const macroShare = (v) => macroSum > 0 ? Math.round((v / macroSum) * 100) : 0;
 
         return `
-          <div class="bg-surface border border-border rounded-2xl shadow-card overflow-hidden">
-            <div class="p-3 bg-surface-2 border-b border-border flex items-center gap-2">
-              <span class="w-7 h-7 rounded-lg bg-success/15 text-success grid place-items-center shrink-0">
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zM12 8v4M12 16h.01"/></svg>
+          <div class="v2-meal-card" data-meal="${escapeHTML(meal.type || '')}">
+            <div class="v2-meal-head">
+              <span class="v2-meal-icon" data-tone="${icon.tone}" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${icon.path}</svg>
               </span>
-              <span class="font-semibold text-sm">${escapeHTML(mealLabels[meal.type] || meal.type)}</span>
-              ${items.length ? `<span class="ms-auto text-xs text-muted font-mono">${fmtNumber(mealCals)} ${t('nutrition.calories').toLowerCase()} · ${fmtNumber(mealP)}P ${fmtNumber(mealC)}C ${fmtNumber(mealF)}F</span>` : ''}
+              <div class="v2-meal-title">
+                <div class="v2-meal-name">${escapeHTML(mealLabels[meal.type] || meal.type)}</div>
+                <div class="v2-meal-meta">${items.length ? items.length + ' ' + escapeHTML(t('nutrition.foods')) : escapeHTML(t('nutrition.noFoodLogged'))}</div>
+              </div>
+              <div class="v2-meal-kcal"><b>${fmtNumber(mealCals)}</b><small>kcal</small></div>
             </div>
-            ${items.length === 0
-              ? `<div class="p-3 text-xs text-muted italic">${escapeHTML(t('nutrition.noFoodLogged'))}</div>`
-              : `<div class="food-grid p-2.5">
-                  ${items.map((it, ii) => {
-                    const img = it.food_id
-                      ? window.dkFoodImgTag({ id: it.food_id, image_url: it.image_url }, 'absolute inset-0 w-full h-full object-cover')
-                      : `<span class="absolute inset-0 grid place-items-center text-lg opacity-50" aria-hidden="true">🥗</span>`;
-                    return `
-                    <div class="relative bg-surface border border-border rounded-xl overflow-hidden">
-                      <div class="relative aspect-[4/3] bg-surface-2 overflow-hidden">
-                        ${img}
-                        <button data-delete-food="${mi}.${ii}" class="food-tile-x" aria-label="${escapeHTML(t('aria.delete'))}">
-                          <svg class="w-3 h-3 mx-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                        </button>
-                      </div>
-                      <div class="p-1.5 min-w-0">
-                        <div class="food-tile-name text-[10px] font-semibold leading-tight">${escapeHTML(it.name || '?')}</div>
-                        <div class="text-[9px] text-muted mt-0.5">${fmtNumber(it.grams)}g · ${fmtNumber(it.calories)} ${escapeHTML(t('nutrition.calories').toLowerCase())}</div>
-                        <div class="flex flex-wrap gap-1 mt-1">
-                          <span class="food-badge" style="background:#10b981">${fmtNumber(it.protein)}P</span>
-                          <span class="food-badge" style="background:#f59e0b">${fmtNumber(it.carbs)}C</span>
-                          <span class="food-badge" style="background:#ef4444">${fmtNumber(it.fat)}F</span>
+            <div class="v2-meal-progress"><i style="width:${mealPct}%"></i></div>
+            <div class="v2-meal-body">
+              ${items.length === 0
+                ? `<div class="v2-meal-empty">
+                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                     <span>${escapeHTML(t('nutrition.noFoodLogged'))}</span>
+                   </div>`
+                : `<div class="v2-meal-body-grid">
+                   <div class="food-grid${items.length < 3 ? ' v2-food-grid--rows' : ''}">
+                    ${items.map((it, ii) => {
+                      const img = it.food_id
+                        ? window.dkFoodImgTag({ id: it.food_id, image_url: it.image_url }, 'absolute inset-0 w-full h-full object-cover')
+                        : `<span class="absolute inset-0 grid place-items-center text-lg opacity-50" aria-hidden="true">🥗</span>`;
+                      return `
+                      <div class="relative bg-surface border border-border rounded-xl overflow-hidden">
+                        <div class="relative aspect-[4/3] bg-surface-2 overflow-hidden">
+                          ${img}
+                          <button data-delete-food="${mi}.${ii}" class="food-tile-x" aria-label="${escapeHTML(t('aria.delete'))}">
+                            <svg class="w-3 h-3 mx-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                          </button>
                         </div>
-                      </div>
-                    </div>`;
-                  }).join('')}
-                </div>`
-            }
-            <div class="p-2 border-t border-border">
-              <button data-add-to-meal="${mi}" class="text-xs font-semibold text-success hover:bg-success/10 rounded-lg px-2.5 py-1.5 transition inline-flex items-center gap-1">
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-                ${t('nutrition.log')}
+                        <div class="p-1.5 min-w-0">
+                          <div class="food-tile-name text-[10px] font-semibold leading-tight">${escapeHTML(it.name || '?')}</div>
+                          <div class="text-[9px] text-muted mt-0.5">${fmtNumber(it.grams)}${gram} · ${fmtNumber(it.calories)} ${escapeHTML(t('nutrition.calories').toLowerCase())}</div>
+                          <div class="flex flex-wrap gap-1 mt-1">
+                            <span class="food-badge" style="background:#10b981">${fmtNumber(it.protein)}P</span>
+                            <span class="food-badge" style="background:#f59e0b">${fmtNumber(it.carbs)}C</span>
+                            <span class="food-badge" style="background:#ef4444">${fmtNumber(it.fat)}F</span>
+                          </div>
+                        </div>
+                      </div>`;
+                    }).join('')}
+                   </div>
+                   <aside class="v2-meal-rail" aria-label="P / C / F">
+                     <div class="v2-meal-rail-title">P · C · F</div>
+                     <div class="v2-meal-macro p"><span>P</span><span class="bar"><i class="p" style="width:${macroShare(pCal)}%"></i></span><b>${fmtNumber(mealP)}${gram}</b></div>
+                     <div class="v2-meal-macro c"><span>C</span><span class="bar"><i class="c" style="width:${macroShare(cCal)}%"></i></span><b>${fmtNumber(mealC)}${gram}</b></div>
+                     <div class="v2-meal-macro f"><span>F</span><span class="bar"><i class="f" style="width:${macroShare(fCal)}%"></i></span><b>${fmtNumber(mealF)}${gram}</b></div>
+                     <div class="v2-meal-share"><span>${Math.round(mealPct)}%</span><small>${escapeHTML(t('nutrition.ofTarget'))}</small></div>
+                   </aside>
+                   </div>`
+              }
+              <button data-add-to-meal="${mi}" class="v2-meal-add">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                ${escapeHTML(t('nutrition.log'))}
               </button>
             </div>
           </div>
@@ -21142,7 +21875,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     // Helpers
     // setText is now global (deduplication 2026-08 QA Sprint 2 #5).
 
-    return { init, selectClient, selectDate, refresh, openFoodSearch, setSearchSource,
+    return { init, selectClient, selectDate, shiftDay, gotoToday, refresh, openFoodSearch, setSearchSource,
              performSearch, openPortionModal, updatePreview, addPendingToMeal,
              openTargets, saveTargets, openCustomFood, saveCustomFood,
              openRecipe, saveRecipe, setFoodFilter, wireRecipeSearch,
@@ -32473,6 +33206,14 @@ loadPanelTexture();
       if (screens.nutrition) screens.nutrition.selectDate(e.target.value);
     });
 
+    // Day stepper (c199)
+    const prevDay = document.getElementById('nutrition-prev-day');
+    if (prevDay) prevDay.addEventListener('click', () => { if (screens.nutrition) screens.nutrition.shiftDay(-1); });
+    const nextDay = document.getElementById('nutrition-next-day');
+    if (nextDay) nextDay.addEventListener('click', () => { if (screens.nutrition) screens.nutrition.shiftDay(1); });
+    const todayBtn = document.getElementById('nutrition-today');
+    if (todayBtn) todayBtn.addEventListener('click', () => { if (screens.nutrition) screens.nutrition.gotoToday(); });
+
     // Add food button (top right)
     const addBtn = document.getElementById('nutrition-add-food-btn');
     if (addBtn) addBtn.addEventListener('click', () => {
@@ -35823,7 +36564,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 198; /* numeric part of dk-build c198 */
+  var RUNNING = 199; /* numeric part of dk-build c199 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
@@ -35892,29 +36633,54 @@ document.addEventListener('input', function (e) {
 <!-- ============= 3D BODY ATLAS (c67–c69) ============= -->
 <div id="atlas-modal" class="hidden fixed inset-0 z-[130] bg-surface" role="dialog" aria-modal="true" aria-label="3D Body Atlas">
   <div class="flex flex-col h-full">
-    <div class="flex items-center gap-2 p-3 border-b border-border bg-surface shrink-0">
-      <span class="w-8 h-8 grid place-items-center rounded-lg bg-danger/15 text-danger shrink-0">
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="4.5" r="2"/><path d="M12 7v6M12 13l-4 7M12 13l4 7M8 9.5h8"/></svg>
+    <div class="v2-atlas-head flex items-center gap-3 p-3 border-b border-border bg-surface shrink-0">
+      <span class="v2-atlas-mark" aria-hidden="true">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="4.5" r="2"/><path d="M12 7v6M12 13l-4 7M12 13l4 7M8 9.5h8"/></svg>
       </span>
-      <h3 id="atlas-title" class="font-display font-bold text-base flex-1 min-w-0 truncate">3D Body Atlas</h3>
-      <button id="atlas-lang" class="h-9 min-w-[2.5rem] px-2 grid place-items-center rounded-lg hover:bg-surface-2 text-muted transition text-xs font-bold tracking-wide" aria-label="Language">EN</button>
-      <button id="atlas-close" class="w-9 h-9 grid place-items-center rounded-lg hover:bg-surface-2 text-muted transition" aria-label="Close">
+      <div class="min-w-0 flex-1">
+        <div class="v2-atlas-eyebrow"><span class="v2-live-dot"></span>ANATOMY LAB<span class="v2-atlas-divider">/</span><span>Z-ANATOMY</span></div>
+        <h3 id="atlas-title" class="font-display font-bold text-base truncate">3D Body Atlas</h3>
+      </div>
+      <span class="v2-atlas-model-chip"><span class="v2-live-dot"></span>WEBGL</span>
+      <button id="atlas-lang" class="v2-atlas-icon-btn" aria-label="Language">EN</button>
+      <button id="atlas-close" class="v2-atlas-icon-btn" aria-label="Close">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
     </div>
     <div class="relative flex-1 flex min-h-0">
       <div id="atlas-panel" class="flex-col overflow-hidden border-e border-border bg-surface-2/40">
-        <div class="p-2 border-b border-border shrink-0">
-          <input type="search" id="atlas-search" class="w-full bg-surface-2 border border-border rounded-lg px-3 py-2 text-sm outline-none focus:border-primary" placeholder="Search muscle…" aria-label="Search muscle">
+        <div class="v2-atlas-panel-head p-2.5 border-b border-border shrink-0">
+          <div class="flex items-center justify-between gap-2 mb-2">
+            <span class="v2-atlas-panel-lbl" data-atlas-lbl="muscles">Muscle map</span>
+            <span id="atlas-count" class="v2-atlas-count">0</span>
+          </div>
+          <div class="v2-atlas-search">
+            <svg class="v2-atlas-search-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input type="search" id="atlas-search" class="w-full bg-surface-2 border border-border rounded-lg ps-8 pe-8 py-2 text-sm outline-none focus:border-primary" placeholder="Search muscle…" aria-label="Search muscle">
+            <button type="button" id="atlas-search-clear" class="v2-atlas-search-clear hidden" aria-label="Clear search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
         </div>
         <div id="atlas-list" class="flex-1 overflow-y-auto p-1.5"></div>
+        <div id="atlas-empty" class="hidden v2-atlas-empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M8.5 11h5"/></svg>
+          <span data-atlas-empty>No muscles found</span>
+        </div>
       </div>
       <div id="atlas-canvas-box" class="relative flex-1 min-w-0 overflow-hidden">
         <canvas id="atlas-canvas"></canvas>
+        <div id="atlas-hud" class="v2-atlas-hud" aria-hidden="true">
+          <span class="v2-hud-live"><i></i>LIVE SCAN</span>
+          <span class="v2-hud-sep"></span>
+          <span class="v2-hud-model">Z-ANATOMY · GLB</span>
+        </div>
+        <div id="atlas-scan" class="v2-atlas-scan" aria-hidden="true"></div>
+        <div id="atlas-hover" class="v2-atlas-hover hidden" role="status"></div>
         <div id="atlas-info" class="hidden absolute top-3 inset-x-3 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 glass border border-border rounded-xl px-3 py-2 shadow-card max-w-[92%] text-center z-10"></div>
         <div id="atlas-hint" class="absolute bottom-16 inset-x-0 text-center text-xs text-muted pointer-events-none px-4">Tap a muscle to highlight it</div>
         <div id="atlas-hidden" class="hidden" aria-live="polite"></div>
-        <div class="absolute bottom-3 inset-x-0 flex flex-wrap items-center justify-center gap-1.5 pointer-events-none px-2">
+        <div class="v2-atlas-dock absolute bottom-3 inset-x-0 flex flex-wrap items-center justify-center gap-1.5 pointer-events-none px-2">
           <button id="atlas-reset" class="atlas-btn" aria-label="Reset view">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
             <span class="atlas-btn-txt">Reset</span>
@@ -35998,7 +36764,11 @@ document.addEventListener('input', function (e) {
     hide:         { en: 'Hide', ru: 'Скрыть', he: 'הסתר' },
     show:         { en: 'Show', ru: 'Показать', he: 'הצג' },
     hiddenLbl:    { en: 'Hidden:', ru: 'Скрыты:', he: 'מוסתרות:' },
-    showAll:      { en: 'Show all', ru: 'Показать все', he: 'הצג הכל' }
+    showAll:      { en: 'Show all', ru: 'Показать все', he: 'הצג הכל' },
+    muscleMap:    { en: 'Muscle map', ru: 'Карта мышц', he: 'מפת שרירים' },
+    selected:     { en: 'Selected muscle', ru: 'Выбранная мышца', he: 'שריר נבחר' },
+    parts:        { en: 'parts', ru: 'частей', he: 'חלקים' },
+    noMatches:    { en: 'No muscles found', ru: 'Мышцы не найдены', he: 'לא נמצאו שרירים' }
   };
 
   /* Region labels (keys = top-level GLB group node names) */
@@ -36256,7 +37026,7 @@ document.addEventListener('input', function (e) {
 
   var MODEL_URL = 'models/muscular-system-v1.glb';
   var CDN = 'https://cdn.jsdelivr.net/npm/three@0.170.0';
-  var HILITE = 0xdc2626; /* red-600 */
+  var HILITE = 0x22d3ee; /* c199: cyan highlight on the red muscle body */
 
   /* ---------------- c182: anatomical muscle palette ----------------
    * The GLB ships with NO materials — the old code painted every mesh the
@@ -36341,12 +37111,12 @@ document.addEventListener('input', function (e) {
   function isRtl() { return lang() === 'he'; }
 
   /* ---------------- DOM refs ---------------- */
-  var modal, canvasBox, canvasEl, infoChip, listEl, searchEl, panelEl, loadBox;
+  var modal, canvasBox, canvasEl, infoChip, listEl, searchEl, panelEl, loadBox, hoverEl;
 
   function bindDom() {
     modal = $('atlas-modal'); canvasBox = $('atlas-canvas-box'); canvasEl = $('atlas-canvas');
     infoChip = $('atlas-info'); listEl = $('atlas-list'); searchEl = $('atlas-search');
-    panelEl = $('atlas-panel'); loadBox = $('atlas-load');
+    panelEl = $('atlas-panel'); loadBox = $('atlas-load'); hoverEl = $('atlas-hover');
     /* c67: «Показать упражнения» — delegated handler on the info plaque */
     if (infoChip && !infoChip._exWired) {
       infoChip._exWired = true;
@@ -36355,6 +37125,8 @@ document.addEventListener('input', function (e) {
         if (b) { showExercisesFor(b.getAttribute('data-gkey'), b.getAttribute('data-skey')); return; }
         var h = e.target.closest ? e.target.closest('[data-act="hide"]') : null;
         if (h) hideSelected();
+        var c = e.target.closest ? e.target.closest('[data-atlas-clear]') : null;
+        if (c) deselect();
       });
     }
   }
@@ -36456,8 +37228,19 @@ document.addEventListener('input', function (e) {
       var dx = e.clientX - down.x, dy = e.clientY - down.y;
       var isTap = (dx * dx + dy * dy) < 64 && (Date.now() - down.t) < 500;
       down = null;
-      if (isTap) pickAt(e.clientX, e.clientY);
+      if (isTap) { hideHover(); pickAt(e.clientX, e.clientY); }
     }, { passive: true });
+    /* c199: hovered-muscle tag — throttled so orbiting stays smooth */
+    var hoverTick = 0;
+    canvasEl.addEventListener('pointermove', function (e) {
+      if (down) { hideHover(); return; }
+      var now = Date.now();
+      if (now - hoverTick < 70) return;
+      hoverTick = now;
+      hoverAt(e.clientX, e.clientY);
+    }, { passive: true });
+    canvasEl.addEventListener('pointerleave', function () { hideHover(); canvasEl.style.cursor = ''; });
+    canvasEl.addEventListener('pointerdown', function () { hideHover(); });
 
     /* resize */
     var ro = new ResizeObserver(function () { resize(); });
@@ -36598,12 +37381,21 @@ document.addEventListener('input', function (e) {
     S.selected.forEach(function (m) { m.material = m.userData.origMat; });
     S.selected = [];
   }
+  /* c199: empty the inspector and put every muscle back */
+  function deselect() {
+    clearHighlight();
+    if (S.isolate) setIso(false);
+    refreshRenderState();
+    if (infoChip) infoChip.classList.add('hidden');
+    if (listEl) listEl.querySelectorAll('.atlas-row.sel').forEach(function (r) { r.classList.remove('sel'); });
+    if (typeof hideHover === 'function') hideHover();
+  }
   function highlightMeshes(meshes) {
     clearHighlight();
     var THREE = S.THREE;
     var mat = highlightMeshes._m;
     if (!mat) {
-      mat = new THREE.MeshStandardMaterial({ color: HILITE, roughness: 0.6, metalness: 0, emissive: 0x450a0a });
+      mat = new THREE.MeshStandardMaterial({ color: HILITE, roughness: 0.42, metalness: 0.1, emissive: 0x0e7490, emissiveIntensity: 0.65 });
       highlightMeshes._m = mat;
     }
     meshes.forEach(function (m) { m.material = mat; });
@@ -36629,9 +37421,11 @@ document.addEventListener('input', function (e) {
     var gTxt = gkey ? tr(GROUP_LABEL[gkey]) : '';
     if (gTxt && skey) {
       var sTxt = (typeof subgroupName === 'function') ? subgroupName(skey) : skey;
-      if (sTxt) gTxt += ' · ' + sTxt;
+      if (sTxt && sTxt.toLowerCase() !== gTxt.toLowerCase()) gTxt += ' · ' + sTxt;
     }
-    var gHtml = gTxt ? '<span class="atlas-chip-g">' + esc(gTxt) + '</span>' : '';
+    var gHtml = gTxt ? '<span class="v2-insp-chip">' + esc(gTxt) + '</span>' : '';
+    var sideHtml = sideTxt ? '<span class="v2-insp-chip side">' + esc(sideTxt) + '</span>' : '';
+    var partsHtml = '<span class="v2-insp-chip muted" aria-label="' + esc(meshes.length + ' ' + tr(UI.parts)) + '">×' + meshes.length + '</span>';
     /* c67: «Показать упражнения» — jump to exercise DB filtered by this group */
     /* c72: + data-skey — subgroup-precise filter (Upper chest, Lats, Rotator Cuff…) */
     var exHtml = gkey ? '<button type="button" class="atlas-ex-btn" data-gkey="' + esc(gkey) + '" data-skey="' + esc(skey) + '">' +
@@ -36641,9 +37435,13 @@ document.addEventListener('input', function (e) {
     var hideHtml = '<button type="button" class="atlas-ex-btn atlas-hide-btn" data-act="hide">' +
       '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 4.32A10.4 10.4 0 0 1 12 4c7 0 10 8 10 8a17.4 17.4 0 0 1-2.16 3.19"/><path d="M6.61 6.61A16.9 16.9 0 0 0 2 12s3 8 10 8a10.7 10.7 0 0 0 5.39-1.61"/><path d="m2 2 20 20"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/></svg>' +
       esc(tr(UI.hide)) + '</button>';
-    infoChip.innerHTML = '<div class="font-semibold text-sm leading-tight">' + esc(muscleLabel(base)) +
-      (sideTxt ? ' <span class="text-muted font-normal text-xs">· ' + esc(sideTxt) + '</span>' : '') + '</div>' +
-      '<div class="atlas-info-row">' + gHtml + exHtml + hideHtml + '</div>';
+    var clearHtml = '<button type="button" class="v2-insp-clear" data-atlas-clear aria-label="' + esc(tr(UI.nothingSel)) + '">' +
+      '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg></button>';
+    infoChip.innerHTML =
+      '<div class="v2-insp-eyebrow"><span class="v2-live-dot"></span>' + esc(tr(UI.selected)) + '</div>' +
+      '<div class="v2-insp-name">' + esc(muscleLabel(base)) + '</div>' +
+      '<div class="v2-insp-meta">' + gHtml + sideHtml + partsHtml + '</div>' +
+      '<div class="v2-inspector-actions">' + exHtml + hideHtml + clearHtml + '</div>';
     infoChip.classList.remove('hidden');
   }
 
@@ -36698,6 +37496,38 @@ document.addEventListener('input', function (e) {
       var m = hits[i].object;
       if (m.isMesh && m.visible && m.userData.base && !HIDE_RE.test(m.userData.base)) { selectMuscle(m, true); return; }
     }
+  }
+
+  /* c199: pointer-follow muscle tag (no material change — selection stays user-driven) */
+  function hoverAt(cx, cy) {
+    if (!S.inited || !S.THREE || !S.camera || !S.root || !hoverEl) { hideHover(); return; }
+    var THREE = S.THREE;
+    var rect = canvasEl.getBoundingClientRect();
+    if (!_rc) { _rc = new THREE.Raycaster(); _v2 = new THREE.Vector2(); }
+    _v2.x = ((cx - rect.left) / rect.width) * 2 - 1;
+    _v2.y = -((cy - rect.top) / rect.height) * 2 + 1;
+    _rc.setFromCamera(_v2, S.camera);
+    var hits = _rc.intersectObjects(S.root.children, true);
+    var hit = null;
+    for (var i = 0; i < hits.length; i++) {
+      var m = hits[i].object;
+      if (m.isMesh && m.visible && m.userData.base && !HIDE_RE.test(m.userData.base)) { hit = m; break; }
+    }
+    if (!hit) { hideHover(); canvasEl.style.cursor = 'grab'; return; }
+    hoverEl.textContent = muscleLabel(hit.userData.base);
+    hoverEl.classList.remove('hidden');
+    var bx = cx - rect.left, by = cy - rect.top;
+    var tw = hoverEl.offsetWidth || 150;
+    var left = bx + 14;
+    if (left + tw > rect.width - 8) left = bx - tw - 14;
+    var top = by + 16;
+    if (top > rect.height - 44) top = by - 36;
+    hoverEl.style.left = Math.max(8, left) + 'px';
+    hoverEl.style.top = Math.max(8, top) + 'px';
+    canvasEl.style.cursor = 'pointer';
+  }
+  function hideHover() {
+    if (hoverEl) hoverEl.classList.add('hidden');
   }
 
   /* ---------------- c68: peeling — hide / restore / x-ray / isolate ---------------- */
@@ -36802,16 +37632,21 @@ document.addEventListener('input', function (e) {
     });
 
     var order = Object.keys(REGION_LABEL);
+    var HUES = [188, 262, 336, 152, 38, 210, 282, 0];
+    var totalBases = 0;
     var html = '';
-    order.forEach(function (regKey) {
+    order.forEach(function (regKey, ri) {
       var rmap = regions.get(regKey);
       if (!rmap || !rmap.size) return;
       var bases = Array.from(rmap.keys()).filter(function (b) { return !HIDE_RE.test(b); });
       if (!bases.length) return;
       bases.sort(function (a, b) { return muscleLabel(a).localeCompare(muscleLabel(b), lang() === 'he' ? 'he' : (lang() === 'ru' ? 'ru' : 'en')); });
-      html += '<div class="atlas-region" data-region="' + esc(regKey) + '">' +
-        '<button type="button" class="atlas-region-btn" data-region-toggle="' + esc(regKey) + '">' +
+      totalBases += bases.length;
+      html += '<div class="atlas-region" data-region="' + esc(regKey) + '" data-rg="' + (ri % HUES.length) + '" style="--rg:' + HUES[ri % HUES.length] + '">' +
+        '<button type="button" class="atlas-region-btn" data-region-toggle="' + esc(regKey) + '" aria-expanded="false">' +
+        '<span class="v2-region-dot" aria-hidden="true"></span>' +
         '<span class="truncate">' + esc(tr(REGION_LABEL[regKey])) + '</span>' +
+        '<span class="atlas-region-n">' + bases.length + '</span>' +
         '<span class="atlas-region-c">▾</span></button>' +
         '<div class="atlas-region-body" data-region-body="' + esc(regKey) + '">';
       bases.forEach(function (b) {
@@ -36826,6 +37661,9 @@ document.addEventListener('input', function (e) {
       html += '</div></div>';
     });
     listEl.innerHTML = html;
+    var countEl = $('atlas-count');
+    S.totalBases = totalBases;
+    if (countEl) countEl.textContent = totalBases;
 
     listEl.querySelectorAll('[data-base]').forEach(function (btn) {
       btn.addEventListener('click', function () {
@@ -36846,7 +37684,8 @@ document.addEventListener('input', function (e) {
         var key = btn.getAttribute('data-region-toggle');
         var body = listEl.querySelector('[data-region-body="' + cssEsc(key) + '"]');
         if (!body) return;
-        body.classList.toggle('open');
+        var open = body.classList.toggle('open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
       });
     });
   }
@@ -36870,6 +37709,8 @@ document.addEventListener('input', function (e) {
 
   function focusOn(meshes) {
     if (!meshes.length) return;
+    /* c199: phones keep the full silhouette — a camera dive hides the muscle context */
+    if (window.matchMedia && window.matchMedia('(max-width: 640px)').matches) return;
     var THREE = S.THREE;
     var box = new THREE.Box3();
     meshes.forEach(function (m) {
@@ -36879,12 +37720,20 @@ document.addEventListener('input', function (e) {
     if (box.isEmpty()) return;
     var c = box.getCenter(new THREE.Vector3());
     var size = box.getSize(new THREE.Vector3());
-    var r = Math.max(size.x, size.y, size.z);
-    var dist = THREE.MathUtils.clamp(r * 2.2, 0.5, 6);
     var dir = new THREE.Vector3().subVectors(S.camera.position, S.controls.target).normalize();
     if (dir.lengthSq() < 0.01) dir.set(0, 0, 1);
-    S.controls.target.copy(c);
-    S.camera.position.copy(c).addScaledVector(dir, dist);
+    /* c199: keep the whole silhouette in frame — shift the orbit target
+       halfway toward the muscle instead of diving into a tight close-up */
+    var target = c.clone();
+    var dist;
+    if (S.camBase) {
+      target.lerp(new THREE.Vector3(S.camBase.cx, S.camBase.cy, S.camBase.cz), 0.5);
+      dist = S.camBase.dist * 0.92;
+    } else {
+      dist = THREE.MathUtils.clamp(r * 2.6, 1.2, 6);
+    }
+    S.controls.target.copy(target);
+    S.camera.position.copy(target).addScaledVector(dir, dist);
     S.controls.update();
   }
 
@@ -36893,6 +37742,10 @@ document.addEventListener('input', function (e) {
     var t = $('atlas-title'); if (t) t.textContent = tr(UI.title);
     var lb = $('atlas-lang'); if (lb) { lb.textContent = lang().toUpperCase(); lb.setAttribute('aria-label', tr(UI.langBtn)); }
     var s = searchEl; if (s) s.placeholder = tr(UI.search);
+    var panelLbl = document.querySelector('[data-atlas-lbl="muscles"]');
+    if (panelLbl) panelLbl.textContent = tr(UI.muscleMap);
+    var emptyLbl = document.querySelector('[data-atlas-empty]');
+    if (emptyLbl) emptyLbl.textContent = tr(UI.noMatches);
     var cr = $('atlas-credit'); if (cr) cr.textContent = tr(UI.credit);
     var lg = $('atlas-load-sub'); if (lg) lg.textContent = tr(UI.loadingSub);
     var lt = $('atlas-load-txt'); if (lt) lt.textContent = tr(UI.loading);
@@ -37299,18 +38152,31 @@ document.addEventListener('input', function (e) {
       var a = e.target.closest ? e.target.closest('[data-unall]') : null;
       if (a) restoreAll();
     });
+    var searchClear = $('atlas-search-clear');
+    if (searchClear && searchEl) searchClear.addEventListener('click', function () {
+      searchEl.value = '';
+      searchEl.dispatchEvent(new Event('input', { bubbles: true }));
+      searchEl.focus();
+    });
     if (searchEl) searchEl.addEventListener('input', function () {
       var q = searchEl.value.trim().toLowerCase();
+      if (searchClear) searchClear.classList.toggle('hidden', !q);
+      var visible = 0;
       listEl.querySelectorAll('.atlas-row').forEach(function (row) {
         var base = row.getAttribute('data-base') || '';
         var hit = !q || muscleLabel(base).toLowerCase().indexOf(q) > -1 || base.toLowerCase().indexOf(q) > -1;
         row.classList.toggle('hidden', !hit);
+        if (hit) visible++;
       });
       listEl.querySelectorAll('.atlas-region').forEach(function (reg) {
         var anyVisible = reg.querySelector('.atlas-row:not(.hidden)');
         reg.classList.toggle('hidden', !anyVisible);
         if (q && anyVisible) reg.querySelector('.atlas-region-body').classList.add('open');
       });
+      var countEl = $('atlas-count');
+      if (countEl) countEl.textContent = q ? String(visible) : String(S.totalBases || '');
+      var emptyEl = $('atlas-empty');
+      if (emptyEl) emptyEl.classList.toggle('hidden', !q || visible > 0);
     });
     /* re-apply texts when app language changes (applyI18n sets <html lang>) */
     var lastLang = lang();

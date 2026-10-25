@@ -90,15 +90,15 @@ const sw = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
 ok('trainer has c185 migration', crm.includes('migrateExerciseTaxonomyC185'));
 ok('trainer migration flag', crm.includes("migrated_taxonomy_c186"));
 ok('trainer boot calls migration', crm.includes('await migrateExerciseTaxonomyC185()'));
-ok('trainer build c198', crm.includes('name="dk-build" content="c198"'));
-ok('trainer RUNNING 198', crm.includes('var RUNNING = 198'));
+ok('trainer build c199', crm.includes('name="dk-build" content="c199"'));
+ok('trainer RUNNING 199', crm.includes('var RUNNING = 199'));
 ok('trainer DB cache-bust v54', crm.includes("EXERCISE_DB_BUST = 'v57'"));
 ok('portal applies old-snapshot fixes', portal.includes('applyTaxonomyFixesToDB'));
 ok('portal has dkTaxFix', portal.includes('function dkTaxFix'));
 ok('portal dedupes override synergist groups', portal.includes('Array.from(new Set(fix185.synergists'));
 ok('portal analytics resolves fixed id first', /function aGroupOf\(ex\)[\s\S]{0,350}dkTaxFix\(ex\.exercise_id/.test(portal));
 ok('portal recovery resolves fixed id', /function recpExInfo\(key, ex\)[\s\S]{0,350}dkTaxFix\(key\)/.test(portal));
-ok('SW cache v225', sw.includes("dk-gym-v225"));
+ok('SW cache v226', sw.includes("dk-gym-v226"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 if (fail) process.exitCode = 1;

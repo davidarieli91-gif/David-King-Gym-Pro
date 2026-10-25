@@ -97,7 +97,7 @@ ok('food save preserves unedited fields', trainer.indexOf('const newFood = Objec
 ok('builders search by brand/barcode/category', trainer.indexOf("(f.brand || '').toLowerCase().includes(ql)") >= 0 && trainer.indexOf("(f.barcode || '').toLowerCase().includes(ql)") >= 0 && trainer.indexOf("(f.category || '').toLowerCase().includes(ql)") >= 0);
 ok('DB browser searches barcodes too', trainer.indexOf("(f.barcode || '') + ').toLowerCase()") >= 0 || trainer.indexOf("+ ' ' + (f.barcode || '')).toLowerCase()") >= 0);
 ok('literal template strings removed from the STATIC modal HTML', trainer.indexOf("title=\"${t('nutrition.shareHint')") === -1 && trainer.indexOf("data-i18n=\"programs.share\">${t('") === -1 && trainer.indexOf("title=\"${t('nutrition.scanBarcode')") === -1);
-ok('add-food button no longer hidden', trainer.indexOf('id="nutrition-add-food-btn" class="bg-primary') >= 0);
+ok('add-food button no longer hidden', trainer.indexOf('id="nutrition-add-food-btn" class="v2-btn-primary') >= 0);
 ok('double wiring guarded (4 elements)', count(trainer, 'dataset.wired146') >= 4);
 
 /* ---------- STATIC: portal meal rendering ---------- */
