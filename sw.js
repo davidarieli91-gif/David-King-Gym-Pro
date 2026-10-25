@@ -180,6 +180,8 @@
 // v219: c192 - REPDB FREE AS A FOURTH SEPARATE SOURCE: 650 records + 1,147
 // images shipped locally, RepDB tab beside Burnfit / Gym Visual / GymImpulse,
 // separate source/ids, no mixing. Existing bf/gv/gi rows untouched.
+// v224: c197 - Vision V2 depth pass: rich client cards, neon exercise modal,
+// transparent 3D body plates, animated card sheen, sidebar search removed.
 // v223: c196 - VISION V2: six futuristic themes replace the 33-theme pack,
 // both texture systems, and the old glass slop; new shell, dashboard, 3D
 // anatomy stage, neon exercise plates and a unified portal skin.
@@ -192,7 +194,7 @@
 // filled (machine pass + manual key names), corrupted equipment labels
 // repaired, and the exercise media slot no longer shrinks to a small square
 // on short/mobile viewports.
-const CACHE_NAME = 'dk-gym-v223'; // c196
+const CACHE_NAME = 'dk-gym-v224'; // c197
 // v104: c77 — UI sizes can no longer change themselves (zoom-based gif/food/cards, wheel/touch slider guards) + hard pre-login lock (Add Client included) + header theme quick menu with all 33 themes
 // v103: c76 — Exercise DB tab = exact Quick Pick copy (star/eye/+ cards, favorites/recent tabs, View grouping, localized map tabs)
 // v102: c75 — 3D atlas 1.5x + Settings ▸ UI sizes (atlas slider, bodymap/exercise-panel fixes) + Exercise DB tab rebuilt as picker-style browse

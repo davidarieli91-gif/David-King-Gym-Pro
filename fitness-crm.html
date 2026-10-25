@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c196" />
+<meta name="dk-build" content="c197" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -3070,6 +3070,28 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
   }
   html[data-ui="v2"] .client-card,
   html[data-ui="v2"] .bm-ex-card { transition: transform .18s var(--v2-ease), box-shadow .18s var(--v2-ease), border-color .18s; }
+  html[data-ui="v2"] .bm-ex-card {
+    position: relative;
+    border-radius: 17px !important;
+    background: linear-gradient(155deg, rgba(255,255,255,.065), rgba(255,255,255,.012)), var(--v2-surface) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 16px 38px -24px rgba(0,0,0,.85);
+    backdrop-filter: blur(16px) saturate(125%);
+  }
+  html[data-ui="v2"] .bm-ex-card:hover { box-shadow: 0 22px 48px -24px rgb(var(--v2-glow) / .55), inset 0 1px 0 rgba(255,255,255,.1); }
+  html[data-ui="v2"] .bm-ex-card .aspect-square::before {
+    content: ""; position: absolute; inset: -10% -40%; z-index: 2; pointer-events: none;
+    background: linear-gradient(112deg, transparent 35%, rgba(255,255,255,.075) 50%, transparent 65%);
+    animation: v2-card-sheen 5.5s ease-in-out infinite;
+  }
+  @keyframes v2-card-sheen { 0%, 55% { transform: translateX(-55%); opacity: 0; } 65% { opacity: 1; } 100% { transform: translateX(55%); opacity: 0; } }
+  html[data-ui="v2"] .v2-anim-badge {
+    position: absolute; z-index: 3; top: 7px; inset-inline-start: 7px;
+    font-size: 8px; font-weight: 800; letter-spacing: .14em; color: rgb(var(--c-accent));
+    background: rgba(3,7,18,.68); border: 1px solid rgb(var(--c-accent) / .32);
+    border-radius: 9999px; padding: 2px 7px; backdrop-filter: blur(8px);
+    box-shadow: 0 0 18px rgb(var(--c-accent) / .15);
+  }
+  @media (prefers-reduced-motion: reduce) { html[data-ui="v2"] .bm-ex-card .aspect-square::before { animation: none; display: none; } }
   /* c196: white-background line art from BF/GV becomes a neon x-ray plate in
      dark themes. RepDB flat art and GI renders keep their original colours. */
   html[data-ui="v2"][data-mode="dark"] .bm-ex-card.v2-src-bf .aspect-square,
@@ -3238,6 +3260,90 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
   .v2-profile-hero::after { content: ""; position: absolute; width: 220px; height: 220px; border-radius: 9999px; top: -120px; inset-inline-end: -70px; background: radial-gradient(circle, rgb(var(--v2-glow) / .35), transparent 70%); filter: blur(14px); pointer-events: none; }
   .v2-profile-hero > * { position: relative; z-index: 1; }
 
+  /* rich client cards */
+  html[data-ui="v2"] .v2-client-card {
+    position: relative; overflow: hidden; display: flex; align-items: center; gap: 12px;
+    min-height: 82px; padding: 12px 14px; border-radius: 18px;
+    background: linear-gradient(145deg, rgba(255,255,255,.055), rgba(255,255,255,.015)), var(--v2-surface) !important;
+    border-color: var(--v2-border) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 12px 34px -24px rgba(0,0,0,.8);
+    transition: transform .18s var(--v2-ease), border-color .18s, box-shadow .18s, background .18s;
+  }
+  html[data-ui="v2"] .v2-client-card::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0;
+    background: linear-gradient(110deg, transparent 18%, rgba(255,255,255,.07) 45%, transparent 72%);
+    transform: translateX(-40%); transition: opacity .2s, transform .55s var(--v2-ease);
+  }
+  html[data-ui="v2"] .v2-client-card:hover {
+    transform: translateY(-2px);
+    border-color: rgb(var(--c-primary-2) / .45) !important;
+    box-shadow: 0 20px 48px -24px rgb(var(--v2-glow) / .55), inset 0 1px 0 rgba(255,255,255,.08);
+  }
+  html[data-ui="v2"] .v2-client-card:hover::before { opacity: 1; transform: translateX(40%); }
+  html[data-ui="v2"] .v2-client-avatar {
+    width: 52px; height: 52px; border-radius: 16px; overflow: hidden; position: relative;
+    display: grid; place-items: center; color: #fff; font-family: var(--font-display); font-weight: 700; font-size: 18px;
+    box-shadow: 0 10px 26px -14px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.2);
+    border: 1px solid rgba(255,255,255,.14);
+  }
+  html[data-ui="v2"] .v2-client-dot {
+    position: absolute; width: 10px; height: 10px; border-radius: 9999px; inset-inline-end: 3px; bottom: 3px;
+    border: 2px solid rgb(var(--c-surface)); box-shadow: 0 0 10px currentColor;
+  }
+  html[data-ui="v2"] .v2-status-active .v2-client-dot { background: rgb(var(--c-success)); color: rgb(var(--c-success)); }
+  html[data-ui="v2"] .v2-status-recent .v2-client-dot { background: rgb(var(--c-warning)); color: rgb(var(--c-warning)); }
+  html[data-ui="v2"] .v2-status-away .v2-client-dot { background: rgb(var(--c-muted)); color: rgb(var(--c-muted)); opacity: .6; }
+  html[data-ui="v2"] .v2-client-name { font-size: 14px; font-weight: 700; letter-spacing: -.015em; color: rgb(var(--c-text)); }
+  html[data-ui="v2"] .v2-client-status {
+    font-size: 8.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 9999px; color: rgb(var(--c-muted)); background: rgba(255,255,255,.05); border: 1px solid var(--v2-border);
+  }
+  html[data-ui="v2"] .v2-status-active .v2-client-status { color: rgb(var(--c-success)); background: rgb(var(--c-success) / .08); border-color: rgb(var(--c-success) / .25); }
+  html[data-ui="v2"] .v2-client-progress { display: flex; align-items: center; gap: 8px; margin-top: 7px; }
+  html[data-ui="v2"] .v2-client-bar { flex: 1 1 auto; height: 5px; border-radius: 9999px; background: rgba(255,255,255,.07); overflow: hidden; max-width: 220px; }
+  html[data-ui="v2"] .v2-client-bar > i { display: block; height: 100%; border-radius: inherit; background: var(--v2-primary-grad); box-shadow: 0 0 12px rgb(var(--v2-glow) / .6); }
+  html[data-ui="v2"] .v2-client-progress-label { font-family: var(--font-mono); font-size: 8.5px; color: rgb(var(--c-muted)); white-space: nowrap; }
+  html[data-ui="v2"] .v2-client-side { display: flex; align-items: center; gap: 8px; }
+  html[data-ui="v2"] .v2-client-spark { display: flex; align-items: flex-end; gap: 2px; height: 19px; padding-inline-end: 3px; }
+  html[data-ui="v2"] .v2-client-spark i { width: 3px; border-radius: 2px; background: var(--v2-primary-grad); box-shadow: 0 0 8px rgb(var(--v2-glow) / .45); opacity: .8; }
+  html[data-ui="v2"] .v2-client-spark i:nth-child(6) { opacity: 1; box-shadow: 0 0 12px rgb(var(--c-accent) / .55); }
+  html[data-ui="v2"] .v2-client-count { text-align: center; min-width: 42px; }
+  html[data-ui="v2"] .v2-client-count b { display: block; font-family: var(--font-display); font-size: 16px; line-height: 1; }
+  html[data-ui="v2"] .v2-client-count span { display: block; font-size: 7.5px; color: rgb(var(--c-muted)); margin-top: 2px; text-transform: uppercase; letter-spacing: .05em; }
+  html[data-ui="v2"] .v2-client-icon-btn {
+    width: 29px; height: 29px; display: grid; place-items: center; border-radius: 9px;
+    background: rgba(255,255,255,.05); border: 1px solid var(--v2-border); color: rgb(var(--c-muted));
+    transition: .15s;
+  }
+  html[data-ui="v2"] .v2-client-icon-btn:hover { color: rgb(var(--c-primary-2)); border-color: rgb(var(--c-primary-2) / .4); }
+  @media (max-width: 720px) {
+    html[data-ui="v2"] .v2-client-card { gap: 9px; padding: 10px; min-height: 74px; }
+    html[data-ui="v2"] .v2-client-avatar { width: 44px; height: 44px; border-radius: 13px; font-size: 15px; }
+    html[data-ui="v2"] .v2-client-count { display: none; }
+    html[data-ui="v2"] .v2-client-spark { display: none; }
+    html[data-ui="v2"] .v2-client-status { display: none; }
+    html[data-ui="v2"] .v2-client-bar { max-width: 120px; }
+  }
+
+  /* glass edge + focus micro-interactions */
+  html[data-ui="v2"] .bg-surface,
+  html[data-ui="v2"] .bg-surface-2,
+  html[data-ui="v2"] .v2-panel,
+  html[data-ui="v2"] .settings-panel,
+  html[data-ui="v2"] .v2-client-card,
+  html[data-ui="v2"] .bm-ex-card { background-clip: padding-box; }
+  html[data-ui="v2"] .settings-panel { transition: border-color .18s, box-shadow .18s; }
+  html[data-ui="v2"] .settings-panel:hover { border-color: var(--v2-border-strong) !important; box-shadow: 0 22px 54px -30px rgb(var(--v2-glow) / .4), var(--v2-card-shadow); }
+  html[data-ui="v2"] input:focus,
+  html[data-ui="v2"] select:focus,
+  html[data-ui="v2"] textarea:focus { border-color: rgb(var(--c-accent) / .55) !important; box-shadow: 0 0 0 3px rgb(var(--c-accent) / .12) !important; outline: 0 !important; }
+  html[data-ui="v2"] input[type="checkbox"],
+  html[data-ui="v2"] input[type="radio"],
+  html[data-ui="v2"] input[type="range"] { accent-color: rgb(var(--c-primary)); }
+  html[data-ui="v2"] .v2-pill { backdrop-filter: blur(10px); }
+  html[data-ui="v2"] .v2-icon-box { box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 0 22px rgb(var(--v2-glow) / .12); }
+  html[data-ui="v2"] .v2-section-title { text-shadow: 0 1px 18px rgba(0,0,0,.35); }
+
   /* shared polish */
   html[data-ui="v2"] #profile-name { font-size: clamp(26px, 3vw, 38px); letter-spacing: -.045em; }
   html[data-ui="v2"] .prog-bar { background: rgba(255,255,255,.08); border-radius: 9999px; overflow: hidden; }
@@ -3279,6 +3385,41 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
   html[data-ui="v2"] #atlas-canvas, html[data-ui="v2"] .b3d-canvas {
     filter: saturate(.9) hue-rotate(-6deg) brightness(1.04) drop-shadow(0 0 28px rgba(34,211,238,.18));
   }
+
+  /* exercise modal — the same neon plate as the cards, not a white lightbox */
+  html[data-ui="v2"] #exercise-modal > .bg-surface { background: var(--v2-glass-bg) !important; border: 1px solid var(--v2-border-strong) !important; }
+  html[data-ui="v2"] #exercise-modal .sticky { background: var(--v2-glass-bg) !important; backdrop-filter: blur(24px); }
+  html[data-ui="v2"] #exercise-gif-slot {
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 32%, rgba(30,58,110,.7), transparent 72%),
+      radial-gradient(ellipse 60% 40% at 50% 100%, rgba(34,211,238,.12), transparent 70%),
+      #050b1a !important;
+    border: 1px solid var(--v2-border-strong) !important;
+    border-radius: 20px;
+    box-shadow: 0 24px 60px -30px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.08);
+  }
+  html[data-ui="v2"][data-mode="dark"] #exercise-gif-slot[data-src="gv"] img,
+  html[data-ui="v2"][data-mode="dark"] #exercise-gif-slot[data-src="bf"] img {
+    filter: invert(1) brightness(1.18) contrast(1.04);
+    mix-blend-mode: screen;
+  }
+  html[data-ui="v2"] #exercise-gif-slot img { object-fit: contain !important; background: transparent !important; }
+  html[data-ui="v2"][data-mode="dark"] #exercise-gif-slot[data-src="gv"] img,
+  html[data-ui="v2"][data-mode="dark"] #exercise-gif-slot[data-src="bf"] img { transform: scale(1.1); }
+  html[data-ui="v2"] #exercise-gif-slot .ex-anim-badge,
+  html[data-ui="v2"] #exercise-gif-slot .absolute.bottom-2 {
+    background: rgba(3,7,18,.72) !important; color: rgb(var(--c-accent)) !important;
+    border: 1px solid rgba(34,211,238,.3); border-radius: 9999px; padding: 3px 9px;
+    font-size: 9px; letter-spacing: .12em;
+  }
+  html[data-ui="v2"] #exercise-muscle-chips > * { border-radius: 10px; }
+  html[data-ui="v2"] #exercise-technique { background: var(--v2-surface-2) !important; border-color: var(--v2-border) !important; border-radius: 16px; }
+  html[data-ui="v2"] #badge-group, html[data-ui="v2"] #badge-subgroup, html[data-ui="v2"] #badge-equipment { border-radius: 9999px; padding: 5px 11px; font-size: 10px; font-weight: 700; }
+  html[data-ui="v2"] #badge-group { background: rgba(124,92,255,.16) !important; color: rgb(190,175,255) !important; border: 1px solid rgba(124,92,255,.3); }
+  html[data-ui="v2"] #badge-subgroup { background: rgba(34,211,238,.12) !important; color: rgb(120,225,245) !important; border: 1px solid rgba(34,211,238,.28); }
+  html[data-ui="v2"] #badge-equipment { background: rgba(255,255,255,.05) !important; color: rgb(var(--c-muted)) !important; border: 1px solid var(--v2-border) !important; }
+  html[data-ui="v2"] #exercise-modal-edit, html[data-ui="v2"] #exercise-modal-close { background: rgba(255,255,255,.05); border: 1px solid var(--v2-border); border-radius: 11px; }
+  html[data-ui="v2"] #exercise-view-delete { border-radius: 14px; }
 
   /* theme preview cards */
   .v2-theme-card {
@@ -3333,7 +3474,11 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
   /* utility classes for new markup */
   .v2-panel { background: var(--v2-surface); border: 1px solid var(--v2-border); border-radius: var(--v2-radius-lg); box-shadow: var(--v2-card-shadow); backdrop-filter: blur(18px) saturate(125%); }
   .v2-card { background: var(--v2-surface-2); border: 1px solid var(--v2-border); border-radius: var(--v2-radius-md); }
-  .v2-kpi { position: relative; overflow: hidden; padding: 18px; border-radius: var(--v2-radius-lg); background: var(--v2-surface); border: 1px solid var(--v2-border); box-shadow: var(--v2-card-shadow); }
+  .v2-kpi { position: relative; overflow: hidden; padding: 18px; border-radius: var(--v2-radius-lg); background: var(--v2-surface); border: 1px solid var(--v2-border); box-shadow: var(--v2-card-shadow); transition: transform .18s var(--v2-ease), border-color .18s, box-shadow .18s; }
+  .v2-kpi:hover { transform: translateY(-2px); border-color: var(--v2-border-strong); box-shadow: 0 20px 46px -24px rgb(var(--v2-glow) / .45), var(--v2-card-shadow); }
+  .v2-kpi:nth-child(2) .v2-icon-box { color: #22d3ee; }
+  .v2-kpi:nth-child(3) .v2-icon-box { color: #a3e635; }
+  .v2-kpi:nth-child(4) .v2-icon-box { color: #f472b6; }
   .v2-kpi::after { content: ""; position: absolute; width: 120px; height: 120px; border-radius: 9999px; top: -60px; inset-inline-end: -40px; background: radial-gradient(circle, rgb(var(--c-primary) / .28), transparent 70%); }
   .v2-kpi-label { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: rgb(var(--c-muted)); }
   .v2-kpi-value { font-family: var(--font-display); font-size: 30px; font-weight: 700; letter-spacing: -.04em; line-height: 1; margin-top: 8px; }
@@ -3511,13 +3656,6 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
             <span class="v2-pill v2-pill-live"><span class="w-1.5 h-1.5 rounded-full bg-success"></span> <span data-i18n="clients.online">Online</span></span>
             <span class="v2-pill" id="v2-side-version">c196</span>
           </div>
-          <div class="relative">
-            <svg class="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-              <input type="search" id="aside-search" placeholder="Search clients…" autocomplete="off" readonly
-                autocorrect="off" autocapitalize="off" spellcheck="false" data-1p-ignore data-lpignore="true"
-                class="w-full bg-surface-2 border border-border rounded-xl ps-9 pe-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60"
-                data-i18n-ph="aside.searchPlaceholder" />
-          </div>
         </div>
 
         <nav class="flex-1 overflow-y-auto p-3 space-y-1">
@@ -3663,7 +3801,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c196</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c197</p>
             </div>
           </div>
 
@@ -10739,6 +10877,29 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     /** Load all clients from IndexedDB and re-apply filters. */
     async function load() {
       _clients = await db.all('clients');
+      /* c197: real per-client workout stats for the richer Vision cards. */
+      try {
+        const history = await db.all('workout_history') || [];
+        const byClient = Object.create(null);
+        const now = Date.now();
+        history.forEach(w => {
+          const cid = w && (w.client_id || w.clientId);
+          if (!cid) return;
+          const ts = Number(w.date || w.created_at || w.ts || 0) || 0;
+          const s = byClient[cid] || (byClient[cid] = { total: 0, last30: 0, last: 0, spark: [0, 0, 0, 0, 0, 0] });
+          s.total++;
+          if (ts && now - ts < 30 * 864e5) s.last30++;
+          if (ts > s.last) s.last = ts;
+          if (ts) {
+            const week = Math.min(5, Math.max(0, Math.floor((now - ts) / (7 * 864e5))));
+            s.spark[5 - week]++;
+          }
+        });
+        _clients.forEach(c => {
+          const s = byClient[c.id] || { total: 0, last30: 0, last: 0, spark: [0, 0, 0, 0, 0, 0] };
+          c._wkTotal = s.total; c._wk30 = s.last30; c._lastWorkout = s.last; c._spark = s.spark;
+        });
+      } catch (_) {}
       await loadGroupConfig();
       await ensureClientCgroups();
       renderGroupChips();
@@ -10875,24 +11036,39 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       const cGrpName = groupNameOf(cGrp);
       const groupBadge = cGrpName ? `<span class="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-surface-2 border border-border text-muted"><span class="w-1.5 h-1.5 rounded-full shrink-0" style="background:${cgColor(cGrp)}"></span>${escapeHTML(cGrpName)}</span>` : '';
 
+      const lastTs = c.last_active || c._lastWorkout || 0;
+      const daysAway = lastTs ? (Date.now() - lastTs) / 864e5 : 999;
+      const status = daysAway < 2 ? 'active' : (daysAway < 8 ? 'recent' : 'away');
+      const statusLabel = status === 'active' ? t('clients.statusActive') : (status === 'recent' ? t('clients.statusRecent') : t('clients.statusAway'));
+      const wk30 = c._wk30 || 0;
+      const progress = Math.min(100, Math.round(wk30 / 12 * 100));
+      const statsLine = [stats, lastActive].filter(Boolean).join(' · ');
       return `
-        <div data-client-id="${escapeAttr(c.id)}" draggable="true" class="client-card flex items-center gap-3 bg-surface border border-border rounded-2xl p-3.5 hover:bg-surface-2 hover:border-primary/30 transition cursor-pointer">
-          <div class="w-11 h-11 rounded-xl grid place-items-center font-display font-bold text-white shrink-0 shadow-card overflow-hidden" style="${c.photo_url ? '' : 'background: ' + avatarGradient(name)}">
+        <div data-client-id="${escapeAttr(c.id)}" draggable="true" class="client-card v2-client-card v2-status-${status} bg-surface border border-border rounded-2xl p-3 hover:border-primary/30 transition cursor-pointer">
+          <div class="v2-client-avatar shrink-0" style="${c.photo_url ? '' : 'background: ' + avatarGradient(name)}">
             ${c.photo_url ? `<img src="${escapeAttr(c.photo_url)}" alt="" class="w-full h-full object-cover" />` : escapeHTML(initials(name))}
+            <span class="v2-client-dot" title="${escapeAttr(statusLabel)}" aria-label="${escapeAttr(statusLabel)}"></span>
           </div>
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 flex-wrap">
-              <span class="font-semibold truncate">${escapeHTML(name)}</span>
+              <span class="v2-client-name truncate">${escapeHTML(name)}</span>
               ${groupBadge}
+              <span class="v2-client-status">${escapeHTML(statusLabel)}</span>
             </div>
-            <div class="text-xs text-muted truncate">
-              ${stats ? escapeHTML(stats) + ' · ' : ''}${escapeHTML(lastActive)}
+            <div class="text-[11px] text-muted truncate mt-0.5">${escapeHTML(statsLine)}</div>
+            <div class="v2-client-progress">
+              <span class="v2-client-bar"><i style="width:${progress}%"></i></span>
+              <span class="v2-client-progress-label">${wk30} / 12 <span class="opacity-70">${escapeHTML(t('clients.thisMonth') || 'this month')}</span></span>
             </div>
           </div>
-          <button type="button" data-move-client="${escapeAttr(c.id)}" class="w-8 h-8 grid place-items-center rounded-lg bg-surface-2 border border-border text-muted hover:text-primary-2 hover:border-primary/40 transition shrink-0" title="${escapeAttr(t('clients.moveToGroup') || 'Move to group')}" aria-label="${escapeAttr(t('clients.moveToGroup') || 'Move to group')}">
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><path d="M12 11v6M9 14h6"/></svg>
-          </button>
-          <svg class="w-4 h-4 text-muted shrink-0 flip-rtl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          <div class="v2-client-side shrink-0">
+            <div class="v2-client-spark" title="6 weeks" aria-hidden="true">${(c._spark || [0,0,0,0,0,0]).map(v => `<i style="height:${3 + Math.min(15, v * 5)}px"></i>`).join('')}</div>
+            <div class="v2-client-count"><b>${c._wkTotal || 0}</b><span>${escapeHTML(t('clients.workoutsShort') || 'workouts')}</span></div>
+            <button type="button" data-move-client="${escapeAttr(c.id)}" class="v2-client-icon-btn" title="${escapeAttr(t('clients.moveToGroup') || 'Move to group')}" aria-label="${escapeAttr(t('clients.moveToGroup') || 'Move to group')}">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><path d="M12 11v6M9 14h6"/></svg>
+            </button>
+            <svg class="w-3.5 h-3.5 text-muted shrink-0 flip-rtl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
         </div>
       `;
     }
@@ -16139,6 +16315,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       // Photos: auto-playing crossfade animation between 2 images
       const gifSlot = document.getElementById('exercise-gif-slot');
       if (gifSlot) {
+        const _srcCode = e.source === 'repdb' || e.src === 'rdb' ? 'rdb'
+          : (e.source === 'gymvisual' || e.src === 'gv' ? 'gv'
+          : (e.source === 'burnfit' || e.src === 'bf' ? 'bf'
+          : (e.source === 'gymimpulse' || e.src === 'gi' ? 'gi' : 'pg')));
+        gifSlot.setAttribute('data-src', _srcCode);
         if (images.length >= 2) {
           // Two images → auto-playing crossfade animation (like a GIF)
           gifSlot.innerHTML = `
@@ -21747,6 +21928,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         return `<div class="bm-ex-card v2-src-${src.toLowerCase()}${e.source === 'repdb' ? ' rdb-card' : ''} bg-surface-2 border border-border rounded-xl overflow-hidden hover:border-primary/30 transition cursor-pointer" data-bm-add="${esc(id)}">
           <div class="aspect-square bg-surface relative overflow-hidden">
             ${imgHtml}
+            ${img1 && img2 ? '<span class="v2-anim-badge">ANIM</span>' : ''}
             <button class="absolute top-1 end-1 w-6 h-6 grid place-items-center rounded-full bg-black/40 text-white z-10" data-bm-fav="${esc(id)}">
               <svg class="w-3.5 h-3.5 ${isFav ? 'text-yellow-400' : 'text-white/60'}" viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
             </button>
@@ -25230,6 +25412,11 @@ Select foods for each meal. Output as JSON only.`;
 
     const gifSlot = document.getElementById('exercise-gif-slot');
     if (gifSlot) {
+      const _srcCode = ex.source === 'repdb' || ex.src === 'rdb' ? 'rdb'
+        : (ex.source === 'gymvisual' || ex.src === 'gv' ? 'gv'
+        : (ex.source === 'burnfit' || ex.src === 'bf' ? 'bf'
+        : (ex.source === 'gymimpulse' || ex.src === 'gi' ? 'gi' : 'pg')));
+      gifSlot.setAttribute('data-src', _srcCode);
       // XSS fix (2026-08): escape all image URLs via escapeAttr before interpolating into innerHTML.
       // Previous version concatenated raw imgs[0] which could inject attributes via " onerror="alert(1)".
       if (imgs.length >= 2) gifSlot.innerHTML = '<div class="ex-anim-container"><img src="' + escapeAttr(imgs[0]) + '" alt="" class="ex-anim-frame-1" loading="lazy" /><img src="' + escapeAttr(imgs[1]) + '" alt="" class="ex-anim-frame-2" loading="lazy" /><div class="ex-anim-badge">ANIM</div></div>';
@@ -35553,7 +35740,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 196; /* numeric part of dk-build c196 */
+  var RUNNING = 197; /* numeric part of dk-build c197 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

@@ -1,4 +1,4 @@
-/* c196 — canonical equipment taxonomy + RepDB subgroup/group cleanup.
+/* c197 — canonical equipment taxonomy + RepDB subgroup/group cleanup.
    Validates the dataset, the shared taxonomy module, and the UI wiring. */
 const fs = require('fs');
 const path = require('path');
@@ -128,10 +128,10 @@ ok('seed syncs subgroup + folder + equipment into RepDB rows', has(crm, "'subgro
 ok('RepDB JSON is cache-busted', has(crm, "const EXERCISE_DB_BUST = 'v57';"));
 
 /* ---------- build/deploy ---------- */
-ok('trainer build c196', has(crm, 'name="dk-build" content="c196"'));
-ok('login build c196', has(crm, '3 languages · c196'));
-ok('RUNNING 196', has(crm, 'var RUNNING = 196;'));
-ok('SW cache v223', has(sw, "CACHE_NAME = 'dk-gym-v223'"));
+ok('trainer build c197', has(crm, 'name="dk-build" content="c197"'));
+ok('login build c197', has(crm, '3 languages · c197'));
+ok('RUNNING 197', has(crm, 'var RUNNING = 197;'));
+ok('SW cache v224', has(sw, "CACHE_NAME = 'dk-gym-v224'"));
 ok('SW keeps RepDB precache', has(sw, "'./exercise-db-rdb.json'"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');

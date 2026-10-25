@@ -1,4 +1,4 @@
-/* c196 — Vision V2: six complete themes replace the 33-theme pack and both
+/* c197 — Vision V2: six complete themes replace the 33-theme pack and both
    texture systems. Checks the theme registry, shell, dashboard, portal and
    i18n wiring. */
 const fs = require('fs');
@@ -80,11 +80,22 @@ for (const lang of ['en', 'ru', 'he']) {
 }
 ok('theme hint says six worlds', /6 /.test(JSON.parse(fs.readFileSync(path.join(root, 'src', 'i18n', 'en.json'), 'utf8')).settings.themesHint));
 
+/* ---------- c197 depth pass ---------- */
+ok('sidebar client search removed', !has(crm, 'id="aside-search"'));
+ok('rich client cards exist', has(crm, 'v2-client-card') && has(crm, 'v2-client-progress') && has(crm, 'v2-client-dot'));
+ok('client cards use real workout stats', has(crm, 'c._wk30') && has(crm, 'c._wkTotal'));
+ok('client cards have a 6-week sparkline', has(crm, 'c._spark = s.spark') && has(crm, 'v2-client-spark'));
+ok('client status pills are localized', has(crm, "t('clients.statusActive')"));
+ok('exercise modal gets the neon source plate', has(crm, "gifSlot.setAttribute('data-src', _srcCode)"));
+ok('exercise modal image is dark/transparent on GV/BF', has(crm, '#exercise-gif-slot[data-src="gv"] img'));
+ok('exercise cards advertise their animation', has(crm, 'class="v2-anim-badge"'));
+ok('card sheen animation exists', has(crm, '@keyframes v2-card-sheen'));
+
 /* ---------- versions ---------- */
-ok('trainer build c196', has(crm, 'name="dk-build" content="c196"'));
-ok('login build c196', has(crm, '3 languages · c196'));
-ok('RUNNING 196', has(crm, 'var RUNNING = 196;'));
-ok('SW cache v223', has(sw, "CACHE_NAME = 'dk-gym-v223'"));
+ok('trainer build c197', has(crm, 'name="dk-build" content="c197"'));
+ok('login build c197', has(crm, '3 languages · c197'));
+ok('RUNNING 197', has(crm, 'var RUNNING = 197;'));
+ok('SW cache v224', has(sw, "CACHE_NAME = 'dk-gym-v224'"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 if (fail) process.exitCode = 1;
