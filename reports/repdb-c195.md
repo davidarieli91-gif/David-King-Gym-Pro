@@ -144,3 +144,16 @@ Existing source counts are unchanged:
 - RepDB legs: 67 / 21 / 19 / 7 / 15 / 13.
 - Stale-chip case: select “Колесо для пресса” → switch to Back → filter resets,
   “All” active, 94 Back exercises shown.
+
+## Deploy
+
+- Commit `73e622b` pushed to `main`; GitHub Actions run **40196549861** —
+  success.
+- Live page verified at
+  `https://davidarieli91-gif.github.io/David-King-Gym-Pro/fitness-crm.html`:
+  build **c195**, SW cache **dk-gym-v222**.
+- Live browser check (RU): RepDB 25 equipment chips + “All”, all with counts
+  and zero empty; 11 group folders with zero empty; leg subgroups
+  67 / 21 / 19 / 7 / 15 / 13.
+- Live source tabs: Burnfit 6 chips, Gym Visual 16, GymImpulse 26, RepDB 25 —
+  no chip with zero exercises on any tab.
