@@ -321,7 +321,42 @@
     "moveToGroup": "Move to group",
     "sortGroup": "Group",
     "waInviteApp": "👋 Hi {name}!\n\nYour David King Gym app is ready:\n👉 {url}\n\nSign in with your phone number and personal password. Open it on your phone and add it to the home screen!",
-    "waInviteAppPass": "👋 Hi {name}!\n\nYour personal training & nutrition plan is ready:\n👉 {url}\n\n🔑 Your password: {code} — enter it when you open the link (or sign in with your phone number)\n\nOpen it on your phone and save it to the home screen!"
+    "waInviteAppPass": "👋 Hi {name}!\n\nYour personal training & nutrition plan is ready:\n👉 {url}\n\n🔑 Your password: {code} — enter it when you open the link (or sign in with your phone number)\n\nOpen it on your phone and save it to the home screen!",
+    "subtitle": "Your athletes — one command center.",
+    "workspace": "Trainer workspace",
+    "kpiTotal": "Total clients",
+    "kpiActive": "Active this week",
+    "kpiWorkouts": "Workouts / 7 days",
+    "kpiNew": "New this month",
+    "kpiTotalSub": "Across all groups",
+    "kpiTotalEmpty": "Create the first profile",
+    "kpiActiveSub": "{pct}% of roster",
+    "kpiActiveEmpty": "No activity yet",
+    "kpiWorkoutsSub": "Logged sessions",
+    "kpiWorkoutsEmpty": "Nothing logged yet",
+    "kpiNewSub": "Last 30 days",
+    "kpiNewEmpty": "None this month",
+    "roster": "Client roster",
+    "rosterHint": "Search, filter and open a profile",
+    "quickActions": "Quick actions",
+    "live": "Live",
+    "startWorkoutHint": "Open the live session",
+    "addClientHint": "Create a new profile",
+    "nutritionHint": "Plans and food database",
+    "coach": "Coach insight",
+    "coachHint": "Based on real client data",
+    "coachEmpty": "Add your first client to unlock personalised insights.",
+    "coachNoActive": "No client has trained in the last 7 days. A quick check-in could restart momentum.",
+    "coachMissing": "{active} clients were active, but only {workouts} workouts were logged. Follow up on the missing sessions.",
+    "coachGood": "{active} active clients and {workouts} logged workouts this week. Keep the rhythm going.",
+    "atlasEyebrow": "Interactive anatomy",
+    "atlasOpen": "Open atlas",
+    "online": "Online",
+    "dailyFocus": "Daily focus",
+    "dailyQuote1": "Strong people are not born.",
+    "dailyQuote2": "They are made.",
+    "dailyHint": "One more set. One more rep. One better version of you.",
+    "searchEverything": "Search clients, exercises…"
   },
   "client": {
     "openInjuryList": "Open conditions list",
@@ -557,7 +592,9 @@
     "rpeLight": "light ≤6",
     "rpeModerate": "moderate 7–8",
     "rpeHard": "hard ≥9",
-    "noWeightData": "No weight recorded — bodyweight-only rows carry no load chart"
+    "noWeightData": "No weight recorded — bodyweight-only rows carry no load chart",
+    "subtitle": "Progress, recovery and records — in one view.",
+    "eyebrow": "Signal, not noise"
   },
   "workouts": {
     "title": "Workouts",
@@ -993,7 +1030,9 @@
     "aminoAcids": "Amino Acids",
     "essentialAminoAcids": "Essential Amino Acids",
     "planHintToast": "To create a plan: Nutrition tab → \"New plan\"",
-    "afterAdd": "After adding, left to target"
+    "afterAdd": "After adding, left to target",
+    "subtitle": "Plans, products and daily targets — one system.",
+    "eyebrow": "Fuel the work"
   },
   "food": {
     "title": "Food database",
@@ -1431,7 +1470,7 @@
     "brandingSaved": "Branding saved — reloading...",
     "brandingReset": "Branding reset — reload to apply",
     "languagesHint": "RU · EN · HE (RTL auto)",
-    "themesHint": "26 themes · dark · mid · light",
+    "themesHint": "6 complete visual worlds · palette + glass + scene",
     "backupDesc": "Export the entire database (clients, photos, documents, exercises, settings) into a single JSON file. Restore on any device.",
     "appSection": "Application",
     "pwaDesc": "Install as an app for offline use and quick access.",
@@ -1782,7 +1821,9 @@
     "repsUnit": "reps",
     "copyChart": "Copy chart",
     "chartCopied": "Load chart copied",
-    "brzyckiNote": "Brzycki formula · estimate only — use a spotter for heavy attempts."
+    "brzyckiNote": "Brzycki formula · estimate only — use a spotter for heavy attempts.",
+    "subtitle": "Calculate the numbers that move the needle.",
+    "eyebrow": "Precision lab"
   },
   "rot": {
     "last": "Last time",

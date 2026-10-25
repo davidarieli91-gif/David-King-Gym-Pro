@@ -1,4 +1,4 @@
-/* c195 finish/save + portal-history regression.
+/* c196 finish/save + portal-history regression.
    Root causes fixed:
    - trainer report called portal-only dispVolKg/dispUnitShort (undefined) and
      threw before showing the report, so Finish/Save looked dead;
@@ -50,9 +50,9 @@ ok('client exDoneVolume uses performed', has(portal, "const perf = (window.dkMus
 ok('client saves performed flag on each set', has(portal, 'performed: !!(s.done || s.touched)'));
 
 /* versions/cache */
-ok('trainer build c195', has(crm, 'name="dk-build" content="c195"'));
-ok('trainer RUNNING 195', has(crm, 'var RUNNING = 195;'));
-ok('SW cache v222', has(sw, "CACHE_NAME = 'dk-gym-v222'"));
+ok('trainer build c196', has(crm, 'name="dk-build" content="c196"'));
+ok('trainer RUNNING 196', has(crm, 'var RUNNING = 196;'));
+ok('SW cache v223', has(sw, "CACHE_NAME = 'dk-gym-v223'"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 if (fail) process.exitCode = 1;

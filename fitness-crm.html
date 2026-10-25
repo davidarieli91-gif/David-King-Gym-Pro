@@ -12,12 +12,12 @@
             injection into exercise_base on first boot.
   ============================================================================
 -->
-<html lang="en" dir="ltr" data-theme="dark" data-mode="dark">
+<html lang="en" dir="ltr" data-theme="v2-nebula" data-mode="dark" data-ui="v2">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c195" />
+<meta name="dk-build" content="c196" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -65,10 +65,10 @@
   <!-- Local QR generation (privacy: no third-party QR services) -->
   <script src="vendor/qrcode.min.js"></script>
 
-  <!-- Google Fonts: Inter (UI), Plus Jakarta Sans (display), JetBrains Mono (numeric) -->
+  <!-- Google Fonts: Inter (UI), Space Grotesk (display), JetBrains Mono (numeric) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
   <style>
     /* =========================================================================
@@ -2726,10 +2726,677 @@ html.dk-fs-big .food-badge { min-width: 1.35rem; height: 1.35rem; font-size: .72
 html.dk-fs-big .fdb-pager { padding: .6rem 1rem; font-size: .85rem; }
 html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
 </style>
+
+<!-- =========================================================================
+     DK VISION V2 — futuristic glass design system (c196)
+     One theme = palette + glass + scene + particles + chart colours.
+     Everything is scoped to html[data-ui="v2"] so the redesign can be
+     previewed and rolled back while the legacy screens are migrated.
+     ========================================================================= -->
+<style id="dk-v2-style">
+  /* ---------- theme tokens ---------- */
+  html[data-ui="v2"] {
+    --font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+    --v2-radius-sm: 10px;
+    --v2-radius-md: 16px;
+    --v2-radius-lg: 22px;
+    --v2-radius-xl: 30px;
+    --v2-ease: cubic-bezier(.22,.61,.36,1);
+    --v2-card-shadow: 0 18px 50px -26px rgba(0,0,0,.72), inset 0 1px 0 rgba(255,255,255,.06);
+    --v2-glass-shadow: 0 24px 80px -34px rgba(0,0,0,.85), inset 0 1px 0 rgba(255,255,255,.08);
+    --v2-glow-opacity: .55;
+  }
+
+  html[data-ui="v2"][data-theme="v2-nebula"] {
+    --c-bg: 4 7 18; --c-surface: 10 18 38; --c-surface-2: 17 30 58;
+    --c-border: 70 100 160; --c-text: 236 243 255; --c-muted: 139 158 194;
+    --c-primary: 124 92 255; --c-primary-2: 96 165 250; --c-accent: 34 211 238;
+    --c-success: 45 212 191; --c-warning: 251 191 36; --c-danger: 251 113 133;
+    --v2-primary-grad: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 60%, #22d3ee 120%);
+    --v2-accent-grad: linear-gradient(135deg, #22d3ee, #6366f1);
+    --v2-glow: 124 92 255; --v2-glow-2: 34 211 238;
+    --v2-surface: linear-gradient(150deg, rgba(18,32,64,.78), rgba(8,14,32,.62));
+    --v2-surface-2: linear-gradient(150deg, rgba(26,44,82,.66), rgba(11,20,44,.5));
+    --v2-input-bg: rgba(8,16,36,.78);
+    --v2-border: rgba(112,150,230,.22);
+    --v2-border-strong: rgba(134,174,255,.4);
+    --v2-glass-bg: rgba(7,13,30,.62);
+    --v2-glass-bg-2: rgba(15,26,52,.48);
+    --v2-scene:
+      radial-gradient(ellipse 80% 65% at 16% -8%, rgba(59,130,246,.32), transparent 68%),
+      radial-gradient(ellipse 65% 58% at 88% 8%, rgba(139,92,246,.28), transparent 70%),
+      radial-gradient(ellipse 55% 45% at 55% 108%, rgba(34,211,238,.14), transparent 72%),
+      linear-gradient(180deg, #040713 0%, #070d21 48%, #030611 100%);
+    --v2-grid-color: rgba(120,170,255,.045);
+    --v2-orb-1: rgba(59,130,246,.34); --v2-orb-2: rgba(139,92,246,.3); --v2-orb-3: rgba(34,211,238,.2);
+    --v2-chart-1: #8b5cf6; --v2-chart-2: #22d3ee; --v2-chart-3: #3b82f6; --v2-chart-4: #f472b6; --v2-chart-5: #fbbf24;
+    --v2-particle-color: rgba(170,210,255,.55);
+  }
+  html[data-ui="v2"][data-theme="v2-aurora"] {
+    --c-bg: 9 4 22; --c-surface: 24 10 46; --c-surface-2: 40 18 68;
+    --c-border: 96 62 130; --c-text: 246 238 255; --c-muted: 178 154 205;
+    --c-primary: 168 85 247; --c-primary-2: 236 72 153; --c-accent: 34 211 238;
+    --c-success: 52 211 153; --c-warning: 251 191 36; --c-danger: 251 113 133;
+    --v2-primary-grad: linear-gradient(135deg, #a855f7 0%, #ec4899 55%, #8b5cf6 110%);
+    --v2-accent-grad: linear-gradient(135deg, #ec4899, #a855f7);
+    --v2-glow: 168 85 247; --v2-glow-2: 236 72 153;
+    --v2-surface: linear-gradient(150deg, rgba(42,18,74,.76), rgba(18,7,38,.62));
+    --v2-surface-2: linear-gradient(150deg, rgba(58,26,96,.64), rgba(25,10,52,.5));
+    --v2-input-bg: rgba(22,8,46,.78);
+    --v2-border: rgba(190,130,255,.24);
+    --v2-border-strong: rgba(220,160,255,.42);
+    --v2-glass-bg: rgba(17,6,38,.64);
+    --v2-glass-bg-2: rgba(34,14,64,.48);
+    --v2-scene:
+      radial-gradient(ellipse 70% 64% at 18% 0%, rgba(168,85,247,.36), transparent 68%),
+      radial-gradient(ellipse 64% 58% at 86% 14%, rgba(236,72,153,.28), transparent 70%),
+      radial-gradient(ellipse 60% 45% at 50% 110%, rgba(34,211,238,.14), transparent 74%),
+      linear-gradient(180deg, #0a0421 0%, #12062d 52%, #070312 100%);
+    --v2-grid-color: rgba(210,160,255,.045);
+    --v2-orb-1: rgba(168,85,247,.36); --v2-orb-2: rgba(236,72,153,.28); --v2-orb-3: rgba(34,211,238,.16);
+    --v2-chart-1: #a855f7; --v2-chart-2: #ec4899; --v2-chart-3: #22d3ee; --v2-chart-4: #818cf8; --v2-chart-5: #fbbf24;
+    --v2-particle-color: rgba(240,190,255,.55);
+  }
+  html[data-ui="v2"][data-theme="v2-abyss"] {
+    --c-bg: 2 14 17; --c-surface: 7 30 34; --c-surface-2: 12 46 50;
+    --c-border: 44 104 106; --c-text: 229 251 248; --c-muted: 128 177 176;
+    --c-primary: 20 184 166; --c-primary-2: 34 211 238; --c-accent: 163 230 53;
+    --c-success: 74 222 128; --c-warning: 251 191 36; --c-danger: 251 113 133;
+    --v2-primary-grad: linear-gradient(135deg, #14b8a6 0%, #06b6d4 60%, #a3e635 120%);
+    --v2-accent-grad: linear-gradient(135deg, #34d399, #22d3ee);
+    --v2-glow: 20 184 166; --v2-glow-2: 34 211 238;
+    --v2-surface: linear-gradient(150deg, rgba(10,48,52,.76), rgba(3,20,24,.62));
+    --v2-surface-2: linear-gradient(150deg, rgba(18,64,66,.64), rgba(6,30,34,.5));
+    --v2-input-bg: rgba(5,26,30,.8);
+    --v2-border: rgba(90,200,190,.22);
+    --v2-border-strong: rgba(110,230,210,.4);
+    --v2-glass-bg: rgba(3,20,24,.64);
+    --v2-glass-bg-2: rgba(10,38,42,.48);
+    --v2-scene:
+      radial-gradient(ellipse 75% 62% at 14% 0%, rgba(20,184,166,.3), transparent 68%),
+      radial-gradient(ellipse 62% 54% at 88% 16%, rgba(34,211,238,.22), transparent 70%),
+      radial-gradient(ellipse 55% 42% at 52% 108%, rgba(163,230,53,.12), transparent 74%),
+      linear-gradient(180deg, #021013 0%, #041c20 50%, #010a0d 100%);
+    --v2-grid-color: rgba(120,240,220,.04);
+    --v2-orb-1: rgba(20,184,166,.32); --v2-orb-2: rgba(34,211,238,.22); --v2-orb-3: rgba(163,230,53,.14);
+    --v2-chart-1: #14b8a6; --v2-chart-2: #22d3ee; --v2-chart-3: #a3e635; --v2-chart-4: #38bdf8; --v2-chart-5: #fbbf24;
+    --v2-particle-color: rgba(150,255,230,.5);
+  }
+  html[data-ui="v2"][data-theme="v2-solar"] {
+    --c-bg: 17 6 10; --c-surface: 38 14 22; --c-surface-2: 58 24 32;
+    --c-border: 120 66 66; --c-text: 255 241 236; --c-muted: 205 166 158;
+    --c-primary: 249 115 22; --c-primary-2: 244 63 94; --c-accent: 250 204 21;
+    --c-success: 52 211 153; --c-warning: 251 191 36; --c-danger: 251 113 133;
+    --v2-primary-grad: linear-gradient(135deg, #f97316 0%, #f43f5e 60%, #a855f7 120%);
+    --v2-accent-grad: linear-gradient(135deg, #fbbf24, #f97316);
+    --v2-glow: 249 115 22; --v2-glow-2: 244 63 94;
+    --v2-surface: linear-gradient(150deg, rgba(62,22,30,.76), rgba(24,8,14,.64));
+    --v2-surface-2: linear-gradient(150deg, rgba(80,32,38,.64), rgba(32,11,18,.5));
+    --v2-input-bg: rgba(28,9,14,.8);
+    --v2-border: rgba(255,150,110,.22);
+    --v2-border-strong: rgba(255,180,130,.4);
+    --v2-glass-bg: rgba(22,7,12,.64);
+    --v2-glass-bg-2: rgba(44,16,22,.5);
+    --v2-scene:
+      radial-gradient(ellipse 72% 60% at 14% 6%, rgba(249,115,22,.3), transparent 68%),
+      radial-gradient(ellipse 60% 52% at 88% 10%, rgba(244,63,94,.26), transparent 70%),
+      radial-gradient(ellipse 55% 44% at 50% 108%, rgba(168,85,247,.16), transparent 74%),
+      linear-gradient(180deg, #12060b 0%, #1c090f 50%, #0a0306 100%);
+    --v2-grid-color: rgba(255,180,140,.04);
+    --v2-orb-1: rgba(249,115,22,.32); --v2-orb-2: rgba(244,63,94,.26); --v2-orb-3: rgba(168,85,247,.16);
+    --v2-chart-1: #f97316; --v2-chart-2: #f43f5e; --v2-chart-3: #fbbf24; --v2-chart-4: #a855f7; --v2-chart-5: #22d3ee;
+    --v2-particle-color: rgba(255,200,160,.5);
+  }
+  html[data-ui="v2"][data-theme="v2-arctic"] {
+    --c-bg: 234 244 255; --c-surface: 255 255 255; --c-surface-2: 240 248 255;
+    --c-border: 176 204 232; --c-text: 8 24 45; --c-muted: 85 110 140;
+    --c-primary: 14 165 233; --c-primary-2: 99 102 241; --c-accent: 6 182 212;
+    --c-success: 16 185 129; --c-warning: 217 119 6; --c-danger: 225 29 72;
+    --v2-primary-grad: linear-gradient(135deg, #0ea5e9 0%, #6366f1 70%, #22d3ee 120%);
+    --v2-accent-grad: linear-gradient(135deg, #22d3ee, #0ea5e9);
+    --v2-glow: 14 165 233; --v2-glow-2: 99 102 241;
+    --v2-surface: linear-gradient(150deg, rgba(255,255,255,.78), rgba(238,247,255,.58));
+    --v2-surface-2: linear-gradient(150deg, rgba(255,255,255,.66), rgba(230,242,255,.48));
+    --v2-input-bg: rgba(255,255,255,.82);
+    --v2-border: rgba(120,160,205,.28);
+    --v2-border-strong: rgba(90,140,200,.42);
+    --v2-glass-bg: rgba(248,252,255,.64);
+    --v2-glass-bg-2: rgba(232,244,255,.5);
+    --v2-scene:
+      radial-gradient(ellipse 70% 60% at 16% -4%, rgba(56,189,248,.3), transparent 68%),
+      radial-gradient(ellipse 64% 58% at 86% 8%, rgba(129,140,248,.2), transparent 70%),
+      radial-gradient(ellipse 58% 42% at 50% 108%, rgba(34,211,238,.16), transparent 74%),
+      linear-gradient(180deg, #eaf4ff 0%, #dcecff 50%, #f5faff 100%);
+    --v2-grid-color: rgba(40,110,180,.055);
+    --v2-orb-1: rgba(56,189,248,.26); --v2-orb-2: rgba(129,140,248,.18); --v2-orb-3: rgba(34,211,238,.16);
+    --v2-chart-1: #0ea5e9; --v2-chart-2: #6366f1; --v2-chart-3: #06b6d4; --v2-chart-4: #f472b6; --v2-chart-5: #f59e0b;
+    --v2-particle-color: rgba(30,100,180,.22);
+  }
+  html[data-ui="v2"][data-theme="v2-pearl"] {
+    --c-bg: 253 244 250; --c-surface: 255 255 255; --c-surface-2: 252 240 249;
+    --c-border: 228 194 220; --c-text: 39 16 44; --c-muted: 130 92 122;
+    --c-primary: 217 70 239; --c-primary-2: 139 92 246; --c-accent: 34 211 238;
+    --c-success: 16 185 129; --c-warning: 217 119 6; --c-danger: 225 29 72;
+    --v2-primary-grad: linear-gradient(135deg, #d946ef 0%, #8b5cf6 70%, #22d3ee 120%);
+    --v2-accent-grad: linear-gradient(135deg, #f472b6, #a855f7);
+    --v2-glow: 217 70 239; --v2-glow-2: 139 92 246;
+    --v2-surface: linear-gradient(150deg, rgba(255,255,255,.8), rgba(253,242,250,.6));
+    --v2-surface-2: linear-gradient(150deg, rgba(255,255,255,.68), rgba(250,236,248,.5));
+    --v2-input-bg: rgba(255,255,255,.84);
+    --v2-border: rgba(205,150,195,.28);
+    --v2-border-strong: rgba(190,120,180,.42);
+    --v2-glass-bg: rgba(255,250,253,.66);
+    --v2-glass-bg-2: rgba(253,238,249,.52);
+    --v2-scene:
+      radial-gradient(ellipse 70% 60% at 16% -4%, rgba(244,114,182,.24), transparent 68%),
+      radial-gradient(ellipse 64% 58% at 86% 8%, rgba(168,85,247,.2), transparent 70%),
+      radial-gradient(ellipse 58% 42% at 50% 108%, rgba(34,211,238,.14), transparent 74%),
+      linear-gradient(180deg, #fdf4fa 0%, #f7ecfb 50%, #fdf8ff 100%);
+    --v2-grid-color: rgba(160,80,150,.05);
+    --v2-orb-1: rgba(244,114,182,.24); --v2-orb-2: rgba(168,85,247,.18); --v2-orb-3: rgba(34,211,238,.14);
+    --v2-chart-1: #d946ef; --v2-chart-2: #8b5cf6; --v2-chart-3: #22d3ee; --v2-chart-4: #f472b6; --v2-chart-5: #f59e0b;
+    --v2-particle-color: rgba(180,90,160,.2);
+  }
+
+  /* ---------- scene layers ---------- */
+  html[data-ui="v2"] body {
+    background: rgb(var(--c-bg));
+    color: rgb(var(--c-text));
+    -webkit-font-smoothing: antialiased;
+  }
+  #v2-scene { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; background: var(--v2-scene); }
+  #v2-scene::before {
+    content: ""; position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+    opacity: .035; mix-blend-mode: overlay;
+  }
+  #v2-scene::after {
+    content: ""; position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 120% 80% at 50% 0%, transparent 45%, rgba(0,0,0,.28) 100%),
+      linear-gradient(180deg, rgba(0,0,0,.12), transparent 22%, transparent 78%, rgba(0,0,0,.22));
+  }
+  html[data-ui="v2"][data-mode="light"] #v2-scene::after {
+    background: radial-gradient(ellipse 120% 80% at 50% 0%, transparent 55%, rgba(30,70,120,.10) 100%);
+  }
+  #v2-orb { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .v2-orb { position: absolute; border-radius: 9999px; filter: blur(90px); opacity: .9; animation: v2-float 18s ease-in-out infinite; }
+  .v2-orb-a { width: 46vw; height: 46vw; top: -18vw; left: -10vw; background: var(--v2-orb-1); }
+  .v2-orb-b { width: 38vw; height: 38vw; top: 8vh; right: -12vw; background: var(--v2-orb-2); animation-delay: -6s; }
+  .v2-orb-c { width: 42vw; height: 42vw; bottom: -20vw; left: 28vw; background: var(--v2-orb-3); animation-delay: -11s; }
+  @keyframes v2-float { 0%,100% { transform: translate3d(0,0,0) scale(1); } 50% { transform: translate3d(18px,-22px,0) scale(1.05); } }
+  .v2-grid {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image: linear-gradient(var(--v2-grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--v2-grid-color) 1px, transparent 1px);
+    background-size: 52px 52px;
+    mask-image: radial-gradient(ellipse 80% 65% at 50% 38%, #000 8%, transparent 78%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 65% at 50% 38%, #000 8%, transparent 78%);
+  }
+  #theme-particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .75; }
+  html[data-ui="v2"] #theme-particles::before {
+    content: ""; position: absolute; inset: -20%;
+    background-image:
+      radial-gradient(1.4px 1.4px at 12% 22%, var(--v2-particle-color), transparent 60%),
+      radial-gradient(1.2px 1.2px at 28% 64%, var(--v2-particle-color), transparent 60%),
+      radial-gradient(1.6px 1.6px at 44% 18%, var(--v2-particle-color), transparent 60%),
+      radial-gradient(1.1px 1.1px at 62% 72%, var(--v2-particle-color), transparent 60%),
+      radial-gradient(1.5px 1.5px at 78% 34%, var(--v2-particle-color), transparent 60%),
+      radial-gradient(1.2px 1.2px at 88% 78%, var(--v2-particle-color), transparent 60%),
+      radial-gradient(1.1px 1.1px at 54% 44%, var(--v2-particle-color), transparent 60%);
+    background-size: 520px 520px;
+    animation: v2-drift 32s linear infinite;
+    opacity: .8;
+  }
+  @keyframes v2-drift { from { transform: translate3d(0,0,0); } to { transform: translate3d(-60px,-40px,0); } }
+  #app { position: relative; z-index: 1; }
+  @media (prefers-reduced-motion: reduce) {
+    .v2-orb, html[data-ui="v2"] #theme-particles::before { animation: none !important; }
+  }
+
+  /* ---------- surface language ---------- */
+  html[data-ui="v2"] .glass,
+  html[data-ui="v2"] .glass-strong,
+  html[data-ui="v2"] header.glass,
+  html[data-ui="v2"] #aside,
+  html[data-ui="v2"] #bottom-nav {
+    background: var(--v2-glass-bg) !important;
+    border-color: var(--v2-border) !important;
+    box-shadow: var(--v2-glass-shadow);
+    backdrop-filter: blur(26px) saturate(135%);
+    -webkit-backdrop-filter: blur(26px) saturate(135%);
+  }
+  html[data-ui="v2"] .bg-surface {
+    background: var(--v2-surface) !important;
+    border-color: var(--v2-border) !important;
+    box-shadow: var(--v2-card-shadow);
+    backdrop-filter: blur(18px) saturate(125%);
+    -webkit-backdrop-filter: blur(18px) saturate(125%);
+  }
+  html[data-ui="v2"] .bg-surface-2 {
+    background: var(--v2-surface-2) !important;
+    border-color: var(--v2-border) !important;
+  }
+  html[data-ui="v2"] input.bg-surface-2,
+  html[data-ui="v2"] select.bg-surface-2,
+  html[data-ui="v2"] textarea.bg-surface-2,
+  html[data-ui="v2"] input[type="search"],
+  html[data-ui="v2"] input[type="text"],
+  html[data-ui="v2"] input[type="number"],
+  html[data-ui="v2"] input[type="email"],
+  html[data-ui="v2"] input[type="password"],
+  html[data-ui="v2"] select,
+  html[data-ui="v2"] textarea {
+    background: var(--v2-input-bg) !important;
+    border-color: var(--v2-border) !important;
+    color: rgb(var(--c-text));
+  }
+  html[data-ui="v2"] .border-border { border-color: var(--v2-border) !important; }
+  html[data-ui="v2"] .border-border\/60 { border-color: var(--v2-border) !important; }
+  html[data-ui="v2"] .shadow-card { box-shadow: var(--v2-card-shadow) !important; }
+  html[data-ui="v2"] .shadow-float { box-shadow: var(--v2-glass-shadow) !important; }
+  html[data-ui="v2"] .rounded-2xl { border-radius: var(--v2-radius-lg); }
+  html[data-ui="v2"] .rounded-xl { border-radius: var(--v2-radius-md); }
+  html[data-ui="v2"] .rounded-3xl { border-radius: var(--v2-radius-xl); }
+  html[data-ui="v2"] .font-display { font-family: var(--font-display); letter-spacing: -.025em; }
+  html[data-ui="v2"] h1.font-display { font-weight: 700; letter-spacing: -.04em; }
+  html[data-ui="v2"] .text-muted { color: rgb(var(--c-muted)); }
+
+  /* accent text + buttons */
+  html[data-ui="v2"] .text-primary-2 { color: rgb(var(--c-primary-2)); }
+  html[data-ui="v2"] .text-accent { color: rgb(var(--c-accent)); }
+  html[data-ui="v2"] button.bg-primary,
+  html[data-ui="v2"] a.bg-primary {
+    background: var(--v2-primary-grad) !important;
+    border-color: transparent !important;
+    color: #fff !important;
+    box-shadow: 0 14px 34px -14px rgb(var(--v2-glow) / .75), inset 0 1px 0 rgba(255,255,255,.28);
+  }
+  html[data-ui="v2"] button.bg-primary:hover,
+  html[data-ui="v2"] a.bg-primary:hover { filter: brightness(1.08) saturate(1.08); }
+  html[data-ui="v2"] button.bg-surface-2,
+  html[data-ui="v2"] a.bg-surface-2 {
+    background: var(--v2-surface-2) !important;
+    border-color: var(--v2-border) !important;
+  }
+  html[data-ui="v2"] button.bg-surface-2:hover,
+  html[data-ui="v2"] a.bg-surface-2:hover { border-color: var(--v2-border-strong) !important; }
+  html[data-ui="v2"] .v2-grad-text {
+    background: linear-gradient(100deg, #fff 0%, rgb(var(--c-primary-2)) 55%, rgb(var(--c-accent)) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+
+  /* chips */
+  html[data-ui="v2"] .bm-chip {
+    background: rgba(255,255,255,.045);
+    border-color: var(--v2-border);
+    color: rgb(var(--c-muted));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+    transition: all .16s var(--v2-ease);
+  }
+  html[data-ui="v2"] .bm-chip:hover { color: rgb(var(--c-text)); border-color: var(--v2-border-strong); transform: translateY(-1px); }
+  html[data-ui="v2"] .bm-chip.active {
+    background: var(--v2-primary-grad);
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 10px 26px -12px rgb(var(--v2-glow) / .8), inset 0 1px 0 rgba(255,255,255,.3);
+  }
+  html[data-ui="v2"] .filter-chip {
+    border-radius: 9999px; border-color: var(--v2-border); background: rgba(255,255,255,.045);
+    color: rgb(var(--c-muted)); font-size: 10.5px; padding: 6px 11px;
+  }
+  html[data-ui="v2"] .filter-chip:hover { border-color: var(--v2-border-strong); color: rgb(var(--c-text)); }
+  html[data-ui="v2"] .filter-chip.border-primary\/60,
+  html[data-ui="v2"] .filter-chip.bg-primary\/15 {
+    background: var(--v2-primary-grad) !important; border-color: transparent !important; color: #fff !important;
+    box-shadow: 0 8px 20px -10px rgb(var(--v2-glow) / .8);
+  }
+
+  /* cards */
+  html[data-ui="v2"] .client-card,
+  html[data-ui="v2"] .bm-ex-card,
+  html[data-ui="v2"] .pf-panel > .bg-surface,
+  html[data-ui="v2"] .settings-panel {
+    background: var(--v2-surface) !important;
+    border-color: var(--v2-border) !important;
+    box-shadow: var(--v2-card-shadow);
+  }
+  html[data-ui="v2"] .client-card:hover,
+  html[data-ui="v2"] .bm-ex-card:hover {
+    border-color: var(--v2-border-strong) !important;
+    box-shadow: 0 18px 44px -22px rgb(var(--v2-glow) / .55), var(--v2-card-shadow);
+    transform: translateY(-2px);
+  }
+  html[data-ui="v2"] .client-card,
+  html[data-ui="v2"] .bm-ex-card { transition: transform .18s var(--v2-ease), box-shadow .18s var(--v2-ease), border-color .18s; }
+  /* c196: white-background line art from BF/GV becomes a neon x-ray plate in
+     dark themes. RepDB flat art and GI renders keep their original colours. */
+  html[data-ui="v2"][data-mode="dark"] .bm-ex-card.v2-src-bf .aspect-square,
+  html[data-ui="v2"][data-mode="dark"] .bm-ex-card.v2-src-gv .aspect-square {
+    background: radial-gradient(ellipse 80% 80% at 50% 35%, #101c3a 0%, #070d1e 72%, #040713 100%);
+  }
+  html[data-ui="v2"][data-mode="dark"] .bm-ex-card.v2-src-bf .aspect-square img,
+  html[data-ui="v2"][data-mode="dark"] .bm-ex-card.v2-src-gv .aspect-square img {
+    filter: invert(1) brightness(1.18) contrast(1.04);
+    mix-blend-mode: screen;
+  }
+  html[data-ui="v2"] .bm-ex-card .aspect-square::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(180deg, transparent 58%, rgba(3,7,18,.28) 100%);
+    opacity: .8;
+  }
+  html[data-ui="v2"][data-mode="light"] .bm-ex-card .aspect-square::after { background: linear-gradient(180deg, transparent 68%, rgba(20,50,80,.10) 100%); }
+  html[data-ui="v2"] .bm-ex-card .aspect-square img { transition: transform .35s var(--v2-ease); }
+  html[data-ui="v2"] .bm-ex-card:hover .aspect-square img { transform: scale(1.035); }
+
+  /* nav */
+  html[data-ui="v2"] #aside { width: 280px; }
+  html[data-ui="v2"] .nav-pill { color: rgb(var(--c-muted)); }
+  html[data-ui="v2"] .nav-pill:hover { background: rgba(255,255,255,.06); color: rgb(var(--c-text)); }
+  html[data-ui="v2"] .nav-pill[aria-current="page"] {
+    background: var(--v2-primary-grad) !important;
+    color: #fff !important;
+    box-shadow: 0 16px 36px -16px rgb(var(--v2-glow) / .85), inset 0 1px 0 rgba(255,255,255,.28);
+  }
+  html[data-ui="v2"] .nav-pill[aria-current="page"] > span:first-child {
+    background: rgba(255,255,255,.18) !important;
+    color: #fff !important;
+  }
+  html[data-ui="v2"] #bottom-nav {
+    border-top: 1px solid var(--v2-border);
+    background: var(--v2-glass-bg) !important;
+  }
+  html[data-ui="v2"] #theme-toggle,
+  html[data-ui="v2"] #font-dec-btn,
+  html[data-ui="v2"] #font-inc-btn,
+  html[data-ui="v2"] #lock-btn,
+  html[data-ui="v2"] #dk-dumbbell-btn {
+    background: rgba(255,255,255,.055);
+    border: 1px solid var(--v2-border);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+    border-radius: 12px;
+  }
+  html[data-ui="v2"] #dk-dumbbell-btn {
+    background: var(--v2-primary-grad);
+    border: 0;
+    color: #fff;
+    box-shadow: 0 10px 28px -12px rgb(var(--v2-glow) / .8);
+  }
+  html[data-ui="v2"] header.glass {
+    background: linear-gradient(180deg, rgba(6,12,28,.72), rgba(6,12,28,.42)) !important;
+  }
+  html[data-ui="v2"][data-mode="light"] header.glass {
+    background: linear-gradient(180deg, rgba(250,253,255,.8), rgba(244,250,255,.55)) !important;
+  }
+
+  /* login */
+  html[data-ui="v2"] [data-screen="login"] .blob { display: none; }
+  html[data-ui="v2"] [data-screen="login"] > .relative > .bg-surface {
+    background: var(--v2-glass-bg) !important;
+    border: 1px solid var(--v2-border-strong) !important;
+    box-shadow: 0 40px 120px -40px rgb(var(--v2-glow) / .55), var(--v2-glass-shadow);
+    backdrop-filter: blur(30px) saturate(140%);
+  }
+  html[data-ui="v2"] #app-logo-login { filter: drop-shadow(0 0 28px rgb(var(--v2-glow) / .55)); }
+
+  /* topbar / global search / profile */
+  html[data-ui="v2"] .v2-global-search {
+    height: 40px; padding: 0 12px; border-radius: 14px;
+    border: 1px solid var(--v2-border);
+    background: rgba(255,255,255,.045);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+    transition: border-color .18s, box-shadow .18s;
+  }
+  html[data-ui="v2"] .v2-global-search:focus-within {
+    border-color: rgb(var(--c-primary-2) / .55);
+    box-shadow: 0 0 0 3px rgb(var(--c-primary) / .12), inset 0 1px 0 rgba(255,255,255,.06);
+  }
+  html[data-ui="v2"] .v2-global-search input {
+    flex: 1; min-width: 0; background: transparent !important; border: 0 !important;
+    outline: 0 !important; box-shadow: none !important; font-size: 12px; color: rgb(var(--c-text));
+  }
+  html[data-ui="v2"] .v2-global-search input::placeholder { color: rgb(var(--c-muted)); }
+  html[data-ui="v2"] .v2-global-search kbd {
+    font-family: var(--font-mono); font-size: 9px; color: rgb(var(--c-muted));
+    border: 1px solid var(--v2-border); border-radius: 6px; padding: 2px 6px; background: rgba(255,255,255,.04);
+  }
+  .v2-search-row { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 12px; text-align: start; color: rgb(var(--c-text)); font-size: 12px; transition: background .15s; }
+  .v2-search-row:hover { background: rgba(255,255,255,.06); }
+  .v2-search-row .v2-search-avatar { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; background: var(--v2-primary-grad); color: #fff; font-size: 10px; font-weight: 700; flex: none; }
+  .v2-search-row .v2-search-sub { display: block; font-size: 10px; color: rgb(var(--c-muted)); }
+  .v2-profile-item { display: flex; align-items: center; gap: 9px; width: 100%; padding: 9px 10px; border-radius: 11px; font-size: 12px; font-weight: 600; color: rgb(var(--c-text)); text-align: start; transition: background .15s; }
+  .v2-profile-item:hover { background: rgba(255,255,255,.07); }
+  .v2-profile-item svg { width: 16px; height: 16px; flex: none; color: rgb(var(--c-muted)); }
+  html[data-ui="v2"][data-mode="light"] .v2-global-search { background: rgba(255,255,255,.55); }
+  html[data-ui="v2"][data-mode="light"] .v2-search-row:hover { background: rgba(10,40,80,.06); }
+  html[data-ui="v2"][data-mode="light"] .v2-profile-item:hover { background: rgba(10,40,80,.06); }
+
+  /* sidebar */
+  .v2-logo-wrap { height: 48px; width: auto; display: flex; align-items: center; }
+  .v2-logo-wrap img { height: 48px; width: auto; max-width: 132px; object-fit: contain; filter: drop-shadow(0 0 14px rgb(var(--v2-glow) / .5)) drop-shadow(0 0 2px rgba(255,255,255,.25)); }
+  .v2-side-card { position: relative; overflow: hidden; padding: 14px; border-radius: 20px; border: 1px solid var(--v2-border); background: linear-gradient(160deg, rgba(255,255,255,.06), rgba(255,255,255,.015)); box-shadow: var(--v2-card-shadow); }
+  .v2-side-card-orb { position: absolute; width: 140px; height: 140px; border-radius: 9999px; top: -80px; inset-inline-end: -60px; background: radial-gradient(circle, rgb(var(--v2-glow) / .45), transparent 70%); filter: blur(18px); pointer-events: none; }
+  .v2-side-card-btn { position: relative; z-index: 1; margin-top: 12px; width: 100%; height: 34px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; border-radius: 11px; background: var(--v2-primary-grad); color: #fff; font-size: 11px; font-weight: 700; box-shadow: 0 10px 24px -12px rgb(var(--v2-glow) / .8); }
+  .v2-side-card-btn:hover { filter: brightness(1.08); }
+
+  /* screen widths + inline picker */
+  html[data-ui="v2"] [data-screen="dashboard"],
+  html[data-ui="v2"] [data-screen="workouts"],
+  html[data-ui="v2"] [data-screen="nutrition"],
+  html[data-ui="v2"] [data-screen="analytics"],
+  html[data-ui="v2"] [data-screen="tools"],
+  html[data-ui="v2"] [data-screen="profile"] { max-width: 1500px !important; }
+  html[data-ui="v2"] [data-screen="settings"] { max-width: 1180px !important; }
+  html[data-ui="v2"] #exb-qp-host > #bm-root { max-width: none !important; width: 100%; }
+  html[data-ui="v2"] #exb-qp-host #bm-root > div:first-child > div:first-child { display: none; }
+  html[data-ui="v2"] #exb-qp-host #bm-root > div:first-child { padding-top: 10px; }
+  html[data-ui="v2"] #exb-qp-host #bm-root > div:first-child > div:nth-child(2) { margin-top: 0; }
+  html[data-ui="v2"] .picker-tree-col { width: 238px; }
+  html[data-ui="v2"] .picker-map-col { width: 286px; }
+  html[data-ui="v2"] #bm-3d-container { aspect-ratio: 200 / 360; max-height: 560px; }
+  html[data-ui="v2"] .b3d-box {
+    background-image:
+      radial-gradient(70% 36% at 50% 84%, rgba(34,211,238,.16), transparent 68%),
+      radial-gradient(85% 58% at 50% 30%, rgba(124,92,255,.14), transparent 68%),
+      radial-gradient(135% 105% at 50% 50%, transparent 58%, rgba(0,0,0,.24) 100%);
+  }
+  @media (max-width: 1400px) { html[data-ui="v2"] .picker-tree-col { width: 212px; } html[data-ui="v2"] .picker-map-col { width: 240px; } }
+  @media (max-width: 1100px) { html[data-ui="v2"] .picker-tree-col { width: 188px; } html[data-ui="v2"] .picker-map-col { width: 190px; } }
+
+  /* dashboard */
+  .v2-page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 22px; }
+  .v2-eyebrow { display: inline-flex; align-items: center; gap: 7px; font-size: 9px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: rgb(var(--c-primary-2)); }
+  .v2-live-dot { width: 6px; height: 6px; border-radius: 9999px; background: rgb(var(--c-success)); box-shadow: 0 0 10px rgb(var(--c-success)); }
+  .v2-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: 13px; background: var(--v2-primary-grad); color: #fff; font-size: 12px; font-weight: 700; box-shadow: 0 14px 34px -14px rgb(var(--v2-glow) / .8), inset 0 1px 0 rgba(255,255,255,.28); transition: filter .15s, transform .15s; }
+  .v2-btn-primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
+  .v2-kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin-bottom: 18px; }
+  .v2-dash-grid { display: grid; grid-template-columns: minmax(0,1fr) 320px; gap: 16px; align-items: start; }
+  .v2-list-panel { padding: 16px; }
+  .v2-panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+  .v2-list-toolbar { display: flex; gap: 8px; margin-bottom: 10px; }
+  .v2-compact-select { height: 34px; border-radius: 10px; border: 1px solid var(--v2-border); background: var(--v2-input-bg); color: rgb(var(--c-text)); font-size: 11px; font-weight: 600; padding: 0 10px; }
+  .v2-client-list { display: flex; flex-direction: column; gap: 6px; }
+  html[data-ui="v2"] .v2-client-list .client-card { border-radius: 14px; padding: 10px 12px; background: rgba(255,255,255,.035) !important; box-shadow: none; backdrop-filter: none; }
+  html[data-ui="v2"] .v2-client-list .client-card:hover { background: rgba(255,255,255,.06) !important; }
+  .v2-dash-rail { display: flex; flex-direction: column; gap: 12px; }
+  .v2-rail-card { padding: 16px; }
+  .v2-quick-action { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 0; border-bottom: 1px solid var(--v2-border); text-align: start; color: rgb(var(--c-text)); }
+  .v2-quick-action:last-child { border-bottom: 0; padding-bottom: 0; }
+  .v2-quick-action .v2-icon-box { width: 34px; height: 34px; border-radius: 10px; }
+  .v2-quick-action:hover { color: rgb(var(--c-primary-2)); }
+  .v2-text-link { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; font-size: 10px; font-weight: 700; color: rgb(var(--c-primary-2)); }
+  .v2-text-link:hover { color: rgb(var(--c-accent)); }
+  .v2-coach-card { background: linear-gradient(160deg, rgba(139,92,246,.12), rgba(34,211,238,.06)), var(--v2-surface); }
+  .v2-atlas-card { position: relative; overflow: hidden; padding: 18px; min-height: 170px; border: 1px solid var(--v2-border); background: linear-gradient(150deg, rgba(59,130,246,.22), rgba(139,92,246,.16)), var(--v2-surface); }
+  .v2-atlas-orb { position: absolute; width: 180px; height: 180px; border-radius: 9999px; top: -70px; inset-inline-end: -60px; background: radial-gradient(circle, rgb(var(--c-accent) / .35), transparent 70%); filter: blur(12px); }
+  @media (max-width: 1180px) { .v2-dash-grid { grid-template-columns: minmax(0,1fr); } .v2-dash-rail { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); } .v2-atlas-card { grid-column: span 2; } }
+  @media (max-width: 900px) { .v2-kpi-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+  @media (max-width: 640px) { .v2-page-head { align-items: flex-start; flex-direction: column; } .v2-kpi-grid { gap: 8px; } .v2-dash-rail { grid-template-columns: minmax(0,1fr); } .v2-atlas-card { grid-column: auto; } }
+
+  .v2-profile-hero { position: relative; overflow: hidden; background: linear-gradient(150deg, rgba(124,92,255,.18), rgba(34,211,238,.06)), var(--v2-surface) !important; }
+  .v2-profile-hero::after { content: ""; position: absolute; width: 220px; height: 220px; border-radius: 9999px; top: -120px; inset-inline-end: -70px; background: radial-gradient(circle, rgb(var(--v2-glow) / .35), transparent 70%); filter: blur(14px); pointer-events: none; }
+  .v2-profile-hero > * { position: relative; z-index: 1; }
+
+  /* shared polish */
+  html[data-ui="v2"] #profile-name { font-size: clamp(26px, 3vw, 38px); letter-spacing: -.045em; }
+  html[data-ui="v2"] .prog-bar { background: rgba(255,255,255,.08); border-radius: 9999px; overflow: hidden; }
+  html[data-ui="v2"] .prog-bar-fill { background: var(--v2-primary-grad); box-shadow: 0 0 18px rgb(var(--v2-glow) / .55); }
+  html[data-ui="v2"] #toast-container { top: 72px !important; left: auto !important; right: 16px !important; align-items: flex-end !important; }
+  html[data-ui="v2"] #toast-container > * { background: var(--v2-glass-bg) !important; border-color: var(--v2-border-strong) !important; backdrop-filter: blur(20px); box-shadow: var(--v2-glass-shadow); text-align: start; }
+  @media (max-width: 640px) { html[data-ui="v2"] #toast-container { inset-inline: 12px; top: 70px; align-items: stretch; } }
+  html[data-ui="v2"] .workout-tab-btn,
+  html[data-ui="v2"] .nutrition-tab-btn,
+  html[data-ui="v2"] .tools-tab,
+  html[data-ui="v2"] .analytics-range-btn { border-radius: 10px; }
+  html[data-ui="v2"] .workout-tab-btn.bg-primary,
+  html[data-ui="v2"] .nutrition-tab-btn.bg-primary,
+  html[data-ui="v2"] .tools-tab.bg-primary,
+  html[data-ui="v2"] .analytics-range-btn.bg-primary,
+  html[data-ui="v2"] .workout-tab-btn.active,
+  html[data-ui="v2"] .nutrition-tab-btn.active,
+  html[data-ui="v2"] .tools-tab.active,
+  html[data-ui="v2"] .analytics-range-btn.active {
+    background: var(--v2-primary-grad) !important; color: #fff !important; border-color: transparent !important;
+    box-shadow: 0 10px 26px -14px rgb(var(--v2-glow) / .8);
+  }
+  html[data-ui="v2"] [id$="-modal"] .bg-surface,
+  html[data-ui="v2"] [id$="-modal"] .glass { border-color: var(--v2-border) !important; }
+  html[data-ui="v2"] [id$="-modal"] .sticky { background: var(--v2-glass-bg) !important; backdrop-filter: blur(20px); }
+
+  /* atlas */
+  html[data-ui="v2"] #atlas-modal { background: rgba(3,7,18,.92) !important; backdrop-filter: blur(18px); }
+  html[data-ui="v2"] #atlas-modal > .bg-surface { background: transparent !important; border: 0 !important; box-shadow: none !important; }
+  html[data-ui="v2"] #atlas-panel { background: var(--v2-glass-bg) !important; border-color: var(--v2-border) !important; backdrop-filter: blur(24px); }
+  html[data-ui="v2"] .atlas-region-btn { border-radius: 11px; }
+  html[data-ui="v2"] .atlas-region-btn:hover { background: rgba(255,255,255,.06); }
+  html[data-ui="v2"] .atlas-row { border-radius: 9px; }
+  html[data-ui="v2"] .atlas-row.sel { background: rgb(var(--c-primary) / .18); color: rgb(var(--c-primary-2)); }
+  html[data-ui="v2"] #atlas-canvas-box { background: radial-gradient(ellipse 60% 40% at 50% 84%, rgba(34,211,238,.14), transparent 70%), radial-gradient(ellipse 80% 55% at 50% 35%, rgba(124,92,255,.12), transparent 72%); }
+  html[data-ui="v2"] .atlas-btn { background: var(--v2-glass-bg); border-color: var(--v2-border); backdrop-filter: blur(16px); border-radius: 9999px; }
+  html[data-ui="v2"] .atlas-ex-btn { border-radius: 9999px; }
+  html[data-ui="v2"] .atlas-chip-g { background: var(--v2-glass-bg); border-color: var(--v2-border); }
+  html[data-ui="v2"] #atlas-canvas, html[data-ui="v2"] .b3d-canvas {
+    filter: saturate(.9) hue-rotate(-6deg) brightness(1.04) drop-shadow(0 0 28px rgba(34,211,238,.18));
+  }
+
+  /* theme preview cards */
+  .v2-theme-card {
+    position: relative; overflow: hidden; text-align: start; cursor: pointer;
+    border-radius: 18px; border: 1px solid rgba(255,255,255,.1);
+    background: #070b18; min-height: 118px; padding: 10px;
+    transition: transform .18s var(--v2-ease), border-color .18s, box-shadow .18s;
+  }
+  .v2-theme-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.24); box-shadow: 0 18px 40px -20px rgba(0,0,0,.8); }
+  .v2-theme-card.active { border-color: rgb(var(--c-primary-2)); box-shadow: 0 0 0 1px rgb(var(--c-primary-2) / .45), 0 18px 44px -22px rgb(var(--v2-glow) / .8); }
+  .v2-theme-preview { position: absolute; inset: 0; opacity: .95; }
+  .v2-theme-preview::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(3,7,16,.02) 8%, rgba(3,7,16,.55) 48%, rgba(3,7,16,.92) 100%); }
+  .v2-theme-card .v2-theme-name { position: relative; z-index: 1; color: #fff; font-size: 11.5px; font-weight: 700; letter-spacing: .01em; margin-top: 80px; text-shadow: 0 1px 10px rgba(0,0,0,.8); }
+  .v2-theme-card .v2-theme-tag { position: relative; z-index: 1; color: rgba(255,255,255,.72); font-size: 9px; font-weight: 600; text-shadow: 0 1px 8px rgba(0,0,0,.7); }
+  .v2-theme-card .v2-theme-check { position: absolute; z-index: 2; top: 8px; inset-inline-end: 8px; width: 20px; height: 20px; border-radius: 9999px; display: grid; place-items: center; background: rgb(var(--c-primary) / .95); color: #fff; opacity: 0; transform: scale(.8); transition: .18s; }
+  .v2-theme-card.active .v2-theme-check { opacity: 1; transform: scale(1); }
+
+  /* settings / forms */
+  html[data-ui="v2"] .settings-panel-header h3 { color: rgb(var(--c-muted)); letter-spacing: .12em; }
+  html[data-ui="v2"] .settings-panel { border-radius: 22px; }
+  html[data-ui="v2"] .settings-panel-body { padding-top: 2px; }
+  html[data-ui="v2"] .pf-panel { border-radius: 22px; }
+
+  /* tables */
+  html[data-ui="v2"] table { border-collapse: separate; border-spacing: 0 6px; }
+  html[data-ui="v2"] thead th { color: rgb(var(--c-muted)); font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+  html[data-ui="v2"] tbody tr { background: rgba(255,255,255,.035); }
+  html[data-ui="v2"] tbody td { border-top: 1px solid var(--v2-border); border-bottom: 1px solid var(--v2-border); }
+  html[data-ui="v2"] tbody tr td:first-child { border-inline-start: 1px solid var(--v2-border); border-start-start-radius: 12px; border-end-start-radius: 12px; }
+  html[data-ui="v2"] tbody tr td:last-child { border-inline-end: 1px solid var(--v2-border); border-start-end-radius: 12px; border-end-end-radius: 12px; }
+
+  /* modals */
+  html[data-ui="v2"] [id$="-modal"] > .bg-surface,
+  html[data-ui="v2"] .bg-surface[role="dialog"] {
+    background: var(--v2-glass-bg) !important;
+    border: 1px solid var(--v2-border-strong) !important;
+    box-shadow: 0 50px 140px -50px rgba(0,0,0,.9), 0 0 0 1px rgba(255,255,255,.04) inset;
+    backdrop-filter: blur(30px) saturate(140%);
+  }
+  html[data-ui="v2"] [id$="-modal"] { background: rgba(2,6,16,.68) !important; backdrop-filter: blur(10px); }
+  html[data-ui="v2"][data-mode="light"] [id$="-modal"] { background: rgba(20,50,80,.28) !important; }
+
+  /* scrollbars */
+  html[data-ui="v2"] * { scrollbar-width: thin; scrollbar-color: rgba(120,160,255,.28) transparent; }
+  html[data-ui="v2"] ::-webkit-scrollbar { width: 8px; height: 8px; }
+  html[data-ui="v2"] ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, rgba(120,160,255,.4), rgba(120,160,255,.18)); border-radius: 9999px; }
+  html[data-ui="v2"] ::-webkit-scrollbar-track { background: transparent; }
+
+  /* focus */
+  html[data-ui="v2"] :focus-visible { outline: 2px solid rgb(var(--c-accent)); outline-offset: 2px; }
+
+  /* utility classes for new markup */
+  .v2-panel { background: var(--v2-surface); border: 1px solid var(--v2-border); border-radius: var(--v2-radius-lg); box-shadow: var(--v2-card-shadow); backdrop-filter: blur(18px) saturate(125%); }
+  .v2-card { background: var(--v2-surface-2); border: 1px solid var(--v2-border); border-radius: var(--v2-radius-md); }
+  .v2-kpi { position: relative; overflow: hidden; padding: 18px; border-radius: var(--v2-radius-lg); background: var(--v2-surface); border: 1px solid var(--v2-border); box-shadow: var(--v2-card-shadow); }
+  .v2-kpi::after { content: ""; position: absolute; width: 120px; height: 120px; border-radius: 9999px; top: -60px; inset-inline-end: -40px; background: radial-gradient(circle, rgb(var(--c-primary) / .28), transparent 70%); }
+  .v2-kpi-label { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+  .v2-kpi-value { font-family: var(--font-display); font-size: 30px; font-weight: 700; letter-spacing: -.04em; line-height: 1; margin-top: 8px; }
+  .v2-kpi-sub { font-size: 11px; color: rgb(var(--c-muted)); margin-top: 6px; }
+  .v2-icon-box { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: rgba(255,255,255,.06); border: 1px solid var(--v2-border); color: rgb(var(--c-primary-2)); }
+  .v2-section-title { font-family: var(--font-display); font-size: 20px; font-weight: 700; letter-spacing: -.03em; }
+  .v2-section-sub { font-size: 11px; color: rgb(var(--c-muted)); margin-top: 2px; }
+  .v2-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--v2-border), transparent); }
+  .v2-glow { box-shadow: 0 0 0 1px rgb(var(--v2-glow) / .35), 0 0 40px rgb(var(--v2-glow) / .28); }
+  .v2-ring { background: conic-gradient(rgb(var(--c-accent)) var(--p, 70%), rgba(255,255,255,.08) 0); border-radius: 9999px; display: grid; place-items: center; }
+  .v2-ring::before { content: ""; width: 74%; height: 74%; border-radius: 9999px; background: rgb(var(--c-bg)); display: block; }
+  .v2-ring > span { position: absolute; font-family: var(--font-display); font-weight: 700; }
+  .v2-hero-title { font-family: var(--font-display); font-size: clamp(24px, 3vw, 40px); font-weight: 700; letter-spacing: -.05em; }
+  .v2-hero-sub { color: rgb(var(--c-muted)); font-size: 13px; margin-top: 4px; }
+  .v2-pill { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: 9999px; border: 1px solid var(--v2-border); background: rgba(255,255,255,.05); font-size: 10px; font-weight: 700; color: rgb(var(--c-muted)); }
+  .v2-pill-live { color: rgb(var(--c-success)); border-color: rgb(var(--c-success) / .35); background: rgb(var(--c-success) / .08); }
+  .v2-avatar { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: var(--v2-primary-grad); color: #fff; font-weight: 700; box-shadow: 0 8px 24px -10px rgb(var(--v2-glow) / .8); }
+
+  @media (max-width: 1023px) {
+    html[data-ui="v2"] #aside { width: min(86vw, 320px); }
+    html[data-ui="v2"] #aside.v2-drawer-open {
+      display: flex !important; position: fixed; inset-block: 0; inset-inline-start: 0;
+      z-index: 80; height: 100dvh; background: var(--v2-glass-bg) !important;
+      backdrop-filter: blur(30px) saturate(140%); box-shadow: 30px 0 80px -30px rgba(0,0,0,.9);
+      animation: v2-drawer-in .22s var(--v2-ease);
+    }
+    .v2-drawer-backdrop { position: fixed; inset: 0; z-index: 75; background: rgba(2,6,16,.6); backdrop-filter: blur(6px); animation: v2-fade .2s ease; }
+    .v2-hero-title { font-size: 26px; }
+  }
+  @keyframes v2-drawer-in { from { transform: translateX(-24px); opacity: .4; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes v2-fade { from { opacity: 0; } to { opacity: 1; } }
+  @media (max-width: 640px) {
+    html[data-ui="v2"] .v2-kpi { padding: 14px; }
+    html[data-ui="v2"] .v2-kpi-value { font-size: 24px; }
+    html[data-ui="v2"] .v2-kpi-label { font-size: 8.5px; letter-spacing: .09em; line-height: 1.35; }
+    html[data-ui="v2"] .v2-kpi-sub { font-size: 10px; line-height: 1.3; }
+    html[data-ui="v2"] #v2-topbar-brand { max-width: 158px; }
+    html[data-ui="v2"] #v2-topbar-logo { height: 28px; max-width: 66px; }
+    html[data-ui="v2"] #v2-topbar-name { font-size: 11px; }
+    html[data-ui="v2"] #v2-topbar-sub { display: none; }
+    html[data-ui="v2"] #lang-select,
+    html[data-ui="v2"] #font-dec-btn,
+    html[data-ui="v2"] #font-inc-btn { display: none !important; }
+    html[data-ui="v2"] #dk-dumbbell-btn { width: 36px; height: 36px; padding: 0; }
+    html[data-ui="v2"] #dk-dumbbell-pct { display: none; }
+    html[data-ui="v2"] #theme-toggle { width: 36px; height: 36px; }
+    html[data-ui="v2"] #bottom-nav .nav-pill { border-radius: 14px; margin: 4px 2px; font-size: 8.5px !important; gap: 1px; }
+    html[data-ui="v2"] #bottom-nav .nav-pill > span { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    html[data-ui="v2"] #bottom-nav .nav-pill[aria-current="page"] { box-shadow: 0 8px 24px -10px rgb(var(--v2-glow) / .8); }
+    html[data-ui="v2"] .v2-panel-head { gap: 8px; }
+    html[data-ui="v2"] .v2-panel-head .v2-section-title { font-size: 18px; }
+    html[data-ui="v2"] .v2-panel-head .v2-section-sub { display: none; }
+    html[data-ui="v2"] .v2-compact-select { max-width: 138px; font-size: 10px; }
+    html[data-ui="v2"] #toast-container { top: auto !important; bottom: calc(var(--space-nav-h) + 14px) !important; left: 12px !important; right: 12px !important; align-items: stretch !important; }
+  }
+</style>
 </head>
 
 <body class="min-h-full antialiased">
-  <div id="theme-particles" aria-hidden="true"></div>
+  <div id="v2-scene" aria-hidden="true"></div>
+  <div id="v2-orb" aria-hidden="true"><span class="v2-orb v2-orb-a"></span><span class="v2-orb v2-orb-b"></span><span class="v2-orb v2-orb-c"></span></div>
+  <div class="v2-grid" aria-hidden="true"></div>
+  <div id="theme-particles" aria-hidden="true"></div></div>
 
   <!-- =========================================================================
        APP ROOT SHELL
@@ -2741,6 +3408,24 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     <!-- ============= TOP HEADER (always visible) ============= -->
     <header class="sticky top-0 z-30 glass" style="border-bottom: 1px solid var(--glass-border);">
       <div class="dk-topbar-row flex items-center gap-2 px-3">
+        <div class="flex items-center gap-2 min-w-0 flex-1">
+          <button id="v2-menu-btn" type="button" class="lg:hidden w-9 h-9 grid place-items-center rounded-xl bg-surface-2 border border-border text-muted" aria-label="Menu">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <div id="v2-topbar-brand" class="lg:hidden flex items-center gap-2 min-w-0">
+            <img id="v2-topbar-logo" src="logo-web.webp" alt="David King Gym" class="h-7 w-auto max-w-[92px] object-contain" />
+            <div class="min-w-0">
+              <div id="v2-topbar-name" class="text-[12px] font-bold leading-tight truncate">David King Gym</div>
+              <div id="v2-topbar-sub" class="text-[9px] text-muted leading-tight truncate">Trainer Studio</div>
+            </div>
+          </div>
+          <div class="v2-global-search relative hidden md:flex items-center gap-2 min-w-0 flex-1 max-w-[520px]">
+            <svg class="w-4 h-4 text-muted shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input id="v2-global-search" type="search" autocomplete="off" placeholder="Поиск клиентов, упражнений…" aria-label="Global search" data-i18n-ph="clients.searchEverything" />
+            <kbd class="hidden lg:inline-flex">Ctrl K</kbd>
+            <div id="v2-search-results" class="hidden absolute start-0 end-0 top-full mt-2 rounded-2xl border border-border bg-surface shadow-float overflow-hidden z-50"></div>
+          </div>
+        </div>
         <div class="ms-auto flex items-center gap-1.5">
           <!-- c83: dumbbell — one-tap return to the live workout at your current exercise -->
           <button id="dk-dumbbell-btn" class="shrink-0" aria-label="Back to workout" title="Back to workout" data-i18n-attr="aria-label:aria.dumbbell,title:aria.dumbbell">
@@ -2778,6 +3463,31 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           <button id="lock-btn" class="hidden w-9 h-9 grid place-items-center rounded-lg bg-surface-2 hover:bg-danger/15 hover:text-danger transition border border-border" aria-label="Lock" title="Lock" data-i18n-attr="aria-label:aria.lock,title:aria.lock">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
           </button>
+          <div class="relative">
+            <button id="v2-profile-btn" type="button" class="hidden sm:flex items-center gap-2 h-10 ps-1.5 pe-2 rounded-xl border border-border bg-surface-2 hover:border-primary/40 transition" aria-haspopup="menu" aria-expanded="false">
+              <span class="v2-avatar w-7 h-7 rounded-lg text-[11px]">DK</span>
+              <span class="text-start min-w-0">
+                <span id="v2-profile-name" class="block text-[11px] font-semibold leading-tight truncate max-w-[110px]">David King</span>
+                <span id="v2-profile-role" class="block text-[9px] text-muted leading-tight truncate">Trainer</span>
+              </span>
+              <svg class="w-3 h-3 text-muted shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div id="v2-profile-menu" class="hidden absolute end-0 top-full mt-2 w-56 rounded-2xl border border-border bg-surface shadow-float z-50 p-1.5" role="menu">
+              <button type="button" class="v2-profile-item" data-v2-goto="settings">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.36.16.66.43.86.78.2.35.28.76.24 1.17V11a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                <span data-i18n="nav.settings">Settings</span>
+              </button>
+              <button type="button" class="v2-profile-item" data-v2-goto="settings:backup">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+                <span data-i18n="settings.backup">Backup &amp; restore</span>
+              </button>
+              <div class="v2-divider my-1"></div>
+              <button type="button" class="v2-profile-item text-danger" id="v2-profile-lock">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <span data-i18n="aria.lock">Lock</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </header>
@@ -2787,9 +3497,21 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       <!-- LEFT ASIDE — Client list / nav (persistent on lg+) -->
       <aside id="aside"
              class="hidden lg:flex flex-col w-[var(--space-aside-w)] shrink-0 glass" style="border-inline-end: 1px solid var(--glass-border);">
-        <div class="p-4 border-b border-border">
-            <img src="logo-web.webp" alt="David King Gym" class="h-10 w-auto max-w-[200px] object-contain mx-auto mb-3" />
-        <div class="relative">
+        <div class="p-4 border-b border-border v2-side-head">
+          <div class="flex items-center gap-3 mb-4 min-w-0">
+            <div class="v2-logo-wrap shrink-0">
+              <img id="app-logo-header" src="logo-web.webp" alt="David King Gym" class="h-9 w-auto max-w-[92px] object-contain" />
+            </div>
+            <div class="min-w-0">
+              <div id="v2-side-title" class="font-display text-[15px] font-bold leading-tight truncate">David King Gym</div>
+              <div id="v2-side-sub" class="text-[10px] text-muted leading-tight truncate">Trainer Studio</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 mb-3">
+            <span class="v2-pill v2-pill-live"><span class="w-1.5 h-1.5 rounded-full bg-success"></span> <span data-i18n="clients.online">Online</span></span>
+            <span class="v2-pill" id="v2-side-version">c196</span>
+          </div>
+          <div class="relative">
             <svg class="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
               <input type="search" id="aside-search" placeholder="Search clients…" autocomplete="off" readonly
                 autocorrect="off" autocapitalize="off" spellcheck="false" data-1p-ignore data-lpignore="true"
@@ -2844,6 +3566,19 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
             <span data-i18n="nav.settings">Settings</span>
           </button>
         </nav>
+
+        <div class="p-3 pt-0">
+          <div class="v2-side-card">
+            <div class="v2-side-card-orb" aria-hidden="true"></div>
+            <div class="text-[9px] font-bold tracking-[.18em] text-primary-2 uppercase" data-i18n="clients.dailyFocus">Daily focus</div>
+            <div class="font-display text-[14px] font-semibold leading-snug mt-2"><span data-i18n="clients.dailyQuote1">Strong people are not born.</span><br><span data-i18n="clients.dailyQuote2">They are made.</span></div>
+            <div class="text-[10px] text-muted leading-relaxed mt-2" data-i18n="clients.dailyHint">One more set. One more rep. One better version of you.</div>
+            <button type="button" data-nav="workouts" class="v2-side-card-btn">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M6 12h12"/></svg>
+              <span data-i18n="workouts.startWorkout">Start workout</span>
+            </button>
+          </div>
+        </div>
 
       </aside>
 
@@ -2928,65 +3663,130 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c195</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c196</p>
             </div>
           </div>
 
           <!-- ============= DASHBOARD SCREEN (Steps 7-9) ============= -->
-          <div data-screen="dashboard" class="hidden p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto w-full">
-            <!-- Header row -->
-            <div class="flex items-center gap-2 mb-4">
-              <h1 class="font-display font-extrabold text-xl tracking-tight" data-i18n="clients.title">Clients</h1>
-              <span id="dash-count" class="text-xs text-muted bg-surface-2 border border-border rounded-full px-2 py-0.5">0</span>
-              <button id="dash-add-btn" class="ms-auto inline-flex items-center gap-1.5 bg-primary hover:bg-primary-2 text-white text-sm font-semibold px-3 py-1.5 rounded-lg transition shadow-card">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-                <span data-i18n="aside.addClient">Add Client</span>
-              </button>
-            </div>
-            <!-- 3D Body Atlas entry (c68) -->
-            <button id="dash-atlas-card" class="w-full flex items-center gap-3 p-3 mb-3 rounded-xl bg-danger/10 border border-danger/25 text-start hover:bg-danger/15 transition shadow-card">
-              <span class="w-10 h-10 grid place-items-center rounded-lg bg-danger/15 text-danger shrink-0">
-                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="4.5" r="2"/><path d="M12 7v6M12 13l-4 7M12 13l4 7M8 9.5h8"/></svg>
-              </span>
-              <span class="flex-1 min-w-0">
-                <span class="block font-semibold text-sm" data-i18n="atlas.name">3D Body Atlas</span>
-                <span class="block text-xs text-muted" data-i18n="atlas.desc">Interactive 3D muscle map</span>
-              </span>
-              <svg class="w-4 h-4 text-muted shrink-0 rtl:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-            </button>
-
-            <!-- Search + sort -->
-            <div class="flex flex-col sm:flex-row gap-2 mb-3">
-              <div class="relative flex-1">
-                <svg class="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-                  <input type="search" id="dash-search" autocomplete="off" readonly
-                    autocorrect="off" autocapitalize="off" spellcheck="false" data-1p-ignore data-lpignore="true"
-                    data-i18n-ph="clients.search" class="w-full bg-surface-2 border border-border rounded-xl ps-9 pe-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
+          <div data-screen="dashboard" class="hidden p-4 sm:p-6 lg:p-8 max-w-[1500px] mx-auto w-full">
+            <div class="v2-page-head">
+              <div class="min-w-0">
+                <div class="v2-eyebrow"><span class="v2-live-dot"></span> <span data-i18n="clients.workspace">Trainer workspace</span></div>
+                <h1 class="v2-hero-title" data-i18n="clients.title">Clients</h1>
+                <p class="v2-hero-sub" data-i18n="clients.subtitle">Your athletes — one command center.</p>
               </div>
-              <select id="dash-sort" class="bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60 cursor-pointer">
-                <option value="created" data-i18n="clients.sortCreated">Date added</option>
-                <option value="name" data-i18n="clients.sortName">Name</option>
-                <option value="lastActive" data-i18n="clients.sortLastActive">Last active</option>
-                <option value="cgroup" data-i18n="clients.sortGroup">Group</option>
-              </select>
+              <div class="flex items-center gap-2 shrink-0">
+                <span id="dash-count" class="v2-pill">0</span>
+                <button id="dash-add-btn" class="v2-btn-primary">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                  <span data-i18n="aside.addClient">Add Client</span>
+                </button>
+              </div>
             </div>
 
-            <!-- c105: client group chips (replaces the old goal filter) — rendered dynamically -->
-            <div class="flex gap-1.5 overflow-x-auto no-scrollbar mb-4 pb-1 items-center" id="dash-filters"></div>
-
-            <!-- Client list -->
-            <div id="dash-list" class="space-y-2"></div>
-
-            <!-- Empty state -->
-            <div id="dash-empty" class="hidden text-center py-16">
-              <div class="inline-flex w-16 h-16 rounded-2xl bg-surface-2 border border-border grid place-items-center mb-4">
-                <svg class="w-7 h-7 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>
+            <div class="v2-kpi-grid">
+              <div class="v2-kpi">
+                <div class="flex items-start justify-between gap-2"><div class="v2-kpi-label" data-i18n="clients.kpiTotal">Total clients</div><span class="v2-icon-box w-8 h-8 rounded-lg"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg></span></div>
+                <div class="v2-kpi-value" id="v2-kpi-clients">0</div>
+                <div class="v2-kpi-sub" id="v2-kpi-clients-sub">Across all groups</div>
               </div>
-              <p class="text-sm text-muted mb-4 max-w-xs mx-auto" data-i18n="clients.empty">No clients yet. Tap "Add Client" to create the first profile.</p>
-              <button id="dash-empty-add" class="inline-flex items-center gap-1.5 bg-primary hover:bg-primary-2 text-white text-sm font-semibold px-4 py-2 rounded-lg transition shadow-card">
-                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-                <span data-i18n="aside.addClient">Add Client</span>
-              </button>
+              <div class="v2-kpi">
+                <div class="flex items-start justify-between gap-2"><div class="v2-kpi-label" data-i18n="clients.kpiActive">Active this week</div><span class="v2-icon-box w-8 h-8 rounded-lg"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></span></div>
+                <div class="v2-kpi-value" id="v2-kpi-active">0</div>
+                <div class="v2-kpi-sub" id="v2-kpi-active-sub">Trained or checked in</div>
+              </div>
+              <div class="v2-kpi">
+                <div class="flex items-start justify-between gap-2"><div class="v2-kpi-label" data-i18n="clients.kpiWorkouts">Workouts / 7 days</div><span class="v2-icon-box w-8 h-8 rounded-lg"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M6 12h12"/></svg></span></div>
+                <div class="v2-kpi-value" id="v2-kpi-workouts">0</div>
+                <div class="v2-kpi-sub" id="v2-kpi-workouts-sub">Logged sessions</div>
+              </div>
+              <div class="v2-kpi">
+                <div class="flex items-start justify-between gap-2"><div class="v2-kpi-label" data-i18n="clients.kpiNew">New this month</div><span class="v2-icon-box w-8 h-8 rounded-lg"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></span></div>
+                <div class="v2-kpi-value" id="v2-kpi-new">0</div>
+                <div class="v2-kpi-sub" id="v2-kpi-new-sub">Fresh profiles</div>
+              </div>
+            </div>
+
+            <div class="v2-dash-grid">
+              <div class="v2-panel v2-list-panel">
+                <div class="v2-panel-head">
+                  <div>
+                    <div class="v2-section-title" data-i18n="clients.roster">Client roster</div>
+                    <div class="v2-section-sub" data-i18n="clients.rosterHint">Search, filter and open a profile</div>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <select id="dash-sort" class="v2-compact-select">
+                      <option value="created" data-i18n="clients.sortCreated">Date added</option>
+                      <option value="name" data-i18n="clients.sortName">Name</option>
+                      <option value="lastActive" data-i18n="clients.sortLastActive">Last active</option>
+                      <option value="cgroup" data-i18n="clients.sortGroup">Group</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="v2-list-toolbar">
+                  <div class="relative flex-1 min-w-0">
+                    <svg class="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                    <input type="search" id="dash-search" autocomplete="off" readonly
+                      autocorrect="off" autocapitalize="off" spellcheck="false" data-1p-ignore data-lpignore="true"
+                      data-i18n-ph="clients.search" class="w-full bg-surface-2 border border-border rounded-xl ps-9 pe-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
+                  </div>
+                </div>
+                <div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-2 items-center" id="dash-filters"></div>
+                <div id="dash-list" class="v2-client-list"></div>
+                <div id="dash-empty" class="hidden text-center py-12">
+                  <div class="inline-flex w-16 h-16 rounded-2xl bg-surface-2 border border-border grid place-items-center mb-4">
+                    <svg class="w-7 h-7 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>
+                  </div>
+                  <p class="text-sm text-muted mb-4 max-w-xs mx-auto" data-i18n="clients.empty">No clients yet. Tap "Add Client" to create the first profile.</p>
+                  <button id="dash-empty-add" class="v2-btn-primary mx-auto">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                    <span data-i18n="aside.addClient">Add Client</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="v2-dash-rail">
+                <div class="v2-panel v2-rail-card">
+                  <div class="flex items-center justify-between gap-2 mb-3">
+                    <div class="v2-section-title" data-i18n="clients.quickActions">Quick actions</div>
+                    <span class="v2-pill" data-i18n="clients.live">Live</span>
+                  </div>
+                  <button class="v2-quick-action" data-nav="workouts">
+                    <span class="v2-icon-box"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M6 12h12"/></svg></span>
+                    <span class="min-w-0 flex-1"><span class="block text-xs font-semibold" data-i18n="workouts.startWorkout">Start workout</span><span class="block text-[10px] text-muted" data-i18n="clients.startWorkoutHint">Open the live session</span></span>
+                    <svg class="w-3.5 h-3.5 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                  </button>
+                  <button class="v2-quick-action" id="dash-quick-add">
+                    <span class="v2-icon-box"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></span>
+                    <span class="min-w-0 flex-1"><span class="block text-xs font-semibold" data-i18n="aside.addClient">Add Client</span><span class="block text-[10px] text-muted" data-i18n="clients.addClientHint">Create a new profile</span></span>
+                    <svg class="w-3.5 h-3.5 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                  </button>
+                  <button class="v2-quick-action" data-nav="nutrition">
+                    <span class="v2-icon-box"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zM12 8v4M12 16h.01"/></svg></span>
+                    <span class="min-w-0 flex-1"><span class="block text-xs font-semibold" data-i18n="nav.nutrition">Nutrition</span><span class="block text-[10px] text-muted" data-i18n="clients.nutritionHint">Plans and food database</span></span>
+                    <svg class="w-3.5 h-3.5 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                  </button>
+                </div>
+
+                <div class="v2-panel v2-rail-card v2-coach-card">
+                  <div class="flex items-center gap-2 mb-2">
+                    <span class="v2-icon-box w-8 h-8 rounded-lg"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2zM9 21h6"/></svg></span>
+                    <div><div class="text-xs font-bold" data-i18n="clients.coach">Coach insight</div><div class="text-[9px] text-muted" data-i18n="clients.coachHint">Based on real client data</div></div>
+                  </div>
+                  <p class="text-[11px] text-muted leading-relaxed" id="v2-coach-text">Add your first client to unlock personalised insights.</p>
+                  <button class="v2-text-link" data-nav="analytics"><span data-i18n="nav.analytics">Analytics</span> <span aria-hidden="true">→</span></button>
+                </div>
+
+                <button id="dash-atlas-card" class="v2-panel v2-atlas-card text-start">
+                  <div class="v2-atlas-orb" aria-hidden="true"></div>
+                  <div class="relative z-10">
+                    <div class="v2-eyebrow" data-i18n="clients.atlasEyebrow">Interactive anatomy</div>
+                    <div class="v2-section-title mt-1" data-i18n="atlas.name">3D Body Atlas</div>
+                    <div class="text-[11px] text-muted mt-1" data-i18n="atlas.desc">Interactive 3D muscle map</div>
+                    <span class="v2-text-link mt-3"><span data-i18n="clients.atlasOpen">Open atlas</span> <span aria-hidden="true">→</span></span>
+                  </div>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -3714,9 +4514,12 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
 
 <!-- ============= NUTRITION SCREEN (Tabs: Database / Templates / Daily Log) ============= -->
           <div data-screen="nutrition" class="hidden p-4 sm:p-6 lg:p-8 max-w-5xl xl:max-w-6xl 2xl:max-w-[1500px] mx-auto w-full">
-            <!-- Header -->
-            <div class="flex items-center gap-2 mb-4">
-              <h1 class="font-display font-extrabold text-xl tracking-tight" data-i18n="nav.nutrition">Nutrition</h1>
+            <div class="v2-page-head">
+              <div class="min-w-0">
+                <div class="v2-eyebrow" data-i18n="nutrition.eyebrow">Fuel the work</div>
+                <h1 class="v2-hero-title" data-i18n="nav.nutrition">Nutrition</h1>
+                <p class="v2-hero-sub" data-i18n="nutrition.subtitle">Plans, products and daily targets — one system.</p>
+              </div>
             </div>
 
             <!-- Tab bar (mirrors workouts: Exercise database / Templates / History) -->
@@ -4080,9 +4883,12 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                tool set: Calorie calculator / Macro calculator / 1RM calculator
                ===================================================================== -->
           <div data-screen="tools" class="hidden p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto w-full">
-            <!-- Header -->
-            <div class="flex items-center gap-2 mb-4">
-              <h1 class="font-display font-extrabold text-xl tracking-tight" data-i18n="nav.tools">Tools</h1>
+            <div class="v2-page-head">
+              <div class="min-w-0">
+                <div class="v2-eyebrow" data-i18n="tools.eyebrow">Precision lab</div>
+                <h1 class="v2-hero-title" data-i18n="nav.tools">Tools</h1>
+                <p class="v2-hero-sub" data-i18n="tools.subtitle">Calculate the numbers that move the needle.</p>
+              </div>
             </div>
 
             <!-- Tool switcher (3 tools — mirrors the MuscleWiki tools menu) -->
@@ -4373,9 +5179,13 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           </div>
 
           <div data-screen="analytics" class="hidden p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto w-full">
-            <div class="flex items-center gap-2 mb-4">
-              <h1 class="font-display font-extrabold text-xl tracking-tight" data-i18n="nav.analytics">Analytics</h1>
-              <span id="analytics-streak" class="text-xs font-semibold text-warning bg-warning/10 border border-warning/30 rounded-full px-2 py-0.5 hidden"></span>
+            <div class="v2-page-head">
+              <div class="min-w-0">
+                <div class="v2-eyebrow" data-i18n="analytics.eyebrow">Signal, not noise</div>
+                <h1 class="v2-hero-title" data-i18n="nav.analytics">Analytics</h1>
+                <p class="v2-hero-sub" data-i18n="analytics.subtitle">Progress, recovery and records — in one view.</p>
+              </div>
+              <span id="analytics-streak" class="v2-pill text-warning border-warning/30 bg-warning/10 hidden"></span>
             </div>
 
             <!-- Client selector -->
@@ -4535,10 +5345,10 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 <div class="flex items-center justify-between">
                   <div>
                     <div class="text-sm font-medium" data-i18n="settings.theme">Theme</div>
-                    <div class="text-xs text-muted" data-i18n="settings.themesHint">26 themes · dark · mid · light</div>
+                    <div class="text-xs text-muted" data-i18n="settings.themesHint">6 complete visual worlds · palette + glass + scene</div>
                   </div>
                 </div>
-                <div id="theme-grid" class="grid grid-cols-4 sm:grid-cols-5 gap-2 mt-3"></div>
+                <div id="theme-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mt-3"></div>
                 <!-- c74: Body map view (SVG / 3D / Both) -->
                 <div class="mt-4 pt-4 border-t border-border">
                   <div class="mb-2">
@@ -4677,231 +5487,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
               </div>
             </div>
 
-                        <!-- Texture Effects v2 (c79) -->
-            <div class="bg-surface border border-accent/30 rounded-2xl shadow-card mb-4 settings-panel collapsed">
-              <div class="settings-panel-header p-5 pb-3">
-                <h3 class="font-display font-bold text-sm text-accent uppercase tracking-wider flex items-center gap-2 flex-1 min-w-0">
-                  <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
-                  <span data-i18n="settings.textureEffects">Texture effects</span>
-                  <span id="tex-active-badge" class="shrink-0">None</span>
-                </h3>
-                <svg class="w-4 h-4 text-muted settings-panel-chevron shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
-              </div>
-              <div class="settings-panel-body p-5 pt-0">
-                <p class="text-xs text-muted mb-4 leading-relaxed" data-i18n="settings.textureHint">Visual texture overlays on top of any theme — noticeable, meaningful, comfortable. Pick an effect and fine-tune its opacity.</p>
-                <div class="tex-cat" data-i18n="settings.texCatBasics">Basics</div>
-                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2.5 mb-4">
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="none" aria-pressed="false">
-                    <span class="tex-swatch" data-tex="none" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.textureNone">None</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="glass" aria-pressed="false">
-                    <span class="tex-swatch" data-tex="glass" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.textureGlass">Glass</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="plastic" aria-pressed="false">
-                    <span class="tex-swatch" data-tex="plastic" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.texturePlastic">Plastic</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="gloss" aria-pressed="false">
-                    <span class="tex-swatch" data-tex="gloss" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.textureGloss">Gloss</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="metal" aria-pressed="false">
-                    <span class="tex-swatch" data-tex="metal" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.textureMetal">Metal</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                </div>
-                <div class="tex-cat" data-i18n="settings.texCatMaterials">Materials</div>
-                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2.5 mb-4">
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="wood" aria-pressed="false">
-                    <span class="tex-swatch" data-tex="wood" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.textureWood">Wood</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="parquet" aria-pressed="false">
-                    <span class="tex-swatch" data-tex="parquet" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.textureParquet">Parquet</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="marble" aria-pressed="false">
-                    <span class="tex-swatch" data-tex="marble" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.textureMarble">Marble</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="tile" aria-pressed="false">
-                    <span class="tex-swatch" data-tex="tile" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.textureTile">Ceramic tile</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="brick" aria-pressed="false">
-                    <span class="tex-swatch" data-tex="brick" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.textureBrick">Brick</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="mosaic" aria-pressed="false">
-                    <span class="tex-swatch" data-tex="mosaic" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.textureMosaic">Mosaic</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="pebbles" aria-pressed="false">
-                    <span class="tex-swatch" data-tex="pebbles" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.texturePebbles">Pebbles</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="asphalt" aria-pressed="false">
-                    <span class="tex-swatch" data-tex="asphalt" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.textureAsphalt">Asphalt</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                </div>
-                <div class="tex-cat" data-i18n="settings.texCatNature">Nature</div>
-                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2.5 mb-4">
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="water" aria-pressed="false">
-                    <span class="tex-swatch" data-tex="water" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.textureWater">Water</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="swamp" aria-pressed="false">
-                    <span class="tex-swatch" data-tex="swamp" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.textureSwamp">Swamp</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="grass" aria-pressed="false">
-                    <span class="tex-swatch" data-tex="grass" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.textureGrass">Grass</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="hay" aria-pressed="false">
-                    <span class="tex-swatch" data-tex="hay" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.textureHay">Hay</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="snow" aria-pressed="false">
-                    <span class="tex-swatch" data-tex="snow" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.textureSnow">Snow</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="bubbles" aria-pressed="false">
-                    <span class="tex-swatch" data-tex="bubbles" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.textureBubbles">Bubbles</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                </div>
-                <div class="tex-cat" data-i18n="settings.texCatRetro">Retro & special</div>
-                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2.5 mb-4">
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="film" aria-pressed="false">
-                    <span class="tex-swatch" data-tex="film" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.textureFilm">Film camera</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="vhs" aria-pressed="false">
-                    <span class="tex-swatch" data-tex="vhs" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.textureVhs">VHS tape</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-tex="church" aria-pressed="false">
-                    <span class="tex-swatch" data-tex="church" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.textureChurch">Church window</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                </div>
-                <div class="mt-1 pt-3 border-t border-border/60">
-                  <div class="flex items-center justify-between mb-1.5 gap-2 flex-wrap">
-                    <label class="text-xs font-semibold text-muted" for="texture-opacity" data-i18n="settings.textureOpacity">Effect opacity</label>
-                    <div class="flex items-center gap-2">
-                      <span id="texture-opacity-val">35%</span>
-                      <button type="button" id="texture-opacity-reset" class="text-[10px] font-semibold text-muted hover:text-accent border border-border rounded-md px-2 py-0.5 transition" data-i18n="settings.textureReset">Reset</button>
-                    </div>
-                  </div>
-                  <input type="range" id="texture-opacity" min="0.05" max="1" step="0.05" value="0.35" class="w-full accent-accent" />
-                  <div class="flex justify-between items-center text-[9px] text-muted mt-0.5 gap-2">
-                    <span>5%</span>
-                    <span class="text-center" data-i18n="settings.textureOpacityHint">Each effect has its own optimal level — Reset returns to it</span>
-                    <span>100%</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Panel Texture (c109) — glass textures for modal panels -->
-            <div class="bg-surface border border-accent/30 rounded-2xl shadow-card mb-4 settings-panel collapsed">
-              <div class="settings-panel-header p-5 pb-3">
-                <h3 class="font-display font-bold text-sm text-accent uppercase tracking-wider flex items-center gap-2 flex-1 min-w-0">
-                  <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="14" rx="3"/><path d="M3 9h18M8 4v5"/></svg>
-                  <span data-i18n="settings.panelTexture">Panel texture</span>
-                  <span id="ptex-active-badge" class="shrink-0">Off</span>
-                </h3>
-                <svg class="w-4 h-4 text-muted settings-panel-chevron shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
-              </div>
-              <div class="settings-panel-body p-5 pt-0">
-                <p class="text-xs text-muted mb-4 leading-relaxed" data-i18n="settings.ptexHint">Glass textures for the panels inside modal windows — frosted, clear, tinted and multicolor mosaic. Pick a texture, choose a shade and fine-tune the transparency. Panels stay pure glass — texture effects live only on the page background.</p>
-                <div class="grid grid-cols-3 sm:grid-cols-5 gap-2.5 mb-4">
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-ptex="off" aria-pressed="false">
-                    <span class="tex-swatch" data-ptex-swatch="off" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.ptexOff">Off</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-ptex="frost" aria-pressed="false">
-                    <span class="tex-swatch" data-ptex-swatch="frost" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.ptexFrost">Frosted glass</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-ptex="clear" aria-pressed="false">
-                    <span class="tex-swatch" data-ptex-swatch="clear" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.ptexClear">Clear glass</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-ptex="tint" aria-pressed="false">
-                    <span class="tex-swatch" data-ptex-swatch="tint" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.ptexTint">Tinted glass</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" class="texture-btn text-center border border-border bg-surface-2 hover:bg-border/30 transition" data-ptex="mosaic" aria-pressed="false">
-                    <span class="tex-swatch" data-ptex-swatch="mosaic" aria-hidden="true"></span>
-                    <span class="tex-name" data-i18n="settings.ptexMosaic">Mosaic glass</span>
-                    <span class="tex-check" aria-hidden="true">✓</span>
-                  </button>
-                </div>
-                <div id="ptex-colors-wrap" class="hidden">
-                  <div class="tex-cat" data-i18n="settings.ptexColor">Shade</div>
-                  <div id="ptex-colors" class="flex flex-wrap gap-2.5 mb-4" role="group" aria-label="Shade"></div>
-                </div>
-                <div id="ptex-backdrop-demo" class="mb-4">
-                  <div id="ptex-preview" class="bg-surface">
-                    <div class="text-xs font-bold" data-i18n="settings.ptexPreview">Live preview</div>
-                    <div class="text-[11px] text-muted mt-0.5" data-i18n="settings.ptexPreviewHint">This is how every app panel will look — sidebar, header, cards and modal windows</div>
-                    <div class="ptex-preview-row" aria-hidden="true">
-                      <span class="ptex-preview-chip"></span>
-                      <span class="ptex-preview-chip"></span>
-                      <span class="ptex-preview-chip"></span>
-                    </div>
-                  </div>
-                </div>
-                <div class="mt-1 pt-3 border-t border-border/60">
-                  <div class="flex items-center justify-between mb-1.5 gap-2 flex-wrap">
-                    <label class="text-xs font-semibold text-muted" for="ptex-opacity" data-i18n="settings.ptexOpacity">Transparency</label>
-                    <div class="flex items-center gap-2">
-                      <span id="ptex-opacity-val">55%</span>
-                      <button type="button" id="ptex-opacity-reset" class="text-[10px] font-semibold text-muted hover:text-accent border border-border rounded-md px-2 py-0.5 transition" data-i18n="settings.textureReset">Reset</button>
-                    </div>
-                  </div>
-                  <input type="range" id="ptex-opacity" min="0.1" max="1" step="0.05" value="0.55" class="w-full accent-accent" />
-                  <div class="flex justify-between items-center text-[9px] text-muted mt-0.5 gap-2">
-                    <span data-i18n="settings.ptexOpSolid">Solid</span>
-                    <span class="text-center" data-i18n="settings.ptexOpacityHint">Right — more see-through, left — more solid</span>
-                    <span data-i18n="settings.ptexOpSee">See-through</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Branding (collapsible) -->
+                        <!-- Branding (collapsible) -->
             <div class="bg-surface border border-primary/30 rounded-2xl shadow-card mb-4 settings-panel collapsed">
               <div class="settings-panel-header p-5 pb-3">
                 <h3 class="font-display font-bold text-sm text-primary-2 uppercase tracking-wider flex items-center gap-2 flex-1">
@@ -9944,7 +10530,9 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       const counts = cgCounts();
       const chipCls = (active) => `filter-chip whitespace-nowrap text-xs font-semibold px-3 py-1.5 rounded-full border transition ${active ? 'border-primary/60 bg-primary/15 text-primary-2' : 'border-border bg-surface-2'}`;
       let html = `<button type="button" data-cgroup="all" class="${chipCls(_groupFilter === 'all')}">${escapeHTML(t('common.all'))} <span class="opacity-60">${_clients.length}</span></button>`;
-      groups.forEach(g => {
+      /* c196: a filter chip with zero clients is an empty group — hide it
+         (the group manager still shows every group, including empty ones). */
+      groups.filter(g => (counts[g.id] || 0) > 0 || _groupFilter === g.id).forEach(g => {
         html += `<button type="button" data-cgroup="${escapeAttr(g.id)}" class="${chipCls(_groupFilter === g.id)}" draggable="false"><span class="inline-block w-2 h-2 rounded-full align-middle me-1 shrink-0" style="background:${cgColor(g.id)}"></span>${escapeHTML(g.name)} <span class="opacity-60">${counts[g.id] || 0}</span></button>`;
       });
       html += `<button type="button" data-cg-add class="whitespace-nowrap text-xs font-bold w-7 h-7 grid place-items-center rounded-full border border-dashed border-primary/50 text-primary-2 bg-primary/10 hover:bg-primary/25 transition shrink-0" title="${escapeAttr(t('clients.groupsManager') || 'Groups')}" aria-label="${escapeAttr(t('clients.groupsManager') || 'Groups')}">+</button>`;
@@ -10156,6 +10744,39 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       renderGroupChips();
       wireCgroupsModal();
       applyFilters();
+      renderKpis();
+    }
+
+    /** c196: real dashboard KPIs + coach insight (no invented numbers). */
+    document.addEventListener('dk-lang', function () { try { renderKpis(); } catch (_) {} });
+
+    async function renderKpis() {
+      const day = 86400000, now = Date.now();
+      const total = _clients.length;
+      const active = _clients.filter(c => c.last_active && now - c.last_active < 7 * day).length;
+      const fresh = _clients.filter(c => c.created_at && now - c.created_at < 30 * day).length;
+      let workouts = 0;
+      try {
+        const hist = await db.all('workout_history');
+        workouts = (hist || []).filter(w => w && w.date && now - w.date < 7 * day).length;
+      } catch (_) {}
+      const tr = (key, vars) => { try { return t(key, vars); } catch (_) { return ''; } };
+      const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = String(v); };
+      set('v2-kpi-clients', total);
+      set('v2-kpi-active', active);
+      set('v2-kpi-workouts', workouts);
+      set('v2-kpi-new', fresh);
+      set('v2-kpi-clients-sub', total ? tr('clients.kpiTotalSub') : tr('clients.kpiTotalEmpty'));
+      set('v2-kpi-active-sub', active ? tr('clients.kpiActiveSub', { pct: Math.round(active / Math.max(1, total) * 100) }) : tr('clients.kpiActiveEmpty'));
+      set('v2-kpi-workouts-sub', workouts ? tr('clients.kpiWorkoutsSub') : tr('clients.kpiWorkoutsEmpty'));
+      set('v2-kpi-new-sub', fresh ? tr('clients.kpiNewSub') : tr('clients.kpiNewEmpty'));
+      const coach = document.getElementById('v2-coach-text');
+      if (coach) {
+        if (!total) coach.textContent = tr('clients.coachEmpty');
+        else if (!active) coach.textContent = tr('clients.coachNoActive');
+        else if (workouts < active) coach.textContent = tr('clients.coachMissing', { active: active, workouts: workouts });
+        else coach.textContent = tr('clients.coachGood', { active: active, workouts: workouts });
+      }
     }
 
     /** Re-apply search + group filter + sort, then re-render. */
@@ -10967,7 +11588,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       }
 
       return `
-        <div class="bg-surface border border-border rounded-2xl shadow-card p-5">
+        <div class="v2-profile-hero bg-surface border border-border rounded-2xl shadow-card p-5">
           <div class="flex items-center gap-4 mb-4">
             <div class="w-16 h-16 rounded-2xl grid place-items-center font-display font-bold text-2xl text-white shrink-0 shadow-card overflow-hidden" style="${c.photo_url ? '' : 'background: ' + avatarGradient(name)}">
               ${c.photo_url ? `<img src="${escapeAttr(c.photo_url)}" alt="" class="w-full h-full object-cover" />` : escapeHTML(initials(name))}
@@ -20696,24 +21317,37 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       renderBodySVG(); renderGroupTree(); renderEquipChips(); renderClassChips(); renderExerciseGrid();
     }
     function applyPickerBmMode() {
-      var mode = (function () { try { return localStorage.getItem('dk_bodymap_mode') || 'svg'; } catch (e) { return 'svg'; } })();
+      var mode = (function () { try { return localStorage.getItem('dk_bodymap_mode') || '3d'; } catch (e) { return '3d'; } })();
       var tabs = document.getElementById('bm-view-tabs');
       var svgBox = document.getElementById('bm-svg-container');
       var box3d = document.getElementById('bm-3d-container');
       var modal = document.getElementById('bodymap-picker-modal');
-      var isOpen = modal && !modal.classList.contains('hidden');
+      var root = document.getElementById('bm-root');
+      var inline = root && root.classList.contains('bm-inline');
+      /* c196: the shared picker is mounted inline in Workouts — 3D must load
+         there too, not only in the modal. */
+      var isOpen = inline || (modal && !modal.classList.contains('hidden'));
       if (tabs) tabs.classList.toggle('hidden', mode === '3d');
       if (svgBox) svgBox.classList.toggle('hidden', mode === '3d');
       if (box3d) box3d.classList.toggle('hidden', mode === 'svg');
       if (mode !== 'svg' && box3d && isOpen) {
-        if (_p3d && _p3d.dead) _p3d = null;
-        if (!_p3d) _p3d = window.DKBody3D.mount(box3d, { onPick: bm3dPick });
-        if (_p3d && !_p3d.dead && _p3d.inited) _p3d.setFilter(_activeGroup || '', _activeSubgroup || '');
+        try {
+          if (!window.DKBody3D || !window.DKBody3D.mount) throw new Error('3D module unavailable');
+          if (_p3d && _p3d.dead) _p3d = null;
+          if (!_p3d) _p3d = window.DKBody3D.mount(box3d, { onPick: bm3dPick });
+          if (_p3d && !_p3d.dead && _p3d.inited) _p3d.setFilter(_activeGroup || '', _activeSubgroup || '');
+        } catch (e3d) {
+          console.warn('[body3d] fallback to SVG:', e3d);
+          if (tabs) tabs.classList.remove('hidden');
+          if (svgBox) svgBox.classList.remove('hidden');
+          if (box3d) box3d.classList.add('hidden');
+        }
       } else if (_p3d && mode === 'svg') { _p3d.dispose(); _p3d = null; }
     }
     document.addEventListener('dk-bodymap-mode', function () {
       var modal = document.getElementById('bodymap-picker-modal');
-      if (modal && !modal.classList.contains('hidden')) applyPickerBmMode();
+      var root = document.getElementById('bm-root');
+      if ((modal && !modal.classList.contains('hidden')) || (root && root.classList.contains('bm-inline'))) applyPickerBmMode();
       else if (_p3d) { _p3d.dispose(); _p3d = null; }
     });
 
@@ -21110,7 +21744,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             ? `<img src="${esc(e.gif)}" alt="" class="w-full h-full object-cover" loading="lazy"/>`
             : `<img src="${esc(img1)}" alt="" class="w-full h-full object-cover" loading="lazy"/>`)
           : (vectorHtml || `<div class="w-full h-full grid place-items-center"><svg class="w-8 h-8 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>`);
-        return `<div class="bm-ex-card${e.source === 'repdb' ? ' rdb-card' : ''} bg-surface-2 border border-border rounded-xl overflow-hidden hover:border-primary/30 transition cursor-pointer" data-bm-add="${esc(id)}">
+        return `<div class="bm-ex-card v2-src-${src.toLowerCase()}${e.source === 'repdb' ? ' rdb-card' : ''} bg-surface-2 border border-border rounded-xl overflow-hidden hover:border-primary/30 transition cursor-pointer" data-bm-add="${esc(id)}">
           <div class="aspect-square bg-surface relative overflow-hidden">
             ${imgHtml}
             <button class="absolute top-1 end-1 w-6 h-6 grid place-items-center rounded-full bg-black/40 text-white z-10" data-bm-fav="${esc(id)}">
@@ -21308,7 +21942,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         const img = e.gif || (e.images && e.images[0]) || (e.i && e.i[0]) || '';
         const src = e.source === 'repdb' || e.src === 'rdb' ? 'RDB' : (e.source === 'muscle_motion' || e.src === 'mm' ? 'MM' : (e.source === 'burnfit' || e.src === 'bf' ? 'BF' : (e.source === 'gymvisual' || e.src === 'gv' ? 'GV' : (e.source === 'gymimpulse' || e.src === 'gi' ? 'GI' : 'PG'))));
         const srcClass = src === 'RDB' ? 'bg-primary/15 text-primary-2' : (src === 'MM' ? 'bg-accent/15 text-accent' : (src === 'BF' ? 'bg-success/15 text-success' : (src === 'GV' ? 'bg-warning/15 text-warning' : (src === 'GI' ? 'bg-accent/15 text-accent' : 'bg-primary/15 text-primary-2'))));
-        return `<div class="bm-ex-card${e.source === 'repdb' ? ' rdb-card' : ''} bg-surface-2 border border-border rounded-xl overflow-hidden hover:border-primary/30 transition cursor-pointer" data-bm-add="${esc(e.id)}">
+        return `<div class="bm-ex-card v2-src-${src.toLowerCase()}${e.source === 'repdb' ? ' rdb-card' : ''} bg-surface-2 border border-border rounded-xl overflow-hidden hover:border-primary/30 transition cursor-pointer" data-bm-add="${esc(e.id)}">
           <div class="aspect-square bg-surface relative">
             ${img ? `<img src="${esc(img)}" alt="" class="w-full h-full object-cover" loading="lazy"/>` : `<div class="w-full h-full grid place-items-center"><svg class="w-8 h-8 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>`}
           </div>
@@ -21366,7 +22000,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         const img = e.gif || (e.images && e.images[0]) || (e.i && e.i[0]) || '';
         const src = e.source === 'repdb' || e.src === 'rdb' ? 'RDB' : (e.source === 'muscle_motion' || e.src === 'mm' ? 'MM' : (e.source === 'burnfit' || e.src === 'bf' ? 'BF' : (e.source === 'gymvisual' || e.src === 'gv' ? 'GV' : (e.source === 'gymimpulse' || e.src === 'gi' ? 'GI' : 'PG'))));
         const srcClass = src === 'RDB' ? 'bg-primary/15 text-primary-2' : (src === 'MM' ? 'bg-accent/15 text-accent' : (src === 'BF' ? 'bg-success/15 text-success' : (src === 'GV' ? 'bg-warning/15 text-warning' : (src === 'GI' ? 'bg-accent/15 text-accent' : 'bg-primary/15 text-primary-2'))));
-        return `<div class="bm-ex-card${e.source === 'repdb' ? ' rdb-card' : ''} bg-surface-2 border border-border rounded-xl overflow-hidden hover:border-primary/30 transition cursor-pointer" data-bm-add="${esc(e.id)}">
+        return `<div class="bm-ex-card v2-src-${src.toLowerCase()}${e.source === 'repdb' ? ' rdb-card' : ''} bg-surface-2 border border-border rounded-xl overflow-hidden hover:border-primary/30 transition cursor-pointer" data-bm-add="${esc(e.id)}">
           <div class="aspect-square bg-surface relative">
             ${img ? `<img src="${esc(img)}" alt="" class="w-full h-full object-cover" loading="lazy"/>` : `<div class="w-full h-full grid place-items-center"><svg class="w-8 h-8 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>`}
           </div>
@@ -28276,7 +28910,7 @@ async function boot() {
     }
 
     // Add client buttons (dashboard, empty state, aside)
-    const addBtns = ['dash-add-btn', 'dash-empty-add', 'aside-add-client'];
+    const addBtns = ['dash-add-btn', 'dash-empty-add', 'dash-quick-add', 'aside-add-client'];
     addBtns.forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('click', () => {
@@ -29721,73 +30355,28 @@ async function boot() {
     });
 
     // Theme picker grid (settings screen)
-    const THEMES = [
-      { id:'dark',name:'Midnight Indigo',dark:true,color:'#6366f1' },
-      { id:'ocean-deep',name:'Ocean Deep',dark:true,color:'#06b6d4' },
-      { id:'forest-night',name:'Forest Night',dark:true,color:'#22c55e' },
-      { id:'sunset-rose',name:'Sunset Rose',dark:true,color:'#ec4899' },
-      { id:'carbon-steel',name:'Carbon Steel',dark:true,color:'#64748b' },
-      { id:'royal-purple',name:'Royal Purple',dark:true,color:'#8b5cf6' },
-      { id:'crimson-dark',name:'Crimson Dark',dark:true,color:'#ef4444' },
-      { id:'amber-gold',name:'Amber Gold',dark:true,color:'#f59e0b' },
-      { id:'teal-pro',name:'Teal Pro',dark:true,color:'#14b8a6' },
-      { id:'slate-mono',name:'Slate Mono',dark:true,color:'#475569' },
-      // === New mid-tone (semi-dark) themes — softer contrast ===
-      { id:'midnight-mint',name:'Midnight Mint',dark:true,color:'#2dd4bf',mid:true },
-      { id:'dusk-velvet',name:'Dusk Velvet',dark:true,color:'#a78bfa',mid:true },
-      { id:'graphite-mist',name:'Graphite Mist',dark:true,color:'#60a5fa',mid:true },
-      { id:'tide-pool',name:'Tide Pool',dark:true,color:'#38bdf8',mid:true },
-      { id:'warm-espresso',name:'Warm Espresso',dark:true,color:'#fb923c',mid:true },
-      { id:'aurora-haze',name:'Aurora Haze',dark:true,color:'#22d3ee',mid:true },
-      // === Premium animated themes ===
-      { id:'jungle',name:'Jungle',dark:true,color:'#22c55e',mid:true },
-      { id:'aquarium',name:'Aquarium',dark:true,color:'#06b6d4',mid:true },
-      { id:'winter',name:'Winter',dark:true,color:'#60a5fa',mid:true },
-      // === Oil-bubble photo series + retro ===
-      { id:'bubble-lagoon',name:'Bubble Lagoon',dark:true,color:'#10b981',mid:true },
-      { id:'ember-tide',name:'Ember Tide',dark:true,color:'#f97316',mid:true },
-      { id:'crimson-reef',name:'Crimson Reef',dark:true,color:'#f43f5e',mid:true },
-      { id:'retro-1940',name:'Retro 1940',dark:false,color:'#b22222' },
-      // === Light themes ===
-      { id:'light',name:'Pure White',dark:false,color:'#4f46e5' },
-      { id:'cloud-blue',name:'Cloud Blue',dark:false,color:'#3b82f6' },
-      { id:'mint-fresh',name:'Mint Fresh',dark:false,color:'#059669' },
-      { id:'peach-soft',name:'Peach Soft',dark:false,color:'#f97316' },
-      { id:'lavender-light',name:'Lavender',dark:false,color:'#a855f7' },
-      { id:'rose-quartz',name:'Rose Quartz',dark:false,color:'#e11d48' },
-      { id:'sand-stone',name:'Sand Stone',dark:false,color:'#d97706' },
-      { id:'sky-day',name:'Sky Day',dark:false,color:'#0ea5e9' },
-      { id:'sage-garden',name:'Sage Garden',dark:false,color:'#65a30d' },
-      { id:'coral-reef',name:'Coral Reef',dark:false,color:'#f43f5e' },
-    ];
+    /* c196: the six Vision themes are the single source of truth for
+       palette + glass + background + particles + charts. */
+    const THEMES = DK_THEMES;
     function renderThemeGrid() {
       const grid = document.getElementById('theme-grid');
       if (!grid) return;
-      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      const currentTheme = normalizeThemeId(document.documentElement.getAttribute('data-theme'));
       grid.innerHTML = THEMES.map(theme => {
         const isActive = theme.id === currentTheme;
-        // Mid themes get a softer, mid-gray gradient; pure dark/light keep their looks
-        let bgStyle;
-        if (theme.mid) {
-          bgStyle = `background:linear-gradient(135deg, rgb(${theme.id === 'midnight-mint' ? '14,31,26' : theme.id === 'dusk-velvet' ? '26,18,36' : theme.id === 'graphite-mist' ? '28,29,34' : theme.id === 'tide-pool' ? '13,26,34' : theme.id === 'warm-espresso' ? '26,18,12' : theme.id === 'aurora-haze' ? '16,20,31' : theme.id === 'jungle' ? '6,18,12' : theme.id === 'aquarium' ? '4,16,28' : theme.id === 'winter' ? '12,18,30' : theme.id === 'bubble-lagoon' ? '8,26,20' : theme.id === 'ember-tide' ? '7,15,30' : theme.id === 'crimson-reef' ? '24,10,16' : theme.id === 'retro-1940' ? '243,232,205' : '16,20,31'}), rgb(${theme.id === 'midnight-mint' ? '32,60,50' : theme.id === 'dusk-velvet' ? '52,40,70' : theme.id === 'graphite-mist' ? '56,58,66' : theme.id === 'tide-pool' ? '34,60,75' : theme.id === 'warm-espresso' ? '58,42,28' : theme.id === 'aurora-haze' ? '40,48,68' : theme.id === 'jungle' ? '22,48,30' : theme.id === 'aquarium' ? '18,45,68' : theme.id === 'winter' ? '30,45,68' : theme.id === 'bubble-lagoon' ? '24,58,42' : theme.id === 'ember-tide' ? '22,42,70' : theme.id === 'crimson-reef' ? '58,28,40' : theme.id === 'retro-1940' ? '252,246,231' : '40,48,68'}))`;
-        } else if (theme.dark) {
-          bgStyle = 'background:linear-gradient(135deg,#14141c,#202028)';
-        } else {
-          bgStyle = 'background:linear-gradient(135deg,#fff,#f3f4f8)';
-        }
-        const midBadge = theme.mid ? '<span class="absolute bottom-1 end-1 text-[8px] font-bold px-1 py-px rounded bg-white/15 text-white/80">mid</span>' : '';
-        return `<button class="relative rounded-xl border-2 p-2 transition ${isActive?'border-primary':'border-border hover:border-muted'}" data-theme-id="${theme.id}" style="${bgStyle};min-height:56px">
-          <div class="flex items-center gap-1.5"><span class="w-4 h-4 rounded-full shrink-0" style="background:${theme.color}"></span>
-          <span class="text-[10px] font-semibold truncate ${theme.dark?'text-white':'text-gray-800'}">${theme.name}</span></div>
-          ${isActive?'<svg class="absolute top-1 end-1 w-3 h-3 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>':''}
-          ${midBadge}
+        return `<button type="button" class="v2-theme-card ${isActive ? 'active' : ''}" data-theme-id="${theme.id}" aria-pressed="${isActive}">
+          <span class="v2-theme-preview" style="background:${theme.preview}" aria-hidden="true"></span>
+          <span class="v2-theme-name">${theme.name}</span>
+          <span class="v2-theme-tag">${theme.tag}</span>
+          <span class="v2-theme-check">✓</span>
         </button>`;
       }).join('');
       grid.querySelectorAll('[data-theme-id]').forEach(btn => {
         btn.addEventListener('click', () => {
           const themeId = btn.getAttribute('data-theme-id');
           applyTheme(themeId);
-          toast(t('toast.themeChanged', { theme: themeId }), 'info', 1500);
+          const th = DK_THEMES.find(x => x.id === themeId);
+          toast(t('toast.themeChanged', { theme: th ? th.name : themeId }), 'info', 1700);
           renderThemeGrid();
         });
       });
@@ -30088,11 +30677,10 @@ function texApply(name, opacity) {
   texBadge();
 }
 async function loadTexture() {
-  try {
-    const row = await db.get('settings', 'texture');
-    const v = row && row.value ? row.value : {};
-    texApply(v.name || 'none', typeof v.opacity === 'number' && isFinite(v.opacity) ? v.opacity : null);
-  } catch (e) { texApply('none', null); }
+  /* c196: the legacy texture-effects system is retired — every Vision theme
+     owns its own atmosphere. Always land on "none" and clean the saved value. */
+  try { texApply('none', null); } catch (_) {}
+  try { await db.put('settings', { key: 'texture', value: { name: 'none', opacity: null } }); } catch (_) {}
 }
 /* c110 fix: bind ONLY buttons that really carry data-tex. The 5 «Panel texture»
    buttons also use .texture-btn — binding them here made every ptex click run
@@ -30427,11 +31015,9 @@ function ptexPaintSwatches() {
   });
 }
 async function loadPanelTexture() {
-  try {
-    const row = await db.get('settings', 'panelTexture');
-    const v = row && row.value ? row.value : {};
-    ptexApply(PTEX[v.name] ? v.name : 'off', v.color, typeof v.tau === 'number' && isFinite(v.tau) ? v.tau : PTEX_DEFAULT_TAU);
-  } catch (e) { ptexApply('off', null, PTEX_DEFAULT_TAU); }
+  /* c196: panel textures are replaced by the theme's own glass material. */
+  try { ptexApply('off', null, PTEX_DEFAULT_TAU); } catch (_) {}
+  try { await db.put('settings', { key: 'panelTexture', value: { name: 'off', color: null, tau: PTEX_DEFAULT_TAU } }); } catch (_) {}
 }
 document.querySelectorAll('.texture-btn[data-ptex]').forEach(btn => {
   btn.addEventListener('click', async () => {
@@ -30494,6 +31080,7 @@ loadPanelTexture();
           const loginLogo = document.getElementById('app-logo-login');
           if (loginLogo) loginLogo.src = br.logoDataUri;
         }
+        if (typeof applyV2Branding === 'function') applyV2Branding(br);
         // Show preview
         const preview = document.getElementById('branding-logo-preview');
         if (preview && (br.logoDataUri || window.APP_LOGO_DATA_URI)) {
@@ -31098,9 +31685,9 @@ loadPanelTexture();
       sections: [
         {
           heading: { en: 'Look and feel', ru: 'Внешний вид', he: 'מראה ותחושה' },
-          body: { en: 'Choose one of 33 themes with light and dark variants, pick a glass texture for modal panels and tune its transparency. The UI sizes panel scales fonts from 0.62 to 2.4 times (the A- and A+ buttons in the top bar do the same) and resizes the 3D atlas. The interface language switches between Russian, English and Hebrew at any moment.',
-                  ru: 'Выберите одну из 33 тем со светлым и тёмным вариантами, подберите стеклянную текстуру для панелей модалок и её прозрачность. Панель размеров интерфейса масштабирует шрифты от 0.62 до 2.4 раза (кнопки A− и A+ в верхней панели делают то же) и меняет размер 3D-атласа. Язык интерфейса переключается на русский, английский и иврит в любой момент.',
-                  he: 'בחרו אחת מ-33 ערכות נושא עם גרסאות בהירות וכהות, בחרו טקסטורת זכוכית לפאנלים של חלונות וכוונו את שקיפותה. פאנל גדלי הממשק משנה גופנים מ-0.62 עד 2.4 (כפתורי A- ו-A+ בפס העליון עושים זאת) ומתאים את האטלס התלת-מימדי. שפת הממשק מתחלפת בין רוסית, אנגלית ועברית בכל רגע.' }
+          body: { en: 'Choose one of six complete visual worlds — each one owns its palette, glass material, background scene and particles. The UI sizes panel scales fonts from 0.62 to 2.4 times (the A- and A+ buttons in the top bar do the same) and resizes the 3D atlas. The interface language switches between Russian, English and Hebrew at any moment.',
+                  ru: 'Выберите один из шести полных визуальных миров — каждый задаёт палитру, материал стекла, фон и частицы. Панель размеров интерфейса масштабирует шрифты от 0.62 до 2.4 раза (кнопки A− и A+ в верхней панели делают то же) и меняет размер 3D-атласа. Язык интерфейса переключается на русский, английский и иврит в любой момент.',
+                  he: 'בחרו אחד מששת העולמות החזותיים — כל אחד מגדיר פלטה, חומר זכוכית, רקע וחלקיקים. פאנל גדלי הממשק משנה גופנים מ-0.62 עד 2.4 (כפתורי A- ו-A+ בפס העליון עושים זאת) ומתאים את האטלס התלת-מימדי. שפת הממשק מתחלפת בין רוסית, אנגלית ועברית בכל רגע.' }
         },
         {
           heading: { en: 'Trainer reminders', ru: 'Напоминания тренеру', he: 'תזכורות למאמן' },
@@ -31350,7 +31937,7 @@ loadPanelTexture();
     }
 
     /* c74: SVG / 3D / Both body-map mode (Settings ▸ Appearance ▸ Body map view) */
-    function bmModeGet() { try { return localStorage.getItem('dk_bodymap_mode') || 'svg'; } catch (e) { return 'svg'; } }
+    function bmModeGet() { try { return localStorage.getItem('dk_bodymap_mode') || '3d'; } catch (e) { return '3d'; } }
     function bm3dDispose() { if (_bm3d) { try { _bm3d.dispose(); } catch (e) {} _bm3d = null; } }
     function bm3dSyncSvg(g, sg) {
       if (!bmSvgContainer) return;
@@ -32237,10 +32824,13 @@ document.addEventListener('DOMContentLoaded', function () {
    *  (not just the literal "dark" id), which fixes white-on-white form fields
    *  in themed dark modes like ocean-deep, forest-night, etc. */
   async function applyTheme(theme) {
-    const t = theme || 'dark';
+    /* c196: old theme ids (33 legacy packs) are migrated to the six Vision
+       themes instead of being dropped, so existing devices keep their mood. */
+    const t = normalizeThemeId(theme);
     document.documentElement.setAttribute('data-theme', t);
+    document.documentElement.setAttribute('data-ui', 'v2');
     // Derive dark/light mode for Tailwind dark: variant + autofill colors
-    const meta = THEMES_META[t] || { dark: t !== 'light' };
+    const meta = THEMES_META[t] || { dark: true };
     document.documentElement.setAttribute('data-mode', meta.dark ? 'dark' : 'light');
     // Update <meta name="theme-color"> to match the active theme's bg
     const metaTag = document.querySelector('meta[name="theme-color"]');
@@ -32250,45 +32840,50 @@ document.addEventListener('DOMContentLoaded', function () {
     try { document.dispatchEvent(new CustomEvent('dk-theme-applied')); } catch (_) {}
   }
 
-  /** Lightweight theme metadata lookup (dark/light + representative hex).
-   *  Kept separate from THEMES array so applyTheme can use it before the
-   *  settings screen initializes. */
-  const THEMES_META = {
-    'dark':           { dark: true,  bgHex: '#0a0a0f' },
-    'ocean-deep':     { dark: true,  bgHex: '#080f19' },
-    'forest-night':   { dark: true,  bgHex: '#0a140f' },
-    'sunset-rose':    { dark: true,  bgHex: '#140a12' },
-    'carbon-steel':   { dark: true,  bgHex: '#121214' },
-    'royal-purple':   { dark: true,  bgHex: '#120c1c' },
-    'crimson-dark':   { dark: true,  bgHex: '#140a0a' },
-    'amber-gold':     { dark: true,  bgHex: '#141008' },
-    'teal-pro':       { dark: true,  bgHex: '#081414' },
-    'slate-mono':     { dark: true,  bgHex: '#0f1216' },
-    'light':          { dark: false, bgHex: '#f8f9fc' },
-    'cloud-blue':     { dark: false, bgHex: '#f0f8ff' },
-    'mint-fresh':     { dark: false, bgHex: '#f0fdf4' },
-    'peach-soft':     { dark: false, bgHex: '#fff7ed' },
-    'lavender-light': { dark: false, bgHex: '#f5f3ff' },
-    'rose-quartz':    { dark: false, bgHex: '#fdf2f8' },
-    'sand-stone':     { dark: false, bgHex: '#fcfaf0' },
-    'sky-day':        { dark: false, bgHex: '#f0f9ff' },
-    'sage-garden':    { dark: false, bgHex: '#f7fceb' },
-    'coral-reef':     { dark: false, bgHex: '#fff1f0' },
-    // === New mid-tone (semi-dark) themes ===
-    'midnight-mint':  { dark: true,  bgHex: '#0e1f1a' },
-    'dusk-velvet':    { dark: true,  bgHex: '#1a1224' },
-    'graphite-mist':  { dark: true,  bgHex: '#1c1d22' },
-    'tide-pool':      { dark: true,  bgHex: '#0d1a22' },
-    'warm-espresso':  { dark: true,  bgHex: '#1a120c' },
-    'aurora-haze':    { dark: true,  bgHex: '#10141f' },
-    'jungle':         { dark: true,  bgHex: '#06120c' },
-    'aquarium':       { dark: true,  bgHex: '#04101c' },
-    'winter':         { dark: true,  bgHex: '#0c121e' },
-    'bubble-lagoon':  { dark: true,  bgHex: '#081a14' },
-    'ember-tide':     { dark: true,  bgHex: '#070f1e' },
-    'crimson-reef':   { dark: true,  bgHex: '#180a10' },
-    'retro-1940':     { dark: false, bgHex: '#f3e8cd' }
+  /** c196 Vision themes — six complete presets (palette + glass + scene). */
+  const DK_THEMES = [
+    { id:'v2-nebula', name:'Nebula Blue',  tag:'Deep space',   dark:true,  color:'#8b5cf6', bg:'#040712', accent:'#22d3ee',
+      preview:'radial-gradient(ellipse 90% 70% at 18% 0%, #3b82f6 0%, transparent 62%), radial-gradient(ellipse 70% 70% at 90% 12%, #8b5cf6 0%, transparent 66%), linear-gradient(180deg,#040712,#0a1330 55%,#030611)' },
+    { id:'v2-aurora', name:'Violet Aurora', tag:'Aurora',     dark:true,  color:'#a855f7', bg:'#0a0421', accent:'#ec4899',
+      preview:'radial-gradient(ellipse 85% 70% at 18% 0%, #a855f7 0%, transparent 62%), radial-gradient(ellipse 70% 70% at 88% 14%, #ec4899 0%, transparent 66%), linear-gradient(180deg,#0a0421,#170733 55%,#070312)' },
+    { id:'v2-abyss',  name:'Abyss Teal',   tag:'Deep water',   dark:true,  color:'#14b8a6', bg:'#021013', accent:'#a3e635',
+      preview:'radial-gradient(ellipse 85% 70% at 16% 0%, #14b8a6 0%, transparent 62%), radial-gradient(ellipse 70% 70% at 88% 14%, #22d3ee 0%, transparent 66%), linear-gradient(180deg,#021013,#041c20 55%,#010a0d)' },
+    { id:'v2-solar',  name:'Solar Ember',  tag:'Sunset',       dark:true,  color:'#f97316', bg:'#12060b', accent:'#fbbf24',
+      preview:'radial-gradient(ellipse 85% 70% at 18% 4%, #f97316 0%, transparent 62%), radial-gradient(ellipse 70% 70% at 88% 10%, #f43f5e 0%, transparent 66%), linear-gradient(180deg,#12060b,#1f0910 55%,#0a0306)' },
+    { id:'v2-arctic', name:'Arctic Glass', tag:'Ice / day',    dark:false, color:'#0ea5e9', bg:'#eaf4ff', accent:'#6366f1',
+      preview:'radial-gradient(ellipse 85% 70% at 18% 0%, #38bdf8 0%, transparent 62%), radial-gradient(ellipse 70% 70% at 88% 8%, #818cf8 0%, transparent 66%), linear-gradient(180deg,#eaf4ff,#dcecff 55%,#f5faff)' },
+    { id:'v2-pearl',  name:'Pearl Rose',   tag:'Pearl / day',  dark:false, color:'#d946ef', bg:'#fdf4fa', accent:'#8b5cf6',
+      preview:'radial-gradient(ellipse 85% 70% at 18% 0%, #f472b6 0%, transparent 62%), radial-gradient(ellipse 70% 70% at 88% 8%, #a855f7 0%, transparent 66%), linear-gradient(180deg,#fdf4fa,#f7ecfb 55%,#fdf8ff)' }
+  ];
+
+  const THEMES_META = Object.fromEntries(DK_THEMES.map(th => [th.id, {
+    dark: th.dark, bgHex: th.bg, name: th.name, tag: th.tag, color: th.color
+  }]));
+
+  /** Legacy 33-theme ids → Vision preset. Keeps the user's intent:
+   *  dark stays dark, light stays light, warm stays warm, green stays green. */
+  const V2_THEME_MAP = {
+    'dark':'v2-nebula', 'ocean-deep':'v2-nebula', 'carbon-steel':'v2-nebula',
+    'slate-mono':'v2-nebula', 'graphite-mist':'v2-nebula', 'midnight-obsidian':'v2-nebula',
+    'arctic-frost':'v2-arctic', 'winter':'v2-arctic', 'aquarium':'v2-abyss',
+    'teal-pro':'v2-abyss', 'midnight-mint':'v2-abyss', 'tide-pool':'v2-abyss',
+    'forest-night':'v2-abyss', 'jungle':'v2-abyss', 'bubble-lagoon':'v2-abyss',
+    'sage-garden':'v2-abyss',
+    'royal-purple':'v2-aurora', 'dusk-velvet':'v2-aurora', 'lavender-light':'v2-aurora',
+    'aurora-haze':'v2-aurora',
+    'sunset-rose':'v2-solar', 'crimson-dark':'v2-solar', 'amber-gold':'v2-solar',
+    'ember-tide':'v2-solar', 'crimson-reef':'v2-solar', 'retro-1940':'v2-solar',
+    'warm-espresso':'v2-solar', 'coral-reef':'v2-solar', 'coral-sunset':'v2-solar',
+    'peach-soft':'v2-solar', 'warm-sand':'v2-solar',
+    'light':'v2-arctic', 'cloud-blue':'v2-arctic', 'sky-day':'v2-arctic',
+    'mint-fresh':'v2-pearl', 'rose-quartz':'v2-pearl', 'sand-stone':'v2-pearl'
   };
+  function normalizeThemeId(id) {
+    const key = String(id || '').trim();
+    if (THEMES_META[key]) return key;
+    if (V2_THEME_MAP[key]) return V2_THEME_MAP[key];
+    return 'v2-nebula';
+  }
 
   /** Current active language getter (used by other modules). */
   function currentLang() { return _lang; }
@@ -32359,41 +32954,6 @@ document.addEventListener('DOMContentLoaded', function () {
      same applyTheme as the Settings grid, so persistence, data-mode and the
      theme-color meta tag all stay in sync. Works while signed out (header is
      the one area that stays interactive before login). */
-  const DK_THEMES = [
-    { id:'dark',name:'Midnight Indigo',dark:true,color:'#6366f1' },
-    { id:'ocean-deep',name:'Ocean Deep',dark:true,color:'#06b6d4' },
-    { id:'forest-night',name:'Forest Night',dark:true,color:'#22c55e' },
-    { id:'sunset-rose',name:'Sunset Rose',dark:true,color:'#ec4899' },
-    { id:'carbon-steel',name:'Carbon Steel',dark:true,color:'#64748b' },
-    { id:'royal-purple',name:'Royal Purple',dark:true,color:'#8b5cf6' },
-    { id:'crimson-dark',name:'Crimson Dark',dark:true,color:'#ef4444' },
-    { id:'amber-gold',name:'Amber Gold',dark:true,color:'#f59e0b' },
-    { id:'teal-pro',name:'Teal Pro',dark:true,color:'#14b8a6' },
-    { id:'slate-mono',name:'Slate Mono',dark:true,color:'#475569' },
-    { id:'midnight-mint',name:'Midnight Mint',dark:true,color:'#2dd4bf' },
-    { id:'dusk-velvet',name:'Dusk Velvet',dark:true,color:'#a78bfa' },
-    { id:'graphite-mist',name:'Graphite Mist',dark:true,color:'#60a5fa' },
-    { id:'tide-pool',name:'Tide Pool',dark:true,color:'#38bdf8' },
-    { id:'warm-espresso',name:'Warm Espresso',dark:true,color:'#fb923c' },
-    { id:'aurora-haze',name:'Aurora Haze',dark:true,color:'#22d3ee' },
-    { id:'jungle',name:'Jungle',dark:true,color:'#22c55e' },
-    { id:'aquarium',name:'Aquarium',dark:true,color:'#06b6d4' },
-    { id:'winter',name:'Winter',dark:true,color:'#60a5fa' },
-    { id:'bubble-lagoon',name:'Bubble Lagoon',dark:true,color:'#10b981' },
-    { id:'ember-tide',name:'Ember Tide',dark:true,color:'#f97316' },
-    { id:'crimson-reef',name:'Crimson Reef',dark:true,color:'#f43f5e' },
-    { id:'retro-1940',name:'Retro 1940',dark:false,color:'#b22222' },
-    { id:'light',name:'Pure White',dark:false,color:'#4f46e5' },
-    { id:'cloud-blue',name:'Cloud Blue',dark:false,color:'#3b82f6' },
-    { id:'mint-fresh',name:'Mint Fresh',dark:false,color:'#059669' },
-    { id:'peach-soft',name:'Peach Soft',dark:false,color:'#f97316' },
-    { id:'lavender-light',name:'Lavender',dark:false,color:'#a855f7' },
-    { id:'rose-quartz',name:'Rose Quartz',dark:false,color:'#e11d48' },
-    { id:'sand-stone',name:'Sand Stone',dark:false,color:'#d97706' },
-    { id:'sky-day',name:'Sky Day',dark:false,color:'#0ea5e9' },
-    { id:'sage-garden',name:'Sage Garden',dark:false,color:'#65a30d' },
-    { id:'coral-reef',name:'Coral Reef',dark:false,color:'#f43f5e' }
-  ];
   const _themeBtn = document.getElementById('theme-toggle');
   const _themeMenu = document.getElementById('theme-menu');
   function _dkThemeGroupLabels() {
@@ -32404,11 +32964,11 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   function renderThemeMenu() {
     if (!_themeMenu) return;
-    const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+    const cur = normalizeThemeId(document.documentElement.getAttribute('data-theme'));
     const L = _dkThemeGroupLabels();
-    const item = (th) => '<button type="button" role="menuitemradio" aria-checked="' + (th.id === cur) + '" class="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs font-medium transition ' + (th.id === cur ? 'bg-primary/15 text-primary' : 'hover:bg-surface-2 text-text') + '" data-theme-pick="' + th.id + '">' +
-      '<span class="w-3.5 h-3.5 rounded-full shrink-0 border border-black/10" style="background:' + th.color + '"></span>' +
-      '<span class="truncate">' + th.name + '</span>' +
+    const item = (th) => '<button type="button" role="menuitemradio" aria-checked="' + (th.id === cur) + '" class="w-full flex items-center gap-2.5 px-2 py-1.5 rounded-xl text-xs font-medium transition ' + (th.id === cur ? 'bg-primary/15 text-primary-2' : 'hover:bg-surface-2 text-text') + '" data-theme-pick="' + th.id + '">' +
+      '<span class="w-4 h-4 rounded-full shrink-0 border border-white/20" style="background:' + th.preview + ';box-shadow:0 0 10px ' + th.color + '66"></span>' +
+      '<span class="min-w-0 flex-1"><span class="block truncate">' + th.name + '</span><span class="block text-[9px] text-muted truncate">' + th.tag + '</span></span>' +
       (th.id === cur ? '<svg class="w-3 h-3 ms-auto shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>' : '') +
       '</button>';
     const darks = DK_THEMES.filter(function (x) { return x.dark; });
@@ -32456,6 +33016,175 @@ document.addEventListener('DOMContentLoaded', function () {
   document.addEventListener('dk-theme-applied', function () {
     try { if (typeof renderThemeGrid === 'function') renderThemeGrid(); } catch (_e) {}
   });
+
+  /* =====================================================================
+     VISION V2 SHELL — profile menu, command search, mobile drawer
+     ===================================================================== */
+  (function () {
+    const profileBtn = document.getElementById('v2-profile-btn');
+    const profileMenu = document.getElementById('v2-profile-menu');
+    const search = document.getElementById('v2-global-search');
+    const results = document.getElementById('v2-search-results');
+    const menuBtn = document.getElementById('v2-menu-btn');
+    const aside = document.getElementById('aside');
+    let clientsCache = null;
+
+    function closeProfile() {
+      if (!profileMenu) return;
+      profileMenu.classList.add('hidden');
+      if (profileBtn) profileBtn.setAttribute('aria-expanded', 'false');
+    }
+    function openProfile() {
+      if (!profileMenu) return;
+      profileMenu.classList.remove('hidden');
+      if (profileBtn) profileBtn.setAttribute('aria-expanded', 'true');
+    }
+    if (profileBtn) profileBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (profileMenu && profileMenu.classList.contains('hidden')) openProfile(); else closeProfile();
+    });
+    document.addEventListener('click', function (e) {
+      if (!profileMenu || profileMenu.classList.contains('hidden')) return;
+      if (profileMenu.contains(e.target) || (profileBtn && profileBtn.contains(e.target))) return;
+      closeProfile();
+    });
+    document.querySelectorAll('[data-v2-goto]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const dest = btn.getAttribute('data-v2-goto') || '';
+        closeProfile();
+        try {
+          if (dest === 'settings:backup') {
+            router.show('settings');
+            setTimeout(function () {
+              const label = document.querySelector('[data-i18n="settings.backup"]');
+              const panel = label ? label.closest('.settings-panel') : null;
+              if (panel) {
+                panel.classList.remove('collapsed');
+                panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            }, 350);
+          } else if (dest === 'settings') {
+            router.show('settings');
+          }
+        } catch (_) {}
+      });
+    });
+    const profileLock = document.getElementById('v2-profile-lock');
+    if (profileLock) profileLock.addEventListener('click', function () {
+      closeProfile();
+      const lock = document.getElementById('lock-btn');
+      if (lock) lock.click();
+    });
+
+    /* mobile drawer */
+    let backdrop = null;
+    function closeDrawer() {
+      if (!aside) return;
+      aside.classList.remove('v2-drawer-open');
+      if (backdrop) { backdrop.remove(); backdrop = null; }
+    }
+    if (menuBtn && aside) menuBtn.addEventListener('click', function () {
+      if (aside.classList.contains('v2-drawer-open')) { closeDrawer(); return; }
+      aside.classList.add('v2-drawer-open');
+      backdrop = document.createElement('div');
+      backdrop.className = 'v2-drawer-backdrop';
+      backdrop.addEventListener('click', closeDrawer);
+      document.body.appendChild(backdrop);
+    });
+    if (aside) aside.querySelectorAll('[data-nav]').forEach(function (b) {
+      b.addEventListener('click', function () { closeDrawer(); });
+    });
+
+    /* command search — real clients, Enter jumps to the filtered Clients list */
+    async function ensureClients() {
+      if (clientsCache) return clientsCache;
+      try { clientsCache = await db.all('clients') || []; } catch (_) { clientsCache = []; }
+      return clientsCache;
+    }
+    function hideResults() { if (results) results.classList.add('hidden'); }
+    async function renderSearch(q) {
+      if (!results) return;
+      const query = String(q || '').trim().toLowerCase();
+      if (!query) { hideResults(); return; }
+      const clients = await ensureClients();
+      const hits = clients.filter(function (c) {
+        const hay = [c.full_name, c.name, c.phone, c.email].filter(Boolean).join(' ').toLowerCase();
+        return hay.includes(query);
+      }).slice(0, 6);
+      const rows = hits.map(function (c) {
+        const name = c.full_name || c.name || '?';
+        const initials = name.split(/\s+/).map(function (x) { return x[0] || ''; }).slice(0, 2).join('').toUpperCase();
+        const sub = [c.cgroup ? (typeof groupNameOf === 'function' ? groupNameOf(c.cgroup) : c.cgroup) : '', c.phone || c.email || ''].filter(Boolean).join(' · ');
+        return '<button type="button" class="v2-search-row" data-v2-client="' + String(c.id).replace(/"/g, '&quot;') + '">' +
+          '<span class="v2-search-avatar">' + initials + '</span>' +
+          '<span class="min-w-0 flex-1"><span class="block font-semibold truncate">' + name.replace(/</g, '&lt;') + '</span>' +
+          '<span class="v2-search-sub truncate">' + sub.replace(/</g, '&lt;') + '</span></span>' +
+          '<svg class="w-3.5 h-3.5 text-muted shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>' +
+          '</button>';
+      }).join('');
+      results.innerHTML = rows || '<div class="px-3 py-3 text-[11px] text-muted">No clients found. Press Enter to search everything.</div>';
+      results.classList.remove('hidden');
+      results.querySelectorAll('[data-v2-client]').forEach(function (row) {
+        row.addEventListener('click', function () {
+          const id = row.getAttribute('data-v2-client');
+          hideResults();
+          if (search) search.value = '';
+          if (screens.profile && screens.profile.load) {
+            screens.profile.load(id);
+            router.show('profile');
+          }
+        });
+      });
+    }
+    if (search) {
+      let timer = null;
+      search.addEventListener('input', function () {
+        clearTimeout(timer);
+        timer = setTimeout(function () { renderSearch(search.value); }, 120);
+      });
+      search.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          const first = results ? results.querySelector('[data-v2-client]') : null;
+          if (first) { first.click(); return; }
+          const q = search.value.trim();
+          hideResults();
+          if (screens.dashboard && screens.dashboard.setSearch) screens.dashboard.setSearch(q);
+          router.show('dashboard');
+        }
+        if (e.key === 'Escape') { hideResults(); search.blur(); }
+      });
+      document.addEventListener('click', function (e) {
+        if (!results || results.classList.contains('hidden')) return;
+        if (results.contains(e.target) || search.contains(e.target)) return;
+        hideResults();
+      });
+      document.addEventListener('keydown', function (e) {
+        if ((e.ctrlKey || e.metaKey) && String(e.key).toLowerCase() === 'k') {
+          e.preventDefault(); search.focus(); search.select();
+        }
+      });
+    }
+    window.__dkV2RefreshClients = function () { clientsCache = null; };
+  })();
+
+  /** Apply custom branding to the Vision shell labels + logo. */
+  function applyV2Branding(br) {
+    const title = (br && br.title) || 'David King Gym';
+    const subtitle = (br && br.subtitle) || 'Trainer Studio';
+    ['v2-topbar-name', 'v2-side-title', 'v2-profile-name'].forEach(function (id) {
+      const el = document.getElementById(id); if (el) el.textContent = title;
+    });
+    ['v2-topbar-sub', 'v2-side-sub', 'v2-profile-role'].forEach(function (id) {
+      const el = document.getElementById(id); if (el) el.textContent = subtitle;
+    });
+    if (br && br.logoDataUri) {
+      const top = document.getElementById('v2-topbar-logo');
+      const header = document.getElementById('app-logo-header');
+      if (top) top.src = br.logoDataUri;
+      if (header) header.src = br.logoDataUri;
+    }
+  }
+  window.__dkApplyV2Branding = applyV2Branding;
 
   // Kick off Phase 1.
   // Initialize back-button trap IMMEDIATELY (don't wait for DOMContentLoaded,
@@ -34541,8 +35270,15 @@ document.addEventListener('input', function (e) {
       var last = parseInt(localStorage.getItem("dk_last_backup") || "0", 10);
       var days = (Date.now() - last) / 86400000;
       var bmsg = (typeof t === "function") ? t("backup.reminderToast") : null;
-      if (!bmsg) bmsg = "⚠️ Make a backup: Settings → Export full backup"; /* EN fallback when the dict hasn't loaded yet */
-      if (!last || days > 7 && typeof toast === "function") toast(bmsg, "warning", 8000);
+      if (!bmsg || bmsg === "backup.reminderToast") {
+        var bl = (typeof currentLang === "function") ? currentLang() : "en";
+        bmsg = bl === "ru" ? "⚠️ Сделайте резервную копию: Настройки → Экспорт"
+             : bl === "he" ? "⚠️ כדאי לגבות: הגדרות → ייצוא"
+             : "⚠️ Make a backup: Settings → Export full backup";
+      }
+      var unlocked = true;
+      try { unlocked = !(typeof auth !== "undefined" && auth && typeof auth.isUnlocked === "function") || auth.isUnlocked(); } catch (e) { unlocked = true; }
+      if (unlocked && (!last || days > 7) && typeof toast === "function") toast(bmsg, "warning", 8000);
     } catch (e) {}
   }, 2500);
 })();
@@ -34817,7 +35553,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 195; /* numeric part of dk-build c195 */
+  var RUNNING = 196; /* numeric part of dk-build c196 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
@@ -35396,10 +36132,21 @@ document.addEventListener('input', function (e) {
   }
   function addStudioLights(scene) {
     var THREE = S.THREE;
-    var hemi = new THREE.HemisphereLight(0xfff2ee, 0x2c1d1c, 0.35); scene.add(hemi);
-    var key = new THREE.DirectionalLight(0xfff1e6, 1.05); key.position.set(2.5, 4, 3); scene.add(key);
-    var rim = new THREE.DirectionalLight(0xd6e6ff, 0.85); rim.position.set(-3, 1.5, -2.5); scene.add(rim);
-    var fill = new THREE.DirectionalLight(0xffffff, 0.25); fill.position.set(0, -3, -2); scene.add(fill);
+    /* c196: holographic anatomy stage — cool cyan rim + violet fill on a
+       deep navy plate, instead of the old warm studio. */
+    var hemi = new THREE.HemisphereLight(0xbfe9ff, 0x120a24, 0.5); scene.add(hemi);
+    var key = new THREE.DirectionalLight(0xffffff, 1.0); key.position.set(2.2, 4, 3); scene.add(key);
+    var rim = new THREE.DirectionalLight(0x22d3ee, 1.45); rim.position.set(-3.5, 2.2, -3); scene.add(rim);
+    var fill = new THREE.DirectionalLight(0x8b5cf6, 0.7); fill.position.set(3, -2, -2); scene.add(fill);
+    var under = new THREE.PointLight(0x22d3ee, 1.1, 4.5, 2); under.position.set(0, 0.15, 0.5); scene.add(under);
+    try {
+      var disc = new THREE.Mesh(new THREE.CircleGeometry(0.52, 64), new THREE.MeshBasicMaterial({ color: 0x061225, transparent: true, opacity: 0.55, side: THREE.DoubleSide }));
+      disc.rotation.x = -Math.PI / 2; disc.position.y = 0.004; scene.add(disc);
+      var ring1 = new THREE.Mesh(new THREE.RingGeometry(0.46, 0.5, 64), new THREE.MeshBasicMaterial({ color: 0x22d3ee, transparent: true, opacity: 0.45, side: THREE.DoubleSide }));
+      ring1.rotation.x = -Math.PI / 2; ring1.position.y = 0.012; scene.add(ring1);
+      var ring2 = new THREE.Mesh(new THREE.RingGeometry(0.56, 0.575, 64), new THREE.MeshBasicMaterial({ color: 0x8b5cf6, transparent: true, opacity: 0.28, side: THREE.DoubleSide }));
+      ring2.rotation.x = -Math.PI / 2; ring2.position.y = 0.012; scene.add(ring2);
+    } catch (_) {}
   }
 
   function initScene() {
@@ -35412,7 +36159,7 @@ document.addEventListener('input', function (e) {
     S.scene.background = null;
 
     S.camera = new THREE.PerspectiveCamera(40, 1, 0.05, 60);
-    S.camera.position.set(0, 0.15, 3.2);
+    S.camera.position.set(0, 0.95, 4.25);
 
     /* c182: studio look — ACES tone mapping + IBL RoomEnvironment + warm
      * key / cool rim / low fill. If the optional RoomEnvironment import
@@ -35424,8 +36171,9 @@ document.addEventListener('input', function (e) {
     var Controls = S._OrbitControls;
     var controls = new Controls(S.camera, canvasEl);
     controls.enableDamping = true; controls.dampingFactor = 0.08;
-    controls.minDistance = 0.4; controls.maxDistance = 8;
+    controls.minDistance = 0.6; controls.maxDistance = 9;
     controls.autoRotateSpeed = 1.6;
+    try { controls.target.set(0, 0.88, 0); controls.update(); } catch (_) {}
     S.controls = controls;
 
     /* pointer: tap vs drag */
@@ -35558,11 +36306,20 @@ document.addEventListener('input', function (e) {
     var box = new THREE.Box3().setFromObject(S.root);
     var c = box.getCenter(new THREE.Vector3());
     var size = box.getSize(new THREE.Vector3());
-    var dist = (size.y / 2) / Math.tan((S.camera.fov * Math.PI / 180) / 2) * 1.15 / dkAtlasScale();
-    S.camBase = { cx: c.x, cy: c.y, cz: c.z, dist: dist };
-    S.camera.position.set(c.x, c.y + size.y * 0.02, c.z + dist);
-    S.camera.lookAt(c);
+    /* c196: fit BOTH height and width — the old formula only used height and
+       then divided by the 1.5× atlas slider, cropping the head and feet on
+       wide screens. The slider now zooms gently (max 1.12×). */
+    var vHalf = (S.camera.fov * Math.PI / 180) / 2;
+    var hHalf = Math.atan(Math.tan(vHalf) * Math.max(0.5, S.camera.aspect || 1));
+    var distH = (size.y / 2) / Math.tan(vHalf);
+    var distW = (size.x / 2) / Math.tan(hHalf);
+    /* A fixed 1.28 margin keeps the whole body visible behind the bottom
+       control dock. The atlas size slider no longer crops the model. */
+    var dist = Math.max(distH, distW) * 1.28;
+    S.camBase = { cx: c.x, cy: c.y, cz: c.z, camY: c.y, dist: dist };
+    S.camera.position.set(c.x, c.y, c.z + dist);
     S.controls.target.set(c.x, c.y, c.z);
+    S.camera.lookAt(c);
     S.controls.update();
   }
 
@@ -36154,10 +36911,10 @@ document.addEventListener('input', function (e) {
   }
   /* ---------------- settings: body map mode (svg | 3d | both) ---------------- */
   function b3dModeGet() {
-    try { return localStorage.getItem('dk_bodymap_mode') || 'svg'; } catch (e) { return 'svg'; }
+    try { return localStorage.getItem('dk_bodymap_mode') || '3d'; } catch (e) { return '3d'; }
   }
   function b3dModeSet(m) {
-    if (m !== 'svg' && m !== '3d' && m !== 'both') m = 'svg';
+    if (m !== 'svg' && m !== '3d' && m !== 'both') m = '3d';
     try { localStorage.setItem('dk_bodymap_mode', m); } catch (e) {}
     b3dModePaint();
     document.dispatchEvent(new CustomEvent('dk-bodymap-mode', { detail: m }));
@@ -36225,7 +36982,7 @@ document.addEventListener('input', function (e) {
     if (rb) rb.addEventListener('click', function () {
       if (!S.camBase) return;
       S.controls.target.set(S.camBase.cx, S.camBase.cy, S.camBase.cz);
-      S.camera.position.set(S.camBase.cx, S.camBase.cy + 0.05, S.camBase.cz + S.camBase.dist);
+      S.camera.position.set(S.camBase.cx, S.camBase.camY || (S.camBase.cy + 0.05), S.camBase.cz + S.camBase.dist);
       S.controls.update();
     });
     var rot = $('atlas-rot');
@@ -36238,7 +36995,7 @@ document.addEventListener('input', function (e) {
     function view(front) {
       if (!S.camBase) return;
       var d = S.camBase.dist;
-      S.camera.position.set(S.camBase.cx, S.camBase.cy + 0.05, S.camBase.cz + (front ? d : -d));
+      S.camera.position.set(S.camBase.cx, S.camBase.camY || (S.camBase.cy + 0.05), S.camBase.cz + (front ? d : -d));
       S.camera.lookAt(S.camBase.cx, S.camBase.cy, S.camBase.cz);
       S.controls.target.set(S.camBase.cx, S.camBase.cy, S.camBase.cz);
       S.controls.update();
@@ -36607,7 +37364,7 @@ document.addEventListener('input', function (e) {
           : (vectorHtml || '<div class="w-full h-full grid place-items-center"><svg class="w-8 h-8 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>'));
       var chips = '';
       try { chips = (typeof window.getExerciseMuscleChips === 'function') ? (window.getExerciseMuscleChips(e, L, { maxAux: 2 }) || '') : ''; } catch (err) {}
-      return '<div class="bm-ex-card' + (e.source === 'repdb' ? ' rdb-card' : '') + ' bg-surface-2 border border-border rounded-xl overflow-hidden hover:border-primary/30 transition cursor-pointer" data-exb-id="' + esc(id) + '">' +
+      return '<div class="bm-ex-card v2-src-' + code.toLowerCase() + (e.source === 'repdb' ? ' rdb-card' : '') + ' bg-surface-2 border border-border rounded-xl overflow-hidden hover:border-primary/30 transition cursor-pointer" data-exb-id="' + esc(id) + '">' +
         '<div class="aspect-square bg-surface relative overflow-hidden">' + imgHtml +
         '<button class="absolute top-1 end-1 w-6 h-6 grid place-items-center rounded-full bg-black/40 text-white z-10" data-exb-fav="' + esc(id) + '" aria-label="Favorite">' +
         '<svg class="w-3.5 h-3.5 ' + (isFav ? 'text-yellow-400' : 'text-white/60') + '" viewBox="0 0 24 24" fill="' + (isFav ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>' +
