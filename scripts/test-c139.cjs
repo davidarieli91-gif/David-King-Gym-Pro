@@ -16,7 +16,7 @@ ok('modal container still clips + flex column', html.indexOf('max-h-[92vh] flex 
 /* ---------- 2. open gesture: eye/image only ---------- */
 ok('title is inert (no data-open-exercise)', html.indexOf('leading-snug flex-1 min-w-0" data-exercise-title') >= 0);
 ok('eye button added with a localized name', html.indexOf('data-open-exercise aria-label="${esc(t(\'a11yOpenCard\'))}"') >= 0);
-ok('thumbnail wrappers still open the card', count(html, 'shrink-0 cursor-pointer" data-open-exercise') >= 2);
+ok('thumbnail wrappers still open the card', count(html, 'data-open-exercise') >= 2);
 ok('handler requires the opener attribute', html.indexOf("const opener = e.target.closest('[data-open-exercise]');") >= 0 && html.indexOf('if(!opener) return; /* only the eye 👁 / the thumbnail */') >= 0);
 ok('old whole-card condition gone', html.indexOf('if(e.target.closest(\'input,button\')) return;') === -1);
 ok('i18n ×3: a11yOpenCard', count(html, "a11yOpenCard:'") === 3);

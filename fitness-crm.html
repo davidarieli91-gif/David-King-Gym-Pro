@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c197" />
+<meta name="dk-build" content="c198" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -3344,6 +3344,56 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
   html[data-ui="v2"] .v2-icon-box { box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 0 22px rgb(var(--v2-glow) / .12); }
   html[data-ui="v2"] .v2-section-title { text-shadow: 0 1px 18px rgba(0,0,0,.35); }
 
+  /* nutrition macro rings */
+  html[data-ui="v2"] #nutrition-rings > div {
+    padding: 10px 6px; border-radius: 16px;
+    background: rgba(255,255,255,.035); border: 1px solid var(--v2-border);
+  }
+  html[data-ui="v2"] #nutrition-rings svg circle:last-child { filter: drop-shadow(0 0 6px rgb(var(--v2-glow) / .35)); }
+
+  /* live workout focus mode */
+  html[data-ui="v2"] .v2-live-ring {
+    width: 64px; height: 64px; border-radius: 9999px; flex: none; position: relative;
+    display: grid; place-items: center;
+    background: conic-gradient(rgb(var(--c-accent)) var(--p, 0%), rgba(255,255,255,.08) 0);
+    box-shadow: 0 0 28px rgb(var(--c-accent) / .28), inset 0 0 0 1px rgba(255,255,255,.06);
+    transition: background .3s var(--v2-ease);
+  }
+  html[data-ui="v2"] .v2-live-ring::before { content: ""; position: absolute; inset: 5px; border-radius: 9999px; background: rgb(var(--c-bg)); }
+  html[data-ui="v2"] .v2-live-ring span { position: relative; z-index: 1; font-family: var(--font-mono); font-size: 11px; font-weight: 800; color: rgb(var(--c-text)); }
+  html[data-ui="v2"] #live-workout-head { background: radial-gradient(ellipse 70% 80% at 50% 0%, rgba(124,92,255,.12), transparent 70%); }
+  html[data-ui="v2"] #live-workout-head .grid > div { border-radius: 16px; }
+  html[data-ui="v2"][data-mode="dark"] #live-workout-exercises .v2-src-bf .ex-anim-container,
+  html[data-ui="v2"][data-mode="dark"] #live-workout-exercises .v2-src-gv .ex-anim-container,
+  html[data-ui="v2"][data-mode="dark"] #live-workout-exercises .v2-src-bf .w-20.relative,
+  html[data-ui="v2"][data-mode="dark"] #live-workout-exercises .v2-src-gv .w-20.relative {
+    background: radial-gradient(ellipse 80% 80% at 50% 35%, #101c3a 0%, #070d1e 72%, #040713 100%);
+    border-radius: 13px;
+  }
+  html[data-ui="v2"][data-mode="dark"] #live-workout-exercises .v2-src-bf img,
+  html[data-ui="v2"][data-mode="dark"] #live-workout-exercises .v2-src-gv img {
+    filter: invert(1) brightness(1.18) contrast(1.04);
+    mix-blend-mode: screen;
+  }
+  html[data-ui="v2"] #live-workout-exercises > [data-exercise-idx] {
+    border-radius: 22px !important;
+    border-color: var(--v2-border) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 18px 42px -28px rgba(0,0,0,.9);
+    transition: border-color .18s, box-shadow .18s;
+  }
+  html[data-ui="v2"] #live-workout-exercises > [data-exercise-idx]:hover { border-color: var(--v2-border-strong) !important; box-shadow: 0 22px 48px -28px rgb(var(--v2-glow) / .45), inset 0 1px 0 rgba(255,255,255,.08); }
+  html[data-ui="v2"] #live-bottom-actions {
+    position: sticky; bottom: 12px; z-index: 25;
+    padding: 9px; border-radius: 18px;
+    background: var(--v2-glass-bg); border: 1px solid var(--v2-border);
+    backdrop-filter: blur(24px) saturate(135%);
+    box-shadow: 0 22px 60px -24px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.08);
+  }
+  html[data-ui="v2"] #live-bottom-actions button { border-radius: 12px; }
+  html[data-ui="v2"] #rest-timer { border-radius: 0 0 18px 18px; background: var(--v2-glass-bg) !important; border-color: var(--v2-border) !important; }
+  @media (max-width: 1023px) { html[data-ui="v2"] #live-bottom-actions { bottom: calc(var(--space-nav-h) + 12px); } }
+  @media (max-width: 640px) { html[data-ui="v2"] .v2-live-ring { width: 52px; height: 52px; } html[data-ui="v2"] .v2-live-ring span { font-size: 9px; } }
+
   /* shared polish */
   html[data-ui="v2"] #profile-name { font-size: clamp(26px, 3vw, 38px); letter-spacing: -.045em; }
   html[data-ui="v2"] .prog-bar { background: rgba(255,255,255,.08); border-radius: 9999px; overflow: hidden; }
@@ -3382,6 +3432,23 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
   html[data-ui="v2"] .atlas-btn { background: var(--v2-glass-bg); border-color: var(--v2-border); backdrop-filter: blur(16px); border-radius: 9999px; }
   html[data-ui="v2"] .atlas-ex-btn { border-radius: 9999px; }
   html[data-ui="v2"] .atlas-chip-g { background: var(--v2-glass-bg); border-color: var(--v2-border); }
+  html[data-ui="v2"] #atlas-info {
+    top: 16px; right: 16px; left: auto; transform: none;
+    width: min(300px, 34vw); padding: 14px; border-radius: 18px;
+    background: var(--v2-glass-bg) !important; border: 1px solid var(--v2-border-strong);
+    box-shadow: var(--v2-glass-shadow); backdrop-filter: blur(26px) saturate(135%);
+    text-align: start;
+  }
+  html[data-ui="v2"] #atlas-info .atlas-info-row { justify-content: flex-start; flex-wrap: wrap; margin-top: 8px; }
+  html[data-ui="v2"] #atlas-panel { width: 232px; }
+  html[data-ui="v2"] #atlas-panel .p-2 { padding: 10px; }
+  html[data-ui="v2"] #atlas-search { background: var(--v2-input-bg) !important; border-color: var(--v2-border) !important; border-radius: 11px; }
+  html[data-ui="v2"] #atlas-list { padding: 8px; }
+  html[data-ui="v2"] .atlas-region-btn { padding: 7px 8px; }
+  html[data-ui="v2"] .atlas-region-btn .atlas-region-c { color: rgb(var(--c-muted)); }
+  @media (max-width: 640px) {
+    html[data-ui="v2"] #atlas-info { top: auto; bottom: 92px; right: 12px; left: 12px; width: auto; }
+  }
   html[data-ui="v2"] #atlas-canvas, html[data-ui="v2"] .b3d-canvas {
     filter: saturate(.9) hue-rotate(-6deg) brightness(1.04) drop-shadow(0 0 28px rgba(34,211,238,.18));
   }
@@ -3654,7 +3721,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           </div>
           <div class="flex items-center gap-2 mb-3">
             <span class="v2-pill v2-pill-live"><span class="w-1.5 h-1.5 rounded-full bg-success"></span> <span data-i18n="clients.online">Online</span></span>
-            <span class="v2-pill" id="v2-side-version">c197</span>
+            <span class="v2-pill" id="v2-side-version">c198</span>
           </div>
         </div>
 
@@ -3801,7 +3868,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c197</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c198</p>
             </div>
           </div>
 
@@ -4148,12 +4215,15 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 <!-- c175: the portal's hero progress bar — the ids already existed
                      and were fed by updateProgressBar(), but no element ever
                      rendered them; now the head shows real set progress too -->
-                <div class="mt-3">
-                  <div class="flex justify-between text-[10px] text-muted mb-1">
-                    <span id="workout-progress-label">0 / 0</span>
-                    <span id="workout-progress-pct">0%</span>
+                <div class="mt-3 flex items-center gap-3">
+                  <div class="v2-live-ring" id="live-progress-ring" style="--p:0%"><span id="live-ring-pct">0%</span></div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex justify-between text-[10px] text-muted mb-1">
+                      <span id="workout-progress-label">0 / 0</span>
+                      <span id="workout-progress-pct">0%</span>
+                    </div>
+                    <div class="prog-bar"><div id="workout-progress-bar" class="prog-bar-fill" style="width:0%"></div></div>
                   </div>
-                  <div class="prog-bar"><div id="workout-progress-bar" class="prog-bar-fill" style="width:0%"></div></div>
                 </div>
               </div>
             </div>
@@ -17986,6 +18056,10 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       }
       const fullEx = _exMap.get(ex.exercise_id);
       const exImgs = fullEx ? (fullEx.images || fullEx.i || []) : [];
+      const _srcCode = fullEx ? (fullEx.source === 'repdb' || fullEx.src === 'rdb' ? 'rdb'
+        : (fullEx.source === 'gymvisual' || fullEx.src === 'gv' ? 'gv'
+        : (fullEx.source === 'burnfit' || fullEx.src === 'bf' ? 'bf'
+        : (fullEx.source === 'gymimpulse' || fullEx.src === 'gi' ? 'gi' : 'pg')))) : 'pg';
       const lang = currentLang();
       const technique = fullEx ? (fullEx['technique_' + lang] || fullEx.t || fullEx.tRu || fullEx.tHe || '') : '';
       const equipment = fullEx ? (fullEx['equipment_' + lang] || fullEx.equipment_en || fullEx.eE || '') : '';
@@ -18026,7 +18100,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         : `<button type="button" class="w-full text-center text-[9px] font-bold uppercase tracking-wide rounded-lg border border-border bg-surface-2 text-muted py-1 px-0.5 leading-tight cursor-pointer transition" data-tunit-col data-tunit-base="${t('workouts.time')}">${t('workouts.time')} · ${dkTUnitShort()}</button>`;
 
       return `
-        <div class="glass rounded-2xl p-4 space-y-3 fade-in" ${_liveChain ? `style="${window.dkSSStyle(_liveChain.gi)}"` : ''} data-exercise-idx="${idx}">
+        <div class="glass rounded-2xl p-4 space-y-3 fade-in v2-src-${_srcCode}" ${_liveChain ? `style="${window.dkSSStyle(_liveChain.gi)}"` : ''} data-exercise-idx="${idx}">
           <!-- Exercise header (portal layout) -->
           <div class="flex items-start justify-between gap-2">
             ${thumbHtml}
@@ -18800,6 +18874,10 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       if (bar) bar.style.width = pct + '%';
       if (label) label.textContent = t('workouts.setsCompleted', { done: doneSets, total: totalSets });
       if (pctEl) pctEl.textContent = pct + '%'; /* c175: portal-hero parity */
+      const ring = document.getElementById('live-progress-ring');
+      if (ring) ring.style.setProperty('--p', pct + '%');
+      const ringPct = document.getElementById('live-ring-pct');
+      if (ringPct) ringPct.textContent = pct + '%';
       /* c119: mirror the completion % into the header dumbbell (runs on every set ✓/✕) */
       try { if (typeof dkDumbbellPctSync === 'function') dkDumbbellPctSync(); } catch (_e) {}
     }
@@ -35745,7 +35823,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 197; /* numeric part of dk-build c197 */
+  var RUNNING = 198; /* numeric part of dk-build c198 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

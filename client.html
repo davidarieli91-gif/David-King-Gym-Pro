@@ -2431,6 +2431,25 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
   html[data-ui="v2"] .border-border { border-color: var(--v2-border) !important; }
   html[data-ui="v2"] .font-display { font-family: var(--font-display); letter-spacing: -.025em; }
   html[data-ui="v2"] button.bg-primary, html[data-ui="v2"] a.bg-primary { background: var(--v2-primary-grad) !important; border-color: transparent !important; color: #fff !important; box-shadow: 0 14px 34px -14px rgb(var(--v2-glow) / .75), inset 0 1px 0 rgba(255,255,255,.28); }
+  html[data-ui="v2"] #client-card {
+    background: linear-gradient(150deg, rgba(124,92,255,.18), rgba(34,211,238,.05)), var(--v2-glass-bg) !important;
+    border: 1px solid var(--v2-border-strong) !important;
+    box-shadow: var(--v2-glass-shadow), 0 0 42px rgb(var(--v2-glow) / .12);
+  }
+  html[data-ui="v2"] #client-card .prog-bar { background: rgba(255,255,255,.08); border-radius: 9999px; overflow: hidden; }
+  html[data-ui="v2"] #client-card .prog-bar-fill { background: var(--v2-primary-grad); box-shadow: 0 0 14px rgb(var(--v2-glow) / .55); }
+  html[data-ui="v2"][data-mode="dark"] [data-src="bf"] .ex-anim-container,
+  html[data-ui="v2"][data-mode="dark"] [data-src="gv"] .ex-anim-container,
+  html[data-ui="v2"][data-mode="dark"] [data-src="bf"].ex-anim-container,
+  html[data-ui="v2"][data-mode="dark"] [data-src="gv"].ex-anim-container {
+    background: radial-gradient(ellipse 80% 80% at 50% 35%, #101c3a 0%, #070d1e 72%, #040713 100%);
+    border-radius: 13px;
+  }
+  html[data-ui="v2"][data-mode="dark"] [data-src="bf"] img,
+  html[data-ui="v2"][data-mode="dark"] [data-src="gv"] img {
+    filter: invert(1) brightness(1.18) contrast(1.04);
+    mix-blend-mode: screen;
+  }
   html[data-ui="v2"] .bm-chip { background: rgba(255,255,255,.045); border-color: var(--v2-border); color: rgb(var(--c-muted)); }
   html[data-ui="v2"] .bm-chip.active { background: var(--v2-primary-grad); border-color: transparent; color: #fff; }
   html[data-ui="v2"] nav.bottom-nav, html[data-ui="v2"] nav.fixed.bottom-0 { background: var(--v2-glass-bg) !important; border-color: var(--v2-border) !important; backdrop-filter: blur(26px) saturate(135%); }
@@ -7264,8 +7283,13 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       const thumbHtml = (() => {
         /* c103: slightly bigger thumbnail (w-20 h-20 / sm:w-24 sm:h-24) — the live
            workout card now renders the EXACT same size for full parity */
-        if (imgs.length >= 2) return `<div class="ex-anim-container w-20 h-20 sm:w-24 sm:h-24 shrink-0 cursor-pointer" data-open-exercise><img src="${escapeAttr(imgs[0])}" alt="" class="ex-anim-frame-1" loading="lazy" /><img src="${escapeAttr(imgs[1])}" alt="" class="ex-anim-frame-2" loading="lazy" /></div>`;
-        if (img) return `<div class="relative w-20 h-20 sm:w-24 sm:h-24 shrink-0 cursor-pointer" data-open-exercise><img src="${escapeAttr(img)}" alt="" class="ex-img w-full h-full object-cover" loading="lazy" />${exData && exData.gif ? '<span class="absolute bottom-0.5 end-0.5 text-[8px] font-bold px-1 py-0.5 rounded bg-black/60 text-white">▶</span>' : ''}</div>`;
+        const _srcRaw = String((exData && (exData.source || exData.src)) || '');
+        const _srcCode = _srcRaw === 'repdb' || _srcRaw === 'rdb' ? 'rdb'
+          : (_srcRaw === 'gymvisual' || _srcRaw === 'gv' ? 'gv'
+          : (_srcRaw === 'burnfit' || _srcRaw === 'bf' ? 'bf'
+          : (_srcRaw === 'gymimpulse' || _srcRaw === 'gi' ? 'gi' : 'pg')));
+        if (imgs.length >= 2) return `<div class="ex-anim-container w-20 h-20 sm:w-24 sm:h-24 shrink-0 cursor-pointer" data-src="${_srcCode}" data-open-exercise><img src="${escapeAttr(imgs[0])}" alt="" class="ex-anim-frame-1" loading="lazy" /><img src="${escapeAttr(imgs[1])}" alt="" class="ex-anim-frame-2" loading="lazy" /></div>`;
+        if (img) return `<div class="relative w-20 h-20 sm:w-24 sm:h-24 shrink-0 cursor-pointer" data-src="${_srcCode}" data-open-exercise><img src="${escapeAttr(img)}" alt="" class="ex-img w-full h-full object-cover" loading="lazy" />${exData && exData.gif ? '<span class="absolute bottom-0.5 end-0.5 text-[8px] font-bold px-1 py-0.5 rounded bg-black/60 text-white">▶</span>' : ''}</div>`;
         const v = (typeof window.exerciseVectorIllustration==='function') ? window.exerciseVectorIllustration(exData||ex,{both:false,size:96}) : '';
         return v ? `<div class="w-20 h-20 sm:w-24 sm:h-24 shrink-0 grid place-items-center cursor-pointer" data-open-exercise>${v}</div>` : '';
       })();
