@@ -33320,9 +33320,9 @@ document.addEventListener('DOMContentLoaded', function () {
         btn.id = 'pwa-install-btn';
         // i18n fix (2026-08 QA #6): use translation if available, fall back to EN/RU
         btn.innerHTML = '📥 ' + ((typeof t === 'function' && t('common.installApp')) || 'Install app');
-        btn.style.cssText = 'position:fixed;bottom:80px;right:16px;z-index:50;background:#10b981;color:#fff;border:none;border-radius:12px;padding:12px 20px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(16,185,129,0.4);transition:transform .15s, background .15s;';
-        btn.onmouseenter = function() { btn.style.background = '#059669'; btn.style.transform = 'scale(1.05)'; };
-        btn.onmouseleave = function() { btn.style.background = '#10b981'; btn.style.transform = 'scale(1)'; };
+        btn.style.cssText = 'position:fixed;bottom:80px;right:16px;z-index:50;background:linear-gradient(135deg,#8b5cf6 0%,#3b82f6 60%,#22d3ee 120%);color:#fff;border:1px solid rgba(160,200,255,.35);border-radius:14px;padding:12px 20px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 16px 40px -16px rgba(124,92,255,.8),inset 0 1px 0 rgba(255,255,255,.25);transition:transform .15s, filter .15s;backdrop-filter:blur(16px);';
+        btn.onmouseenter = function() { btn.style.filter = 'brightness(1.08)'; btn.style.transform = 'translateY(-2px)'; };
+        btn.onmouseleave = function() { btn.style.filter = 'none'; btn.style.transform = 'translateY(0)'; };
         btn.onclick = installApp;
         document.body.appendChild(btn);
       }
