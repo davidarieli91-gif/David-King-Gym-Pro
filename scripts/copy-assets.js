@@ -7,6 +7,7 @@ const dist = resolve(root, 'dist');
 
 const assets = [
   'exercise-db.json',
+  'exercise-db-rdb.json',
   'food-db.json',
   'manifest.json',
   'manifest-portal.json',

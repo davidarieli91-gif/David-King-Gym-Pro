@@ -752,7 +752,8 @@
     "bulkHint": "Tap to add",
     "addedCheck": "✓ Added",
     "category": "Category",
-    "categoryCardio": "Cardio"
+    "categoryCardio": "Cardio",
+    "sourceRepDB": "RepDB"
   },
   "nutrition": {
     "title": "Nutrition",
@@ -1480,7 +1481,7 @@
     "cloudAccErrGeneric": "Cloud error: {e}",
     "gdriveSave": "Save to Google Drive",
     "gdriveLoad": "Restore from Google Drive",
-    "reseedDb": "Re-seed exercise database (1,660 exercises)",
+    "reseedDb": "Re-seed exercise database (6,273 exercises)",
     "database": "Database",
     "storage": "Storage",
     "indexedDBLocal": "IndexedDB (local)",

@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c191" />
+<meta name="dk-build" content="c192" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -799,6 +799,10 @@
     .bm-muscle-label { font-size: 7px; fill: rgb(var(--c-muted)); pointer-events: none; text-anchor: middle; font-weight: 600; }
     .bm-ex-card { transition: all .12s; }
     .bm-ex-card:active { transform: scale(.95); }
+    /* c192: RepDB single-pose holds get a subtle breathing loop; two-pose
+       records already use the existing CSS crossfade (.ex-anim-container). */
+    @keyframes rdb-breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.025); } }
+    .rdb-card img { transform-origin: center bottom; animation: rdb-breathe 4s ease-in-out infinite; }
     .bm-ex-card img, .bm-ex-card .ex-anim-container img { object-fit: contain !important; }
     #exercise-gif-slot { aspect-ratio: 1 / 1 !important; max-height: 60vh; }
     @media (max-width: 640px) { #exercise-gif-slot { max-height: 50vh; } }
@@ -3604,6 +3608,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                   <button id="bm-tab-bf" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs min-[1440px]:text-[14px] font-semibold transition bg-primary text-white" data-i18n="exercise.sourceBurnfit">Burnfit</button>
                   <button id="bm-tab-gv" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs min-[1440px]:text-[14px] font-semibold transition text-muted" data-i18n="exercise.sourceGymVisual">Gym Visual</button>
                   <button id="bm-tab-gi" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs min-[1440px]:text-[14px] font-semibold transition text-muted" data-i18n="exercise.sourceGymImpulse">GymImpulse</button>
+                  <button id="bm-tab-rdb" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs min-[1440px]:text-[14px] font-semibold transition text-muted" data-i18n="exercise.sourceRepDB">RepDB</button>
                   <button id="bm-tab-favorites" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs font-semibold transition text-muted">⭐</button>
                   <button id="bm-tab-recent" class="shrink-0 px-2.5 py-1 min-[1440px]:px-3 min-[1440px]:py-1.5 rounded-md text-xs font-semibold transition text-muted">🕐</button>
                 </div>
@@ -6374,10 +6379,14 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
      ===================================================================== */
   /** Exercise database is fetched from exercise-db.json at runtime (was: inline script tag — removed). */
   let EXERCISE_DB_RAW = '[]';
+      /* c192: RepDB Free is a SEPARATE source/database. It is fetched and
+         seeded independently so the existing bf/gv/gi bases are never touched. */
+      let EXERCISE_DB_RDB_RAW = '[]';
       let _exerciseDbLoaded = false;
-      // Bump EXERCISE_DB_BUST when exercise-db.json changes — defeats SW/browser
+      let _exerciseDbRdbLoaded = false;
+      // Bump EXERCISE_DB_BUST when exercise-db.json changes - defeats SW/browser
       // cache-first staleness so reseed always unpacks the deployed dataset.
-      const EXERCISE_DB_BUST = 'v54';
+      const EXERCISE_DB_BUST = 'v55';
       async function loadExerciseDbExternal() {
         try {
           const resp = await fetch('exercise-db.json?v=' + EXERCISE_DB_BUST);
@@ -6386,12 +6395,23 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
             _exerciseDbLoaded = true;
           }
         } catch (e) { console.warn('[exercise_db] fetch failed:', e); }
+        try {
+          const rdb = await fetch('exercise-db-rdb.json?v=' + EXERCISE_DB_BUST);
+          if (rdb.ok) {
+            EXERCISE_DB_RDB_RAW = await rdb.text();
+            _exerciseDbRdbLoaded = true;
+          }
+        } catch (e) { console.warn('[exercise_db] RepDB fetch failed:', e); }
       }
 
   /** Unpack the compact exercise database into full records for IndexedDB. */
   function unpackExerciseDB() {
     try {
-      const raw = JSON.parse(EXERCISE_DB_RAW);
+      const base = JSON.parse(EXERCISE_DB_RAW);
+      const rdb = JSON.parse(EXERCISE_DB_RDB_RAW || '[]');
+      /* c192: RepDB is appended for display only. Its records keep source
+         'repdb' and rdb_* ids, so every source filter stays isolated. */
+      const raw = Array.isArray(base) ? base.concat(Array.isArray(rdb) ? rdb : []) : (Array.isArray(rdb) ? rdb : []);
 
       // Group display-name overrides (RU/HE) — match the user's terminology:
       //   triceps → "Разгибатели локтя" (was "Трицепс")
@@ -6635,15 +6655,28 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
         'dumbbells': 'Dumbbell', 'dumbbell': 'Dumbbell',
         'cable': 'Cable',
         'machine': 'Machine', 'smith': 'Machine',
-        'bodyweight': 'Bodyweight', 'pull_up_bar': 'Bodyweight',
+        'bodyweight': 'Bodyweight',
+        'pull_up_bar': 'Pull-up Bar',
+        'dip_station': 'Dip Station',
+        'rings': 'Rings',
+        'rope': 'Rope',
+        'climbing_rope': 'Rope',
+        'bench': 'Bench', 'flat_bench': 'Bench',
+        'box': 'Box', 'plyo_box': 'Box',
+        'ab_wheel': 'Ab Wheel',
+        'battle_rope': 'Battle Rope',
+        'medicine_ball': 'Medicine Ball', 'slam_ball': 'Medicine Ball',
+        'stability_ball': 'Stability Ball',
+        'suspension': 'Suspension', 'suspension_trainer': 'Suspension',
+        'trap_bar': 'Trap Bar',
+        'cardio_machine': 'Cardio Machine',
         'exercise_ball': 'Bodyweight', 'bosu': 'Bodyweight',
         'foam_roll': 'Bodyweight',
         'kettlebells': 'Kettlebell', 'kettlebell': 'Kettlebell',
         'bands': 'Band', 'band': 'Band',
         'ez_bar': 'EZ-Bar', 'ez-bar': 'EZ-Bar',
-        'medicine_ball': 'Plate',
-        'plate': 'Plate',
-        'other': 'Bodyweight'
+        'plate': 'Plate', 'plates': 'Plate',
+        'other': 'Other'
       };
 
       function normalizeEquipment(e) {
@@ -6663,7 +6696,12 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
         const groupHe = GROUP_HE_OVERRIDES[e.g] || e.gH;
         return {
           id: e.id,
-          source: (e.src === 'mm' ? 'muscle_motion' : (e.src === 'bf' ? 'burnfit' : (e.src === 'gv' ? 'gymvisual' : (e.src === 'gi' ? 'gymimpulse' : 'private_gym')))),
+          source: (e.src === 'rdb' ? 'repdb' : (e.src === 'mm' ? 'muscle_motion' : (e.src === 'bf' ? 'burnfit' : (e.src === 'gv' ? 'gymvisual' : (e.src === 'gi' ? 'gymimpulse' : 'private_gym'))))),
+          source_id: e.src === 'rdb' ? String(e.id).replace(/^rdb_/, '') : e.id,
+          attribution: e.attribution || '',
+          source_url: e.source_url || '',
+          is_bodyweight: !!e.is_bodyweight,
+          met: e.met || null,
           group_canonical: e.g,
           group_en: e.gE, group_ru: groupRu, group_he: groupHe,
           subgroup_en: subgroup, subgroup_ru: subgroup, subgroup_he: subgroup,
@@ -6764,6 +6802,19 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     'Cable': {en:'Cable',ru:'Кроссовер',he:'כבל'},
     'Machine': {en:'Machine',ru:'Тренажёр',he:'מכשיר'},
     'Bodyweight': {en:'Bodyweight',ru:'Вес тела',he:'משקל גוף'},
+    'Pull-up Bar': {en:'Pull-up Bar',ru:'??????',he:'???'},
+    'Dip Station': {en:'Dip Station',ru:'??????',he:'???????'},
+    'Rings': {en:'Rings',ru:'??????',he:'?????'},
+    'Rope': {en:'Rope',ru:'?????',he:'???'},
+    'Bench': {en:'Bench',ru:'??????',he:'????'},
+    'Box': {en:'Box',ru:'?????',he:'????'},
+    'Ab Wheel': {en:'Ab Wheel',ru:'?????? ??? ??????',he:'????? ???'},
+    'Battle Rope': {en:'Battle Rope',ru:'?????? ?????',he:'??? ???'},
+    'Medicine Ball': {en:'Medicine Ball',ru:'??????',he:'???? ???'},
+    'Stability Ball': {en:'Stability Ball',ru:'??????',he:'???? ??????'},
+    'Suspension': {en:'Suspension',ru:'?????',he:'?????? ?????'},
+    'Trap Bar': {en:'Trap Bar',ru:'????-????',he:'??? ????'},
+    'Cardio Machine': {en:'Cardio Machine',ru:'??????????????',he:'????? ???????'},
     'Kettlebell': {en:'Kettlebell',ru:'Гиря',he:'קטלבל'},
     'Band': {en:'Band',ru:'Резинка',he:'גומייה'},
     'EZ-Bar': {en:'EZ-Bar',ru:'EZ-гриф',he:'EZ בר'},
@@ -7356,12 +7407,33 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     if (force) await db.clear('exercise_base');
     await db.bulkPut('exercise_base', exercises);
     await db.put('settings', { key: 'seeded_exercise_base_v95', value: true });
-    console.info(`[seed] injected ${exercises.length} exercises into exercise_base (bf=${srcCount.burnfit} gv=${srcCount.gymvisual} gi=${srcCount.gymimpulse})`);
+    console.info(`[seed] injected ${exercises.length} exercises into exercise_base (bf=${srcCount.burnfit} gv=${srcCount.gymvisual} gi=${srcCount.gymimpulse} rdb=${srcCount.repdb || 0})`);
     return exercises.length;
   }
 
+  /* c192: add the separate RepDB Free collection without touching bf/gv/gi.
+     Existing devices already have exercise_base seeded, so the normal
+     seedExerciseBase() path intentionally skips them; this function fills
+     only the missing RepDB rows and is idempotent. */
+  async function seedRepDBBase(force = false) {
+    if (!_exerciseDbRdbLoaded) await loadExerciseDbExternal();
+    let all = [];
+    try { all = await db.all('exercise_base'); } catch (_) {}
+    const records = unpackExerciseDB().filter(e => e.source === 'repdb');
+    if (!records.length) {
+      console.warn('[seed] RepDB records missing from exercise-db-rdb.json');
+      return 0;
+    }
+    const have = new Set(all.filter(e => e.source === 'repdb').map(e => e.id));
+    const missing = force ? records : records.filter(e => !have.has(e.id));
+    if (missing.length) await db.bulkPut('exercise_base', missing);
+    await db.put('settings', { key: 'seeded_repdb_v1', value: true });
+    if (missing.length) console.info(`[seed] RepDB added: ${missing.length}/${records.length} (source=repdb, total base=${all.length + missing.length})`);
+    return records.length;
+  }
+
   /* =====================================================================
-     IMAGE PATH HEAL (c16) — 2026-09-09
+     IMAGE PATH HEAL (c16) - 2026-09-09
      Devices that seeded exercise_base before the v19 WebP migration keep
      Burnfit records pointing at images/bf_*.gif — those files no longer
      exist on the server (converted to .webp, some renamed), so the exercise
@@ -12433,10 +12505,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         const root = { children: {
           muscle_motion: { name: 'muscle_motion', label: 'Muscle Motion', pathKey: 'muscle_motion', children: {}, exercises: [] },
           private_gym: { name: 'private_gym', label: 'Private Gym', pathKey: 'private_gym', children: {}, exercises: [] },
-          burnfit: { name: 'burnfit', label: 'Burnfit', pathKey: 'burnfit', children: {}, exercises: [] }
+          burnfit: { name: 'burnfit', label: 'Burnfit', pathKey: 'burnfit', children: {}, exercises: [] },
+          repdb: { name: 'repdb', label: 'RepDB', pathKey: 'repdb', children: {}, exercises: [] }
         }, exercises: [] };
         filtered.forEach(e => {
-          const sourceKey = e.source === 'muscle_motion' ? 'muscle_motion' : (e.source === 'burnfit' ? 'burnfit' : 'private_gym');
+          const sourceKey = e.source === 'muscle_motion' ? 'muscle_motion' : (e.source === 'burnfit' ? 'burnfit' : (e.source === 'repdb' ? 'repdb' : 'private_gym'));
           const sourceNode = root.children[sourceKey];
           // folder_path is now [group] or [group, subgroup] — no equipment level
           const path = e.folder_path && e.folder_path.length > 0
@@ -12478,8 +12551,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               if (child.exercises.length > 0) {
                 child.exercises.forEach(e => {
                   const name = e['name_' + lang] || e.name_en || '?';
-                  const src = e.source === 'gymvisual' ? 'GV' : (e.source === 'gymimpulse' ? 'GI' : (e.source === 'burnfit' ? 'BF' : 'BF'));
-                  const srcClass = e.source === 'gymvisual' ? 'bg-warning/15 text-warning' : (e.source === 'gymimpulse' ? 'bg-accent/15 text-accent' : 'bg-success/15 text-success');
+                  const src = e.source === 'repdb' ? 'RDB' : (e.source === 'gymvisual' ? 'GV' : (e.source === 'gymimpulse' ? 'GI' : (e.source === 'burnfit' ? 'BF' : 'BF')));
+                  const srcClass = e.source === 'repdb' ? 'bg-primary/15 text-primary-2' : (e.source === 'gymvisual' ? 'bg-warning/15 text-warning' : (e.source === 'gymimpulse' ? 'bg-accent/15 text-accent' : 'bg-success/15 text-success'));
                   const hasPhoto = e.images && e.images.length > 0;
                   html += `<div data-pb-pick="${escapeAttr(e.id)}" class="flex items-center gap-2 bg-surface-2 border border-border rounded-lg p-2 hover:bg-border/30 hover:border-primary/30 transition cursor-pointer" style="margin-inline-start: ${(depth + 1) * 16 + 8}px">
                     <div class="w-7 h-7 rounded-lg shrink-0 overflow-hidden bg-surface border border-border grid place-items-center">
@@ -12530,8 +12603,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         list.innerHTML = filtered.map(e => {
           const name = e['name_' + lang] || e.name_en || '?';
           const group = e['group_' + lang] || e.group_en || '';
-          const src = e.source === 'gymvisual' ? 'GV' : (e.source === 'gymimpulse' ? 'GI' : (e.source === 'burnfit' ? 'BF' : 'BF'));
-          const srcClass = e.source === 'gymvisual' ? 'bg-warning/15 text-warning' : (e.source === 'gymimpulse' ? 'bg-accent/15 text-accent' : 'bg-success/15 text-success');
+          const src = e.source === 'repdb' ? 'RDB' : (e.source === 'gymvisual' ? 'GV' : (e.source === 'gymimpulse' ? 'GI' : (e.source === 'burnfit' ? 'BF' : 'BF')));
+          const srcClass = e.source === 'repdb' ? 'bg-primary/15 text-primary-2' : (e.source === 'gymvisual' ? 'bg-warning/15 text-warning' : (e.source === 'gymimpulse' ? 'bg-accent/15 text-accent' : 'bg-success/15 text-success'));
           const hasPhoto = e.images && e.images.length > 0;
           return `<div data-pb-pick="${escapeAttr(e.id)}" class="flex items-center gap-3 bg-surface-2 border border-border rounded-xl p-3 hover:bg-border/30 hover:border-primary/30 transition cursor-pointer">
             <div class="w-9 h-9 rounded-lg shrink-0 overflow-hidden bg-surface border border-border grid place-items-center">
@@ -14673,8 +14746,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         if (node.exercises.length > 0) {
           node.exercises.forEach(e => {
             const name = exName(e);
-            const src = e.source === 'gymvisual' ? 'GV' : (e.source === 'gymimpulse' ? 'GI' : (e.source === 'burnfit' ? 'BF' : 'BF'));
-            const srcClass = e.source === 'gymvisual' ? 'bg-warning/15 text-warning' : (e.source === 'gymimpulse' ? 'bg-accent/15 text-accent' : 'bg-success/15 text-success');
+            const src = e.source === 'repdb' ? 'RDB' : (e.source === 'gymvisual' ? 'GV' : (e.source === 'gymimpulse' ? 'GI' : (e.source === 'burnfit' ? 'BF' : 'BF')));
+            const srcClass = e.source === 'repdb' ? 'bg-primary/15 text-primary-2' : (e.source === 'gymvisual' ? 'bg-warning/15 text-warning' : (e.source === 'gymimpulse' ? 'bg-accent/15 text-accent' : 'bg-success/15 text-success'));
             const hasPhoto = e.images && e.images.length > 0;
             const hasVideo = e.video_url && extractYouTubeId(e.video_url);
             html += `<div data-exercise-id="${escAttr(e.id)}" class="exercise-card flex items-center gap-2 bg-surface-2 border border-border rounded-lg p-2 hover:bg-border/30 hover:border-primary/30 transition cursor-pointer" style="margin-inline-start: ${(depth + 1) * 20}px"${_editMode ? ' draggable="true"' : ''}>
@@ -17674,7 +17747,10 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     }
 
     /** Open the exercise picker modal. */
-    function openPicker() {
+    async function openPicker() {
+      // c192: refresh before opening so a picker cached during boot also sees
+      // the separate RepDB source (seedRepDBBase can finish after earlier caches).
+      await loadExerciseCache();
       // Use Body Map Picker for fast exercise selection
       bodyMapPicker.open((ex) => {
         addExerciseById(ex.id);
@@ -17701,10 +17777,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         const root = { children: {
           burnfit: { name: 'burnfit', label: 'Burnfit', pathKey: 'burnfit', children: {}, exercises: [] },
           gymvisual: { name: 'gymvisual', label: 'Gym Visual', pathKey: 'gymvisual', children: {}, exercises: [] },
-          gymimpulse: { name: 'gymimpulse', label: 'GymImpulse', pathKey: 'gymimpulse', children: {}, exercises: [] }
+          gymimpulse: { name: 'gymimpulse', label: 'GymImpulse', pathKey: 'gymimpulse', children: {}, exercises: [] },
+          repdb: { name: 'repdb', label: 'RepDB', pathKey: 'repdb', children: {}, exercises: [] }
         }, exercises: [] };
         filtered.forEach(e => {
-          const sourceKey = e.source === 'gymvisual' ? 'gymvisual' : (e.source === 'gymimpulse' ? 'gymimpulse' : 'burnfit');
+          const sourceKey = e.source === 'repdb' ? 'repdb' : (e.source === 'gymvisual' ? 'gymvisual' : (e.source === 'gymimpulse' ? 'gymimpulse' : 'burnfit'));
           const sourceNode = root.children[sourceKey];
           const path = e.folder_path || [e.group_canonical || 'other', 'general', e.equipment_type || 'other'];
           let node = sourceNode;
@@ -17752,8 +17829,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               if (child.exercises.length > 0) {
                 child.exercises.forEach(e => {
                   const name = e['name_' + lang] || e.name_en || '?';
-                  const src = e.source === 'gymvisual' ? 'GV' : (e.source === 'gymimpulse' ? 'GI' : (e.source === 'burnfit' ? 'BF' : 'BF'));
-                  const srcClass = e.source === 'gymvisual' ? 'bg-warning/15 text-warning' : (e.source === 'gymimpulse' ? 'bg-accent/15 text-accent' : 'bg-success/15 text-success');
+                  const src = e.source === 'repdb' ? 'RDB' : (e.source === 'gymvisual' ? 'GV' : (e.source === 'gymimpulse' ? 'GI' : (e.source === 'burnfit' ? 'BF' : 'BF')));
+                  const srcClass = e.source === 'repdb' ? 'bg-primary/15 text-primary-2' : (e.source === 'gymvisual' ? 'bg-warning/15 text-warning' : (e.source === 'gymimpulse' ? 'bg-accent/15 text-accent' : 'bg-success/15 text-success'));
                   const hasPhoto = e.images && e.images.length > 0;
                   html += `<div data-pick-exercise="${escapeAttr(e.id)}" class="flex items-center gap-2 bg-surface-2 border border-border rounded-lg p-2 hover:bg-border/30 hover:border-primary/30 transition cursor-pointer" style="margin-inline-start: ${(depth + 1) * 16 + 8}px">
                     <div class="w-7 h-7 rounded-lg shrink-0 overflow-hidden bg-surface border border-border grid place-items-center">
@@ -17791,8 +17868,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         list.innerHTML = filtered.map(e => {
           const name = e['name_' + lang] || e.name_en || '?';
           const group = e['group_' + lang] || e.group_en || '';
-          const src = e.source === 'gymvisual' ? 'GV' : (e.source === 'gymimpulse' ? 'GI' : (e.source === 'burnfit' ? 'BF' : 'BF'));
-          const srcClass = e.source === 'gymvisual' ? 'bg-warning/15 text-warning' : (e.source === 'gymimpulse' ? 'bg-accent/15 text-accent' : 'bg-success/15 text-success');
+          const src = e.source === 'repdb' ? 'RDB' : (e.source === 'gymvisual' ? 'GV' : (e.source === 'gymimpulse' ? 'GI' : (e.source === 'burnfit' ? 'BF' : 'BF')));
+          const srcClass = e.source === 'repdb' ? 'bg-primary/15 text-primary-2' : (e.source === 'gymvisual' ? 'bg-warning/15 text-warning' : (e.source === 'gymimpulse' ? 'bg-accent/15 text-accent' : 'bg-success/15 text-success'));
           const hasPhoto = e.images && e.images.length > 0;
           return `
             <div data-pick-exercise="${escapeAttr(e.id)}" class="flex items-center gap-3 bg-surface-2 border border-border rounded-xl p-3 hover:bg-border/30 hover:border-primary/30 transition cursor-pointer">
@@ -20041,9 +20118,10 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const tabBF = document.getElementById('bm-tab-bf');
       const tabGV = document.getElementById('bm-tab-gv');
       const tabGI = document.getElementById('bm-tab-gi');
+      const tabRDB = document.getElementById('bm-tab-rdb');
       const tabAll = document.getElementById('bm-tab-all');
       const setActiveTab = (active) => {
-        [tabAll, tabBF, tabGV, tabGI].forEach(btn => {
+        [tabAll, tabBF, tabGV, tabGI, tabRDB].forEach(btn => {
           if (!btn) return;
           if (btn === active) { btn.classList.add('bg-primary','text-white'); btn.classList.remove('text-muted'); }
           else { btn.classList.remove('bg-primary','text-white'); btn.classList.add('text-muted'); }
@@ -20082,6 +20160,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       if (tabBF) tabBF.onclick = () => { _tab = 'body'; _favOnly = false; _sourceFilter = 'burnfit'; resetSourceFilters(); setActiveTab(tabBF); renderAll(); };
       if (tabGV) tabGV.onclick = () => { _tab = 'body'; _favOnly = false; _sourceFilter = 'gymvisual'; resetSourceFilters(); setActiveTab(tabGV); renderAll(); };
       if (tabGI) tabGI.onclick = () => { _tab = 'body'; _favOnly = false; _sourceFilter = 'gymimpulse'; resetSourceFilters(); setActiveTab(tabGI); renderAll(); };
+      if (tabRDB) tabRDB.onclick = () => { _tab = 'body'; _favOnly = false; _sourceFilter = 'repdb'; resetSourceFilters(); setActiveTab(tabRDB); renderAll(); };
       const tabFav = document.getElementById('bm-tab-favorites');
       if (tabFav) tabFav.onclick = () => { _tab = 'favorites'; _favOnly = true; _sourceFilter = null; resetSourceFilters(); setActiveTab(null); renderAll(); };
       const tabRecent = document.getElementById('bm-tab-recent');
@@ -20546,6 +20625,19 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         cable: { en: 'Cable', ru: 'Кроссовер', he: 'כבלים' },
         machine: { en: 'Machine', ru: 'Тренажёр', he: 'מכונה' },
         bodyweight: { en: 'Bodyweight', ru: 'Вес тела', he: 'משקל גוף' },
+      pull_up_bar: { en: 'Pull-up Bar', ru: '??????', he: '???' },
+      dip_station: { en: 'Dip Station', ru: '??????', he: '???????' },
+      rings: { en: 'Rings', ru: '??????', he: '?????' },
+      rope: { en: 'Rope', ru: '?????', he: '???' },
+      bench: { en: 'Bench', ru: '??????', he: '????' },
+      box: { en: 'Box', ru: '?????', he: '????' },
+      ab_wheel: { en: 'Ab Wheel', ru: '?????? ??? ??????', he: '????? ???' },
+      battle_rope: { en: 'Battle Rope', ru: '?????? ?????', he: '??? ???' },
+      medicine_ball: { en: 'Medicine Ball', ru: '??????', he: '???? ???' },
+      stability_ball: { en: 'Stability Ball', ru: '??????', he: '???? ??????' },
+      suspension: { en: 'Suspension', ru: '?????', he: '?????? ?????' },
+      trap_bar: { en: 'Trap Bar', ru: '????-????', he: '??? ????' },
+      cardio_machine: { en: 'Cardio Machine', ru: '??????????????', he: '????? ???????' },
         kettlebell: { en: 'Kettlebells', ru: 'Гири', he: 'קטלבלים' },
         kettlebells: { en: 'Kettlebells', ru: 'Гири', he: 'קטלבלים' },
         band: { en: 'Bands', ru: 'Резинки', he: 'גומיות' },
@@ -20735,8 +20827,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         const img2 = imgs[1] || '';
         const id = e.id;
         const isFav = _favorites.includes(id);
-        const src = e.source === 'muscle_motion' || e.src === 'mm' ? 'MM' : (e.source === 'burnfit' || e.src === 'bf' ? 'BF' : (e.source === 'gymvisual' || e.src === 'gv' ? 'GV' : (e.source === 'gymimpulse' || e.src === 'gi' ? 'GI' : 'PG')));
-        const srcClass = src === 'MM' ? 'bg-accent/15 text-accent' : (src === 'BF' ? 'bg-success/15 text-success' : (src === 'GV' ? 'bg-warning/15 text-warning' : (src === 'GI' ? 'bg-accent/15 text-accent' : 'bg-primary/15 text-primary-2')));
+        const src = e.source === 'repdb' || e.src === 'rdb' ? 'RDB' : (e.source === 'muscle_motion' || e.src === 'mm' ? 'MM' : (e.source === 'burnfit' || e.src === 'bf' ? 'BF' : (e.source === 'gymvisual' || e.src === 'gv' ? 'GV' : (e.source === 'gymimpulse' || e.src === 'gi' ? 'GI' : 'PG'))));
+        const srcClass = src === 'RDB' ? 'bg-primary/15 text-primary-2' : (src === 'MM' ? 'bg-accent/15 text-accent' : (src === 'BF' ? 'bg-success/15 text-success' : (src === 'GV' ? 'bg-warning/15 text-warning' : (src === 'GI' ? 'bg-accent/15 text-accent' : 'bg-primary/15 text-primary-2'))));
         const hasVector = typeof exerciseVectorIllustration === 'function';
         const vectorHtml = hasVector ? exerciseVectorIllustration(e, { both: false, size: 140 }) : '';
         const imgHtml = img1 && img2
@@ -20749,7 +20841,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             ? `<img src="${esc(e.gif)}" alt="" class="w-full h-full object-cover" loading="lazy"/>`
             : `<img src="${esc(img1)}" alt="" class="w-full h-full object-cover" loading="lazy"/>`)
           : (vectorHtml || `<div class="w-full h-full grid place-items-center"><svg class="w-8 h-8 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>`);
-        return `<div class="bm-ex-card bg-surface-2 border border-border rounded-xl overflow-hidden hover:border-primary/30 transition cursor-pointer" data-bm-add="${esc(id)}">
+        return `<div class="bm-ex-card${e.source === 'repdb' ? ' rdb-card' : ''} bg-surface-2 border border-border rounded-xl overflow-hidden hover:border-primary/30 transition cursor-pointer" data-bm-add="${esc(id)}">
           <div class="aspect-square bg-surface relative overflow-hidden">
             ${imgHtml}
             <button class="absolute top-1 end-1 w-6 h-6 grid place-items-center rounded-full bg-black/40 text-white z-10" data-bm-fav="${esc(id)}">
@@ -20945,9 +21037,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       grid.innerHTML = favExercises.map(e => {
         const name = e['name_' + lang] || e.name_en || '?';
         const img = e.gif || (e.images && e.images[0]) || (e.i && e.i[0]) || '';
-        const src = e.source === 'muscle_motion' || e.src === 'mm' ? 'MM' : (e.source === 'burnfit' || e.src === 'bf' ? 'BF' : (e.source === 'gymvisual' || e.src === 'gv' ? 'GV' : (e.source === 'gymimpulse' || e.src === 'gi' ? 'GI' : 'PG')));
-        const srcClass = src === 'MM' ? 'bg-accent/15 text-accent' : (src === 'BF' ? 'bg-success/15 text-success' : (src === 'GV' ? 'bg-warning/15 text-warning' : (src === 'GI' ? 'bg-accent/15 text-accent' : 'bg-primary/15 text-primary-2')));
-        return `<div class="bm-ex-card bg-surface-2 border border-border rounded-xl overflow-hidden hover:border-primary/30 transition cursor-pointer" data-bm-add="${esc(e.id)}">
+        const src = e.source === 'repdb' || e.src === 'rdb' ? 'RDB' : (e.source === 'muscle_motion' || e.src === 'mm' ? 'MM' : (e.source === 'burnfit' || e.src === 'bf' ? 'BF' : (e.source === 'gymvisual' || e.src === 'gv' ? 'GV' : (e.source === 'gymimpulse' || e.src === 'gi' ? 'GI' : 'PG'))));
+        const srcClass = src === 'RDB' ? 'bg-primary/15 text-primary-2' : (src === 'MM' ? 'bg-accent/15 text-accent' : (src === 'BF' ? 'bg-success/15 text-success' : (src === 'GV' ? 'bg-warning/15 text-warning' : (src === 'GI' ? 'bg-accent/15 text-accent' : 'bg-primary/15 text-primary-2'))));
+        return `<div class="bm-ex-card${e.source === 'repdb' ? ' rdb-card' : ''} bg-surface-2 border border-border rounded-xl overflow-hidden hover:border-primary/30 transition cursor-pointer" data-bm-add="${esc(e.id)}">
           <div class="aspect-square bg-surface relative">
             ${img ? `<img src="${esc(img)}" alt="" class="w-full h-full object-cover" loading="lazy"/>` : `<div class="w-full h-full grid place-items-center"><svg class="w-8 h-8 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>`}
           </div>
@@ -21003,9 +21095,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       grid.innerHTML = recentExercises.map(e => {
         const name = e['name_' + lang] || e.name_en || '?';
         const img = e.gif || (e.images && e.images[0]) || (e.i && e.i[0]) || '';
-        const src = e.source === 'muscle_motion' || e.src === 'mm' ? 'MM' : (e.source === 'burnfit' || e.src === 'bf' ? 'BF' : (e.source === 'gymvisual' || e.src === 'gv' ? 'GV' : (e.source === 'gymimpulse' || e.src === 'gi' ? 'GI' : 'PG')));
-        const srcClass = src === 'MM' ? 'bg-accent/15 text-accent' : (src === 'BF' ? 'bg-success/15 text-success' : (src === 'GV' ? 'bg-warning/15 text-warning' : (src === 'GI' ? 'bg-accent/15 text-accent' : 'bg-primary/15 text-primary-2')));
-        return `<div class="bm-ex-card bg-surface-2 border border-border rounded-xl overflow-hidden hover:border-primary/30 transition cursor-pointer" data-bm-add="${esc(e.id)}">
+        const src = e.source === 'repdb' || e.src === 'rdb' ? 'RDB' : (e.source === 'muscle_motion' || e.src === 'mm' ? 'MM' : (e.source === 'burnfit' || e.src === 'bf' ? 'BF' : (e.source === 'gymvisual' || e.src === 'gv' ? 'GV' : (e.source === 'gymimpulse' || e.src === 'gi' ? 'GI' : 'PG'))));
+        const srcClass = src === 'RDB' ? 'bg-primary/15 text-primary-2' : (src === 'MM' ? 'bg-accent/15 text-accent' : (src === 'BF' ? 'bg-success/15 text-success' : (src === 'GV' ? 'bg-warning/15 text-warning' : (src === 'GI' ? 'bg-accent/15 text-accent' : 'bg-primary/15 text-primary-2'))));
+        return `<div class="bm-ex-card${e.source === 'repdb' ? ' rdb-card' : ''} bg-surface-2 border border-border rounded-xl overflow-hidden hover:border-primary/30 transition cursor-pointer" data-bm-add="${esc(e.id)}">
           <div class="aspect-square bg-surface relative">
             ${img ? `<img src="${esc(img)}" alt="" class="w-full h-full object-cover" loading="lazy"/>` : `<div class="w-full h-full grid place-items-center"><svg class="w-8 h-8 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>`}
           </div>
@@ -24233,6 +24325,11 @@ Select foods for each meal. Output as JSON only.`;
         const vector = (typeof exerciseVectorIllustration === 'function') ? exerciseVectorIllustration(ex, { both: true }) : '';
         gifSlot.innerHTML = vector || '<div class="text-center text-muted"><p class="text-xs">' + escapeHTML(t('exercise.noImage') || 'No image') + '</p></div>';
       }
+      /* c192: RepDB/other sourced media attribution is shown for every shape,
+         not only the old single-GIF branch. */
+      if (gifSlot && ex.attribution && !(imgs.length === 1 && ex.gif)) {
+        gifSlot.insertAdjacentHTML('beforeend', '<p class="text-[10px] text-muted mt-1">' + escapeHTML(ex.attribution) + '</p>');
+      }
     }
     const techEl = document.getElementById('exercise-technique');
     if (techEl) {
@@ -27307,6 +27404,7 @@ async function boot() {
       }
     await ensureDefaultSettings();
     const seedCount = await seedExerciseBase(false);
+    try { await seedRepDBBase(false); } catch (e) { console.warn('[seed] RepDB seed failed', e); }
     await seedFoodDatabase(false);
     /* c169: pull the corrected categories/subs into an already-seeded base */
     try { await migrateFoodCategoriesC169(); } catch (_e169) {}
@@ -34437,7 +34535,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 191; /* numeric part of dk-build c191 */
+  var RUNNING = 192; /* numeric part of dk-build c192 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
@@ -36201,8 +36299,8 @@ document.addEventListener('input', function (e) {
       var id = e.id;
       var isFav = _favs.indexOf(id) > -1;
       var src = e.source || e.src || '';
-      var code = (src === 'muscle_motion' || src === 'mm') ? 'MM' : ((src === 'burnfit' || src === 'bf') ? 'BF' : ((src === 'gymvisual' || src === 'gv') ? 'GV' : ((src === 'gymimpulse' || src === 'gi') ? 'GI' : 'PG')));
-      var codeCls = code === 'MM' ? 'bg-accent/15 text-accent' : (code === 'BF' ? 'bg-success/15 text-success' : (code === 'GV' ? 'bg-warning/15 text-warning' : (code === 'GI' ? 'bg-accent/15 text-accent' : 'bg-primary/15 text-primary-2')));
+      var code = (src === 'repdb' || src === 'rdb') ? 'RDB' : ((src === 'muscle_motion' || src === 'mm') ? 'MM' : ((src === 'burnfit' || src === 'bf') ? 'BF' : ((src === 'gymvisual' || src === 'gv') ? 'GV' : ((src === 'gymimpulse' || src === 'gi') ? 'GI' : 'PG'))));
+      var codeCls = code === 'RDB' ? 'bg-primary/15 text-primary-2' : (code === 'MM' ? 'bg-accent/15 text-accent' : (code === 'BF' ? 'bg-success/15 text-success' : (code === 'GV' ? 'bg-warning/15 text-warning' : (code === 'GI' ? 'bg-accent/15 text-accent' : 'bg-primary/15 text-primary-2'))));
       var hasVector = (typeof window.exerciseVectorIllustration === 'function');
       var vectorHtml = hasVector ? window.exerciseVectorIllustration(e, { both: false, size: 140 }) : '';
       var imgHtml = (img1 && img2)
@@ -36217,7 +36315,7 @@ document.addEventListener('input', function (e) {
           : (vectorHtml || '<div class="w-full h-full grid place-items-center"><svg class="w-8 h-8 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>'));
       var chips = '';
       try { chips = (typeof window.getExerciseMuscleChips === 'function') ? (window.getExerciseMuscleChips(e, L, { maxAux: 2 }) || '') : ''; } catch (err) {}
-      return '<div class="bm-ex-card bg-surface-2 border border-border rounded-xl overflow-hidden hover:border-primary/30 transition cursor-pointer" data-exb-id="' + esc(id) + '">' +
+      return '<div class="bm-ex-card' + (e.source === 'repdb' ? ' rdb-card' : '') + ' bg-surface-2 border border-border rounded-xl overflow-hidden hover:border-primary/30 transition cursor-pointer" data-exb-id="' + esc(id) + '">' +
         '<div class="aspect-square bg-surface relative overflow-hidden">' + imgHtml +
         '<button class="absolute top-1 end-1 w-6 h-6 grid place-items-center rounded-full bg-black/40 text-white z-10" data-exb-fav="' + esc(id) + '" aria-label="Favorite">' +
         '<svg class="w-3.5 h-3.5 ' + (isFav ? 'text-yellow-400' : 'text-white/60') + '" viewBox="0 0 24 24" fill="' + (isFav ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>' +

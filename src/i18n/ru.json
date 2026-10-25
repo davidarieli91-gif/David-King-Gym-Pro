@@ -752,7 +752,8 @@
     "bulkHint": "Нажимайте для добавления",
     "addedCheck": "✓ Добавлено",
     "category": "Категория",
-    "categoryCardio": "Кардио"
+    "categoryCardio": "Кардио",
+    "sourceRepDB": "RepDB"
   },
   "nutrition": {
     "title": "Питание",
@@ -1480,7 +1481,7 @@
     "cloudAccErrGeneric": "Ошибка облака: {e}",
     "gdriveSave": "Сохранить на Google Drive",
     "gdriveLoad": "Восстановить с Google Drive",
-    "reseedDb": "Пересидировать базу упражнений (9 базовых упражнений)",
+    "reseedDb": "?????????????? ???? ?????????? (6 273 ??????????)",
     "database": "База данных",
     "storage": "Хранилище",
     "indexedDBLocal": "IndexedDB (локально)",
