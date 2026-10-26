@@ -180,6 +180,9 @@
 // v219: c192 - REPDB FREE AS A FOURTH SEPARATE SOURCE: 650 records + 1,147
 // images shipped locally, RepDB tab beside Burnfit / Gym Visual / GymImpulse,
 // separate source/ids, no mixing. Existing bf/gv/gi rows untouched.
+// v227: c200 - SVG anatomy lab: 34 clickable muscles, front/back figures, group
+// rail, inspector, show-exercises bridge; Vision client-profile hero with live
+// anatomy preview; new anatomy-svg.js asset.
 // v226: c199 - Vision V2: nutrition bento (hero, macro rings, fuel gauge, meal
 // timeline, macro rails), anatomy lab chrome (HUD, hover tooltip, inspector,
 // search count/empty state, softened camera focus), day stepper, light-theme QA.
@@ -199,7 +202,7 @@
 // filled (machine pass + manual key names), corrupted equipment labels
 // repaired, and the exercise media slot no longer shrinks to a small square
 // on short/mobile viewports.
-const CACHE_NAME = 'dk-gym-v226'; // c199
+const CACHE_NAME = 'dk-gym-v227'; // c200
 // v104: c77 — UI sizes can no longer change themselves (zoom-based gif/food/cards, wheel/touch slider guards) + hard pre-login lock (Add Client included) + header theme quick menu with all 33 themes
 // v103: c76 — Exercise DB tab = exact Quick Pick copy (star/eye/+ cards, favorites/recent tabs, View grouping, localized map tabs)
 // v102: c75 — 3D atlas 1.5x + Settings ▸ UI sizes (atlas slider, bodymap/exercise-panel fixes) + Exercise DB tab rebuilt as picker-style browse

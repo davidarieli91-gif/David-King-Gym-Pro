@@ -1,4 +1,4 @@
-/* c199 profile client-switch race regression.
+/* c200 profile client-switch race regression.
    A slow async load/render/program query for client A must never paint into
    client B's profile after the trainer switches clients. */
 const fs = require('fs');
@@ -67,9 +67,9 @@ ok('nutrition plans guard stale query', (function () {
 })());
 
 ok('profile render still wires programs', has(crm, 'loadPrograms(c.id);'));
-ok('trainer build c199', has(crm, 'name="dk-build" content="c199"'));
-ok('trainer RUNNING 199', has(crm, 'var RUNNING = 199;'));
-ok('SW cache v226', has(sw, "CACHE_NAME = 'dk-gym-v226'"));
+ok('trainer build c200', has(crm, 'name="dk-build" content="c200"'));
+ok('trainer RUNNING 200', has(crm, 'var RUNNING = 200;'));
+ok('SW cache v227', has(sw, "CACHE_NAME = 'dk-gym-v227'"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 if (fail) process.exitCode = 1;
