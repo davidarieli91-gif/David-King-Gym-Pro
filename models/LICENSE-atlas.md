@@ -1,7 +1,9 @@
 # 3D Body Atlas — model attribution
 
-The 3D model `muscular-system-v1.glb` is a web-optimized derivative (decimation,
-Draco compression, material unification) of the **Z-Anatomy** muscular system model.
+The 3D models `muscular-system-v1.glb` and `z-anatomy-skeleton-v1.glb` are
+web-optimized derivatives (decimation, Draco compression, material unification)
+of the **Z-Anatomy** full-body atlas. The skeleton file contains the skeletal
+system only, joined and decimated to 0.3 for an optional overlay layer.
 
 - **Z-Anatomy** — The libre 3D atlas of anatomy — https://www.z-anatomy.com
   License: **Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)**

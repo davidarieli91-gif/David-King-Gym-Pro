@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* c201 regression — cleanup of the experimental SVG lab + UX fixes. */
+/* c202 regression — cleanup of the experimental SVG lab + UX fixes. */
 const fs = require('fs');
 const path = require('path');
 let pass = 0, fail = 0;
@@ -31,10 +31,10 @@ ok('profile hero portal action kept', crm.indexOf('data-open-portal') >= 0 && cr
 ok('profile hero has real stats', crm.indexOf("t('client.age')") >= 0 && crm.indexOf('BMI') >= 0 && crm.indexOf("t('client.weight')") >= 0);
 ok('i18n profileEyebrow kept in 3 languages', !!(en.client.profileEyebrow && ru.client.profileEyebrow && he.client.profileEyebrow));
 ok('i18n muscleMap key removed', !(en.client.muscleMap || ru.client.muscleMap || he.client.muscleMap));
-ok('build is c201', crm.indexOf('<meta name="dk-build" content="c201" />') >= 0);
-ok('SW cache is v228', sw.indexOf("const CACHE_NAME = 'dk-gym-v228'") >= 0);
-ok('running build label is c201', crm.indexOf('var RUNNING = 201') >= 0);
-ok('login/sidebar show c201', crm.indexOf('3 languages · c201') >= 0 && crm.indexOf('id="v2-side-version">c201') >= 0);
+ok('build is c202', crm.indexOf('<meta name="dk-build" content="c202" />') >= 0);
+ok('SW cache is v229', sw.indexOf("const CACHE_NAME = 'dk-gym-v229'") >= 0);
+ok('running build label is c202', crm.indexOf('var RUNNING = 202') >= 0);
+ok('login/sidebar show c202', crm.indexOf('3 languages · c202') >= 0 && crm.indexOf('id="v2-side-version">c202') >= 0);
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

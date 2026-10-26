@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c201" />
+<meta name="dk-build" content="c202" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -3970,6 +3970,8 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
   }
   html[data-ui="v2"] .v2-atlas-dock .atlas-btn:hover { background: rgba(255,255,255,.07); color: rgb(var(--c-text)); }
   html[data-ui="v2"] .v2-atlas-dock .atlas-btn.on { background: rgb(var(--c-accent) / .14); color: rgb(var(--c-accent)); border: 1px solid rgb(var(--c-accent) / .3); }
+  html[data-ui="v2"] #atlas-skeleton.loading { opacity: .55; pointer-events: none; }
+  html[data-ui="v2"] #atlas-skeleton.loading .atlas-btn-txt { animation: v2HudPulse 1.2s ease-in-out infinite; }
   html[data-ui="v2"] .v2-atlas-dock .atlas-btn svg { width: 13px; height: 13px; }
   html[data-ui="v2"] .v2-atlas-dock .atlas-btn + .atlas-btn { box-shadow: inset 1px 0 0 rgba(255,255,255,.07); border-radius: 0 9999px 9999px 0; }
   html[data-ui="v2"] #atlas-hint {
@@ -4318,7 +4320,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           </div>
           <div class="flex items-center gap-2 mb-3">
             <span class="v2-pill v2-pill-live"><span class="w-1.5 h-1.5 rounded-full bg-success"></span> <span data-i18n="clients.online">Online</span></span>
-            <span class="v2-pill" id="v2-side-version">c201</span>
+            <span class="v2-pill" id="v2-side-version">c202</span>
           </div>
         </div>
 
@@ -4465,7 +4467,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c201</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c202</p>
             </div>
           </div>
 
@@ -34201,7 +34203,7 @@ document.addEventListener('DOMContentLoaded', function () {
       backdrop = document.createElement('div');
       backdrop.className = 'v2-drawer-backdrop';
       backdrop.addEventListener('click', closeDrawer);
-      /* c201: the backdrop must live in the same stacking context as #app,
+      /* c202: the backdrop must live in the same stacking context as #app,
          otherwise it paints over the z-80 drawer and blurs the whole menu. */
       (document.getElementById('app') || document.body).appendChild(backdrop);
     }
@@ -36676,7 +36678,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 201; /* numeric part of dk-build c201 */
+  var RUNNING = 202; /* numeric part of dk-build c202 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
@@ -36793,6 +36795,8 @@ document.addEventListener('input', function (e) {
           <span class="v2-hud-live"><i></i>LIVE SCAN</span>
           <span class="v2-hud-sep"></span>
           <span class="v2-hud-model">Z-ANATOMY · GLB</span>
+          <span class="v2-hud-sep"></span>
+          <span class="v2-hud-model" id="atlas-layer-txt">MUSCLES</span>
         </div>
         <div id="atlas-scan" class="v2-atlas-scan" aria-hidden="true"></div>
         <div id="atlas-hover" class="v2-atlas-hover hidden" role="status"></div>
@@ -36817,6 +36821,10 @@ document.addEventListener('input', function (e) {
           <button id="atlas-iso" class="atlas-btn" aria-label="Isolate" aria-pressed="false">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
             <span class="atlas-btn-txt">Isolate</span>
+          </button>
+          <button id="atlas-skeleton" class="atlas-btn" aria-label="Skeleton" aria-pressed="false">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="7" cy="7" r="2.6"/><circle cx="17" cy="17" r="2.6"/><path d="m9 9 6 6"/><circle cx="17" cy="7" r="2.6"/><circle cx="7" cy="17" r="2.6"/><path d="m15 9-6 6"/></svg>
+            <span class="atlas-btn-txt">Skeleton</span>
           </button>
           <button id="atlas-panel-toggle" class="atlas-btn" aria-label="Muscle list">
             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
@@ -36873,7 +36881,7 @@ document.addEventListener('input', function (e) {
     sideR:        { en: 'Right', ru: 'справа', he: 'ימין' },
     sideL:        { en: 'Left', ru: 'слева', he: 'שמאל' },
     sideBoth:     { en: 'both sides', ru: 'обе стороны', he: 'שני הצדדים' },
-    credit:       { en: 'Model: Z-Anatomy (CC BY-SA 4.0) · BodyParts3D (CC BY-SA 2.1 JP)', ru: 'Модель: Z-Anatomy (CC BY-SA 4.0) · BodyParts3D (CC BY-SA 2.1 JP)', he: 'מודל: Z-Anatomy (CC BY-SA 4.0) · BodyParts3D (CC BY-SA 2.1 JP)' },
+    credit:       { en: 'Model: Z-Anatomy (CC BY-SA 4.0) · BodyParts3D (CC BY-SA 2.1 JP) · Skeleton overlay', ru: 'Модель: Z-Anatomy (CC BY-SA 4.0) · BodyParts3D (CC BY-SA 2.1 JP) · Слой скелета', he: 'מודל: Z-Anatomy (CC BY-SA 4.0) · BodyParts3D (CC BY-SA 2.1 JP) · שכבת שלד' },
     close:        { en: 'Close', ru: 'Закрыть', he: 'סגור' },
     nothingSel:   { en: 'Nothing selected', ru: 'Ничего не выбрано', he: 'לא נבחר דבר' },
     showEx:       { en: 'Show exercises', ru: 'Показать упражнения', he: 'הצג תרגילים' },
@@ -36883,6 +36891,11 @@ document.addEventListener('input', function (e) {
     isolate:      { en: 'Isolate', ru: 'Изолировать', he: 'בידוד' },
     hide:         { en: 'Hide', ru: 'Скрыть', he: 'הסתר' },
     show:         { en: 'Show', ru: 'Показать', he: 'הצג' },
+    skeleton:     { en: 'Skeleton', ru: 'Скелет', he: 'שלד' },
+    skeletonLoad: { en: 'Skeleton…', ru: 'Скелет…', he: 'שלד…' },
+    skeletonErr:  { en: 'Skeleton unavailable', ru: 'Скелет недоступен', he: 'השלד לא זמין' },
+    musclesLayer: { en: 'MUSCLES', ru: 'МЫШЦЫ', he: 'שרירים' },
+    skeletonLayer:{ en: 'SKELETON OVERLAY', ru: 'СЛОЙ СКЕЛЕТА', he: 'שכבת שלד' },
     hiddenLbl:    { en: 'Hidden:', ru: 'Скрыты:', he: 'מוסתרות:' },
     showAll:      { en: 'Show all', ru: 'Показать все', he: 'הצג הכל' },
     muscleMap:    { en: 'Muscle map', ru: 'Карта мышц', he: 'מפת שרירים' },
@@ -37145,6 +37158,7 @@ document.addEventListener('input', function (e) {
   var FOREARM_HINT_RE = /(flexor|extensor|pronator|supinator|palmaris|interossei|lumbrical|pollicis|digit minimi|indicis)/i;
 
   var MODEL_URL = 'models/muscular-system-v1.glb';
+  var SKELETON_URL = 'models/z-anatomy-skeleton-v1.glb';
   var CDN = 'https://cdn.jsdelivr.net/npm/three@0.170.0';
   var HILITE = 0x22d3ee; /* c199: cyan highlight on the red muscle body */
 
@@ -37194,7 +37208,9 @@ document.addEventListener('input', function (e) {
     root: null, raf: 0, parts: [], groups: new Map(), selected: [],
     camBase: null, autoRot: false,
     /* c68 peeling: manually hidden bases, meshes hidden by isolate, x-ray */
-    hidden: new Map(), isoHidden: new Set(), xray: false, xrayOp: 0.16, isolate: false
+    hidden: new Map(), isoHidden: new Set(), xray: false, xrayOp: 0.16, isolate: false,
+    /* c202: optional Z-Anatomy skeleton overlay, loaded only on demand */
+    skeletonOn: false, skeletonWrap: null, skeletonP: null, skeletonLoading: false
   };
 
   /* ---------------- helpers ---------------- */
@@ -37394,6 +37410,125 @@ document.addEventListener('input', function (e) {
     });
   }
 
+  /* c202: optional full Z-Anatomy skeleton (bones only, 0.6 decimation,
+     ~359k tris / 0.9 MB). Loaded on demand so the muscle view stays light. */
+  function loadSkeletonModel() {
+    if (S.skeletonWrap) return Promise.resolve(S.skeletonWrap);
+    if (S.skeletonP) return S.skeletonP;
+    S.skeletonP = ensureThree().then(function () {
+      if (!S.scene) throw new Error('atlas scene is not ready');
+      var attempt = 0;
+      function loadOnce() {
+        attempt++;
+        return new Promise(function (resolve, reject) {
+          var loader = new S._GLTFLoader();
+          var draco = new S._DRACOLoader();
+          draco.setDecoderPath(CDN + '/examples/jsm/libs/draco/gltf/');
+          loader.setDRACOLoader(draco);
+          loader.load(SKELETON_URL + '?v=1&try=' + attempt, function (gltf) {
+            resolve(gltf);
+          }, undefined, function (err) {
+            if (attempt < 3) {
+              setTimeout(function () { loadOnce().then(resolve, reject); }, 900);
+            } else {
+              reject(err);
+            }
+          });
+        });
+      }
+      return loadOnce();
+    }).then(function (gltf) {
+      var THREE = S.THREE;
+      var root = gltf.scene;
+      var boneMat = new THREE.MeshStandardMaterial({
+        color: 0xe8d7ba, roughness: 0.52, metalness: 0.02,
+        emissive: 0x1d1308, emissiveIntensity: 0.16,
+        side: THREE.DoubleSide
+      });
+      root.traverse(function (o) {
+        if (!o.isMesh) return;
+        o.material = boneMat;
+        o.castShadow = false; o.receiveShadow = false;
+      });
+      var box = new THREE.Box3().setFromObject(root);
+      var size = box.getSize(new THREE.Vector3());
+      if (size.z > size.y * 1.4) {
+        root.rotation.x = -Math.PI / 2;
+        box.setFromObject(root); size = box.getSize(new THREE.Vector3());
+      }
+      var center = box.getCenter(new THREE.Vector3());
+      root.position.sub(center);
+      root.position.y += size.y / 2;
+      var k = 1.7 / (size.y || 1.7);
+      var wrap = new THREE.Group();
+      wrap.add(root);
+      wrap.scale.setScalar(k);
+      wrap.visible = false;
+      S.scene.add(wrap);
+      S.skeletonWrap = wrap;
+      return wrap;
+    }).catch(function (err) {
+      S.skeletonP = null;
+      throw err;
+    });
+    return S.skeletonP;
+  }
+
+  function syncSkeletonButton() {
+    var b = $('atlas-skeleton');
+    if (b) {
+      b.classList.toggle('on', !!S.skeletonOn);
+      b.setAttribute('aria-pressed', S.skeletonOn ? 'true' : 'false');
+      b.setAttribute('aria-busy', S.skeletonLoading ? 'true' : 'false');
+      var lbl = b.querySelector('.atlas-btn-txt');
+      if (lbl) lbl.textContent = tr(S.skeletonLoading ? UI.skeletonLoad : UI.skeleton);
+      b.setAttribute('aria-label', tr(S.skeletonLoading ? UI.skeletonLoad : UI.skeleton));
+    }
+    var layer = $('atlas-layer-txt');
+    if (layer) layer.textContent = tr(S.skeletonOn ? UI.skeletonLayer : UI.musclesLayer);
+  }
+
+  function setSkeleton(on) {
+    on = !!on;
+    if (on && !S.inited) {
+      setTimeout(function () { if (S.inited) setSkeleton(true); }, 500);
+      return;
+    }
+    if (!on) {
+      S.skeletonOn = false;
+      S.skeletonLoading = false;
+      if (S.skeletonWrap) S.skeletonWrap.visible = false;
+      syncSkeletonButton();
+      refreshRenderState();
+      return;
+    }
+    if (S.skeletonOn && S.skeletonWrap) {
+      S.skeletonWrap.visible = true;
+      syncSkeletonButton();
+      return;
+    }
+    if (S.skeletonLoading) return;
+    S.skeletonLoading = true;
+    syncSkeletonButton();
+    loadSkeletonModel().then(function (wrap) {
+      S.skeletonLoading = false;
+      S.skeletonOn = true;
+      wrap.visible = true;
+      syncSkeletonButton();
+      refreshRenderState();
+    }).catch(function (err) {
+      console.warn('[atlas] skeleton layer failed:', err);
+      S.skeletonLoading = false;
+      S.skeletonOn = false;
+      if (S.skeletonWrap) S.skeletonWrap.visible = false;
+      var b = $('atlas-skeleton');
+      var lbl = b && b.querySelector('.atlas-btn-txt');
+      if (lbl) lbl.textContent = tr(UI.skeletonErr);
+      syncSkeletonButton();
+      setTimeout(syncSkeletonButton, 1800);
+    });
+  }
+
   function prepareModel(gltf) {
     var THREE = S.THREE;
     var root = gltf.scene;
@@ -37452,6 +37587,15 @@ document.addEventListener('input', function (e) {
     });
     S.parts = parts;
     fitCamera();
+    /* c202: warm the optional skeleton layer after the muscle body is ready.
+       It stays hidden; opening the layer later is then instant. */
+    setTimeout(function () {
+      try {
+        if (S.skeletonWrap || S.skeletonP) return;
+        if (navigator.connection && navigator.connection.saveData) return;
+        loadSkeletonModel().catch(function () {});
+      } catch (_) {}
+    }, 1800);
   }
 
   function findRegion(mesh) {
@@ -37667,17 +37811,21 @@ document.addEventListener('input', function (e) {
   var GHOST_C = 0x453032; /* c182: dim flesh-shell — a desaturated dark red-brown that reads as «ghost of a red muscle», not as a gray blob */
   function applyXray() {
     if (!S.THREE) return;
-    var op = S.xrayOp || 0.16;
+    var skeletonGhost = !!S.skeletonOn;
+    var softSkeleton = skeletonGhost && !S.xray;
+    var op = softSkeleton ? 0.26 : (S.xrayOp || 0.16);
     var sel = S.selected || [];
     S.parts.forEach(function (m) {
       var mat = m.userData.origMat; if (!mat) return;
-      var ghost = S.xray && m.visible && sel.indexOf(m) < 0;
+      var ghost = (S.xray || skeletonGhost) && m.visible && sel.indexOf(m) < 0;
       if (ghost && m.userData._c0 == null) m.userData._c0 = mat.color ? mat.color.getHex() : 0xa8484c;
-      if (mat.color) mat.color.setHex(ghost ? GHOST_C : (m.userData._c0 != null ? m.userData._c0 : 0xa8484c));
+      var ghostColor = softSkeleton && m.userData._c0 != null ? m.userData._c0 : GHOST_C;
+      if (mat.color) mat.color.setHex(ghost ? ghostColor : (m.userData._c0 != null ? m.userData._c0 : 0xa8484c));
       mat.transparent = ghost;
       mat.opacity = ghost ? op : 1;
       mat.depthWrite = !ghost;
     });
+    if (S.skeletonWrap) S.skeletonWrap.visible = skeletonGhost;
   }
   function hideBase(base) {
     var meshes = S.groups.get(base) || [];
@@ -37887,6 +38035,7 @@ document.addEventListener('input', function (e) {
       if (lbl) lbl.textContent = tr(UI[key]);
       b.setAttribute('aria-label', tr(UI[key]));
     });
+    syncSkeletonButton();
     if (S.open && listEl && listEl.childElementCount) buildList();
     if (S.selected && S.selected.length) showChip(S.selected[0].userData.base);
   }
@@ -38265,6 +38414,8 @@ document.addEventListener('input', function (e) {
     });
     var iso = $('atlas-iso');
     if (iso) iso.addEventListener('click', function () { setIso(!S.isolate); });
+    var skel = $('atlas-skeleton');
+    if (skel) skel.addEventListener('click', function () { setSkeleton(!S.skeletonOn); });
     var strip = $('atlas-hidden');
     if (strip) strip.addEventListener('click', function (e) {
       var c = e.target.closest ? e.target.closest('[data-unbase]') : null;

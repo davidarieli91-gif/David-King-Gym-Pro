@@ -1,4 +1,4 @@
-/* c201 — Vision V2: six complete themes replace the 33-theme pack and both
+/* c202 — Vision V2: six complete themes replace the 33-theme pack and both
    texture systems. Checks the theme registry, shell, dashboard, portal and
    i18n wiring. */
 const fs = require('fs');
@@ -80,7 +80,7 @@ for (const lang of ['en', 'ru', 'he']) {
 }
 ok('theme hint says six worlds', /6 /.test(JSON.parse(fs.readFileSync(path.join(root, 'src', 'i18n', 'en.json'), 'utf8')).settings.themesHint));
 
-/* ---------- c201 depth pass ---------- */
+/* ---------- c202 depth pass ---------- */
 ok('sidebar client search removed', !has(crm, 'id="aside-search"'));
 ok('rich client cards exist', has(crm, 'v2-client-card') && has(crm, 'v2-client-progress') && has(crm, 'v2-client-dot'));
 ok('client cards use real workout stats', has(crm, 'c._wk30') && has(crm, 'c._wkTotal'));
@@ -92,10 +92,10 @@ ok('exercise cards advertise their animation', has(crm, 'class="v2-anim-badge"')
 ok('card sheen animation exists', has(crm, '@keyframes v2-card-sheen'));
 
 /* ---------- versions ---------- */
-ok('trainer build c201', has(crm, 'name="dk-build" content="c201"'));
-ok('login build c201', has(crm, '3 languages · c201'));
-ok('RUNNING 201', has(crm, 'var RUNNING = 201;'));
-ok('SW cache v228', has(sw, "CACHE_NAME = 'dk-gym-v228'"));
+ok('trainer build c202', has(crm, 'name="dk-build" content="c202"'));
+ok('login build c202', has(crm, '3 languages · c202'));
+ok('RUNNING 202', has(crm, 'var RUNNING = 202;'));
+ok('SW cache v229', has(sw, "CACHE_NAME = 'dk-gym-v229'"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 if (fail) process.exitCode = 1;
