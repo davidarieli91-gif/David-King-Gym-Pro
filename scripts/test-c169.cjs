@@ -54,7 +54,7 @@ ok('no full reseed / no clear in the migration', (function () {
 })());
 
 /* ---------- STATIC: stale client search ---------- */
-ok('client search got autocomplete=off (sidebar search removed in c200)', trainer.indexOf('id="dash-search" autocomplete="off"') >= 0 && trainer.indexOf('id="aside-search"') < 0);
+ok('client search got autocomplete=off (sidebar search removed in c201)', trainer.indexOf('id="dash-search" autocomplete="off"') >= 0 && trainer.indexOf('id="aside-search"') < 0);
 ok('boot clears both search boxes + the filter', trainer.indexOf('function dkClearClientSearch()') >= 0 && trainer.indexOf('[dashSearch, asideSearch].forEach(el => { if (el && el.value) el.value = \'\'; })') >= 0 && trainer.indexOf("screens.dashboard.setSearch('')") >= 0);
 ok('a pageshow guard catches late browser restores', trainer.indexOf("window.addEventListener('pageshow'") >= 0 && trainer.indexOf('if (!e.persisted) dkClearClientSearch();') >= 0);
 

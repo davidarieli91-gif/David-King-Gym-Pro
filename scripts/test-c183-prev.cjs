@@ -37,8 +37,8 @@ ok('portal: finish stores performed/touched', portal.indexOf('performed: !!(s.do
 
 /* Version / cache */
 const sw = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
-ok('sw cache bumped for c200', sw.indexOf("const CACHE_NAME = 'dk-gym-v227'; // c200") >= 0);
-ok('trainer build c200 (meta + RUNNING)', trainer.indexOf('content="c200"') >= 0 && /var RUNNING = 200;/.test(trainer));
+ok('sw cache bumped for c201', sw.indexOf("const CACHE_NAME = 'dk-gym-v228'; // c201") >= 0);
+ok('trainer build c201 (meta + RUNNING)', trainer.indexOf('content="c201"') >= 0 && /var RUNNING = 201;/.test(trainer));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
