@@ -100,11 +100,11 @@ ok('Russian dashboard copy is Cyrillic', /[\u0400-\u04FF]/.test(ru.nutrition.tab
 ok('Hebrew dashboard copy is Hebrew', /[\u0590-\u05FF]/.test(he.nutrition.tabPlan) && /[\u0590-\u05FF]/.test(he.nutrition.weeklyIntake));
 
 /* ---------- versions ---------- */
-ok('trainer build is c204', crm.indexOf('<meta name="dk-build" content="c204" />') >= 0);
-ok('RUNNING is 203', crm.indexOf('var RUNNING = 204;') >= 0);
-ok('sidebar/login show c204', crm.indexOf('id="v2-side-version">c204') >= 0 && crm.indexOf('3 languages · c204') >= 0);
-ok('service worker cache is v231', sw.indexOf("CACHE_NAME = 'dk-gym-v231'") >= 0);
-ok('service worker documents v231', sw.indexOf('// v231: c204') >= 0);
+ok('trainer build is c205', crm.indexOf('<meta name="dk-build" content="c205" />') >= 0);
+ok('RUNNING is 203', crm.indexOf('var RUNNING = 205;') >= 0);
+ok('sidebar/login show c205', crm.indexOf('id="v2-side-version">c205') >= 0 && crm.indexOf('3 languages · c205') >= 0);
+ok('service worker cache is v232', sw.indexOf("CACHE_NAME = 'dk-gym-v232'") >= 0);
+ok('service worker documents v232', sw.indexOf('// v232: c205') >= 0);
 ok('service worker precaches the dashboard CSS', sw.indexOf("'./src/nutrition-dashboard.css'") >= 0);
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');

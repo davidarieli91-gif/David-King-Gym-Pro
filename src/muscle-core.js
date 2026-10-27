@@ -39,8 +39,12 @@
      - legacy records without flags fall back to done !== false. */
   function setPerformed(s) {
     if (!s) return false;
+    /* c205: live sessions are seeded with performed:false and only flip
+       done/touched as the trainee works. The explicit performed flag must not
+       override a set that was just ticked, otherwise the live ring/volume
+       stayed at zero until the workout was saved. */
+    if (s.done === true || s.touched === true) return true;
     if (s.performed != null) return !!s.performed;
-    if (s.touched === true) return true;
     return s.done !== false;
   }
   function performedSets(sets) {

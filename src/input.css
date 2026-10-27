@@ -1,3 +1,68 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+/* ============================================================
+   c205 — shared live-workout surface (trainer + client portal)
+   ============================================================ */
+.rest-sec-input {
+  width: 4.25rem !important;
+  min-width: 4.25rem;
+  height: 1.65rem;
+  padding: 0 .35rem !important;
+  font-size: .72rem !important;
+  line-height: 1;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.rest-sec-input::-webkit-outer-spin-button,
+.rest-sec-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* Exercise cards follow the active theme in BOTH portals — dark themes get
+   dark cards, light themes get light cards, including inner set rows. */
+html[data-ui="v2"] #live-workout-exercises > .glass,
+html[data-ui="v2"] #workout-exercises-list > .glass {
+  background: var(--v2-glass-bg) !important;
+  border-color: var(--v2-border) !important;
+  color: rgb(var(--c-text));
+}
+html[data-ui="v2"] #live-workout-exercises > .glass h4,
+html[data-ui="v2"] #workout-exercises-list > .glass h4 {
+  color: rgb(var(--c-text)) !important;
+}
+html[data-ui="v2"] #live-workout-exercises .set-row,
+html[data-ui="v2"] #workout-exercises-list .set-row {
+  background: rgb(var(--c-surface-2) / .62) !important;
+  border: 1px solid var(--v2-border) !important;
+  color: rgb(var(--c-text));
+}
+html[data-ui="v2"] #live-workout-exercises .set-input,
+html[data-ui="v2"] #workout-exercises-list .set-input {
+  background: var(--v2-input-bg) !important;
+  border-color: var(--v2-border) !important;
+  color: rgb(var(--c-text)) !important;
+}
+html[data-ui="v2"] #live-workout-exercises .set-row-done,
+html[data-ui="v2"] #workout-exercises-list .set-row-done { opacity: .72; }
+html[data-ui="v2"] #live-workout-exercises .set-row-done .set-check,
+html[data-ui="v2"] #workout-exercises-list .set-row-done .set-check {
+  opacity: 1 !important;
+  color: #fff !important;
+  background: rgb(var(--c-success)) !important;
+  border-color: rgb(var(--c-success)) !important;
+  box-shadow: 0 0 14px rgb(var(--c-success) / .38);
+}
+html[data-ui="v2"] #workout-exercises-list .set-check {
+  width: 1.9rem;
+  height: 1.8rem;
+  font-weight: 800;
+}
+
+/* The trainer's live cards were visibly tighter than the portal's on the
+   same monitor. Nudge the card rhythm up without changing the layout. */
+html[data-ui="v2"] #live-workout-exercises > .glass {
+  padding: 1.12rem 1.18rem;
+}
+html[data-ui="v2"] #live-workout-exercises > .glass h4 { font-size: .96rem; }
+html[data-ui="v2"] #live-workout-exercises .set-row { min-height: 2.5rem; }

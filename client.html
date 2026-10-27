@@ -2200,6 +2200,20 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
     @keyframes pulse-ring { 0%,100% { box-shadow:0 0 0 0 rgba(99,102,241,.4); } 50% { box-shadow:0 0 0 8px rgba(99,102,241,0); } }
     .pulse-ring { animation: pulse-ring 2s ease-in-out infinite; }
     .prog-bar { height: 6px; border-radius: 999px; background: rgb(var(--c-border) / 0.30); overflow: hidden; }
+    .cp-live-ring {
+      width: 54px; height: 54px; flex: none; position: relative; display: grid; place-items: center;
+      border-radius: 9999px;
+      background: conic-gradient(from -90deg, rgb(var(--c-primary)) 0%, rgb(var(--c-accent)) var(--p, 0%), rgba(255,255,255,.09) var(--p, 0%));
+      box-shadow: 0 0 24px rgb(var(--c-primary) / .18);
+    }
+    .cp-live-ring::before { content: ""; position: absolute; inset: 5px; border-radius: 9999px; background: rgb(var(--c-surface)); }
+    .cp-live-ring span { position: relative; z-index: 1; font-family: var(--font-mono); font-size: 9px; font-weight: 800; color: rgb(var(--c-text)); }
+    [data-mode="light"] .cp-live-ring { background: conic-gradient(from -90deg, rgb(var(--c-primary)) 0%, rgb(var(--c-accent)) var(--p, 0%), rgba(40,20,60,.12) var(--p, 0%)); }
+    .report-bars { display: flex; align-items: flex-end; gap: 7px; height: 82px; padding: 4px 2px 0; }
+    .report-bar-wrap { flex: 1; min-width: 0; height: 78px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; }
+    .report-bar { display: block; width: 100%; max-width: 28px; border-radius: 5px 5px 3px 3px; background: linear-gradient(180deg, rgb(var(--c-accent)), rgb(var(--c-primary))); box-shadow: 0 0 14px rgb(var(--c-primary) / .22); }
+    .report-bar-wrap small { font-family: var(--font-mono); font-size: 7.5px; color: rgb(var(--c-muted)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+    .report-trend { min-width: 0; }
     .prog-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, rgb(var(--c-primary)), rgb(var(--c-accent))); transition: width .5s cubic-bezier(.4,0,.2,1); }
     .ex-img { aspect-ratio: 4/3; object-fit: cover; border-radius: 12px; width: 100%; background: rgb(var(--c-surface-2)); }
     .set-row-done { opacity: .5; }
@@ -2827,13 +2841,16 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
             <span id="txt-start-btn">Начать тренировку</span>
           </button>
         </div>
-        <!-- Workout progress bar -->
-        <div class="mt-3">
-          <div class="flex justify-between text-[10px] text-muted mb-1">
-            <span id="txt-progress-label">0 / 0</span>
-            <span id="txt-progress-pct">0%</span>
+        <!-- c205: whole-workout completion graph (trainer parity) -->
+        <div class="mt-3 flex items-center gap-3">
+          <div class="cp-live-ring" id="client-progress-ring" style="--p:0%"><span id="client-ring-pct">0%</span></div>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between text-[10px] text-muted mb-1">
+              <span id="txt-progress-label">0 / 0</span>
+              <span id="txt-progress-pct">0%</span>
+            </div>
+            <div class="prog-bar"><div id="workout-progress" class="prog-bar-fill" style="width:0%"></div></div>
           </div>
-          <div class="prog-bar"><div id="workout-progress" class="prog-bar-fill" style="width:0%"></div></div>
         </div>
         <!-- Stat cards: exercises / sets / volume -->
         <div class="grid grid-cols-3 gap-2 mt-3">
@@ -3240,11 +3257,11 @@ mapModeRecovery:'Восстановление',mapMode7d:'Объём 7д',mapMod
       targetMuscle:'Целевые',auxMuscle:'Вспомогательные',rest:'Отдых',
       liveBadge:'Идёт тренировка',statEx:'Упражнения',statSets:'Подходы',statVol:'Объём',
       doneAllBtn:'Сделал всё',prevLabel:'Пред.',weightLabel:'Вес',repsLabel:'Повт.',rpeLabel:'RPE',timeLabel:'Время',distLabel:'Дистанция',distShortLabel:'Дист',
-      addSet:'+ подход',setWarmup:'Разминка',setDrop:'Дроп',setFailure:'Отказ',setAmrap:'AMRAP',setNormal:'Обычный',supersetLabel:'Суперсет',timeToggle:'мин ⇄ сек',a11yDoneSet:'Отметить подход выполненным',a11yRemoveSet:'Удалить подход',a11yFontDec:'Уменьшить шрифт',a11yFontInc:'Увеличить шрифт',a11yTheme:'Переключить тему',a11yThemeMenu:'Выбор темы',a11ySettings:'Настройки',a11yWaterPlus:'Добавить стакан воды',a11yWaterMinus:'Убрать стакан воды',a11yRestMinus:'Минус 15 секунд',a11yRestPlus:'Плюс 30 секунд',a11yRestSkip:'Пропустить отдых',a11yRemoveDiary:'Удалить из дневника',a11yCloseViewer:'Закрыть просмотр',voiceTechPlay:'Прочитать технику',voiceTechNext:'Далее',voiceTechRepeat:'Повторить',voiceTechStop:'Стоп',voiceStepWord:'Шаг',voiceStepOf:'из',voiceStart:'Тренировка начата',voiceResume:'Продолжаем тренировку',voiceSetWord:'Подход',voiceSetDone:'выполнен',voiceSetUndone:'отменён',voiceNextSet:'Следующий подход',voiceKg:'килограммов',voiceLb:'фунтов',voiceReps:'повторов',voiceRest:'Отдых',voiceRestSec:'секунд',voiceFinish:'Тренировка завершена',voiceSetAdded:'Подход добавлен',voiceSetRemoved:'Подход удалён',voiceRpe:'Уровень тяжести',voiceMinutes:'минут',voiceMeters:'метров',voiceKm:'километров',voiceCm:'сантиметров',voiceUnitKg:'килограммы',voiceUnitLb:'фунты',a11yOpenCard:'Открыть карточку упражнения',speedLabel:'Скорость',inclineLabel:'Угол 1–20',levelLabel:'Уровень 1–20',a11ySetTimer:'Таймер подхода',voiceTimerStart:'Таймер запущен',voiceTimeUp:'Время вышло',voiceProgress:'Прогресс — лучше прошлого раза',timerNoTime:'Укажите время подхода',voiceInstallBadge:'Голос для этого языка не установлен — нажмите, чтобы исправить',nutrProgressTitle:'Съедено сегодня',nutrMicroTitle:'Микронутриенты',nutrMicroHint:'По отмеченным продуктам плана · % от суточной нормы',fiberLbl:'Клетчатка',sodiumLbl:'Натрий',ironLbl:'Железо',calciumLbl:'Кальций',potassiumLbl:'Калий',vitCLbl:'Витамин C',
+      addSet:'+ подход',setWarmup:'Разминка',setDrop:'Дроп',setFailure:'Отказ',setAmrap:'AMRAP',setNormal:'Обычный',supersetLabel:'Суперсет',supersetOn:'Суперсет включён',supersetOff:'Суперсет выключен',supersetNeedNext:'Сначала добавьте следующее упражнение',timeToggle:'мин ⇄ сек',a11yDoneSet:'Отметить подход выполненным',a11yRemoveSet:'Удалить подход',a11yFontDec:'Уменьшить шрифт',a11yFontInc:'Увеличить шрифт',a11yTheme:'Переключить тему',a11yThemeMenu:'Выбор темы',a11ySettings:'Настройки',a11yWaterPlus:'Добавить стакан воды',a11yWaterMinus:'Убрать стакан воды',a11yRestMinus:'Минус 15 секунд',a11yRestPlus:'Плюс 30 секунд',a11yRestSkip:'Пропустить отдых',a11yRemoveDiary:'Удалить из дневника',a11yCloseViewer:'Закрыть просмотр',voiceTechPlay:'Прочитать технику',voiceTechNext:'Далее',voiceTechRepeat:'Повторить',voiceTechStop:'Стоп',voiceStepWord:'Шаг',voiceStepOf:'из',voiceStart:'Тренировка начата',voiceResume:'Продолжаем тренировку',voiceSetWord:'Подход',voiceSetDone:'выполнен',voiceSetUndone:'отменён',voiceNextSet:'Следующий подход',voiceKg:'килограммов',voiceLb:'фунтов',voiceReps:'повторов',voiceRest:'Отдых',voiceRestSec:'секунд',voiceFinish:'Тренировка завершена',voiceSetAdded:'Подход добавлен',voiceSetRemoved:'Подход удалён',voiceRpe:'Уровень тяжести',voiceMinutes:'минут',voiceMeters:'метров',voiceKm:'километров',voiceCm:'сантиметров',voiceUnitKg:'килограммы',voiceUnitLb:'фунты',a11yOpenCard:'Открыть карточку упражнения',speedLabel:'Скорость',inclineLabel:'Угол 1–20',levelLabel:'Уровень 1–20',a11ySetTimer:'Таймер подхода',voiceTimerStart:'Таймер запущен',voiceTimeUp:'Время вышло',voiceProgress:'Прогресс — лучше прошлого раза',timerNoTime:'Укажите время подхода',voiceInstallBadge:'Голос для этого языка не установлен — нажмите, чтобы исправить',nutrProgressTitle:'Съедено сегодня',nutrMicroTitle:'Микронутриенты',nutrMicroHint:'По отмеченным продуктам плана · % от суточной нормы',fiberLbl:'Клетчатка',sodiumLbl:'Натрий',ironLbl:'Железо',calciumLbl:'Кальций',potassiumLbl:'Калий',vitCLbl:'Витамин C',
       restDone:'Отдых окончен!',skipRest:'Пропустить',restPerEx:'Отдых, с',
       finishConfirm:'Завершить тренировку?',draftFound:'Найдена незавершённая тренировка. Продолжить?',
-      draftRestored:'Тренировка восстановлена ✓',workoutSaved:'Тренировка сохранена ✓',
-      reportTitle:'Отчёт о тренировке',reportPartial:'Частичная тренировка',tileSets:'Подходы',tileReps:'Повторы',tileVol:'Объём',tileMin:'мин',
+      draftRestored:'Тренировка восстановлена ✓',workoutSaved:'Тренировка сохранена ✓',workoutSavedPending:'Тренировка сохранена — ждёт синхронизации',
+      reportTitle:'Отчёт о тренировке',reportPartial:'Частичная тренировка',tileSets:'Подходы',tileReps:'Повторы',tileVol:'Объём',tileMin:'мин',reportTrendTitle:'Объём · 6 недель',reportThisWeek:'сейчас',reportWeekShort:'н',
       volPerEx:'Объём по упражнениям',compareTitle:'Сравнение с прошлой тренировкой',baselineNote:'Это первая записанная тренировка — она станет базой для прогресса!',
       btnSave:'Сохранить',btnContinue:'Продолжить тренировку',btnWA:'Поделиться в WhatsApp',badgeNew:'новое',
       repLast:'Прошлый раз:',wunitKgShort:'кг',wunitLbShort:'фт',
@@ -3301,11 +3318,11 @@ mapModeRecovery:'Recovery',mapMode7d:'7d Vol',mapMode30d:'30d Vol',mapViewFront:
       targetMuscle:'Target',auxMuscle:'Auxiliary',rest:'Rest',
       liveBadge:'Workout in progress',statEx:'Exercises',statSets:'Sets',statVol:'Volume',
       doneAllBtn:'Done all',prevLabel:'Prev.',weightLabel:'Weight',repsLabel:'Reps',rpeLabel:'RPE',timeLabel:'Time',distLabel:'Distance',distShortLabel:'Dist',
-      addSet:'+ set',setWarmup:'Warmup',setDrop:'Drop',setFailure:'Failure',setAmrap:'AMRAP',setNormal:'Normal',supersetLabel:'Superset',timeToggle:'min ⇄ sec',a11yDoneSet:'Mark set done',a11yRemoveSet:'Remove set',a11yFontDec:'Decrease font size',a11yFontInc:'Increase font size',a11yTheme:'Toggle theme',a11yThemeMenu:'Choose theme',a11ySettings:'Settings',a11yWaterPlus:'Add a glass of water',a11yWaterMinus:'Remove a glass of water',a11yRestMinus:'Minus 15 seconds',a11yRestPlus:'Plus 30 seconds',a11yRestSkip:'Skip rest',a11yRemoveDiary:'Remove from diary',a11yCloseViewer:'Close viewer',voiceTechPlay:'Read technique',voiceTechNext:'Next',voiceTechRepeat:'Repeat',voiceTechStop:'Stop',voiceStepWord:'Step',voiceStepOf:'of',voiceStart:'Workout started',voiceResume:'Resuming workout',voiceSetWord:'Set',voiceSetDone:'done',voiceSetUndone:'undone',voiceNextSet:'Next set',voiceKg:'kilograms',voiceLb:'pounds',voiceReps:'reps',voiceRest:'Rest',voiceRestSec:'seconds',voiceFinish:'Workout complete',voiceSetAdded:'Set added',voiceSetRemoved:'Set removed',voiceRpe:'Effort level',voiceMinutes:'minutes',voiceMeters:'meters',voiceKm:'kilometers',voiceCm:'centimeters',voiceUnitKg:'kilograms',voiceUnitLb:'pounds',a11yOpenCard:'Open exercise card',speedLabel:'Speed',inclineLabel:'Incline 1–20',levelLabel:'Level 1–20',a11ySetTimer:'Set timer',voiceTimerStart:'Timer started',voiceTimeUp:'Time is up',voiceProgress:'Progress — better than last time',timerNoTime:'Enter the set time first',voiceInstallBadge:'No voice for this language — tap to fix',nutrProgressTitle:'Eaten today',nutrMicroTitle:'Micronutrients',nutrMicroHint:'From checked plan items · % of daily value',fiberLbl:'Fiber',sodiumLbl:'Sodium',ironLbl:'Iron',calciumLbl:'Calcium',potassiumLbl:'Potassium',vitCLbl:'Vitamin C',
+      addSet:'+ set',setWarmup:'Warmup',setDrop:'Drop',setFailure:'Failure',setAmrap:'AMRAP',setNormal:'Normal',supersetLabel:'Superset',supersetOn:'Superset ON',supersetOff:'Superset OFF',supersetNeedNext:'Add the next exercise first',timeToggle:'min ⇄ sec',a11yDoneSet:'Mark set done',a11yRemoveSet:'Remove set',a11yFontDec:'Decrease font size',a11yFontInc:'Increase font size',a11yTheme:'Toggle theme',a11yThemeMenu:'Choose theme',a11ySettings:'Settings',a11yWaterPlus:'Add a glass of water',a11yWaterMinus:'Remove a glass of water',a11yRestMinus:'Minus 15 seconds',a11yRestPlus:'Plus 30 seconds',a11yRestSkip:'Skip rest',a11yRemoveDiary:'Remove from diary',a11yCloseViewer:'Close viewer',voiceTechPlay:'Read technique',voiceTechNext:'Next',voiceTechRepeat:'Repeat',voiceTechStop:'Stop',voiceStepWord:'Step',voiceStepOf:'of',voiceStart:'Workout started',voiceResume:'Resuming workout',voiceSetWord:'Set',voiceSetDone:'done',voiceSetUndone:'undone',voiceNextSet:'Next set',voiceKg:'kilograms',voiceLb:'pounds',voiceReps:'reps',voiceRest:'Rest',voiceRestSec:'seconds',voiceFinish:'Workout complete',voiceSetAdded:'Set added',voiceSetRemoved:'Set removed',voiceRpe:'Effort level',voiceMinutes:'minutes',voiceMeters:'meters',voiceKm:'kilometers',voiceCm:'centimeters',voiceUnitKg:'kilograms',voiceUnitLb:'pounds',a11yOpenCard:'Open exercise card',speedLabel:'Speed',inclineLabel:'Incline 1–20',levelLabel:'Level 1–20',a11ySetTimer:'Set timer',voiceTimerStart:'Timer started',voiceTimeUp:'Time is up',voiceProgress:'Progress — better than last time',timerNoTime:'Enter the set time first',voiceInstallBadge:'No voice for this language — tap to fix',nutrProgressTitle:'Eaten today',nutrMicroTitle:'Micronutrients',nutrMicroHint:'From checked plan items · % of daily value',fiberLbl:'Fiber',sodiumLbl:'Sodium',ironLbl:'Iron',calciumLbl:'Calcium',potassiumLbl:'Potassium',vitCLbl:'Vitamin C',
       restDone:'Rest is over!',skipRest:'Skip',restPerEx:'Rest, s',
       finishConfirm:'Finish workout?',draftFound:'Unfinished workout found. Resume?',
-      draftRestored:'Workout restored ✓',workoutSaved:'Workout saved ✓',
-      reportTitle:'Workout Report',reportPartial:'Partial workout',tileSets:'Sets',tileReps:'Reps',tileVol:'Volume',tileMin:'min',
+      draftRestored:'Workout restored ✓',workoutSaved:'Workout saved ✓',workoutSavedPending:'Workout saved — waiting to sync',
+      reportTitle:'Workout Report',reportPartial:'Partial workout',tileSets:'Sets',tileReps:'Reps',tileVol:'Volume',tileMin:'min',reportTrendTitle:'Volume · 6 weeks',reportThisWeek:'now',reportWeekShort:'w',
       volPerEx:'Volume per exercise',compareTitle:'vs previous workout',baselineNote:'First recorded workout — it becomes your progress baseline!',
       btnSave:'Save',btnContinue:'Continue workout',btnWA:'Share via WhatsApp',badgeNew:'new',
       repLast:'Last time:',wunitKgShort:'kg',wunitLbShort:'lb',
@@ -3362,11 +3379,11 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       targetMuscle:'יעד',auxMuscle:'עזר',rest:'מנוחה',
       liveBadge:'אימון מתבצע',statEx:'תרגילים',statSets:'סטים',statVol:'נפח',
       doneAllBtn:'בוצע הכל',prevLabel:'קודם',weightLabel:'משקל',repsLabel:'חזרות',rpeLabel:'RPE',timeLabel:'זמן',distLabel:'מרחק',distShortLabel:'מרחק',
-      addSet:'+ סט',setWarmup:'חימום',setDrop:'דרופ',setFailure:'כשל',setAmrap:'AMRAP',setNormal:'רגיל',supersetLabel:'סופרסט',timeToggle:'דק׳ ⇄ שנ׳',a11yDoneSet:'סמן סט כבוצע',a11yRemoveSet:'הסר סט',a11yFontDec:'הקטן גופן',a11yFontInc:'הגדל גופן',a11yTheme:'החלף ערכת נושא',a11yThemeMenu:'בחירת ערכת נושא',a11ySettings:'הגדרות',a11yWaterPlus:'הוסף כוס מים',a11yWaterMinus:'הסר כוס מים',a11yRestMinus:'פחות 15 שניות',a11yRestPlus:'ועוד 30 שניות',a11yRestSkip:'דלג על מנוחה',a11yRemoveDiary:'הסר מהיומן',a11yCloseViewer:'סגור תצוגה',voiceTechPlay:'קרא טכניקה',voiceTechNext:'הבא',voiceTechRepeat:'חזור',voiceTechStop:'עצור',voiceStepWord:'צעד',voiceStepOf:'מתוך',voiceStart:'האימון החל',voiceResume:'ממשיכים באימון',voiceSetWord:'סט',voiceSetDone:'בוצע',voiceSetUndone:'בוטל',voiceNextSet:'הסט הבא',voiceKg:'קילוגרמים',voiceLb:'ליברות',voiceReps:'חזרות',voiceRest:'מנוחה',voiceRestSec:'שניות',voiceFinish:'האימון הושלם',voiceSetAdded:'הסט נוסף',voiceSetRemoved:'הסט הוסר',voiceRpe:'רמת קושי',voiceMinutes:'דקות',voiceMeters:'מטרים',voiceKm:'קילומטרים',voiceCm:'סנטימטרים',voiceUnitKg:'קילוגרמים',voiceUnitLb:'ליברות',a11yOpenCard:'פתח כרטיס תרגיל',speedLabel:'מהירות',inclineLabel:'שיפוע 1–20',levelLabel:'רמה 1–20',a11ySetTimer:'טיימר סט',voiceTimerStart:'הטיימר הופעל',voiceTimeUp:'הזמן נגמר',voiceProgress:'התקדמות — טוב יותר מהפעם הקודמת',timerNoTime:'הזן קודם זמן לסט',voiceInstallBadge:'אין קול לשפה הזו — הקישו לתיקון',nutrProgressTitle:'נאכל היום',nutrMicroTitle:'מיקרו-נוטריאנטים',nutrMicroHint:'לפי פריטי התוכנית המסומנים · % מהצריכה היומית',fiberLbl:'סיבים',sodiumLbl:'נתרן',ironLbl:'ברזל',calciumLbl:'סידן',potassiumLbl:'אשלגן',vitCLbl:'ויטמין C',
+      addSet:'+ סט',setWarmup:'חימום',setDrop:'דרופ',setFailure:'כשל',setAmrap:'AMRAP',setNormal:'רגיל',supersetLabel:'סופרסט',supersetOn:'סופרסט פעיל',supersetOff:'סופרסט כבוי',supersetNeedNext:'הוסיפו קודם את התרגיל הבא',timeToggle:'דק׳ ⇄ שנ׳',a11yDoneSet:'סמן סט כבוצע',a11yRemoveSet:'הסר סט',a11yFontDec:'הקטן גופן',a11yFontInc:'הגדל גופן',a11yTheme:'החלף ערכת נושא',a11yThemeMenu:'בחירת ערכת נושא',a11ySettings:'הגדרות',a11yWaterPlus:'הוסף כוס מים',a11yWaterMinus:'הסר כוס מים',a11yRestMinus:'פחות 15 שניות',a11yRestPlus:'ועוד 30 שניות',a11yRestSkip:'דלג על מנוחה',a11yRemoveDiary:'הסר מהיומן',a11yCloseViewer:'סגור תצוגה',voiceTechPlay:'קרא טכניקה',voiceTechNext:'הבא',voiceTechRepeat:'חזור',voiceTechStop:'עצור',voiceStepWord:'צעד',voiceStepOf:'מתוך',voiceStart:'האימון החל',voiceResume:'ממשיכים באימון',voiceSetWord:'סט',voiceSetDone:'בוצע',voiceSetUndone:'בוטל',voiceNextSet:'הסט הבא',voiceKg:'קילוגרמים',voiceLb:'ליברות',voiceReps:'חזרות',voiceRest:'מנוחה',voiceRestSec:'שניות',voiceFinish:'האימון הושלם',voiceSetAdded:'הסט נוסף',voiceSetRemoved:'הסט הוסר',voiceRpe:'רמת קושי',voiceMinutes:'דקות',voiceMeters:'מטרים',voiceKm:'קילומטרים',voiceCm:'סנטימטרים',voiceUnitKg:'קילוגרמים',voiceUnitLb:'ליברות',a11yOpenCard:'פתח כרטיס תרגיל',speedLabel:'מהירות',inclineLabel:'שיפוע 1–20',levelLabel:'רמה 1–20',a11ySetTimer:'טיימר סט',voiceTimerStart:'הטיימר הופעל',voiceTimeUp:'הזמן נגמר',voiceProgress:'התקדמות — טוב יותר מהפעם הקודמת',timerNoTime:'הזן קודם זמן לסט',voiceInstallBadge:'אין קול לשפה הזו — הקישו לתיקון',nutrProgressTitle:'נאכל היום',nutrMicroTitle:'מיקרו-נוטריאנטים',nutrMicroHint:'לפי פריטי התוכנית המסומנים · % מהצריכה היומית',fiberLbl:'סיבים',sodiumLbl:'נתרן',ironLbl:'ברזל',calciumLbl:'סידן',potassiumLbl:'אשלגן',vitCLbl:'ויטמין C',
       restDone:'המנוחה נגמרה!',skipRest:'דלג',restPerEx:'מנוחה, שנ׳',
       finishConfirm:'לסיים את האימון?',draftFound:'נמצא אימון שלא הושלם. להמשיך?',
-      draftRestored:'האימון שוחזר ✓',workoutSaved:'האימון נשמר ✓',
-      reportTitle:'דו״ח אימון',reportPartial:'אימון חלקי',tileSets:'סטים',tileReps:'חזרות',tileVol:'נפח',tileMin:'דק׳',
+      draftRestored:'האימון שוחזר ✓',workoutSaved:'האימון נשמר ✓',workoutSavedPending:'האימון נשמר — ממתין לסנכרון',
+      reportTitle:'דו״ח אימון',reportPartial:'אימון חלקי',tileSets:'סטים',tileReps:'חזרות',tileVol:'נפח',tileMin:'דק׳',reportTrendTitle:'נפח · 6 שבועות',reportThisWeek:'עכשיו',reportWeekShort:'ש',
       volPerEx:'נפח לפי תרגילים',compareTitle:'השוואה לאימון קודם',baselineNote:'זהו האימון המתועד הראשון — הוא יהווה בסיס להתקדמות!',
       btnSave:'שמור',btnContinue:'המשך אימון',btnWA:'שתף בוואטסאפ',badgeNew:'חדש',
       repLast:'פעם קודמת:',wunitKgShort:'ק״ג',wunitLbShort:'lb',
@@ -6091,26 +6108,27 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     return false;
   }
   function dkPFindLastEx(progName, letter, key, curName) {
+    /* c205: ONE source of truth for «Пред.». The trainer's live workout uses
+       the last occurrence of the exercise across the WHOLE history, regardless
+       of program/day. Requiring an exact program/day match first (the old
+       3-pass lookup) could show an older set than the trainer for the same
+       exercise. Both portals now scan newest-first over every record. */
     const list = loadHistory();
-    for (let pass = 0; pass < 3; pass++) {
-      for (let i = list.length - 1; i >= 0; i--) {
-        const r = list[i];
-        if (!r || !Array.isArray(r.exercises)) continue;
-        if (pass === 0 && !(r.program === progName && (!letter || r.day_letter === letter))) continue;
-        if (pass === 1 && r.program !== progName) continue;
-        const he = r.exercises.find(e => dkPHistExMatch(e, key, curName));
-        /* c126: DONE-ONLY — history stores every set with its done flag,
-           including never-touched sets that still carry the PROGRAM'S
-           PRESCRIBED weight/reps. Those prescriptions used to surface in the
-           «Пред.» hints as if the trainee had lifted them. Same rule the
-           recovery engine uses: skip only EXPLICIT done === false, so legacy
-           records without the flag still count. */
-        /* c183: keep ALL sets so the set NUMBER stays aligned. A skipped set
-           must leave a hole, not shift set 3 into set 2. */
-        const allSets = he && Array.isArray(he.sets) ? he.sets : [];
-        if (he && allSets.some(psSetPerformed)) {
-          return { unit: he.unit === 'lb' ? 'lb' : 'kg', sets: allSets, ts: Number(r.ts) || 0 };
-        }
+    for (let i = list.length - 1; i >= 0; i--) {
+      const r = list[i];
+      if (!r || !Array.isArray(r.exercises)) continue;
+      const he = r.exercises.find(e => dkPHistExMatch(e, key, curName));
+      /* c126: DONE-ONLY — history stores every set with its done flag,
+         including never-touched sets that still carry the PROGRAM'S
+         PRESCRIBED weight/reps. Those prescriptions used to surface in the
+         «Пред.» hints as if the trainee had lifted them. Same rule the
+         recovery engine uses: skip only EXPLICIT done === false, so legacy
+         records without the flag still count. */
+      /* c183: keep ALL sets so the set NUMBER stays aligned. A skipped set
+         must leave a hole, not shift set 3 into set 2. */
+      const allSets = he && Array.isArray(he.sets) ? he.sets : [];
+      if (he && allSets.some(psSetPerformed)) {
+        return { unit: he.unit === 'lb' ? 'lb' : 'kg', sets: allSets, ts: Number(r.ts) || 0 };
       }
     }
     return null;
@@ -7014,6 +7032,36 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       } else i++;
     }
   }
+  /* c205: client-side superset toggle (trainer parity) — links this exercise
+     to the NEXT one; pressing again (or on the second partner) splits it. */
+  function psToggleSuperset(ei) {
+    const sess = getSession(activeDayIndex) || ensureSession(activeDayIndex);
+    if (!sess || !Array.isArray(sess.exercises)) return;
+    const exs = sess.exercises;
+    psNormalizeLinks(exs);
+    const ex = exs[ei];
+    if (!ex) return;
+    const prev = ei > 0 ? exs[ei - 1] : null;
+    const next = exs[ei + 1];
+    if (ex.ss_link === true) {
+      delete ex.ss_link;
+      toast(t('supersetOff'), 'info', 1800);
+    } else if (prev && prev.ss_link === true) {
+      delete prev.ss_link;
+      toast(t('supersetOff'), 'info', 1800);
+    } else if (next) {
+      ex.ss_link = true;
+      psEqualizeSupersets(exs);
+      toast(t('supersetOn'), 'success', 2600);
+    } else {
+      toast(t('supersetNeedNext'), 'info', 2600);
+      return;
+    }
+    psNormalizeLinks(exs);
+    saveDraft();
+    renderExercises();
+    updateLiveUI();
+  }
 
   /* c183: rebuild Prev from history WITHOUT touching the current weight/reps
      inputs. Used after add-set, superset padding, and when the trainer's
@@ -7165,6 +7213,10 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     const pct = total ? Math.round(done/total*100) : 0;
     const bar = document.getElementById('workout-progress');
     if (bar) bar.style.width = pct+'%';
+    const ring = document.getElementById('client-progress-ring');
+    if (ring) ring.style.setProperty('--p', pct+'%');
+    const ringPct = document.getElementById('client-ring-pct');
+    if (ringPct) ringPct.textContent = pct+'%';
     const lbl = document.getElementById('txt-progress-label');
     if (lbl) lbl.textContent = done+' / '+total;
     const pct2 = document.getElementById('txt-progress-pct');
@@ -7584,11 +7636,12 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
             <h4 class="font-display font-bold text-sm text-white leading-snug flex-1 min-w-0" data-exercise-title>${supHl ? '<span style="color:' + psSSColor(_ssChain.gi) + '" title="' + esc(t('supersetLabel')) + '">⚡ </span>' : ''}${esc(exName)}</h4>
             <!-- c139: the card opens ONLY from the eye or the image — stray taps on the card body must not pop a modal at blind trainees -->
             <button type="button" data-open-exercise aria-label="${esc(t('a11yOpenCard'))}" title="${esc(t('a11yOpenCard'))}" class="w-9 h-9 shrink-0 grid place-items-center rounded-lg bg-surface-2 border border-border text-muted hover:text-[rgb(var(--c-primary))] hover:border-[rgb(var(--c-primary))]/50 transition cursor-pointer">👁</button>
+            <button type="button" data-ps-superset="${ei}" ${editable?'':'disabled'} aria-pressed="${supHl ? 'true' : 'false'}" aria-label="${esc(t('supersetLabel'))}" title="${esc(t('supersetLabel'))}" class="w-9 h-9 shrink-0 grid place-items-center rounded-lg border transition cursor-pointer ${supHl ? 'bg-amber-500/15 border-amber-500/50 text-amber-400' : 'bg-surface-2 border-border text-muted hover:text-amber-400 hover:border-amber-500/50'}">⚡</button>
             </div>
             <div class="text-[11px] text-muted flex items-center gap-2 mt-0.5 flex-wrap">
               ${groupLabel?`<span class="text-cyan-300">${esc(groupLabel)}</span><span>·</span>`:''}
               <label class="flex items-center gap-1">${esc(t('restPerEx'))}
-                <input type="number" min="10" step="5" value="${restSec}" data-rest-input data-ex="${ei}" ${editable?'':'disabled'} class="w-12 bg-surface-2 text-center rounded border border-border py-0.5 text-[10px] font-mono text-white focus:outline-none" />
+                <input type="number" min="10" step="5" value="${restSec}" data-rest-input data-ex="${ei}" ${editable?'':'disabled'} class="rest-sec-input w-16 bg-surface-2 text-center rounded border border-border py-1 text-[11px] font-mono text-white focus:outline-none" aria-label="${esc(t('restPerEx'))}" />
               </label>
             </div>
             ${equipment?`<span class="inline-block text-[9px] bg-surface-2 px-1.5 py-0.5 rounded text-muted mt-1">${esc(equipment)}</span>`:''}
@@ -7615,6 +7668,14 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
   function wireExerciseEvents() {
     const list = document.getElementById('workout-exercises-list');
     const getSess = () => getSession(activeDayIndex) || ensureSession(activeDayIndex);
+    /* c205: client-side superset toggle */
+    list.querySelectorAll('[data-ps-superset]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const ei = parseInt(btn.getAttribute('data-ps-superset'), 10);
+        if (Number.isFinite(ei)) psToggleSuperset(ei);
+      });
+    });
 
     // weight / reps inputs (rpe is set via the 1-10 color buttons below each row)
     list.querySelectorAll('[data-field]').forEach(inp => {
@@ -7932,6 +7993,31 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     if (hist.length) return hist[hist.length - 1];
     return null;
   }
+  /* c205: post-workout volume chart — the trainer portal has a weekly volume
+     graph; the trainee should see the same closing picture. Six 7-day buckets,
+     the just-finished session included in the current one. */
+  function reportVolumeTrendHTML(rec) {
+    const hist = loadHistory().concat(rec ? [rec] : []).filter(r => r && Number(r.ts) > 0);
+    const day = 86400000, now = Date.now();
+    const vals = [], labels = [];
+    for (let i = 5; i >= 0; i--) {
+      const start = now - (i + 1) * 7 * day;
+      const end = now - i * 7 * day;
+      const v = hist.reduce((s, r) => {
+        const ts = Number(r.ts) || 0;
+        return (ts >= start && ts < end) ? s + (Number(r.volume) || 0) : s;
+      }, 0);
+      vals.push(v);
+      labels.push(i === 0 ? t('reportThisWeek') : '-' + i + t('reportWeekShort'));
+    }
+    const max = Math.max.apply(null, vals.concat([1]));
+    const bars = vals.map((v, i) => {
+      const h = Math.max(4, Math.round(v / max * 58));
+      return `<span class="report-bar-wrap" title="${esc(aNum(dispVolKg(v)))} ${esc(dispUnitShort())}"><i class="report-bar" style="height:${h}px"></i><small>${esc(labels[i])}</small></span>`;
+    }).join('');
+    return `<div class="report-trend"><div class="report-bars">${bars}</div></div>`;
+  }
+
   function openReportModal(rec, prev) {
     const body = document.getElementById('report-body');
     if (!body) return;
@@ -8033,6 +8119,13 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       <div class="mt-3 bg-[rgb(var(--c-surface-2))]/50 border border-border rounded-2xl p-3">
         <div class="text-[12px] font-extrabold text-text mb-1">${esc(t('compareTitle'))}</div>${cmp}
       </div>
+      <div class="mt-3 bg-[rgb(var(--c-surface-2))]/50 border border-border rounded-2xl p-3">
+        <div class="flex items-center justify-between gap-2 mb-1">
+          <div class="text-[12px] font-extrabold text-text">${esc(t('reportTrendTitle'))}</div>
+          <span class="text-[9px] text-muted">${esc(dispUnitShort())}</span>
+        </div>
+        ${reportVolumeTrendHTML(rec)}
+      </div>
       <button id="report-save" class="w-full mt-3 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-extrabold py-3 rounded-2xl transition">💾 ${esc(t('btnSave'))}</button>
       <button id="report-continue" class="w-full mt-2 bg-[rgb(var(--c-surface-2))] hover:bg-[rgb(var(--c-border))]/40 text-text border border-border text-sm font-semibold py-2.5 rounded-2xl transition">← ${esc(t('btnContinue'))}</button>
       <button id="report-wa" class="w-full mt-2 text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 py-1 transition">💬 ${esc(t('btnWA'))}</button>`;
@@ -8043,23 +8136,31 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     _reportPrevFocus133 = (document.activeElement && document.activeElement !== document.body) ? document.activeElement : document.getElementById('btn-finish-workout');
     _rm133.classList.remove('hidden');
     try { document.getElementById('report-save').focus({ preventScroll: true }); } catch (e) {}
-    document.getElementById('report-save').addEventListener('click', () => {
+    document.getElementById('report-save').addEventListener('click', async () => {
       const hist = loadHistory(); hist.push(rec);
       /* c131: a full device storage must not crash the save flow — tell the
          trainee; the workout still goes to the cloud (and the pending queue) */
       const _saved131 = saveHistory(hist);
       try { setTimerStopAll(); } catch (e144) {} /* c144: no orphan timers after the save */
       if (!_saved131) toast(t('storageFull'), 'danger');
-      /* c93: mirror the finished workout into the shared cloud history doc
-         (c131: a failed push waits in the pending queue — flushed on boot/online) */
-      try { dkHistPush(rec); } catch (e) {}
+      /* c93/c205: wait briefly for the shared-doc write — the trainer's
+         dashboard now reads this doc; a failed write stays in the pending
+         queue and is retried on boot/online. */
+      let synced = false;
+      try {
+        synced = await Promise.race([
+          dkHistPush(rec),
+          new Promise(resolve => setTimeout(() => resolve(false), 4500))
+        ]);
+      } catch (e) { synced = false; }
       delete sessions[rec.day_index];
       saveDraft(true);
       stopRest();
       markDone();
-      toast(t('workoutSaved'));
+      toast(synced ? t('workoutSaved') : (t('workoutSavedPending') || t('workoutSaved')));
       closeReportModal();
       renderAll();
+      try { dkSyncState(); } catch (e) {}
     });
     document.getElementById('report-continue').addEventListener('click', closeReportModal);
     document.getElementById('report-wa').addEventListener('click', () => shareReport({ workout: rec }));

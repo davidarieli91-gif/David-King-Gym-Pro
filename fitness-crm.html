@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c204" />
+<meta name="dk-build" content="c205" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -4532,7 +4532,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           </div>
           <div class="flex items-center gap-2 mb-3">
             <span class="v2-pill v2-pill-live"><span class="w-1.5 h-1.5 rounded-full bg-success"></span> <span data-i18n="clients.online">Online</span></span>
-            <span class="v2-pill" id="v2-side-version">c204</span>
+            <span class="v2-pill" id="v2-side-version">c205</span>
           </div>
         </div>
 
@@ -4679,7 +4679,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c204</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c205</p>
             </div>
           </div>
 
@@ -11669,6 +11669,8 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     let _groupFilter = 'all';   /* c105: was _goalFilter — now a client-GROUP id (or 'all') */
     let _pendingClientPhoto = null;  // Sprint 3+: compressed photo dataURL, set on file select
     let _pendingClientPhotoRemove = false;  // c180: user explicitly deleted the photo in the form
+    let _portalHistBusy = false;
+    let _portalHistAt = 0;
 
     /* === c105: CLIENT GROUPS (Спортзал / Друзья / Семья + custom CRUD) ===
        Built-in groups get i18n labels; custom groups are trainer-created and
@@ -11988,7 +11990,38 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       wireCgroupsModal();
       applyFilters();
       renderKpis();
+      /* c205: clients who train in the portal save their workouts to the
+         shared cloud doc. `dkFetchClientHistory` now also persists them, so
+         the dashboard KPIs, client cards and History see them too. */
+      mergePortalHistory();
     }
+
+    async function mergePortalHistory() {
+      if (_portalHistBusy || !_clients.length) return;
+      const now = Date.now();
+      if (now - _portalHistAt < 30000) return;
+      _portalHistAt = now;
+      _portalHistBusy = true;
+      try {
+        const candidates = _clients.filter(c => c && (c.portal_sk || c.portal_pass));
+        if (!candidates.length) return;
+        await Promise.all(candidates.map(c => {
+          try {
+            return (typeof window.dkFetchClientHistory === 'function')
+              ? window.dkFetchClientHistory(c.id).catch(() => [])
+              : Promise.resolve([]);
+          } catch (_) { return Promise.resolve([]); }
+        }));
+      } catch (e) {
+        console.warn('[dashboard] portal history merge failed', e);
+      } finally {
+        _portalHistBusy = false;
+      }
+    }
+
+    document.addEventListener('dk-workout-history-updated', function () {
+      try { if (router.current() === 'dashboard') load(); } catch (_) {}
+    });
 
     /** c196: real dashboard KPIs + coach insight (no invented numbers). */
     document.addEventListener('dk-lang', function () { try { renderKpis(); } catch (_) {} });
@@ -14247,7 +14280,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         const firstRestB = (day.exercises[0] && day.exercises[0].rest_sec != null) ? day.exercises[0].rest_sec : 90;
         const bulkRestB = `<div class="flex items-center gap-2 mb-3 bg-surface rounded-xl border border-border px-3 py-2">
           <span class="text-xs font-semibold text-muted flex-1 min-w-0 truncate">${t('programs.restForAll') || 'Rest for all exercises'}</span>
-          <input type="number" min="0" max="600" step="15" value="${firstRestB}" data-pb-rest-all class="w-16 bg-surface-2 border border-border rounded-lg px-2 py-1 text-xs text-center font-bold focus:outline-none focus:ring-1 focus:ring-primary/60" />
+          <input type="number" min="0" max="600" step="15" value="${firstRestB}" data-pb-rest-all class="rest-sec-input w-16 bg-surface-2 border border-border rounded-lg px-2 py-1 text-xs text-center font-bold focus:outline-none focus:ring-1 focus:ring-primary/60" />
           <span class="text-[10px] text-muted shrink-0">${(typeof currentLang === 'function' && currentLang() === 'en') ? 's' : (currentLang() === 'he' ? 'ש׳' : 'с')}</span>
           <button data-pb-rest-all-apply class="text-[11px] font-bold px-3 py-1.5 rounded-lg bg-primary/15 text-primary-2 border border-primary/30 hover:bg-primary/25 transition shrink-0">${t('wunit.applyAll') || 'Apply to all'}</button>
         </div>`;
@@ -14357,7 +14390,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
                 <option value="" selected>⇄</option>
                 ${_pb.days.map((d2, di2) => (di2 === _pb.activeDay || d2.is_rest_day) ? '' : `<option value="${di2}">→ ${d2.day_letter}</option>`).join('')}
               </select>
-              <label class="flex items-center gap-1 text-xs text-muted shrink-0" title="${t('workouts.perExerciseRest') || 'Rest after each set'}"><span class="text-[10px] hidden sm:inline">${t('workouts.rest') || 'Rest'}</span><input type="number" min="0" max="600" step="15" value="${ex.rest_sec != null ? ex.rest_sec : 90}" data-pb-rest="${ei}" class="w-12 bg-surface-2 border border-border rounded px-1 py-0.5 text-xs text-center focus:outline-none focus:ring-1 focus:ring-primary/60"><span class="text-[10px]">${(typeof currentLang === 'function' && currentLang() === 'en') ? 's' : (currentLang() === 'he' ? 'ש׳' : 'с')}</span></label>
+              <label class="flex items-center gap-1 text-xs text-muted shrink-0" title="${t('workouts.perExerciseRest') || 'Rest after each set'}"><span class="text-[10px] hidden sm:inline">${t('workouts.rest') || 'Rest'}</span><input type="number" min="0" max="600" step="15" value="${ex.rest_sec != null ? ex.rest_sec : 90}" data-pb-rest="${ei}" class="rest-sec-input w-16 bg-surface-2 border border-border rounded px-1 py-0.5 text-xs text-center focus:outline-none focus:ring-1 focus:ring-primary/60"><span class="text-[10px]">${(typeof currentLang === 'function' && currentLang() === 'en') ? 's' : (currentLang() === 'he' ? 'ש׳' : 'с')}</span></label>
               <button data-pb-superset="${ei}" class="text-xs font-semibold text-accent hover:bg-accent/10 rounded-lg px-2 py-1 transition shrink-0" title="${t('programs.toggleSuperset') || 'Toggle superset (⚡)'}">⚡</button>
               <button data-pb-add-set="${ei}" class="text-xs font-semibold text-primary-2 hover:bg-primary/10 rounded-lg px-2 py-1 transition shrink-0">${t('workouts.addSet')}</button>
               <button data-pb-replace-ex="${ei}" class="text-muted hover:text-accent transition w-6 h-6 grid place-items-center shrink-0" title="${t('programs.replaceExercise') || 'Replace exercise'}">
@@ -18190,7 +18223,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       _remoteAt = now;
       _remoteBusy = true;
       try {
-        const candidates = _clients.filter(c => c && c.portal_sk);
+        const candidates = _clients.filter(c => c && (c.portal_sk || c.portal_pass));
         if (_filter !== 'all') {
           const one = _clients.find(c => c.id === _filter);
           if (one && !candidates.some(c => c.id === one.id)) candidates.push(one);
@@ -19158,7 +19191,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               <div class="text-[11px] text-muted flex items-center gap-2 mt-0.5 flex-wrap">
                 ${group ? `<span class="text-cyan-300">${escapeHTML(group)}</span><span>·</span>` : ''}
                 <label class="flex items-center gap-1">${t('workouts.perExerciseRest')}
-                  <input type="number" min="0" max="600" step="15" value="${ex.rest_sec != null ? ex.rest_sec : 90}" data-exercise-rest="${idx}" class="w-12 bg-surface-2 text-center rounded border border-border py-0.5 text-[10px] font-mono" />
+                  <input type="number" min="0" max="600" step="15" value="${ex.rest_sec != null ? ex.rest_sec : 90}" data-exercise-rest="${idx}" class="rest-sec-input w-16 bg-surface-2 text-center rounded border border-border py-1 text-[11px] font-mono" aria-label="${t('workouts.rest')}" />
                 </label>
               </div>
               ${equipment ? `<span class="inline-block text-[9px] bg-surface-2 px-1.5 py-0.5 rounded text-muted mt-1">${escapeHTML(equipment)}</span>` : ''}
@@ -31462,6 +31495,43 @@ async function boot() {
         return true;
       } catch (e) { console.warn('[hist-sync] CRM push failed', e); return false; }
     };
+    /* c205: persist portal workouts into the trainer's workout_history.
+       Analytics/recovery already merged them in-memory; the dashboard, client
+       cards and Workouts › History read IndexedDB, so a client's finished
+       workout looked absent until this existed. */
+    async function dkPersistCrmHistory(clientId, rows) {
+      if (!clientId || !Array.isArray(rows) || !rows.length) return 0;
+      let local = [];
+      try { local = (await db.find('workout_history', 'by_clientId', clientId)) || []; } catch (_) { local = []; }
+      const seen = new Set(local.map(w => Number(w.date || w.created_at || 0) || 0));
+      const fresh = [];
+      rows.forEach(r => {
+        const ts = Number(r && (r.date || r.created_at)) || 0;
+        if (!ts || seen.has(ts)) return;
+        seen.add(ts);
+        fresh.push(Object.assign({}, r, {
+          client_id: clientId,
+          id: (r && r.id) || ('remote_' + clientId + '_' + ts),
+          _remote: true
+        }));
+      });
+      if (!fresh.length) return 0;
+      try { await db.bulkPut('workout_history', fresh); } catch (e) { console.warn('[history] persist failed', e); return 0; }
+      const maxTs = Math.max.apply(null, fresh.map(r => Number(r.date || r.created_at) || 0));
+      try {
+        const c = await db.get('clients', clientId);
+        if (c && (!c.last_active || maxTs > c.last_active)) {
+          c.last_active = maxTs;
+          await db.put('clients', c);
+        }
+      } catch (_) {}
+      try {
+        document.dispatchEvent(new CustomEvent('dk-workout-history-updated', { detail: { clientId: clientId, added: fresh.length } }));
+      } catch (_) {}
+      return fresh.length;
+    }
+    window.dkPersistCrmHistory = dkPersistCrmHistory;
+
     window.dkFetchClientHistory = async function (clientId) {
       try {
         if (!clientId) return [];
@@ -31477,8 +31547,7 @@ async function boot() {
         if (!data.d) return [];
         const p = JSON.parse(data.d);
         const recs = Array.isArray(p.recs) ? p.recs : [];
-        /* portal-shaped → CRM-shaped (in-memory only, NOT persisted) */
-        return recs.filter(r => r && (Number(r.ts) > 0 || Date.parse(r.date) > 0)).map(r => {
+        const mapped = recs.filter(r => r && (Number(r.ts) > 0 || Date.parse(r.date) > 0)).map(r => {
           const ts = Number(r.ts) || Date.parse(r.date) || 0;
           const exs = r.exercises || [];
           return {
@@ -31504,6 +31573,8 @@ async function boot() {
             }))
           };
         }).filter(w => w.date > 0);
+        try { await dkPersistCrmHistory(clientId, mapped); } catch (_) {}
+        return mapped;
       } catch (e) { console.warn('[hist-sync] CRM fetch failed', e); return []; }
     };
 
@@ -37550,7 +37621,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 204; /* numeric part of dk-build c204 */
+  var RUNNING = 205; /* numeric part of dk-build c205 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

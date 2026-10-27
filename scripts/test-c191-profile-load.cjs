@@ -67,9 +67,9 @@ ok('nutrition plans guard stale query', (function () {
 })());
 
 ok('profile render still wires programs', has(crm, 'loadPrograms(c.id);'));
-ok('trainer build c204', has(crm, 'name="dk-build" content="c204"'));
-ok('trainer RUNNING 204', has(crm, 'var RUNNING = 204;'));
-ok('SW cache v231', has(sw, "CACHE_NAME = 'dk-gym-v231'"));
+ok('trainer build c205', has(crm, 'name="dk-build" content="c205"'));
+ok('trainer RUNNING 205', has(crm, 'var RUNNING = 205;'));
+ok('SW cache v232', has(sw, "CACHE_NAME = 'dk-gym-v232'"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 if (fail) process.exitCode = 1;
