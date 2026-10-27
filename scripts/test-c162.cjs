@@ -96,7 +96,7 @@ ok('picker results are photo tiles in a grid', trainer.indexOf("results.innerHTM
 ok('smart shelves above the bento', trainer.indexOf('const SMART_SHELVES = [') >= 0 && trainer.indexOf('data-fdb-smart="') >= 0);
 ok('badges help button + modal + wiring', trainer.indexOf('id="food-db-badges-help"') >= 0 && trainer.indexOf('id="food-badges-modal"') >= 0 && trainer.indexOf("getElementById('food-db-badges-help')") >= 0);
 ok('kiosk CSS (grid/bento/badges) + big-font rules', trainer.indexOf('.food-bento {') >= 0 && trainer.indexOf('.food-grid {') >= 0 && trainer.indexOf('.food-badge {') >= 0 && trainer.indexOf('html.dk-fs-big .food-bento') >= 0);
-ok('nutrition screen widened for large displays', trainer.indexOf('max-w-5xl xl:max-w-6xl 2xl:max-w-[1500px]') >= 0);
+ok('nutrition screen widened for large displays', trainer.indexOf('<div data-screen="nutrition" class="hidden p-4 sm:p-6 lg:p-8 max-w-[1600px]') >= 0);
 
 /* ---------- i18n ×3 ---------- */
 for (const lang of ['ru', 'en', 'he']) {

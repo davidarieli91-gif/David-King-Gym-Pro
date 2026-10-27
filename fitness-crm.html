@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c202" />
+<meta name="dk-build" content="c203" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -52,6 +52,7 @@
   <title>David King Gym — Trainer Studio</title>
 
   <link rel="stylesheet" href="src/input.css" />
+  <link rel="stylesheet" href="src/nutrition-dashboard.css" />
   <!-- i18n dictionaries as bundled ES module (executes before DOMContentLoaded) -->
   <script type="module" src="src/i18n.js"></script>
   <!-- c184: shared muscle core — ONE performed/units/attribution model for both engines -->
@@ -4320,7 +4321,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           </div>
           <div class="flex items-center gap-2 mb-3">
             <span class="v2-pill v2-pill-live"><span class="w-1.5 h-1.5 rounded-full bg-success"></span> <span data-i18n="clients.online">Online</span></span>
-            <span class="v2-pill" id="v2-side-version">c202</span>
+            <span class="v2-pill" id="v2-side-version">c203</span>
           </div>
         </div>
 
@@ -4467,7 +4468,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c202</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c203</p>
             </div>
           </div>
 
@@ -5320,24 +5321,154 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           </div>
 
 <!-- ============= NUTRITION SCREEN (Tabs: Database / Templates / Daily Log) ============= -->
-          <div data-screen="nutrition" class="hidden p-4 sm:p-6 lg:p-8 max-w-5xl xl:max-w-6xl 2xl:max-w-[1500px] mx-auto w-full">
-            <div class="v2-page-head">
-              <div class="min-w-0">
-                <div class="v2-eyebrow" data-i18n="nutrition.eyebrow">Fuel the work</div>
-                <h1 class="v2-hero-title" data-i18n="nav.nutrition">Nutrition</h1>
-                <p class="v2-hero-sub" data-i18n="nutrition.subtitle">Plans, products and daily targets — one system.</p>
+          <div data-screen="nutrition" class="hidden p-4 sm:p-6 lg:p-8 max-w-[1600px] mx-auto w-full">
+  <div class="nutri-dash">
+    <main class="nutri-main">
+      <section class="nutri-shell">
+        <header class="nutri-head">
+          <span class="nutri-head-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4C10 4 4 9 4 17c0 2 1 3 3 3 8 0 13-6 13-16Z"/><path d="M4 20 14 10"/></svg>
+          </span>
+          <div class="nutri-head-copy">
+            <div class="nutri-eyebrow" data-i18n="nutrition.osEyebrow">Nutrition OS</div>
+            <h1 class="nutri-title" data-i18n="nutrition.dashboardTitle">Meal plan</h1>
+            <p class="nutri-sub" data-i18n="nutrition.planSubtitle">Create individual meal plans for your clients.</p>
+          </div>
+          <nav class="nutri-tabs" role="tablist" aria-label="Nutrition sections">
+            <button type="button" data-nutrition-tab="log" class="nutri-tab active" data-i18n="nutrition.tabPlan">Plan</button>
+            <button type="button" data-nutrition-tab="database" class="nutri-tab" data-i18n="nutrition.tabProducts">Products</button>
+            <button type="button" data-nutrition-tab="recipes" class="nutri-tab" data-i18n="nutrition.tabRecipes">Recipes</button>
+            <button type="button" data-nutrition-tab="templates" class="nutri-tab" data-i18n="nutrition.tabTemplates">Templates</button>
+            <button type="button" data-nutrition-tab="history" class="nutri-tab" data-i18n="nutrition.tabHistory">History</button>
+          </nav>
+        </header>
+
+        <div class="nutri-panels">
+          <div data-nutrition-panel="log">
+            <div class="nutri-client-row">
+              <div class="nutri-client-switch">
+                <span class="nutri-client-switch-ic" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+                </span>
+                <select id="nutrition-client-select" aria-label="Client">
+                  <option value="" data-i18n="analytics.selectClient">Select client…</option>
+                </select>
+                <svg class="nutri-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
+              </div>
+              <div id="nutri-client-card" class="nutri-client-card">
+                <div class="nutri-avatar" id="nutri-client-avatar">—</div>
+                <div class="nutri-client-copy">
+                  <div class="nutri-client-line">
+                    <h2 id="nutri-client-name">—</h2>
+                    <span class="nutri-active" id="nutri-client-status"><span class="v2-live-dot"></span><span data-i18n="clients.active">Active</span></span>
+                  </div>
+                  <div class="nutri-client-meta">
+                    <span><b data-i18n="client.goal">Goal</b><em id="nutri-client-goal">—</em></span>
+                    <span><b data-i18n="client.weight">Weight</b><em id="nutri-client-weight">—</em></span>
+                    <span><b data-i18n="client.height">Height</b><em id="nutri-client-height">—</em></span>
+                    <span><b data-i18n="client.age">Age</b><em id="nutri-client-age">—</em></span>
+                  </div>
+                </div>
+              </div>
+              <div class="nutri-week">
+                <button type="button" id="nutri-week-prev" class="nutri-week-arrow" aria-label="Previous week">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <div class="nutri-week-label">
+                  <b id="nutri-week-label">Week —</b>
+                  <span id="nutri-week-range">—</span>
+                </div>
+                <button type="button" id="nutri-week-next" class="nutri-week-arrow" aria-label="Next week">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+                <button type="button" id="nutri-week-calendar" class="nutri-week-cal" aria-label="Pick date">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg>
+                </button>
+                <button type="button" id="nutri-week-today" class="nutri-week-today hidden" data-i18n="nutrition.today">Today</button>
+                <input type="date" id="nutrition-date" class="nutri-hidden-date" aria-label="Date" />
               </div>
             </div>
 
-            <!-- Tab bar (mirrors workouts: Exercise database / Templates / History) -->
-            <div class="flex gap-1 bg-surface-2 border border-border rounded-xl p-1 mb-4">
-              <button data-nutrition-tab="database" class="nutrition-tab-btn flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition active bg-primary text-white" data-i18n="nutrition.tabDatabase">Food database</button>
-              <button data-nutrition-tab="templates" class="nutrition-tab-btn flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition text-muted" data-i18n="nutrition.tabTemplates">Meal templates</button>
-              <button data-nutrition-tab="log" class="nutrition-tab-btn flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition text-muted" data-i18n="nutrition.tabLog">Daily log</button>
+            <div id="nutrition-empty" class="nutri-empty">
+              <span class="nutri-empty-ic" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21c5-3 8-7 8-12a8 8 0 0 0-16 0c0 5 3 9 8 12Z"/><path d="M12 21V9M8 13c2-1 3-3 4-5 1 2 2 4 4 5"/></svg>
+              </span>
+              <h3 data-i18n="nutrition.selectClientTitle">Choose a client to open the plan</h3>
+              <p data-i18n="nutrition.selectClientHint">Select a client above to track their daily nutrition.</p>
             </div>
 
-            <!-- ===== Tab: Food database ===== -->
-            <div data-nutrition-panel="database" class="overflow-x-hidden">
+            <div id="nutrition-content" class="hidden">
+              <div class="nutri-macro-strip" id="nutri-macro-cards"></div>
+
+              <div class="nutri-plan-toolbar">
+                <div class="nutri-plan-title-wrap">
+                  <div>
+                    <h2 class="nutri-plan-title" data-i18n="nutrition.dailyPlan">Daily plan</h2>
+                    <div class="nutri-plan-subline">
+                      <span id="nutri-balanced-badge" class="nutri-balanced"><span class="v2-live-dot"></span><span data-i18n="nutrition.balanced">Balanced</span></span>
+                      <span id="nutri-day-summary" class="nutri-muted"></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="nutri-daystrip" id="nutri-week-days" role="group" aria-label="Days"></div>
+                <div class="nutri-plan-actions">
+                  <button type="button" id="nutrition-add-meal" class="nutri-btn-ghost">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+                    <span data-i18n="nutrition.addMeal">Add meal</span>
+                  </button>
+                  <button type="button" id="nutrition-add-food-btn" class="v2-btn-primary nutri-add-food">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+                    <span data-i18n="nutrition.log">Log food</span>
+                  </button>
+                </div>
+              </div>
+
+              <div id="nutrition-meals" class="nutri-meal-list"></div>
+
+              <div class="nutri-total-bar">
+                <div class="nutri-total-main">
+                  <span class="nutri-total-label" data-i18n="nutrition.dayTotal">Day total</span>
+                  <b><span id="total-cal">0</span> <small>kcal</small></b>
+                </div>
+                <div class="nutri-total-macros">
+                  <span class="p"><i></i><b data-i18n="nutrition.protein">Protein</b><em id="total-protein">0</em><small>g</small></span>
+                  <span class="c"><i></i><b data-i18n="nutrition.carbs">Carbs</b><em id="total-carbs">0</em><small>g</small></span>
+                  <span class="f"><i></i><b data-i18n="nutrition.fat">Fat</b><em id="total-fat">0</em><small>g</small></span>
+                </div>
+                <div class="nutri-total-progress">
+                  <div class="nutri-total-bar-track"><i id="nutri-total-fill" style="width:0%"></i></div>
+                  <span id="nutri-total-pct">0%</span>
+                </div>
+              </div>
+
+              <div class="nutri-extra-grid">
+                <section class="nutri-extra-card nutri-advice-card">
+                  <div class="nutri-extra-head">
+                    <div><span class="nutri-eyebrow" data-i18n="nutrition.adviceEyebrow">Coach notes</span><h3 data-i18n="nutrition.recommendations">Recommendations</h3></div>
+                    <span class="nutri-extra-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21c5-3 8-7 8-12a8 8 0 0 0-16 0c0 5 3 9 8 12Z"/><path d="M12 21V9"/></svg></span>
+                  </div>
+                  <div class="nutri-advice-grid">
+                    <div class="nutri-advice p"><span class="nutri-advice-ic">🌿</span><span data-i18n="nutrition.adviceVeg">Add more vegetables and greens</span></div>
+                    <div class="nutri-advice c"><span class="nutri-advice-ic">💧</span><span data-i18n="nutrition.adviceWater">Increase water to 2.5 L</span></div>
+                    <div class="nutri-advice w"><span class="nutri-advice-ic">🍬</span><span data-i18n="nutrition.adviceSugar">Reduce simple carbohydrates</span></div>
+                    <div class="nutri-advice f"><span class="nutri-advice-ic">🥑</span><span data-i18n="nutrition.adviceFats">Add healthy fats</span></div>
+                  </div>
+                </section>
+                <section class="nutri-extra-card nutri-popular-card">
+                  <div class="nutri-extra-head">
+                    <div><span class="nutri-eyebrow" data-i18n="nutrition.recipesEyebrow">Inspiration</span><h3 data-i18n="nutrition.popularRecipes">Popular recipes</h3></div>
+                    <button type="button" class="nutri-text-link" id="nutri-popular-all" data-i18n="nutrition.seeAll">See all</button>
+                  </div>
+                  <div class="nutri-popular-grid" id="nutri-popular-recipes"></div>
+                </section>
+              </div>
+            </div>
+          </div>
+
+          <div data-nutrition-panel="database" class="hidden nutri-tabpanel overflow-x-hidden">
+              <div class="nutri-tab-head">
+                <div><span class="nutri-eyebrow" data-i18n="nutrition.baseEyebrow">Product base</span><h2 data-i18n="nutrition.tabProducts">Products</h2></div>
+              </div>
               <!-- Source toggle + count + add -->
               <div class="flex items-center gap-2 mb-3 flex-wrap max-w-full overflow-x-auto no-scrollbar">
                 <span id="food-db-count" class="text-xs text-muted bg-surface-2 border border-border rounded-full px-2 py-0.5">0</span>
@@ -5420,150 +5551,137 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
             </div>
 
             <!-- ===== Tab: Meal templates ===== -->
-            <div data-nutrition-panel="templates" class="hidden">
-              <div class="flex items-center gap-2 mb-3">
-                <span id="nutrition-templates-count" class="text-xs text-muted bg-surface-2 border border-border rounded-full px-2 py-0.5">0</span>
-                <button id="nutrition-template-add-btn" class="ms-auto bg-surface-2 hover:bg-border/40 border border-border text-sm font-medium px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1.5">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-                  <span data-i18n="workouts.newTemplate">New template</span>
-                </button>
-              </div>
-              <div id="nutrition-templates-list"></div>
-              <div id="nutrition-templates-empty" class="hidden text-center py-12">
-                <div class="inline-flex w-16 h-16 rounded-2xl bg-surface-2 border border-border grid place-items-center mb-4">
-                  <svg class="w-7 h-7 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                </div>
-                <p class="text-sm text-muted" data-i18n="nutrition.noTemplates">No meal templates yet. Create one to deploy on any client in 1 click.</p>
-              </div>
+
+          <div data-nutrition-panel="recipes" class="hidden nutri-tabpanel">
+            <div class="nutri-tab-head">
+              <div><span class="nutri-eyebrow" data-i18n="nutrition.recipesEyebrow">Inspiration</span><h2 data-i18n="nutrition.tabRecipes">Recipes</h2></div>
+              <button type="button" id="nutrition-recipe-create" class="v2-btn-primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+                <span data-i18n="food.newRecipe">New recipe</span>
+              </button>
             </div>
-
-            <!-- ===== Tab: Daily log ===== -->
-            <div data-nutrition-panel="log" class="hidden">
-              <div class="v2-nutri-toolbar">
-                <div class="v2-nutri-selects">
-                  <select id="nutrition-client-select" class="v2-nutri-select" aria-label="Client">
-                    <option value="" data-i18n="analytics.selectClient">Select client…</option>
-                  </select>
-                  <div class="v2-nutri-date-wrap">
-                    <button type="button" id="nutrition-prev-day" class="v2-day-arrow" aria-label="Previous day">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m15 18-6-6 6-6"/></svg>
-                    </button>
-                    <input type="date" id="nutrition-date" class="v2-nutri-date" aria-label="Date" />
-                    <button type="button" id="nutrition-next-day" class="v2-day-arrow" aria-label="Next day">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 18 6-6-6-6"/></svg>
-                    </button>
-                    <button type="button" id="nutrition-today" class="v2-day-today" data-i18n="nutrition.today">Today</button>
-                  </div>
-                </div>
-                <button id="nutrition-add-food-btn" class="v2-btn-primary v2-nutri-add">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-                  <span data-i18n="nutrition.log">Log food</span>
-                </button>
-              </div>
-              <!-- Empty state (no client selected) -->
-              <div id="nutrition-empty" class="v2-panel v2-nutri-empty">
-                <div class="v2-nutri-empty-orb">
-                  <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zM12 8v4M12 16h.01"/></svg>
-                </div>
-                <p class="text-sm text-muted" data-i18n="nutrition.selectClientHint">Select a client above to track their daily nutrition.</p>
-              </div>
-              <!-- Nutrition content (shown when client selected) -->
-              <div id="nutrition-content" class="hidden">
-                <section class="v2-nutri-hero">
-                  <div class="v2-nutri-hero-copy">
-                    <div class="v2-eyebrow"><span class="v2-live-dot"></span><span data-i18n="nutrition.daySummary">Day summary</span></div>
-                    <div class="v2-nutri-big">
-                      <span id="nutrition-remaining-hero">—</span>
-                      <em id="nutrition-remaining-unit" data-i18n="nutrition.kcalLeft">kcal left</em>
-                    </div>
-                    <p id="nutrition-hero-sub" class="v2-nutri-sub" data-i18n="nutrition.setTargetsHint">Set daily targets to unlock the full dashboard.</p>
-                    <div class="v2-nutri-chips">
-                      <span class="v2-nutri-chip"><small data-i18n="nutrition.consumed">Consumed</small><b id="nutrition-consumed-hero">0</b></span>
-                      <span class="v2-nutri-chip"><small data-i18n="nutrition.targetShort">Target</small><b id="nutrition-target-hero">—</b></span>
-                      <span class="v2-nutri-chip"><small data-i18n="nutrition.mealsLogged">Meals</small><b id="nutrition-meal-count">0/0</b></span>
-                      <span class="v2-nutri-chip"><small data-i18n="nutrition.foodsLogged">Foods</small><b id="nutrition-food-count">0</b></span>
-                    </div>
-                  </div>
-                  <div class="v2-nutri-orb" id="nutrition-orb" style="--p:0%">
-                    <div class="v2-nutri-orb-in">
-                      <b id="nutrition-hero-pct">0%</b>
-                      <small data-i18n="nutrition.ofTarget">of target</small>
-                    </div>
-                  </div>
-                </section>
-
-                <section class="v2-panel v2-nutri-section">
-                  <div class="v2-nutri-section-head">
-                    <div class="min-w-0">
-                      <div class="v2-eyebrow"><span data-i18n="nutrition.macrosEyebrow">Macro engine</span></div>
-                      <h4 class="v2-section-title-sm" data-i18n="nutrition.target">Daily target</h4>
-                    </div>
-                    <button id="nutrition-set-targets" class="v2-text-link" data-i18n="nutrition.editTargets">Edit targets</button>
-                  </div>
-                  <div id="nutrition-rings" class="v2-macro-grid"></div>
-                </section>
-
-                <div class="v2-nutri-duo">
-                  <section class="v2-panel v2-nutri-gauge">
-                    <div class="v2-nutri-section-head">
-                      <div class="min-w-0">
-                        <div class="v2-eyebrow"><span data-i18n="nutrition.energyEyebrow">Fuel gauge</span></div>
-                        <h4 class="v2-section-title-sm" data-i18n="nutrition.energyBalance">Energy balance</h4>
-                      </div>
-                      <span id="nutrition-daybar-pct" class="v2-pill">0%</span>
-                    </div>
-                    <div class="v2-gauge-num"><b id="nutrition-daybar-consumed">0</b><span>/</span><span id="nutrition-daybar-target">—</span><small data-i18n="nutrition.calories">Calories</small></div>
-                    <div class="v2-gauge"><i id="nutrition-daybar-fill" style="width:0%"></i></div>
-                    <div class="v2-gauge-foot"><span id="nutrition-daybar-note">—</span><span id="nutrition-daybar-side">0%</span></div>
-                  </section>
-                  <section class="v2-panel v2-nutri-split">
-                    <div class="v2-nutri-section-head">
-                      <div class="min-w-0">
-                        <div class="v2-eyebrow"><span data-i18n="nutrition.macrosEyebrow">Macro engine</span></div>
-                        <h4 class="v2-section-title-sm" data-i18n="nutrition.macroSplit">Macro split</h4>
-                      </div>
-                    </div>
-                    <div class="v2-splitbar" aria-hidden="true">
-                      <i class="p" id="nutrition-split-p" style="width:0%"></i>
-                      <i class="c" id="nutrition-split-c" style="width:0%"></i>
-                      <i class="f" id="nutrition-split-f" style="width:0%"></i>
-                    </div>
-                    <div class="v2-split-legend">
-                      <span class="p"><i></i><span data-i18n="nutrition.protein">Protein</span><b id="nutrition-split-p-pct">0%</b></span>
-                      <span class="c"><i></i><span data-i18n="nutrition.carbs">Carbs</span><b id="nutrition-split-c-pct">0%</b></span>
-                      <span class="f"><i></i><span data-i18n="nutrition.fat">Fat</span><b id="nutrition-split-f-pct">0%</b></span>
-                    </div>
-                  </section>
-                </div>
-
-                <div class="v2-nutri-meals-head">
-                  <div class="min-w-0">
-                    <div class="v2-eyebrow"><span data-i18n="nutrition.timelineEyebrow">Intake timeline</span></div>
-                    <h4 class="v2-section-title-sm" data-i18n="nutrition.mealTimeline">Meal timeline</h4>
-                  </div>
-                  <span id="nutrition-meal-progress" class="v2-pill">0/0</span>
-                </div>
-                <div id="nutrition-meals" class="v2-meal-timeline"></div>
-
-                <section class="v2-panel v2-nutri-totals">
-                  <div class="flex items-center justify-between flex-wrap gap-2">
-                    <div class="min-w-0">
-                      <div class="v2-eyebrow"><span data-i18n="nutrition.totalsEyebrow">Day totals</span></div>
-                      <span class="font-display font-bold text-sm" data-i18n="nutrition.totals">Totals</span>
-                    </div>
-                    <div class="v2-nutri-total-grid">
-                      <span class="v2-total-item"><small data-i18n="nutrition.calories">Calories</small><b><span id="total-cal">0</span></b></span>
-                      <span class="v2-total-item p"><small data-i18n="nutrition.protein">Protein</small><b><span id="total-protein">0</span><em>g</em></b></span>
-                      <span class="v2-total-item c"><small data-i18n="nutrition.carbs">Carbs</small><b><span id="total-carbs">0</span><em>g</em></b></span>
-                      <span class="v2-total-item f"><small data-i18n="nutrition.fat">Fat</small><b><span id="total-fat">0</span><em>g</em></b></span>
-                    </div>
-                  </div>
-                </section>
-              </div>
+            <div class="nutri-toolbar">
+              <div class="nutri-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input type="search" id="nutrition-recipe-search" data-i18n-ph="food.recipeSearchPh" placeholder="Search a recipe…" /></div>
+              <span id="nutrition-recipes-count" class="nutri-count">0</span>
+            </div>
+            <div id="nutrition-recipes-grid" class="nutri-recipes-grid"></div>
+            <div id="nutrition-recipes-empty" class="nutri-tab-empty hidden">
+              <span class="nutri-empty-ic">🍲</span>
+              <h3 data-i18n="nutrition.noRecipesTitle">No recipes yet</h3>
+              <p data-i18n="nutrition.noRecipesHint">Create a dish from your products and reuse it in any plan.</p>
+              <button type="button" id="nutrition-recipe-empty-add" class="v2-btn-primary" data-i18n="food.newRecipe">New recipe</button>
             </div>
           </div>
 
-          <!-- ============= FOOD SEARCH MODAL (Steps 32-33) ============= -->
+          <div data-nutrition-panel="templates" class="hidden nutri-tabpanel">
+            <div class="nutri-tab-head">
+              <div><span class="nutri-eyebrow" data-i18n="nutrition.templatesEyebrow">Meal planning</span><h2 data-i18n="nutrition.tabTemplates">Templates</h2></div>
+              <div class="flex items-center gap-2">
+                <span id="nutrition-templates-count" class="nutri-count">0</span>
+                <button type="button" id="nutrition-template-add-btn" class="v2-btn-primary">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+                  <span data-i18n="workouts.newTemplate">New template</span>
+                </button>
+              </div>
+            </div>
+            <div id="nutrition-templates-list"></div>
+            <div id="nutrition-templates-empty" class="nutri-tab-empty hidden">
+              <span class="nutri-empty-ic">▤</span>
+              <h3 data-i18n="nutrition.noTemplatesTitle">No templates yet</h3>
+              <p data-i18n="nutrition.noTemplates">No meal templates yet. Create one to deploy on any client in 1 click.</p>
+              <button type="button" id="nutrition-template-empty-add" class="v2-btn-primary" data-i18n="workouts.newTemplate">New template</button>
+            </div>
+          </div>
+
+            <!-- ===== Tab: Daily log ===== -->
+
+          <div data-nutrition-panel="history" class="hidden nutri-tabpanel">
+            <div class="nutri-tab-head">
+              <div><span class="nutri-eyebrow" data-i18n="nutrition.historyEyebrow">Archive</span><h2 data-i18n="nutrition.tabHistory">History</h2></div>
+              <span id="nutrition-history-count" class="nutri-count">0</span>
+            </div>
+            <div id="nutrition-history-summary" class="nutri-history-summary"></div>
+            <div id="nutrition-history-list" class="nutri-history-list"></div>
+            <div id="nutrition-history-empty" class="nutri-tab-empty hidden">
+              <span class="nutri-empty-ic">◷</span>
+              <h3 data-i18n="nutrition.noHistoryTitle">No days logged yet</h3>
+              <p data-i18n="nutrition.noHistoryHint">Log a meal to start building the history.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="nutri-rail">
+      <section class="nutri-side-card nutri-day-card">
+        <div class="nutri-side-head">
+          <div><span class="nutri-eyebrow" id="nutri-stats-eyebrow" data-i18n="nutrition.statsEyebrow">Today</span><h3 data-i18n="nutrition.dailyStats">Daily stats</h3></div>
+          <button type="button" id="nutrition-set-targets" class="nutri-icon-btn" aria-label="Edit targets" title="Edit targets">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z"/></svg>
+          </button>
+        </div>
+        <div class="nutri-day-top">
+          <div class="nutri-day-ring" id="nutri-day-ring" style="--p:0%">
+            <div class="nutri-day-ring-in">
+              <b id="nutri-day-kcal">0</b>
+              <span>kcal</span>
+              <small><span data-i18n="nutrition.of">of</span> <span id="nutri-day-target">0</span></small>
+            </div>
+          </div>
+          <div class="nutri-day-macros" id="nutri-day-macros"></div>
+        </div>
+        <div class="nutri-chart-head"><span data-i18n="nutrition.weeklyIntake">Weekly intake</span><span id="nutri-week-avg">—</span></div>
+        <div id="nutri-week-chart" class="nutri-week-chart"></div>
+      </section>
+
+      <section class="nutri-side-card nutri-food-card">
+        <div class="nutri-side-head">
+          <div><span class="nutri-eyebrow" data-i18n="nutrition.baseEyebrow">Product base</span><h3 data-i18n="nutrition.foodBase">Food base</h3></div>
+          <button type="button" id="nutri-food-all" class="nutri-text-link" data-i18n="nutrition.seeAll">See all</button>
+        </div>
+        <div class="nutri-food-cats" id="nutri-food-cats"></div>
+        <div class="nutri-search nutri-search-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input type="search" id="nutri-food-search" data-i18n-ph="nutrition.searchProduct" placeholder="Search product…" /></div>
+        <div class="nutri-food-grid" id="nutri-food-preview"></div>
+      </section>
+
+      <section class="nutri-side-card nutri-progress-card">
+        <div class="nutri-side-head">
+          <div><span class="nutri-eyebrow" data-i18n="nutrition.progressEyebrow">Body trends</span><h3 data-i18n="nutrition.progressTitle">Progress</h3></div>
+          <button type="button" id="nutri-progress-details" class="nutri-text-link" data-i18n="nutrition.details">Details</button>
+        </div>
+        <div class="nutri-progress-main">
+          <div class="nutri-progress-figure" aria-hidden="true">
+            <svg viewBox="0 0 100 180" fill="none">
+              <defs>
+                <linearGradient id="nutriBodyGrad" x1="24" y1="10" x2="78" y2="176" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="rgb(var(--c-accent))" stop-opacity=".92"/>
+                  <stop offset=".55" stop-color="rgb(var(--c-primary))" stop-opacity=".62"/>
+                  <stop offset="1" stop-color="rgb(var(--c-primary))" stop-opacity=".22"/>
+                </linearGradient>
+              </defs>
+              <circle cx="50" cy="21" r="11.5" fill="url(#nutriBodyGrad)"/>
+              <path d="M50 37c-9 0-16.2 4.2-19.4 11.2l-4.8 10.2c-1.4 2.9-.1 6.4 2.9 7.7l2.9 1.3c2.6 1.1 5.5 0 6.6-2.6l2.2-5.1v35.6c0 3.3 2.7 6 6 6h6.2c3.3 0 6-2.7 6-6V59.7l2.2 5.1c1.1 2.6 4 3.7 6.6 2.6l2.9-1.3c3-1.3 4.3-4.8 2.9-7.7l-4.8-10.2C66.2 41.2 59 37 50 37Z" fill="url(#nutriBodyGrad)"/>
+              <path d="M29.7 59 24 94.5c-.4 2.6 1.3 5 3.9 5.5l.8.2c2.4.4 4.6-1.1 5.1-3.4l4.6-20.2" stroke="url(#nutriBodyGrad)" stroke-width="7.4" stroke-linecap="round" opacity=".82"/>
+              <path d="M70.3 59 76 94.5c.4 2.6-1.3 5-3.9 5.5l-.8.2c-2.4.4-4.6-1.1-5.1-3.4l-4.6-20.2" stroke="url(#nutriBodyGrad)" stroke-width="7.4" stroke-linecap="round" opacity=".82"/>
+              <path d="M40.4 95.5h7.9l1.1 64.2c0 2.8-2 5.1-4.8 5.1h-.5c-2.7 0-4.9-2.2-4.9-4.9l1.2-64.4Z" fill="url(#nutriBodyGrad)" opacity=".9"/>
+              <path d="M51.7 95.5h7.9l1.2 64.4c0 2.7-2.2 4.9-4.9 4.9h-.5c-2.8 0-4.8-2.3-4.8-5.1l1.1-64.2Z" fill="url(#nutriBodyGrad)" opacity=".9"/>
+            </svg>
+          </div>
+          <div class="nutri-progress-metrics" id="nutri-progress-metrics"></div>
+        </div>
+        <div class="nutri-progress-goal" id="nutri-progress-goal"></div>
+      </section>
+
+      <section class="nutri-quote-card">
+        <span class="nutri-quote-mark">“</span>
+        <p data-i18n="nutrition.quote">You are what you eat. Nutrition is an investment in your future.</p>
+        <span class="nutri-quote-sign">David King</span>
+      </section>
+    </aside>
+  </div>
+
+
+<!-- ============= FOOD SEARCH MODAL (Steps 32-33) ============= -->
           <div id="food-search-modal" class="hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
             <div class="bg-surface w-full  lg:max-w-[min(96vw,760px)] max-h-[90vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
               <div class="p-4 border-b border-border flex items-center gap-3">
@@ -20869,6 +20987,13 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     let _date = null;
     let _log = null;        // current nutrition_history record
     let _clients = [];
+    let _client = null;     // selected client record (profile data)
+    let _history = [];      // all nutrition_history records for the selected client
+    let _allFoods = [];     // food_base cache for the right rail / product preview
+    let _foodCat = 'all';
+    let _foodPreviewSearch = '';
+    let _recipeSearch = '';
+    let _wired = false;
     let _searchSource = 'local';
     let _pendingFood = null; // food item awaiting portion input
     /* c150: smart food search — favorites / recent (localStorage, trainer-wide) */
@@ -20908,6 +21033,98 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     }
 
     const MEAL_TYPES = ['breakfast', 'lunch', 'dinner', 'snack', 'pre_workout', 'post_workout'];
+    const MEAL_TIMES = { breakfast: '07:30', snack: '10:30', lunch: '13:00', pre_workout: '16:30', dinner: '19:00', post_workout: '21:30' };
+    const NUTRI_LOCALES = { en: 'en-US', ru: 'ru-RU', he: 'he-IL' };
+    function nutriLocale() { return NUTRI_LOCALES[currentLang()] || 'en-US'; }
+    function mealLabel(meal, idx) {
+      const labels = {
+        breakfast: t('nutrition.mealBreakfast'), lunch: t('nutrition.mealLunch'),
+        dinner: t('nutrition.mealDinner'), snack: t('nutrition.mealSnack'),
+        pre_workout: t('nutrition.mealPreWorkout'), post_workout: t('nutrition.mealPostWorkout')
+      };
+      return (meal && (meal.label || labels[meal.type])) || (t('nutrition.mealN') + ' ' + ((idx || 0) + 1));
+    }
+    function mealTime(meal) {
+      if (!meal) return '—';
+      if (meal.time) return meal.time;
+      return MEAL_TIMES[meal.type] || '—';
+    }
+    function mealInitials(name) {
+      return String(name || '?').trim().split(/\s+/).slice(0, 2).map(w => w.charAt(0)).join('').toUpperCase() || '?';
+    }
+    function logDateKey(d) {
+      const dt = new Date(d);
+      if (isNaN(dt)) return '';
+      return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
+    }
+    function weekDaysFor(dateStr) {
+      const parts = String(dateStr || logDateKey(new Date())).split('-').map(Number);
+      const d = new Date(parts[0] || 1970, (parts[1] || 1) - 1, parts[2] || 1);
+      /* c203: Hebrew weeks start on Sunday; EN/RU keep Monday-first. */
+      const offset = currentLang() === 'he' ? d.getDay() : (d.getDay() + 6) % 7;
+      const start = new Date(d.getFullYear(), d.getMonth(), d.getDate() - offset);
+      return Array.from({ length: 7 }, (_, i) => new Date(start.getFullYear(), start.getMonth(), start.getDate() + i));
+    }
+    function isoWeekNumber(date) {
+      const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+      const day = d.getUTCDay() || 7;
+      d.setUTCDate(d.getUTCDate() + 4 - day);
+      const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+      return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    }
+    function historyTotals(record) {
+      if (!record) return { calories: 0, protein: 0, carbs: 0, fat: 0 };
+      return (record.meals || []).reduce((acc, meal) => {
+        (meal.items || []).forEach(it => {
+          acc.calories += Number(it.calories) || 0;
+          acc.protein += Number(it.protein) || 0;
+          acc.carbs += Number(it.carbs) || 0;
+          acc.fat += Number(it.fat) || 0;
+        });
+        return acc;
+      }, { calories: 0, protein: 0, carbs: 0, fat: 0 });
+    }
+    function recordForDate(key) {
+      if (key === (_date || logDateKey(new Date())) && _log) return _log;
+      return _history.find(r => logDateKey(r.date) === key) || null;
+    }
+    /** c203: keep the in-memory food catalog in sync after create/edit. */
+    function cacheFood(item) {
+      if (!item || !item.id) return;
+      const key = String(item.id);
+      const idx = _allFoods.findIndex(f => String(f.id) === key);
+      if (idx >= 0) _allFoods[idx] = Object.assign({}, _allFoods[idx], item);
+      else _allFoods.push(item);
+    }
+    /** c203: the product rail reads BOTH the curated reference DB and the
+     *  local/custom/recipe store. Reference rows keep macros under .nutrition. */
+    async function loadFoodCatalog() {
+      let base = [], ref = [];
+      try { base = await db.all('food_base'); } catch (e) { base = []; }
+      try { ref = await db.all('food_database'); } catch (e) { ref = []; }
+      const normRef = (f) => {
+        const n = (f && f.nutrition) || {};
+        return {
+          id: f && f.id, name_en: f && f.name_en, name_ru: f && f.name_ru, name_he: f && f.name_he,
+          brand: (f && f.brand) || '', category: (f && f.category) || '',
+          calories: Number(f && f.calories != null ? f.calories : n.calories) || 0,
+          protein: Number(f && f.protein != null ? f.protein : n.protein) || 0,
+          carbs: Number(f && f.carbs != null ? f.carbs : n.carbs) || 0,
+          fat: Number(f && f.fat != null ? f.fat : n.fat) || 0,
+          fiber: Number(f && f.fiber != null ? f.fiber : n.fiber) || 0,
+          serving_quantity: Number(f && f.serving_quantity) || 0,
+          package_grams: Number(f && f.package_grams) || 0,
+          image_url: (f && f.image_url) || '',
+          source: (f && f.source) || 'reference', _ref: true
+        };
+      };
+      const seen = new Set();
+      return (base || []).concat((ref || []).map(normRef)).filter(function (f) {
+        if (!f || !f.id || seen.has(String(f.id))) return false;
+        seen.add(String(f.id));
+        return true;
+      });
+    }
 
     /** Load client list + set today's date. */
     async function init() {
@@ -20926,6 +21143,13 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       if (dateInput && !dateInput.value) {
         dateInput.value = dkLogDateKey(new Date()); /* c146: local today, not UTC */
       }
+      wireDashboard();
+      if (!_allFoods.length) {
+        loadFoodCatalog().then(function (foods) {
+          _allFoods = foods || [];
+          if (document.querySelector('.nutri-dash')) { renderFoodPreview(); renderRecipes(); }
+        }).catch(function () {});
+      }
     }
 
     /** Select a client + load their log for the current date. */
@@ -20936,6 +21160,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const empty = document.getElementById('nutrition-empty');
       const content = document.getElementById('nutrition-content');
       if (!_clientId) {
+        _client = null;
         if (empty) empty.classList.remove('hidden');
         if (content) content.classList.add('hidden');
         return;
@@ -20943,6 +21168,14 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       if (empty) empty.classList.add('hidden');
       if (content) content.classList.remove('hidden');
       await loadLog();
+      const [client, history, foods] = await Promise.all([
+        db.get('clients', _clientId).catch(function () { return null; }),
+        db.find('nutrition_history', 'by_clientId', _clientId).catch(function () { return []; }),
+        _allFoods.length ? Promise.resolve(_allFoods) : loadFoodCatalog().catch(function () { return []; })
+      ]);
+      _client = client || null;
+      _history = history || [];
+      _allFoods = foods || [];
       render();
     }
 
@@ -20953,6 +21186,122 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         await loadLog();
         render();
       }
+    }
+
+    async function shiftWeek(delta) {
+      const input = document.getElementById('nutrition-date');
+      const base = _date || (input && input.value) || logDateKey(new Date());
+      const parts = String(base).split('-').map(Number);
+      const d = new Date(parts[0] || 1970, (parts[1] || 1) - 1, parts[2] || 1);
+      d.setDate(d.getDate() + (Number(delta || 0) * 7));
+      const key = logDateKey(d);
+      if (input) input.value = key;
+      await selectDate(key);
+    }
+
+    function wireDashboard() {
+      if (_wired) return;
+      _wired = true;
+      const byId = (id) => document.getElementById(id);
+      const prevWeek = byId('nutri-week-prev');
+      if (prevWeek) prevWeek.addEventListener('click', function () { shiftWeek(-1); });
+      const nextWeek = byId('nutri-week-next');
+      if (nextWeek) nextWeek.addEventListener('click', function () { shiftWeek(1); });
+      const calBtn = byId('nutri-week-calendar');
+      const dateInput = byId('nutrition-date');
+      if (calBtn && dateInput) calBtn.addEventListener('click', function () {
+        try { dateInput.showPicker ? dateInput.showPicker() : dateInput.focus(); } catch (e) { dateInput.focus(); }
+      });
+      const todayBtn = byId('nutri-week-today');
+      if (todayBtn) todayBtn.addEventListener('click', function () { gotoToday(); });
+      const addMeal = byId('nutrition-add-meal');
+      if (addMeal) addMeal.addEventListener('click', addCustomMeal);
+      const days = byId('nutri-week-days');
+      if (days) days.addEventListener('click', function (e) {
+        const b = e.target.closest ? e.target.closest('[data-nutri-day]') : null;
+        if (!b) return;
+        const key = b.getAttribute('data-nutri-day');
+        if (key) { const input = byId('nutrition-date'); if (input) input.value = key; selectDate(key); }
+      });
+      const foodAll = byId('nutri-food-all');
+      if (foodAll) foodAll.addEventListener('click', function () {
+        const tab = document.querySelector('[data-nutrition-tab="database"]');
+        if (tab) tab.click();
+      });
+      const foodCats = byId('nutri-food-cats');
+      if (foodCats) foodCats.addEventListener('click', function (e) {
+        const b = e.target.closest ? e.target.closest('[data-nutri-food-cat]') : null;
+        if (!b) return;
+        _foodCat = b.getAttribute('data-nutri-food-cat') || 'all';
+        renderFoodPreview();
+      });
+      const foodSearch = byId('nutri-food-search');
+      if (foodSearch) foodSearch.addEventListener('input', function () {
+        _foodPreviewSearch = foodSearch.value.trim().toLowerCase();
+        renderFoodPreview();
+      });
+      const foodPreview = byId('nutri-food-preview');
+      if (foodPreview) foodPreview.addEventListener('click', function (e) {
+        const b = e.target.closest ? e.target.closest('[data-nutri-food]') : null;
+        if (!b) return;
+        const food = _allFoods.find(f => String(f.id) === b.getAttribute('data-nutri-food'));
+        if (food) {
+          if (!_log) { toast(t('nutrition.chooseClientFirst') || 'Choose a client first', 'warning', 2200); return; }
+          openPortionModal(food);
+        }
+      });
+      const progressDetails = byId('nutri-progress-details');
+      if (progressDetails) progressDetails.addEventListener('click', function () {
+        if (!_clientId) return;
+        try { if (window.screens && screens.profile) screens.profile.load(_clientId); router.show('profile'); } catch (e) {}
+      });
+      const popularAll = byId('nutri-popular-all');
+      if (popularAll) popularAll.addEventListener('click', function () {
+        const tab = document.querySelector('[data-nutrition-tab="recipes"]');
+        if (tab) tab.click();
+      });
+      const popular = byId('nutri-popular-recipes');
+      if (popular) popular.addEventListener('click', function (e) {
+        if (e.target.closest && e.target.closest('[data-nutri-popular]')) {
+          const tab = document.querySelector('[data-nutrition-tab="recipes"]');
+          if (tab) tab.click();
+        }
+      });
+      const recipeCreate = byId('nutrition-recipe-create');
+      if (recipeCreate) recipeCreate.addEventListener('click', function () { openRecipe(); });
+      const recipeEmptyAdd = byId('nutrition-recipe-empty-add');
+      if (recipeEmptyAdd) recipeEmptyAdd.addEventListener('click', function () { openRecipe(); });
+      const recipeSearch = byId('nutrition-recipe-search');
+      if (recipeSearch) recipeSearch.addEventListener('input', function () {
+        _recipeSearch = recipeSearch.value.trim().toLowerCase();
+        renderRecipes();
+      });
+      const recipesGrid = byId('nutrition-recipes-grid');
+      if (recipesGrid) recipesGrid.addEventListener('click', function (e) {
+        const edit = e.target.closest ? e.target.closest('[data-recipe-edit]') : null;
+        const add = e.target.closest ? e.target.closest('[data-recipe-add]') : null;
+        const id = (edit || add) && (edit || add).getAttribute('data-recipe-edit') || (add && add.getAttribute('data-recipe-add'));
+        const food = _allFoods.find(f => String(f.id) === String(id));
+        if (!food) return;
+        if (edit) openRecipe(food);
+        else if (add) {
+          if (!_log) { toast(t('nutrition.chooseClientFirst') || 'Choose a client first', 'warning', 2200); return; }
+          openPortionModal(food);
+        }
+      });
+      const historyList = byId('nutrition-history-list');
+      if (historyList) historyList.addEventListener('click', function (e) {
+        const b = e.target.closest ? e.target.closest('[data-nutri-history]') : null;
+        if (!b) return;
+        const key = b.getAttribute('data-nutri-history');
+        if (!key) return;
+        const input = byId('nutrition-date'); if (input) input.value = key;
+        selectDate(key);
+        const plan = document.querySelector('[data-nutrition-tab="log"]'); if (plan) plan.click();
+      });
+      document.addEventListener('dk-lang', function () {
+        if (_log) { render(); renderRecipes(); renderHistory(); }
+      });
     }
 
     /** c199: step the daily log one day back/forward. */
@@ -21022,277 +21371,453 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     /** Save the current log to IndexedDB. */
     async function saveLog() {
       if (!_log) return;
-      await db.put('nutrition_history', _log);
+      const saved = await db.put('nutrition_history', _log);
+      if (saved && saved.id) _log.id = saved.id;
+      const key = logDateKey(_log.date);
+      const idx = _history.findIndex(r => (r.id && _log.id && r.id === _log.id) || logDateKey(r.date) === key);
+      if (idx >= 0) _history[idx] = _log; else _history.push(_log);
     }
 
-    /** Render the entire nutrition screen. */
+    /** c203: render the whole nutrition dashboard. */
     function render() {
       if (!_log) return;
-      renderRings();
-      renderMeals();
-      renderTotals();
-    }
-
-    /** c199: fill the remaining-calorie hero, gauge and macro split. */
-    function renderNutritionSummary(totals) {
-      const target = Number(_log.target_calories) || 0;
-      const cal = Math.round(totals.calories || 0);
-      const pctRaw = target > 0 ? (cal / target) * 100 : 0;
-      const pct = Math.max(0, Math.min(100, Math.round(pctRaw)));
-      const remaining = target - cal;
-      const over = target > 0 && remaining < 0;
-      const meals = _log.meals || [];
-      const loggedMeals = meals.filter(m => (m.items || []).length > 0).length;
-      const foodCount = meals.reduce((s, m) => s + (m.items || []).length, 0);
-
-      setText('nutrition-consumed-hero', fmtNumber(cal));
-      setText('nutrition-target-hero', target > 0 ? fmtNumber(target) : '—');
-      setText('nutrition-meal-count', loggedMeals + '/' + meals.length);
-      setText('nutrition-food-count', String(foodCount));
-      setText('nutrition-hero-pct', pct + '%');
-      setText('nutrition-remaining-hero', target > 0 ? (over ? '+' + fmtNumber(Math.abs(remaining)) : fmtNumber(Math.max(0, remaining))) : '—');
-
-      const hero = document.querySelector('.v2-nutri-hero');
-      if (hero) hero.classList.toggle('is-over', over);
-      const orb = document.getElementById('nutrition-orb');
-      if (orb) orb.style.setProperty('--p', pct + '%');
-      const remUnit = document.getElementById('nutrition-remaining-unit');
-      if (remUnit) {
-        const unitKey = over ? 'nutrition.kcalOver' : 'nutrition.kcalLeft';
-        remUnit.setAttribute('data-i18n', unitKey);
-        remUnit.textContent = t(unitKey);
-      }
-
-      const sub = document.getElementById('nutrition-hero-sub');
-      if (sub) {
-        if (target <= 0) sub.textContent = t('nutrition.setTargetsHint');
-        else if (over) sub.textContent = t('nutrition.overBy', { n: fmtNumber(Math.abs(remaining)) });
-        else sub.textContent = t('nutrition.consumedOf', { c: fmtNumber(cal), t: fmtNumber(target) });
-      }
-
-      /* energy gauge */
-      setText('nutrition-daybar-consumed', fmtNumber(cal));
-      setText('nutrition-daybar-target', target > 0 ? fmtNumber(target) : '—');
-      setText('nutrition-daybar-pct', Math.round(pctRaw) + '%');
-      setText('nutrition-daybar-side', target > 0 ? t('nutrition.targetShort') + ' ' + fmtNumber(target) : '—');
-      setText('nutrition-daybar-note', target > 0
-        ? (over ? fmtNumber(Math.abs(remaining)) + ' ' + t('nutrition.over').toLowerCase() : fmtNumber(Math.max(0, remaining)) + ' ' + t('nutrition.kcalLeft'))
-        : t('nutrition.setTargetsHintShort'));
-      const fill = document.getElementById('nutrition-daybar-fill');
-      if (fill) {
-        fill.style.width = pct + '%';
-        fill.classList.toggle('is-over', over);
-      }
-
-      /* macro split by calories (P/C = 4 kcal/g, F = 9 kcal/g) */
-      const pKcal = (totals.protein || 0) * 4;
-      const cKcal = (totals.carbs || 0) * 4;
-      const fKcal = (totals.fat || 0) * 9;
-      const sum = pKcal + cKcal + fKcal;
-      const share = (v) => sum > 0 ? Math.round((v / sum) * 100) : 0;
-      const pPct = share(pKcal), cPct = share(cKcal), fPct = share(fKcal);
-      const setSplit = (id, v) => { const el = document.getElementById(id); if (el) el.style.width = v + '%'; };
-      setSplit('nutrition-split-p', pPct);
-      setSplit('nutrition-split-c', cPct);
-      setSplit('nutrition-split-f', fPct);
-      setText('nutrition-split-p-pct', pPct + '%');
-      setText('nutrition-split-c-pct', cPct + '%');
-      setText('nutrition-split-f-pct', fPct + '%');
-
-      const mealProgress = document.getElementById('nutrition-meal-progress');
-      if (mealProgress) {
-        mealProgress.textContent = loggedMeals + '/' + meals.length;
-        mealProgress.style.color = loggedMeals === meals.length && meals.length ? 'rgb(var(--c-success))' : '';
-      }
-    }
-
-    /** Render the 4 macro rings (calories / protein / carbs / fat). */
-    function renderRings() {
-      const container = document.getElementById('nutrition-rings');
-      if (!container) return;
       const totals = computeTotals();
-      renderNutritionSummary(totals);
+      renderPlanClient();
+      renderWeek();
+      renderMacroCards(totals);
+      renderMeals();
+      renderTotals(totals);
+      renderDayStats(totals);
+      renderWeekChart();
+      renderFoodPreview();
+      renderBodyProgress(totals);
+      renderPopularRecipes();
+      renderRecipes();
+      renderHistory();
+    }
+
+    function renderPlanClient() {
+      const c = _client || {};
+      const name = c.full_name || c.name || '—';
+      const avatar = document.getElementById('nutri-client-avatar');
+      if (avatar) {
+        avatar.innerHTML = c.photo_url
+          ? '<img src="' + escapeAttr(c.photo_url) + '" alt="" />'
+          : escapeHTML(mealInitials(name));
+      }
+      setText('nutri-client-name', name);
+      const goalMap = {
+        hypertrophy: 'client.goalHypertrophy', strength: 'client.goalStrength',
+        fat_loss: 'client.goalFatLoss', endurance: 'client.goalEndurance', rehab: 'client.goalRehab'
+      };
+      setText('nutri-client-goal', goalMap[c.goal] ? t(goalMap[c.goal]) : '—');
+      setText('nutri-client-weight', c.weight ? fmtNumber(c.weight) + ' kg' : '—');
+      setText('nutri-client-height', c.height ? fmtNumber(c.height) + ' cm' : '—');
+      setText('nutri-client-age', c.age ? String(c.age) : '—');
+      const status = document.getElementById('nutri-client-status');
+      const active = c.last_active && (Date.now() - Number(c.last_active)) < 7 * 86400000;
+      if (status) status.classList.toggle('hidden', !active);
+      const sel = document.getElementById('nutrition-client-select');
+      if (sel && _clientId) sel.value = _clientId;
+    }
+
+    function renderWeek() {
+      const input = document.getElementById('nutrition-date');
+      const selected = _date || (input && input.value) || logDateKey(new Date());
+      if (input) input.value = selected;
+      const days = weekDaysFor(selected);
+      const start = days[0], end = days[6];
+      const weekLabel = document.getElementById('nutri-week-label');
+      const weekRange = document.getElementById('nutri-week-range');
+      if (weekLabel) {
+        const selParts = String(selected).split('-').map(Number);
+        const selDate = new Date(selParts[0] || 1970, (selParts[1] || 1) - 1, selParts[2] || 1);
+        weekLabel.textContent = t('nutrition.weekN', { n: isoWeekNumber(selDate) });
+      }
+      if (weekRange) {
+        const fmt = new Intl.DateTimeFormat(nutriLocale(), { day: 'numeric', month: 'short' });
+        weekRange.textContent = fmt.format(start) + ' – ' + fmt.format(end);
+      }
+      const todayBtn = document.getElementById('nutri-week-today');
+      if (todayBtn) todayBtn.classList.toggle('hidden', selected === logDateKey(new Date()));
+      const strip = document.getElementById('nutri-week-days');
+      if (!strip) return;
+      const todayKey = logDateKey(new Date());
+      const wd = new Intl.DateTimeFormat(nutriLocale(), { weekday: 'short' });
+      let html = '';
+      days.forEach(function (d) {
+        const key = logDateKey(d);
+        const on = key === selected;
+        const today = key === todayKey;
+        const label = wd.format(d).replace(/\.$/, '');
+        html += '<button type="button" class="nutri-daybtn' + (on ? ' active' : '') + (today ? ' today' : '') + '" data-nutri-day="' + key + '" aria-label="' + escapeHTML(label + ' ' + d.getDate()) + '"><span>' + escapeHTML(label) + '</span><b>' + d.getDate() + '</b></button>';
+      });
+      strip.innerHTML = html;
+      const meals = _log.meals || [];
+      const logged = meals.filter(m => (m.items || []).length > 0).length;
+      setText('nutri-day-summary', logged + ' / ' + meals.length + ' ' + t('nutrition.meals'));
+    }
+
+    function macroIcon(key) {
+      const paths = {
+        calories: '<path d="M12 3c3 4 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 3-7 6-11Z"/>',
+        protein: '<path d="M6 7v10M18 7v10M3 9v6M21 9v6M6 12h12"/>',
+        carbs: '<path d="M5 20c0-8 5-13 14-15-2 10-7 15-14 15Z"/><path d="M5 20 15 9"/>',
+        fat: '<path d="M12 3c3 4 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 3-7 6-11Z"/>'
+      };
+      return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + (paths[key] || paths.calories) + '</svg>';
+    }
+
+    function renderMacroCards(totals) {
+      const box = document.getElementById('nutri-macro-cards');
+      if (!box) return;
       const macros = [
         { key: 'calories', label: t('nutrition.calories'), consumed: totals.calories, target: _log.target_calories, unit: '' },
-        { key: 'protein',  label: t('nutrition.protein'),  consumed: totals.protein,  target: _log.target_protein,  unit: 'g' },
-        { key: 'carbs',    label: t('nutrition.carbs'),    consumed: totals.carbs,    target: _log.target_carbs,    unit: 'g' },
-        { key: 'fat',      label: t('nutrition.fat'),      consumed: totals.fat,      target: _log.target_fat,      unit: 'g' }
+        { key: 'protein', label: t('nutrition.protein'), consumed: totals.protein, target: _log.target_protein, unit: 'g' },
+        { key: 'carbs', label: t('nutrition.carbs'), consumed: totals.carbs, target: _log.target_carbs, unit: 'g' },
+        { key: 'fat', label: t('nutrition.fat'), consumed: totals.fat, target: _log.target_fat, unit: 'g' }
       ];
-
-      const hasTargets = _log.target_calories || _log.target_protein || _log.target_carbs || _log.target_fat;
-      if (!hasTargets) {
-        container.innerHTML = `<div class="col-span-2 sm:col-span-4 text-center py-4 text-sm text-muted">${escapeHTML(t('nutrition.noTargets'))}</div>`;
-        return;
-      }
-
-      container.innerHTML = macros.map(m => {
+      box.innerHTML = macros.map(function (m) {
         const target = Number(m.target) || 0;
-        const consumed = Math.round(m.consumed || 0);
+        const consumed = Math.round(Number(m.consumed) || 0);
         const rawPct = target > 0 ? (consumed / target) * 100 : 0;
-        const pct = Math.min(100, rawPct);
-        const over = target > 0 && consumed > target;
-        const remaining = target > 0 ? Math.max(0, target - consumed) : 0;
-        const unit = m.unit === 'g' ? t('nutrition.gramShort') : m.unit;
-        const circumference = 2 * Math.PI * 27;
-        const dashOffset = circumference * (1 - pct / 100);
-        const status = over
-          ? `+${fmtNumber(consumed - target)}${unit} ${t('nutrition.over').toLowerCase()}`
-          : target > 0
-            ? `${fmtNumber(remaining)}${unit} ${t('nutrition.remaining').toLowerCase()}`
-            : '—';
-
-        return `
-          <div class="v2-macro-tile" data-macro="${m.key}">
-            <div class="v2-macro-top">
-              <span class="v2-macro-name">${escapeHTML(m.label)}</span>
-              <span class="v2-macro-pct">${Math.round(rawPct)}%</span>
-            </div>
-            <div class="v2-macro-row">
-              <svg class="v2-macro-ring" viewBox="0 0 64 64" aria-hidden="true">
-                <circle class="v2-ring-bg" cx="32" cy="32" r="27" fill="none" stroke-width="5"/>
-                <circle class="v2-ring-tick" cx="32" cy="32" r="31.5" fill="none" stroke-width="1" stroke-dasharray="1 5"/>
-                <circle class="v2-ring-val" cx="32" cy="32" r="27" fill="none" stroke-width="5" stroke-linecap="round"
-                        stroke-dasharray="${circumference.toFixed(1)}" stroke-dashoffset="${dashOffset.toFixed(1)}" transform="rotate(-90 32 32)"/>
-              </svg>
-              <div class="v2-macro-copy">
-                <b>${fmtNumber(consumed)}</b>
-                <span>/ ${target > 0 ? fmtNumber(target) : '—'}${unit}</span>
-                <small class="${over ? 'is-over' : ''}">${status}</small>
-              </div>
-            </div>
-            <div class="v2-macro-bar"><i style="width:${pct}%"></i></div>
-          </div>
-        `;
+        const ringPct = Math.max(0, Math.min(100, rawPct));
+        const unitLabel = m.key === 'calories' ? 'kcal' : (m.unit || 'g');
+        return '<div class="nutri-macro-card" data-macro="' + m.key + '" title="' + escapeHTML(consumed + ' / ' + (target > 0 ? target : '—') + ' ' + unitLabel) + '">' +
+          '<span class="nutri-macro-icon">' + macroIcon(m.key) + '</span>' +
+          '<div class="nutri-macro-copy"><small>' + escapeHTML(m.label) + '</small><b>' + fmtNumber(consumed) + '<span>' + escapeHTML(m.unit || '') + '</span></b><em>' + escapeHTML(t('nutrition.of')) + ' ' + (target > 0 ? fmtNumber(target) : '—') + ' ' + escapeHTML(unitLabel) + '</em></div>' +
+          '<div class="nutri-macro-ring" style="--p:' + ringPct.toFixed(1) + '%"><span>' + Math.round(rawPct) + '%</span></div>' +
+          '</div>';
       }).join('');
     }
 
-    /** Render meal sections with their food items. */
     function renderMeals() {
       const container = document.getElementById('nutrition-meals');
       if (!container) return;
-      const mealLabels = {
-        breakfast: t('nutrition.mealBreakfast'),
-        lunch: t('nutrition.mealLunch'),
-        dinner: t('nutrition.mealDinner'),
-        snack: t('nutrition.mealSnack'),
-        pre_workout: t('nutrition.mealPreWorkout'),
-        post_workout: t('nutrition.mealPostWorkout')
-      };
-      const mealIcons = {
-        breakfast: { tone: 'amber', path: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>' },
-        lunch:     { tone: 'emerald', path: '<path d="M4 11h16a8 8 0 0 1-16 0Z"/><path d="M8 7c0-2 1-3 2-3M12 7c0-2 1-3 2-3"/>' },
-        dinner:    { tone: 'cyan', path: '<path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z"/>' },
-        snack:     { tone: 'rose', path: '<path d="M12 8c-1.5-2.5-5-2.7-6 .2-.9 2.6 1.9 8.9 4.6 9.5 1 .2 1.9-.5 2.4-.5s1.4.7 2.4.5c2.7-.6 5.5-6.9 4.6-9.5-1-2.9-4.5-2.7-6-.2Z"/><path d="M12 8V5"/>' },
-        pre_workout: { tone: 'cyan', path: '<path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/>' },
-        post_workout:{ tone: 'emerald', path: '<path d="M12 3c3 4 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 3-7 6-11Z"/>' }
-      };
-      const dayTarget = Number(_log.target_calories) || 0;
       const gram = t('nutrition.gramShort');
-
-      container.innerHTML = (_log.meals || []).map((meal, mi) => {
+      const meals = _log.meals || [];
+      if (!meals.length) {
+        container.innerHTML = '<div class="nutri-empty" style="min-height:120px"><span class="nutri-empty-ic">🍽️</span><p>' + escapeHTML(t('nutrition.noMeals')) + '</p></div>';
+        return;
+      }
+      container.innerHTML = meals.map(function (meal, mi) {
         const items = meal.items || [];
-        const mealCals = items.reduce((s, it) => s + (it.calories || 0), 0);
-        const mealP = items.reduce((s, it) => s + (it.protein || 0), 0);
-        const mealC = items.reduce((s, it) => s + (it.carbs || 0), 0);
-        const mealF = items.reduce((s, it) => s + (it.fat || 0), 0);
-        const mealPct = dayTarget > 0 ? Math.min(100, (mealCals / dayTarget) * 100) : 0;
-        const icon = mealIcons[meal.type] || mealIcons.lunch;
-        const pCal = mealP * 4, cCal = mealC * 4, fCal = mealF * 9;
-        const macroSum = pCal + cCal + fCal;
-        const macroShare = (v) => macroSum > 0 ? Math.round((v / macroSum) * 100) : 0;
-
-        return `
-          <div class="v2-meal-card" data-meal="${escapeHTML(meal.type || '')}">
-            <div class="v2-meal-head">
-              <span class="v2-meal-icon" data-tone="${icon.tone}" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${icon.path}</svg>
-              </span>
-              <div class="v2-meal-title">
-                <div class="v2-meal-name">${escapeHTML(mealLabels[meal.type] || meal.type)}</div>
-                <div class="v2-meal-meta">${items.length ? items.length + ' ' + escapeHTML(t('nutrition.foods')) : escapeHTML(t('nutrition.noFoodLogged'))}</div>
-              </div>
-              <div class="v2-meal-kcal"><b>${fmtNumber(mealCals)}</b><small>kcal</small></div>
-            </div>
-            <div class="v2-meal-progress"><i style="width:${mealPct}%"></i></div>
-            <div class="v2-meal-body">
-              ${items.length === 0
-                ? `<div class="v2-meal-empty">
-                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-                     <span>${escapeHTML(t('nutrition.noFoodLogged'))}</span>
-                   </div>`
-                : `<div class="v2-meal-body-grid">
-                   <div class="food-grid${items.length < 3 ? ' v2-food-grid--rows' : ''}">
-                    ${items.map((it, ii) => {
-                      const img = it.food_id
-                        ? window.dkFoodImgTag({ id: it.food_id, image_url: it.image_url }, 'absolute inset-0 w-full h-full object-cover')
-                        : `<span class="absolute inset-0 grid place-items-center text-lg opacity-50" aria-hidden="true">🥗</span>`;
-                      return `
-                      <div class="relative bg-surface border border-border rounded-xl overflow-hidden">
-                        <div class="relative aspect-[4/3] bg-surface-2 overflow-hidden">
-                          ${img}
-                          <button data-delete-food="${mi}.${ii}" class="food-tile-x" aria-label="${escapeHTML(t('aria.delete'))}">
-                            <svg class="w-3 h-3 mx-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                          </button>
-                        </div>
-                        <div class="p-1.5 min-w-0">
-                          <div class="food-tile-name text-[10px] font-semibold leading-tight">${escapeHTML(it.name || '?')}</div>
-                          <div class="text-[9px] text-muted mt-0.5">${fmtNumber(it.grams)}${gram} · ${fmtNumber(it.calories)} ${escapeHTML(t('nutrition.calories').toLowerCase())}</div>
-                          <div class="flex flex-wrap gap-1 mt-1">
-                            <span class="food-badge" style="background:#10b981">${fmtNumber(it.protein)}P</span>
-                            <span class="food-badge" style="background:#f59e0b">${fmtNumber(it.carbs)}C</span>
-                            <span class="food-badge" style="background:#ef4444">${fmtNumber(it.fat)}F</span>
-                          </div>
-                        </div>
-                      </div>`;
-                    }).join('')}
-                   </div>
-                   <aside class="v2-meal-rail" aria-label="P / C / F">
-                     <div class="v2-meal-rail-title">P · C · F</div>
-                     <div class="v2-meal-macro p"><span>P</span><span class="bar"><i class="p" style="width:${macroShare(pCal)}%"></i></span><b>${fmtNumber(mealP)}${gram}</b></div>
-                     <div class="v2-meal-macro c"><span>C</span><span class="bar"><i class="c" style="width:${macroShare(cCal)}%"></i></span><b>${fmtNumber(mealC)}${gram}</b></div>
-                     <div class="v2-meal-macro f"><span>F</span><span class="bar"><i class="f" style="width:${macroShare(fCal)}%"></i></span><b>${fmtNumber(mealF)}${gram}</b></div>
-                     <div class="v2-meal-share"><span>${Math.round(mealPct)}%</span><small>${escapeHTML(t('nutrition.ofTarget'))}</small></div>
-                   </aside>
-                   </div>`
-              }
-              <button data-add-to-meal="${mi}" class="v2-meal-add">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-                ${escapeHTML(t('nutrition.log'))}
-              </button>
-            </div>
-          </div>
-        `;
+        const mealCals = items.reduce((s, it) => s + (Number(it.calories) || 0), 0);
+        const mealP = items.reduce((s, it) => s + (Number(it.protein) || 0), 0);
+        const mealC = items.reduce((s, it) => s + (Number(it.carbs) || 0), 0);
+        const mealF = items.reduce((s, it) => s + (Number(it.fat) || 0), 0);
+        const first = items.find(it => it.food_id || it.image_url);
+        let thumb = '<span class="nutri-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21c5-3 8-7 8-12a8 8 0 0 0-16 0c0 5 3 9 8 12Z"/><path d="M12 21V9"/></svg></span>';
+        if (first && first.food_id) {
+          thumb = window.dkFoodImgTag({ id: first.food_id, image_url: first.image_url }, 'w-full h-full object-cover') || thumb;
+        } else if (first && first.image_url) {
+          thumb = '<img src="' + escapeAttr(first.image_url) + '" alt="" />';
+        }
+        const desc = items.length
+          ? items.slice(0, 3).map(it => it.name || '?').join(' · ')
+          : t('nutrition.noFoodLogged');
+        const chips = items.slice(0, 4).map(function (it, ii) {
+          let cimg = '<span class="nutri-chip-ph">🥗</span>';
+          if (it.food_id) cimg = window.dkFoodImgTag({ id: it.food_id, image_url: it.image_url }, 'w-full h-full object-cover') || cimg;
+          else if (it.image_url) cimg = '<img src="' + escapeAttr(it.image_url) + '" alt="" />';
+          return '<span class="nutri-food-chip"><span style="width:18px;height:18px;border-radius:9999px;overflow:hidden;flex:none;display:block">' + cimg + '</span>' +
+            '<span style="max-width:112px;overflow:hidden;text-overflow:ellipsis">' + escapeHTML(it.name || '?') + '</span>' +
+            '<em>' + fmtNumber(it.grams) + gram + '</em>' +
+            '<button type="button" class="nutri-chip-x" data-delete-food="' + mi + '.' + ii + '" aria-label="' + escapeHTML(t('aria.delete')) + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button></span>';
+        }).join('');
+        const more = items.length > 4 ? '<span class="nutri-food-chip">+' + (items.length - 4) + '</span>' : '';
+        const addChip = '<button type="button" class="nutri-meal-addchip" data-add-to-meal="' + mi + '">+ ' + escapeHTML(t('nutrition.addFood')) + '</button>';
+        const done = !!meal.done;
+        return '<div class="nutri-meal-row' + (done ? ' is-done' : '') + '" data-meal="' + escapeHTML(meal.type || '') + '">' +
+          '<div class="nutri-meal-time">' + escapeHTML(mealTime(meal)) + '</div>' +
+          '<div class="nutri-meal-thumb">' + thumb + '</div>' +
+          '<div class="nutri-meal-copy"><div class="nutri-meal-title"><b>' + escapeHTML(mealLabel(meal, mi)) + '</b><small>' + escapeHTML(items.length + ' ' + t('nutrition.foods')) + '</small></div>' +
+          '<div class="nutri-meal-sub">' + escapeHTML(desc) + '</div>' +
+          '<div class="nutri-meal-foods">' + chips + more + addChip + '</div></div>' +
+          '<div class="nutri-meal-nutrition"><div class="nutri-meal-kcal"><b>' + fmtNumber(mealCals) + '</b><small>kcal</small></div>' +
+          '<div class="nutri-meal-macros"><span class="p">' + fmtNumber(mealP) + 'P</span><span class="c">' + fmtNumber(mealC) + 'C</span><span class="f">' + fmtNumber(mealF) + 'F</span></div></div>' +
+          '<button type="button" class="nutri-meal-check' + (done ? ' done' : '') + '" data-meal-done="' + mi + '"' + (items.length ? '' : ' disabled') + ' aria-label="' + escapeHTML(t(done ? 'nutrition.markPending' : 'nutrition.markDone')) + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m5 12 4 4L19 6"/></svg></button>' +
+          '</div>';
       }).join('');
+      wireMealEvents(container);
+    }
 
-      // Wire add-to-meal buttons
-      container.querySelectorAll('[data-add-to-meal]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const mi = parseInt(btn.getAttribute('data-add-to-meal'), 10);
-          openFoodSearch(mi);
-        });
+    function wireMealEvents(container) {
+      container.querySelectorAll('[data-add-to-meal]').forEach(function (btn) {
+        btn.addEventListener('click', function () { openFoodSearch(parseInt(btn.getAttribute('data-add-to-meal'), 10)); });
       });
-      // Wire delete buttons
-      container.querySelectorAll('[data-delete-food]').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const [mi, ii] = btn.getAttribute('data-delete-food').split('.').map(Number);
+      container.querySelectorAll('[data-delete-food]').forEach(function (btn) {
+        btn.addEventListener('click', async function () {
+          const pair = btn.getAttribute('data-delete-food').split('.').map(Number);
           if (!confirm(t('nutrition.deleteFoodConfirm'))) return;
-          if (_log.meals[mi] && _log.meals[mi].items) {
-            _log.meals[mi].items.splice(ii, 1);
+          if (_log.meals[pair[0]] && _log.meals[pair[0]].items) {
+            _log.meals[pair[0]].items.splice(pair[1], 1);
             await saveLog();
             toast(t('nutrition.foodRemoved'), 'warning', 2000);
             render();
           }
         });
       });
+      container.querySelectorAll('[data-meal-done]').forEach(function (btn) {
+        btn.addEventListener('click', async function () {
+          const mi = parseInt(btn.getAttribute('data-meal-done'), 10);
+          const meal = _log.meals[mi];
+          if (!meal) return;
+          meal.done = !meal.done;
+          await saveLog();
+          render();
+        });
+      });
     }
 
-    /** Render the totals row at the bottom. */
-    function renderTotals() {
-      const totals = computeTotals();
+    async function addCustomMeal() {
+      if (!_log) return;
+      const n = (_log.meals || []).length + 1;
+      _log.meals = _log.meals || [];
+      _log.meals.push({ type: 'custom_' + Date.now(), label: t('nutrition.mealN') + ' ' + n, items: [], done: false });
+      await saveLog();
+      render();
+      toast(t('nutrition.mealAdded') || t('nutrition.addMeal'), 'success', 1800);
+    }
+
+    function renderTotals(totals) {
       setText('total-cal', fmtNumber(totals.calories));
       setText('total-protein', fmtNumber(totals.protein));
       setText('total-carbs', fmtNumber(totals.carbs));
       setText('total-fat', fmtNumber(totals.fat));
+      const target = Number(_log.target_calories) || 0;
+      const cal = Number(totals.calories) || 0;
+      const pct = target > 0 ? Math.round((cal / target) * 100) : 0;
+      const fill = document.getElementById('nutri-total-fill');
+      if (fill) fill.style.width = Math.max(0, Math.min(100, pct)) + '%';
+      setText('nutri-total-pct', target > 0 ? pct + '%' : '—');
+      const pKcal = (totals.protein || 0) * 4, cKcal = (totals.carbs || 0) * 4, fKcal = (totals.fat || 0) * 9;
+      const sum = pKcal + cKcal + fKcal;
+      const balanced = sum > 0 && pKcal / sum >= .18 && cKcal / sum >= .3 && fKcal / sum >= .18;
+      const badge = document.getElementById('nutri-balanced-badge');
+      if (badge) {
+        badge.setAttribute('data-off', balanced ? '0' : '1');
+        badge.innerHTML = '<span class="v2-live-dot"></span><span>' + escapeHTML(t(balanced ? 'nutrition.balanced' : 'nutrition.needsBalance')) + '</span>';
+      }
+    }
+
+    function renderDayStats(totals) {
+      const selected = _date || logDateKey(new Date());
+      const eyebrow = document.getElementById('nutri-stats-eyebrow');
+      if (eyebrow) {
+        if (selected === logDateKey(new Date())) {
+          eyebrow.textContent = t('nutrition.statsEyebrow') || 'Today';
+        } else {
+          const p = String(selected).split('-').map(Number);
+          const d = new Date(p[0] || 1970, (p[1] || 1) - 1, p[2] || 1);
+          eyebrow.textContent = new Intl.DateTimeFormat(nutriLocale(), { weekday: 'short', day: 'numeric', month: 'short' }).format(d);
+        }
+      }
+      const target = Number(_log.target_calories) || 0;
+      const cal = Math.round(Number(totals.calories) || 0);
+      const pct = target > 0 ? Math.max(0, Math.min(100, Math.round((cal / target) * 100))) : 0;
+      const ring = document.getElementById('nutri-day-ring');
+      if (ring) ring.style.setProperty('--p', pct + '%');
+      setText('nutri-day-kcal', fmtNumber(cal));
+      setText('nutri-day-target', target > 0 ? fmtNumber(target) : '—');
+      const macros = [
+        { key: 'p', label: t('nutrition.protein'), value: totals.protein, target: _log.target_protein },
+        { key: 'c', label: t('nutrition.carbs'), value: totals.carbs, target: _log.target_carbs },
+        { key: 'f', label: t('nutrition.fat'), value: totals.fat, target: _log.target_fat }
+      ];
+      const box = document.getElementById('nutri-day-macros');
+      if (box) box.innerHTML = macros.map(function (m) {
+        const tgt = Number(m.target) || 0;
+        const val = Math.round(Number(m.value) || 0);
+        const p = tgt > 0 ? Math.max(0, Math.min(100, (val / tgt) * 100)) : 0;
+        return '<div class="nutri-day-macro ' + m.key + '"><div class="nutri-day-macro-top"><i></i><b>' + escapeHTML(m.label) + '</b></div>' +
+          '<span class="nutri-day-macro-val">' + fmtNumber(val) + ' / ' + (tgt > 0 ? fmtNumber(tgt) : '—') + 'g</span>' +
+          '<div class="nutri-day-macro-track"><i style="width:' + p.toFixed(1) + '%"></i></div></div>';
+      }).join('');
+    }
+
+    function renderWeekChart() {
+      const box = document.getElementById('nutri-week-chart');
+      if (!box) return;
+      const selected = _date || logDateKey(new Date());
+      const days = weekDaysFor(selected);
+      const target = Number(_log.target_calories) || 0;
+      const values = days.map(function (d) {
+        const key = logDateKey(d);
+        const rec = recordForDate(key);
+        return Math.round(historyTotals(rec).calories);
+      });
+      const max = Math.max(target, ...values, 1);
+      const W = 300, H = 74, padX = 5, padTop = 5, padBottom = 12;
+      const step = (W - padX * 2) / 6;
+      const points = values.map(function (v, i) {
+        const x = padX + i * step;
+        const y = H - padBottom - (v / max) * (H - padTop - padBottom);
+        return [x, y];
+      });
+      const line = points.map(function (p, i) { return (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' ');
+      const area = line + ' L' + points[points.length - 1][0].toFixed(1) + ' ' + (H - padBottom) + ' L' + points[0][0].toFixed(1) + ' ' + (H - padBottom) + ' Z';
+      const targetY = target > 0 ? H - padBottom - (target / max) * (H - padTop - padBottom) : null;
+      let svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="nutriChartGrad" x1="0" y1="0" x2="0" y2="1"><stop stop-color="rgb(var(--c-accent))" stop-opacity=".34"/><stop offset="1" stop-color="rgb(var(--c-accent))" stop-opacity="0"/></linearGradient></defs>';
+      svg += '<path d="' + area + '" fill="url(#nutriChartGrad)"/>';
+      if (targetY != null) svg += '<line x1="' + padX + '" y1="' + targetY.toFixed(1) + '" x2="' + (W - padX) + '" y2="' + targetY.toFixed(1) + '" stroke="rgb(var(--c-warning) / .45)" stroke-width="1" stroke-dasharray="3 4"/>';
+      svg += '<path d="' + line + '" fill="none" stroke="rgb(var(--c-accent))" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 0 4px rgb(var(--c-accent) / .55))"/>';
+      points.forEach(function (p, i) {
+        svg += '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + (days[i] && logDateKey(days[i]) === selected ? 3.2 : 2.1) + '" fill="rgb(var(--c-accent))" stroke="rgb(var(--c-bg))" stroke-width="1"/>';
+      });
+      svg += '</svg>';
+      const wd = new Intl.DateTimeFormat(nutriLocale(), { weekday: 'narrow' });
+      const labels = days.map(function (d) { return '<span class="' + (logDateKey(d) === selected ? 'is-on' : '') + '">' + escapeHTML(wd.format(d)) + '</span>'; }).join('');
+      box.innerHTML = svg + '<div class="nutri-week-labels">' + labels + '</div>';
+      const logged = values.filter(v => v > 0);
+      const avg = logged.length ? Math.round(logged.reduce((a, b) => a + b, 0) / logged.length) : 0;
+      setText('nutri-week-avg', avg ? fmtNumber(avg) + ' kcal' : '—');
+    }
+
+    function renderFoodPreview() {
+      const cats = document.getElementById('nutri-food-cats');
+      if (cats) {
+        const defs = [
+          ['all', t('common.all')], ['vegetable', t('nutrition.catVegetables')], ['fruit', t('nutrition.catFruits')],
+          ['meat', t('nutrition.catMeat')], ['fish', t('nutrition.catFish')], ['grains', t('nutrition.catGrains')], ['dairy', t('nutrition.catDairy')]
+        ];
+        cats.innerHTML = defs.map(function (d) {
+          return '<button type="button" class="nutri-food-cat' + (_foodCat === d[0] ? ' active' : '') + '" data-nutri-food-cat="' + d[0] + '">' + escapeHTML(d[1]) + '</button>';
+        }).join('');
+      }
+      const box = document.getElementById('nutri-food-preview');
+      if (!box) return;
+      if (!_allFoods.length) { box.innerHTML = '<div class="nutri-muted" style="grid-column:1/-1;padding:12px 0">' + escapeHTML(t('common.loading')) + '</div>'; return; }
+      const cat = _foodCat;
+      const search = _foodPreviewSearch;
+      let pool = _allFoods.filter(function (f) {
+        if (!f || !f.id || f.source === 'recipe') return false;
+        const fc = String(f.category || '').toLowerCase();
+        const matches = cat === 'all' || fc === cat || (cat === 'vegetable' && (fc === 'greens' || fc === 'vegetable'));
+        if (!matches) return false;
+        if (!search) return true;
+        const name = String(f['name_' + currentLang()] || f.name_en || '').toLowerCase();
+        return name.indexOf(search) >= 0;
+      });
+      /* c203: the "All" rail should read like a curated shelf, not the raw
+         alphabetical catalog — take one product from each core category. */
+      if (cat === 'all' && !search) {
+        const shelf = ['vegetable', 'fruit', 'meat', 'fish', 'grains', 'dairy', 'eggs', 'nuts'];
+        const picked = [];
+        shelf.forEach(function (c) {
+          const hit = pool.find(function (f) { return String(f.category || '').toLowerCase() === c; });
+          if (hit) picked.push(hit);
+        });
+        pool = picked.concat(pool.filter(function (f) { return picked.indexOf(f) < 0; }));
+      }
+      const foods = pool.slice(0, 8);
+      box.innerHTML = foods.map(function (f) {
+        const name = f['name_' + currentLang()] || f.name_en || f.name || '?';
+        const img = window.dkFoodImgTag({ id: f.id, image_url: f.image_url }, 'w-full h-full object-cover');
+        return '<button type="button" class="nutri-food-tile" data-nutri-food="' + escapeAttr(String(f.id)) + '">' +
+          (img || '<span class="nutri-food-ph">🥗</span>') +
+          '<b>' + escapeHTML(name) + '</b><small>' + fmtNumber(f.calories || 0) + ' kcal / 100g</small></button>';
+      }).join('') || '<div class="nutri-muted" style="grid-column:1/-1;padding:12px 0">' + escapeHTML(t('nutrition.noFoodsFound')) + '</div>';
+    }
+
+    function renderBodyProgress(totals) {
+      const c = _client || {};
+      const box = document.getElementById('nutri-progress-metrics');
+      if (!box) return;
+      const weight = Number(c.weight) || 0;
+      const targetWeight = Number(c.target_weight) || 0;
+      const fat = Number(c.body_fat_pct) || 0;
+      const waist = Number(c.waist_cm) || 0;
+      const weightDelta = weight && targetWeight ? (weight - targetWeight) : null;
+      const deltaTone = (weightDelta != null && ((c.goal === 'fat_loss' && weightDelta > 0) || (c.goal === 'hypertrophy' && weightDelta < 0)))
+        ? 'var(--c-warning)' : 'rgb(var(--c-success))';
+      box.innerHTML =
+        '<div class="nutri-metric"><span>' + escapeHTML(t('client.weight')) + '</span><b>' + (weight ? fmtNumber(weight) + ' kg' : '—') + (weightDelta != null ? ' <em style="color:' + deltaTone + '">' + (weightDelta > 0 ? '+' : '') + fmtNumber(weightDelta) + '</em>' : '') + '</b></div>' +
+        '<div class="nutri-metric"><span>' + escapeHTML(t('nutrition.bodyFat')) + '</span><b>' + (fat ? fmtNumber(fat) + '%' : '—') + '</b></div>' +
+        '<div class="nutri-metric"><span>' + escapeHTML(t('nutrition.waist')) + '</span><b>' + (waist ? fmtNumber(waist) + ' cm' : '—') + '</b></div>';
+      const goal = document.getElementById('nutri-progress-goal');
+      if (goal) {
+        const target = Number(_log.target_calories) || 0;
+        const cal = Number(totals.calories) || 0;
+        const pct = target > 0 ? Math.max(0, Math.min(100, Math.round((cal / target) * 100))) : 0;
+        goal.innerHTML = '<div class="nutri-progress-goal-line"><span>' + escapeHTML(t('nutrition.planAdherence')) + '</span><b>' + (target > 0 ? pct + '%' : '—') + '</b></div>' +
+          '<div class="nutri-progress-track"><i style="width:' + (target > 0 ? pct : 0) + '%"></i></div>' +
+          (targetWeight ? '<div class="nutri-progress-goal-line" style="margin-top:7px"><span>' + escapeHTML(t('nutrition.targetWeight')) + '</span><b>' + fmtNumber(targetWeight) + ' kg</b></div>' : '');
+      }
+    }
+
+    function renderPopularRecipes() {
+      const box = document.getElementById('nutri-popular-recipes');
+      if (!box) return;
+      const items = [
+        { id: 'fd_fd_8276822451925977', name: t('nutrition.recipeQuinoa'), min: 25 },
+        { id: 'fd_fd_2493252517133452', name: t('nutrition.recipeSalmon'), min: 30 },
+        { id: 'fd_il_e252ac3a251f57bb', name: t('nutrition.recipePancakes'), min: 20 }
+      ];
+      box.innerHTML = items.map(function (it) {
+        return '<button type="button" class="nutri-popular" data-nutri-popular="' + escapeAttr(it.id) + '">' +
+          (window.dkFoodImgTag({ id: it.id, image_url: '' }, 'w-full h-full object-cover') || '<span class="nutri-food-ph">🍽️</span>') +
+          '<span class="nutri-popular-copy"><b>' + escapeHTML(it.name) + '</b><small>' + it.min + ' ' + escapeHTML(t('nutrition.minShort')) + '</small></span></button>';
+      }).join('');
+    }
+
+    function renderRecipes() {
+      const grid = document.getElementById('nutrition-recipes-grid');
+      const empty = document.getElementById('nutrition-recipes-empty');
+      const count = document.getElementById('nutrition-recipes-count');
+      if (!grid) return;
+      const recipes = _allFoods.filter(f => f && f.source === 'recipe');
+      const search = _recipeSearch;
+      const filtered = recipes.filter(function (f) {
+        if (!search) return true;
+        return String(f['name_' + currentLang()] || f.name_en || '').toLowerCase().indexOf(search) >= 0;
+      });
+      if (count) count.textContent = recipes.length;
+      if (empty) empty.classList.toggle('hidden', filtered.length > 0);
+      grid.innerHTML = filtered.map(function (f) {
+        const name = f['name_' + currentLang()] || f.name_en || f.name || '?';
+        const img = window.dkFoodImgTag({ id: f.id, image_url: f.image_url }, 'w-full h-full object-cover');
+        return '<article class="nutri-recipe-card"><div class="nutri-recipe-img">' + (img || '<span class="nutri-food-ph">🍲</span>') + '</div>' +
+          '<div class="nutri-recipe-actions"><button type="button" data-recipe-edit="' + escapeAttr(f.id) + '" aria-label="' + escapeHTML(t('food.recipeEditTitle') || 'Edit recipe') + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button></div>' +
+          '<div class="nutri-recipe-copy"><b>' + escapeHTML(name) + '</b><small>' + fmtNumber(f.calories || 0) + ' kcal / 100g</small>' +
+          '<div class="nutri-recipe-macros"><span>' + fmtNumber(f.protein || 0) + 'P</span><span>' + fmtNumber(f.carbs || 0) + 'C</span><span>' + fmtNumber(f.fat || 0) + 'F</span></div>' +
+          '<button type="button" class="nutri-text-link" style="margin-top:6px" data-recipe-add="' + escapeAttr(f.id) + '">+ ' + escapeHTML(t('nutrition.addFood')) + '</button></div></article>';
+      }).join('');
+    }
+
+    function renderHistory() {
+      const list = document.getElementById('nutrition-history-list');
+      const empty = document.getElementById('nutrition-history-empty');
+      const summary = document.getElementById('nutrition-history-summary');
+      const count = document.getElementById('nutrition-history-count');
+      if (!list) return;
+      const rows = (_history || []).filter(r => (r.meals || []).some(m => (m.items || []).length > 0)).sort((a, b) => (b.date || 0) - (a.date || 0));
+      if (count) count.textContent = rows.length;
+      if (empty) empty.classList.toggle('hidden', rows.length > 0);
+      if (summary) {
+        if (!rows.length) summary.innerHTML = '';
+        else {
+          const avg = rows.reduce((s, r) => s + historyTotals(r).calories, 0) / rows.length;
+          const avgP = rows.reduce((s, r) => s + historyTotals(r).protein, 0) / rows.length;
+          summary.innerHTML = '<div><small>' + escapeHTML(t('nutrition.daysLogged')) + '</small><b>' + rows.length + '</b></div>' +
+            '<div><small>' + escapeHTML(t('nutrition.avgCalories')) + '</small><b>' + fmtNumber(avg) + ' kcal</b></div>' +
+            '<div><small>' + escapeHTML(t('nutrition.avgProtein')) + '</small><b>' + fmtNumber(avgP) + ' g</b></div>';
+        }
+      }
+      list.innerHTML = rows.slice(0, 21).map(function (r) {
+        const key = logDateKey(r.date);
+        const tt = historyTotals(r);
+        const target = Number(r.target_calories) || 0;
+        const pct = target > 0 ? Math.round((tt.calories / target) * 100) : 0;
+        const d = new Date(r.date);
+        const ds = new Intl.DateTimeFormat(nutriLocale(), { day: '2-digit', month: 'short', year: 'numeric' }).format(d);
+        const wd = new Intl.DateTimeFormat(nutriLocale(), { weekday: 'long' }).format(d);
+        return '<button type="button" class="nutri-history-row" data-nutri-history="' + key + '">' +
+          '<span class="nutri-history-date"><b>' + escapeHTML(ds) + '</b><small>' + escapeHTML(wd) + '</small></span>' +
+          '<span class="nutri-history-bar"><i style="width:' + Math.max(0, Math.min(100, pct)) + '%"></i></span>' +
+          '<span><span class="nutri-history-kcal">' + fmtNumber(tt.calories) + ' kcal</span><span class="nutri-history-macros"><span class="p">' + fmtNumber(tt.protein) + 'P</span><span class="c">' + fmtNumber(tt.carbs) + 'C</span><span class="f">' + fmtNumber(tt.fat) + 'F</span></span></span>' +
+          '<span class="nutri-history-pct">' + (target > 0 ? pct + '%' : '—') + '</span></button>';
+      }).join('');
     }
 
     /** Compute total macros across all meals. */
@@ -21300,10 +21825,10 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       if (!_log) return { calories: 0, protein: 0, carbs: 0, fat: 0 };
       return (_log.meals || []).reduce((acc, meal) => {
         (meal.items || []).forEach(it => {
-          acc.calories += it.calories || 0;
-          acc.protein += it.protein || 0;
-          acc.carbs += it.carbs || 0;
-          acc.fat += it.fat || 0;
+          acc.calories += Number(it.calories) || 0;
+          acc.protein += Number(it.protein) || 0;
+          acc.carbs += Number(it.carbs) || 0;
+          acc.fat += Number(it.fat) || 0;
         });
         return acc;
       }, { calories: 0, protein: 0, carbs: 0, fat: 0 });
@@ -21560,18 +22085,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       // Populate meal selector
       const mealSel = document.getElementById('food-portion-meal');
       if (mealSel) {
-        const labels = {
-          breakfast: t('nutrition.mealBreakfast'), lunch: t('nutrition.mealLunch'),
-          dinner: t('nutrition.mealDinner'), snack: t('nutrition.mealSnack'),
-          pre_workout: t('nutrition.mealPreWorkout'), post_workout: t('nutrition.mealPostWorkout')
-        };
-        mealSel.innerHTML = MEAL_TYPES.map(m => `<option value="${m}">${escapeHTML(labels[m])}</option>`).join('');
+        const meals = (_log && _log.meals) || MEAL_TYPES.map(m => ({ type: m }));
+        mealSel.innerHTML = meals.map((m, mi) => `<option value="${mi}">${escapeHTML(mealLabel(m, mi))}</option>`).join('');
         // Preselect meal if specified
         const input = document.getElementById('food-search-input');
         const preIdx = input && input.dataset.preselectMeal ? parseInt(input.dataset.preselectMeal, 10) : null;
-        if (preIdx != null && _log && _log.meals[preIdx]) {
-          mealSel.value = _log.meals[preIdx].type;
-        }
+        if (preIdx != null && meals[preIdx]) mealSel.value = String(preIdx);
       }
       // Reset grams + preview — c150: start from the product's REAL portion
       const gramsInput = document.getElementById('food-portion-grams');
@@ -21614,7 +22133,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const gramsInput = document.getElementById('food-portion-grams');
       const mealSel = document.getElementById('food-portion-meal');
       const grams = parseFloat(gramsInput?.value) || 0;
-      const mealType = mealSel?.value || 'snack';
+      const mealIdx = parseInt(mealSel?.value, 10);
       if (grams <= 0) return;
 
       const ratio = grams / 100;
@@ -21622,7 +22141,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         id: db.uuid(),
         food_id: _pendingFood.id || '',
         image_url: _pendingFood.image_url || '',
-        name: _pendingFood.name_en,
+        name: _pendingFood['name_' + currentLang()] || _pendingFood.name_en || _pendingFood.name || '?',
         brand: _pendingFood.brand || '',
         barcode: _pendingFood.barcode || '',
         grams: grams,
@@ -21633,7 +22152,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         source: _pendingFood.source || 'local',
         created_at: Date.now()
       };
-      const meal = _log.meals.find(m => m.type === mealType);
+      const meal = (Number.isFinite(mealIdx) && _log.meals[mealIdx]) ? _log.meals[mealIdx] : _log.meals.find(m => m.type === 'snack');
       if (meal) {
         meal.items = meal.items || [];
         meal.items.push(entry);
@@ -21643,9 +22162,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         try {
           const existing = await db.get('food_base', _pendingFood.id);
           if (!existing) {
-            await db.put('food_base', {
+            const cached = {
               id: _pendingFood.id,
               name_en: _pendingFood.name_en,
+              name_ru: _pendingFood.name_ru,
+              name_he: _pendingFood.name_he,
               brand: _pendingFood.brand,
               barcode: _pendingFood.barcode,
               category: _pendingFood.category,
@@ -21654,8 +22175,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               carbs: _pendingFood.carbs,
               fat: _pendingFood.fat,
               fiber: _pendingFood.fiber,
+              image_url: _pendingFood.image_url || '',
               source: 'openfoodfacts'
-            });
+            };
+            await db.put('food_base', cached);
+            cacheFood(cached);
           }
         } catch (e) { /* ignore cache errors */ }
       }
@@ -21744,6 +22268,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       obj.source = 'custom';
       obj.per_100g = true;
       const saved = await db.put('food_base', obj);
+      cacheFood(Object.assign({}, obj, saved || {}));
       toast(t('nutrition.customFoodSaved'), 'success', 2000);
       document.getElementById('custom-food-modal').classList.add('hidden');
       // Open portion modal for the just-saved food
@@ -21915,7 +22440,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         created_at: (prev && prev.created_at) || Date.now()
       };
       if (editing) item.updated_at = Date.now();
-      await db.put('food_base', item);
+      const savedRecipe = await db.put('food_base', item);
+      cacheFood(Object.assign({}, item, savedRecipe || {}));
+      renderRecipes();
       document.getElementById('recipe-modal').classList.add('hidden');
       if (editing) {
         toast(t('food.recipeUpdated'), 'success', 2500);
@@ -21974,8 +22501,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     // Helpers
     // setText is now global (deduplication 2026-08 QA Sprint 2 #5).
 
-    return { init, selectClient, selectDate, shiftDay, gotoToday, refresh, openFoodSearch, setSearchSource,
-             performSearch, openPortionModal, updatePreview, addPendingToMeal,
+    return { init, selectClient, selectDate, shiftDay, shiftWeek, gotoToday, refresh, openFoodSearch, setSearchSource,
+             performSearch, openPortionModal, updatePreview, addPendingToMeal, addCustomMeal,
+             renderRecipes, renderHistory, renderDashboard: render,
              openTargets, saveTargets, openCustomFood, saveCustomFood,
              openRecipe, saveRecipe, setFoodFilter, wireRecipeSearch,
              get clientId() { return _clientId; } };
@@ -29180,9 +29708,9 @@ Select foods for each meal. Output as JSON only.`;
             <div class="font-display font-bold text-sm truncate">${esc(tpl.name || (t('nutrition.untitledTemplate') || 'Untitled'))}</div>
             <div class="text-[10px] text-muted mt-0.5">${meals.length} ${escapeHTML(t('nutrition.meals') || '')}</div>
             <div class="food-badges flex flex-wrap gap-1 mt-1.5">
-              ${macroChip(t('nutrition.proteinShort') || 'P', tpl.target_protein, '#10b981')}
+              ${macroChip(t('nutrition.proteinShort') || 'P', tpl.target_protein, '#8b5cf6')}
               ${macroChip(t('nutrition.carbsShort') || 'C', tpl.target_carbs, '#f59e0b')}
-              ${macroChip(t('nutrition.fatShort') || 'F', tpl.target_fat, '#ef4444')}
+              ${macroChip(t('nutrition.fatShort') || 'F', tpl.target_fat, '#3b82f6')}
             </div>
           </div>
           <div class="flex items-center gap-1 px-2.5 pb-2.5">
@@ -33432,17 +33960,16 @@ loadPanelTexture();
       if (screens.nutrition) screens.nutrition.saveTargets();
     });
 
-    // === NUTRITION TAB BAR (database / templates / log) ===
-    document.querySelectorAll('.nutrition-tab-btn').forEach(btn => {
+    // === NUTRITION TAB BAR (plan / products / recipes / templates / history) ===
+    document.querySelectorAll('.nutri-tab').forEach(btn => {
       btn.addEventListener('click', () => {
         const tab = btn.getAttribute('data-nutrition-tab');
         // Update active states
-        document.querySelectorAll('.nutrition-tab-btn').forEach(b => {
-          b.classList.remove('active','bg-primary','text-white');
-          b.classList.add('text-muted');
+        document.querySelectorAll('.nutri-tab').forEach(b => {
+          const on = b === btn;
+          b.classList.toggle('active', on);
+          b.classList.toggle('text-muted', !on);
         });
-        btn.classList.add('active','bg-primary','text-white');
-        btn.classList.remove('text-muted');
         // Toggle panels
         document.querySelectorAll('[data-nutrition-panel]').forEach(p => {
           p.classList.toggle('hidden', p.getAttribute('data-nutrition-panel') !== tab);
@@ -33451,6 +33978,8 @@ loadPanelTexture();
         if (tab === 'database' && typeof foodDatabase !== 'undefined') foodDatabase.refresh();
         if (tab === 'templates' && typeof nutritionTemplates !== 'undefined') nutritionTemplates.refresh();
         if (tab === 'log' && screens.nutrition) screens.nutrition.refresh();
+        if (tab === 'recipes' && screens.nutrition && screens.nutrition.renderRecipes) screens.nutrition.renderRecipes();
+        if (tab === 'history' && screens.nutrition && screens.nutrition.renderHistory) screens.nutrition.renderHistory();
       });
     });
 
@@ -33538,6 +34067,8 @@ loadPanelTexture();
     // === NUTRITION TEMPLATES TAB ===
     const ntAddBtn = document.getElementById('nutrition-template-add-btn');
     if (ntAddBtn) ntAddBtn.addEventListener('click', () => nutritionTemplates.openCreate());
+    const ntEmptyAdd = document.getElementById('nutrition-template-empty-add');
+    if (ntEmptyAdd) ntEmptyAdd.addEventListener('click', () => nutritionTemplates.openCreate());
     const ntClose = document.getElementById('nt-close');
     if (ntClose) ntClose.addEventListener('click', () => {
       document.getElementById('nutrition-template-modal').classList.add('hidden');
@@ -36678,7 +37209,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 202; /* numeric part of dk-build c202 */
+  var RUNNING = 203; /* numeric part of dk-build c203 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

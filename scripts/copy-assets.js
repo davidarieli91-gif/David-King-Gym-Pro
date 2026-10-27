@@ -36,6 +36,7 @@ const assets = [
   'src/voice-coach.js',
   'src/i18n',
   'src/input.css',
+  'src/nutrition-dashboard.css',
 ];
 
 for (const asset of assets) {

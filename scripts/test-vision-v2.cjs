@@ -92,10 +92,10 @@ ok('exercise cards advertise their animation', has(crm, 'class="v2-anim-badge"')
 ok('card sheen animation exists', has(crm, '@keyframes v2-card-sheen'));
 
 /* ---------- versions ---------- */
-ok('trainer build c202', has(crm, 'name="dk-build" content="c202"'));
-ok('login build c202', has(crm, '3 languages · c202'));
-ok('RUNNING 202', has(crm, 'var RUNNING = 202;'));
-ok('SW cache v229', has(sw, "CACHE_NAME = 'dk-gym-v229'"));
+ok('trainer build c203', has(crm, 'name="dk-build" content="c203"'));
+ok('login build c203', has(crm, '3 languages · c203'));
+ok('RUNNING 203', has(crm, 'var RUNNING = 203;'));
+ok('SW cache v230', has(sw, "CACHE_NAME = 'dk-gym-v230'"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 if (fail) process.exitCode = 1;

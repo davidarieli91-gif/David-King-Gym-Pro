@@ -32,16 +32,17 @@ const tplList = extractFn(trainer, 'renderList');
 ok('templates render as a food-grid of cards', tplList.indexOf("'<div class=\"food-grid\">' + sorted.map") >= 0);
 ok('template card has a 2×2 photo collage of its foods', tplList.indexOf('for (let i = 0; i < 4; i++)') >= 0 && tplList.indexOf('grid-cols-2 grid-rows-2') >= 0 && tplList.indexOf('window.dkFoodImgTag') >= 0);
 ok('template card shows total kcal over the photo', tplList.indexOf('font-display font-extrabold text-lg') >= 0 && tplList.indexOf('totalCal') >= 0);
-ok('template card shows P/C/F target chips in ring colours', tplList.indexOf("'#10b981'") >= 0 && tplList.indexOf("'#f59e0b'") >= 0 && tplList.indexOf("'#ef4444'") >= 0 && tplList.indexOf('macroChip') >= 0);
+ok('template card shows P/C/F target chips in macro colours', tplList.indexOf("'#8b5cf6'") >= 0 && tplList.indexOf("'#f59e0b'") >= 0 && tplList.indexOf("'#3b82f6'") >= 0 && tplList.indexOf('macroChip') >= 0);
 ok('template actions preserved (edit/apply/delete)', tplList.indexOf('data-nt-edit') >= 0 && tplList.indexOf('data-nt-apply') >= 0 && tplList.indexOf('data-nt-delete') >= 0);
 ok('old icon+row template card removed', tplList.indexOf('w-10 h-10 rounded-lg bg-primary/15') < 0 && tplList.indexOf('shadow-card p-4 hover:border-primary/30') < 0);
 
-/* ---------- STATIC: daily log meals → photo mini-tiles ---------- */
+/* ---------- STATIC: c203 daily log meals — compact restaurant rows ---------- */
 const rm = extractFn(trainer, 'renderMeals');
-ok('meal items render as photo mini-tiles grid', rm.indexOf('class="food-grid${items.length < 3') >= 0 && rm.indexOf('v2-food-grid--rows') >= 0);
-ok('log tile: photo by stored food_id, plate placeholder for legacy entries', rm.indexOf('it.food_id') >= 0 && rm.indexOf('window.dkFoodImgTag') >= 0 && rm.indexOf('🥗') >= 0);
-ok('log tile: grams · kcal line + P/C/F badge chips', rm.indexOf('fmtNumber(it.grams)') >= 0 && rm.indexOf('${fmtNumber(it.protein)}P') >= 0 && rm.indexOf('${fmtNumber(it.carbs)}C') >= 0 && rm.indexOf('${fmtNumber(it.fat)}F') >= 0);
-ok('log tile: ✕ overlay delete keeps data-delete-food', rm.indexOf('data-delete-food=') >= 0 && rm.indexOf('food-tile-x') >= 0);
+ok('meal items render as compact dashboard rows', rm.indexOf('nutri-meal-row') >= 0 && rm.indexOf('nutri-meal-thumb') >= 0 && rm.indexOf('nutri-meal-copy') >= 0);
+ok('meal row: photo by stored food_id, plate placeholder for legacy entries', rm.indexOf('it.food_id') >= 0 && rm.indexOf('window.dkFoodImgTag') >= 0 && rm.indexOf('nutri-ph') >= 0);
+ok('meal row: grams + P/C/F macro colours', rm.indexOf('fmtNumber(it.grams)') >= 0 && rm.indexOf('fmtNumber(mealP)') >= 0 && rm.indexOf('fmtNumber(mealC)') >= 0 && rm.indexOf('fmtNumber(mealF)') >= 0);
+ok('meal row delete keeps data-delete-food and chip control', rm.indexOf('data-delete-food=') >= 0 && rm.indexOf('nutri-chip-x') >= 0);
+ok('meal row done toggle + add-to-meal controls', rm.indexOf('data-meal-done=') >= 0 && rm.indexOf('data-add-to-meal=') >= 0);
 ok('old text-row item list removed from meals', rm.indexOf('divide-y divide-border') < 0 && rm.indexOf('p-3 flex items-center gap-3') < 0);
 
 /* ---------- STATIC: entries now carry the product photo ---------- */

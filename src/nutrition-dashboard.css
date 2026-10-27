@@ -1,0 +1,605 @@
+/* ============================================================
+   DK Nutrition OS — c203
+   Theme-aware dashboard shell for the nutrition screen.
+   All colors come from the six Vision themes; semantic macro
+   tones stay stable across light and dark.
+   ============================================================ */
+
+html[data-ui="v2"] .nutri-dash {
+  --nutri-panel: rgba(255, 255, 255, .035);
+  --nutri-panel-2: rgba(255, 255, 255, .055);
+  --nutri-line: var(--v2-border);
+  --nutri-line-strong: var(--v2-border-strong);
+  --nutri-protein: 139 92 246;
+  --nutri-carbs: 245 158 11;
+  --nutri-fat: 59 130 246;
+  --nutri-cal: var(--c-primary);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 342px;
+  gap: 16px;
+  align-items: start;
+}
+html[data-ui="v2"][data-mode="light"] .nutri-dash {
+  --nutri-panel: rgba(255, 255, 255, .55);
+  --nutri-panel-2: rgba(255, 255, 255, .72);
+}
+html[data-ui="v2"] .nutri-main { min-width: 0; }
+html[data-ui="v2"] .nutri-rail { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+
+html[data-ui="v2"] .nutri-shell {
+  position: relative;
+  padding: 18px;
+  border-radius: 26px;
+  border: 1px solid var(--v2-border-strong);
+  background:
+    radial-gradient(ellipse 70% 80% at 0% 0%, rgba(124, 92, 255, .12), transparent 58%),
+    radial-gradient(ellipse 55% 70% at 100% 6%, rgba(34, 211, 238, .07), transparent 66%),
+    var(--v2-glass-bg);
+  box-shadow: var(--v2-glass-shadow);
+  backdrop-filter: blur(28px) saturate(135%);
+  -webkit-backdrop-filter: blur(28px) saturate(135%);
+}
+html[data-ui="v2"][data-mode="light"] .nutri-shell {
+  background:
+    radial-gradient(ellipse 75% 85% at 0% 0%, rgba(255, 255, 255, .65), transparent 62%),
+    radial-gradient(ellipse 60% 70% at 100% 10%, rgba(167, 139, 250, .08), transparent 70%),
+    rgba(255, 255, 255, .52);
+}
+
+/* ---------- header + tabs ---------- */
+html[data-ui="v2"] .nutri-head {
+  display: flex; align-items: flex-start; gap: 12px; flex-wrap: wrap;
+  padding-bottom: 14px; margin-bottom: 14px;
+  border-bottom: 1px solid var(--nutri-line);
+}
+html[data-ui="v2"] .nutri-head-mark {
+  width: 48px; height: 48px; flex: none; display: grid; place-items: center; border-radius: 15px;
+  color: #fff; background: var(--v2-primary-grad);
+  box-shadow: 0 14px 30px -16px rgb(var(--v2-glow) / .8), inset 0 1px 0 rgba(255,255,255,.3);
+}
+html[data-ui="v2"] .nutri-head-mark svg { width: 24px; height: 24px; }
+html[data-ui="v2"] .nutri-head-copy { min-width: 0; flex: 1 1 250px; }
+html[data-ui="v2"] .nutri-eyebrow {
+  display: inline-flex; align-items: center; gap: 5px; font-size: 8px; font-weight: 800;
+  letter-spacing: .16em; text-transform: uppercase; color: rgb(var(--c-muted));
+}
+html[data-ui="v2"] .nutri-title {
+  font-family: var(--font-display, inherit); font-size: clamp(22px, 2.4vw, 30px);
+  line-height: 1.08; font-weight: 700; letter-spacing: -.045em; margin-top: 3px;
+}
+html[data-ui="v2"] .nutri-sub { margin-top: 4px; font-size: 11px; line-height: 1.45; color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-tabs {
+  display: flex; align-items: center; gap: 3px; flex-wrap: wrap;
+  padding: 4px; border-radius: 14px; background: rgba(255,255,255,.045);
+  border: 1px solid var(--nutri-line); flex: none;
+}
+html[data-ui="v2"][data-mode="light"] .nutri-tabs { background: rgba(255,255,255,.62); }
+html[data-ui="v2"] .nutri-tab {
+  height: 31px; padding: 0 12px; border-radius: 10px;
+  font-size: 10px; font-weight: 700; color: rgb(var(--c-muted));
+  transition: background .15s, color .15s, box-shadow .15s;
+}
+html[data-ui="v2"] .nutri-tab:hover { color: rgb(var(--c-text)); background: rgba(255,255,255,.06); }
+html[data-ui="v2"] .nutri-tab.active {
+  color: #fff; background: var(--v2-primary-grad);
+  box-shadow: 0 10px 24px -14px rgb(var(--v2-glow) / .9), inset 0 1px 0 rgba(255,255,255,.25);
+}
+
+/* ---------- client + week ---------- */
+html[data-ui="v2"] .nutri-client-row {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 10px 12px; border-radius: 18px;
+  background: var(--nutri-panel); border: 1px solid var(--nutri-line);
+}
+html[data-ui="v2"] .nutri-client-switch {
+  display: flex; align-items: center; gap: 6px; position: relative; flex: none;
+  height: 34px; padding: 0 8px; border-radius: 10px; border: 1px solid var(--nutri-line);
+  background: var(--v2-input-bg); min-width: 148px; max-width: 190px;
+}
+html[data-ui="v2"] .nutri-client-switch-ic { width: 14px; height: 14px; color: rgb(var(--c-accent)); flex: none; }
+html[data-ui="v2"] .nutri-client-switch select {
+  appearance: none; -webkit-appearance: none; border: 0; background: transparent; outline: none;
+  color: rgb(var(--c-text)); font-size: 10px; font-weight: 700; width: 100%; padding-inline-end: 14px; cursor: pointer;
+}
+html[data-ui="v2"] .nutri-client-switch option { background: rgb(var(--c-surface)); color: rgb(var(--c-text)); }
+html[data-ui="v2"] .nutri-chev { width: 10px; height: 10px; position: absolute; inset-inline-end: 7px; color: rgb(var(--c-muted)); pointer-events: none; }
+html[data-ui="v2"] .nutri-client-card { display: flex; align-items: center; gap: 10px; flex: 1 1 300px; min-width: 0; }
+html[data-ui="v2"] .nutri-avatar {
+  width: 46px; height: 46px; flex: none; border-radius: 14px; overflow: hidden;
+  display: grid; place-items: center; color: #fff; font-family: var(--font-display, inherit);
+  font-size: 16px; font-weight: 700; background: var(--v2-primary-grad);
+  border: 1px solid rgba(255,255,255,.18); box-shadow: 0 10px 24px -16px rgba(0,0,0,.8);
+}
+html[data-ui="v2"] .nutri-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+html[data-ui="v2"] .nutri-client-copy { min-width: 0; flex: 1; }
+html[data-ui="v2"] .nutri-client-line { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+html[data-ui="v2"] .nutri-client-line h2 { font-size: 14px; font-weight: 700; letter-spacing: -.02em; }
+html[data-ui="v2"] .nutri-active {
+  display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; border-radius: 9999px;
+  font-size: 8px; font-weight: 800; color: rgb(var(--c-success));
+  background: rgb(var(--c-success) / .08); border: 1px solid rgb(var(--c-success) / .26);
+}
+html[data-ui="v2"] .nutri-active .v2-live-dot { width: 4px; height: 4px; }
+html[data-ui="v2"] .nutri-active.hidden { display: none !important; }
+html[data-ui="v2"] .nutri-client-meta { display: flex; flex-wrap: wrap; gap: 3px 12px; margin-top: 4px; }
+html[data-ui="v2"] .nutri-client-meta span { display: inline-flex; align-items: baseline; gap: 4px; font-size: 9px; }
+html[data-ui="v2"] .nutri-client-meta b { color: rgb(var(--c-muted)); font-weight: 600; }
+html[data-ui="v2"] .nutri-client-meta em { font-style: normal; font-weight: 700; color: rgb(var(--c-text)); }
+html[data-ui="v2"] .nutri-week { display: flex; align-items: center; gap: 3px; flex: none; margin-inline-start: auto; }
+html[data-ui="v2"] .nutri-week-arrow, html[data-ui="v2"] .nutri-week-cal {
+  width: 28px; height: 30px; display: grid; place-items: center; border-radius: 9px;
+  color: rgb(var(--c-muted)); border: 1px solid var(--nutri-line); background: rgba(255,255,255,.035);
+}
+html[data-ui="v2"] .nutri-week-arrow:hover, html[data-ui="v2"] .nutri-week-cal:hover { color: rgb(var(--c-text)); background: rgba(255,255,255,.08); }
+html[data-ui="v2"] .nutri-week-arrow svg, html[data-ui="v2"] .nutri-week-cal svg { width: 13px; height: 13px; }
+html[data-ui="v2"] .nutri-week-today {
+  height: 30px; padding: 0 8px; display: grid; place-items: center;
+  border-radius: 9px; border: 1px solid rgb(var(--c-accent) / .3);
+  background: rgb(var(--c-accent) / .08); color: rgb(var(--c-accent));
+  font-size: 8px; font-weight: 800;
+}
+html[data-ui="v2"] .nutri-week-today:hover { background: rgb(var(--c-accent) / .16); }
+html[data-ui="v2"] .nutri-week-today.hidden { display: none; }
+html[dir="rtl"] .nutri-week-arrow svg { transform: scaleX(-1); }
+html[data-ui="v2"] .nutri-week-label { min-width: 104px; text-align: center; display: flex; flex-direction: column; }
+html[data-ui="v2"] .nutri-week-label b { font-size: 10px; font-weight: 800; }
+html[data-ui="v2"] .nutri-week-label span { font-size: 8px; color: rgb(var(--c-muted)); margin-top: 1px; }
+html[data-ui="v2"] .nutri-hidden-date { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+
+/* ---------- macro cards ---------- */
+html[data-ui="v2"] .nutri-macro-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; margin-top: 12px; }
+html[data-ui="v2"] .nutri-macro-card {
+  --tone: var(--c-primary-2);
+  display: flex; align-items: center; gap: 9px; min-width: 0;
+  padding: 10px 11px; border-radius: 16px;
+  background: linear-gradient(150deg, rgb(var(--tone) / .10), rgba(255,255,255,.015) 62%);
+  border: 1px solid var(--nutri-line);
+  transition: transform .16s, border-color .16s, box-shadow .16s;
+}
+html[data-ui="v2"] .nutri-macro-card:hover { transform: translateY(-2px); border-color: rgb(var(--tone) / .42); box-shadow: 0 18px 36px -26px rgb(var(--tone) / .6); }
+html[data-ui="v2"] .nutri-macro-card[data-macro="calories"] { --tone: var(--c-primary); }
+html[data-ui="v2"] .nutri-macro-card[data-macro="protein"] { --tone: var(--nutri-protein); }
+html[data-ui="v2"] .nutri-macro-card[data-macro="carbs"] { --tone: var(--nutri-carbs); }
+html[data-ui="v2"] .nutri-macro-card[data-macro="fat"] { --tone: var(--nutri-fat); }
+html[data-ui="v2"] .nutri-macro-icon {
+  width: 29px; height: 29px; flex: none; display: grid; place-items: center; border-radius: 9px;
+  color: rgb(var(--tone)); background: rgb(var(--tone) / .13); border: 1px solid rgb(var(--tone) / .2);
+}
+html[data-ui="v2"] .nutri-macro-icon svg { width: 14px; height: 14px; }
+html[data-ui="v2"] .nutri-macro-copy { min-width: 0; flex: 1; }
+html[data-ui="v2"] .nutri-macro-copy small { display: block; font-size: 8px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: rgb(var(--c-muted)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+html[data-ui="v2"] .nutri-macro-copy b { display: block; margin-top: 1px; font-family: var(--font-mono); font-size: 14px; line-height: 1.08; letter-spacing: -.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+html[data-ui="v2"] .nutri-macro-copy b span { font-weight: 500; color: rgb(var(--c-muted)); font-size: 8px; margin-inline-start: 1px; }
+html[data-ui="v2"] .nutri-macro-copy em { display: block; margin-top: 1px; font-style: normal; font-family: var(--font-mono); font-size: 7.5px; line-height: 1.2; color: rgb(var(--c-muted)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+html[data-ui="v2"] .nutri-macro-ring {
+  width: 38px; height: 38px; flex: none; position: relative; display: grid; place-items: center;
+  border-radius: 9999px;
+  background: conic-gradient(from -90deg, rgb(var(--tone)) var(--p, 0%), rgba(255,255,255,.09) 0);
+  box-shadow: 0 0 18px rgb(var(--tone) / .18);
+}
+html[data-ui="v2"][data-mode="light"] .nutri-macro-ring { background: conic-gradient(from -90deg, rgb(var(--tone)) var(--p, 0%), rgba(40,20,60,.1) 0); }
+html[data-ui="v2"] .nutri-macro-ring::before { content: ""; position: absolute; inset: 4px; border-radius: 9999px; background: rgb(var(--c-bg)); }
+html[data-ui="v2"] .nutri-macro-ring span { position: relative; z-index: 1; font-family: var(--font-mono); font-size: 8.5px; font-weight: 700; }
+
+/* ---------- plan toolbar / day strip ---------- */
+html[data-ui="v2"] .nutri-plan-toolbar {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin: 14px 0 9px;
+}
+html[data-ui="v2"] .nutri-plan-title-wrap { display: flex; align-items: center; gap: 8px; flex: none; }
+html[data-ui="v2"] .nutri-plan-title { font-family: var(--font-display, inherit); font-size: 16px; font-weight: 700; letter-spacing: -.025em; }
+html[data-ui="v2"] .nutri-plan-subline { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-top: 2px; }
+html[data-ui="v2"] .nutri-balanced {
+  display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; border-radius: 9999px;
+  font-size: 8px; font-weight: 800; color: rgb(var(--c-success));
+  background: rgb(var(--c-success) / .07); border: 1px solid rgb(var(--c-success) / .23);
+}
+html[data-ui="v2"] .nutri-balanced[data-off="1"] { color: rgb(var(--c-warning)); background: rgb(var(--c-warning) / .07); border-color: rgb(var(--c-warning) / .24); }
+html[data-ui="v2"] .nutri-balanced .v2-live-dot { width: 4px; height: 4px; }
+html[data-ui="v2"] .nutri-muted { font-size: 9px; color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-daystrip {
+  margin-inline-start: auto; display: flex; align-items: stretch; gap: 2px;
+  padding: 3px; border-radius: 12px; border: 1px solid var(--nutri-line);
+  background: rgba(255,255,255,.025); max-width: 100%; overflow-x: auto; scrollbar-width: none;
+}
+html[data-ui="v2"] .nutri-daystrip::-webkit-scrollbar { display: none; }
+html[data-ui="v2"] .nutri-daybtn {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  min-width: 38px; height: 38px; padding: 0 7px; border-radius: 9px; color: rgb(var(--c-muted));
+  font-size: 8px; font-weight: 700; transition: background .14s, color .14s;
+}
+html[data-ui="v2"] .nutri-daybtn b { font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: rgb(var(--c-text)); }
+html[data-ui="v2"] .nutri-daybtn:hover { background: rgba(255,255,255,.06); }
+html[data-ui="v2"] .nutri-daybtn.active { background: var(--v2-primary-grad); color: rgba(255,255,255,.78); box-shadow: 0 8px 20px -12px rgb(var(--v2-glow) / .9); }
+html[data-ui="v2"] .nutri-daybtn.active b { color: #fff; }
+html[data-ui="v2"] .nutri-daybtn.today:not(.active) { color: rgb(var(--c-accent)); }
+html[data-ui="v2"] .nutri-plan-actions { display: flex; align-items: center; gap: 6px; flex: none; }
+html[data-ui="v2"] .nutri-btn-ghost {
+  display: inline-flex; align-items: center; gap: 5px; height: 32px; padding: 0 10px;
+  border-radius: 10px; border: 1px solid var(--nutri-line); background: rgba(255,255,255,.035);
+  color: rgb(var(--c-text)); font-size: 9px; font-weight: 700;
+}
+html[data-ui="v2"] .nutri-btn-ghost:hover { background: rgba(255,255,255,.08); border-color: var(--nutri-line-strong); }
+html[data-ui="v2"] .nutri-btn-ghost svg { width: 12px; height: 12px; }
+html[data-ui="v2"] .nutri-add-food { height: 32px; font-size: 9px; padding: 0 11px; border-radius: 10px; }
+html[data-ui="v2"] .nutri-add-food svg { width: 12px; height: 12px; }
+
+/* ---------- empty ---------- */
+html[data-ui="v2"] .nutri-empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 9px;
+  min-height: 280px; padding: 36px 20px; text-align: center;
+  border-radius: 20px; border: 1px dashed var(--nutri-line); background: rgba(255,255,255,.018);
+}
+html[data-ui="v2"] .nutri-empty.hidden { display: none !important; }
+html[data-ui="v2"] .nutri-empty-ic {
+  width: 58px; height: 58px; display: grid; place-items: center; border-radius: 18px;
+  color: rgb(var(--c-accent)); background: rgb(var(--c-accent) / .08); border: 1px solid var(--nutri-line-strong);
+  box-shadow: 0 16px 36px -24px rgb(var(--v2-glow) / .6);
+}
+html[data-ui="v2"] .nutri-empty-ic svg { width: 27px; height: 27px; }
+html[data-ui="v2"] .nutri-empty h3 { font-family: var(--font-display, inherit); font-size: 16px; font-weight: 700; }
+html[data-ui="v2"] .nutri-empty p { max-width: 300px; font-size: 11px; line-height: 1.55; color: rgb(var(--c-muted)); }
+
+/* ---------- compact meal rows ---------- */
+html[data-ui="v2"] .nutri-meal-list { display: flex; flex-direction: column; gap: 7px; }
+html[data-ui="v2"] .nutri-meal-row {
+  display: grid; grid-template-columns: 62px 92px minmax(0, 1fr) auto 27px;
+  grid-template-areas: "time thumb copy nutrition check";
+  align-items: center; gap: 10px; padding: 9px;
+  border-radius: 17px; border: 1px solid var(--nutri-line);
+  background: linear-gradient(135deg, rgba(255,255,255,.045), rgba(255,255,255,.012));
+  transition: border-color .16s, box-shadow .16s, transform .16s;
+  animation: nutriRowIn .3s var(--v2-ease) both;
+}
+html[data-ui="v2"] .nutri-meal-row:hover { border-color: var(--nutri-line-strong); box-shadow: 0 16px 38px -28px rgb(var(--v2-glow) / .6); transform: translateY(-1px); }
+html[data-ui="v2"] .nutri-meal-row.is-done { border-color: rgb(var(--c-success) / .24); }
+@keyframes nutriRowIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+html[data-ui="v2"] .nutri-meal-time {
+  grid-area: time; align-self: start; display: inline-flex; align-items: center; justify-content: center;
+  min-height: 24px; border-radius: 8px; border: 1px solid var(--nutri-line);
+  background: rgba(255,255,255,.04); font-family: var(--font-mono); font-size: 9px; font-weight: 700;
+}
+html[data-ui="v2"] .nutri-meal-thumb {
+  grid-area: thumb; position: relative; width: 92px; height: 68px; flex: none;
+  border-radius: 13px; overflow: hidden; background: var(--nutri-panel-2);
+  border: 1px solid var(--nutri-line);
+}
+html[data-ui="v2"] .nutri-meal-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+html[data-ui="v2"] .nutri-meal-thumb .nutri-ph {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  color: rgb(var(--c-muted)); background: radial-gradient(circle at 35% 25%, rgb(var(--c-primary) / .16), transparent 70%);
+}
+html[data-ui="v2"] .nutri-meal-thumb .nutri-ph svg { width: 24px; height: 24px; }
+html[data-ui="v2"] .nutri-meal-copy { grid-area: copy; min-width: 0; }
+html[data-ui="v2"] .nutri-meal-title { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+html[data-ui="v2"] .nutri-meal-title b { font-family: var(--font-display, inherit); font-size: 13px; font-weight: 700; letter-spacing: -.015em; }
+html[data-ui="v2"] .nutri-meal-title small { font-size: 8px; color: rgb(var(--c-muted)); font-weight: 600; }
+html[data-ui="v2"] .nutri-meal-sub { font-size: 8px; color: rgb(var(--c-muted)); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html[data-ui="v2"] .nutri-meal-foods { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+html[data-ui="v2"] .nutri-food-chip {
+  display: inline-flex; align-items: center; gap: 4px; padding: 2px 6px 2px 2px;
+  border-radius: 9999px; border: 1px solid var(--nutri-line); background: rgba(255,255,255,.035);
+  font-size: 8.5px; color: rgb(var(--c-muted)); white-space: nowrap; max-width: 190px;
+}
+html[data-ui="v2"] .nutri-food-chip img, html[data-ui="v2"] .nutri-food-chip .nutri-chip-ph {
+  width: 18px; height: 18px; border-radius: 9999px; object-fit: cover; flex: none;
+  background: rgb(var(--c-primary) / .15); display: grid; place-items: center; font-size: 8px;
+}
+html[data-ui="v2"] .nutri-food-chip em { font-style: normal; font-family: var(--font-mono); font-size: 8px; color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-food-chip .nutri-chip-x { width: 13px; height: 13px; display: grid; place-items: center; border-radius: 9999px; color: rgb(var(--c-muted)); opacity: .45; }
+html[data-ui="v2"] .nutri-food-chip:hover .nutri-chip-x { opacity: 1; color: rgb(var(--c-danger)); }
+html[data-ui="v2"] .nutri-food-chip .nutri-chip-x svg { width: 8px; height: 8px; }
+html[data-ui="v2"] .nutri-meal-addchip {
+  display: inline-flex; align-items: center; gap: 3px; padding: 2px 7px; border-radius: 9999px;
+  border: 1px dashed rgb(var(--c-primary-2) / .35); color: rgb(var(--c-primary-2)); font-size: 8.5px; font-weight: 700;
+}
+html[data-ui="v2"] .nutri-meal-nutrition { grid-area: nutrition; text-align: end; flex: none; }
+html[data-ui="v2"] .nutri-meal-kcal b { font-family: var(--font-mono); font-size: 16px; line-height: 1; letter-spacing: -.04em; }
+html[data-ui="v2"] .nutri-meal-kcal small { display: block; font-size: 7px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-meal-macros { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 3px; margin-top: 5px; }
+html[data-ui="v2"] .nutri-meal-macros span { display: inline-flex; align-items: center; gap: 2px; font-family: var(--font-mono); font-size: 7.5px; font-weight: 700; }
+html[data-ui="v2"] .nutri-meal-macros span::before { content: ""; width: 3px; height: 3px; border-radius: 9999px; background: currentColor; }
+html[data-ui="v2"] .nutri-meal-macros .p { color: rgb(var(--nutri-protein)); }
+html[data-ui="v2"] .nutri-meal-macros .c { color: rgb(var(--nutri-carbs)); }
+html[data-ui="v2"] .nutri-meal-macros .f { color: rgb(var(--nutri-fat)); }
+html[data-ui="v2"] .nutri-meal-check {
+  grid-area: check; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 9999px;
+  color: rgb(var(--c-muted)); border: 1px solid var(--nutri-line); background: transparent;
+  transition: background .15s, color .15s, border-color .15s;
+}
+html[data-ui="v2"] .nutri-meal-check svg { width: 12px; height: 12px; }
+html[data-ui="v2"] .nutri-meal-check.done { color: #fff; background: rgb(var(--c-success)); border-color: rgb(var(--c-success)); box-shadow: 0 0 15px rgb(var(--c-success) / .35); }
+html[data-ui="v2"] .nutri-meal-check:disabled { opacity: .25; }
+html[data-ui="v2"] .nutri-meal-emptyrow {
+  grid-area: copy; display: flex; align-items: center; gap: 6px; font-size: 9px; color: rgb(var(--c-muted));
+  border: 1px dashed var(--nutri-line); border-radius: 10px; padding: 8px; min-height: 42px;
+}
+html[data-ui="v2"] .nutri-meal-emptyrow svg { width: 13px; height: 13px; opacity: .7; }
+
+/* ---------- total bar ---------- */
+html[data-ui="v2"] .nutri-total-bar {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  margin-top: 9px; padding: 10px 12px; border-radius: 16px;
+  background: linear-gradient(90deg, rgb(var(--c-primary) / .08), rgba(255,255,255,.02));
+  border: 1px solid var(--nutri-line);
+}
+html[data-ui="v2"] .nutri-total-main { display: flex; align-items: baseline; gap: 8px; flex: none; }
+html[data-ui="v2"] .nutri-total-label { font-size: 8px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-total-main b { font-family: var(--font-mono); font-size: 18px; letter-spacing: -.04em; }
+html[data-ui="v2"] .nutri-total-main small { font-size: 8px; color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-total-macros { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+html[data-ui="v2"] .nutri-total-macros span { display: inline-flex; align-items: center; gap: 3px; font-size: 8.5px; color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-total-macros i { width: 6px; height: 6px; border-radius: 9999px; background: currentColor; }
+html[data-ui="v2"] .nutri-total-macros b { font-weight: 600; color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-total-macros em { font-style: normal; font-family: var(--font-mono); font-weight: 700; color: rgb(var(--c-text)); }
+html[data-ui="v2"] .nutri-total-macros small { color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-total-macros .p i { background: rgb(var(--nutri-protein)); }
+html[data-ui="v2"] .nutri-total-macros .c i { background: rgb(var(--nutri-carbs)); }
+html[data-ui="v2"] .nutri-total-macros .f i { background: rgb(var(--nutri-fat)); }
+html[data-ui="v2"] .nutri-total-progress { flex: 1 1 180px; display: flex; align-items: center; gap: 8px; min-width: 120px; }
+html[data-ui="v2"] .nutri-total-bar-track { flex: 1; height: 7px; border-radius: 9999px; background: rgba(255,255,255,.08); overflow: hidden; }
+html[data-ui="v2"][data-mode="light"] .nutri-total-bar-track { background: rgba(40,20,60,.1); }
+html[data-ui="v2"] .nutri-total-bar-track i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, rgb(var(--c-primary)), rgb(var(--c-accent))); box-shadow: 0 0 16px rgb(var(--c-accent) / .4); transition: width .55s var(--v2-ease); }
+html[data-ui="v2"] .nutri-total-progress > span { flex: none; font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: rgb(var(--c-accent)); }
+
+/* ---------- advice + popular ---------- */
+html[data-ui="v2"] .nutri-extra-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 10px; margin-top: 12px; }
+html[data-ui="v2"] .nutri-extra-card { padding: 12px; border-radius: 17px; border: 1px solid var(--nutri-line); background: var(--nutri-panel); min-width: 0; }
+html[data-ui="v2"] .nutri-extra-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 9px; }
+html[data-ui="v2"] .nutri-extra-head h3 { font-family: var(--font-display, inherit); font-size: 12px; font-weight: 700; letter-spacing: -.015em; }
+html[data-ui="v2"] .nutri-extra-ic { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 8px; color: rgb(var(--c-success)); background: rgb(var(--c-success) / .08); }
+html[data-ui="v2"] .nutri-extra-ic svg { width: 13px; height: 13px; }
+html[data-ui="v2"] .nutri-text-link { font-size: 8.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: rgb(var(--c-primary-2)); }
+html[data-ui="v2"] .nutri-text-link:hover { color: rgb(var(--c-accent)); }
+html[data-ui="v2"] .nutri-advice-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 5px; }
+html[data-ui="v2"] .nutri-advice {
+  display: flex; align-items: flex-start; gap: 5px; min-height: 48px; padding: 7px;
+  border-radius: 10px; font-size: 8.5px; line-height: 1.3; color: rgb(var(--c-text));
+  border: 1px solid transparent;
+}
+html[data-ui="v2"] .nutri-advice-ic { width: 18px; height: 18px; flex: none; display: grid; place-items: center; border-radius: 6px; background: rgba(255,255,255,.08); font-size: 9px; }
+html[data-ui="v2"] .nutri-advice.p { background: rgb(var(--c-success) / .06); border-color: rgb(var(--c-success) / .17); }
+html[data-ui="v2"] .nutri-advice.c { background: rgb(var(--nutri-fat) / .07); border-color: rgb(var(--nutri-fat) / .18); }
+html[data-ui="v2"] .nutri-advice.w { background: rgb(var(--c-warning) / .06); border-color: rgb(var(--c-warning) / .18); }
+html[data-ui="v2"] .nutri-advice.f { background: rgb(var(--c-primary) / .07); border-color: rgb(var(--c-primary) / .18); }
+html[data-ui="v2"] .nutri-popular-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 6px; }
+html[data-ui="v2"] .nutri-popular {
+  position: relative; overflow: hidden; min-width: 0; border-radius: 11px; border: 1px solid var(--nutri-line);
+  background: var(--nutri-panel-2); text-align: start;
+}
+html[data-ui="v2"] .nutri-popular img { width: 100%; height: 58px; object-fit: cover; display: block; }
+html[data-ui="v2"] .nutri-popular-copy { padding: 5px 6px 6px; }
+html[data-ui="v2"] .nutri-popular-copy b { display: block; font-size: 8.5px; line-height: 1.25; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+html[data-ui="v2"] .nutri-popular-copy small { display: block; margin-top: 2px; font-size: 7.5px; color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-popular:hover { border-color: var(--nutri-line-strong); }
+
+/* ---------- right rail ---------- */
+html[data-ui="v2"] .nutri-side-card {
+  padding: 14px; border-radius: 21px; border: 1px solid var(--v2-border-strong);
+  background: var(--v2-glass-bg); box-shadow: var(--v2-glass-shadow);
+  backdrop-filter: blur(26px) saturate(135%); -webkit-backdrop-filter: blur(26px) saturate(135%);
+  min-width: 0;
+}
+html[data-ui="v2"][data-mode="light"] .nutri-side-card { background: rgba(255,255,255,.56); }
+html[data-ui="v2"] .nutri-side-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+html[data-ui="v2"] .nutri-side-head h3 { font-family: var(--font-display, inherit); font-size: 14px; font-weight: 700; letter-spacing: -.02em; }
+html[data-ui="v2"] .nutri-icon-btn {
+  width: 28px; height: 28px; display: grid; place-items: center; border-radius: 8px;
+  color: rgb(var(--c-muted)); border: 1px solid var(--nutri-line); background: rgba(255,255,255,.035);
+}
+html[data-ui="v2"] .nutri-icon-btn:hover { color: rgb(var(--c-text)); background: rgba(255,255,255,.08); }
+html[data-ui="v2"] .nutri-icon-btn svg { width: 13px; height: 13px; }
+html[data-ui="v2"] .nutri-day-top { display: flex; align-items: center; gap: 13px; margin: 13px 0 12px; }
+html[data-ui="v2"] .nutri-day-ring {
+  width: 126px; height: 126px; flex: none; position: relative; display: grid; place-items: center;
+  border-radius: 9999px;
+  background: conic-gradient(from -90deg, rgb(var(--c-primary)) 0%, rgb(var(--c-accent)) var(--p, 0%), rgba(255,255,255,.09) var(--p, 0%));
+  box-shadow: 0 0 34px rgb(var(--c-accent) / .13);
+}
+html[data-ui="v2"][data-mode="light"] .nutri-day-ring { background: conic-gradient(from -90deg, rgb(var(--c-primary)) 0%, rgb(var(--c-accent)) var(--p, 0%), rgba(40,20,60,.1) var(--p, 0%)); }
+html[data-ui="v2"] .nutri-day-ring::before { content: ""; position: absolute; inset: 8px; border-radius: 9999px; background: rgb(var(--c-bg)); }
+html[data-ui="v2"] .nutri-day-ring-in { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; line-height: 1; }
+html[data-ui="v2"] .nutri-day-ring-in b { font-family: var(--font-display, inherit); font-size: 22px; letter-spacing: -.05em; }
+html[data-ui="v2"] .nutri-day-ring-in > span { margin-top: 3px; font-size: 8px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-day-ring-in small { margin-top: 7px; font-size: 8px; color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-day-macros { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+html[data-ui="v2"] .nutri-day-macro { display: grid; grid-template-columns: 1fr auto; gap: 2px 7px; align-items: center; }
+html[data-ui="v2"] .nutri-day-macro-top { display: flex; align-items: center; gap: 4px; font-size: 8.5px; }
+html[data-ui="v2"] .nutri-day-macro-top i { width: 5px; height: 5px; border-radius: 9999px; background: currentColor; }
+html[data-ui="v2"] .nutri-day-macro-top b { font-weight: 600; color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-day-macro-val { font-family: var(--font-mono); font-size: 9px; font-weight: 700; white-space: nowrap; }
+html[data-ui="v2"] .nutri-day-macro.p { color: rgb(var(--nutri-protein)); }
+html[data-ui="v2"] .nutri-day-macro.c { color: rgb(var(--nutri-carbs)); }
+html[data-ui="v2"] .nutri-day-macro.f { color: rgb(var(--nutri-fat)); }
+html[data-ui="v2"] .nutri-day-macro-track { grid-column: 1 / -1; height: 4px; border-radius: 9999px; background: rgba(255,255,255,.08); overflow: hidden; }
+html[data-ui="v2"][data-mode="light"] .nutri-day-macro-track { background: rgba(40,20,60,.1); }
+html[data-ui="v2"] .nutri-day-macro-track i { display: block; height: 100%; border-radius: inherit; background: currentColor; box-shadow: 0 0 9px currentColor; }
+html[data-ui="v2"] .nutri-chart-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 4px; padding-top: 10px; border-top: 1px solid var(--nutri-line); font-size: 8px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-week-chart { margin-top: 7px; }
+html[data-ui="v2"] .nutri-week-chart svg { display: block; width: 100%; height: 80px; overflow: visible; }
+html[data-ui="v2"] .nutri-week-labels { display: flex; justify-content: space-between; gap: 2px; margin-top: 3px; }
+html[data-ui="v2"] .nutri-week-labels span { flex: 1; text-align: center; font-size: 7px; color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-week-labels span.is-on { color: rgb(var(--c-accent)); font-weight: 800; }
+
+/* food preview */
+html[data-ui="v2"] .nutri-food-cats { display: flex; gap: 3px; flex-wrap: nowrap; overflow-x: auto; margin: 10px 0 8px; scrollbar-width: none; }
+html[data-ui="v2"] .nutri-food-cats::-webkit-scrollbar { display: none; }
+html[data-ui="v2"] .nutri-food-cat {
+  flex: none; height: 22px; padding: 0 7px; border-radius: 7px;
+  border: 1px solid transparent; color: rgb(var(--c-muted)); font-size: 8px; font-weight: 700;
+}
+html[data-ui="v2"] .nutri-food-cat.active { color: #fff; background: var(--v2-primary-grad); }
+html[data-ui="v2"] .nutri-food-cat:not(.active):hover { background: rgba(255,255,255,.06); color: rgb(var(--c-text)); }
+html[data-ui="v2"] .nutri-search { display: flex; align-items: center; gap: 5px; height: 30px; padding: 0 8px; border-radius: 9px; border: 1px solid var(--nutri-line); background: var(--v2-input-bg); }
+html[data-ui="v2"] .nutri-search svg { width: 12px; height: 12px; color: rgb(var(--c-muted)); flex: none; }
+html[data-ui="v2"] .nutri-search input { min-width: 0; flex: 1; border: 0; outline: none; background: transparent; color: rgb(var(--c-text)); font-size: 9px; }
+html[data-ui="v2"] .nutri-search input::placeholder { color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-food-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 5px; margin-top: 8px; }
+html[data-ui="v2"] .nutri-food-tile { min-width: 0; padding: 3px; border-radius: 9px; border: 1px solid var(--nutri-line); background: var(--nutri-panel); text-align: start; transition: transform .14s, border-color .14s; }
+html[data-ui="v2"] .nutri-food-tile:hover { transform: translateY(-1px); border-color: var(--nutri-line-strong); }
+html[data-ui="v2"] .nutri-progress-figure stop:first-child { stop-color: rgb(var(--c-accent)); }
+html[data-ui="v2"] .nutri-progress-figure stop:last-child { stop-color: rgb(var(--c-primary)); }
+html[data-ui="v2"] .nutri-food-ph { display: grid; place-items: center; color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-recipe-img .nutri-food-ph { width: 100%; height: 100%; }
+html[data-ui="v2"] .nutri-food-tile img, html[data-ui="v2"] .nutri-food-tile .nutri-food-ph { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; display: grid; place-items: center; background: rgb(var(--c-primary) / .1); color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-food-tile b { display: block; margin-top: 3px; font-size: 7px; line-height: 1.2; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+html[data-ui="v2"] .nutri-food-tile small { display: block; margin-top: 1px; font-family: var(--font-mono); font-size: 6.5px; color: rgb(var(--c-muted)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* progress */
+html[data-ui="v2"] .nutri-progress-main { display: grid; grid-template-columns: 80px minmax(0,1fr); gap: 10px; align-items: center; margin-top: 10px; }
+html[data-ui="v2"] .nutri-progress-figure { width: 80px; height: 142px; display: grid; place-items: center; border-radius: 15px; background: radial-gradient(ellipse 70% 60% at 50% 30%, rgb(var(--c-accent) / .14), transparent 72%), rgba(255,255,255,.02); border: 1px solid var(--nutri-line); }
+html[data-ui="v2"] .nutri-progress-figure svg { width: 62px; height: 125px; }
+html[data-ui="v2"] .nutri-progress-metrics { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+html[data-ui="v2"] .nutri-metric { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding-bottom: 5px; border-bottom: 1px solid var(--nutri-line); }
+html[data-ui="v2"] .nutri-metric:last-child { border-bottom: 0; padding-bottom: 0; }
+html[data-ui="v2"] .nutri-metric span { font-size: 8px; color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-metric b { font-family: var(--font-mono); font-size: 10px; }
+html[data-ui="v2"] .nutri-metric em { font-style: normal; font-family: var(--font-mono); font-size: 7.5px; color: rgb(var(--c-success)); }
+html[data-ui="v2"] .nutri-progress-goal { margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--nutri-line); }
+html[data-ui="v2"] .nutri-progress-goal-line { display: flex; justify-content: space-between; gap: 8px; font-size: 8px; color: rgb(var(--c-muted)); margin-bottom: 5px; }
+html[data-ui="v2"] .nutri-progress-goal-line b { color: rgb(var(--c-text)); font-family: var(--font-mono); }
+html[data-ui="v2"] .nutri-progress-track { height: 6px; border-radius: 9999px; background: rgba(255,255,255,.08); overflow: hidden; }
+html[data-ui="v2"][data-mode="light"] .nutri-progress-track { background: rgba(40,20,60,.1); }
+html[data-ui="v2"] .nutri-progress-track i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, rgb(var(--c-primary)), rgb(var(--c-accent))); box-shadow: 0 0 12px rgb(var(--c-accent) / .4); }
+html[data-ui="v2"] .nutri-quote-card { position: relative; overflow: hidden; padding: 14px 16px 12px; border-radius: 21px; border: 1px solid var(--nutri-line); background: linear-gradient(145deg, rgb(var(--c-primary) / .14), rgba(255,255,255,.025)); }
+html[data-ui="v2"] .nutri-quote-card p { font-family: var(--font-display, inherit); font-size: 11px; line-height: 1.45; font-weight: 600; max-width: 250px; }
+html[data-ui="v2"] .nutri-quote-mark { position: absolute; top: -8px; inset-inline-end: 10px; font-family: Georgia, serif; font-size: 68px; line-height: 1; color: rgb(var(--c-primary) / .18); }
+html[data-ui="v2"] .nutri-quote-sign { display: block; margin-top: 8px; font-size: 8px; font-style: italic; color: rgb(var(--c-muted)); }
+
+/* tab panels: recipes/history/legacy database */
+html[data-ui="v2"] .nutri-tabpanel { padding: 2px 0; }
+html[data-ui="v2"] .nutri-tabpanel.hidden { display: none !important; }
+html[data-ui="v2"] .nutri-tab-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+html[data-ui="v2"] .nutri-tab-head h2 { font-family: var(--font-display, inherit); font-size: 18px; font-weight: 700; letter-spacing: -.03em; margin-top: 2px; }
+html[data-ui="v2"] .nutri-tab-head .v2-btn-primary { white-space: nowrap; }
+html[data-ui="v2"] .nutri-toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+html[data-ui="v2"] .nutri-toolbar .nutri-search { flex: 1; max-width: 340px; }
+html[data-ui="v2"] .nutri-count { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 7px; border-radius: 9999px; font-family: var(--font-mono); font-size: 8px; color: rgb(var(--c-primary-2)); background: rgb(var(--c-primary) / .1); border: 1px solid var(--nutri-line); }
+html[data-ui="v2"] .nutri-recipes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; }
+html[data-ui="v2"] .nutri-recipe-card { position: relative; overflow: hidden; border-radius: 15px; border: 1px solid var(--nutri-line); background: var(--nutri-panel); min-width: 0; }
+html[data-ui="v2"] .nutri-recipe-card > .nutri-recipe-img { height: 128px; position: relative; overflow: hidden; background: var(--nutri-panel-2); }
+html[data-ui="v2"] .nutri-recipe-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+html[data-ui="v2"] .nutri-recipe-copy { padding: 8px 9px 9px; }
+html[data-ui="v2"] .nutri-recipe-copy { padding: 9px 10px 10px; }
+html[data-ui="v2"] .nutri-recipe-copy b { display: block; font-family: var(--font-display, inherit); font-size: 12px; line-height: 1.22; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+html[data-ui="v2"] .nutri-recipe-copy small { display: block; margin-top: 3px; font-size: 8.5px; color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-recipe-macros { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+html[data-ui="v2"] .nutri-recipe-macros span { font-family: var(--font-mono); font-size: 7.5px; color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-recipe-actions { position: absolute; top: 5px; inset-inline-end: 5px; display: flex; gap: 3px; }
+html[data-ui="v2"] .nutri-recipe-actions button { width: 22px; height: 22px; display: grid; place-items: center; border-radius: 7px; color: #fff; background: rgba(3,7,18,.55); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(8px); }
+html[data-ui="v2"] .nutri-recipe-actions button svg { width: 10px; height: 10px; }
+html[data-ui="v2"] .nutri-tab-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 50px 16px; text-align: center; border: 1px dashed var(--nutri-line); border-radius: 18px; }
+html[data-ui="v2"] .nutri-tab-empty.hidden { display: none !important; }
+html[data-ui="v2"] .nutri-tab-empty .nutri-empty-ic { width: 46px; height: 46px; border-radius: 14px; font-size: 20px; }
+html[data-ui="v2"] .nutri-tab-empty h3 { font-family: var(--font-display, inherit); font-size: 14px; font-weight: 700; }
+html[data-ui="v2"] .nutri-tab-empty p { max-width: 300px; font-size: 10px; line-height: 1.5; color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-history-summary { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; margin-bottom: 10px; }
+html[data-ui="v2"] .nutri-history-summary > div { padding: 10px; border-radius: 12px; border: 1px solid var(--nutri-line); background: var(--nutri-panel); }
+html[data-ui="v2"] .nutri-history-summary small { display: block; font-size: 8px; color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-history-summary b { display: block; margin-top: 2px; font-family: var(--font-mono); font-size: 13px; }
+html[data-ui="v2"] .nutri-history-list { display: flex; flex-direction: column; gap: 5px; }
+html[data-ui="v2"] .nutri-history-row { display: grid; grid-template-columns: 82px 1fr auto auto; gap: 10px; align-items: center; padding: 9px 10px; border-radius: 12px; border: 1px solid var(--nutri-line); background: var(--nutri-panel); text-align: start; }
+html[data-ui="v2"] .nutri-history-row:hover { border-color: var(--nutri-line-strong); background: rgba(255,255,255,.05); }
+html[data-ui="v2"] .nutri-history-date b { display: block; font-family: var(--font-mono); font-size: 9.5px; }
+html[data-ui="v2"] .nutri-history-date small { display: block; font-size: 8px; color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-history-bar { height: 6px; border-radius: 9999px; background: rgba(255,255,255,.08); overflow: hidden; }
+html[data-ui="v2"][data-mode="light"] .nutri-history-bar { background: rgba(40,20,60,.1); }
+html[data-ui="v2"] .nutri-history-bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, rgb(var(--c-primary)), rgb(var(--c-accent))); }
+html[data-ui="v2"] .nutri-history-kcal { font-family: var(--font-mono); font-size: 10px; white-space: nowrap; }
+html[data-ui="v2"] .nutri-history-pct { font-family: var(--font-mono); font-size: 9px; color: rgb(var(--c-accent)); min-width: 30px; text-align: end; }
+html[data-ui="v2"] .nutri-history-macros { display: flex; gap: 6px; font-family: var(--font-mono); font-size: 7.5px; color: rgb(var(--c-muted)); }
+html[data-ui="v2"] .nutri-history-macros .p { color: rgb(var(--nutri-protein)); }
+html[data-ui="v2"] .nutri-history-macros .c { color: rgb(var(--nutri-carbs)); }
+html[data-ui="v2"] .nutri-history-macros .f { color: rgb(var(--nutri-fat)); }
+
+/* existing food DB / templates get the same shell spacing */
+html[data-ui="v2"] .nutri-tabpanel > .flex,
+html[data-ui="v2"] .nutri-tabpanel > div { max-width: 100%; }
+html[data-ui="v2"] .nutri-tabpanel #food-db-tree,
+html[data-ui="v2"] .nutri-tabpanel #nutrition-templates-list { margin-top: 4px; }
+html[data-ui="v2"] #nutrition-templates-list .food-grid { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+html[data-ui="v2"] #nutrition-templates-list .food-tile { border-radius: 16px; background: var(--nutri-panel); border-color: var(--nutri-line); }
+html[data-ui="v2"] #nutrition-templates-list .food-tile:hover { border-color: var(--nutri-line-strong); }
+
+/* responsive */
+@media (max-width: 1320px) {
+  html[data-ui="v2"] .nutri-dash { grid-template-columns: minmax(0,1fr) 310px; }
+}
+@media (max-width: 1180px) {
+  html[data-ui="v2"] .nutri-dash { grid-template-columns: minmax(0,1fr); }
+  html[data-ui="v2"] .nutri-rail { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); align-items: start; }
+  html[data-ui="v2"] .nutri-quote-card { grid-column: span 2; }
+}
+@media (max-width: 900px) {
+  html[data-ui="v2"] .nutri-shell { padding: 14px; border-radius: 22px; }
+  html[data-ui="v2"] .nutri-head { gap: 9px; }
+  html[data-ui="v2"] .nutri-head-mark { width: 40px; height: 40px; border-radius: 12px; }
+  html[data-ui="v2"] .nutri-tabs { order: 3; width: 100%; margin-top: 2px; overflow-x: auto; flex-wrap: nowrap; }
+  html[data-ui="v2"] .nutri-tab { flex: none; }
+  html[data-ui="v2"] .nutri-macro-strip { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  html[data-ui="v2"] .nutri-daystrip { order: 3; margin-inline-start: 0; width: 100%; }
+  html[data-ui="v2"] .nutri-plan-actions { margin-inline-start: auto; }
+  html[data-ui="v2"] .nutri-extra-grid { grid-template-columns: 1fr; }
+  html[data-ui="v2"] .nutri-rail { grid-template-columns: 1fr; }
+  html[data-ui="v2"] .nutri-quote-card { grid-column: auto; }
+  html[data-ui="v2"] .nutri-food-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+}
+@media (max-width: 720px) {
+  html[data-ui="v2"] .nutri-client-row { align-items: flex-start; }
+  html[data-ui="v2"] .nutri-client-switch { min-width: 0; flex: 1 1 100%; max-width: none; }
+  html[data-ui="v2"] .nutri-client-card { flex: 1 1 100%; }
+  html[data-ui="v2"] .nutri-week { margin-inline-start: auto; }
+  html[data-ui="v2"] .nutri-meal-row {
+    position: relative;
+    grid-template-columns: 82px minmax(0,1fr) 24px;
+    grid-template-areas: "thumb copy check" "thumb nutrition check";
+    gap: 7px 10px;
+    padding: 10px;
+  }
+  html[data-ui="v2"] .nutri-meal-thumb { width: 82px; height: 70px; align-self: start; }
+  html[data-ui="v2"] .nutri-meal-copy { align-self: center; }
+  html[data-ui="v2"] .nutri-meal-nutrition { display: flex; align-items: center; justify-content: flex-start; gap: 8px; text-align: start; padding-top: 0; align-self: start; }
+  html[data-ui="v2"] .nutri-meal-kcal { display: flex; align-items: baseline; gap: 3px; }
+  html[data-ui="v2"] .nutri-meal-kcal small { display: inline; }
+  html[data-ui="v2"] .nutri-meal-macros { margin-top: 0; }
+  html[data-ui="v2"] .nutri-meal-time {
+    position: absolute; top: 13px; inset-inline-start: 13px; z-index: 2;
+    min-height: 18px; padding: 0 5px; font-size: 7.5px; color: #fff;
+    background: rgba(3,7,18,.62); border-color: rgba(255,255,255,.18);
+    backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px);
+  }
+  html[data-ui="v2"] .nutri-meal-check { align-self: center; }
+  html[data-ui="v2"] .nutri-total-bar { gap: 9px; }
+  html[data-ui="v2"] .nutri-total-macros { gap: 8px; }
+  html[data-ui="v2"] .nutri-total-progress { flex-basis: 100%; }
+  html[data-ui="v2"] .nutri-day-top { align-items: flex-start; }
+  html[data-ui="v2"] .nutri-day-ring { width: 108px; height: 108px; }
+  html[data-ui="v2"] .nutri-day-ring-in b { font-size: 19px; }
+  html[data-ui="v2"] .nutri-history-row { grid-template-columns: 68px 1fr auto; }
+  html[data-ui="v2"] .nutri-history-macros { grid-column: 1 / -1; }
+  html[data-ui="v2"] .nutri-history-pct { display: none; }
+  html[data-ui="v2"] .nutri-advice-grid { grid-template-columns: 1fr; }
+  html[data-ui="v2"] .nutri-popular-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+  html[data-ui="v2"] .nutri-food-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+}
+@media (max-width: 520px) {
+  html[data-ui="v2"] .nutri-title { font-size: 22px; }
+  html[data-ui="v2"] .nutri-tab { padding: 0 8px; font-size: 9px; }
+  html[data-ui="v2"] .nutri-tabs { gap: 2px; }
+  html[data-ui="v2"] .nutri-plan-title { font-size: 14px; }
+  html[data-ui="v2"] .nutri-macro-card { padding: 8px; gap: 6px; }
+  html[data-ui="v2"] .nutri-macro-icon { width: 24px; height: 24px; border-radius: 7px; }
+  html[data-ui="v2"] .nutri-macro-icon svg { width: 12px; height: 12px; }
+  html[data-ui="v2"] .nutri-macro-ring { width: 36px; height: 36px; }
+  html[data-ui="v2"] .nutri-macro-copy b { font-size: 11px; }
+  html[data-ui="v2"] .nutri-macro-copy small { font-size: 7px; }
+  html[data-ui="v2"] .nutri-food-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+  html[data-ui="v2"] .nutri-popular img { height: 46px; }
+  html[data-ui="v2"] .nutri-plan-actions { width: 100%; }
+  html[data-ui="v2"] .nutri-plan-actions button { flex: 1; justify-content: center; }
+  html[data-ui="v2"] .nutri-history-summary { gap: 5px; }
+  html[data-ui="v2"] .nutri-history-summary > div { padding: 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-ui="v2"] .nutri-meal-row, html[data-ui="v2"] .nutri-macro-card { animation: none !important; transition: none !important; }
+}

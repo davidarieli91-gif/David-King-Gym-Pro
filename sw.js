@@ -180,6 +180,10 @@
 // v219: c192 - REPDB FREE AS A FOURTH SEPARATE SOURCE: 650 records + 1,147
 // images shipped locally, RepDB tab beside Burnfit / Gym Visual / GymImpulse,
 // separate source/ids, no mixing. Existing bf/gv/gi rows untouched.
+// v230: c203 - nutrition rebuilt as a plan dashboard: client header, week/day
+// nav, macro strip, compact meal rows with done toggles, total bar, right rail
+// (daily ring, weekly chart, food base, body progress), plus Products, Recipes,
+// Templates and History tabs. Theme-aware light/dark + RTL, EN/RU/HE.
 // v229: c202 - optional full Z-Anatomy skeleton overlay in the 3D atlas:
 // 359k tris / 0.9 MB Draco GLB, lazy loaded, ghosted muscles, layer HUD,
 // EN/RU/HE control and attribution. Full-body audit of current vs Z-Anatomy.
@@ -208,7 +212,7 @@
 // filled (machine pass + manual key names), corrupted equipment labels
 // repaired, and the exercise media slot no longer shrinks to a small square
 // on short/mobile viewports.
-const CACHE_NAME = 'dk-gym-v229'; // c202
+const CACHE_NAME = 'dk-gym-v230'; // c203
 // v104: c77 — UI sizes can no longer change themselves (zoom-based gif/food/cards, wheel/touch slider guards) + hard pre-login lock (Add Client included) + header theme quick menu with all 33 themes
 // v103: c76 — Exercise DB tab = exact Quick Pick copy (star/eye/+ cards, favorites/recent tabs, View grouping, localized map tabs)
 // v102: c75 — 3D atlas 1.5x + Settings ▸ UI sizes (atlas slider, bodymap/exercise-panel fixes) + Exercise DB tab rebuilt as picker-style browse
@@ -234,6 +238,7 @@ const APP_SHELL = [
      offline portal could boot without styles/engines until first online fetch */
   './manifest-portal.json',
   './src/input.css',
+  './src/nutrition-dashboard.css',
   './src/muscle-map.js',
   './src/muscle-core.js',
   './src/muscle-roles.js',

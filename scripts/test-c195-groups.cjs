@@ -128,10 +128,10 @@ ok('seed syncs subgroup + folder + equipment into RepDB rows', has(crm, "'subgro
 ok('RepDB JSON is cache-busted', has(crm, "const EXERCISE_DB_BUST = 'v57';"));
 
 /* ---------- build/deploy ---------- */
-ok('trainer build c202', has(crm, 'name="dk-build" content="c202"'));
-ok('login build c202', has(crm, '3 languages · c202'));
-ok('RUNNING 202', has(crm, 'var RUNNING = 202;'));
-ok('SW cache v229', has(sw, "CACHE_NAME = 'dk-gym-v229'"));
+ok('trainer build c203', has(crm, 'name="dk-build" content="c203"'));
+ok('login build c203', has(crm, '3 languages · c203'));
+ok('RUNNING 203', has(crm, 'var RUNNING = 203;'));
+ok('SW cache v230', has(sw, "CACHE_NAME = 'dk-gym-v230'"));
 ok('SW keeps RepDB precache', has(sw, "'./exercise-db-rdb.json'"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
