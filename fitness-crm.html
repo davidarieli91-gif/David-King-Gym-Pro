@@ -21213,7 +21213,10 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         try { dateInput.showPicker ? dateInput.showPicker() : dateInput.focus(); } catch (e) { dateInput.focus(); }
       });
       const todayBtn = byId('nutri-week-today');
-      if (todayBtn) todayBtn.addEventListener('click', function () { gotoToday(); });
+      if (todayBtn) todayBtn.addEventListener('click', function () {
+        todayBtn.classList.add('hidden');
+        gotoToday();
+      });
       const addMeal = byId('nutrition-add-meal');
       if (addMeal) addMeal.addEventListener('click', addCustomMeal);
       const days = byId('nutri-week-days');
