@@ -66,3 +66,51 @@ html[data-ui="v2"] #live-workout-exercises > .glass {
 }
 html[data-ui="v2"] #live-workout-exercises > .glass h4 { font-size: .96rem; }
 html[data-ui="v2"] #live-workout-exercises .set-row { min-height: 2.5rem; }
+
+
+/* ============================================================
+   c206 ? one dark glass image plate for every exercise source
+   ------------------------------------------------------------
+   The first two databases already turned white-background line art into
+   neon x-ray plates. RepDB flat art (light blue background) and GymImpulse
+   renders (black background) stayed inconsistent, and the client portal only
+   covered animated pairs. Match by the image path so every renderer in both
+   portals gets the same treatment: cards, previews, live workout, modal.
+   ============================================================ */
+html[data-ui="v2"][data-mode="dark"] .bm-ex-card .aspect-square {
+  background: radial-gradient(ellipse 80% 80% at 50% 35%, #101c3a 0%, #070d1e 72%, #040713 100%) !important;
+}
+
+/* white-background line art: Burnfit, Gym Visual (and legacy sources) */
+html[data-ui="v2"][data-mode="dark"] img[src*="images/bf_"],
+html[data-ui="v2"][data-mode="dark"] img[src*="images/gv_"],
+html[data-ui="v2"][data-mode="dark"] [data-src="bf"] img,
+html[data-ui="v2"][data-mode="dark"] [data-src="gv"] img,
+html[data-ui="v2"][data-mode="dark"] .v2-src-bf img,
+html[data-ui="v2"][data-mode="dark"] .v2-src-gv img {
+  filter: invert(1) brightness(1.18) contrast(1.04);
+  mix-blend-mode: screen;
+}
+
+/* RepDB flat art: invert + hue-rotate keeps the illustration readable while
+   turning its light-blue plate into deep navy glass */
+html[data-ui="v2"][data-mode="dark"] img[src*="images/rdb/"],
+html[data-ui="v2"][data-mode="dark"] [data-src="rdb"] img,
+html[data-ui="v2"][data-mode="dark"] .v2-src-rdb img,
+html[data-ui="v2"][data-mode="dark"] img[src*="images/gi_"],
+html[data-ui="v2"][data-mode="dark"] [data-src="gi"] img,
+html[data-ui="v2"][data-mode="dark"] .v2-src-gi img {
+  mix-blend-mode: screen;
+}
+html[data-ui="v2"][data-mode="dark"] img[src*="images/rdb/"],
+html[data-ui="v2"][data-mode="dark"] [data-src="rdb"] img,
+html[data-ui="v2"][data-mode="dark"] .v2-src-rdb img {
+  filter: invert(1) hue-rotate(180deg) brightness(1.08) contrast(1.02);
+}
+
+/* the rest field is a real input, not a gradient panel: keep it on the same
+   solid plate as the set inputs in every theme */
+html[data-ui="v2"] .rest-sec-input {
+  background: var(--v2-input-bg) !important;
+  color: rgb(var(--c-text)) !important;
+}

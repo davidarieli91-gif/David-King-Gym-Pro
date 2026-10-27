@@ -180,6 +180,10 @@
 // v219: c192 - REPDB FREE AS A FOURTH SEPARATE SOURCE: 650 records + 1,147
 // images shipped locally, RepDB tab beside Burnfit / Gym Visual / GymImpulse,
 // separate source/ids, no mixing. Existing bf/gv/gi rows untouched.
+// v233: c206 - one dark glass plate for exercise imagery in all four
+// databases and both portals: white-background BF/GV art is inverted, RepDB
+// flat art is inverted+hue-rotated, GymImpulse renders are screened onto the
+// dark plate, and every pre-workout/live/picker thumbnail follows the theme.
 // v232: c205 - live-workout parity: readable rest seconds, larger trainer
 // cards, visible green set checks, one Prev source in both portals, client
 // supersets, a completion ring and six-week volume report, theme-aware
@@ -219,7 +223,7 @@
 // filled (machine pass + manual key names), corrupted equipment labels
 // repaired, and the exercise media slot no longer shrinks to a small square
 // on short/mobile viewports.
-const CACHE_NAME = 'dk-gym-v232'; // c205
+const CACHE_NAME = 'dk-gym-v233'; // c206
 // v104: c77 — UI sizes can no longer change themselves (zoom-based gif/food/cards, wheel/touch slider guards) + hard pre-login lock (Add Client included) + header theme quick menu with all 33 themes
 // v103: c76 — Exercise DB tab = exact Quick Pick copy (star/eye/+ cards, favorites/recent tabs, View grouping, localized map tabs)
 // v102: c75 — 3D atlas 1.5x + Settings ▸ UI sizes (atlas slider, bodymap/exercise-panel fixes) + Exercise DB tab rebuilt as picker-style browse
