@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const root = path.join(__dirname, '..');
 const trainer = fs.readFileSync(path.join(root, 'fitness-crm.html'), 'utf8');
+const css = fs.readFileSync(path.join(root, 'src', 'nutrition-dashboard.css'), 'utf8');
 const sw = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
 let pass = 0, fail = 0;
 function ok(name, cond) { if (cond) { pass++; console.log('PASS ' + name); } else { fail++; console.log('FAIL ' + name); } }
@@ -37,11 +38,11 @@ ok('pickerMount is called with the portion-calculator callback', trainer.indexOf
 /* ---------- 2. FULL PHOTOS (no crop) ---------- */
 ok('picker tiles show the whole photo (object-contain)', (function () {
   const f = extractFn(trainer, 'pickerTileHTML');
-  return f.indexOf('object-contain') >= 0 && f.indexOf('object-cover') < 0;
+  return f.indexOf('dk-food-img') >= 0 && f.indexOf('dk-product-card') >= 0 && css.indexOf('.dk-food-img') >= 0 && css.indexOf('object-fit: contain') >= 0;
 })());
 ok('kiosk grid tiles show the whole photo too (identical look)', (function () {
   const f = extractFn(trainer, 'foodTileHTML');
-  return f.indexOf('object-contain') >= 0 && f.indexOf('object-cover') < 0;
+  return f.indexOf('dk-food-img') >= 0 && f.indexOf('dk-product-card') >= 0 && css.indexOf('.dk-product-media') >= 0;
 })());
 
 /* ---------- 3. STALE SEARCH — ROOT FIX ---------- */

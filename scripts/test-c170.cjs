@@ -30,21 +30,21 @@ function extractFn(src, name) {
 /* ---------- STATIC: picker mounts the kiosk ---------- */
 ok('picker engine exists in the kiosk module', trainer.indexOf('function pickerMount(rootEl, foods, onPick)') >= 0 && trainer.indexOf('function pickerTileHTML(f)') >= 0 && trainer.indexOf('function pickerRender()') >= 0 && trainer.indexOf('function wirePicker()') >= 0);
 ok('engine is exposed', trainer.indexOf('pickerMount, pickerTileHTML,') >= 0);
-ok('picker reuses the kiosk builders + data', (function () {
+ok('picker reuses the kiosk builders + 14 groups', (function () {
   const f = extractFn(trainer, 'pickerRender');
-  return f.indexOf('smartShelfItems(') >= 0 && f.indexOf('smartTileHTML(') >= 0 && f.indexOf('shelfTileHTML(') >= 0 && f.indexOf('shelfCollageHTML(') >= 0 && f.indexOf('SUB_EMOJI[') >= 0 && f.indexOf('FOOD_SHELVES') >= 0;
+  return f.indexOf('smartShelfItems(') >= 0 && f.indexOf('smartTileHTML(') >= 0 && f.indexOf('shelfTileHTML(') >= 0 && f.indexOf('DK_FOOD_GROUPS') >= 0 && f.indexOf('pickerGridHTML(') >= 0;
 })());
 ok('picker tiles carry data-fp-pick + badges', (function () {
   const f = extractFn(trainer, 'pickerTileHTML');
   return f.indexOf('data-fp-pick=') >= 0 && f.indexOf('foodBadgeHTML(f)') >= 0;
 })());
-ok('picker grid pages like the kiosk', (function () {
+ok('picker grid shows all cards (no paging/subfolders)', (function () {
   const f = extractFn(trainer, 'pickerGridHTML');
-  return f.indexOf('PAGE_SIZE') >= 0 && f.indexOf('data-pfp-page="prev"') >= 0 && f.indexOf('data-pfp-page="next"') >= 0;
+  return f.indexOf('PAGE_SIZE') < 0 && f.indexOf('data-pfp-page') < 0 && f.indexOf("map(pickerTileHTML)") >= 0;
 })());
-ok('wirePicker wires kiosk tiles as picker actions', (function () {
+ok('wirePicker wires group tiles, smart pills and product picks', (function () {
   const f = extractFn(trainer, 'wirePicker');
-  return f.indexOf("'[data-pfp-smart], [data-fdb-smart]'") >= 0 && f.indexOf("'[data-pfp-shelf], [data-fdb-shelf]'") >= 0 && f.indexOf('[data-pfp-sub]') >= 0;
+  return f.indexOf("'[data-fdb-smart]'") >= 0 && f.indexOf("'[data-fdb-group]'") >= 0 && f.indexOf("'[data-fp-pick]'") >= 0 && f.indexOf('[data-pfp-sub]') < 0;
 })());
 
 /* ---------- STATIC: renderFoodResults uses it ---------- */

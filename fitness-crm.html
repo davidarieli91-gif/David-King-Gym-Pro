@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c203" />
+<meta name="dk-build" content="c204" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -2900,6 +2900,200 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     --v2-chart-1: #d946ef; --v2-chart-2: #8b5cf6; --v2-chart-3: #22d3ee; --v2-chart-4: #f472b6; --v2-chart-5: #f59e0b;
     --v2-particle-color: rgba(180,90,160,.2);
   }
+  /* ===== c204: seven new expressive presets ===== */
+  html[data-ui="v2"][data-theme="v2-honey"] {
+    --c-bg: 20 14 4; --c-surface: 38 28 8; --c-surface-2: 56 42 12;
+    --c-border: 122 92 34; --c-text: 255 247 222; --c-muted: 203 178 118;
+    --c-primary: 250 204 21; --c-primary-2: 245 158 11; --c-accent: 132 204 22;
+    --c-success: 132 204 22; --c-warning: 251 146 60; --c-danger: 251 113 133;
+    --v2-primary-grad: linear-gradient(135deg, #fde047 0%, #facc15 38%, #f59e0b 100%);
+    --v2-accent-grad: linear-gradient(135deg, #bef264, #84cc16 55%, #22c55e);
+    --v2-glow: 250 204 21; --v2-glow-2: 245 158 11;
+    --v2-surface: linear-gradient(155deg, rgba(54,38,10,.82), rgba(24,16,4,.68));
+    --v2-surface-2: linear-gradient(155deg, rgba(72,52,14,.7), rgba(32,22,6,.54));
+    --v2-input-bg: rgba(24,16,5,.82);
+    --v2-border: rgba(245,200,80,.22);
+    --v2-border-strong: rgba(255,220,120,.42);
+    --v2-glass-bg: rgba(20,14,4,.66);
+    --v2-glass-bg-2: rgba(42,30,8,.5);
+    --v2-scene:
+      radial-gradient(ellipse 82% 72% at 12% -10%, rgba(250,204,21,.44), transparent 64%),
+      radial-gradient(ellipse 72% 64% at 88% 4%, rgba(245,158,11,.34), transparent 68%),
+      radial-gradient(ellipse 62% 50% at 55% 108%, rgba(132,204,22,.2), transparent 72%),
+      conic-gradient(from 205deg at 50% -14%, transparent 0deg, rgba(255,232,130,.13) 24deg, transparent 54deg, rgba(245,158,11,.09) 104deg, transparent 146deg),
+      linear-gradient(180deg, #140d03 0%, #201506 46%, #0b0702 100%);
+    --v2-grid-color: rgba(255,210,100,.04);
+    --v2-orb-1: rgba(250,204,21,.4); --v2-orb-2: rgba(245,158,11,.32); --v2-orb-3: rgba(132,204,22,.2);
+    --v2-chart-1: #facc15; --v2-chart-2: #84cc16; --v2-chart-3: #f59e0b; --v2-chart-4: #fb7185; --v2-chart-5: #22d3ee;
+    --v2-particle-color: rgba(255,225,150,.58);
+  }
+  html[data-ui="v2"][data-theme="v2-apricot"] {
+    --c-bg: 255 247 237; --c-surface: 255 255 255; --c-surface-2: 255 237 213;
+    --c-border: 238 195 155; --c-text: 67 32 10; --c-muted: 146 95 58;
+    --c-primary: 249 115 22; --c-primary-2: 234 88 12; --c-accent: 132 204 22;
+    --c-success: 22 163 74; --c-warning: 217 119 6; --c-danger: 225 29 72;
+    --v2-primary-grad: linear-gradient(135deg, #fb923c 0%, #f97316 45%, #ea580c 100%);
+    --v2-accent-grad: linear-gradient(135deg, #bef264, #84cc16 55%, #22c55e);
+    --v2-glow: 249 115 22; --v2-glow-2: 132 204 22;
+    --v2-surface: linear-gradient(155deg, rgba(255,255,255,.82), rgba(255,247,237,.64));
+    --v2-surface-2: linear-gradient(155deg, rgba(255,255,255,.7), rgba(255,237,213,.52));
+    --v2-input-bg: rgba(255,255,255,.86);
+    --v2-border: rgba(230,160,110,.3);
+    --v2-border-strong: rgba(230,140,80,.44);
+    --v2-glass-bg: rgba(255,251,245,.68);
+    --v2-glass-bg-2: rgba(255,242,226,.54);
+    --v2-scene:
+      radial-gradient(ellipse 82% 72% at 12% -8%, rgba(251,146,60,.42), transparent 64%),
+      radial-gradient(ellipse 72% 62% at 88% 6%, rgba(253,186,116,.38), transparent 68%),
+      radial-gradient(ellipse 64% 52% at 52% 110%, rgba(132,204,22,.2), transparent 72%),
+      conic-gradient(from 200deg at 50% -18%, transparent 0deg, rgba(255,220,170,.26) 28deg, transparent 58deg, rgba(132,204,22,.1) 108deg, transparent 150deg),
+      linear-gradient(180deg, #fff8f0 0%, #ffeddc 48%, #fffaf5 100%);
+    --v2-grid-color: rgba(190,120,70,.055);
+    --v2-orb-1: rgba(251,146,60,.3); --v2-orb-2: rgba(253,186,116,.28); --v2-orb-3: rgba(132,204,22,.16);
+    --v2-chart-1: #f97316; --v2-chart-2: #84cc16; --v2-chart-3: #f59e0b; --v2-chart-4: #e11d48; --v2-chart-5: #0ea5e9;
+    --v2-particle-color: rgba(210,130,70,.26);
+  }
+  html[data-ui="v2"][data-theme="v2-jade"] {
+    --c-bg: 3 18 13; --c-surface: 7 34 24; --c-surface-2: 12 52 36;
+    --c-border: 40 112 82; --c-text: 230 255 244; --c-muted: 130 184 154;
+    --c-primary: 16 185 129; --c-primary-2: 245 158 11; --c-accent: 250 204 21;
+    --c-success: 52 211 153; --c-warning: 250 204 21; --c-danger: 251 113 133;
+    --v2-primary-grad: linear-gradient(135deg, #6ee7b7 0%, #10b981 42%, #fbbf24 110%);
+    --v2-accent-grad: linear-gradient(135deg, #fde047, #f59e0b 60%, #10b981);
+    --v2-glow: 16 185 129; --v2-glow-2: 250 204 21;
+    --v2-surface: linear-gradient(155deg, rgba(10,48,34,.82), rgba(3,22,16,.68));
+    --v2-surface-2: linear-gradient(155deg, rgba(16,66,46,.7), rgba(5,30,22,.54));
+    --v2-input-bg: rgba(4,24,17,.82);
+    --v2-border: rgba(70,200,150,.22);
+    --v2-border-strong: rgba(110,230,180,.42);
+    --v2-glass-bg: rgba(3,20,14,.66);
+    --v2-glass-bg-2: rgba(10,40,28,.5);
+    --v2-scene:
+      radial-gradient(ellipse 82% 72% at 14% -10%, rgba(16,185,129,.4), transparent 64%),
+      radial-gradient(ellipse 70% 60% at 88% 8%, rgba(250,204,21,.26), transparent 68%),
+      radial-gradient(ellipse 62% 50% at 52% 108%, rgba(34,211,238,.14), transparent 72%),
+      conic-gradient(from 210deg at 50% -16%, transparent 0deg, rgba(110,230,180,.12) 26deg, transparent 56deg, rgba(250,204,21,.08) 106deg, transparent 148deg),
+      linear-gradient(180deg, #03130d 0%, #06281c 48%, #010b08 100%);
+    --v2-grid-color: rgba(110,240,190,.04);
+    --v2-orb-1: rgba(16,185,129,.36); --v2-orb-2: rgba(250,204,21,.22); --v2-orb-3: rgba(34,211,238,.16);
+    --v2-chart-1: #10b981; --v2-chart-2: #facc15; --v2-chart-3: #22d3ee; --v2-chart-4: #f472b6; --v2-chart-5: #f59e0b;
+    --v2-particle-color: rgba(160,255,210,.5);
+  }
+  html[data-ui="v2"][data-theme="v2-plum"] {
+    --c-bg: 20 6 18; --c-surface: 40 12 36; --c-surface-2: 60 20 54;
+    --c-border: 128 58 112; --c-text: 255 238 250; --c-muted: 198 150 185;
+    --c-primary: 217 70 239; --c-primary-2: 244 114 182; --c-accent: 251 191 36;
+    --c-success: 52 211 153; --c-warning: 251 191 36; --c-danger: 251 113 133;
+    --v2-primary-grad: linear-gradient(135deg, #f0abfc 0%, #d946ef 42%, #be123c 110%);
+    --v2-accent-grad: linear-gradient(135deg, #fde047, #fb7185 55%, #d946ef);
+    --v2-glow: 217 70 239; --v2-glow-2: 251 191 36;
+    --v2-surface: linear-gradient(155deg, rgba(64,18,56,.82), rgba(26,7,24,.68));
+    --v2-surface-2: linear-gradient(155deg, rgba(84,28,72,.7), rgba(36,10,32,.54));
+    --v2-input-bg: rgba(28,7,25,.84);
+    --v2-border: rgba(230,120,210,.22);
+    --v2-border-strong: rgba(250,160,230,.42);
+    --v2-glass-bg: rgba(24,6,22,.66);
+    --v2-glass-bg-2: rgba(50,14,44,.5);
+    --v2-scene:
+      radial-gradient(ellipse 82% 72% at 14% -10%, rgba(217,70,239,.4), transparent 64%),
+      radial-gradient(ellipse 70% 60% at 88% 8%, rgba(251,191,36,.22), transparent 68%),
+      radial-gradient(ellipse 62% 50% at 52% 108%, rgba(244,114,182,.2), transparent 72%),
+      conic-gradient(from 206deg at 50% -16%, transparent 0deg, rgba(255,190,240,.13) 26deg, transparent 58deg, rgba(251,191,36,.08) 106deg, transparent 148deg),
+      linear-gradient(180deg, #140511 0%, #270b23 48%, #0c030a 100%);
+    --v2-grid-color: rgba(255,160,240,.04);
+    --v2-orb-1: rgba(217,70,239,.36); --v2-orb-2: rgba(251,191,36,.2); --v2-orb-3: rgba(244,114,182,.22);
+    --v2-chart-1: #d946ef; --v2-chart-2: #fbbf24; --v2-chart-3: #fb7185; --v2-chart-4: #8b5cf6; --v2-chart-5: #22d3ee;
+    --v2-particle-color: rgba(255,190,240,.5);
+  }
+  html[data-ui="v2"][data-theme="v2-horizon"] {
+    --c-bg: 5 10 26; --c-surface: 10 20 46; --c-surface-2: 18 34 66;
+    --c-border: 54 88 142; --c-text: 235 244 255; --c-muted: 142 164 198;
+    --c-primary: 59 130 246; --c-primary-2: 14 165 233; --c-accent: 251 146 60;
+    --c-success: 45 212 191; --c-warning: 251 191 36; --c-danger: 251 113 133;
+    --v2-primary-grad: linear-gradient(135deg, #60a5fa 0%, #3b82f6 42%, #0ea5e9 110%);
+    --v2-accent-grad: linear-gradient(135deg, #fdba74, #fb923c 55%, #f43f5e);
+    --v2-glow: 59 130 246; --v2-glow-2: 251 146 60;
+    --v2-surface: linear-gradient(155deg, rgba(14,30,64,.82), rgba(5,12,30,.68));
+    --v2-surface-2: linear-gradient(155deg, rgba(22,44,86,.7), rgba(8,18,40,.54));
+    --v2-input-bg: rgba(5,14,34,.84);
+    --v2-border: rgba(90,150,235,.22);
+    --v2-border-strong: rgba(120,180,255,.42);
+    --v2-glass-bg: rgba(4,11,28,.66);
+    --v2-glass-bg-2: rgba(10,24,52,.5);
+    --v2-scene:
+      radial-gradient(ellipse 82% 72% at 12% -10%, rgba(59,130,246,.4), transparent 64%),
+      radial-gradient(ellipse 70% 60% at 88% 8%, rgba(251,146,60,.32), transparent 68%),
+      radial-gradient(ellipse 62% 50% at 52% 108%, rgba(14,165,233,.18), transparent 72%),
+      conic-gradient(from 204deg at 50% -16%, transparent 0deg, rgba(150,200,255,.12) 26deg, transparent 58deg, rgba(251,146,60,.09) 106deg, transparent 148deg),
+      linear-gradient(180deg, #040916 0%, #0a1730 48%, #02050d 100%);
+    --v2-grid-color: rgba(110,170,255,.045);
+    --v2-orb-1: rgba(59,130,246,.36); --v2-orb-2: rgba(251,146,60,.26); --v2-orb-3: rgba(14,165,233,.18);
+    --v2-chart-1: #3b82f6; --v2-chart-2: #fb923c; --v2-chart-3: #0ea5e9; --v2-chart-4: #a78bfa; --v2-chart-5: #fbbf24;
+    --v2-particle-color: rgba(170,210,255,.5);
+  }
+  html[data-ui="v2"][data-theme="v2-sand"] {
+    --c-bg: 250 246 236; --c-surface: 255 255 255; --c-surface-2: 245 238 220;
+    --c-border: 218 200 168; --c-text: 58 45 22; --c-muted: 138 116 78;
+    --c-primary: 180 120 40; --c-primary-2: 132 204 22; --c-accent: 14 165 233;
+    --c-success: 22 163 74; --c-warning: 217 119 6; --c-danger: 225 29 72;
+    --v2-primary-grad: linear-gradient(135deg, #e7c873 0%, #b47828 45%, #8a5a16 100%);
+    --v2-accent-grad: linear-gradient(135deg, #bef264, #84cc16 55%, #0ea5e9);
+    --v2-glow: 180 120 40; --v2-glow-2: 132 204 22;
+    --v2-surface: linear-gradient(155deg, rgba(255,255,255,.82), rgba(252,247,235,.64));
+    --v2-surface-2: linear-gradient(155deg, rgba(255,255,255,.7), rgba(245,238,220,.54));
+    --v2-input-bg: rgba(255,255,255,.86);
+    --v2-border: rgba(190,165,120,.3);
+    --v2-border-strong: rgba(170,140,90,.44);
+    --v2-glass-bg: rgba(255,251,241,.68);
+    --v2-glass-bg-2: rgba(250,243,228,.54);
+    --v2-scene:
+      radial-gradient(ellipse 82% 72% at 12% -8%, rgba(231,200,115,.4), transparent 64%),
+      radial-gradient(ellipse 72% 62% at 88% 6%, rgba(132,204,22,.2), transparent 68%),
+      radial-gradient(ellipse 64% 52% at 52% 110%, rgba(14,165,233,.14), transparent 72%),
+      conic-gradient(from 200deg at 50% -18%, transparent 0deg, rgba(255,235,180,.3) 28deg, transparent 58deg, rgba(132,204,22,.09) 108deg, transparent 150deg),
+      linear-gradient(180deg, #fbf7ed 0%, #f3ecd8 48%, #fffdf8 100%);
+    --v2-grid-color: rgba(140,115,70,.05);
+    --v2-orb-1: rgba(231,200,115,.28); --v2-orb-2: rgba(132,204,22,.16); --v2-orb-3: rgba(14,165,233,.12);
+    --v2-chart-1: #b47828; --v2-chart-2: #84cc16; --v2-chart-3: #0ea5e9; --v2-chart-4: #d97706; --v2-chart-5: #e11d48;
+    --v2-particle-color: rgba(150,125,80,.24);
+  }
+  html[data-ui="v2"][data-theme="v2-sky"] {
+    --c-bg: 240 249 255; --c-surface: 255 255 255; --c-surface-2: 224 242 254;
+    --c-border: 175 205 230; --c-text: 12 32 56; --c-muted: 88 112 142;
+    --c-primary: 14 165 233; --c-primary-2: 99 102 241; --c-accent: 251 113 133;
+    --c-success: 16 185 129; --c-warning: 217 119 6; --c-danger: 225 29 72;
+    --v2-primary-grad: linear-gradient(135deg, #7dd3fc 0%, #0ea5e9 45%, #6366f1 110%);
+    --v2-accent-grad: linear-gradient(135deg, #fda4af, #fb7185 55%, #6366f1);
+    --v2-glow: 14 165 233; --v2-glow-2: 251 113 133;
+    --v2-surface: linear-gradient(155deg, rgba(255,255,255,.84), rgba(240,249,255,.66));
+    --v2-surface-2: linear-gradient(155deg, rgba(255,255,255,.72), rgba(224,242,254,.54));
+    --v2-input-bg: rgba(255,255,255,.88);
+    --v2-border: rgba(145,185,225,.3);
+    --v2-border-strong: rgba(110,160,215,.44);
+    --v2-glass-bg: rgba(248,252,255,.7);
+    --v2-glass-bg-2: rgba(235,246,255,.56);
+    --v2-scene:
+      radial-gradient(ellipse 82% 72% at 12% -8%, rgba(56,189,248,.34), transparent 64%),
+      radial-gradient(ellipse 72% 62% at 88% 6%, rgba(251,113,133,.24), transparent 68%),
+      radial-gradient(ellipse 64% 52% at 52% 110%, rgba(99,102,241,.16), transparent 72%),
+      conic-gradient(from 200deg at 50% -18%, transparent 0deg, rgba(190,230,255,.3) 28deg, transparent 58deg, rgba(251,113,133,.08) 108deg, transparent 150deg),
+      linear-gradient(180deg, #f2faff 0%, #e3f2ff 48%, #fbfdff 100%);
+    --v2-grid-color: rgba(40,110,180,.055);
+    --v2-orb-1: rgba(56,189,248,.28); --v2-orb-2: rgba(251,113,133,.18); --v2-orb-3: rgba(99,102,241,.16);
+    --v2-chart-1: #0ea5e9; --v2-chart-2: #fb7185; --v2-chart-3: #6366f1; --v2-chart-4: #14b8a6; --v2-chart-5: #f59e0b;
+    --v2-particle-color: rgba(80,140,200,.22);
+  }
+
+  /* bright gold primary needs dark type for contrast */
+  html[data-ui="v2"][data-theme="v2-honey"] button.bg-primary,
+  html[data-ui="v2"][data-theme="v2-honey"] .v2-btn-primary,
+  html[data-ui="v2"][data-theme="v2-honey"] .nav-pill[aria-current="page"],
+  html[data-ui="v2"][data-theme="v2-honey"] .nutri-tab.active,
+  html[data-ui="v2"][data-theme="v2-honey"] .nutri-daybtn.active,
+  html[data-ui="v2"][data-theme="v2-honey"] .nutri-daybtn.active b,
+  html[data-ui="v2"][data-theme="v2-honey"] .nutri-food-cat.active,
+  html[data-ui="v2"][data-theme="v2-honey"] .food-db-group.active { color: #1c1302 !important; }
+  html[data-ui="v2"][data-theme="v2-honey"] .nav-pill[aria-current="page"] svg { color: #1c1302; }
 
   /* ---------- scene layers ---------- */
   html[data-ui="v2"] body {
@@ -2907,7 +3101,13 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     color: rgb(var(--c-text));
     -webkit-font-smoothing: antialiased;
   }
-  #v2-scene { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; background: var(--v2-scene); }
+  #v2-scene {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+    background:
+      radial-gradient(ellipse 58% 34% at 50% 112%, rgb(var(--v2-glow-2) / .11), transparent 72%),
+      conic-gradient(from 215deg at 50% -18%, transparent 0deg, rgb(var(--v2-glow) / .07) 24deg, transparent 48deg, rgb(var(--v2-glow-2) / .055) 92deg, transparent 128deg, rgb(var(--v2-glow) / .045) 170deg, transparent 212deg),
+      var(--v2-scene);
+  }
   #v2-scene::before {
     content: ""; position: absolute; inset: 0;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
@@ -2964,9 +3164,9 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
   html[data-ui="v2"] #bottom-nav {
     background: var(--v2-glass-bg) !important;
     border-color: var(--v2-border) !important;
-    box-shadow: var(--v2-glass-shadow);
-    backdrop-filter: blur(26px) saturate(135%);
-    -webkit-backdrop-filter: blur(26px) saturate(135%);
+    box-shadow: var(--v2-glass-shadow), inset 0 1px 0 rgba(255,255,255,.07);
+    backdrop-filter: blur(30px) saturate(145%);
+    -webkit-backdrop-filter: blur(30px) saturate(145%);
   }
   html[data-ui="v2"] .bg-surface {
     background: var(--v2-surface) !important;
@@ -4084,16 +4284,27 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
   /* theme preview cards */
   .v2-theme-card {
     position: relative; overflow: hidden; text-align: start; cursor: pointer;
-    border-radius: 18px; border: 1px solid rgba(255,255,255,.1);
-    background: #070b18; min-height: 118px; padding: 10px;
+    border-radius: 20px; border: 1px solid rgba(255,255,255,.12);
+    background: #070b18; min-height: 132px; padding: 11px;
     transition: transform .18s var(--v2-ease), border-color .18s, box-shadow .18s;
   }
-  .v2-theme-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.24); box-shadow: 0 18px 40px -20px rgba(0,0,0,.8); }
-  .v2-theme-card.active { border-color: rgb(var(--c-primary-2)); box-shadow: 0 0 0 1px rgb(var(--c-primary-2) / .45), 0 18px 44px -22px rgb(var(--v2-glow) / .8); }
-  .v2-theme-preview { position: absolute; inset: 0; opacity: .95; }
-  .v2-theme-preview::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(3,7,16,.02) 8%, rgba(3,7,16,.55) 48%, rgba(3,7,16,.92) 100%); }
-  .v2-theme-card .v2-theme-name { position: relative; z-index: 1; color: #fff; font-size: 11.5px; font-weight: 700; letter-spacing: .01em; margin-top: 80px; text-shadow: 0 1px 10px rgba(0,0,0,.8); }
-  .v2-theme-card .v2-theme-tag { position: relative; z-index: 1; color: rgba(255,255,255,.72); font-size: 9px; font-weight: 600; text-shadow: 0 1px 8px rgba(0,0,0,.7); }
+  .v2-theme-card::after {
+    content: ""; position: absolute; z-index: 1; inset: 0 0 auto; height: 46px;
+    background: linear-gradient(180deg, rgba(255,255,255,.16), transparent);
+    opacity: .45; pointer-events: none;
+  }
+  .v2-theme-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,.28); box-shadow: 0 24px 50px -24px rgba(0,0,0,.85); }
+  .v2-theme-card.active { border-color: rgb(var(--c-primary-2)); box-shadow: 0 0 0 1px rgb(var(--c-primary-2) / .45), 0 22px 52px -24px rgb(var(--v2-glow) / .9); }
+  .v2-theme-preview { position: absolute; inset: 0; opacity: .97; transition: transform .35s var(--v2-ease); }
+  .v2-theme-card:hover .v2-theme-preview { transform: scale(1.035); }
+  .v2-theme-preview::before {
+    content: ""; position: absolute; inset: -20%;
+    background: conic-gradient(from 210deg at 55% -10%, transparent 0 18deg, rgba(255,255,255,.16) 26deg, transparent 44deg, rgba(255,255,255,.07) 90deg, transparent 120deg);
+    mix-blend-mode: screen; opacity: .65;
+  }
+  .v2-theme-preview::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(3,7,16,.02) 8%, rgba(3,7,16,.52) 48%, rgba(3,7,16,.94) 100%); }
+  .v2-theme-card .v2-theme-name { position: relative; z-index: 1; color: #fff; font-size: 12px; font-weight: 800; letter-spacing: .01em; margin-top: 92px; text-shadow: 0 1px 12px rgba(0,0,0,.85); }
+  .v2-theme-card .v2-theme-tag { position: relative; z-index: 1; color: rgba(255,255,255,.76); font-size: 9px; font-weight: 600; text-shadow: 0 1px 8px rgba(0,0,0,.7); }
   .v2-theme-card .v2-theme-check { position: absolute; z-index: 2; top: 8px; inset-inline-end: 8px; width: 20px; height: 20px; border-radius: 9999px; display: grid; place-items: center; background: rgb(var(--c-primary) / .95); color: #fff; opacity: 0; transform: scale(.8); transition: .18s; }
   .v2-theme-card.active .v2-theme-check { opacity: 1; transform: scale(1); }
 
@@ -4321,7 +4532,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           </div>
           <div class="flex items-center gap-2 mb-3">
             <span class="v2-pill v2-pill-live"><span class="w-1.5 h-1.5 rounded-full bg-success"></span> <span data-i18n="clients.online">Online</span></span>
-            <span class="v2-pill" id="v2-side-version">c203</span>
+            <span class="v2-pill" id="v2-side-version">c204</span>
           </div>
         </div>
 
@@ -4468,7 +4679,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c203</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c204</p>
             </div>
           </div>
 
@@ -5495,17 +5706,18 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 <!-- c162: what do the Nutri-Score / Green-Score / NOVA badges mean? -->
                 <button id="food-db-badges-help" class="w-8 h-8 grid place-items-center rounded-lg bg-surface-2 hover:bg-border/40 border border-border text-muted text-sm font-bold transition" data-i18n-attr="title:food.badgesTitle">?</button>
               </div>
-              <!-- Search + category filter -->
-              <div class="flex flex-col sm:flex-row gap-2 mb-3">
+              <!-- c204: search + the 14 shared product groups -->
+              <div class="food-db-search-row">
                 <div class="relative flex-1">
                   <svg class="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
                   <input type="search" id="food-db-search" data-i18n-ph="nutrition.searchFood" class="w-full bg-surface-2 border border-border rounded-xl ps-9 pe-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
                 </div>
-                <select id="food-db-category-filter" class="bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60 cursor-pointer">
+                <select id="food-db-category-filter" class="hidden" aria-hidden="true" tabindex="-1">
                   <option value="all" data-i18n="common.all">All categories</option>
                 </select>
               </div>
-              <!-- Tree container (foods grouped by category) -->
+              <div id="food-db-groups" class="food-db-groups" role="tablist" aria-label="Product groups"></div>
+              <!-- Tree container (14 groups / product grid) -->
               <div id="food-db-tree" class="space-y-1"></div>
               <div id="food-db-empty" class="hidden text-center py-12">
                 <div class="inline-flex w-16 h-16 rounded-2xl bg-surface-2 border border-border grid place-items-center mb-4">
@@ -5641,6 +5853,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
         </div>
         <div class="nutri-food-cats" id="nutri-food-cats"></div>
         <div class="nutri-search nutri-search-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input type="search" id="nutri-food-search" data-i18n-ph="nutrition.searchProduct" placeholder="Search product…" /></div>
+        <div class="nutri-food-meta"><span id="nutri-food-total"></span><span class="nutri-drag-hint" data-i18n="nutrition.dragHint">Drag a product into a meal</span></div>
         <div class="nutri-food-grid" id="nutri-food-preview"></div>
       </section>
 
@@ -7124,6 +7337,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
         <!-- Header -->
         <div class="sticky top-0 z-10 bg-surface border-b border-border p-4 flex items-center gap-3">
           <h3 id="food-detail-title" class="font-display font-bold text-base flex-1 min-w-0 truncate">Food</h3>
+          <button type="button" id="food-detail-add" class="v2-btn-primary hidden" data-i18n="nutrition.addToPlan">Add to plan</button>
           <button id="food-detail-edit" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-surface-2 text-muted hover:text-text transition shrink-0" aria-label="Edit" data-i18n-attr="aria-label:aria.edit">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           </button>
@@ -21102,28 +21316,19 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       let base = [], ref = [];
       try { base = await db.all('food_base'); } catch (e) { base = []; }
       try { ref = await db.all('food_database'); } catch (e) { ref = []; }
-      const normRef = (f) => {
-        const n = (f && f.nutrition) || {};
-        return {
-          id: f && f.id, name_en: f && f.name_en, name_ru: f && f.name_ru, name_he: f && f.name_he,
-          brand: (f && f.brand) || '', category: (f && f.category) || '',
-          calories: Number(f && f.calories != null ? f.calories : n.calories) || 0,
-          protein: Number(f && f.protein != null ? f.protein : n.protein) || 0,
-          carbs: Number(f && f.carbs != null ? f.carbs : n.carbs) || 0,
-          fat: Number(f && f.fat != null ? f.fat : n.fat) || 0,
-          fiber: Number(f && f.fiber != null ? f.fiber : n.fiber) || 0,
-          serving_quantity: Number(f && f.serving_quantity) || 0,
-          package_grams: Number(f && f.package_grams) || 0,
-          image_url: (f && f.image_url) || '',
-          source: (f && f.source) || 'reference', _ref: true
-        };
-      };
-      const seen = new Set();
-      return (base || []).concat((ref || []).map(normRef)).filter(function (f) {
-        if (!f || !f.id || seen.has(String(f.id))) return false;
-        seen.add(String(f.id));
-        return true;
+      const byId = new Map();
+      (ref || []).forEach(function (f) {
+        if (!f || !f.id) return;
+        byId.set(String(f.id), dkNormalizeFood(f, 'food_database'));
       });
+      (base || []).forEach(function (f) {
+        if (!f || !f.id) return;
+        const key = String(f.id);
+        const existing = byId.get(key);
+        /* a curated reference row wins over an anonymous OFF cache copy */
+        if (!existing || f.source === 'custom' || f.source === 'recipe') byId.set(key, dkNormalizeFood(f, 'food_base'));
+      });
+      return Array.from(byId.values()).filter(function (f) { return f && !f.is_archived; });
     }
 
     /** Load client list + set today's date. */
@@ -21244,15 +21449,29 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         renderFoodPreview();
       });
       const foodPreview = byId('nutri-food-preview');
-      if (foodPreview) foodPreview.addEventListener('click', function (e) {
-        const b = e.target.closest ? e.target.closest('[data-nutri-food]') : null;
-        if (!b) return;
-        const food = _allFoods.find(f => String(f.id) === b.getAttribute('data-nutri-food'));
-        if (food) {
-          if (!_log) { toast(t('nutrition.chooseClientFirst') || 'Choose a client first', 'warning', 2200); return; }
-          openPortionModal(food);
-        }
-      });
+      if (foodPreview) {
+        foodPreview.addEventListener('click', function (e) {
+          const b = e.target.closest ? e.target.closest('[data-nutri-food]') : null;
+          if (!b) return;
+          const id = b.getAttribute('data-nutri-food');
+          if (id && typeof openFoodDetailModal === 'function') openFoodDetailModal(id);
+        });
+        foodPreview.addEventListener('dragstart', function (e) {
+          const b = e.target.closest ? e.target.closest('[data-nutri-food]') : null;
+          if (!b) return;
+          const id = b.getAttribute('data-nutri-food');
+          if (!id) return;
+          try {
+            e.dataTransfer.setData('text/plain', id);
+            e.dataTransfer.effectAllowed = 'copy';
+          } catch (err) {}
+          b.classList.add('is-dragging');
+        });
+        foodPreview.addEventListener('dragend', function (e) {
+          const b = e.target.closest ? e.target.closest('[data-nutri-food]') : null;
+          if (b) b.classList.remove('is-dragging');
+        });
+      }
       const progressDetails = byId('nutri-progress-details');
       if (progressDetails) progressDetails.addEventListener('click', function () {
         if (!_clientId) return;
@@ -21304,6 +21523,10 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       });
       document.addEventListener('dk-lang', function () {
         if (_log) { render(); renderRecipes(); renderHistory(); }
+      });
+      document.addEventListener('dragend', function () {
+        document.querySelectorAll('.is-drop-target').forEach(function (el) { el.classList.remove('is-drop-target'); });
+        document.querySelectorAll('.is-dragging').forEach(function (el) { el.classList.remove('is-dragging'); });
       });
     }
 
@@ -21531,7 +21754,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         const more = items.length > 4 ? '<span class="nutri-food-chip">+' + (items.length - 4) + '</span>' : '';
         const addChip = '<button type="button" class="nutri-meal-addchip" data-add-to-meal="' + mi + '">+ ' + escapeHTML(t('nutrition.addFood')) + '</button>';
         const done = !!meal.done;
-        return '<div class="nutri-meal-row' + (done ? ' is-done' : '') + '" data-meal="' + escapeHTML(meal.type || '') + '">' +
+        return '<div class="nutri-meal-row' + (done ? ' is-done' : '') + '" data-meal="' + escapeHTML(meal.type || '') + '" data-meal-index="' + mi + '">' +
+          '<span class="nutri-drop-hint">+ ' + escapeHTML(t('nutrition.dropHere') || 'Drop here') + '</span>' +
           '<div class="nutri-meal-time">' + escapeHTML(mealTime(meal)) + '</div>' +
           '<div class="nutri-meal-thumb">' + thumb + '</div>' +
           '<div class="nutri-meal-copy"><div class="nutri-meal-title"><b>' + escapeHTML(mealLabel(meal, mi)) + '</b><small>' + escapeHTML(items.length + ' ' + t('nutrition.foods')) + '</small></div>' +
@@ -21571,6 +21795,54 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           render();
         });
       });
+      /* c204: drag a product from the right rail straight into a meal */
+      container.querySelectorAll('.nutri-meal-row').forEach(function (row) {
+        const mi = parseInt(row.getAttribute('data-meal-index'), 10);
+        row.addEventListener('dragover', function (e) {
+          if (!e.dataTransfer) return;
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'copy';
+          row.classList.add('is-drop-target');
+        });
+        row.addEventListener('dragleave', function (e) {
+          if (e.relatedTarget && row.contains(e.relatedTarget)) return;
+          row.classList.remove('is-drop-target');
+        });
+        row.addEventListener('drop', function (e) {
+          e.preventDefault();
+          row.classList.remove('is-drop-target');
+          const id = e.dataTransfer ? e.dataTransfer.getData('text/plain') : '';
+          if (id) dropFoodIntoMeal(id, mi);
+        });
+      });
+    }
+
+    async function dropFoodIntoMeal(foodId, mealIndex) {
+      if (!_log || !_log.meals || !_log.meals[mealIndex]) return;
+      const food = _allFoods.find(function (f) { return String(f.id) === String(foodId); });
+      if (!food) return;
+      const grams = Number(food.serving_quantity) > 0 ? Math.round(Number(food.serving_quantity)) : 100;
+      const ratio = grams / 100;
+      const meal = _log.meals[mealIndex];
+      meal.items = meal.items || [];
+      meal.items.push({
+        id: db.uuid(),
+        food_id: food.id || '',
+        image_url: food.image_url || '',
+        name: dkFoodName(food),
+        brand: food.brand || '',
+        barcode: food.barcode || '',
+        grams: grams,
+        calories: Math.round((Number(food.calories) || 0) * ratio * 10) / 10,
+        protein: Math.round((Number(food.protein) || 0) * ratio * 10) / 10,
+        carbs: Math.round((Number(food.carbs) || 0) * ratio * 10) / 10,
+        fat: Math.round((Number(food.fat) || 0) * ratio * 10) / 10,
+        source: food.source || 'local',
+        created_at: Date.now()
+      });
+      await saveLog();
+      render();
+      toast(t('nutrition.foodAdded') || 'Food added', 'success', 1600);
     }
 
     async function addCustomMeal() {
@@ -21679,47 +21951,51 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
     function renderFoodPreview() {
       const cats = document.getElementById('nutri-food-cats');
+      const counts = {};
+      let productTotal = 0;
+      (_allFoods || []).forEach(function (f) {
+        if (!f || f.source === 'recipe' || f.is_archived) return;
+        productTotal++;
+        const g = dkFoodGroupOf(f);
+        counts[g.id] = (counts[g.id] || 0) + 1;
+      });
       if (cats) {
-        const defs = [
-          ['all', t('common.all')], ['vegetable', t('nutrition.catVegetables')], ['fruit', t('nutrition.catFruits')],
-          ['meat', t('nutrition.catMeat')], ['fish', t('nutrition.catFish')], ['grains', t('nutrition.catGrains')], ['dairy', t('nutrition.catDairy')]
-        ];
+        const defs = [{ id: 'all', label: t('common.all') || 'All', count: productTotal }]
+          .concat(DK_FOOD_GROUPS.map(function (g) {
+            return { id: g.id, label: t(g.shortKey) || t(g.nameKey) || g.id, count: counts[g.id] || 0 };
+          }));
         cats.innerHTML = defs.map(function (d) {
-          return '<button type="button" class="nutri-food-cat' + (_foodCat === d[0] ? ' active' : '') + '" data-nutri-food-cat="' + d[0] + '">' + escapeHTML(d[1]) + '</button>';
+          return '<button type="button" class="nutri-food-cat' + (_foodCat === d.id ? ' active' : '') + '" data-nutri-food-cat="' + d.id + '" title="' + escapeAttr(d.count + ' ' + (t('food.products') || 'products')) + '">' + escapeHTML(d.label) + '</button>';
         }).join('');
       }
       const box = document.getElementById('nutri-food-preview');
+      const total = document.getElementById('nutri-food-total');
       if (!box) return;
-      if (!_allFoods.length) { box.innerHTML = '<div class="nutri-muted" style="grid-column:1/-1;padding:12px 0">' + escapeHTML(t('common.loading')) + '</div>'; return; }
-      const cat = _foodCat;
-      const search = _foodPreviewSearch;
-      let pool = _allFoods.filter(function (f) {
-        if (!f || !f.id || f.source === 'recipe') return false;
-        const fc = String(f.category || '').toLowerCase();
-        const matches = cat === 'all' || fc === cat || (cat === 'vegetable' && (fc === 'greens' || fc === 'vegetable'));
-        if (!matches) return false;
-        if (!search) return true;
-        const name = String(f['name_' + currentLang()] || f.name_en || '').toLowerCase();
-        return name.indexOf(search) >= 0;
-      });
-      /* c203: the "All" rail should read like a curated shelf, not the raw
-         alphabetical catalog — take one product from each core category. */
-      if (cat === 'all' && !search) {
-        const shelf = ['vegetable', 'fruit', 'meat', 'fish', 'grains', 'dairy', 'eggs', 'nuts'];
-        const picked = [];
-        shelf.forEach(function (c) {
-          const hit = pool.find(function (f) { return String(f.category || '').toLowerCase() === c; });
-          if (hit) picked.push(hit);
-        });
-        pool = picked.concat(pool.filter(function (f) { return picked.indexOf(f) < 0; }));
+      if (!_allFoods.length) {
+        if (total) total.textContent = '';
+        box.innerHTML = '<div class="nutri-muted" style="grid-column:1/-1;padding:12px 0">' + escapeHTML(t('common.loading')) + '</div>';
+        return;
       }
-      const foods = pool.slice(0, 8);
+      const cat = _foodCat;
+      const group = cat !== 'all' ? dkFoodGroupById(cat) : null;
+      const search = _foodPreviewSearch;
+      const foods = _allFoods.filter(function (f) {
+        if (!f || !f.id || f.source === 'recipe' || f.is_archived) return false;
+        if (group && group.cats.indexOf(String(f.category || '').toLowerCase()) < 0) return false;
+        if (!search) return true;
+        return dkFoodName(f).toLowerCase().indexOf(search) >= 0;
+      });
+      if (total) total.textContent = fmtNumber(foods.length) + ' ' + dkProductWord(foods.length);
       box.innerHTML = foods.map(function (f) {
-        const name = f['name_' + currentLang()] || f.name_en || f.name || '?';
-        const img = window.dkFoodImgTag({ id: f.id, image_url: f.image_url }, 'w-full h-full object-cover');
-        return '<button type="button" class="nutri-food-tile" data-nutri-food="' + escapeAttr(String(f.id)) + '">' +
-          (img || '<span class="nutri-food-ph">🥗</span>') +
-          '<b>' + escapeHTML(name) + '</b><small>' + fmtNumber(f.calories || 0) + ' kcal / 100g</small></button>';
+        const name = dkFoodName(f);
+        const n = f.nutrition || {};
+        const img = window.dkFoodImgTag(f, 'nutri-food-img');
+        return '<button type="button" draggable="true" class="nutri-food-tile" data-nutri-food="' + escapeAttr(String(f.id)) + '" title="' + escapeAttr(name + ' · ' + (t('nutrition.dragHint') || 'Drag to a meal')) + '">'
+          + '<span class="nutri-food-media"><span class="nutri-food-ph">🥗</span>' + img + '<span class="nutri-drag-grip" aria-hidden="true">⠿</span></span>'
+          + '<span class="nutri-food-name">' + escapeHTML(name) + '</span>'
+          + '<span class="nutri-food-energy"><b>' + fmtNumber(n.calories || 0) + '</b> ' + escapeHTML(t('nutrition.kcal')) + '</span>'
+          + '<span class="dk-macros">' + dkFoodMacroBadges(n) + '</span>'
+          + '</button>';
       }).join('') || '<div class="nutri-muted" style="grid-column:1/-1;padding:12px 0">' + escapeHTML(t('nutrition.noFoodsFound')) + '</div>';
     }
 
@@ -27206,7 +27482,17 @@ Select foods for each meal. Output as JSON only.`;
     }
 
     async function loadFoods() {
-      const all = await db.all('food_database');
+      let ref = [], base = [];
+      try { ref = await db.all('food_database'); } catch (e) { ref = []; }
+      try { base = await db.all('food_base'); } catch (e) { base = []; }
+      const byId = new Map();
+      (ref || []).forEach(function (f) { if (f && f.id) byId.set(String(f.id), dkNormalizeFood(f, 'food_database')); });
+      (base || []).forEach(function (f) {
+        if (!f || !f.id || f.source === 'recipe') return;
+        const key = String(f.id);
+        if (!byId.has(key) || f.source === 'custom') byId.set(key, dkNormalizeFood(f, 'food_base'));
+      });
+      const all = Array.from(byId.values());
       _foods = all.filter(f => !f.is_archived);  // Archive feature: hide archived foods
       console.info(`[nutrition] loaded ${_foods.length} foods (${all.length - _foods.length} archived)`);
     }
@@ -28684,8 +28970,78 @@ Select foods for each meal. Output as JSON only.`;
       return icons[cat] || '⭐';
     }
 
+  /* =====================================================================
+     c204: ONE FOOD CATALOG — 14 groups shared by the big Products screen,
+     the right-rail product base and the meal-plan picker. Both IndexedDB
+     stores are merged: food_database (curated reference) + food_base
+     (custom products and cached OFF foods). Recipes stay in their own tab.
+     ===================================================================== */
+  const DK_FOOD_GROUPS = [
+    { id: 'veg',     emoji: '🥦', nameKey: 'food.shelfVeg',    shortKey: 'food.cat_vegetable', cats: ['vegetable', 'greens'] },
+    { id: 'fruit',   emoji: '🍎', nameKey: 'food.shelfFruit',  shortKey: 'food.cat_fruit',     cats: ['fruit'] },
+    { id: 'meat',    emoji: '🥩', nameKey: 'food.groupMeat',   shortKey: 'food.cat_meat',      cats: ['meat'] },
+    { id: 'fish',    emoji: '🐟', nameKey: 'food.groupFish',   shortKey: 'food.cat_fish',      cats: ['fish'] },
+    { id: 'eggs',    emoji: '🥚', nameKey: 'food.groupEggs',   shortKey: 'food.cat_eggs',      cats: ['eggs'] },
+    { id: 'dairy',   emoji: '🥛', nameKey: 'food.shelfDairy',  shortKey: 'food.cat_dairy',     cats: ['dairy'] },
+    { id: 'grains',  emoji: '🌾', nameKey: 'food.groupGrains', shortKey: 'food.cat_grains',    cats: ['grains', 'bakery'] },
+    { id: 'legumes', emoji: '🫘', nameKey: 'food.shelfLegumes',shortKey: 'food.cat_legumes',   cats: ['legumes'] },
+    { id: 'nuts',    emoji: '🥜', nameKey: 'food.groupNuts',   shortKey: 'food.cat_nuts',      cats: ['nuts'] },
+    { id: 'oils',    emoji: '🫙', nameKey: 'food.groupOils',   shortKey: 'food.cat_oils',      cats: ['oils'] },
+    { id: 'drinks',  emoji: '🥤', nameKey: 'food.shelfDrinks', shortKey: 'food.cat_drinks',    cats: ['drinks'] },
+    { id: 'sweets',  emoji: '🍫', nameKey: 'food.shelfSweets', shortKey: 'food.cat_sweets',    cats: ['sweets'] },
+    { id: 'sauces',  emoji: '🧂', nameKey: 'food.shelfSauces', shortKey: 'food.cat_sauces',    cats: ['sauces'] },
+    { id: 'other',   emoji: '📦', nameKey: 'food.shelfOther',  shortKey: 'food.cat_other',     cats: ['other', 'protein', 'vegan', 'israeli', 'international', 'baby'] }
+  ];
+  function dkFoodGroupById(id) {
+    return DK_FOOD_GROUPS.find(function (g) { return g.id === id; }) || null;
+  }
+  function dkFoodGroupOf(food) {
+    const cat = String((food && food.category) || '').toLowerCase();
+    return DK_FOOD_GROUPS.find(function (g) { return g.cats.indexOf(cat) >= 0; }) || DK_FOOD_GROUPS[DK_FOOD_GROUPS.length - 1];
+  }
+  function dkFoodName(f) {
+    if (!f) return '?';
+    const lang = typeof currentLang === 'function' ? currentLang() : 'en';
+    return (lang === 'he' ? (f.name_he || f.name_en) : (lang === 'ru' ? (f.name_ru || f.name_en || f.name_he) : (f.name_en || f.name_he))) || f.name || '?';
+  }
+  function dkProductWord(n) {
+    const x = Math.abs(Number(n) || 0);
+    const lang = typeof currentLang === 'function' ? currentLang() : 'en';
+    if (lang === 'ru') {
+      const m10 = x % 10, m100 = x % 100;
+      if (m10 === 1 && m100 !== 11) return 'продукт';
+      if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return 'продукта';
+      return 'продуктов';
+    }
+    if (lang === 'he') return x === 1 ? 'מוצר' : 'מוצרים';
+    return x === 1 ? 'product' : 'products';
+  }
+  /** Normalize a reference (nested nutrition) or a local (flat macros) record. */
+  function dkNormalizeFood(f, store) {
+    if (!f) return null;
+    const out = Object.assign({}, f);
+    const n = Object.assign({}, f.nutrition || {});
+    const micro = ['calories','protein','carbs','fat','fiber','sugars','saturated_fat','sodium','cholesterol','potassium','calcium','iron','magnesium','phosphorus','zinc','water','vitamin_a','vitamin_b1','vitamin_b2','vitamin_b3','vitamin_b5','vitamin_b6','vitamin_b_total','folate','vitamin_c','vitamin_d','vitamin_e','vitamin_k','polyunsaturated_fat','monounsaturated_fat','omega_3','omega_6','omega_9','amino_acids'];
+    micro.forEach(function (k) {
+      if (n[k] == null && f[k] != null && f[k] !== '') n[k] = Number(f[k]) || 0;
+    });
+    ['calories','protein','carbs','fat','fiber'].forEach(function (k) {
+      n[k] = Number(n[k]) || 0;
+      out[k] = n[k];
+    });
+    out.nutrition = n;
+    out._store = store || f._store || 'food_database';
+    out._ref = out._store === 'food_database';
+    return out;
+  }
+  function dkFoodMacroBadges(n) {
+    return '<span class="dk-macro p"><b>' + Math.round(Number(n && n.protein) || 0) + '</b>P</span>'
+      + '<span class="dk-macro c"><b>' + Math.round(Number(n && n.carbs) || 0) + '</b>C</span>'
+      + '<span class="dk-macro f"><b>' + Math.round(Number(n && n.fat) || 0) + '</b>F</span>';
+  }
+
   const foodDatabase = (function () {
-    let _all = [];           // all foods from food_database store
+    let _all = [];           // merged, normalized catalog (both stores)
     let _filtered = [];
     let _search = '';
     let _source = 'all';     // all | FoodsDictionary_IL | OpenFoodFacts_IL | OpenFoodFacts_Global | USDA_SR_Legacy
@@ -28698,12 +29054,24 @@ Select foods for each meal. Output as JSON only.`;
 
     /** Load all foods from IndexedDB. */
     async function load() {
-      const raw = await db.all('food_database');
-      if (_archiveMode) {
-        _all = raw.filter(f => f.is_archived);  // Show only archived
-      } else {
-        _all = raw.filter(f => !f.is_archived);  // Hide archived
-      }
+      let ref = [], base = [];
+      try { ref = await db.all('food_database'); } catch (e) { ref = []; }
+      try { base = await db.all('food_base'); } catch (e) { base = []; }
+      /* c204: one catalog. Reference rows keep their nested nutrition; local
+         custom/cached rows are flattened. Recipes belong to the Recipes tab. */
+      const byId = new Map();
+      (ref || []).forEach(function (f) {
+        if (!f || !f.id) return;
+        byId.set(String(f.id), dkNormalizeFood(f, 'food_database'));
+      });
+      (base || []).forEach(function (f) {
+        if (!f || !f.id || f.source === 'recipe') return;
+        const key = String(f.id);
+        const existing = byId.get(key);
+        if (!existing || f.source === 'custom') byId.set(key, dkNormalizeFood(f, 'food_base'));
+      });
+      const raw = Array.from(byId.values());
+      _all = _archiveMode ? raw.filter(f => f.is_archived) : raw.filter(f => !f.is_archived);
       _loaded = true;
       populateCategoryFilter();
       applyFilters();
@@ -28721,11 +29089,13 @@ Select foods for each meal. Output as JSON only.`;
 
     async function restoreFood(id) {
       try {
-        const food = await db.get('food_database', id);
+        let food = null, store = 'food_database';
+        try { food = await db.get('food_database', id); } catch (e) {}
+        if (!food) { try { food = await db.get('food_base', id); store = 'food_base'; } catch (e) {} }
         if (food) {
           food.is_archived = false;
           delete food.archived_at;
-          await db.put('food_database', food);
+          await db.put(store, food);
           toast((t('exercise.restored') || 'Restored from archive'), 'success', 2000);
           await load();
         }
@@ -28734,28 +29104,58 @@ Select foods for each meal. Output as JSON only.`;
 
     function setSearch(q) { _search = (q || '').trim(); applyFilters(); }
     function setSource(s) { _source = s; applyFilters(); }
-    function setCategoryFilter(c) { _categoryFilter = c; applyFilters(); }
+    function setCategoryFilter(c) { _categoryFilter = c || 'all'; _smart = ''; applyFilters(); }
 
     function populateCategoryFilter() {
       const sel = document.getElementById('food-db-category-filter');
       if (!sel) return;
-      const cats = new Set();
-      _all.forEach(f => { if (f.category) cats.add(f.category); });
-      const sortedCats = Array.from(cats).sort((a, b) =>
-        categoryLabel(a).localeCompare(categoryLabel(b), localeString()));
       const currentVal = sel.value;
       sel.innerHTML = '<option value="all">' + (t('common.all') || 'All categories') + '</option>' +
-        sortedCats.map(c => {
-          const label = categoryLabel(c);
-          return '<option value="' + esc(c) + '">' + esc(label) + '</option>';
-        }).join('');
+        DK_FOOD_GROUPS.map(g => '<option value="' + esc(g.id) + '">' + esc(t(g.nameKey) || g.id) + '</option>').join('');
       sel.value = currentVal || 'all';
+      renderGroupChips();
+    }
+
+    function groupCounts() {
+      const counts = {};
+      (_all || []).forEach(function (f) {
+        const g = dkFoodGroupOf(f);
+        counts[g.id] = (counts[g.id] || 0) + 1;
+      });
+      return counts;
+    }
+
+    function renderGroupChips() {
+      const box = document.getElementById('food-db-groups');
+      if (!box) return;
+      const counts = groupCounts();
+      const defs = [{ id: 'all', emoji: '✨', label: t('common.all') || 'All', count: _all.length }]
+        .concat(DK_FOOD_GROUPS.map(function (g) {
+          return { id: g.id, emoji: g.emoji, label: t(g.nameKey) || g.id, count: counts[g.id] || 0 };
+        }));
+      box.innerHTML = defs.map(function (d) {
+        return '<button type="button" role="tab" data-fdb-group-chip="' + d.id + '" class="food-db-group" aria-selected="false">'
+          + '<span>' + d.emoji + '</span><b>' + escapeHTML(d.label) + '</b><small>' + d.count + '</small></button>';
+      }).join('');
+      syncGroupChips();
+    }
+
+    function syncGroupChips() {
+      const box = document.getElementById('food-db-groups');
+      if (!box) return;
+      box.querySelectorAll('[data-fdb-group-chip]').forEach(function (b) {
+        const id = b.getAttribute('data-fdb-group-chip');
+        const on = id === 'all' ? (_categoryFilter === 'all' && !_smart) : _categoryFilter === id;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
     }
 
     function applyFilters() {
+      const group = _categoryFilter !== 'all' ? dkFoodGroupById(_categoryFilter) : null;
       _filtered = _all.filter(f => {
         if (_source !== 'all' && f.source !== _source) return false;
-        if (_categoryFilter !== 'all' && f.category !== _categoryFilter) return false;
+        if (group && group.cats.indexOf(String(f.category || '').toLowerCase()) < 0) return false;
         if (_search) {
           const q = _search.toLowerCase();
           const hay = ((f.name_he || '') + ' ' + (f.name_en || '') + ' ' + (f.name_ru || '') + ' ' + (f.brand || '') + ' ' + (f.category || '') + ' ' + (f.barcode || '')).toLowerCase();
@@ -28763,10 +29163,7 @@ Select foods for each meal. Output as JSON only.`;
         }
         return true;
       });
-      // Auto-expand all when searching
-      if (_search.length > 0) {
-        _filtered.forEach(f => { if (f.category) _expandedCats.add(f.category); });
-      }
+      syncGroupChips();
       renderTree();
     }
 
@@ -28777,24 +29174,7 @@ Select foods for each meal. Output as JSON only.`;
        Green-Score / NOVA badges. Everything adaptive (rem-based grids,
        html.dk-fs-big collapses the spans).
        ===================================================================== */
-    const FOOD_SHELVES = [
-      { id: 'veg', emoji: '🥦', nameKey: 'food.shelfVeg', cats: ['vegetable', 'greens'], tier: 1 },
-      { id: 'fruit', emoji: '🍎', nameKey: 'food.shelfFruit', cats: ['fruit'], tier: 1 },
-      { id: 'protein', emoji: '🍗', nameKey: 'food.shelfProtein', cats: ['meat', 'fish', 'eggs', 'protein'], tier: 1 },
-      { id: 'dairy', emoji: '🥛', nameKey: 'food.shelfDairy', cats: ['dairy'], tier: 1 },
-      { id: 'carbs', emoji: '🍚', nameKey: 'food.shelfCarbs', cats: ['grains', 'bakery'], tier: 2 },
-      { id: 'drinks', emoji: '🥤', nameKey: 'food.shelfDrinks', cats: ['drinks'], tier: 2 },
-      { id: 'sweets', emoji: '🍫', nameKey: 'food.shelfSweets', cats: ['sweets'], tier: 2 },
-      { id: 'legumes', emoji: '🫘', nameKey: 'food.shelfLegumes', cats: ['legumes'], tier: 2 },
-      { id: 'fats', emoji: '🥜', nameKey: 'food.shelfFats', cats: ['oils', 'nuts'], tier: 3 },
-      { id: 'sauces', emoji: '🥫', nameKey: 'food.shelfSauces', cats: ['sauces'], tier: 3 },
-      { id: 'baby', emoji: '🍼', nameKey: 'food.shelfBaby', cats: ['baby'], tier: 3 },
-      { id: 'israeli', emoji: '🇮🇱', nameKey: 'food.shelfIsraeli', cats: ['israeli'], tier: 3 },
-      { id: 'world', emoji: '🌍', nameKey: 'food.shelfWorld', cats: ['international'], tier: 3 },
-      { id: 'vegan', emoji: '🌱', nameKey: 'food.shelfVegan', cats: ['vegan'], tier: 3 },
-      { id: 'other', emoji: '📦', nameKey: 'food.shelfOther', cats: ['other'], tier: 3 }
-    ];
-    const SUB_EMOJI = { milks: '🥛', yogurts: '🍶', cheeses: '🧀', butter: '🧈', creams: '🍨', poultry: '🍗', beef: '🥩', pork: '🥓', sausages: '🌭', fish: '🐟', seafood: '🦐', breads: '🍞', pastas: '🍝', rices: '🍚', cereals: '🥣', chocolates: '🍫', candies: '🍬', biscuits: '🍪', cakes: '🎂', icecream: '🍦', 'olive-oil': '🫒', 'vegetable-oils': '🫙', nuts: '🥜', seeds: '🌰', waters: '💧', juices: '🧃', sodas: '🥤', coffees: '☕', teas: '🍵', eggs: '🥚', oils: '🫙', other: '📁' };
+    const FOOD_SHELVES = DK_FOOD_GROUPS;
     const NUTRI_COLORS = { a: '#1e8e3e', b: '#74b816', c: '#f5a623', d: '#ef6c00', e: '#d93025' };
     const NOVA_COLORS = { 1: '#1e8e3e', 2: '#74b816', 3: '#f5a623', 4: '#d93025' };
     const SMART_SHELVES = [
@@ -28805,10 +29185,7 @@ Select foods for each meal. Output as JSON only.`;
       { id: 'lowCal', emoji: '💡', nameKey: 'food.smartLowCal' },
       { id: 'ecoAB', emoji: '🌿', nameKey: 'food.smartEco' }
     ];
-    let _view = { kind: 'home', shelf: '', sub: '' };
     let _smart = '';
-    let _page = 0;
-    const PAGE_SIZE = 60;
 
     function foodNameFor(f) {
       const lang = currentLang();
@@ -28848,112 +29225,64 @@ Select foods for each meal. Output as JSON only.`;
     function foodTileHTML(f) {
       const name = foodNameFor(f);
       const n = f.nutrition || {};
-      const srcInfo = (typeof FOOD_SOURCE_INFO !== 'undefined' && FOOD_SOURCE_INFO[f.source]) || { badge: '?', class: 'bg-muted/15 text-muted' };
-      /* c171: object-contain — the whole photo stays visible, no crop */
-      const img = '<span class="absolute text-lg opacity-60" aria-hidden="true">🥗</span>' + window.dkFoodImgTag(f, 'absolute inset-0 w-full h-full object-contain');
+      const srcInfo = (typeof FOOD_SOURCE_INFO !== 'undefined' && FOOD_SOURCE_INFO[f.source]) || { badge: f._store === 'food_base' ? 'CUSTOM' : 'LOCAL', class: 'bg-muted/15 text-muted' };
+      /* c204: the whole product photo is visible, never cropped */
+      const img = '<span class="dk-food-ph" aria-hidden="true">🥗</span>' + window.dkFoodImgTag(f, 'dk-food-img');
       const del = _editMode ? '<button type="button" class="food-tile-x" data-delete-food="' + escapeAttr(f.id) + '" title="' + escapeAttr(t('common.delete') || 'Delete') + '">✕</button>' : '';
       const restore = _archiveMode ? '<button type="button" class="food-tile-restore" data-restore-food="' + escapeAttr(f.id) + '">↩</button>' : '';
-      return '<div class="food-tile bg-surface border border-border rounded-2xl overflow-hidden hover:border-primary/40 transition cursor-pointer" data-food-id="' + escapeAttr(f.id) + '">'
-        + '<div class="relative aspect-square bg-surface-2 overflow-hidden">' + img + del + restore
-        + '<span class="absolute bottom-1 start-1 text-[8px] font-bold px-1 py-0.5 rounded ' + srcInfo.class + '">' + srcInfo.badge + '</span>'
+      return '<div class="food-tile dk-product-card" data-food-id="' + escapeAttr(f.id) + '">'
+        + '<div class="dk-product-media">' + img + del + restore
+        + '<span class="dk-source-badge ' + srcInfo.class + '">' + srcInfo.badge + '</span>'
         + '</div>'
-        + '<div class="p-2 min-w-0">'
-        + '<div class="food-tile-name text-[11px] font-semibold text-text">' + escapeHTML(name) + '</div>'
-        + '<div class="text-[9px] text-muted mt-0.5">' + Math.round(n.calories || 0) + ' ' + t('nutrition.kcal') + ' · ' + t('nutrition.proteinShort') + ' ' + Math.round(n.protein || 0) + ' ' + t('nutrition.carbsShort') + ' ' + Math.round(n.carbs || 0) + ' ' + t('nutrition.fatShort') + ' ' + Math.round(n.fat || 0) + '</div>'
-        + '<div class="food-badges flex flex-wrap gap-1 mt-1">' + foodBadgeHTML(f) + '</div>'
+        + '<div class="dk-product-copy">'
+        + '<div class="food-tile-name dk-product-name">' + escapeHTML(name) + '</div>'
+        + '<div class="dk-product-kcal"><b>' + Math.round(n.calories || 0) + '</b> ' + t('nutrition.kcal') + '</div>'
+        + '<div class="dk-macros">' + dkFoodMacroBadges(n) + '</div>'
+        + (foodBadgeHTML(f) ? '<div class="food-badges flex flex-wrap gap-1 mt-1.5">' + foodBadgeHTML(f) + '</div>' : '')
         + '</div></div>';
     }
     function shelfCollageHTML(foods) {
-      const imgs = foods.filter((f) => f.image_url).slice(0, 4);
+      const list = (foods || []).filter((f) => f && f.id).slice(0, 4);
       const cells = [];
       for (let i = 0; i < 4; i++) {
-        const f = imgs[i];
-        cells.push('<div class="relative overflow-hidden bg-surface-2">' + (f ? window.dkFoodImgTag(f, 'absolute inset-0 w-full h-full object-cover') : '') + '</div>');
+        const f = list[i];
+        cells.push('<div class="dk-group-cell">' + (f ? window.dkFoodImgTag(f, 'dk-group-img') : '<span class="dk-food-ph">🥗</span>') + '</div>');
       }
-      return '<div class="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-px">' + cells.join('') + '</div>'
-        + '<div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/5"></div>';
+      return '<div class="dk-group-collage">' + cells.join('') + '</div>'
+        + '<div class="dk-group-shade"></div>';
     }
     function shelfTileHTML(shelf, foods) {
-      const tierCls = shelf.tier === 1 ? ' food-tile-hero' : shelf.tier === 2 ? ' food-tile-wide' : '';
-      return '<button type="button" data-fdb-shelf="' + shelf.id + '" class="food-tile food-shelf relative rounded-2xl overflow-hidden border border-border text-start transition hover:border-primary/50' + tierCls + '">'
+      return '<button type="button" data-fdb-group="' + shelf.id + '" class="food-group-card">'
         + shelfCollageHTML(foods)
-        + '<span class="absolute top-2 end-2 text-[10px] font-bold px-1.5 py-0.5 rounded-lg bg-black/45 text-white/90">' + foods.length + '</span>'
-        + '<span class="absolute inset-0 p-3 flex flex-col justify-end pointer-events-none">'
-        + '<span class="text-2xl leading-none mb-1">' + shelf.emoji + '</span>'
-        + '<span class="text-white font-display font-extrabold text-sm leading-tight">' + escapeHTML(t(shelf.nameKey)) + '</span>'
+        + '<span class="food-group-count">' + foods.length + '</span>'
+        + '<span class="food-group-copy">'
+        + '<span class="food-group-emoji">' + shelf.emoji + '</span>'
+        + '<span class="food-group-name">' + escapeHTML(t(shelf.nameKey) || shelf.id) + '</span>'
+        + '<span class="food-group-sub">' + foods.length + ' ' + dkProductWord(foods.length) + '</span>'
         + '</span></button>';
     }
     function smartTileHTML(s, foods) {
-      return '<button type="button" data-fdb-smart="' + s.id + '" class="flex items-center gap-2 bg-surface border border-border rounded-xl px-3 py-2 transition hover:border-primary/40 text-start min-w-0">'
-        + '<span class="text-lg shrink-0">' + s.emoji + '</span>'
-        + '<span class="min-w-0"><span class="block text-[11px] font-semibold text-text truncate">' + escapeHTML(t(s.nameKey)) + '</span>'
-        + '<span class="block text-[9px] text-muted">' + foods.length + '</span></span></button>';
+      return '<button type="button" data-fdb-smart="' + s.id + '" class="food-smart-pill">'
+        + '<span class="food-smart-emoji">' + s.emoji + '</span>'
+        + '<span class="food-smart-name">' + escapeHTML(t(s.nameKey)) + '</span>'
+        + '<span class="food-smart-count">' + foods.length + '</span></button>';
+    }
+    function groupHeaderHTML(group, count) {
+      return '<div class="food-group-head">'
+        + '<button type="button" data-fdb-home class="fdb-pager food-back-groups">‹ ' + escapeHTML(t('food.backHome')) + '</button>'
+        + '<span class="food-group-title"><span>' + group.emoji + '</span>' + escapeHTML(t(group.nameKey) || group.id) + '</span>'
+        + '<span class="food-group-total">' + count + '</span></div>';
     }
     function renderProductGridHTML(list) {
-      const pages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
-      if (_page > pages - 1) _page = pages - 1;
-      if (_page < 0) _page = 0;
-      const slice = list.slice(_page * PAGE_SIZE, (_page + 1) * PAGE_SIZE);
-      let html = '<div class="food-grid">' + slice.map(foodTileHTML).join('') + '</div>';
-      if (pages > 1) {
-        html += '<div class="flex items-center justify-center gap-3 mt-4">'
-          + '<button type="button" data-fdb-page="prev" class="fdb-pager" ' + (_page <= 0 ? 'disabled' : '') + '>‹ ' + escapeHTML(t('food.pagePrev')) + '</button>'
-          + '<span class="text-xs text-muted font-mono">' + (_page + 1) + ' / ' + pages + ' · ' + list.length + '</span>'
-          + '<button type="button" data-fdb-page="next" class="fdb-pager" ' + (_page >= pages - 1 ? 'disabled' : '') + '>' + escapeHTML(t('food.pageNext')) + ' ›</button>'
-          + '</div>';
-      }
-      return html;
+      /* c204: no paging and no mixed tile sizes — every product is one equal
+         card; the page scroll is the product scroll. */
+      return '<div class="food-grid">' + list.map(foodTileHTML).join('') + '</div>';
     }
     function renderHomeTiles(tree) {
-      const shelves = FOOD_SHELVES.map((s) => ({ s: s, foods: _filtered.filter((f) => s.cats.indexOf(f.category) >= 0) })).filter((x) => x.foods.length > 0);
+      const groups = DK_FOOD_GROUPS.map((g) => ({ g: g, foods: _filtered.filter((f) => g.cats.indexOf(String(f.category || '').toLowerCase()) >= 0) }));
       const smart = SMART_SHELVES.map((s) => ({ s: s, foods: smartShelfItems(s.id, _filtered) }));
-      let html = '<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">' + smart.map((x) => smartTileHTML(x.s, x.foods)).join('') + '</div>';
-      html += '<div class="food-bento">' + shelves.map((x) => shelfTileHTML(x.s, x.foods)).join('') + '</div>';
-      tree.innerHTML = html;
-    }
-    function renderShelfView(tree) {
-      const shelf = FOOD_SHELVES.find((s) => s.id === _view.shelf) || FOOD_SHELVES[FOOD_SHELVES.length - 1];
-      const foods = _filtered.filter((f) => shelf.cats.indexOf(f.category) >= 0);
-      const subs = {};
-      foods.forEach((f) => { if (f.sub) (subs[f.sub] = subs[f.sub] || []).push(f); });
-      const subIds = Object.keys(subs).filter((x) => subs[x].length >= 3).sort((a, b) => subs[b].length - subs[a].length);
-      const cats = Array.from(new Set(foods.map((f) => f.category)));
-      let html = '<div class="flex items-center gap-2 flex-wrap mb-3">'
-        + '<button type="button" data-fdb-home class="fdb-pager">‹ ' + escapeHTML(t('food.backHome')) + '</button>'
-        + '<span class="text-sm font-semibold">' + shelf.emoji + ' ' + escapeHTML(t(shelf.nameKey)) + '</span>'
-        + '<span class="text-xs text-muted font-mono">' + foods.length + '</span></div>';
-      if (_editMode && cats.length) {
-        html += '<div class="flex items-center gap-2 flex-wrap mb-3 text-[10px] text-muted">' + cats.map((c) =>
-          '<span class="inline-flex items-center gap-1 bg-surface-2 border border-border rounded-lg px-2 py-1">' + escapeHTML(categoryIcon(c)) + ' ' + escapeHTML(categoryLabel(c))
-          + '<button type="button" data-rename-cat="' + escapeAttr(c) + '" class="text-primary-2">✎</button>'
-          + (c === 'other' ? '' : '<button type="button" data-delete-cat="' + escapeAttr(c) + '" class="text-danger">✕</button>')
-          + '</span>').join('') + '</div>';
-      }
-      if (!_view.sub && subIds.length >= 2) {
-        html += '<div class="food-grid">'
-          + '<button type="button" data-fdb-sub="all" class="food-tile bg-surface border border-border rounded-2xl overflow-hidden text-start hover:border-primary/40 transition">'
-          + '<span class="relative block aspect-square bg-surface-2 grid place-items-center text-3xl">' + shelf.emoji + '</span>'
-          + '<span class="block p-2"><span class="block text-[11px] font-semibold">' + escapeHTML(t('food.allProducts')) + '</span>'
-          + '<span class="block text-[9px] text-muted">' + foods.length + '</span></span></button>'
-          + subIds.map((sub) => {
-            const list = subs[sub];
-            return '<button type="button" data-fdb-sub="' + escapeAttr(sub) + '" class="food-tile bg-surface border border-border rounded-2xl overflow-hidden text-start hover:border-primary/40 transition">'
-              + '<span class="relative block aspect-square bg-surface-2">' + shelfCollageHTML(list)
-              + '<span class="absolute inset-0 grid place-items-center text-2xl pointer-events-none">' + (SUB_EMOJI[sub] || '📁') + '</span></span>'
-              + '<span class="block p-2"><span class="block text-[11px] font-semibold">' + escapeHTML(t('food.sub_' + sub)) + '</span>'
-              + '<span class="block text-[9px] text-muted">' + list.length + '</span></span></button>';
-          }).join('') + '</div>';
-        tree.innerHTML = html;
-        return;
-      }
-      let list = foods;
-      if (_view.sub && _view.sub !== 'all') list = subs[_view.sub] || [];
-      if (_view.sub && _view.sub !== 'all') {
-        html += '<div class="flex items-center gap-2 flex-wrap mb-3">'
-          + '<button type="button" data-fdb-shelf="' + shelf.id + '" class="fdb-pager">‹ ' + escapeHTML(t(shelf.nameKey)) + '</button>'
-          + '<span class="text-sm font-semibold">' + (SUB_EMOJI[_view.sub] || '📁') + ' ' + escapeHTML(t('food.sub_' + _view.sub)) + '</span></div>';
-      }
-      html += renderProductGridHTML(list);
+      let html = '<div class="food-smart-row">' + smart.map((x) => smartTileHTML(x.s, x.foods)).join('') + '</div>';
+      html += '<div class="food-group-grid">' + groups.map((x) => shelfTileHTML(x.g, x.foods)).join('') + '</div>';
       tree.innerHTML = html;
     }
     /** Render the kiosk (home / shelf / search / smart list). */
@@ -28972,36 +29301,31 @@ Select foods for each meal. Output as JSON only.`;
       if (_search) {
         tree.innerHTML = renderProductGridHTML(_filtered);
       } else if (_categoryFilter !== 'all') {
-        tree.innerHTML = renderProductGridHTML(_filtered);
+        const group = dkFoodGroupById(_categoryFilter) || DK_FOOD_GROUPS[0];
+        tree.innerHTML = groupHeaderHTML(group, _filtered.length) + renderProductGridHTML(_filtered);
       } else if (_smart) {
         const smartFoods = smartShelfItems(_smart, _filtered);
         const s = SMART_SHELVES.find((x) => x.id === _smart) || SMART_SHELVES[0];
-        tree.innerHTML = '<div class="flex items-center gap-2 flex-wrap mb-3">'
-          + '<button type="button" data-fdb-home class="fdb-pager">‹ ' + escapeHTML(t('food.backHome')) + '</button>'
-          + '<span class="text-sm font-semibold">' + s.emoji + ' ' + escapeHTML(t(s.nameKey)) + '</span>'
-          + '<span class="text-xs text-muted font-mono">' + smartFoods.length + '</span></div>' + renderProductGridHTML(smartFoods);
-      } else if (_view.kind === 'shelf') {
-        renderShelfView(tree);
+        tree.innerHTML = '<div class="food-group-head">'
+          + '<button type="button" data-fdb-home class="fdb-pager food-back-groups">‹ ' + escapeHTML(t('food.backHome')) + '</button>'
+          + '<span class="food-group-title"><span>' + s.emoji + '</span>' + escapeHTML(t(s.nameKey)) + '</span>'
+          + '<span class="food-group-total">' + smartFoods.length + '</span></div>' + renderProductGridHTML(smartFoods);
       } else {
         renderHomeTiles(tree);
       }
       wireTree(tree);
     }
     function wireTree(tree) {
-      tree.querySelectorAll('[data-fdb-shelf]').forEach((b) => b.addEventListener('click', () => {
-        _view = { kind: 'shelf', shelf: b.getAttribute('data-fdb-shelf'), sub: '' }; _smart = ''; _page = 0; renderTree();
+      tree.querySelectorAll('[data-fdb-group]').forEach((b) => b.addEventListener('click', () => {
+        _smart = ''; setCategoryFilter(b.getAttribute('data-fdb-group'));
       }));
       tree.querySelectorAll('[data-fdb-home]').forEach((b) => b.addEventListener('click', () => {
-        _view = { kind: 'home', shelf: '', sub: '' }; _smart = ''; _page = 0; renderTree();
+        _smart = ''; setCategoryFilter('all');
       }));
       tree.querySelectorAll('[data-fdb-smart]').forEach((b) => b.addEventListener('click', () => {
-        _smart = b.getAttribute('data-fdb-smart'); _view = { kind: 'home', shelf: '', sub: '' }; _page = 0; renderTree();
-      }));
-      tree.querySelectorAll('[data-fdb-sub]').forEach((b) => b.addEventListener('click', () => {
-        _view.sub = b.getAttribute('data-fdb-sub'); _page = 0; renderTree();
-      }));
-      tree.querySelectorAll('[data-fdb-page]').forEach((b) => b.addEventListener('click', () => {
-        _page += b.getAttribute('data-fdb-page') === 'next' ? 1 : -1; renderTree(); window.scrollTo({ top: 0, behavior: 'smooth' });
+        _smart = b.getAttribute('data-fdb-smart') || '';
+        _categoryFilter = 'all';
+        applyFilters();
       }));
       tree.querySelectorAll('[data-food-id]').forEach((el) => {
         el.addEventListener('click', (e) => {
@@ -29015,7 +29339,13 @@ Select foods for each meal. Output as JSON only.`;
         e.stopPropagation();
         const fid = btn.getAttribute('data-delete-food');
         if (!confirm(t('food.deleteConfirm') || 'Delete this food?')) return;
-        try { await db.del('food_database', fid); } catch (err) {}
+        const item = _all.find(f => String(f.id) === String(fid));
+        const store = item && item._store === 'food_base' ? 'food_base' : 'food_database';
+        try {
+          const rec = await db.get(store, fid);
+          if (rec) { rec.is_archived = true; rec.archived_at = Date.now(); await db.put(store, rec); }
+          else await db.del(store, fid);
+        } catch (err) {}
         toast(t('food.deleted') || 'Food deleted', 'warning', 2000);
         await load();
       }));
@@ -29113,34 +29443,22 @@ Select foods for each meal. Output as JSON only.`;
     let _pickRoot = null;
     let _pickFoods = null;
     let _pickOnPick = null; /* c171: called with the picked food — wired on EVERY render */
-    let _pickView = { kind: 'home', shelf: '', sub: '', smart: '' };
-    let _pickPage = 0;
+    let _pickView = { shelf: '', smart: '' };
     function pickerTileHTML(f) {
       const name = foodNameFor(f);
       const n = f.nutrition || {};
-      /* c171: object-contain — the WHOLE product photo is visible (no crop) */
-      const img = '<span class="absolute text-lg opacity-60" aria-hidden="true">🥗</span>' + window.dkFoodImgTag(f, 'absolute inset-0 w-full h-full object-contain');
-      return '<button type="button" data-fp-pick="' + escapeAttr(f.id) + '" class="food-tile bg-surface border border-border rounded-2xl overflow-hidden hover:border-primary/40 transition text-start">'
-        + '<div class="relative aspect-square bg-surface-2 overflow-hidden">' + img + '</div>'
-        + '<div class="p-2 min-w-0">'
-        + '<div class="food-tile-name text-[11px] font-semibold text-text">' + escapeHTML(name) + '</div>'
-        + '<div class="text-[9px] text-muted mt-0.5">' + Math.round(n.calories || 0) + ' ' + t('nutrition.kcal') + ' · ' + t('nutrition.proteinShort') + ' ' + Math.round(n.protein || 0) + ' ' + t('nutrition.carbsShort') + ' ' + Math.round(n.carbs || 0) + ' ' + t('nutrition.fatShort') + ' ' + Math.round(n.fat || 0) + '</div>'
-        + '<div class="food-badges flex flex-wrap gap-1 mt-1">' + foodBadgeHTML(f) + '</div>'
+      const img = '<span class="dk-food-ph" aria-hidden="true">🥗</span>' + window.dkFoodImgTag(f, 'dk-food-img');
+      return '<button type="button" data-fp-pick="' + escapeAttr(f.id) + '" class="food-tile dk-product-card dk-picker-card">'
+        + '<div class="dk-product-media">' + img + '</div>'
+        + '<div class="dk-product-copy">'
+        + '<div class="food-tile-name dk-product-name">' + escapeHTML(name) + '</div>'
+        + '<div class="dk-product-kcal"><b>' + Math.round(n.calories || 0) + '</b> ' + t('nutrition.kcal') + '</div>'
+        + '<div class="dk-macros">' + dkFoodMacroBadges(n) + '</div>'
+        + (foodBadgeHTML(f) ? '<div class="food-badges flex flex-wrap gap-1 mt-1.5">' + foodBadgeHTML(f) + '</div>' : '')
         + '</div></button>';
     }
     function pickerGridHTML(list) {
-      const pages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
-      if (_pickPage > pages - 1) _pickPage = pages - 1;
-      if (_pickPage < 0) _pickPage = 0;
-      const slice = list.slice(_pickPage * PAGE_SIZE, (_pickPage + 1) * PAGE_SIZE);
-      let html = '<div class="food-grid">' + slice.map(pickerTileHTML).join('') + '</div>';
-      if (pages > 1) {
-        html += '<div class="flex items-center justify-center gap-2 mt-3">'
-          + '<button type="button" data-pfp-page="prev" class="fdb-pager" ' + (_pickPage <= 0 ? 'disabled' : '') + '>‹ ' + escapeHTML(t('food.pagePrev')) + '</button>'
-          + '<span class="text-xs text-muted font-mono">' + (_pickPage + 1) + ' / ' + pages + '</span>'
-          + '<button type="button" data-pfp-page="next" class="fdb-pager" ' + (_pickPage >= pages - 1 ? 'disabled' : '') + '>' + escapeHTML(t('food.pageNext')) + ' ›</button></div>';
-      }
-      return html;
+      return '<div class="food-grid">' + list.map(pickerTileHTML).join('') + '</div>';
     }
     function pickerRender() {
       const root = _pickRoot;
@@ -29151,49 +29469,20 @@ Select foods for each meal. Output as JSON only.`;
       if (v.smart) {
         const list = smartShelfItems(v.smart, pool);
         const s = SMART_SHELVES.find((x) => x.id === v.smart) || SMART_SHELVES[0];
-        html = '<div class="flex items-center gap-2 flex-wrap mb-3">'
-          + '<button type="button" data-pfp-home class="fdb-pager">‹ ' + escapeHTML(t('food.backHome')) + '</button>'
-          + '<span class="text-sm font-semibold">' + s.emoji + ' ' + escapeHTML(t(s.nameKey)) + '</span>'
-          + '<span class="text-xs text-muted font-mono">' + list.length + '</span></div>' + pickerGridHTML(list);
-      } else if (v.kind === 'shelf') {
-        const shelf = FOOD_SHELVES.find((s) => s.id === v.shelf) || FOOD_SHELVES[FOOD_SHELVES.length - 1];
-        const foods = pool.filter((f) => shelf.cats.indexOf(f.category) >= 0);
-        const subs = {};
-        foods.forEach((f) => { if (f.sub) (subs[f.sub] = subs[f.sub] || []).push(f); });
-        const subIds = Object.keys(subs).filter((x) => subs[x].length >= 3).sort((a, b) => subs[b].length - subs[a].length);
-        html = '<div class="flex items-center gap-2 flex-wrap mb-3">'
-          + '<button type="button" data-pfp-home class="fdb-pager">‹ ' + escapeHTML(t('food.backHome')) + '</button>'
-          + '<span class="text-sm font-semibold">' + shelf.emoji + ' ' + escapeHTML(t(shelf.nameKey)) + '</span>'
-          + '<span class="text-xs text-muted font-mono">' + foods.length + '</span></div>';
-        if (!v.sub && subIds.length >= 2) {
-          html += '<div class="food-grid">'
-            + '<button type="button" data-pfp-sub="all" class="food-tile bg-surface border border-border rounded-2xl overflow-hidden text-start hover:border-primary/40 transition">'
-            + '<span class="relative block aspect-square bg-surface-2 grid place-items-center text-3xl">' + shelf.emoji + '</span>'
-            + '<span class="block p-2"><span class="block text-[11px] font-semibold">' + escapeHTML(t('food.allProducts')) + '</span>'
-            + '<span class="block text-[9px] text-muted">' + foods.length + '</span></span></button>'
-            + subIds.map((sub) => {
-              const list = subs[sub];
-              return '<button type="button" data-pfp-sub="' + escapeAttr(sub) + '" class="food-tile bg-surface border border-border rounded-2xl overflow-hidden text-start hover:border-primary/40 transition">'
-                + '<span class="relative block aspect-square bg-surface-2">' + shelfCollageHTML(list)
-                + '<span class="absolute inset-0 grid place-items-center text-2xl pointer-events-none">' + (SUB_EMOJI[sub] || '📁') + '</span></span>'
-                + '<span class="block p-2"><span class="block text-[11px] font-semibold">' + escapeHTML(t('food.sub_' + sub)) + '</span>'
-                + '<span class="block text-[9px] text-muted">' + list.length + '</span></span></button>';
-            }).join('') + '</div>';
-        } else {
-          let list = foods;
-          if (v.sub && v.sub !== 'all') list = subs[v.sub] || [];
-          if (v.sub && v.sub !== 'all') {
-            html += '<div class="flex items-center gap-2 flex-wrap mb-3">'
-              + '<button type="button" data-pfp-shelf="' + escapeAttr(shelf.id) + '" class="fdb-pager">‹ ' + escapeHTML(t(shelf.nameKey)) + '</button>'
-              + '<span class="text-sm font-semibold">' + (SUB_EMOJI[v.sub] || '📁') + ' ' + escapeHTML(t('food.sub_' + v.sub)) + '</span></div>';
-          }
-          html += pickerGridHTML(list);
-        }
+        html = '<div class="food-group-head"><button type="button" data-pfp-home class="fdb-pager food-back-groups">‹ ' + escapeHTML(t('food.backHome')) + '</button>'
+          + '<span class="food-group-title"><span>' + s.emoji + '</span>' + escapeHTML(t(s.nameKey)) + '</span>'
+          + '<span class="food-group-total">' + list.length + '</span></div>' + pickerGridHTML(list);
+      } else if (v.shelf) {
+        const group = dkFoodGroupById(v.shelf) || DK_FOOD_GROUPS[0];
+        const foods = pool.filter((f) => group.cats.indexOf(String(f.category || '').toLowerCase()) >= 0);
+        html = '<div class="food-group-head"><button type="button" data-pfp-home class="fdb-pager food-back-groups">‹ ' + escapeHTML(t('food.backHome')) + '</button>'
+          + '<span class="food-group-title"><span>' + group.emoji + '</span>' + escapeHTML(t(group.nameKey) || group.id) + '</span>'
+          + '<span class="food-group-total">' + foods.length + '</span></div>' + pickerGridHTML(foods);
       } else {
-        const shelves = FOOD_SHELVES.map((s) => ({ s: s, foods: pool.filter((f) => s.cats.indexOf(f.category) >= 0) })).filter((x) => x.foods.length > 0);
+        const groups = DK_FOOD_GROUPS.map((g) => ({ g: g, foods: pool.filter((f) => g.cats.indexOf(String(f.category || '').toLowerCase()) >= 0) }));
         const smart = SMART_SHELVES.map((s) => ({ s: s, foods: smartShelfItems(s.id, pool) }));
-        html = '<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">' + smart.map((x) => smartTileHTML(x.s, x.foods)).join('') + '</div>';
-        html += '<div class="food-bento">' + shelves.map((x) => shelfTileHTML(x.s, x.foods)).join('') + '</div>';
+        html = '<div class="food-smart-row">' + smart.map((x) => smartTileHTML(x.s, x.foods)).join('') + '</div>';
+        html += '<div class="food-group-grid">' + groups.map((x) => shelfTileHTML(x.g, x.foods)).join('') + '</div>';
       }
       root.innerHTML = html;
       wirePicker();
@@ -29201,26 +29490,14 @@ Select foods for each meal. Output as JSON only.`;
     function wirePicker() {
       const root = _pickRoot;
       if (!root) return;
-      const goHome = () => { _pickView = { kind: 'home', shelf: '', sub: '', smart: '' }; _pickPage = 0; pickerRender(); };
+      const goHome = () => { _pickView = { shelf: '', smart: '' }; pickerRender(); };
       root.querySelectorAll('[data-pfp-home]').forEach((b) => b.addEventListener('click', goHome));
-      /* the smart/shelf tiles are the kiosk's own builders — they carry the
-         kiosk's data-fdb-* attributes, so wire those here as picker actions */
-      root.querySelectorAll('[data-pfp-smart], [data-fdb-smart]').forEach((b) => b.addEventListener('click', () => {
-        const id = b.getAttribute('data-pfp-smart') || b.getAttribute('data-fdb-smart');
-        _pickView = { kind: 'home', shelf: '', sub: '', smart: id }; _pickPage = 0; pickerRender();
+      root.querySelectorAll('[data-fdb-smart]').forEach((b) => b.addEventListener('click', () => {
+        _pickView = { shelf: '', smart: b.getAttribute('data-fdb-smart') || '' }; pickerRender();
       }));
-      root.querySelectorAll('[data-pfp-shelf], [data-fdb-shelf]').forEach((b) => b.addEventListener('click', () => {
-        const id = b.getAttribute('data-pfp-shelf') || b.getAttribute('data-fdb-shelf');
-        _pickView = { kind: 'shelf', shelf: id, sub: '', smart: '' }; _pickPage = 0; pickerRender();
+      root.querySelectorAll('[data-fdb-group]').forEach((b) => b.addEventListener('click', () => {
+        _pickView = { shelf: b.getAttribute('data-fdb-group') || '', smart: '' }; pickerRender();
       }));
-      root.querySelectorAll('[data-pfp-sub]').forEach((b) => b.addEventListener('click', () => {
-        _pickView.sub = b.getAttribute('data-pfp-sub'); _pickPage = 0; pickerRender();
-      }));
-      root.querySelectorAll('[data-pfp-page]').forEach((b) => b.addEventListener('click', () => {
-        _pickPage += b.getAttribute('data-pfp-page') === 'next' ? 1 : -1; pickerRender(); root.scrollTop = 0;
-      }));
-      /* c171: product tiles must be clickable after EVERY render (shelf/sub/
-         smart/page navigation re-renders the whole view) */
       root.querySelectorAll('[data-fp-pick]').forEach((el) => el.addEventListener('click', () => {
         if (!_pickOnPick) return;
         const id = el.getAttribute('data-fp-pick');
@@ -29233,8 +29510,7 @@ Select foods for each meal. Output as JSON only.`;
       _pickRoot = rootEl || null;
       _pickFoods = foods || null;
       _pickOnPick = (typeof onPick === 'function') ? onPick : null;
-      _pickView = { kind: 'home', shelf: '', sub: '', smart: '' };
-      _pickPage = 0;
+      _pickView = { shelf: '', smart: '' };
       pickerRender();
     }
 
@@ -29250,15 +29526,25 @@ Select foods for each meal. Output as JSON only.`;
      ===================================================================== */
   let _foodDetailCurrentId = null;
   let _foodDetailEditMode = false;
+  let _foodDetailFood = null;
+  let _foodDetailStore = 'food_database';
 
   async function openFoodDetailModal(foodId) {
     const modal = document.getElementById('food-detail-modal');
     if (!modal) return;
 
     let food = null;
+    let store = 'food_database';
     if (foodId) {
       try { food = await db.get('food_database', foodId); } catch (e) {}
-      if (!food && foodDatabase._all) food = foodDatabase._all.find(f => f.id === foodId);
+      if (!food) {
+        try { food = await db.get('food_base', foodId); store = 'food_base'; } catch (e) {}
+      }
+      if (!food && foodDatabase._all) {
+        food = foodDatabase._all.find(f => String(f.id) === String(foodId));
+        if (food && food._store) store = food._store;
+      }
+      if (food) food = dkNormalizeFood(food, store);
     }
     if (!food) {
       // CREATE mode: empty food
@@ -29274,6 +29560,8 @@ Select foods for each meal. Output as JSON only.`;
         nutrition: { calories: 0, protein: 0, carbs: 0, fat: 0 }
       };
     }
+    _foodDetailFood = food;
+    _foodDetailStore = store;
     _foodDetailCurrentId = foodId || null;
     _foodDetailEditMode = !foodId;  // create = edit mode
 
@@ -29490,6 +29778,11 @@ Select foods for each meal. Output as JSON only.`;
       if (cancelBtn) cancelBtn.classList.add('hidden');
       if (saveBtn) saveBtn.classList.add('hidden');
     }
+    const addBtn = document.getElementById('food-detail-add');
+    if (addBtn) {
+      const hasPlan = typeof screens !== 'undefined' && screens.nutrition && screens.nutrition.clientId;
+      addBtn.classList.toggle('hidden', _foodDetailEditMode || !hasPlan || !!(_foodDetailFood && _foodDetailFood.source === 'recipe'));
+    }
   }
 
   function toggleFoodDetailEditMode() {
@@ -29592,7 +29885,8 @@ Select foods for each meal. Output as JSON only.`;
     // If editing existing food, preserve existing vitamins/minerals
     let food = null;
     if (_foodDetailCurrentId) {
-      try { food = await db.get('food_database', _foodDetailCurrentId); } catch(e) {}
+      try { food = await db.get(_foodDetailStore, _foodDetailCurrentId); } catch(e) {}
+      if (food) food = dkNormalizeFood(food, _foodDetailStore);
     }
     const newFood = Object.assign({}, food || {}, {
       /* c146: preserve EVERYTHING not present in the edit form (name_ru,
@@ -29614,12 +29908,21 @@ Select foods for each meal. Output as JSON only.`;
       forest: obj.forest || (food && food.forest) || null,
       sub: obj.sub || (food && food.sub) || '',
       nutrition: Object.assign({}, food ? (food.nutrition || {}) : {}, nutrition),
+      /* flat mirrors keep custom foods consumable by the portion modal/rail */
+      calories: nutrition.calories, protein: nutrition.protein,
+      carbs: nutrition.carbs, fat: nutrition.fat, fiber: nutrition.fiber,
       updated_at: Date.now()
     });
-    await db.put('food_database', newFood);
+    const store = _foodDetailStore === 'food_base' ? 'food_base' : 'food_database';
+    delete newFood._store;
+    delete newFood._ref;
+    await db.put(store, newFood);
     // Refresh food database tab + nutritionPlans cache
     if (typeof foodDatabase !== 'undefined') await foodDatabase.load();
     if (typeof nutritionPlans !== 'undefined') await nutritionPlans.loadFoods();
+    if (typeof screens !== 'undefined' && screens.nutrition) {
+      try { screens.nutrition.refresh(); } catch (e) {}
+    }
     toast((t('food.saved') || 'Food saved') + ' ✓', 'success', 2000);
     // Switch back to view mode (or close if new)
     if (_foodDetailCurrentId) {
@@ -29635,15 +29938,18 @@ Select foods for each meal. Output as JSON only.`;
     if (!confirm(t('food.deleteConfirm') || 'Delete this food?')) return;
     try {
       // Soft-delete: mark as archived instead of hard delete (Archive feature)
-      const food = await db.get('food_database', _foodDetailCurrentId);
+      let food = await db.get(_foodDetailStore, _foodDetailCurrentId);
       if (food) {
         food.is_archived = true;
         food.archived_at = Date.now();
-        await db.put('food_database', food);
+        await db.put(_foodDetailStore, food);
       }
     } catch(e) {}
     if (typeof foodDatabase !== 'undefined') await foodDatabase.load();
     if (typeof nutritionPlans !== 'undefined') await nutritionPlans.loadFoods();
+    if (typeof screens !== 'undefined' && screens.nutrition) {
+      try { screens.nutrition.refresh(); } catch (e) {}
+    }
     toast((t('food.archived') || 'Moved to archive') + ' ✓', 'warning', 2000);
     document.getElementById('food-detail-modal').classList.add('hidden');
   }
@@ -31982,7 +32288,7 @@ async function boot() {
     });
 
     // Theme picker grid (settings screen)
-    /* c196: the six Vision themes are the single source of truth for
+    /* c196/c204: the Vision themes are the single source of truth for
        palette + glass + background + particles + charts. */
     const THEMES = DK_THEMES;
     function renderThemeGrid() {
@@ -33855,6 +34161,18 @@ loadPanelTexture();
       if (screens.nutrition) screens.nutrition.openTargets();
     });
 
+    // c204: preview → add the exact product shown in the detail modal
+    const fdAdd = document.getElementById('food-detail-add');
+    if (fdAdd) fdAdd.addEventListener('click', () => {
+      if (!_foodDetailFood || !screens.nutrition) return;
+      if (!screens.nutrition.clientId) {
+        toast(t('nutrition.chooseClientFirst') || 'Choose a client first', 'warning', 2200);
+        return;
+      }
+      document.getElementById('food-detail-modal').classList.add('hidden');
+      screens.nutrition.openPortionModal(_foodDetailFood);
+    });
+
     // Food search modal
     const searchClose = document.getElementById('food-search-close');
     if (searchClose) searchClose.addEventListener('click', () => {
@@ -33996,6 +34314,12 @@ loadPanelTexture();
       });
     }
     /* c169: the source chips are gone — ONE common database (user decision) */
+    const foodDbGroups = document.getElementById('food-db-groups');
+    if (foodDbGroups) foodDbGroups.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-fdb-group-chip]');
+      if (!b) return;
+      foodDatabase.setCategoryFilter(b.getAttribute('data-fdb-group-chip') || 'all');
+    });
     const foodDbCatFilter = document.getElementById('food-db-category-filter');
     if (foodDbCatFilter) foodDbCatFilter.addEventListener('change', () => {
       foodDatabase.setCategoryFilter(foodDbCatFilter.value);
@@ -34462,7 +34786,7 @@ document.addEventListener('DOMContentLoaded', function () {
    *  (not just the literal "dark" id), which fixes white-on-white form fields
    *  in themed dark modes like ocean-deep, forest-night, etc. */
   async function applyTheme(theme) {
-    /* c196: old theme ids (33 legacy packs) are migrated to the six Vision
+    /* c196: old theme ids (33 legacy packs) are migrated to the Vision
        themes instead of being dropped, so existing devices keep their mood. */
     const t = normalizeThemeId(theme);
     document.documentElement.setAttribute('data-theme', t);
@@ -34491,7 +34815,21 @@ document.addEventListener('DOMContentLoaded', function () {
     { id:'v2-arctic', name:'Arctic Glass', tag:'Ice / day',    dark:false, color:'#0ea5e9', bg:'#eaf4ff', accent:'#6366f1',
       preview:'radial-gradient(ellipse 85% 70% at 18% 0%, #38bdf8 0%, transparent 62%), radial-gradient(ellipse 70% 70% at 88% 8%, #818cf8 0%, transparent 66%), linear-gradient(180deg,#eaf4ff,#dcecff 55%,#f5faff)' },
     { id:'v2-pearl',  name:'Pearl Rose',   tag:'Pearl / day',  dark:false, color:'#d946ef', bg:'#fdf4fa', accent:'#8b5cf6',
-      preview:'radial-gradient(ellipse 85% 70% at 18% 0%, #f472b6 0%, transparent 62%), radial-gradient(ellipse 70% 70% at 88% 8%, #a855f7 0%, transparent 66%), linear-gradient(180deg,#fdf4fa,#f7ecfb 55%,#fdf8ff)' }
+      preview:'radial-gradient(ellipse 85% 70% at 18% 0%, #f472b6 0%, transparent 62%), radial-gradient(ellipse 70% 70% at 88% 8%, #a855f7 0%, transparent 66%), linear-gradient(180deg,#fdf4fa,#f7ecfb 55%,#fdf8ff)' },
+    { id:'v2-honey',   name:'Honey Ember', tag:'Dark gold',    dark:true,  color:'#facc15', bg:'#140d03', accent:'#84cc16',
+      preview:'radial-gradient(ellipse 82% 70% at 16% 0%, #facc15 0%, transparent 60%), radial-gradient(ellipse 66% 62% at 90% 10%, #f59e0b 0%, transparent 64%), radial-gradient(ellipse 62% 42% at 50% 110%, #84cc16 0%, transparent 70%), linear-gradient(180deg,#140d03,#201506 54%,#0b0702)' },
+    { id:'v2-apricot', name:'Apricot Bloom', tag:'Light orange', dark:false, color:'#f97316', bg:'#fff7ed', accent:'#84cc16',
+      preview:'radial-gradient(ellipse 82% 70% at 16% 0%, #fb923c 0%, transparent 60%), radial-gradient(ellipse 66% 62% at 90% 8%, #fdba74 0%, transparent 64%), radial-gradient(ellipse 62% 42% at 50% 110%, #84cc16 0%, transparent 70%), linear-gradient(180deg,#fff8f0,#ffeddc 52%,#fffaf5)' },
+    { id:'v2-jade',    name:'Jade Empire',  tag:'Emerald gold', dark:true,  color:'#10b981', bg:'#03130d', accent:'#facc15',
+      preview:'radial-gradient(ellipse 82% 70% at 16% 0%, #10b981 0%, transparent 60%), radial-gradient(ellipse 66% 62% at 90% 10%, #facc15 0%, transparent 64%), radial-gradient(ellipse 62% 42% at 50% 110%, #22d3ee 0%, transparent 70%), linear-gradient(180deg,#03130d,#06281c 54%,#010b08)' },
+    { id:'v2-plum',    name:'Plum Noir',    tag:'Velvet night', dark:true,  color:'#d946ef', bg:'#140511', accent:'#fbbf24',
+      preview:'radial-gradient(ellipse 82% 70% at 16% 0%, #d946ef 0%, transparent 60%), radial-gradient(ellipse 66% 62% at 90% 10%, #fbbf24 0%, transparent 64%), radial-gradient(ellipse 62% 42% at 50% 110%, #fb7185 0%, transparent 70%), linear-gradient(180deg,#140511,#270b23 54%,#0c030a)' },
+    { id:'v2-horizon', name:'Blue Horizon', tag:'Dusk coast',   dark:true,  color:'#3b82f6', bg:'#040916', accent:'#fb923c',
+      preview:'radial-gradient(ellipse 82% 70% at 16% 0%, #3b82f6 0%, transparent 60%), radial-gradient(ellipse 66% 62% at 90% 10%, #fb923c 0%, transparent 64%), radial-gradient(ellipse 62% 42% at 50% 110%, #0ea5e9 0%, transparent 70%), linear-gradient(180deg,#040916,#0a1730 54%,#02050d)' },
+    { id:'v2-sand',    name:'Sandstone',    tag:'Warm day',     dark:false, color:'#b47828', bg:'#faf6ec', accent:'#84cc16',
+      preview:'radial-gradient(ellipse 82% 70% at 16% 0%, #e7c873 0%, transparent 60%), radial-gradient(ellipse 66% 62% at 90% 8%, #84cc16 0%, transparent 64%), radial-gradient(ellipse 62% 42% at 50% 110%, #0ea5e9 0%, transparent 70%), linear-gradient(180deg,#fbf7ed,#f3ecd8 52%,#fffdf8)' },
+    { id:'v2-sky',     name:'Sky Blossom',  tag:'Fresh day',    dark:false, color:'#0ea5e9', bg:'#f0f9ff', accent:'#fb7185',
+      preview:'radial-gradient(ellipse 82% 70% at 16% 0%, #38bdf8 0%, transparent 60%), radial-gradient(ellipse 66% 62% at 88% 8%, #fb7185 0%, transparent 64%), radial-gradient(ellipse 62% 42% at 50% 110%, #6366f1 0%, transparent 70%), linear-gradient(180deg,#f2faff,#e3f2ff 52%,#fbfdff)' }
   ];
 
   const THEMES_META = Object.fromEntries(DK_THEMES.map(th => [th.id, {
@@ -34501,20 +34839,20 @@ document.addEventListener('DOMContentLoaded', function () {
   /** Legacy 33-theme ids → Vision preset. Keeps the user's intent:
    *  dark stays dark, light stays light, warm stays warm, green stays green. */
   const V2_THEME_MAP = {
-    'dark':'v2-nebula', 'ocean-deep':'v2-nebula', 'carbon-steel':'v2-nebula',
-    'slate-mono':'v2-nebula', 'graphite-mist':'v2-nebula', 'midnight-obsidian':'v2-nebula',
-    'arctic-frost':'v2-arctic', 'winter':'v2-arctic', 'aquarium':'v2-abyss',
-    'teal-pro':'v2-abyss', 'midnight-mint':'v2-abyss', 'tide-pool':'v2-abyss',
-    'forest-night':'v2-abyss', 'jungle':'v2-abyss', 'bubble-lagoon':'v2-abyss',
-    'sage-garden':'v2-abyss',
-    'royal-purple':'v2-aurora', 'dusk-velvet':'v2-aurora', 'lavender-light':'v2-aurora',
+    'dark':'v2-nebula', 'ocean-deep':'v2-horizon', 'carbon-steel':'v2-nebula',
+    'slate-mono':'v2-nebula', 'graphite-mist':'v2-horizon', 'midnight-obsidian':'v2-nebula',
+    'arctic-frost':'v2-arctic', 'winter':'v2-arctic', 'aquarium':'v2-jade',
+    'teal-pro':'v2-jade', 'midnight-mint':'v2-jade', 'tide-pool':'v2-jade',
+    'forest-night':'v2-jade', 'jungle':'v2-jade', 'bubble-lagoon':'v2-jade',
+    'sage-garden':'v2-sand',
+    'royal-purple':'v2-plum', 'dusk-velvet':'v2-plum', 'lavender-light':'v2-aurora',
     'aurora-haze':'v2-aurora',
-    'sunset-rose':'v2-solar', 'crimson-dark':'v2-solar', 'amber-gold':'v2-solar',
-    'ember-tide':'v2-solar', 'crimson-reef':'v2-solar', 'retro-1940':'v2-solar',
-    'warm-espresso':'v2-solar', 'coral-reef':'v2-solar', 'coral-sunset':'v2-solar',
-    'peach-soft':'v2-solar', 'warm-sand':'v2-solar',
-    'light':'v2-arctic', 'cloud-blue':'v2-arctic', 'sky-day':'v2-arctic',
-    'mint-fresh':'v2-pearl', 'rose-quartz':'v2-pearl', 'sand-stone':'v2-pearl'
+    'sunset-rose':'v2-solar', 'crimson-dark':'v2-solar', 'amber-gold':'v2-honey',
+    'ember-tide':'v2-solar', 'crimson-reef':'v2-solar', 'retro-1940':'v2-honey',
+    'warm-espresso':'v2-honey', 'coral-reef':'v2-apricot', 'coral-sunset':'v2-apricot',
+    'peach-soft':'v2-apricot', 'warm-sand':'v2-apricot',
+    'light':'v2-arctic', 'cloud-blue':'v2-sky', 'sky-day':'v2-sky',
+    'mint-fresh':'v2-jade', 'rose-quartz':'v2-pearl', 'sand-stone':'v2-sand'
   };
   function normalizeThemeId(id) {
     const key = String(id || '').trim();
@@ -37212,7 +37550,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 203; /* numeric part of dk-build c203 */
+  var RUNNING = 204; /* numeric part of dk-build c204 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

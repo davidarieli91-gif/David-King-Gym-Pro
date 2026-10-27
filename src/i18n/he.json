@@ -1121,7 +1121,10 @@
     "afterAdd": "לאחר ההוספה יישאר ליעד",
     "subtitle": "תוכניות, מוצרים ויעדים יומיים — במערכת אחת.",
     "eyebrow": "דלק לעבודה",
-    "dashboardTitle": "תוכנית תזונה"
+    "dashboardTitle": "תוכנית תזונה",
+    "dragHint": "גררו מוצר לארוחה",
+    "dropHere": "שחררו כאן",
+    "addToPlan": "הוסף לתוכנית"
   },
   "food": {
     "title": "מאגר מוצרים",
@@ -1225,7 +1228,7 @@
     "smartHealthy": "בריאים (A/B)",
     "smartProtein": "חלבון גבוה",
     "allProducts": "כל המוצרים",
-    "backHome": "כל המדפים",
+    "backHome": "כל הקבוצות",
     "pagePrev": "הקודם",
     "pageNext": "הבא",
     "badgesTitle": "מה משמעות התגים",
@@ -1286,7 +1289,15 @@
     "offNoScores": "המוצר נמצא, אך אין לו תוויות",
     "offOffline": "אין חיבור ל-OpenFoodFacts — נסה שוב מאוחר יותר",
     "smartLowCal": "קלוריות נמוכות",
-    "smartEco": "ירוק A/B"
+    "smartEco": "ירוק A/B",
+    "groupMeat": "בשר ועוף",
+    "groupFish": "דגים ופירות ים",
+    "groupEggs": "ביצים",
+    "groupGrains": "דגנים ומאפים",
+    "groupNuts": "אגוזים וזרעים",
+    "groupOils": "שמנים ושומנים",
+    "product": "מוצר",
+    "products": "מוצרים"
   },
   "generator": {
     "title": "מחולל תוכניות חכם",
@@ -1559,7 +1570,7 @@
     "brandingSaved": "מיתוג נשמר — טוען מחדש...",
     "brandingReset": "מיתוג אופס — טען מחדש להחלה",
     "languagesHint": "RU · EN · HE (RTL אוטומטי)",
-    "themesHint": "6 עולמות · פלטה + זכוכית + סצנה",
+    "themesHint": "13 עולמות - פלטה + זכוכית + סצנה",
     "backupDesc": "ייצוא מלא של מסד הנתונים (מתאמנים, תמונות, מסמכים, תרגילים, הגדרות) לקובץ JSON יחיד. שחזור בכל מכשיר.",
     "appSection": "אפליקציה",
     "pwaDesc": "התקן כאפליקציה לשימוש ללא חיבור וגישה מהירה.",

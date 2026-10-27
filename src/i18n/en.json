@@ -1121,7 +1121,10 @@
     "afterAdd": "After adding, left to target",
     "subtitle": "Plans, products and daily targets — one system.",
     "eyebrow": "Fuel the work",
-    "dashboardTitle": "Meal plan"
+    "dashboardTitle": "Meal plan",
+    "dragHint": "Drag a product into a meal",
+    "dropHere": "Drop here",
+    "addToPlan": "Add to plan"
   },
   "food": {
     "title": "Food database",
@@ -1225,7 +1228,7 @@
     "smartHealthy": "Healthy (A/B)",
     "smartProtein": "High protein",
     "allProducts": "All products",
-    "backHome": "All shelves",
+    "backHome": "All groups",
     "pagePrev": "Prev",
     "pageNext": "Next",
     "badgesTitle": "What the badges mean",
@@ -1286,7 +1289,15 @@
     "offNoScores": "Product found, but it has no scores",
     "offOffline": "No connection to OpenFoodFacts — try again later",
     "smartLowCal": "Low calorie",
-    "smartEco": "Green A/B"
+    "smartEco": "Green A/B",
+    "groupMeat": "Meat & poultry",
+    "groupFish": "Fish & seafood",
+    "groupEggs": "Eggs",
+    "groupGrains": "Grains & bakery",
+    "groupNuts": "Nuts & seeds",
+    "groupOils": "Oils & fats",
+    "product": "product",
+    "products": "products"
   },
   "generator": {
     "title": "Smart program generator",
@@ -1559,7 +1570,7 @@
     "brandingSaved": "Branding saved — reloading...",
     "brandingReset": "Branding reset — reload to apply",
     "languagesHint": "RU · EN · HE (RTL auto)",
-    "themesHint": "6 complete visual worlds · palette + glass + scene",
+    "themesHint": "13 complete visual worlds - palette + glass + scene",
     "backupDesc": "Export the entire database (clients, photos, documents, exercises, settings) into a single JSON file. Restore on any device.",
     "appSection": "Application",
     "pwaDesc": "Install as an app for offline use and quick access.",

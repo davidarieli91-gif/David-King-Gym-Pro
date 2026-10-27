@@ -36,7 +36,7 @@ ok('template card shows P/C/F target chips in macro colours', tplList.indexOf("'
 ok('template actions preserved (edit/apply/delete)', tplList.indexOf('data-nt-edit') >= 0 && tplList.indexOf('data-nt-apply') >= 0 && tplList.indexOf('data-nt-delete') >= 0);
 ok('old icon+row template card removed', tplList.indexOf('w-10 h-10 rounded-lg bg-primary/15') < 0 && tplList.indexOf('shadow-card p-4 hover:border-primary/30') < 0);
 
-/* ---------- STATIC: c203 daily log meals — compact restaurant rows ---------- */
+/* ---------- STATIC: c204 daily log meals — compact restaurant rows ---------- */
 const rm = extractFn(trainer, 'renderMeals');
 ok('meal items render as compact dashboard rows', rm.indexOf('nutri-meal-row') >= 0 && rm.indexOf('nutri-meal-thumb') >= 0 && rm.indexOf('nutri-meal-copy') >= 0);
 ok('meal row: photo by stored food_id, plate placeholder for legacy entries', rm.indexOf('it.food_id') >= 0 && rm.indexOf('window.dkFoodImgTag') >= 0 && rm.indexOf('nutri-ph') >= 0);

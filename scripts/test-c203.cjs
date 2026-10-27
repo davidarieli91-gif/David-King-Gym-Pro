@@ -1,4 +1,4 @@
-/* c203 test - nutrition rebuilt as a plan dashboard (markup, CSS, data flow, i18n). */
+/* c204 test - nutrition rebuilt as a plan dashboard (markup, CSS, data flow, i18n). */
 const fs = require('fs');
 const path = require('path');
 const root = path.join(__dirname, '..');
@@ -49,7 +49,7 @@ ok('old page-head / old tab bar removed from nutrition', crm.indexOf('<div data-
 /* ---------- styles ---------- */
 ok('dashboard CSS exists and is linked', fs.existsSync(path.join(root, 'src', 'nutrition-dashboard.css')) && crm.indexOf('href="src/nutrition-dashboard.css"') >= 0);
 ok('CSS ships in copy-assets', copy.indexOf("'src/nutrition-dashboard.css'") >= 0);
-ok('two-column grid with 342px rail', css.indexOf('.nutri-dash {') >= 0 && css.indexOf('grid-template-columns: minmax(0, 1fr) 342px') >= 0);
+ok('two-column grid with a wider 372px rail', css.indexOf('.nutri-dash {') >= 0 && css.indexOf('grid-template-columns: minmax(0, 1fr) 372px') >= 0);
 ok('light-mode shell overrides', css.indexOf('[data-mode="light"] .nutri-dash') >= 0 && css.indexOf('[data-mode="light"] .nutri-shell') >= 0);
 ok('macro tones + rings', css.indexOf('--nutri-protein:') >= 0 && css.indexOf('--nutri-carbs:') >= 0 && css.indexOf('--nutri-fat:') >= 0 && css.indexOf('.nutri-macro-ring') >= 0 && css.indexOf('conic-gradient') >= 0);
 ok('compact meal row grid + done state', css.indexOf('.nutri-meal-row') >= 0 && css.indexOf('grid-template-areas') >= 0 && css.indexOf('.nutri-meal-check.done') >= 0);
@@ -60,7 +60,7 @@ ok('reduced motion respected', css.indexOf('prefers-reduced-motion') >= 0);
 
 /* ---------- data flow ---------- */
 const loadFoods = extractFn(crm, 'loadFoodCatalog');
-ok('food rail reads reference DB + local store', loadFoods.indexOf("db.all('food_base')") >= 0 && loadFoods.indexOf("db.all('food_database')") >= 0 && loadFoods.indexOf('normRef') >= 0);
+ok('food rail reads reference DB + local store', loadFoods.indexOf("db.all('food_base')") >= 0 && loadFoods.indexOf("db.all('food_database')") >= 0 && loadFoods.indexOf('dkNormalizeFood') >= 0);
 ok('food rail does not leak recipes into products', extractFn(crm, 'renderFoodPreview').indexOf("f.source === 'recipe'") >= 0);
 ok('history query uses the real by_clientId index', crm.indexOf("db.find('nutrition_history', 'by_clientId', _clientId)") >= 0 && crm.indexOf("'byClientId'") < 0);
 const rendHist = extractFn(crm, 'renderHistory');
@@ -90,8 +90,8 @@ for (const lang of ['en', 'ru', 'he']) {
   const dict = JSON.parse(fs.readFileSync(path.join(root, 'src', 'i18n', lang + '.json'), 'utf8'));
   const miss = required.filter(k => !dict.nutrition || typeof dict.nutrition[k] !== 'string' || !dict.nutrition[k].length);
   const bad = required.filter(k => dict.nutrition && /\?{2,}/.test(dict.nutrition[k] || ''));
-  ok(lang + ': all c203 keys present', miss.length === 0);
-  ok(lang + ': no corrupted c203 values', bad.length === 0);
+  ok(lang + ': all c204 keys present', miss.length === 0);
+  ok(lang + ': no corrupted c204 values', bad.length === 0);
   ok(lang + ': client active label present', !!(dict.clients && dict.clients.active));
 }
 const ru = JSON.parse(fs.readFileSync(path.join(root, 'src', 'i18n', 'ru.json'), 'utf8'));
@@ -100,11 +100,11 @@ ok('Russian dashboard copy is Cyrillic', /[\u0400-\u04FF]/.test(ru.nutrition.tab
 ok('Hebrew dashboard copy is Hebrew', /[\u0590-\u05FF]/.test(he.nutrition.tabPlan) && /[\u0590-\u05FF]/.test(he.nutrition.weeklyIntake));
 
 /* ---------- versions ---------- */
-ok('trainer build is c203', crm.indexOf('<meta name="dk-build" content="c203" />') >= 0);
-ok('RUNNING is 203', crm.indexOf('var RUNNING = 203;') >= 0);
-ok('sidebar/login show c203', crm.indexOf('id="v2-side-version">c203') >= 0 && crm.indexOf('3 languages · c203') >= 0);
-ok('service worker cache is v230', sw.indexOf("CACHE_NAME = 'dk-gym-v230'") >= 0);
-ok('service worker documents v230', sw.indexOf('// v230: c203') >= 0);
+ok('trainer build is c204', crm.indexOf('<meta name="dk-build" content="c204" />') >= 0);
+ok('RUNNING is 203', crm.indexOf('var RUNNING = 204;') >= 0);
+ok('sidebar/login show c204', crm.indexOf('id="v2-side-version">c204') >= 0 && crm.indexOf('3 languages · c204') >= 0);
+ok('service worker cache is v231', sw.indexOf("CACHE_NAME = 'dk-gym-v231'") >= 0);
+ok('service worker documents v231', sw.indexOf('// v231: c204') >= 0);
 ok('service worker precaches the dashboard CSS', sw.indexOf("'./src/nutrition-dashboard.css'") >= 0);
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');

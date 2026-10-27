@@ -11,17 +11,17 @@ const tailwind = fs.readFileSync(path.join(root, 'tailwind.config.js'), 'utf8');
 let pass = 0, fail = 0;
 function ok(name, cond) { cond ? pass++ : fail++; console.log((cond ? 'PASS ' : 'FAIL ') + name); }
 function has(s, x) { return s.indexOf(x) >= 0; }
-const themes = ['v2-nebula', 'v2-aurora', 'v2-abyss', 'v2-solar', 'v2-arctic', 'v2-pearl'];
+const themes = ['v2-nebula', 'v2-aurora', 'v2-abyss', 'v2-solar', 'v2-arctic', 'v2-pearl', 'v2-honey', 'v2-apricot', 'v2-jade', 'v2-plum', 'v2-horizon', 'v2-sand', 'v2-sky'];
 
 /* ---------- theme registry ---------- */
-ok('trainer ships the six Vision themes', themes.every(id => has(crm, "id:'" + id + "'")));
-ok('portal ships the same six themes', themes.every(id => has(portal, "id:'" + id + "'")));
+ok('trainer ships the thirteen Vision themes', themes.every(id => has(crm, "id:'" + id + "'")));
+ok('portal ships the same thirteen themes', themes.every(id => has(portal, "id:'" + id + "'")));
 ok('every trainer theme has a CSS token block', themes.every(id => has(crm, 'data-theme="' + id + '"')));
 ok('every portal theme has a CSS token block', themes.every(id => has(portal, 'data-theme="' + id + '"')));
 ok('trainer no longer lists the 33 legacy themes', !has(crm, "id:'midnight-obsidian'") && !has(crm, "id:'retro-1940'"));
 ok('portal no longer lists the 33 legacy themes', !has(portal, "id:'midnight-obsidian'") && !has(portal, "id:'retro-1940'"));
-ok('trainer maps old themes to Vision presets', has(crm, "'retro-1940':'v2-solar'") && has(crm, "'ocean-deep':'v2-nebula'") && has(crm, "'forest-night':'v2-abyss'"));
-ok('portal maps old themes to Vision presets', has(portal, "'retro-1940':'v2-solar'") && has(portal, "'royal-purple':'v2-aurora'"));
+ok('trainer maps old themes to Vision presets', has(crm, "'retro-1940':'v2-honey'") && has(crm, "'ocean-deep':'v2-horizon'") && has(crm, "'forest-night':'v2-jade'"));
+ok('portal maps old themes to Vision presets', has(portal, "'retro-1940':'v2-honey'") && has(portal, "'royal-purple':'v2-aurora'"));
 ok('trainer has normalizeThemeId', has(crm, 'function normalizeThemeId(id)'));
 ok('portal has normalizePortalTheme', has(portal, 'function normalizePortalTheme(t)'));
 ok('applyTheme forces the v2 UI', has(crm, "document.documentElement.setAttribute('data-ui', 'v2')") && has(portal, "document.documentElement.setAttribute('data-ui', 'v2')"));
@@ -31,8 +31,8 @@ ok('trainer html is v2 + nebula by default', has(crm, 'data-theme="v2-nebula" da
 ok('portal html is v2 + nebula by default', has(portal, 'data-theme="v2-nebula" data-mode="dark" data-ui="v2"'));
 ok('trainer has the scene layers', has(crm, 'id="v2-scene"') && has(crm, 'id="v2-orb"') && has(crm, 'class="v2-grid"'));
 ok('portal has the scene layer', has(portal, 'id="v2-scene"'));
-ok('six scene gradients in trainer theme block', (crm.match(/--v2-scene:/g) || []).length >= 6);
-ok('six scene gradients in portal theme block', (portal.match(/--v2-scene:/g) || []).length >= 6);
+ok('thirteen scene gradients in trainer theme block', (crm.match(/--v2-scene:/g) || []).length >= 13);
+ok('thirteen scene gradients in portal theme block', (portal.match(/--v2-scene:/g) || []).length >= 13);
 ok('trainer has the new top search', has(crm, 'id="v2-global-search"') && has(crm, 'id="v2-search-results"'));
 ok('trainer has the profile menu', has(crm, 'id="v2-profile-btn"') && has(crm, 'id="v2-profile-menu"'));
 ok('trainer has the mobile drawer', has(crm, 'v2-drawer-open') && has(crm, 'v2-drawer-backdrop'));
@@ -78,7 +78,7 @@ for (const lang of ['en', 'ru', 'he']) {
   ok('i18n ' + lang + ' has all Vision dashboard keys', keys.every(k => d.clients && typeof d.clients[k] === 'string' && d.clients[k].length > 0));
   ok('i18n ' + lang + ' has no corrupted new strings', !/\?{3,}/.test([d.clients.kpiTotal, d.clients.workspace, d.clients.coach, d.settings.themesHint].join(' ')));
 }
-ok('theme hint says six worlds', /6 /.test(JSON.parse(fs.readFileSync(path.join(root, 'src', 'i18n', 'en.json'), 'utf8')).settings.themesHint));
+ok('theme hint says thirteen worlds', /13 /.test(JSON.parse(fs.readFileSync(path.join(root, 'src', 'i18n', 'en.json'), 'utf8')).settings.themesHint));
 
 /* ---------- c202 depth pass ---------- */
 ok('sidebar client search removed', !has(crm, 'id="aside-search"'));
@@ -92,10 +92,10 @@ ok('exercise cards advertise their animation', has(crm, 'class="v2-anim-badge"')
 ok('card sheen animation exists', has(crm, '@keyframes v2-card-sheen'));
 
 /* ---------- versions ---------- */
-ok('trainer build c203', has(crm, 'name="dk-build" content="c203"'));
-ok('login build c203', has(crm, '3 languages · c203'));
-ok('RUNNING 203', has(crm, 'var RUNNING = 203;'));
-ok('SW cache v230', has(sw, "CACHE_NAME = 'dk-gym-v230'"));
+ok('trainer build c204', has(crm, 'name="dk-build" content="c204"'));
+ok('login build c204', has(crm, '3 languages · c204'));
+ok('RUNNING 204', has(crm, 'var RUNNING = 204;'));
+ok('SW cache v231', has(sw, "CACHE_NAME = 'dk-gym-v231'"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 if (fail) process.exitCode = 1;
