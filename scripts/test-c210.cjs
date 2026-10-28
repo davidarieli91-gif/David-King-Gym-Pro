@@ -24,10 +24,10 @@ ok('nutrition rail stays 3-up and meals use 2/3 columns', css.indexOf('.nutri-ra
 ok('mobile keeps two client columns and stacks the hero', css.indexOf('grid-template-columns: repeat(2, minmax(0, 1fr))') >= 0 && css.indexOf('.dk-hero { grid-template-columns: 1fr; }') >= 0);
 ok('hidden settings never leak under another screen', css.indexOf('[data-screen="settings"]:not(.hidden)') >= 0);
 
-ok('trainer build c210', crm.indexOf('<meta name="dk-build" content="c210" />') >= 0);
-ok('trainer RUNNING 210', crm.indexOf('var RUNNING = 210;') >= 0);
-ok('sidebar + login show c210', crm.indexOf('id="v2-side-version">c210') >= 0 && crm.indexOf('3 languages · c210') >= 0);
-ok('SW cache v237', sw.indexOf("CACHE_NAME = 'dk-gym-v237'") >= 0);
+ok('trainer build c211', crm.indexOf('<meta name="dk-build" content="c211" />') >= 0);
+ok('trainer RUNNING 211', crm.indexOf('var RUNNING = 211;') >= 0);
+ok('sidebar + login show c210', crm.indexOf('id="v2-side-version">c211') >= 0 && crm.indexOf('3 languages · c211') >= 0);
+ok('SW cache v238', sw.indexOf("CACHE_NAME = 'dk-gym-v238'") >= 0);
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);

@@ -279,3 +279,131 @@ html[data-ui="v2"] .nutri-rail .nutri-food-grid {
 @media (min-width: 3000px) {
   html[data-ui="v2"] .nutri-meal-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
+
+
+/* ============================================================
+   c211 ? readable large-monitor typography + settings flow
+   ============================================================ */
+@media (min-width: 1800px) {
+  /* Tailwind's hard pixel text sizes were tuned for a laptop; scale them
+     once on large panels instead of making the trainer zoom the app. */
+  html[data-ui="v2"] [class*="text-[8px]"] { font-size: clamp(11px, .43vw, 14px) !important; line-height: 1.35; }
+  html[data-ui="v2"] [class*="text-[9px]"] { font-size: clamp(13px, .56vw, 16px) !important; line-height: 1.35; }
+  html[data-ui="v2"] [class*="text-[10px]"] { font-size: clamp(15px, .58vw, 18px) !important; line-height: 1.35; }
+  html[data-ui="v2"] [class*="text-[11px]"] { font-size: clamp(15px, .58vw, 18px) !important; line-height: 1.35; }
+  html[data-ui="v2"] [class*="text-[12px]"] { font-size: clamp(15px, .6vw, 18px) !important; line-height: 1.35; }
+  html[data-ui="v2"] [class*="text-[13px]"] { font-size: clamp(17px, .66vw, 20px) !important; line-height: 1.35; }
+  html[data-ui="v2"] [class*="text-[14px]"] { font-size: clamp(16px, .66vw, 19px) !important; line-height: 1.35; }
+  html[data-ui="v2"] .text-xs { font-size: clamp(14px, .57vw, 17px) !important; line-height: 1.4; }
+  html[data-ui="v2"] .text-sm { font-size: clamp(17px, .66vw, 20px) !important; }
+  html[data-ui="v2"] .text-base { font-size: clamp(16px, .7vw, 20px) !important; }
+  html[data-ui="v2"] .text-lg { font-size: clamp(18px, .8vw, 23px) !important; }
+  html[data-ui="v2"] .text-xl { font-size: clamp(21px, .95vw, 28px) !important; }
+  html[data-ui="v2"] .text-2xl { font-size: clamp(24px, 1.15vw, 34px) !important; }
+
+  /* bigger controls to match the type scale */
+  html[data-ui="v2"] .dk-status-chip, html[data-ui="v2"] .dk-filter-btn,
+  html[data-ui="v2"] .dk-roster-tools select, html[data-ui="v2"] .v2-compact-select { height: 38px; }
+  html[data-ui="v2"] .dk-quick-row { padding-block: 9px; }
+  html[data-ui="v2"] .dk-rail-head h3 { font-size: 13px; }
+  html[data-ui="v2"] .dk-quick-copy b { font-size: 11px; }
+  html[data-ui="v2"] .dk-quick-copy small { font-size: 9.5px; }
+  html[data-ui="v2"] .dk-activity-copy b { font-size: 11px; }
+  html[data-ui="v2"] .dk-activity-copy small { font-size: 9.5px; }
+
+  /* food detail is a work surface, not a phone sheet */
+  html[data-ui="v2"] #food-detail-modal > .bg-surface {
+    max-width: clamp(960px, 52vw, 1400px) !important;
+    width: 100% !important;
+  }
+  html[data-ui="v2"] #food-detail-view { padding: 22px !important; }
+  html[data-ui="v2"] #food-detail-view .em-media { max-width: 420px; }
+  html[data-ui="v2"] #food-detail-image-slot { aspect-ratio: 4 / 3; }
+
+  /* Settings flows as balanced columns instead of a chessboard grid */
+  html[data-ui="v2"] [data-screen="settings"]:not(.hidden) {
+    display: block !important;
+    column-count: 2;
+    column-gap: 18px;
+  }
+  html[data-ui="v2"] [data-screen="settings"] > h1 { column-span: all; }
+  html[data-ui="v2"] [data-screen="settings"] > .settings-panel {
+    break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    margin-bottom: 16px !important;
+  }
+  html[data-ui="v2"] [data-screen="settings"] > button { column-span: all; width: 100%; }
+}
+@media (min-width: 2600px) {
+  html[data-ui="v2"] [data-screen="settings"]:not(.hidden) { column-count: 3; }
+}
+
+
+/* c211b ? component-level type scale (the custom CSS labels that are not
+   Tailwind utilities need their own readable sizes on large monitors) */
+@media (min-width: 1800px) {
+  html[data-ui="v2"] .dk-kpi-label { font-size: clamp(13px, .56vw, 16px); }
+  html[data-ui="v2"] .dk-kpi-sub { font-size: clamp(13.5px, .56vw, 16px); }
+  html[data-ui="v2"] .dk-dash-head p, html[data-ui="v2"] .dk-roster-head p { font-size: clamp(13.5px, .56vw, 16px); }
+  html[data-ui="v2"] .dk-status-chip { font-size: clamp(13px, .56vw, 16px); }
+  html[data-ui="v2"] .dk-status-chip b { font-size: clamp(9px, .4vw, 12px); }
+  html[data-ui="v2"] .dk-search input, html[data-ui="v2"] .dk-roster-tools select { font-size: clamp(15px, .58vw, 18px); }
+  html[data-ui="v2"] .dk-client-sub { font-size: clamp(13px, .54vw, 15px); }
+  html[data-ui="v2"] .dk-client-goal { font-size: clamp(13.5px, .56vw, 16px); }
+  html[data-ui="v2"] .dk-client-photo-badge { font-size: clamp(9px, .39vw, 12px); }
+  html[data-ui="v2"] .dk-client-ring b { font-size: clamp(12px, .48vw, 14px); }
+  html[data-ui="v2"] .dk-client-wk b { font-size: clamp(15px, .63vw, 19px); }
+  html[data-ui="v2"] .dk-client-wk small { font-size: clamp(11px, .43vw, 13px); }
+  html[data-ui="v2"] .dk-client-metric { font-size: clamp(12.5px, .5vw, 14.5px); }
+  html[data-ui="v2"] .dk-client-metric svg { width: 12px; height: 12px; }
+  html[data-ui="v2"] .dk-rail-hero h3 { font-size: clamp(16px, .7vw, 20px); }
+  html[data-ui="v2"] .dk-rail-hero p { font-size: clamp(10px, .43vw, 13px); }
+  html[data-ui="v2"] .dk-quick-copy b, html[data-ui="v2"] .dk-activity-copy b { font-size: clamp(13.5px, .56vw, 16px); }
+  html[data-ui="v2"] .dk-quick-copy small, html[data-ui="v2"] .dk-activity-copy small { font-size: clamp(12px, .48vw, 14px); }
+  html[data-ui="v2"] .dk-rail-quote b { font-size: clamp(16px, .7vw, 20px); }
+  html[data-ui="v2"] .dk-rail-quote p { font-size: clamp(11px, .44vw, 13.5px); }
+
+  html[data-ui="v2"] .dk-hero-chip { font-size: clamp(12px, .48vw, 14px); height: 25px; }
+  html[data-ui="v2"] .dk-hero-meta, html[data-ui="v2"] .dk-hero-quote { font-size: clamp(10px, .43vw, 13px); }
+  html[data-ui="v2"] .dk-hero-btn { font-size: clamp(10px, .43vw, 13px); height: 33px; }
+  html[data-ui="v2"] .dk-hero-info-tile small { font-size: clamp(8px, .34vw, 10.5px); }
+  html[data-ui="v2"] .dk-hero-info-tile b { font-size: clamp(15px, .58vw, 18px); }
+  html[data-ui="v2"] .dk-hero-ring-wrap small { font-size: clamp(11px, .43vw, 13px); }
+  html[data-ui="v2"] .dk-hero-program-head span, html[data-ui="v2"] .dk-hero-program-head small { font-size: clamp(11px, .43vw, 13px); }
+  html[data-ui="v2"] .dk-hero-program h4 { font-size: clamp(14px, .6vw, 18px); }
+  html[data-ui="v2"] .dk-hero-program p { font-size: clamp(11.5px, .46vw, 14px); }
+  html[data-ui="v2"] .dk-hero-program button { font-size: clamp(11.5px, .46vw, 14px); height: 31px; }
+  html[data-ui="v2"] .dk-stat-tile span { font-size: clamp(11.5px, .46vw, 14px); }
+  html[data-ui="v2"] .dk-stat-tile em { font-size: clamp(11px, .43vw, 13px); }
+  html[data-ui="v2"] .dk-chart-head h3 { font-size: clamp(15px, .58vw, 18px); }
+  html[data-ui="v2"] .dk-chart-head select { font-size: clamp(11px, .44vw, 13.5px); height: 29px; }
+  html[data-ui="v2"] .dk-meal-top b { font-size: clamp(10px, .43vw, 13px); }
+  html[data-ui="v2"] .dk-meal-time { font-size: clamp(8.5px, .35vw, 10.5px); }
+  html[data-ui="v2"] .dk-meal-kcal { font-size: clamp(15px, .58vw, 18px); }
+  html[data-ui="v2"] .dk-meal-macros { font-size: clamp(8px, .34vw, 10.5px); }
+
+  /* nutrition work surfaces */
+  html[data-ui="v2"] .nutri-food-name { font-size: clamp(12px, .48vw, 14px); }
+  html[data-ui="v2"] .nutri-food-energy, html[data-ui="v2"] .nutri-food-tile .nutri-food-energy { font-size: clamp(11px, .45vw, 13.5px); }
+  html[data-ui="v2"] .nutri-meal-sub, html[data-ui="v2"] .nutri-meal-title small { font-size: clamp(12px, .48vw, 14px); }
+  html[data-ui="v2"] .nutri-meal-kcal small, html[data-ui="v2"] .nutri-meal-macros span { font-size: clamp(11px, .44vw, 13px); }
+  html[data-ui="v2"] .nutri-day-macro-top, html[data-ui="v2"] .nutri-macro-copy small { font-size: clamp(11.5px, .46vw, 14px); }
+  html[data-ui="v2"] .nutri-food-cat { font-size: clamp(11.5px, .46vw, 14px); height: 29px; }
+  html[data-ui="v2"] .nutri-food-grid .nutri-food-name { font-size: clamp(12px, .48vw, 14px); }
+  html[data-ui="v2"] .nutri-food-grid .nutri-food-energy { font-size: clamp(10.5px, .43vw, 13px); }
+  html[data-ui="v2"] .food-group-name { font-size: clamp(14px, .57vw, 17px); }
+  html[data-ui="v2"] .food-group-sub { font-size: clamp(11.5px, .46vw, 14px); }
+  html[data-ui="v2"] .food-group-count { font-size: clamp(11px, .44vw, 13px); }
+  html[data-ui="v2"] .nutri-side-head h3 { font-size: clamp(17px, .66vw, 20px); }
+  html[data-ui="v2"] .nutri-metric span, html[data-ui="v2"] .nutri-metric b { font-size: clamp(11px, .44vw, 13.5px); }
+  html[data-ui="v2"] .nutri-history-date b, html[data-ui="v2"] .nutri-history-kcal { font-size: clamp(11px, .44vw, 13.5px); }
+  html[data-ui="v2"] .nutri-recipe-copy b { font-size: clamp(15px, .58vw, 18px); }
+  html[data-ui="v2"] .nutri-recipe-copy small { font-size: clamp(12px, .48vw, 14px); }
+}
+
+@media (min-width: 1800px) {
+  html[data-ui="v2"] .nutri-meal-title b { font-size: clamp(15px, .6vw, 18px); }
+  html[data-ui="v2"] .nutri-food-cat { font-size: clamp(11.5px, .46vw, 14px); }
+  html[data-ui="v2"] #food-detail-view .text-xs,
+  html[data-ui="v2"] #food-detail-view .text-sm { line-height: 1.45; }
+}

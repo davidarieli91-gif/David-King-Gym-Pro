@@ -38,10 +38,10 @@ ok('profile CSS covers hero, ring, stats, chart and meals', ['.dk-hero', '.dk-he
 ok('light mode has theme-aware cards', css.indexOf('html[data-ui="v2"] .dk-client-card') >= 0 && crm.indexOf('[data-mode="light"]') >= 0);
 
 /* ---------- versions ---------- */
-ok('trainer build c210', crm.indexOf('<meta name="dk-build" content="c210" />') >= 0);
-ok('trainer RUNNING 210', crm.indexOf('var RUNNING = 210;') >= 0);
-ok('sidebar + login show c208', crm.indexOf('id="v2-side-version">c210') >= 0 && crm.indexOf('3 languages · c210') >= 0);
-ok('SW cache v237', sw.indexOf("CACHE_NAME = 'dk-gym-v237'") >= 0);
+ok('trainer build c211', crm.indexOf('<meta name="dk-build" content="c211" />') >= 0);
+ok('trainer RUNNING 211', crm.indexOf('var RUNNING = 211;') >= 0);
+ok('sidebar + login show c208', crm.indexOf('id="v2-side-version">c211') >= 0 && crm.indexOf('3 languages · c211') >= 0);
+ok('SW cache v238', sw.indexOf("CACHE_NAME = 'dk-gym-v238'") >= 0);
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);

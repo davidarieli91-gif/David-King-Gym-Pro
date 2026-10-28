@@ -52,10 +52,10 @@ ok('router still shows every [data-screen] mount', crm.indexOf("document.querySe
    of inline <script> templates; the nutrition→tools boundary is the one that
    regressed and is covered above. The browser smoke test checks the rest. */
 
-ok('trainer build c210', crm.indexOf('<meta name="dk-build" content="c210" />') >= 0);
-ok('trainer RUNNING 210', crm.indexOf('var RUNNING = 210;') >= 0);
-ok('sidebar + login show c207', crm.indexOf('id="v2-side-version">c210') >= 0 && crm.indexOf('3 languages · c210') >= 0);
-ok('SW cache v237', sw.indexOf("CACHE_NAME = 'dk-gym-v237'") >= 0);
+ok('trainer build c211', crm.indexOf('<meta name="dk-build" content="c211" />') >= 0);
+ok('trainer RUNNING 211', crm.indexOf('var RUNNING = 211;') >= 0);
+ok('sidebar + login show c207', crm.indexOf('id="v2-side-version">c211') >= 0 && crm.indexOf('3 languages · c211') >= 0);
+ok('SW cache v238', sw.indexOf("CACHE_NAME = 'dk-gym-v238'") >= 0);
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
