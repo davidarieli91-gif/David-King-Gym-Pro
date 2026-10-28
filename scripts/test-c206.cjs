@@ -35,10 +35,10 @@ ok('no light-mode image filter overrides', css.indexOf('[data-mode="light"] .bm-
 ok('portal light-mode text rules still exist', portal.indexOf('[data-mode="light"] #workout-exercises-list') >= 0);
 
 /* ---------- versions ---------- */
-ok('trainer build c206', crm.indexOf('<meta name="dk-build" content="c206" />') >= 0);
-ok('trainer RUNNING 206', crm.indexOf('var RUNNING = 206;') >= 0);
-ok('sidebar + login show c206', crm.indexOf('id="v2-side-version">c206') >= 0 && crm.indexOf('3 languages · c206') >= 0);
-ok('SW cache v233', sw.indexOf("CACHE_NAME = 'dk-gym-v233'") >= 0);
+ok('trainer build c207', crm.indexOf('<meta name="dk-build" content="c207" />') >= 0);
+ok('trainer RUNNING 207', crm.indexOf('var RUNNING = 207;') >= 0);
+ok('sidebar + login show c206', crm.indexOf('id="v2-side-version">c207') >= 0 && crm.indexOf('3 languages · c207') >= 0);
+ok('SW cache v234', sw.indexOf("CACHE_NAME = 'dk-gym-v234'") >= 0);
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
