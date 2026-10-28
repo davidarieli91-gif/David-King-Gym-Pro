@@ -52,7 +52,7 @@ ok('exercise media slot no longer shrinks to a small square', crm.includes('#exe
 ok('exercise media slot has a hard full-width inline fallback', crm.includes('style="width:100%;max-height:none;aspect-ratio:1/1"'));
 ok('mobile media column is explicitly full width', crm.includes('#exercise-view:not(.em2col) > .em-media'));
 ok('modal media child stretches instead of shrinking in grid centering', crm.includes('#exercise-gif-slot { display: flex !important; flex-direction: column; align-items: stretch; justify-content: center; }') && crm.includes('#exercise-gif-slot > .ex-anim-container'));
-ok('login build label is current', crm.includes('3 languages · c207'));
+ok('login build label is current', crm.includes('3 languages · c208'));
 
 for (const lang of ['en', 'ru', 'he']) {
   const d = JSON.parse(fs.readFileSync(path.join(root, 'src', 'i18n', lang + '.json'), 'utf8'));
@@ -60,8 +60,8 @@ for (const lang of ['en', 'ru', 'he']) {
 }
 ok('copy-assets ships RepDB JSON', has(copy, "'exercise-db-rdb.json'"));
 ok('SW precaches RepDB JSON', has(sw, "'./exercise-db-rdb.json'"));
-ok('trainer build c207', has(crm, 'name="dk-build" content="c207"'));
-ok('SW cache v234', has(sw, "CACHE_NAME = 'dk-gym-v234'"));
+ok('trainer build c208', has(crm, 'name="dk-build" content="c208"'));
+ok('SW cache v235', has(sw, "CACHE_NAME = 'dk-gym-v235'"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 if (fail) process.exitCode = 1;

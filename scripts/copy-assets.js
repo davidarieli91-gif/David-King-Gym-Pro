@@ -37,6 +37,7 @@ const assets = [
   'src/i18n',
   'src/input.css',
   'src/nutrition-dashboard.css',
+  'src/dashboard-v3.css',
 ];
 
 for (const asset of assets) {

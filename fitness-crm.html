@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c207" />
+<meta name="dk-build" content="c208" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -53,6 +53,7 @@
 
   <link rel="stylesheet" href="src/input.css" />
   <link rel="stylesheet" href="src/nutrition-dashboard.css" />
+  <link rel="stylesheet" href="src/dashboard-v3.css" />
   <!-- i18n dictionaries as bundled ES module (executes before DOMContentLoaded) -->
   <script type="module" src="src/i18n.js"></script>
   <!-- c184: shared muscle core — ONE performed/units/attribution model for both engines -->
@@ -4532,7 +4533,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           </div>
           <div class="flex items-center gap-2 mb-3">
             <span class="v2-pill v2-pill-live"><span class="w-1.5 h-1.5 rounded-full bg-success"></span> <span data-i18n="clients.online">Online</span></span>
-            <span class="v2-pill" id="v2-side-version">c207</span>
+            <span class="v2-pill" id="v2-side-version">c208</span>
           </div>
         </div>
 
@@ -4679,20 +4680,23 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c207</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c208</p>
             </div>
           </div>
 
           <!-- ============= DASHBOARD SCREEN (Steps 7-9) ============= -->
-          <div data-screen="dashboard" class="hidden p-4 sm:p-6 lg:p-8 max-w-[1500px] mx-auto w-full">
-            <div class="v2-page-head">
-              <div class="min-w-0">
-                <div class="v2-eyebrow"><span class="v2-live-dot"></span> <span data-i18n="clients.workspace">Trainer workspace</span></div>
-                <h1 class="v2-hero-title" data-i18n="clients.title">Clients</h1>
-                <p class="v2-hero-sub" data-i18n="clients.subtitle">Your athletes — one command center.</p>
+          <div data-screen="dashboard" class="hidden p-4 sm:p-6 lg:p-8 max-w-[1500px] mx-auto w-full dk-dash">
+            <div class="dk-dash-head">
+              <div class="dk-dash-mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
               </div>
-              <div class="flex items-center gap-2 shrink-0">
-                <span id="dash-count" class="v2-pill">0</span>
+              <div class="min-w-0 flex-1">
+                <div class="v2-eyebrow"><span class="v2-live-dot"></span> <span data-i18n="clients.workspace">Trainer workspace</span></div>
+                <h1 data-i18n="clients.title">Clients</h1>
+                <p data-i18n="clients.subtitle">Your athletes &mdash; one command center.</p>
+              </div>
+              <div class="dk-dash-head-actions">
+                <span id="dash-count" class="dk-dash-count">0</span>
                 <button id="dash-add-btn" class="v2-btn-primary">
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
                   <span data-i18n="aside.addClient">Add Client</span>
@@ -4700,108 +4704,93 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
               </div>
             </div>
 
-            <div class="v2-kpi-grid">
-              <div class="v2-kpi">
-                <div class="flex items-start justify-between gap-2"><div class="v2-kpi-label" data-i18n="clients.kpiTotal">Total clients</div><span class="v2-icon-box w-8 h-8 rounded-lg"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg></span></div>
-                <div class="v2-kpi-value" id="v2-kpi-clients">0</div>
-                <div class="v2-kpi-sub" id="v2-kpi-clients-sub">Across all groups</div>
+            <div class="v2-kpi-grid dk-kpi-grid">
+              <div class="v2-kpi dk-kpi">
+                <div class="dk-kpi-top"><div class="dk-kpi-label" data-i18n="clients.kpiTotal">Total clients</div><span class="dk-kpi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg></span></div>
+                <div><div class="dk-kpi-value" id="v2-kpi-clients">0</div><div class="dk-kpi-sub" id="v2-kpi-clients-sub">Across all groups</div></div>
               </div>
-              <div class="v2-kpi">
-                <div class="flex items-start justify-between gap-2"><div class="v2-kpi-label" data-i18n="clients.kpiActive">Active this week</div><span class="v2-icon-box w-8 h-8 rounded-lg"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></span></div>
-                <div class="v2-kpi-value" id="v2-kpi-active">0</div>
-                <div class="v2-kpi-sub" id="v2-kpi-active-sub">Trained or checked in</div>
+              <div class="v2-kpi dk-kpi">
+                <div class="dk-kpi-top"><div class="dk-kpi-label" data-i18n="clients.kpiActive">Active this week</div><span class="dk-kpi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></span></div>
+                <div><div class="dk-kpi-value" id="v2-kpi-active">0</div><div class="dk-kpi-sub" id="v2-kpi-active-sub">Trained or checked in</div></div>
               </div>
-              <div class="v2-kpi">
-                <div class="flex items-start justify-between gap-2"><div class="v2-kpi-label" data-i18n="clients.kpiWorkouts">Workouts / 7 days</div><span class="v2-icon-box w-8 h-8 rounded-lg"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M6 12h12"/></svg></span></div>
-                <div class="v2-kpi-value" id="v2-kpi-workouts">0</div>
-                <div class="v2-kpi-sub" id="v2-kpi-workouts-sub">Logged sessions</div>
+              <div class="v2-kpi dk-kpi">
+                <div class="dk-kpi-top"><div class="dk-kpi-label" data-i18n="clients.kpiWorkouts">Workouts / 7 days</div><span class="dk-kpi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M6 12h12"/></svg></span></div>
+                <div><div class="dk-kpi-value" id="v2-kpi-workouts">0</div><div class="dk-kpi-sub" id="v2-kpi-workouts-sub">Logged sessions</div></div>
               </div>
-              <div class="v2-kpi">
-                <div class="flex items-start justify-between gap-2"><div class="v2-kpi-label" data-i18n="clients.kpiNew">New this month</div><span class="v2-icon-box w-8 h-8 rounded-lg"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></span></div>
-                <div class="v2-kpi-value" id="v2-kpi-new">0</div>
-                <div class="v2-kpi-sub" id="v2-kpi-new-sub">Fresh profiles</div>
+              <div class="v2-kpi dk-kpi">
+                <div class="dk-kpi-top"><div class="dk-kpi-label" data-i18n="clients.kpiNew">New this month</div><span class="dk-kpi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></span></div>
+                <div><div class="dk-kpi-value" id="v2-kpi-new">0</div><div class="dk-kpi-sub" id="v2-kpi-new-sub">Fresh profiles</div></div>
+              </div>
+              <div class="v2-kpi dk-kpi">
+                <div class="dk-kpi-top"><div class="dk-kpi-label" data-i18n="clients.dynamics">Client dynamics</div><span class="dk-kpi-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 7-8"/><path d="M14 7h6v6"/></svg></span></div>
+                <div class="dk-kpi-spark" id="v2-kpi-spark" aria-hidden="true"></div>
+                <div class="dk-kpi-sub" id="v2-kpi-dyn-sub">Workouts trend &middot; 6 weeks</div>
               </div>
             </div>
 
-            <div class="v2-dash-grid">
-              <div class="v2-panel v2-list-panel">
-                <div class="v2-panel-head">
-                  <div>
-                    <div class="v2-section-title" data-i18n="clients.roster">Client roster</div>
-                    <div class="v2-section-sub" data-i18n="clients.rosterHint">Search, filter and open a profile</div>
+            <div class="v2-dash-grid dk-dash-grid">
+              <div class="v2-panel v2-list-panel dk-roster">
+                <div class="dk-roster-head">
+                  <span class="dk-panel-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg></span>
+                  <div><h2 data-i18n="clients.roster">Client roster</h2><p data-i18n="clients.rosterHint">Search, filter and open a profile</p></div>
+                  <div class="dk-view-toggle" role="group" aria-label="View">
+                    <button type="button" id="dash-view-grid" class="dk-view-btn active" data-view="grid" title="Grid" onclick="screens.dashboard.setView('grid');this.parentElement.querySelectorAll('.dk-view-btn').forEach(x=>x.classList.toggle('active',x===this))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></button>
+                    <button type="button" id="dash-view-list" class="dk-view-btn" data-view="list" title="List" onclick="screens.dashboard.setView('list');this.parentElement.querySelectorAll('.dk-view-btn').forEach(x=>x.classList.toggle('active',x===this))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
                   </div>
-                  <div class="flex items-center gap-1.5">
-                    <select id="dash-sort" class="v2-compact-select">
-                      <option value="created" data-i18n="clients.sortCreated">Date added</option>
-                      <option value="name" data-i18n="clients.sortName">Name</option>
-                      <option value="lastActive" data-i18n="clients.sortLastActive">Last active</option>
-                      <option value="cgroup" data-i18n="clients.sortGroup">Group</option>
-                    </select>
-                  </div>
+                  <select id="dash-sort" class="v2-compact-select" onchange="screens.dashboard.setSort(this.value)">
+                    <option value="created" data-i18n="clients.sortCreated">Date added</option>
+                    <option value="name" data-i18n="clients.sortName">Name</option>
+                    <option value="lastActive" data-i18n="clients.sortLastActive">Last active</option>
+                    <option value="cgroup" data-i18n="clients.sortGroup">Group</option>
+                  </select>
                 </div>
-                <div class="v2-list-toolbar">
-                  <div class="relative flex-1 min-w-0">
-                    <svg class="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-                    <input type="search" id="dash-search" autocomplete="off" readonly
-                      autocorrect="off" autocapitalize="off" spellcheck="false" data-1p-ignore data-lpignore="true"
-                      data-i18n-ph="clients.search" class="w-full bg-surface-2 border border-border rounded-xl ps-9 pe-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
+                <div class="dk-roster-tools">
+                  <div class="dk-search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                    <input type="search" id="dash-search" autocomplete="off" readonly autocorrect="off" autocapitalize="off" spellcheck="false" data-1p-ignore data-lpignore="true" data-i18n-ph="clients.search" />
                   </div>
+                  <div class="dk-status-chips" id="dash-status"></div>
+                  <select id="dash-group" aria-label="Group" onchange="screens.dashboard.setGroupFilter(this.value)"><option value="all" data-i18n="clients.allGroups">All groups</option></select>
                 </div>
                 <div class="flex gap-1.5 overflow-x-auto no-scrollbar pb-2 items-center" id="dash-filters"></div>
-                <div id="dash-list" class="v2-client-list"></div>
+                <div id="dash-list" class="dk-client-grid"></div>
                 <div id="dash-empty" class="hidden text-center py-12">
                   <div class="inline-flex w-16 h-16 rounded-2xl bg-surface-2 border border-border grid place-items-center mb-4">
                     <svg class="w-7 h-7 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>
                   </div>
                   <p class="text-sm text-muted mb-4 max-w-xs mx-auto" data-i18n="clients.empty">No clients yet. Tap "Add Client" to create the first profile.</p>
-                  <button id="dash-empty-add" class="v2-btn-primary mx-auto">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-                    <span data-i18n="aside.addClient">Add Client</span>
-                  </button>
+                  <button id="dash-empty-add" class="v2-btn-primary mx-auto"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg><span data-i18n="aside.addClient">Add Client</span></button>
                 </div>
               </div>
 
-              <div class="v2-dash-rail">
-                <div class="v2-panel v2-rail-card">
-                  <div class="flex items-center justify-between gap-2 mb-3">
-                    <div class="v2-section-title" data-i18n="clients.quickActions">Quick actions</div>
-                    <span class="v2-pill" data-i18n="clients.live">Live</span>
-                  </div>
-                  <button class="v2-quick-action" data-nav="workouts">
-                    <span class="v2-icon-box"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M6 12h12"/></svg></span>
-                    <span class="min-w-0 flex-1"><span class="block text-xs font-semibold" data-i18n="workouts.startWorkout">Start workout</span><span class="block text-[10px] text-muted" data-i18n="clients.startWorkoutHint">Open the live session</span></span>
-                    <svg class="w-3.5 h-3.5 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-                  </button>
-                  <button class="v2-quick-action" id="dash-quick-add">
-                    <span class="v2-icon-box"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></span>
-                    <span class="min-w-0 flex-1"><span class="block text-xs font-semibold" data-i18n="aside.addClient">Add Client</span><span class="block text-[10px] text-muted" data-i18n="clients.addClientHint">Create a new profile</span></span>
-                    <svg class="w-3.5 h-3.5 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-                  </button>
-                  <button class="v2-quick-action" data-nav="nutrition">
-                    <span class="v2-icon-box"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zM12 8v4M12 16h.01"/></svg></span>
-                    <span class="min-w-0 flex-1"><span class="block text-xs font-semibold" data-i18n="nav.nutrition">Nutrition</span><span class="block text-[10px] text-muted" data-i18n="clients.nutritionHint">Plans and food database</span></span>
-                    <svg class="w-3.5 h-3.5 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-                  </button>
+              <div class="v2-dash-rail dk-rail">
+                <div class="dk-rail-card dk-rail-hero">
+                  <svg class="dk-rail-hero-art" viewBox="0 0 80 120" fill="none" aria-hidden="true"><circle cx="40" cy="18" r="10" fill="currentColor" opacity=".85"/><path d="M27 36c7-5 19-5 26 0l5 25-9 5-2 24h-7l-2-20-2 20h-7l-2-24-9-5 5-25z" fill="currentColor" opacity=".62"/><path d="M26 44 14 70M54 44l12 26" stroke="currentColor" stroke-width="4" stroke-linecap="round" opacity=".55"/></svg>
+                  <h3 data-i18n="clients.everyClient">Every client is unique</h3>
+                  <p data-i18n="clients.everyClientHint">The right plan. Better results.</p>
+                  <button type="button" id="dash-rail-add"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg><span data-i18n="aside.addClient">Add Client</span></button>
                 </div>
-
+                <div class="dk-rail-card">
+                  <div class="dk-rail-head"><span class="dk-panel-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></span><h3 data-i18n="clients.quickActions">Quick actions</h3><span class="v2-pill" data-i18n="clients.live">Live</span></div>
+                  <button class="dk-quick-row" data-nav="workouts"><span class="dk-quick-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M6 12h12"/></svg></span><span class="dk-quick-copy"><b data-i18n="workouts.startWorkout">Start workout</b><small data-i18n="clients.startWorkoutHint">Open the live session</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+                  <button class="dk-quick-row" id="dash-quick-add"><span class="dk-quick-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></span><span class="dk-quick-copy"><b data-i18n="aside.addClient">Add Client</b><small data-i18n="clients.addClientHint">Create a new profile</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+                  <button class="dk-quick-row" data-nav="nutrition"><span class="dk-quick-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zM12 8v4M12 16h.01"/></svg></span><span class="dk-quick-copy"><b data-i18n="nav.nutrition">Nutrition</b><small data-i18n="clients.nutritionHint">Plans and food database</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+                  <button class="dk-quick-row" data-nav="analytics"><span class="dk-quick-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 5-6"/></svg></span><span class="dk-quick-copy"><b data-i18n="nav.analytics">Analytics</b><small data-i18n="clients.coachHint">Based on real client data</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+                </div>
+                <div class="dk-rail-card">
+                  <div class="dk-rail-head"><span class="dk-panel-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><h3 data-i18n="clients.lastActivity">Last activity</h3></div>
+                  <div class="dk-activity" id="dash-activity"></div>
+                </div>
+                <div class="dk-rail-card dk-rail-quote">
+                  <b data-i18n="clients.dailyQuote1">Strong people are not born. They are made.</b>
+                  <p data-i18n="clients.dailyHint">One more set. One more rep. One better version of you.</p>
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 17l4-9 3 4 3-7 4 12 4-5v5H3z"/></svg>
+                </div>
                 <div class="v2-panel v2-rail-card v2-coach-card">
-                  <div class="flex items-center gap-2 mb-2">
-                    <span class="v2-icon-box w-8 h-8 rounded-lg"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2zM9 21h6"/></svg></span>
-                    <div><div class="text-xs font-bold" data-i18n="clients.coach">Coach insight</div><div class="text-[9px] text-muted" data-i18n="clients.coachHint">Based on real client data</div></div>
-                  </div>
+                  <div class="flex items-center gap-2 mb-2"><span class="v2-icon-box w-8 h-8 rounded-lg"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2zM9 21h6"/></svg></span><div><div class="text-xs font-bold" data-i18n="clients.coach">Coach insight</div><div class="text-[9px] text-muted" data-i18n="clients.coachHint">Based on real client data</div></div></div>
                   <p class="text-[11px] text-muted leading-relaxed" id="v2-coach-text">Add your first client to unlock personalised insights.</p>
-                  <button class="v2-text-link" data-nav="analytics"><span data-i18n="nav.analytics">Analytics</span> <span aria-hidden="true">→</span></button>
+                  <button class="v2-text-link" data-nav="analytics"><span data-i18n="nav.analytics">Analytics</span> <span aria-hidden="true">?</span></button>
                 </div>
-
-                <button id="dash-atlas-card" class="v2-panel v2-atlas-card text-start">
-                  <div class="v2-atlas-orb" aria-hidden="true"></div>
-                  <div class="relative z-10">
-                    <div class="v2-eyebrow" data-i18n="clients.atlasEyebrow">Interactive anatomy</div>
-                    <div class="v2-section-title mt-1" data-i18n="atlas.name">3D Body Atlas</div>
-                    <div class="text-[11px] text-muted mt-1" data-i18n="atlas.desc">Interactive 3D muscle map</div>
-                    <span class="v2-text-link mt-3"><span data-i18n="clients.atlasOpen">Open atlas</span> <span aria-hidden="true">→</span></span>
-                  </div>
-                </button>
               </div>
             </div>
           </div>
@@ -11669,6 +11658,8 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     let _search = '';
     let _sortBy = 'created';
     let _groupFilter = 'all';   /* c105: was _goalFilter — now a client-GROUP id (or 'all') */
+    let _statusFilter = 'all';  /* c208: all / active / recent / away */
+    let _viewMode = 'grid';     /* c208: photo grid or compact list */
     let _pendingClientPhoto = null;  // Sprint 3+: compressed photo dataURL, set on file select
     let _pendingClientPhotoRemove = false;  // c180: user explicitly deleted the photo in the form
     let _portalHistBusy = false;
@@ -11972,23 +11963,26 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           const cid = w && (w.client_id || w.clientId);
           if (!cid) return;
           const ts = Number(w.date || w.created_at || w.ts || 0) || 0;
-          const s = byClient[cid] || (byClient[cid] = { total: 0, last30: 0, last: 0, spark: [0, 0, 0, 0, 0, 0] });
+          const s = byClient[cid] || (byClient[cid] = { total: 0, last30: 0, last: 0, spark: [0, 0, 0, 0, 0, 0], lastName: '' });
           s.total++;
           if (ts && now - ts < 30 * 864e5) s.last30++;
-          if (ts > s.last) s.last = ts;
+          if (ts > s.last) { s.last = ts; s.lastName = w.name || w.program || ''; }
           if (ts) {
             const week = Math.min(5, Math.max(0, Math.floor((now - ts) / (7 * 864e5))));
             s.spark[5 - week]++;
           }
         });
         _clients.forEach(c => {
-          const s = byClient[c.id] || { total: 0, last30: 0, last: 0, spark: [0, 0, 0, 0, 0, 0] };
+          const s = byClient[c.id] || { total: 0, last30: 0, last: 0, spark: [0, 0, 0, 0, 0, 0], lastName: '' };
           c._wkTotal = s.total; c._wk30 = s.last30; c._lastWorkout = s.last; c._spark = s.spark;
+          c._lastWorkoutName = s.lastName;
         });
       } catch (_) {}
       await loadGroupConfig();
       await ensureClientCgroups();
       renderGroupChips();
+      renderStatusChips();
+      renderGroupSelect();
       wireCgroupsModal();
       applyFilters();
       renderKpis();
@@ -12034,9 +12028,10 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       const active = _clients.filter(c => c.last_active && now - c.last_active < 7 * day).length;
       const fresh = _clients.filter(c => c.created_at && now - c.created_at < 30 * day).length;
       let workouts = 0;
+      let hist = [];
       try {
-        const hist = await db.all('workout_history');
-        workouts = (hist || []).filter(w => w && w.date && now - w.date < 7 * day).length;
+        hist = (await db.all('workout_history')) || [];
+        workouts = hist.filter(w => w && w.date && now - w.date < 7 * day).length;
       } catch (_) {}
       const tr = (key, vars) => { try { return t(key, vars); } catch (_) { return ''; } };
       const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = String(v); };
@@ -12048,6 +12043,24 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       set('v2-kpi-active-sub', active ? tr('clients.kpiActiveSub', { pct: Math.round(active / Math.max(1, total) * 100) }) : tr('clients.kpiActiveEmpty'));
       set('v2-kpi-workouts-sub', workouts ? tr('clients.kpiWorkoutsSub') : tr('clients.kpiWorkoutsEmpty'));
       set('v2-kpi-new-sub', fresh ? tr('clients.kpiNewSub') : tr('clients.kpiNewEmpty'));
+      /* c208: six-week workout sparkline + growth for the dynamics tile */
+      try {
+        const wk = [0, 0, 0, 0, 0, 0];
+        hist.forEach(w => {
+          const ts = Number(w && w.date) || 0;
+          if (!ts) return;
+          const age = now - ts;
+          if (age < 0 || age >= 42 * day) return;
+          wk[5 - Math.min(5, Math.floor(age / (7 * day)))]++;
+        });
+        const max = Math.max(1, Math.max.apply(null, wk));
+        const spark = document.getElementById('v2-kpi-spark');
+        if (spark) spark.innerHTML = wk.map(v => '<i style="height:' + Math.max(3, Math.round(v / max * 20)) + 'px"></i>').join('');
+        const recent = wk[3] + wk[4] + wk[5], prev = wk[0] + wk[1] + wk[2];
+        const growth = prev ? Math.round((recent - prev) / prev * 100) : (recent ? 100 : 0);
+        const dyn = document.getElementById('v2-kpi-dyn-sub');
+        if (dyn) dyn.textContent = (growth > 0 ? '+' : '') + growth + '% · 6 ' + tr('client.weeks');
+      } catch (_) {}
       const coach = document.getElementById('v2-coach-text');
       if (coach) {
         if (!total) coach.textContent = tr('clients.coachEmpty');
@@ -12057,11 +12070,20 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       }
     }
 
+    /** c208: one status vocabulary for chips, cards and filters. */
+    function clientStatus(c) {
+      const lastTs = c.last_active || c._lastWorkout || 0;
+      const daysAway = lastTs ? (Date.now() - lastTs) / 864e5 : 999;
+      return daysAway < 2 ? 'active' : (daysAway < 8 ? 'recent' : 'away');
+    }
+
     /** Re-apply search + group filter + sort, then re-render. */
     function applyFilters() {
       _filtered = _clients.filter(c => {
         // c105: client-group filter (legacy clients live in the default group)
         if (_groupFilter !== 'all' && (c.cgroup || CG_DEFAULT) !== _groupFilter) return false;
+        // c208: status filter
+        if (_statusFilter !== 'all' && clientStatus(c) !== _statusFilter) return false;
         // Search (case-insensitive, matches name + goal + group + notes + injuries)
         if (_search) {
           const q = _search.toLowerCase();
@@ -12113,6 +12135,9 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       empty.classList.add('hidden');
 
       list.innerHTML = _filtered.map(c => cardHTML(c)).join('');
+      list.classList.toggle('is-list', _viewMode === 'list');
+      renderStatusChips();
+      renderActivity();
 
       // Wire click handlers — open profile view (not edit form)
       list.querySelectorAll('[data-client-id]').forEach(el => {
@@ -12137,61 +12162,64 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       });
     }
 
-    /** Build HTML for a single client card. */
+    /** c208: photo-first client card matching the reference dashboard. */
     function cardHTML(c) {
       const name = c.full_name || c.name || '?';
-      /* c107: the old goal groupings are gone (c105 replaced them with
-         Спортзал/Друзья/Семья) — the «Гипертрофия» badge no longer renders */
-      const lastActive = c.last_active ? fmtRelative(c.last_active) : t('client.lastActive') + ' —';
-      const stats = [
-        c.age ? c.age + 'y' : null,
-        c.weight ? c.weight + 'kg' : null,
-        c.height ? c.height + 'cm' : null
-      ].filter(Boolean).join(' · ');
-      /* c105: client group badge (colored dot + localized/custom name) */
-      const cGrp = c.cgroup || 'gym';
-      const cGrpName = groupNameOf(cGrp);
-      const groupBadge = cGrpName ? `<span class="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-surface-2 border border-border text-muted"><span class="w-1.5 h-1.5 rounded-full shrink-0" style="background:${cgColor(cGrp)}"></span>${escapeHTML(cGrpName)}</span>` : '';
-
-      const lastTs = c.last_active || c._lastWorkout || 0;
-      const daysAway = lastTs ? (Date.now() - lastTs) / 864e5 : 999;
-      const status = daysAway < 2 ? 'active' : (daysAway < 8 ? 'recent' : 'away');
+      const status = clientStatus(c);
       const statusLabel = status === 'active' ? t('clients.statusActive') : (status === 'recent' ? t('clients.statusRecent') : t('clients.statusAway'));
-      const wk30 = c._wk30 || 0;
-      const progress = Math.min(100, Math.round(wk30 / 12 * 100));
-      const statsLine = [stats, lastActive].filter(Boolean).join(' · ');
+      const lastActive = c.last_active ? fmtRelative(c.last_active) : t('client.lastActive') + ' ?';
+      const GOAL_KEY = { hypertrophy: 'client.goalHypertrophy', strength: 'client.goalStrength', fat_loss: 'client.goalFatLoss', endurance: 'client.goalEndurance', rehab: 'client.goalRehab' };
+      const goalTxt = GOAL_KEY[c.goal] ? t(GOAL_KEY[c.goal]) : '';
+      const cGrpName = groupNameOf(c.cgroup || 'gym');
+      const wk30 = Number(c._wk30) || 0;
+      const ring = Math.min(100, Math.round(wk30 / 16 * 100));
+      const wNow = Number(c.weight) || 0;
+      const wStart = Number(c.start_weight) || 0;
+      const waNow = Number(c.waist_cm) || 0;
+      const waStart = Number(c.start_waist) || 0;
+      const bfNow = Number(c.body_fat_pct) || 0;
+      const bfStart = Number(c.start_body_fat) || 0;
+      const num = v => (Math.round(v * 10) / 10).toLocaleString(localeString());
+      const metric = (icon, now, start, unit, label) => {
+        if (!now) return '';
+        const d = start && now !== start ? (now - start) : 0;
+        const cls = d < 0 ? ' down' : (d > 0 ? ' up' : '');
+        const val = d ? (d > 0 ? '+' : '') + num(d) + ' ' + unit : num(now) + ' ' + unit;
+        return '<span class="dk-client-metric' + cls + '" title="' + escapeAttr(label) + '">' + icon + val + '</span>';
+      };
+      const icoW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7v10M18 7v10M3 9v6M21 9v6M6 12h12"/></svg>';
+      const icoWaist = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h16M4 12h16M4 16h16"/><path d="M8 6v12M16 6v12"/></svg>';
+      const icoFat = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2s6 7 6 12a6 6 0 0 1-12 0c0-5 6-12 6-12z"/></svg>';
+      const metrics = [
+        metric(icoW, wNow, wStart, 'kg', t('clients.metricWeight')),
+        metric(icoWaist, waNow, waStart, 'cm', t('clients.metricWaist')),
+        metric(icoFat, bfNow, bfStart, '%', t('clients.metricFat'))
+      ].filter(Boolean).join('');
+      const photo = c.photo_url
+        ? '<img src="' + escapeAttr(c.photo_url) + '" alt="" loading="lazy" />'
+        : '<span class="dk-client-photo-fallback" style="background:' + avatarGradient(name) + '">' + escapeHTML(initials(name)) + '</span>';
+      const groupChip = cGrpName ? '<span class="dk-client-group"><span style="background:' + cgColor(c.cgroup || 'gym') + '"></span>' + escapeHTML(cGrpName) + '</span>' : '';
       return `
-        <div data-client-id="${escapeAttr(c.id)}" draggable="true" class="client-card v2-client-card v2-status-${status} bg-surface border border-border rounded-2xl p-3 hover:border-primary/30 transition cursor-pointer">
-          <div class="v2-client-avatar shrink-0" style="${c.photo_url ? '' : 'background: ' + avatarGradient(name)}">
-            ${c.photo_url ? `<img src="${escapeAttr(c.photo_url)}" alt="" class="w-full h-full object-cover" />` : escapeHTML(initials(name))}
-            <span class="v2-client-dot" title="${escapeAttr(statusLabel)}" aria-label="${escapeAttr(statusLabel)}"></span>
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="v2-client-name truncate">${escapeHTML(name)}</span>
-              ${groupBadge}
-              <span class="v2-client-status">${escapeHTML(statusLabel)}</span>
-            </div>
-            <div class="text-[11px] text-muted truncate mt-0.5">${escapeHTML(statsLine)}</div>
-            <div class="v2-client-progress">
-              <span class="v2-client-bar"><i style="width:${progress}%"></i></span>
-              <span class="v2-client-progress-label">${wk30} / 12 <span class="opacity-70">${escapeHTML(t('clients.thisMonth') || 'this month')}</span></span>
-            </div>
-          </div>
-          <div class="v2-client-side shrink-0">
-            <div class="v2-client-spark" title="6 weeks" aria-hidden="true">${(c._spark || [0,0,0,0,0,0]).map(v => `<i style="height:${3 + Math.min(15, v * 5)}px"></i>`).join('')}</div>
-            <div class="v2-client-count"><b>${c._wkTotal || 0}</b><span>${escapeHTML(t('clients.workoutsShort') || 'workouts')}</span></div>
-            <button type="button" data-move-client="${escapeAttr(c.id)}" class="v2-client-icon-btn" title="${escapeAttr(t('clients.moveToGroup') || 'Move to group')}" aria-label="${escapeAttr(t('clients.moveToGroup') || 'Move to group')}">
+        <article data-client-id="${escapeAttr(c.id)}" draggable="true" class="client-card v2-client-card dk-client-card v2-status-${status}">
+          <div class="dk-client-photo">
+            ${photo}
+            <span class="dk-client-photo-badge">${escapeHTML(statusLabel)}</span>
+            <button type="button" data-move-client="${escapeAttr(c.id)}" class="dk-client-move" title="${escapeAttr(t('clients.moveToGroup') || 'Move to group')}" aria-label="${escapeAttr(t('clients.moveToGroup') || 'Move to group')}">
               <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><path d="M12 11v6M9 14h6"/></svg>
             </button>
-            <svg class="w-3.5 h-3.5 text-muted shrink-0 flip-rtl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            <div class="dk-client-photo-name">${status === 'active' ? '<svg class="dk-crown" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 6l4.5 4L12 3l4.5 7L21 6l-2 12H5L3 6z"/></svg>' : ''}<span class="truncate">${escapeHTML(name)}</span></div>
           </div>
-        </div>
-      `;
+          <div class="dk-client-body">
+            <div class="dk-client-sub">${groupChip}<span class="truncate">${escapeHTML(lastActive)}</span></div>
+            <div class="dk-client-goal"><span>${escapeHTML(t('clients.goalLabel'))}:</span><small>${escapeHTML(goalTxt || '?')}</small></div>
+            <div class="dk-client-ring-row">
+              <span class="dk-client-ring" style="--p:${ring}%"><b>${ring}%</b></span>
+              <span class="dk-client-wk"><b>${wk30} / 16</b><small>${escapeHTML(t('clients.workoutsLabel'))}</small></span>
+            </div>
+            <div class="dk-client-metrics">${metrics || '<span class="dk-client-metric">?</span>'}</div>
+          </div>
+        </article>`;
     }
-
-    // goalBadgeClass / avatarGradient / initials are now global (moved to top-level, 2026-08 QA Sprint 2 #5).
-
 
     /** Open the modal in create mode (empty form). */
     function openCreate() {
@@ -12345,6 +12373,12 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       if (obj.training_experience) obj.training_experience = parseInt(obj.training_experience, 10);
       if (obj.target_weight) obj.target_weight = parseFloat(obj.target_weight);
       if (obj.goal_weeks) obj.goal_weeks = parseInt(obj.goal_weeks, 10);
+      /* c208: remember the starting body numbers for the client-card deltas */
+      if (!obj.id) {
+        if (obj.weight) obj.start_weight = obj.weight;
+        if (obj.waist_cm != null && obj.waist_cm !== '') obj.start_waist = parseFloat(obj.waist_cm);
+        if (obj.body_fat_pct != null && obj.body_fat_pct !== '') obj.start_body_fat = parseFloat(obj.body_fat_pct);
+      }
       // Body composition + measurements (all numeric)
       ['body_fat_pct','visceral_fat','muscle_mass','bone_mass','water_pct','metabolic_age',
        'neck_cm','shoulder_cm','chest_cm','waist_cm','hip_cm','arm_cm','thigh_cm','calf_cm'].forEach(name => {
@@ -12425,6 +12459,53 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       el.classList.remove('hidden');
     }
 
+    /** c208: status chips (All / Active / In work / Paused). */
+    function renderStatusChips() {
+      const box = document.getElementById('dash-status');
+      if (!box) return;
+      const counts = { all: _clients.length, active: 0, recent: 0, away: 0 };
+      _clients.forEach(c => { counts[clientStatus(c)] = (counts[clientStatus(c)] || 0) + 1; });
+      const lg = (typeof currentLang === 'function') ? currentLang() : 'en';
+      const allLabel = lg === 'ru' ? '???' : (lg === 'he' ? '???' : 'All');
+      const defs = [
+        ['all', allLabel, counts.all],
+        ['active', t('clients.statusActive'), counts.active],
+        ['recent', t('clients.statusRecent'), counts.recent],
+        ['away', t('clients.statusAway'), counts.away]
+      ];
+      box.innerHTML = defs.map(([k, label, n]) =>
+        '<button type="button" class="dk-status-chip' + (_statusFilter === k ? ' active' : '') + '" data-status="' + k + '">' + escapeHTML(label) + ' <b>' + n + '</b></button>'
+      ).join('');
+      box.querySelectorAll('[data-status]').forEach(b => b.addEventListener('click', () => setStatus(b.getAttribute('data-status'))));
+    }
+    function setStatus(v) { _statusFilter = v || 'all'; applyFilters(); }
+    function setView(v) { _viewMode = v === 'list' ? 'list' : 'grid'; applyFilters(); }
+
+    function renderGroupSelect() {
+      const sel = document.getElementById('dash-group');
+      if (!sel) return;
+      const groups = [{ id: 'all', name: t('clients.allGroups') || 'All groups' }].concat(groupsList());
+      sel.innerHTML = groups.map(g => '<option value="' + escapeAttr(g.id) + '">' + escapeHTML(g.name) + '</option>').join('');
+      sel.value = _groupFilter;
+    }
+
+    /** c208: right-rail activity feed built from the same history stats. */
+    function renderActivity() {
+      const box = document.getElementById('dash-activity');
+      if (!box) return;
+      const rows = _clients.slice().sort((a, b) => Math.max(b.last_active || 0, b._lastWorkout || 0) - Math.max(a.last_active || 0, a._lastWorkout || 0)).slice(0, 5);
+      if (!rows.length) { box.innerHTML = '<div class="text-[9px] text-muted">?</div>'; return; }
+      box.innerHTML = rows.map(c => {
+        const workout = (c._lastWorkout || 0) >= (c.last_active || 0) && c._lastWorkout;
+        const ts = workout || c.last_active || 0;
+        const name = c.full_name || c.name || '?';
+        const what = workout ? (c._lastWorkoutName || t('nav.workouts')) : t('clients.statusActive');
+        return '<div class="dk-activity-row"><span class="dk-activity-dot">' + (workout
+          ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M6 12h12"/></svg>'
+          : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></svg>') + '</span><div class="dk-activity-copy"><b>' + escapeHTML(name) + '</b><small>' + escapeHTML(what) + ' ? ' + escapeHTML(ts ? fmtRelative(ts) : '?') + '</small></div></div>';
+      }).join('');
+    }
+
     function setSearch(v)   { _search = v;     applyFilters(); }
     function setSort(v)     { _sortBy = v;     applyFilters(); }
     /* c105: group filter setter (setGoalFilter kept as alias for old callers) */
@@ -12461,6 +12542,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     
     return { load, refresh, applyFilters, openCreate, openEdit, openEditById, closeModal,
              saveFromForm, deleteFromForm, setSearch, setSort, setGoalFilter, setGroupFilter,
+             setStatus, setView, renderStatusChips, renderGroupSelect, renderActivity,
              renderGroupChips, moveClientToGroup, openCgroupsModal,
              /* c180: photo-delete bridge — the trash button lives outside the IIFE */
              markPhotoRemoved: function () { _pendingClientPhotoRemove = true; _pendingClientPhoto = null; } };
@@ -12683,12 +12765,12 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     }
 
     /* ---- Profile panel layout: base orders + persisted custom order ---- */
-    const PF_PANELS = ['hero', 'nutrition', 'documents', 'personalInfo', 'programs', 'health', 'photos'];
-    function pfKey(desktop) { return desktop ? 'profile_panels_order_desktop' : 'profile_panels_order_mobile'; }
+    const PF_PANELS = ['hero', 'stats', 'quick', 'nutrition', 'documents', 'personalInfo', 'programs', 'health', 'photos'];
+    function pfKey(desktop) { return desktop ? 'profile_panels_order_desktop_v3' : 'profile_panels_order_mobile_v3'; }
     function pfBase(desktop) {
       return desktop
-        ? { col1: ['hero', 'nutrition', 'documents'], col2: ['personalInfo', 'programs', 'health', 'photos'] }
-        : { col1: ['hero', 'programs', 'nutrition', 'documents'], col2: ['personalInfo', 'health', 'photos'] };
+        ? { col1: ['hero', 'stats', 'nutrition', 'documents', 'photos'], col2: ['quick', 'programs', 'health', 'personalInfo'] }
+        : { col1: ['hero', 'stats', 'quick', 'programs', 'nutrition', 'documents', 'health', 'photos'], col2: ['personalInfo'] };
     }
     function pfSanitize(layout, desktop) {
       const known = new Set(PF_PANELS);
@@ -12714,6 +12796,8 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       if (!body) return;
       const builders = {
         hero: () => heroCard(c, name),
+        stats: () => statsCard(c),
+        quick: () => quickCard(c),
         nutrition: () => nutritionPlanCard(c),
         documents: () => documentsCard(c),
         personalInfo: () => personalInfoCard(c),
@@ -12748,6 +12832,11 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       // via the consolidated click delegation — do NOT attach a second handler here
       // (that would cause two modals to open simultaneously).
       wirePanelMove();
+      /* c208: async fill for the cinematic hero program, KPI chart and rail */
+      try { loadProfileHeroProgram(c); } catch (_) {}
+      try { loadProfileStats(c); } catch (_) {}
+      try { loadProfileQuickActivity(c); } catch (_) {}
+      wireProfileHero(c);
     }
 
     /* ---- Panel move mode: 5-sec long-press picks a panel up,
@@ -12864,73 +12953,195 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       });
     }
 
-    /** c200: Vision client hero - identity, live chips and real stats. */
+    /** c208: cinematic client hero ? photo, identity, body tiles, goal ring,
+        active program and the four reference-style action buttons. */
     function heroCard(c, name) {
-      const lastActive = c.last_active ? fmtRelative(c.last_active) : '—';
-      const since = c.created_at ? fmtDate(c.created_at) : '—';
+      const lastActive = c.last_active ? fmtRelative(c.last_active) : '?';
       const active = !!(c.last_active && (Date.now() - Number(c.last_active)) < 7 * 86400000);
-      const stats = [];
-      if (c.age) stats.push({ icon: 'age', label: t('client.age'), value: String(c.age) });
-      if (c.weight) stats.push({ icon: 'weight', label: String(t('client.weight') || 'Weight').replace(/\s*\(.*?\)\s*/g, ''), value: c.weight + ' kg' });
-      if (c.height) stats.push({ icon: 'height', label: String(t('client.height') || 'Height').replace(/\s*\(.*?\)\s*/g, ''), value: c.height + ' cm' });
-      let bmi = null;
-      if (c.weight && c.height) {
-        const h = c.height / 100;
-        bmi = (c.weight / (h * h)).toFixed(1);
-        stats.push({ icon: 'bmi', label: 'BMI', value: bmi });
-      }
       const GOAL_KEY = { hypertrophy: 'client.goalHypertrophy', strength: 'client.goalStrength', fat_loss: 'client.goalFatLoss', endurance: 'client.goalEndurance', rehab: 'client.goalRehab' };
       const goalTxt = GOAL_KEY[c.goal] ? t(GOAL_KEY[c.goal]) : '';
-      const iconSvg = {
-        age: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/>',
-        weight: '<path d="M6 7v10M18 7v10M3 9v6M21 9v6M6 12h12"/>',
-        height: '<path d="M5 3v18M19 3v18M5 7h4M5 12h6M5 17h4M15 7h4M13 12h6M15 17h4"/>',
-        bmi: '<path d="M3 12h4l2-7 4 14 2-7h6"/>'
-      };
-      const chip = (cls, txt, dot) => `<span class="v2-ch-chip ${cls}">${dot ? '<span class="v2-live-dot"></span>' : ''}${escapeHTML(txt)}</span>`;
-
+      const bmi = (c.weight && c.height) ? (c.weight / Math.pow(c.height / 100, 2)).toFixed(1) : '';
+      const lg = (typeof currentLang === 'function') ? currentLang() : 'en';
+      const quote = lg === 'ru' ? '???????, ??? ?????' : (lg === 'he' ? '????? ???? ??????' : 'Stronger than yesterday');
+      const photo = c.photo_url
+        ? '<img src="' + escapeAttr(c.photo_url) + '" alt="" />'
+        : '<span class="dk-hero-photo-fallback" style="background:' + avatarGradient(name) + '">' + escapeHTML(initials(name)) + '</span>';
+      const tile = (icon, val, label) => '<div class="dk-hero-info-tile">' + icon + '<b>' + escapeHTML(val) + '</b><small>' + escapeHTML(label) + '</small></div>';
+      const icoAge = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg>';
+      const icoHeight = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M8 6l4-3 4 3M8 18l4 3 4-3"/></svg>';
+      const icoWeight = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7v10M18 7v10M3 9v6M21 9v6M6 12h12"/></svg>';
+      const icoBmi = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l2-7 4 14 2-7h6"/></svg>';
       return `
-        <div class="v2-profile-hero v2-client-hero bg-surface border border-border rounded-2xl shadow-card">
-          <div class="v2-ch-grid">
-            <div class="v2-ch-main">
-              <div class="v2-ch-head">
-                <div class="v2-ch-avatar-wrap">
-                  <div class="v2-ch-avatar" style="${c.photo_url ? '' : 'background: ' + avatarGradient(name)}">
-                    ${c.photo_url ? `<img src="${escapeAttr(c.photo_url)}" alt="" />` : escapeHTML(initials(name))}
-                  </div>
-                  <span class="v2-ch-online${active ? '' : ' is-off'}" aria-hidden="true"></span>
-                </div>
-                <div class="v2-ch-id">
-                  <div class="v2-eyebrow"><span class="v2-live-dot"></span>${escapeHTML(t('client.profileEyebrow') || 'Client profile')}</div>
-                  <h2 class="v2-ch-name">${escapeHTML(name)}</h2>
-                  <div class="v2-ch-meta">
-                    ${escapeHTML(t('client.since'))}: <b>${escapeHTML(since)}</b> · ${escapeHTML(t('client.lastSeen'))}: <b>${escapeHTML(lastActive)}</b>
-                  </div>
-                  <div class="v2-ch-chips">
-                    ${active ? chip('live', t('clients.active') || 'Active', true) : ''}
-                    ${goalTxt ? chip('goal', goalTxt, false) : ''}
-                    ${c.portal_pass ? chip('portal', t('programs.clientPortal') || 'Client portal', false) : ''}
-                  </div>
-                </div>
-              </div>
-              <div class="v2-ch-actions">
-                <button type="button" class="v2-ch-btn primary" data-open-portal>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
-                  <span>${escapeHTML(t('programs.clientPortal') || 'Client portal')}</span>
-                </button>
-              </div>
-              ${stats.length ? `
-                <div class="v2-ch-stats">
-                  ${stats.map(s => `
-                    <div class="v2-ch-stat">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${iconSvg[s.icon] || ''}</svg>
-                      <div class="v2-ch-stat-val"><b>${escapeHTML(s.value)}</b><small>${escapeHTML(s.label)}</small></div>
-                    </div>`).join('')}
-                </div>` : ''}
+        <div class="dk-hero">
+          <div class="dk-hero-photo">
+            ${photo}
+            <span class="dk-hero-status">${escapeHTML(active ? t('clients.statusActive') : t('clients.statusAway'))}</span>
+          </div>
+          <div class="dk-hero-copy">
+            <div class="dk-hero-name"><svg class="dk-crown" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 6l4.5 4L12 3l4.5 7L21 6l-2 12H5L3 6z"/></svg><span class="truncate">${escapeHTML(name)}</span></div>
+            <div class="dk-hero-quote"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21c3-6 6-9 9-11M14 21c3-6 6-9 9-11"/></svg>${escapeHTML(quote)}</div>
+            <div class="dk-hero-chips">
+              ${active ? '<span class="dk-hero-chip">? ' + escapeHTML(t('clients.active') || 'Active') + '</span>' : ''}
+              ${goalTxt ? '<span class="dk-hero-chip goal">' + escapeHTML(goalTxt) + '</span>' : ''}
+              ${c.portal_pass ? '<span class="dk-hero-chip portal">' + escapeHTML(t('programs.clientPortal') || 'Client portal') + '</span>' : ''}
+              <span class="dk-hero-chip">${escapeHTML(t('client.lastSeen'))}: ${escapeHTML(lastActive)}</span>
+            </div>
+            <div class="dk-hero-actions">
+              <button type="button" class="dk-hero-btn" data-hero-action="message"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>${escapeHTML(t('client.message') || 'Message')}</button>
+              <button type="button" class="dk-hero-btn" data-hero-action="call"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>${escapeHTML(t('client.call') || 'Call')}</button>
+              <button type="button" class="dk-hero-btn" data-hero-action="note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>${escapeHTML(t('client.note') || 'Note')}</button>
+              <button type="button" class="dk-hero-btn" data-hero-action="history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${escapeHTML(t('workouts.history'))}</button>
+            </div>
+            <div class="dk-hero-info">
+              ${c.age ? tile(icoAge, String(c.age), t('client.age')) : ''}
+              ${c.height ? tile(icoHeight, c.height + ' cm', t('client.height').replace(/\s*\(.*?\)\s*/g, '')) : ''}
+              ${c.weight ? tile(icoWeight, c.weight + ' kg', t('client.weight').replace(/\s*\(.*?\)\s*/g, '')) : ''}
+              ${bmi ? tile(icoBmi, bmi, 'BMI') : ''}
             </div>
           </div>
+          <div class="dk-hero-right">
+            <div class="dk-hero-ring-wrap">
+              <span class="dk-hero-ring" id="profile-goal-ring" style="--p:0%"><b id="profile-goal-pct">0%</b></span>
+              <small>${escapeHTML(t('clients.goalLabel'))}<br>${escapeHTML(t('clients.thisMonth') || 'this month')}</small>
+            </div>
+            <div id="profile-hero-program-slot" class="dk-hero-program"><div class="dk-hero-program-head"><span>${escapeHTML(t('programs.activeProgram') || 'Active program')}</span><small>?</small></div><h4>?</h4><p>Loading?</p></div>
+          </div>
+        </div>`;
+    }
+
+    function quickCard(c) {
+      return `<div class="bg-surface border border-border rounded-2xl shadow-card dk-quick">
+        <h3>${escapeHTML(t('clients.quickActions'))}</h3>
+        <button class="dk-quick-row" data-quick-action="workout"><span class="dk-quick-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M6 12h12"/></svg></span><span class="dk-quick-copy"><b>${escapeHTML(t('workouts.startWorkout'))}</b><small>${escapeHTML(t('clients.startWorkoutHint'))}</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+        <button class="dk-quick-row" data-quick-action="program"><span class="dk-quick-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></span><span class="dk-quick-copy"><b>${escapeHTML(t('programs.new'))}</b><small>${escapeHTML(t('clients.addClientHint'))}</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+        <button class="dk-quick-row" data-quick-action="nutrition"><span class="dk-quick-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zM12 8v4M12 16h.01"/></svg></span><span class="dk-quick-copy"><b>${escapeHTML(t('nutrition.newPlan') || 'New nutrition plan')}</b><small>${escapeHTML(t('clients.nutritionHint'))}</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+        <button class="dk-quick-row" data-quick-action="note"><span class="dk-quick-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span><span class="dk-quick-copy"><b>${escapeHTML(t('client.notesLabel') || 'Notes')}</b><small>${escapeHTML(t('client.note') || 'Add a note')}</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+        <div class="dk-rail-head" style="margin-top:10px"><h3>${escapeHTML(t('clients.lastActivity'))}</h3></div>
+        <div class="dk-quick-activity" id="profile-quick-activity"></div>
+      </div>`;
+    }
+
+    function statsCard(c) {
+      return `<div class="bg-surface border border-border rounded-2xl shadow-card dk-stats">
+        <div class="dk-stats-grid">
+          <div class="dk-stat-tile gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M6 12h12"/></svg><b id="profile-stat-workouts">?</b><span>${escapeHTML(t('clients.kpiWorkouts'))}</span><em id="profile-stat-workouts-delta"></em></div>
+          <div class="dk-stat-tile green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2s6 7 6 12a6 6 0 0 1-12 0c0-5 6-12 6-12z"/></svg><b id="profile-stat-kcal">?</b><span>${escapeHTML(t('nutrition.kcal'))}</span><em id="profile-stat-kcal-delta"></em></div>
+          <div class="dk-stat-tile cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7v10M18 7v10M3 9v6M21 9v6M6 12h12"/></svg><b id="profile-stat-weight">?</b><span>${escapeHTML(t('clients.metricWeight'))}</span></div>
+          <div class="dk-stat-tile violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2s6 7 6 12a6 6 0 0 1-12 0c0-5 6-12 6-12z"/></svg><b id="profile-stat-fat">?</b><span>${escapeHTML(t('clients.metricFat'))}</span></div>
         </div>
-      `;
+        <div class="dk-chart-head"><h3>${escapeHTML(t('health.weightTrend') || 'Weight progress')}</h3><select aria-label="Range"><option>30 ${escapeHTML(t('client.daysShort') || 'days')}</option></select></div>
+        <div class="dk-chart" id="profile-weight-chart"><div class="dk-chart-empty">${escapeHTML(t('analytics.noData') || 'No data yet')}</div></div>
+      </div>`;
+    }
+
+    async function loadProfileHeroProgram(c) {
+      const slot = document.getElementById('profile-hero-program-slot');
+      if (!slot || !c || !c.id) return;
+      const target = String(c.id);
+      let all = [];
+      try { all = await db.find('client_programs', 'by_clientId', target) || []; } catch (_) { all = []; }
+      if (String(_clientId) !== target || !slot.isConnected) return;
+      const active = all.filter(p => p.status === 'active').sort((a, b) => (b.created_at || 0) - (a.created_at || 0))[0];
+      if (!active) {
+        slot.innerHTML = '<div class="dk-hero-program-head"><span>' + escapeHTML(t('programs.activeProgram') || 'Active program') + '</span></div><h4>' + escapeHTML(t('programs.noActive') || 'No active program') + '</h4><p>' + escapeHTML(t('programs.dayEmpty') || 'Create a program to start') + '</p><button type="button" id="profile-hero-program-new">+ ' + escapeHTML(t('programs.new')) + '</button>';
+        const nb = document.getElementById('profile-hero-program-new');
+        if (nb) nb.addEventListener('click', () => { const b = document.getElementById('profile-create-program'); if (b) b.click(); });
+        return;
+      }
+      const weeks = Math.max(1, parseInt(c.goal_weeks, 10) || 8);
+      const start = Number(active.created_at) || Date.now();
+      const end = start + weeks * 7 * 86400000;
+      const elapsed = Math.max(0, Math.min(weeks, Math.round((Date.now() - start) / (7 * 86400000))));
+      const pct = Math.max(0, Math.min(100, Math.round(elapsed / weeks * 100)));
+      const totalEx = (active.workout_days || []).reduce((s, d) => s + (d.exercises || []).length, 0);
+      slot.innerHTML = '<div class="dk-hero-program-head"><span>' + escapeHTML(t('programs.activeProgram') || 'Active program') + '</span><small>' + totalEx + ' ' + escapeHTML(t('exercise.exercises')) + '</small></div><h4>' + escapeHTML(active.name || 'Program') + '</h4><p>' + escapeHTML(fmtDate(start)) + ' \u2014 ' + escapeHTML(fmtDate(end)) + '</p><div class="dk-hero-program-track"><i style="width:' + pct + '%"></i></div><p>' + elapsed + ' / ' + weeks + ' ' + escapeHTML(t('client.weeks') || 'weeks') + '</p><button type="button" id="profile-hero-program-open">' + escapeHTML(t('common.open') || 'Open') + ' \u2192</button>';
+      const ob = document.getElementById('profile-hero-program-open');
+      if (ob) ob.addEventListener('click', () => { const p = document.querySelector('[data-pf-panel="programs"]'); if (p) p.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+    }
+
+    async function loadProfileStats(c) {
+      if (!c || !c.id) return;
+      const target = String(c.id);
+      let hist = [], checks = [];
+      try { hist = await db.find('workout_history', 'by_clientId', target) || []; } catch (_) {}
+      try {
+        if (typeof window.dkFetchClientChecks === 'function') checks = await Promise.race([window.dkFetchClientChecks(target), new Promise(r => setTimeout(() => r([]), 4000))]) || [];
+      } catch (_) { checks = []; }
+      if (String(_clientId) !== target) return;
+      const now = Date.now(), d30 = 30 * 86400000;
+      const recent = hist.filter(w => w && Number(w.date || w.created_at) > now - d30);
+      const prev = hist.filter(w => w && Number(w.date || w.created_at) <= now - d30 && Number(w.date || w.created_at) > now - 2 * d30);
+      const weight = Number(c.weight) || 0;
+      const kcal = Math.round(recent.reduce((s, w) => s + (Number(w.duration) || 0) / 60 * 7 * ((weight || 75) / 75), 0));
+      const kcalPrev = Math.round(prev.reduce((s, w) => s + (Number(w.duration) || 0) / 60 * 7 * ((weight || 75) / 75), 0));
+      const setNum = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+      setNum('profile-stat-workouts', recent.length);
+      setNum('profile-stat-kcal', kcal ? kcal.toLocaleString(localeString()) : '0');
+      setNum('profile-stat-weight', weight ? weight + ' kg' : '?');
+      const lastCheck = checks.length ? checks[checks.length - 1] : null;
+      const fat = (lastCheck && Number(lastCheck.body_fat)) || Number(c.body_fat_pct) || 0;
+      setNum('profile-stat-fat', fat ? fat + '%' : '?');
+      const pctDelta = (a, b) => (b > 0 ? Math.round((a - b) / b * 100) : (a > 0 ? 100 : 0));
+      const wd = pctDelta(recent.length, prev.length), kd = pctDelta(kcal, kcalPrev);
+      const wde = document.getElementById('profile-stat-workouts-delta'); if (wde) wde.textContent = (wd > 0 ? '+' : '') + wd + '% vs prev. 30d';
+      const kde = document.getElementById('profile-stat-kcal-delta'); if (kde) kde.textContent = (kd > 0 ? '+' : '') + kd + '% vs prev. 30d';
+      const ringPct = Math.min(100, Math.round(recent.length / 16 * 100));
+      const ring = document.getElementById('profile-goal-ring'); if (ring) ring.style.setProperty('--p', ringPct + '%');
+      const rp = document.getElementById('profile-goal-pct'); if (rp) rp.textContent = ringPct + '%';
+      drawProfileChart(checks, weight);
+    }
+
+    function drawProfileChart(checks, fallbackWeight) {
+      const box = document.getElementById('profile-weight-chart');
+      if (!box) return;
+      const pts = (checks || []).map(x => ({ ts: Number(x.ts) || Date.parse(x.date) || 0, w: Number(x.weight) || 0 })).filter(x => x.ts && x.w > 20 && x.w < 300).sort((a, b) => a.ts - b.ts);
+      if (!pts.length && fallbackWeight) pts.push({ ts: Date.now() - 30 * 86400000, w: fallbackWeight }, { ts: Date.now(), w: fallbackWeight });
+      if (pts.length < 2) { box.innerHTML = '<div class="dk-chart-empty">' + escapeHTML(t('analytics.noData') || 'No data yet') + '</div>'; return; }
+      const W = 600, H = 132, pad = 12, min = Math.min.apply(null, pts.map(p => p.w)), max = Math.max.apply(null, pts.map(p => p.w));
+      const span = Math.max(1, max - min), flat = (max - min) < 0.01, t0 = pts[0].ts, t1 = pts[pts.length - 1].ts || t0 + 1;
+      const X = ts => pad + (ts - t0) / Math.max(1, t1 - t0) * (W - pad * 2);
+      const Y = w => flat ? H / 2 : H - pad - (w - min) / span * (H - pad * 2);
+      const line = pts.map((p, i) => (i ? 'L' : 'M') + X(p.ts).toFixed(1) + ' ' + Y(p.w).toFixed(1)).join(' ');
+      const area = line + ' L' + X(t1).toFixed(1) + ' ' + (H - pad) + ' L' + X(t0).toFixed(1) + ' ' + (H - pad) + ' Z';
+      box.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none"><defs><linearGradient id="dkw-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgb(var(--c-primary))" stop-opacity=".36"/><stop offset="1" stop-color="rgb(var(--c-primary))" stop-opacity="0"/></linearGradient></defs><path d="' + area + '" fill="url(#dkw-grad)"/><path d="' + line + '" fill="none" stroke="rgb(var(--c-primary))" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' + pts.map(p => '<circle cx="' + X(p.ts).toFixed(1) + '" cy="' + Y(p.w).toFixed(1) + '" r="2.4" fill="rgb(var(--c-primary))"/>').join('') + '</svg>';
+    }
+
+    async function loadProfileQuickActivity(c) {
+      const box = document.getElementById('profile-quick-activity');
+      if (!box || !c || !c.id) return;
+      let hist = [];
+      try { hist = await db.find('workout_history', 'by_clientId', String(c.id)) || []; } catch (_) {}
+      if (String(_clientId) !== String(c.id) || !box.isConnected) return;
+      const rows = hist.map(w => ({ ts: Number(w.date || w.created_at) || 0, name: w.name || t('nav.workouts') })).filter(x => x.ts).sort((a, b) => b.ts - a.ts).slice(0, 3);
+      if (c.last_active) rows.push({ ts: Number(c.last_active), name: t('clients.statusActive') });
+      box.innerHTML = rows.slice(0, 4).map(r => '<div class="dk-quick-activity-row"><span class="dk-quick-activity-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div class="dk-quick-activity-copy"><b>' + escapeHTML(r.name) + '</b><small>' + escapeHTML(fmtRelative(r.ts)) + '</small></div></div>').join('') || '<div class="text-[9px] text-muted">?</div>';
+    }
+
+    function wireProfileHero(c) {
+      document.querySelectorAll('[data-hero-action]').forEach(b => b.addEventListener('click', () => {
+        const a = b.getAttribute('data-hero-action');
+        if (a === 'message') {
+          const digits = String(c.phone || '').replace(/[^0-9]/g, '');
+          if (digits) window.open('https://wa.me/' + digits, '_blank');
+          else { const n = document.querySelector('[data-pf-panel="personalInfo"]'); if (n) n.scrollIntoView({ behavior: 'smooth' }); }
+        } else if (a === 'call') {
+          const digits = String(c.phone || '').replace(/[^0-9+]/g, '');
+          if (digits) location.href = 'tel:' + digits;
+          else { const n = document.querySelector('[data-pf-panel="personalInfo"]'); if (n) n.scrollIntoView({ behavior: 'smooth' }); }
+        } else if (a === 'note') {
+          const n = document.querySelector('[data-pf-panel="health"]') || document.querySelector('[data-pf-panel="personalInfo"]');
+          if (n) n.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else if (a === 'history') {
+          const h = document.getElementById('profile-workout-history'); if (h) h.click();
+        }
+      }));
+      document.querySelectorAll('[data-quick-action]').forEach(b => b.addEventListener('click', () => {
+        const a = b.getAttribute('data-quick-action');
+        const id = a === 'workout' ? 'profile-new-workout' : (a === 'program' ? 'profile-create-program' : (a === 'nutrition' ? 'profile-create-np' : 'profile-edit'));
+        const target = document.getElementById(id);
+        if (target) target.click();
+        else if (a === 'note') { const n = document.querySelector('[data-pf-panel="health"]'); if (n) n.scrollIntoView({ behavior: 'smooth' }); }
+      }));
     }
 
     /** Personal info card (phone, email). */
@@ -13029,6 +13240,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           </button>
           
         </div>
+        <div id="profile-meal-cards" class="dk-meal-grid"></div>
         <div id="nutrition-plans-section" class="space-y-2"></div>
       </div>`;
     }
@@ -27543,6 +27755,33 @@ Select foods for each meal. Output as JSON only.`;
       renderPlansList(targetId);
     }
 
+    /** c208: four reference-style meal cards for the client profile. */
+    function profileMealCardsHTML(plan) {
+      if (!plan) return '';
+      const lang = (typeof currentLang === 'function') ? currentLang() : 'en';
+      const meals = (plan.meals || []).slice(0, 4);
+      const times = ['07:30', '12:30', '19:00', '16:00'];
+      return meals.map((m, i) => {
+        const foods = m.foods || [];
+        let cal = 0, p = 0, c = 0, f = 0;
+        foods.forEach(x => {
+          const n = x.nutrition || {};
+          const g = (Number(x.grams) || 0) / 100;
+          cal += (Number(n.calories) || 0) * g;
+          p += (Number(n.protein) || 0) * g;
+          c += (Number(n.carbs) || 0) * g;
+          f += (Number(n.fat) || 0) * g;
+        });
+        const first = foods.find(x => x && x.id) || foods[0];
+        const img = first && window.dkFoodImgTag ? window.dkFoodImgTag(first, '') : '';
+        const nm = first ? (first['name_' + lang] || first.name_en || first.name || '') : '';
+        const capType = String(m.type || '').replace(/^./, ch => ch.toUpperCase());
+        let label = m.labelKey ? t(m.labelKey) : '';
+        if (!label || label === m.labelKey) label = t('nutrition.meal' + capType) || m.type || ('Meal ' + (i + 1));
+        return '<div class="dk-meal-card"><div class="dk-meal-media">' + (img || '<span class="nutri-food-ph">???</span>') + '<span class="dk-meal-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></span></div><div class="dk-meal-body"><div class="dk-meal-top"><b>' + escapeHTML(label) + '</b><span class="dk-meal-time">' + escapeHTML(times[i] || '') + '</span></div><div class="dk-meal-kcal">' + Math.round(cal) + ' <small>' + escapeHTML(t('nutrition.kcal')) + '</small></div><div class="dk-meal-macros"><span class="p">' + Math.round(p) + 'P</span><span class="c">' + Math.round(c) + 'C</span><span class="f">' + Math.round(f) + 'F</span></div>' + (nm ? '<div class="text-[8px] text-muted truncate mt-1">' + escapeHTML(nm) + '</div>' : '') + '</div></div>';
+      }).join('');
+    }
+
     function renderPlansList(clientId) {
       const targetId = String(clientId || '');
       if (targetId && _plansClientId && targetId !== String(_plansClientId)) return;
@@ -27551,6 +27790,8 @@ Select foods for each meal. Output as JSON only.`;
       const lang = (typeof currentLang === 'function') ? currentLang() : 'en';
       const actives = _all.filter(p => p.status === 'active');
       const history = _all.filter(p => p.status === 'archived');
+      const mealBox = document.getElementById('profile-meal-cards');
+      if (mealBox) mealBox.innerHTML = profileMealCardsHTML(actives[0]);
 
       let html = '';
       if (actives.length > 0) {
@@ -30856,6 +31097,17 @@ async function boot() {
     if (dashSort) dashSort.addEventListener('change', (e) => {
       screens.dashboard.setSort(e.target.value);
     });
+    const dashGroup = document.getElementById('dash-group');
+    if (dashGroup) dashGroup.addEventListener('change', (e) => {
+      screens.dashboard.setGroupFilter(e.target.value);
+    });
+    ['grid','list'].forEach(v => {
+      const b = document.getElementById('dash-view-' + v);
+      if (b) b.addEventListener('click', () => {
+        document.querySelectorAll('.dk-view-btn').forEach(x => x.classList.toggle('active', x === b));
+        screens.dashboard.setView(v);
+      });
+    });
 
     /* c105: group chips are wired INSIDE screens.dashboard (delegation on
        #dash-filters: click / dragover / drop). What remains here is the
@@ -30878,7 +31130,7 @@ async function boot() {
     }
 
     // Add client buttons (dashboard, empty state, aside)
-    const addBtns = ['dash-add-btn', 'dash-empty-add', 'dash-quick-add', 'aside-add-client'];
+    const addBtns = ['dash-add-btn', 'dash-empty-add', 'dash-quick-add', 'dash-rail-add', 'aside-add-client'];
     addBtns.forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('click', () => {
@@ -37623,7 +37875,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 207; /* numeric part of dk-build c207 */
+  var RUNNING = 208; /* numeric part of dk-build c208 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

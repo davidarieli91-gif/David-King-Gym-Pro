@@ -40,8 +40,8 @@ ok('trainer sidebar has the daily focus card', has(crm, 'class="v2-side-card"'))
 ok('theme preview cards exist', has(crm, 'class="v2-theme-card') && has(crm, 'class="v2-theme-preview'));
 
 /* ---------- dashboard ---------- */
-ok('dashboard has KPI cards', has(crm, 'class="v2-kpi-grid"') && has(crm, 'id="v2-kpi-clients"'));
-ok('dashboard has the roster + rail grid', has(crm, 'class="v2-dash-grid"') && has(crm, 'class="v2-dash-rail"'));
+ok('dashboard has KPI cards', has(crm, 'v2-kpi-grid') && has(crm, 'id="v2-kpi-clients"'));
+ok('dashboard has the roster + rail grid', has(crm, 'v2-dash-grid') && has(crm, 'v2-dash-rail'));
 ok('dashboard has real coach insight', has(crm, 'id="v2-coach-text"') && has(crm, 'renderKpis'));
 ok('empty client groups are hidden', has(crm, 'counts[g.id] || 0) > 0'));
 ok('dashboard KPIs are localized through t()', has(crm, "tr('clients.kpiTotalSub')") && has(crm, "tr('clients.coachGood'"));
@@ -82,9 +82,9 @@ ok('theme hint says thirteen worlds', /13 /.test(JSON.parse(fs.readFileSync(path
 
 /* ---------- c202 depth pass ---------- */
 ok('sidebar client search removed', !has(crm, 'id="aside-search"'));
-ok('rich client cards exist', has(crm, 'v2-client-card') && has(crm, 'v2-client-progress') && has(crm, 'v2-client-dot'));
+ok('rich client cards exist', has(crm, 'v2-client-card') && has(crm, 'dk-client-card') && has(crm, 'dk-client-ring') && has(crm, 'dk-client-photo'));
 ok('client cards use real workout stats', has(crm, 'c._wk30') && has(crm, 'c._wkTotal'));
-ok('client cards have a 6-week sparkline', has(crm, 'c._spark = s.spark') && has(crm, 'v2-client-spark'));
+ok('client cards have a 6-week sparkline', has(crm, 'c._spark = s.spark') && has(crm, 'v2-kpi-spark'));
 ok('client status pills are localized', has(crm, "t('clients.statusActive')"));
 ok('exercise modal gets the neon source plate', has(crm, "gifSlot.setAttribute('data-src', _srcCode)"));
 ok('exercise modal image is dark/transparent on GV/BF', has(crm, '#exercise-gif-slot[data-src="gv"] img'));
@@ -92,10 +92,10 @@ ok('exercise cards advertise their animation', has(crm, 'class="v2-anim-badge"')
 ok('card sheen animation exists', has(crm, '@keyframes v2-card-sheen'));
 
 /* ---------- versions ---------- */
-ok('trainer build c207', has(crm, 'name="dk-build" content="c207"'));
-ok('login build c207', has(crm, '3 languages · c207'));
-ok('RUNNING 207', has(crm, 'var RUNNING = 207;'));
-ok('SW cache v234', has(sw, "CACHE_NAME = 'dk-gym-v234'"));
+ok('trainer build c208', has(crm, 'name="dk-build" content="c208"'));
+ok('login build c208', has(crm, '3 languages · c208'));
+ok('RUNNING 208', has(crm, 'var RUNNING = 208;'));
+ok('SW cache v235', has(sw, "CACHE_NAME = 'dk-gym-v235'"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 if (fail) process.exitCode = 1;

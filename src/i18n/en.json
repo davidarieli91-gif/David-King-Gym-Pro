@@ -164,7 +164,9 @@
     "saveTemplate": "Save as template",
     "statusActive": "Active",
     "clientPortal": "Client Portal",
-    "save": "Save program"
+    "save": "Save program",
+    "activeProgram": "Active program",
+    "noActive": "No active program"
   },
   "bm": {
     "body": "Body",
@@ -362,7 +364,17 @@
     "statusRecent": "Recent",
     "statusAway": "Away",
     "workoutsShort": "workouts",
-    "thisMonth": "this month"
+    "thisMonth": "this month",
+    "dynamics": "Client dynamics",
+    "everyClient": "Every client is unique",
+    "everyClientHint": "The right plan. Better results.",
+    "lastActivity": "Last activity",
+    "allGroups": "All groups",
+    "goalLabel": "Goal",
+    "workoutsLabel": "workouts",
+    "metricWeight": "Weight",
+    "metricWaist": "Waist",
+    "metricFat": "Body fat"
   },
   "client": {
     "openInjuryList": "Open conditions list",
@@ -534,7 +546,12 @@
     "portalPassSaved": "Portal password saved — phone sign-in is ready",
     "portalPassLocal": "Password saved. Cloud unavailable — it will apply next time the portal is generated",
     "portalPassNone": "not set",
-    "birthDate": "Birth date"
+    "birthDate": "Birth date",
+    "weeks": "weeks",
+    "daysShort": "days",
+    "message": "Message",
+    "call": "Call",
+    "note": "Note"
   },
   "analytics": {
     "title": "Analytics",
@@ -1931,5 +1948,8 @@
     "next": "Next",
     "wasThis": "done last time",
     "nowThis": "next in the rotation"
+  },
+  "health": {
+    "weightTrend": "Weight progress"
   }
 }
