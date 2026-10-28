@@ -1,0 +1,281 @@
+/* ============================================================================
+   c210 — adaptive workspace for 16:9 → 21:9 → 32:9 and down to phones
+   The trainer workspace fills the available width instead of sitting in a
+   narrow 1500px island. Content stays readable because cards get fluid
+   min/max widths and the rails grow with the viewport.
+   ========================================================================== */
+
+/* ---------- fluid screen shells ---------- */
+html[data-ui="v2"] [data-screen="dashboard"],
+html[data-ui="v2"] [data-screen="profile"],
+html[data-ui="v2"] [data-screen="workouts"],
+html[data-ui="v2"] [data-screen="nutrition"],
+html[data-ui="v2"] [data-screen="analytics"],
+html[data-ui="v2"] [data-screen="tools"] {
+  max-width: none !important;
+  width: 100%;
+  padding-inline: clamp(16px, 1.35vw, 46px) !important;
+}
+html[data-ui="v2"] [data-screen="settings"] {
+  max-width: 1500px !important;
+  width: 100%;
+  padding-inline: clamp(16px, 1.35vw, 46px) !important;
+}
+html[data-ui="v2"] [data-screen="dashboard"],
+html[data-ui="v2"] [data-screen="profile"],
+html[data-ui="v2"] [data-screen="nutrition"],
+html[data-ui="v2"] [data-screen="analytics"],
+html[data-ui="v2"] [data-screen="tools"] {
+  padding-block: clamp(16px, 1.2vw, 30px) !important;
+}
+html[data-ui="v2"] [data-screen="workouts"] { padding-block: clamp(16px, 1.1vw, 26px) !important; }
+
+/* the aside keeps a sane optical width on very wide panels */
+@media (min-width: 2000px) {
+  html[data-ui="v2"] #aside { width: clamp(280px, 15vw, 330px); }
+}
+@media (min-width: 2800px) {
+  html[data-ui="v2"] #aside { width: clamp(300px, 9vw, 360px); }
+}
+
+/* ---------- living grid columns ---------- */
+html[data-ui="v2"] .dk-dash-grid {
+  grid-template-columns: minmax(0, 1fr) clamp(320px, 21vw, 450px) !important;
+}
+html[data-ui="v2"] .dk-client-grid {
+  grid-template-columns: repeat(auto-fill, minmax(clamp(190px, 11.2vw, 300px), 1fr));
+}
+html[data-ui="v2"] .dk-kpi-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+}
+
+/* profile: main column + a rail that grows with the monitor */
+html[data-ui="v2"] #profile-body .pf-cols {
+  grid-template-columns: minmax(0, 1fr) clamp(300px, 21vw, 450px);
+  gap: clamp(12px, .9vw, 22px);
+}
+html[data-ui="v2"] #profile-body .pf-col { gap: clamp(12px, .9vw, 20px); }
+
+/* hero grows in width, not in emptiness */
+html[data-ui="v2"] .dk-hero {
+  grid-template-columns: clamp(150px, 11vw, 230px) minmax(0, 1fr) clamp(230px, 17vw, 360px);
+  gap: clamp(11px, .8vw, 20px);
+  padding: clamp(12px, .8vw, 20px);
+}
+html[data-ui="v2"] .dk-hero-photo { min-height: clamp(200px, 15vw, 270px); }
+
+/* stats card becomes the reference two-column strip:
+   four KPI tiles on the left, weight chart on the right */
+@media (min-width: 1180px) {
+  html[data-ui="v2"] .dk-stats {
+    display: grid;
+    grid-template-columns: minmax(360px, .92fr) minmax(0, 1.25fr);
+    grid-template-rows: auto minmax(148px, 1fr);
+    column-gap: clamp(12px, .9vw, 22px);
+    align-items: stretch;
+  }
+  html[data-ui="v2"] .dk-stats-grid { grid-column: 1; grid-row: 1 / span 2; align-content: start; }
+  html[data-ui="v2"] .dk-chart-head { grid-column: 2; grid-row: 1; margin: 0 0 6px; }
+  html[data-ui="v2"] .dk-chart { grid-column: 2; grid-row: 2; height: 100%; min-height: 148px; }
+}
+html[data-ui="v2"] .dk-stats { padding: clamp(12px, .8vw, 18px); }
+html[data-ui="v2"] .dk-stats-grid { gap: clamp(6px, .5vw, 10px); }
+
+/* meal cards stay rich at 21:9 and 32:9 */
+html[data-ui="v2"] .dk-meal-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(7px, .55vw, 12px); }
+html[data-ui="v2"] .dk-meal-media { height: clamp(84px, 6.5vw, 130px); }
+
+/* nutrition dashboard */
+html[data-ui="v2"] .nutri-dash {
+  grid-template-columns: minmax(0, 1fr) clamp(340px, 21vw, 460px);
+  gap: clamp(12px, .9vw, 22px);
+}
+html[data-ui="v2"] .nutri-food-grid { grid-template-columns: repeat(auto-fill, minmax(clamp(150px, 9vw, 215px), 1fr)); }
+html[data-ui="v2"] #food-db-tree .food-grid,
+html[data-ui="v2"] #fp-results .food-grid { grid-template-columns: repeat(auto-fill, minmax(clamp(160px, 10vw, 230px), 1fr)); }
+html[data-ui="v2"] #food-db-tree .food-group-grid,
+html[data-ui="v2"] #fp-results .food-group-grid { grid-template-columns: repeat(auto-fill, minmax(clamp(190px, 11vw, 270px), 1fr)); }
+
+/* workouts: use the panel width on wide monitors */
+html[data-ui="v2"] #exb-qp-host > #bm-root { width: 100%; }
+@media (min-width: 1800px) {
+  html[data-ui="v2"] .picker-tree-col { width: clamp(240px, 13vw, 300px); }
+  html[data-ui="v2"] .picker-map-col { width: clamp(280px, 16vw, 360px); }
+  html[data-ui="v2"] #exb-grid { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+}
+@media (min-width: 2800px) {
+  html[data-ui="v2"] .picker-tree-col { width: 330px; }
+  html[data-ui="v2"] .picker-map-col { width: 400px; }
+  html[data-ui="v2"] #exb-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+}
+
+/* analytics/tools forms don't become a single 3000px line */
+html[data-ui="v2"] [data-screen="analytics"] .grid,
+html[data-ui="v2"] [data-screen="tools"] .grid { max-width: 1800px; }
+html[data-ui="v2"] [data-screen="tools"] { max-width: 1800px !important; }
+
+/* settings accordion cards are readable across the wide screen */
+@media (min-width: 1800px) {
+  html[data-ui="v2"] [data-screen="settings"] .settings-panel { width: 100%; }
+}
+
+/* live workout: two columns on 21:9+, still one on phones */
+html[data-ui="v2"] [data-screen="live-workout"] > .max-w-3xl,
+html[data-ui="v2"] [data-screen="live-workout"] .max-w-3xl.xl\:max-w-5xl {
+  max-width: none !important;
+  width: 100%;
+}
+@media (min-width: 1500px) {
+  html[data-ui="v2"] [data-screen="live-workout"] > .max-w-3xl,
+  html[data-ui="v2"] [data-screen="live-workout"] .max-w-3xl.xl\:max-w-5xl {
+    padding-inline: clamp(20px, 2vw, 54px) !important;
+  }
+  html[data-ui="v2"] #live-workout-exercises {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: clamp(12px, 1vw, 20px);
+  }
+  html[data-ui="v2"] #live-workout-exercises > * { margin-top: 0 !important; }
+  html[data-ui="v2"] #live-workout-exercises > .glass { height: auto; }
+}
+
+/* ---------- 21:9 and 32:9 refinements ---------- */
+@media (min-width: 2100px) {
+  html[data-ui="v2"] .dk-kpi { min-height: 138px; padding: 16px 17px !important; }
+  html[data-ui="v2"] .dk-kpi-value { font-size: 34px; }
+  html[data-ui="v2"] .dk-client-photo { height: clamp(190px, 12.5vw, 260px); }
+  html[data-ui="v2"] .dk-client-photo-name { font-size: 18px; }
+  html[data-ui="v2"] .dk-hero-name { font-size: clamp(30px, 2.4vw, 42px); }
+  html[data-ui="v2"] .dk-hero-info-tile b { font-size: 13px; }
+  html[data-ui="v2"] .dk-meal-top b { font-size: 11px; }
+  html[data-ui="v2"] .dk-meal-kcal { font-size: 14px; }
+  html[data-ui="v2"] .dk-stat-tile b { font-size: 26px; }
+  html[data-ui="v2"] .dk-stat-tile span { font-size: 8.5px; }
+}
+@media (min-width: 3000px) {
+  html[data-ui="v2"] #live-workout-exercises { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  html[data-ui="v2"] .dk-kpi-grid { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; }
+  html[data-ui="v2"] .dk-kpi { min-height: 150px; }
+  html[data-ui="v2"] .dk-kpi-value { font-size: 38px; }
+  html[data-ui="v2"] .dk-client-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+  html[data-ui="v2"] .dk-hero { grid-template-columns: 240px minmax(0, 1fr) 380px; }
+  html[data-ui="v2"] .dk-hero-photo { min-height: 290px; }
+  html[data-ui="v2"] .dk-hero-name { font-size: 44px; }
+  html[data-ui="v2"] .dk-hero-info { gap: 10px; }
+  html[data-ui="v2"] .dk-meal-media { height: 160px; }
+  html[data-ui="v2"] .dk-meal-grid { gap: 14px; }
+  html[data-ui="v2"] .nutri-food-grid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+}
+
+/* ---------- tablet / narrow laptop ---------- */
+@media (max-width: 1500px) {
+  html[data-ui="v2"] .dk-dash-grid { grid-template-columns: minmax(0, 1fr) 310px !important; }
+  html[data-ui="v2"] #profile-body .pf-cols { grid-template-columns: minmax(0, 1fr) 300px; }
+  html[data-ui="v2"] .nutri-dash { grid-template-columns: minmax(0, 1fr) 350px; }
+}
+@media (max-width: 1180px) {
+  html[data-ui="v2"] .dk-dash-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  html[data-ui="v2"] .dk-rail { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  html[data-ui="v2"] .dk-rail-hero, html[data-ui="v2"] .dk-rail-quote { grid-column: span 2; }
+  html[data-ui="v2"] #profile-body .pf-cols { grid-template-columns: minmax(0, 1fr); }
+  html[data-ui="v2"] .nutri-dash { grid-template-columns: minmax(0, 1fr); }
+  html[data-ui="v2"] .nutri-rail { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  html[data-ui="v2"] .nutri-side-card:last-child { grid-column: span 2; }
+}
+@media (max-width: 900px) {
+  html[data-ui="v2"] .dk-kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  html[data-ui="v2"] .dk-client-grid { grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); }
+  html[data-ui="v2"] .dk-hero { grid-template-columns: 140px minmax(0, 1fr); }
+  html[data-ui="v2"] .dk-hero-right { grid-column: 1 / -1; flex-direction: row; }
+  html[data-ui="v2"] .dk-hero-ring-wrap { flex: none; }
+  html[data-ui="v2"] .nutri-rail { grid-template-columns: minmax(0, 1fr); }
+  html[data-ui="v2"] .nutri-side-card:last-child { grid-column: auto; }
+}
+@media (max-width: 700px) {
+  html[data-ui="v2"] .dk-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  html[data-ui="v2"] .dk-kpi:nth-child(5) { grid-column: 1 / -1; }
+  html[data-ui="v2"] .dk-client-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  html[data-ui="v2"] .dk-hero { grid-template-columns: 1fr; }
+  html[data-ui="v2"] .dk-hero-photo { min-height: 180px; max-height: 240px; }
+  html[data-ui="v2"] .dk-hero-right { flex-direction: column; }
+  html[data-ui="v2"] .dk-hero-info { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  html[data-ui="v2"] .dk-stats { display: block; }
+  html[data-ui="v2"] .dk-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  html[data-ui="v2"] .dk-chart { height: 132px; min-height: 0; }
+  html[data-ui="v2"] .dk-meal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  html[data-ui="v2"] .dk-dash-head { align-items: flex-start; flex-wrap: wrap; }
+  html[data-ui="v2"] .dk-dash-head-actions { width: 100%; }
+  html[data-ui="v2"] .dk-rail { grid-template-columns: minmax(0, 1fr); }
+  html[data-ui="v2"] .dk-rail-hero, html[data-ui="v2"] .dk-rail-quote { grid-column: auto; }
+  html[data-ui="v2"] #live-workout-exercises { display: block; }
+  html[data-ui="v2"] #live-workout-exercises > * { margin-top: 12px !important; }
+}
+
+/* ---------- phones ---------- */
+@media (max-width: 480px) {
+  html[data-ui="v2"] [data-screen="dashboard"],
+  html[data-ui="v2"] [data-screen="profile"],
+  html[data-ui="v2"] [data-screen="nutrition"],
+  html[data-ui="v2"] [data-screen="analytics"],
+  html[data-ui="v2"] [data-screen="tools"],
+  html[data-ui="v2"] [data-screen="settings"],
+  html[data-ui="v2"] [data-screen="workouts"] { padding-inline: 10px !important; }
+  html[data-ui="v2"] .dk-kpi { min-height: 104px; padding: 10px !important; }
+  html[data-ui="v2"] .dk-kpi-value { font-size: 23px; }
+  html[data-ui="v2"] .dk-client-photo { height: 128px; }
+  html[data-ui="v2"] .dk-client-photo-name { font-size: 13px; }
+  html[data-ui="v2"] .dk-client-metrics { display: none; }
+  html[data-ui="v2"] .dk-roster-head { flex-wrap: wrap; }
+  html[data-ui="v2"] .dk-view-toggle { margin-inline-start: auto; }
+  html[data-ui="v2"] .dk-hero { padding: 10px; }
+  html[data-ui="v2"] .dk-hero-name { font-size: 24px; }
+  html[data-ui="v2"] .dk-hero-actions { gap: 4px; }
+  html[data-ui="v2"] .dk-hero-btn { height: 28px; padding: 0 8px; font-size: 8.5px; }
+  html[data-ui="v2"] .dk-meal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+  html[data-ui="v2"] .dk-meal-media { height: 92px; }
+  html[data-ui="v2"] .dk-hero-info { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+
+/* ---------- c210b: fully wide utility screens ---------- */
+@media (min-width: 1800px) {
+  html[data-ui="v2"] [data-screen="settings"]:not(.hidden) {
+    max-width: none !important;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    align-items: start;
+  }
+  html[data-ui="v2"] [data-screen="settings"] > h1 { grid-column: 1 / -1; }
+  html[data-ui="v2"] [data-screen="settings"] > .settings-panel { margin-bottom: 0 !important; }
+  html[data-ui="v2"] [data-screen="settings"] > .settings-panel[data-open="1"],
+  html[data-ui="v2"] [data-screen="settings"] > .settings-panel.collapsed { min-width: 0; }
+  html[data-ui="v2"] [data-screen="tools"] { max-width: none !important; }
+  html[data-ui="v2"] [data-screen="tools"] [class*="sm:grid-cols-2"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+@media (min-width: 2600px) {
+  html[data-ui="v2"] [data-screen="settings"]:not(.hidden) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  html[data-ui="v2"] [data-screen="tools"] [class*="sm:grid-cols-2"] {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+}
+
+
+/* right-rail food cards keep their 3-up rhythm even when the rail is wider */
+html[data-ui="v2"] .nutri-rail .nutri-food-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (min-width: 2000px) {
+  html[data-ui="v2"] .nutri-meal-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  html[data-ui="v2"] .nutri-meal-list .nutri-total-bar { grid-column: 1 / -1; }
+}
+@media (min-width: 3000px) {
+  html[data-ui="v2"] .nutri-meal-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}

@@ -50,9 +50,9 @@ ok('client exDoneVolume uses performed', has(portal, "const perf = (window.dkMus
 ok('client saves performed flag on each set', has(portal, 'performed: !!(s.done || s.touched)'));
 
 /* versions/cache */
-ok('trainer build c209', has(crm, 'name="dk-build" content="c209"'));
-ok('trainer RUNNING 209', has(crm, 'var RUNNING = 209;'));
-ok('SW cache v236', has(sw, "CACHE_NAME = 'dk-gym-v236'"));
+ok('trainer build c210', has(crm, 'name="dk-build" content="c210"'));
+ok('trainer RUNNING 210', has(crm, 'var RUNNING = 210;'));
+ok('SW cache v237', has(sw, "CACHE_NAME = 'dk-gym-v237'"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 if (fail) process.exitCode = 1;

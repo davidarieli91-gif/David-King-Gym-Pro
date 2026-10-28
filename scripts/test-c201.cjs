@@ -31,10 +31,10 @@ ok('profile hero portal action kept', crm.indexOf('data-open-portal') >= 0 && cr
 ok('profile hero has real stats', crm.indexOf("t('client.age')") >= 0 && crm.indexOf('BMI') >= 0 && crm.indexOf("t('client.weight')") >= 0);
 ok('i18n profileEyebrow kept in 3 languages', !!(en.client.profileEyebrow && ru.client.profileEyebrow && he.client.profileEyebrow));
 ok('i18n muscleMap key removed', !(en.client.muscleMap || ru.client.muscleMap || he.client.muscleMap));
-ok('build is c209', crm.indexOf('<meta name="dk-build" content="c209" />') >= 0);
-ok('SW cache is v232', sw.indexOf("const CACHE_NAME = 'dk-gym-v236'") >= 0);
-ok('running build label is c205', crm.indexOf('var RUNNING = 209') >= 0);
-ok('login/sidebar show c205', crm.indexOf('3 languages · c209') >= 0 && crm.indexOf('id="v2-side-version">c209') >= 0);
+ok('build is c210', crm.indexOf('<meta name="dk-build" content="c210" />') >= 0);
+ok('SW cache is v232', sw.indexOf("const CACHE_NAME = 'dk-gym-v237'") >= 0);
+ok('running build label is c205', crm.indexOf('var RUNNING = 210') >= 0);
+ok('login/sidebar show c205', crm.indexOf('3 languages · c210') >= 0 && crm.indexOf('id="v2-side-version">c210') >= 0);
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

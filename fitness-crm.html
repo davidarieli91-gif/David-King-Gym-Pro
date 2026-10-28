@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c209" />
+<meta name="dk-build" content="c210" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -54,6 +54,7 @@
   <link rel="stylesheet" href="src/input.css" />
   <link rel="stylesheet" href="src/nutrition-dashboard.css" />
   <link rel="stylesheet" href="src/dashboard-v3.css" />
+  <link rel="stylesheet" href="src/responsive-v4.css" />
   <!-- i18n dictionaries as bundled ES module (executes before DOMContentLoaded) -->
   <script type="module" src="src/i18n.js"></script>
   <!-- c184: shared muscle core — ONE performed/units/attribution model for both engines -->
@@ -4533,7 +4534,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           </div>
           <div class="flex items-center gap-2 mb-3">
             <span class="v2-pill v2-pill-live"><span class="w-1.5 h-1.5 rounded-full bg-success"></span> <span data-i18n="clients.online">Online</span></span>
-            <span class="v2-pill" id="v2-side-version">c209</span>
+            <span class="v2-pill" id="v2-side-version">c210</span>
           </div>
         </div>
 
@@ -4680,7 +4681,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c209</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c210</p>
             </div>
           </div>
 
@@ -13101,7 +13102,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       const Y = w => flat ? H / 2 : H - pad - (w - min) / span * (H - pad * 2);
       const line = pts.map((p, i) => (i ? 'L' : 'M') + X(p.ts).toFixed(1) + ' ' + Y(p.w).toFixed(1)).join(' ');
       const area = line + ' L' + X(t1).toFixed(1) + ' ' + (H - pad) + ' L' + X(t0).toFixed(1) + ' ' + (H - pad) + ' Z';
-      box.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none"><defs><linearGradient id="dkw-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgb(var(--c-primary))" stop-opacity=".36"/><stop offset="1" stop-color="rgb(var(--c-primary))" stop-opacity="0"/></linearGradient></defs><path d="' + area + '" fill="url(#dkw-grad)"/><path d="' + line + '" fill="none" stroke="rgb(var(--c-primary))" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' + pts.map(p => '<circle cx="' + X(p.ts).toFixed(1) + '" cy="' + Y(p.w).toFixed(1) + '" r="2.4" fill="rgb(var(--c-primary))"/>').join('') + '</svg>';
+      box.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none"><defs><linearGradient id="dkw-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgb(var(--c-primary))" stop-opacity=".36"/><stop offset="1" stop-color="rgb(var(--c-primary))" stop-opacity="0"/></linearGradient></defs>' + (flat ? '' : '<path d="' + area + '" fill="url(#dkw-grad)"/>') + '<path d="' + line + '" fill="none" stroke="rgb(var(--c-primary))" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' + pts.map(p => '<circle cx="' + X(p.ts).toFixed(1) + '" cy="' + Y(p.w).toFixed(1) + '" r="2.4" fill="rgb(var(--c-primary))"/>').join('') + '</svg>';
     }
 
     async function loadProfileQuickActivity(c) {
@@ -37873,7 +37874,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 209; /* numeric part of dk-build c209 */
+  var RUNNING = 210; /* numeric part of dk-build c210 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {
