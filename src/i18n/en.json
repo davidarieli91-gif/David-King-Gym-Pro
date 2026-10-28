@@ -166,7 +166,8 @@
     "clientPortal": "Client Portal",
     "save": "Save program",
     "activeProgram": "Active program",
-    "noActive": "No active program"
+    "noActive": "No active program",
+    "newHint": "Create a new program"
   },
   "bm": {
     "body": "Body",
@@ -551,7 +552,8 @@
     "daysShort": "days",
     "message": "Message",
     "call": "Call",
-    "note": "Note"
+    "note": "Note",
+    "quote": "Stronger than yesterday"
   },
   "analytics": {
     "title": "Analytics",
@@ -1141,7 +1143,8 @@
     "dashboardTitle": "Meal plan",
     "dragHint": "Drag a product into a meal",
     "dropHere": "Drop here",
-    "addToPlan": "Add to plan"
+    "addToPlan": "Add to plan",
+    "newPlanHint": "Build a nutrition plan"
   },
   "food": {
     "title": "Food database",
@@ -1950,6 +1953,9 @@
     "nowThis": "next in the rotation"
   },
   "health": {
-    "weightTrend": "Weight progress"
+    "weightTrend": "Weight progress",
+    "workouts30": "Workouts / 30 days",
+    "vsPrev30": "vs prev. 30d",
+    "days30": "30 days"
   }
 }

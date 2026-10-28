@@ -125,9 +125,9 @@ ok('dashboard refreshes when persisted portal history lands', crm.indexOf("docum
   }
 
   /* ---------- versions ---------- */
-  ok('trainer build c208', crm.indexOf('<meta name="dk-build" content="c208" />') >= 0);
-  ok('trainer RUNNING 208', crm.indexOf('var RUNNING = 208;') >= 0);
-  ok('SW cache v235', sw.indexOf("CACHE_NAME = 'dk-gym-v235'") >= 0);
+  ok('trainer build c209', crm.indexOf('<meta name="dk-build" content="c209" />') >= 0);
+  ok('trainer RUNNING 209', crm.indexOf('var RUNNING = 209;') >= 0);
+  ok('SW cache v236', sw.indexOf("CACHE_NAME = 'dk-gym-v236'") >= 0);
 
   console.log('\n' + pass + ' passed, ' + fail + ' failed');
   process.exit(fail ? 1 : 0);

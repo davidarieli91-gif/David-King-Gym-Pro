@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c208" />
+<meta name="dk-build" content="c209" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -4533,7 +4533,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           </div>
           <div class="flex items-center gap-2 mb-3">
             <span class="v2-pill v2-pill-live"><span class="w-1.5 h-1.5 rounded-full bg-success"></span> <span data-i18n="clients.online">Online</span></span>
-            <span class="v2-pill" id="v2-side-version">c208</span>
+            <span class="v2-pill" id="v2-side-version">c209</span>
           </div>
         </div>
 
@@ -4680,7 +4680,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c208</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c209</p>
             </div>
           </div>
 
@@ -12465,8 +12465,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       if (!box) return;
       const counts = { all: _clients.length, active: 0, recent: 0, away: 0 };
       _clients.forEach(c => { counts[clientStatus(c)] = (counts[clientStatus(c)] || 0) + 1; });
-      const lg = (typeof currentLang === 'function') ? currentLang() : 'en';
-      const allLabel = lg === 'ru' ? '???' : (lg === 'he' ? '???' : 'All');
+      const allLabel = (typeof t === 'function' && t('common.all')) || 'All';
       const defs = [
         ['all', allLabel, counts.all],
         ['active', t('clients.statusActive'), counts.active],
@@ -12961,8 +12960,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       const GOAL_KEY = { hypertrophy: 'client.goalHypertrophy', strength: 'client.goalStrength', fat_loss: 'client.goalFatLoss', endurance: 'client.goalEndurance', rehab: 'client.goalRehab' };
       const goalTxt = GOAL_KEY[c.goal] ? t(GOAL_KEY[c.goal]) : '';
       const bmi = (c.weight && c.height) ? (c.weight / Math.pow(c.height / 100, 2)).toFixed(1) : '';
-      const lg = (typeof currentLang === 'function') ? currentLang() : 'en';
-      const quote = lg === 'ru' ? '???????, ??? ?????' : (lg === 'he' ? '????? ???? ??????' : 'Stronger than yesterday');
+      const quote = (typeof t === 'function' && t('client.quote')) || 'Stronger than yesterday';
       const photo = c.photo_url
         ? '<img src="' + escapeAttr(c.photo_url) + '" alt="" />'
         : '<span class="dk-hero-photo-fallback" style="background:' + avatarGradient(name) + '">' + escapeHTML(initials(name)) + '</span>';
@@ -13013,8 +13011,8 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       return `<div class="bg-surface border border-border rounded-2xl shadow-card dk-quick">
         <h3>${escapeHTML(t('clients.quickActions'))}</h3>
         <button class="dk-quick-row" data-quick-action="workout"><span class="dk-quick-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M6 12h12"/></svg></span><span class="dk-quick-copy"><b>${escapeHTML(t('workouts.startWorkout'))}</b><small>${escapeHTML(t('clients.startWorkoutHint'))}</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
-        <button class="dk-quick-row" data-quick-action="program"><span class="dk-quick-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></span><span class="dk-quick-copy"><b>${escapeHTML(t('programs.new'))}</b><small>${escapeHTML(t('clients.addClientHint'))}</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
-        <button class="dk-quick-row" data-quick-action="nutrition"><span class="dk-quick-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zM12 8v4M12 16h.01"/></svg></span><span class="dk-quick-copy"><b>${escapeHTML(t('nutrition.newPlan') || 'New nutrition plan')}</b><small>${escapeHTML(t('clients.nutritionHint'))}</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+        <button class="dk-quick-row" data-quick-action="program"><span class="dk-quick-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></span><span class="dk-quick-copy"><b>${escapeHTML(t('programs.new'))}</b><small>${escapeHTML(t('programs.newHint'))}</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+        <button class="dk-quick-row" data-quick-action="nutrition"><span class="dk-quick-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zM12 8v4M12 16h.01"/></svg></span><span class="dk-quick-copy"><b>${escapeHTML(t('nutrition.newPlan') || 'New nutrition plan')}</b><small>${escapeHTML(t('nutrition.newPlanHint'))}</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
         <button class="dk-quick-row" data-quick-action="note"><span class="dk-quick-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span><span class="dk-quick-copy"><b>${escapeHTML(t('client.notesLabel') || 'Notes')}</b><small>${escapeHTML(t('client.note') || 'Add a note')}</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
         <div class="dk-rail-head" style="margin-top:10px"><h3>${escapeHTML(t('clients.lastActivity'))}</h3></div>
         <div class="dk-quick-activity" id="profile-quick-activity"></div>
@@ -13024,12 +13022,12 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     function statsCard(c) {
       return `<div class="bg-surface border border-border rounded-2xl shadow-card dk-stats">
         <div class="dk-stats-grid">
-          <div class="dk-stat-tile gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M6 12h12"/></svg><b id="profile-stat-workouts">?</b><span>${escapeHTML(t('clients.kpiWorkouts'))}</span><em id="profile-stat-workouts-delta"></em></div>
-          <div class="dk-stat-tile green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2s6 7 6 12a6 6 0 0 1-12 0c0-5 6-12 6-12z"/></svg><b id="profile-stat-kcal">?</b><span>${escapeHTML(t('nutrition.kcal'))}</span><em id="profile-stat-kcal-delta"></em></div>
-          <div class="dk-stat-tile cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7v10M18 7v10M3 9v6M21 9v6M6 12h12"/></svg><b id="profile-stat-weight">?</b><span>${escapeHTML(t('clients.metricWeight'))}</span></div>
-          <div class="dk-stat-tile violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2s6 7 6 12a6 6 0 0 1-12 0c0-5 6-12 6-12z"/></svg><b id="profile-stat-fat">?</b><span>${escapeHTML(t('clients.metricFat'))}</span></div>
+          <div class="dk-stat-tile gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M6 12h12"/></svg><b id="profile-stat-workouts">&mdash;</b><span>${escapeHTML(t('health.workouts30'))}</span><em id="profile-stat-workouts-delta"></em></div>
+          <div class="dk-stat-tile green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2s6 7 6 12a6 6 0 0 1-12 0c0-5 6-12 6-12z"/></svg><b id="profile-stat-kcal">&mdash;</b><span>${escapeHTML(t('nutrition.kcal'))}</span><em id="profile-stat-kcal-delta"></em></div>
+          <div class="dk-stat-tile cyan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7v10M18 7v10M3 9v6M21 9v6M6 12h12"/></svg><b id="profile-stat-weight">&mdash;</b><span>${escapeHTML(t('clients.metricWeight'))}</span></div>
+          <div class="dk-stat-tile violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2s6 7 6 12a6 6 0 0 1-12 0c0-5 6-12 6-12z"/></svg><b id="profile-stat-fat">&mdash;</b><span>${escapeHTML(t('clients.metricFat'))}</span></div>
         </div>
-        <div class="dk-chart-head"><h3>${escapeHTML(t('health.weightTrend') || 'Weight progress')}</h3><select aria-label="Range"><option>30 ${escapeHTML(t('client.daysShort') || 'days')}</option></select></div>
+        <div class="dk-chart-head"><h3>${escapeHTML(t('health.weightTrend') || 'Weight progress')}</h3><select aria-label="Range"><option>${escapeHTML(t('health.days30'))}</option></select></div>
         <div class="dk-chart" id="profile-weight-chart"><div class="dk-chart-empty">${escapeHTML(t('analytics.noData') || 'No data yet')}</div></div>
       </div>`;
     }
@@ -13083,8 +13081,8 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       setNum('profile-stat-fat', fat ? fat + '%' : '?');
       const pctDelta = (a, b) => (b > 0 ? Math.round((a - b) / b * 100) : (a > 0 ? 100 : 0));
       const wd = pctDelta(recent.length, prev.length), kd = pctDelta(kcal, kcalPrev);
-      const wde = document.getElementById('profile-stat-workouts-delta'); if (wde) wde.textContent = (wd > 0 ? '+' : '') + wd + '% vs prev. 30d';
-      const kde = document.getElementById('profile-stat-kcal-delta'); if (kde) kde.textContent = (kd > 0 ? '+' : '') + kd + '% vs prev. 30d';
+      const wde = document.getElementById('profile-stat-workouts-delta'); if (wde) wde.textContent = (wd > 0 ? '+' : '') + wd + '% ' + escapeHTML(t('health.vsPrev30'));
+      const kde = document.getElementById('profile-stat-kcal-delta'); if (kde) kde.textContent = (kd > 0 ? '+' : '') + kd + '% ' + escapeHTML(t('health.vsPrev30'));
       const ringPct = Math.min(100, Math.round(recent.length / 16 * 100));
       const ring = document.getElementById('profile-goal-ring'); if (ring) ring.style.setProperty('--p', ringPct + '%');
       const rp = document.getElementById('profile-goal-pct'); if (rp) rp.textContent = ringPct + '%';
@@ -37875,7 +37873,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 208; /* numeric part of dk-build c208 */
+  var RUNNING = 209; /* numeric part of dk-build c209 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

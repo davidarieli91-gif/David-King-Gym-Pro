@@ -165,8 +165,9 @@
     "statusActive": "פעיל",
     "clientPortal": "פורטל החניך",
     "save": "שמור תוכנית",
-    "activeProgram": "?????? ?????",
-    "noActive": "??? ?????? ?????"
+    "activeProgram": "תוכנית פעילה",
+    "noActive": "אין תוכנית פעילה",
+    "newHint": "צור תוכנית חדשה"
   },
   "bm": {
     "body": "גוף",
@@ -365,16 +366,16 @@
     "statusAway": "לא פעיל",
     "workoutsShort": "אימונים",
     "thisMonth": "החודש",
-    "dynamics": "??????? ??????",
-    "everyClient": "?? ???? ??? ??????",
-    "everyClientHint": "??????? ??????. ?????? ????? ????.",
-    "lastActivity": "?????? ??????",
-    "allGroups": "?? ???????",
-    "goalLabel": "????",
-    "workoutsLabel": "???????",
-    "metricWeight": "????",
-    "metricWaist": "????",
-    "metricFat": "????"
+    "dynamics": "דינמיקת לקוחות",
+    "everyClient": "כל לקוח הוא ייחודי",
+    "everyClientHint": "התוכנית הנכונה. תוצאות טובות יותר.",
+    "lastActivity": "פעילות אחרונה",
+    "allGroups": "כל הקבוצות",
+    "goalLabel": "מטרה",
+    "workoutsLabel": "אימונים",
+    "metricWeight": "משקל",
+    "metricWaist": "מותן",
+    "metricFat": "שומן"
   },
   "client": {
     "openInjuryList": "פתח רשימת מצבים",
@@ -547,11 +548,12 @@
     "portalPassLocal": "הסיסמה נשמרה. הענן לא זמין — תחול בפתיחה הבאה של הפורטל",
     "portalPassNone": "לא הוגדרה",
     "birthDate": "תאריך לידה",
-    "weeks": "??????",
-    "daysShort": "????",
-    "message": "?????",
-    "call": "?????",
-    "note": "????"
+    "weeks": "שבועות",
+    "daysShort": "ימים",
+    "message": "הודעה",
+    "call": "התקשר",
+    "note": "הערה",
+    "quote": "חזקים יותר מאתמול"
   },
   "analytics": {
     "title": "ניתוח",
@@ -1141,7 +1143,8 @@
     "dashboardTitle": "תוכנית תזונה",
     "dragHint": "גררו מוצר לארוחה",
     "dropHere": "שחררו כאן",
-    "addToPlan": "הוסף לתוכנית"
+    "addToPlan": "הוסף לתוכנית",
+    "newPlanHint": "בנה תוכנית תזונה"
   },
   "food": {
     "title": "מאגר מוצרים",
@@ -1950,6 +1953,9 @@
     "nowThis": "הבא ברוטציה"
   },
   "health": {
-    "weightTrend": "???? ????"
+    "weightTrend": "מגמת משקל",
+    "workouts30": "אימונים / 30 יום",
+    "vsPrev30": "לעומת 30 יום קודמים",
+    "days30": "30 ימים"
   }
 }

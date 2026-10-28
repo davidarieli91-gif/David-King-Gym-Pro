@@ -165,8 +165,9 @@
     "statusActive": "Активна",
     "clientPortal": "Портал подопечного",
     "save": "Сохранить программу",
-    "activeProgram": "???????? ?????????",
-    "noActive": "??? ???????? ?????????"
+    "activeProgram": "Активная программа",
+    "noActive": "Нет активной программы",
+    "newHint": "Создать новую программу"
   },
   "bm": {
     "body": "Тело",
@@ -365,16 +366,16 @@
     "statusAway": "Давно",
     "workoutsShort": "тренировок",
     "thisMonth": "в этом месяце",
-    "dynamics": "???????? ????????",
-    "everyClient": "?????? ?????? ????????",
-    "everyClientHint": "?????????? ????. ?????? ??????????.",
-    "lastActivity": "????????? ??????????",
-    "allGroups": "??? ??????",
-    "goalLabel": "????",
-    "workoutsLabel": "??????????",
-    "metricWeight": "???",
-    "metricWaist": "?????",
-    "metricFat": "???"
+    "dynamics": "Динамика клиентов",
+    "everyClient": "Каждый клиент уникален",
+    "everyClientHint": "Правильный план. Лучшие результаты.",
+    "lastActivity": "Последняя активность",
+    "allGroups": "Все группы",
+    "goalLabel": "Цель",
+    "workoutsLabel": "тренировок",
+    "metricWeight": "Вес",
+    "metricWaist": "Талия",
+    "metricFat": "Жир"
   },
   "client": {
     "openInjuryList": "Открыть список патологий",
@@ -547,11 +548,12 @@
     "portalPassLocal": "Пароль сохранён. Облако недоступно — применится при следующем открытии портала",
     "portalPassNone": "не задан",
     "birthDate": "Дата рождения",
-    "weeks": "??????",
-    "daysShort": "????",
-    "message": "?????????",
-    "call": "?????????",
-    "note": "???????"
+    "weeks": "недель",
+    "daysShort": "дней",
+    "message": "Сообщение",
+    "call": "Позвонить",
+    "note": "Заметка",
+    "quote": "Сильнее, чем вчера"
   },
   "analytics": {
     "title": "Аналитика",
@@ -1141,7 +1143,8 @@
     "dashboardTitle": "План питания",
     "dragHint": "Перетащите продукт в приём пищи",
     "dropHere": "Отпустите здесь",
-    "addToPlan": "Добавить в план"
+    "addToPlan": "Добавить в план",
+    "newPlanHint": "Создать план питания"
   },
   "food": {
     "title": "База продуктов",
@@ -1950,6 +1953,9 @@
     "nowThis": "следующая в ротации"
   },
   "health": {
-    "weightTrend": "???????? ?? ????"
+    "weightTrend": "Прогресс по весу",
+    "workouts30": "Тренировки / 30 дней",
+    "vsPrev30": "к пред. 30 дн.",
+    "days30": "30 дней"
   }
 }

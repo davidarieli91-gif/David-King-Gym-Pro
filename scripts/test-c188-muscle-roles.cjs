@@ -153,8 +153,8 @@ ok('portal recovery resolver passes contributions', portal.includes('contributio
 ok('chips delegate to role model', map.includes('window.dkMuscleRoles.renderChips'));
 ok('SW precaches roles module', sw.includes("'./src/muscle-roles.js'"));
 ok('copy-assets ships roles module', copy.includes("'src/muscle-roles.js'"));
-ok('trainer build c208', crm.includes('name="dk-build" content="c208"'));
-ok('SW cache v235', sw.includes("dk-gym-v235"));
+ok('trainer build c209', crm.includes('name="dk-build" content="c209"'));
+ok('SW cache v236', sw.includes("dk-gym-v236"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 if (fail) process.exitCode = 1;

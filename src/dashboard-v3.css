@@ -272,3 +272,92 @@ html[data-ui="v2"] #profile-body .pf-panel > .bg-surface { border-radius:20px !i
   html[data-ui="v2"] .dk-client-metrics { display:none; }
   html[data-ui="v2"] .dk-meal-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
 }
+
+
+/* ---------- c209: neon depth for client workspace + nutrition ---------- */
+html[data-ui="v2"][data-mode="dark"] .dk-kpi,
+html[data-ui="v2"][data-mode="dark"] .dk-rail-card,
+html[data-ui="v2"][data-mode="dark"] .dk-roster {
+  border-color: rgb(var(--c-primary) / .22) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 0 34px -18px rgb(var(--v2-glow) / .55), 0 18px 42px -30px rgba(0,0,0,.95);
+}
+html[data-ui="v2"][data-mode="dark"] .dk-kpi:hover,
+html[data-ui="v2"][data-mode="dark"] .dk-rail-card:hover {
+  border-color: rgb(var(--c-primary) / .42) !important;
+}
+html[data-ui="v2"][data-mode="dark"] .dk-client-card {
+  border-color: rgb(var(--c-primary) / .18) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 0 28px -18px rgb(var(--v2-glow) / .45), 0 18px 42px -30px rgba(0,0,0,.95);
+}
+html[data-ui="v2"][data-mode="dark"] .dk-client-card:hover {
+  border-color: rgb(var(--c-primary) / .6) !important;
+  box-shadow: 0 0 38px -12px rgb(var(--v2-glow) / .65), 0 24px 50px -26px rgba(0,0,0,.98);
+}
+html[data-ui="v2"][data-mode="dark"] .dk-hero {
+  border-color: rgb(var(--c-primary) / .4) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 0 46px -20px rgb(var(--v2-glow) / .55), 0 26px 60px -36px rgba(0,0,0,.98);
+}
+html[data-ui="v2"][data-mode="dark"] .dk-stat-tile,
+html[data-ui="v2"][data-mode="dark"] .dk-meal-card {
+  border-color: rgb(var(--c-primary) / .18) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.055), 0 0 22px -16px rgb(var(--v2-glow) / .45);
+}
+html[data-ui="v2"][data-mode="dark"] .dk-meal-card:hover {
+  border-color: rgb(var(--c-primary) / .45) !important;
+  box-shadow: 0 0 28px -12px rgb(var(--v2-glow) / .55);
+}
+html[data-ui="v2"][data-mode="dark"] .dk-hero-program {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 0 30px -18px rgb(var(--v2-glow) / .55);
+}
+
+/* product / meal cards follow the dark glass language */
+html[data-ui="v2"][data-mode="dark"] .dk-product-card,
+html[data-ui="v2"][data-mode="dark"] .nutri-food-tile,
+html[data-ui="v2"][data-mode="dark"] .nutri-meal-row,
+html[data-ui="v2"][data-mode="dark"] .nutri-recipe-card,
+html[data-ui="v2"][data-mode="dark"] .nutri-extra-card,
+html[data-ui="v2"][data-mode="dark"] .nutri-side-card,
+html[data-ui="v2"][data-mode="dark"] .food-tile {
+  background: linear-gradient(155deg, rgba(255,255,255,.045), rgba(255,255,255,.008)), var(--v2-surface) !important;
+  border-color: var(--v2-border) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 14px 34px -28px rgba(0,0,0,.95);
+}
+html[data-ui="v2"][data-mode="dark"] .dk-product-card:hover,
+html[data-ui="v2"][data-mode="dark"] .nutri-food-tile:hover,
+html[data-ui="v2"][data-mode="dark"] .nutri-recipe-card:hover,
+html[data-ui="v2"][data-mode="dark"] .food-tile:hover {
+  border-color: rgb(var(--c-primary) / .5) !important;
+  box-shadow: 0 0 30px -14px rgb(var(--v2-glow) / .6), 0 18px 38px -26px rgba(0,0,0,.95);
+}
+html[data-ui="v2"][data-mode="dark"] .dk-product-media,
+html[data-ui="v2"][data-mode="dark"] .nutri-food-media,
+html[data-ui="v2"][data-mode="dark"] .nutri-meal-thumb {
+  background: radial-gradient(ellipse 72% 64% at 50% 26%, rgb(var(--c-primary) / .12), transparent 68%), var(--v2-surface-2) !important;
+}
+html[data-ui="v2"][data-mode="dark"] .dk-product-card .dk-product-name,
+html[data-ui="v2"][data-mode="dark"] .nutri-food-tile .nutri-food-name {
+  color: rgb(var(--c-text)) !important;
+}
+html[data-ui="v2"][data-mode="dark"] .nutri-meal-row .nutri-meal-title b { color: rgb(var(--c-text)) !important; }
+html[data-ui="v2"][data-mode="dark"] .nutri-meal-row.is-done { border-color: rgb(var(--c-success) / .38) !important; box-shadow: 0 0 24px -16px rgb(var(--c-success) / .55); }
+
+
+/* c209: food photography sits on the same dark glass as exercise imagery */
+html[data-ui="v2"][data-mode="dark"] .dk-product-media::after,
+html[data-ui="v2"][data-mode="dark"] .nutri-food-media::after,
+html[data-ui="v2"][data-mode="dark"] .nutri-meal-thumb::after,
+html[data-ui="v2"][data-mode="dark"] .food-group-card .dk-group-cell::after {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(180deg, rgba(4,7,16,.08) 25%, rgba(4,7,16,.38) 100%);
+}
+html[data-ui="v2"][data-mode="dark"] .nutri-food-tile .nutri-food-img,
+html[data-ui="v2"][data-mode="dark"] .dk-product-media img,
+html[data-ui="v2"][data-mode="dark"] .nutri-food-media img,
+html[data-ui="v2"][data-mode="dark"] .nutri-meal-thumb img,
+html[data-ui="v2"][data-mode="dark"] .food-group-card .dk-group-img {
+  filter: brightness(.9) saturate(1.04);
+}
+html[data-ui="v2"][data-mode="dark"] .nutri-food-tile .nutri-food-name,
+html[data-ui="v2"][data-mode="dark"] .nutri-food-tile .nutri-food-energy,
+html[data-ui="v2"][data-mode="dark"] .nutri-food-tile .nutri-food-energy b { color: rgb(var(--c-text)) !important; }
+html[data-ui="v2"][data-mode="dark"] .nutri-food-tile .nutri-food-energy { color: rgb(var(--c-muted)) !important; }
