@@ -69,12 +69,29 @@ Get-NetIPAddress -AddressFamily IPv4 |
     ForEach-Object { Write-Host ("  \\{0}\{1}" -f $_.IPAddress, $shareName) }
 
 Write-Host ''
-Write-Host 'If another PC cannot connect:' -ForegroundColor Yellow
-Write-Host '  1. Set the Ethernet network to Private:'
-Write-Host '     Set-NetConnectionProfile -InterfaceAlias "Ethernet" -NetworkCategory Private'
-Write-Host '  2. Allow File and Printer Sharing:'
-Write-Host '     Enable-NetFirewallRule -DisplayGroup "File and Printer Sharing"'
-Write-Host '  3. Use the Windows account of this PC when prompted.'
+Write-Host 'Allowing File and Printer Sharing on the local network ...'
+Get-NetConnectionProfile |
+    Where-Object { $_.InterfaceAlias -notlike 'Tailscale*' } |
+    ForEach-Object {
+        try {
+            Set-NetConnectionProfile -InterfaceIndex $_.InterfaceIndex -NetworkCategory Private -ErrorAction Stop
+            Write-Host ("  {0} ({1}) -> Private" -f $_.Name, $_.InterfaceAlias)
+        } catch {
+            Write-Host ("  Could not set {0}: {1}" -f $_.Name, $_.Exception.Message) -ForegroundColor Yellow
+        }
+    }
+
+# Language-independent group + explicit SMB rule names.
+$fwGroup = Get-NetFirewallRule -Group '@FirewallAPI.dll,-28502' -ErrorAction SilentlyContinue
+if ($fwGroup) {
+    $fwGroup | Enable-NetFirewallRule -ErrorAction SilentlyContinue
+}
+Enable-NetFirewallRule -Name 'FPS-SMB-In-TCP','FPS-SMB-In-TCP-NoScope' -ErrorAction SilentlyContinue
+
+Write-Host ''
+Write-Host 'If another PC still cannot connect:' -ForegroundColor Yellow
+Write-Host '  Use the Windows account of this PC when prompted.'
+Write-Host '  Try the IP address if the PC name does not resolve.'
 Write-Host ''
 Write-Host 'Do not forward SMB ports on the router. This share is for the local network only.'
 Write-Host ''
