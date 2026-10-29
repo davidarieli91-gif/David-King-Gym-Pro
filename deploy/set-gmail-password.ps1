@@ -44,7 +44,13 @@ foreach ($api in $apis) {
 }
 Start-Sleep -Seconds 1
 Start-Process -FilePath (Join-Path $PSScriptRoot 'restart-api.cmd') -WindowStyle Hidden
-Start-Sleep -Seconds 2
+Start-Sleep -Seconds 3
+try {
+    Invoke-RestMethod -Uri 'http://127.0.0.1:8080/health' -TimeoutSec 6 | Out-Null
+    Write-Host 'API is up.' -ForegroundColor Green
+} catch {
+    Write-Host 'API did not answer. Double-click "Запустить сервер DKG.bat" on the Desktop.' -ForegroundColor Yellow
+}
 
 Write-Host ''
 Write-Host 'Done. Password-reset emails will go to' $email -ForegroundColor Green
