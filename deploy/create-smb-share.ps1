@@ -1,4 +1,4 @@
-# David King Gym — create the LAN share for F:\DKG
+﻿# David King Gym — create the LAN share for F:\DKG
 # Right-click -> "Run with PowerShell" as Administrator, or run from an
 # elevated PowerShell:
 #   powershell -ExecutionPolicy Bypass -File .\create-smb-share.ps1

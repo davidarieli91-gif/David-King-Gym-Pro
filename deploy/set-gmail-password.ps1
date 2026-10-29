@@ -1,8 +1,17 @@
-# David King Gym — configure the Gmail App Password.
+﻿# David King Gym — configure the Gmail App Password.
 # Run by double-clicking "Настроить Gmail для DKG.bat" on the Desktop.
 # No administrator rights are needed.
 
 $ErrorActionPreference = 'Stop'
+
+trap {
+    Write-Host ''
+    Write-Host ('ERROR: ' + $_.Exception.Message) -ForegroundColor Red
+    Write-Host ($_.ScriptStackTrace)
+    Read-Host 'Press Enter to close'
+    exit 1
+}
+
 $server = Join-Path $PSScriptRoot '..\server'
 $envFile = Join-Path $server '.env'
 
