@@ -48,10 +48,10 @@ ok('product media gets a dark plate + overlay', css.indexOf('.dk-product-media::
 ok('food images are dimmed for dark themes', css.indexOf('.nutri-food-tile .nutri-food-img') >= 0 && css.indexOf('brightness(.9)') >= 0);
 
 /* ---------- versions ---------- */
-ok('trainer build c211', crm.indexOf('<meta name="dk-build" content="c211" />') >= 0);
-ok('trainer RUNNING 211', crm.indexOf('var RUNNING = 211;') >= 0);
-ok('sidebar + login show c209', crm.indexOf('id="v2-side-version">c211') >= 0 && crm.indexOf('3 languages · c211') >= 0);
-ok('SW cache v238', sw.indexOf("CACHE_NAME = 'dk-gym-v238'") >= 0);
+ok('trainer build c212', crm.indexOf('<meta name="dk-build" content="c212" />') >= 0);
+ok('trainer RUNNING 212', crm.indexOf('var RUNNING = 212;') >= 0);
+ok('sidebar + login show c209', crm.indexOf('id="v2-side-version">c212') >= 0 && crm.indexOf('3 languages · c212') >= 0);
+ok('SW cache v239', sw.indexOf("CACHE_NAME = 'dk-gym-v239'") >= 0);
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);

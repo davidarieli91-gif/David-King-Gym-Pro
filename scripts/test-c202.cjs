@@ -34,10 +34,10 @@ ok('skeleton ghosts the muscle layer', crm.indexOf('var skeletonGhost = !!S.skel
 ok('HUD reports the active layer', crm.indexOf('id="atlas-layer-txt"') >= 0 && crm.indexOf('skeletonLayer') >= 0);
 ok('skeleton labels exist in 3 languages', crm.indexOf('Скелет') >= 0 && crm.indexOf('שלד') >= 0 && crm.indexOf("en: 'Skeleton'") >= 0);
 ok('skeleton is credited', crm.indexOf('Skeleton overlay') >= 0 && read('models/LICENSE-atlas.md').indexOf('z-anatomy-skeleton-v1.glb') >= 0);
-ok('build is c211', crm.indexOf('<meta name="dk-build" content="c211" />') >= 0);
-ok('SW cache is v232', sw.indexOf("const CACHE_NAME = 'dk-gym-v238'") >= 0);
-ok('running build label is c205', crm.indexOf('var RUNNING = 211') >= 0);
-ok('login/sidebar show c205', crm.indexOf('3 languages · c211') >= 0 && crm.indexOf('id="v2-side-version">c211') >= 0);
+ok('build is c212', crm.indexOf('<meta name="dk-build" content="c212" />') >= 0);
+ok('SW cache is v232', sw.indexOf("const CACHE_NAME = 'dk-gym-v239'") >= 0);
+ok('running build label is c205', crm.indexOf('var RUNNING = 212') >= 0);
+ok('login/sidebar show c205', crm.indexOf('3 languages · c212') >= 0 && crm.indexOf('id="v2-side-version">c212') >= 0);
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

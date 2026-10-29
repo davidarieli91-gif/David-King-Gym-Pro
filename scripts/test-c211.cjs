@@ -17,10 +17,10 @@ ok('settings never leaks when hidden', css.indexOf('[data-screen="settings"]:not
 ok('nutrition custom labels scale too', css.indexOf('.nutri-meal-sub') >= 0 && css.indexOf('.nutri-food-name') >= 0);
 ok('controls grow with the type scale', css.indexOf('.dk-status-chip') >= 0 && css.indexOf('height: 38px') >= 0);
 
-ok('trainer build c211', crm.indexOf('<meta name="dk-build" content="c211" />') >= 0);
-ok('trainer RUNNING 211', crm.indexOf('var RUNNING = 211;') >= 0);
-ok('sidebar + login show c211', crm.indexOf('id="v2-side-version">c211') >= 0 && crm.indexOf('3 languages · c211') >= 0);
-ok('SW cache v238', sw.indexOf("CACHE_NAME = 'dk-gym-v238'") >= 0);
+ok('trainer build c212', crm.indexOf('<meta name="dk-build" content="c212" />') >= 0);
+ok('trainer RUNNING 212', crm.indexOf('var RUNNING = 212;') >= 0);
+ok('sidebar + login show c211', crm.indexOf('id="v2-side-version">c212') >= 0 && crm.indexOf('3 languages · c212') >= 0);
+ok('SW cache v239', sw.indexOf("CACHE_NAME = 'dk-gym-v239'") >= 0);
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
