@@ -49,7 +49,9 @@ if ($LASTEXITCODE -ne 0) {
 
 if (Get-SmbShare -Name $shareName -ErrorAction SilentlyContinue) {
     Write-Host "Updating existing share $shareName ..."
-    Set-SmbShare -Name $shareName -Path $folder -Description 'David King Gym data' -Force
+    # Set-SmbShare has no -Path parameter. The path is already correct when the
+    # share exists; only the description needs updating.
+    Set-SmbShare -Name $shareName -Description 'David King Gym data' -Force
 } else {
     Write-Host "Creating share $shareName ..."
     New-SmbShare -Name $shareName -Path $folder -Description 'David King Gym data' | Out-Null
