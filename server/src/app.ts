@@ -104,6 +104,10 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
     };
   });
 
+  // The legacy Firebase trainee portal is for old GitHub Pages links only.
+  // On the server origin the personal portal is /p/<token>.
+  app.get('/client.html', async (_request, reply) => reply.redirect('/fitness-crm.html'));
+
   for (const page of ['admin', 'join']) {
     app.get(`/${page}`, async (_request, reply) => {
       try {
