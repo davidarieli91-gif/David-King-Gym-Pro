@@ -19,7 +19,7 @@ ok('wide meal list uses 2/3 columns', css.indexOf('.nutri-meal-list') >= 0);
 ok('trainer build c213', crm.indexOf('<meta name="dk-build" content="c213" />') >= 0);
 ok('trainer RUNNING 213', crm.indexOf('var RUNNING = 213;') >= 0);
 ok('sidebar + login show c212', crm.indexOf('id="v2-side-version">c213') >= 0 && crm.indexOf('3 languages · c213') >= 0);
-ok('SW cache v240', sw.indexOf("CACHE_NAME = 'dk-gym-v240'") >= 0);
+ok('SW cache v241', sw.indexOf("CACHE_NAME = 'dk-gym-v241'") >= 0);
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);

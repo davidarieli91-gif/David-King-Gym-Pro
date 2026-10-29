@@ -14,7 +14,7 @@ function read(rel) { return fs.readFileSync(path.join(root, rel), 'utf8'); }
 ok('trainer build c213', crm.includes('<meta name="dk-build" content="c213" />'));
 ok('trainer RUNNING 213', crm.includes('var RUNNING = 213;'));
 ok('sidebar + login show c213', crm.includes('id="v2-side-version">c213') && crm.includes('3 languages · c213'));
-ok('SW cache v240', sw.includes("CACHE_NAME = 'dk-gym-v240'"));
+ok('SW cache v241', sw.includes("CACHE_NAME = 'dk-gym-v241'"));
 ok('SW precaches server scripts', sw.includes("./src/server-mode.js") && sw.includes("./src/server-sync.js"));
 
 ok('IndexedDB version 11', crm.includes('const DB_VERSION = 11;'));
@@ -30,6 +30,10 @@ ok('server gate script checks /api/auth/me', mode.includes("fetch('/api/auth/me'
 ok('server gate logs in via /api/auth/login', mode.includes("fetch('/api/auth/login'"));
 ok('server gate logs out via /api/auth/logout', mode.includes("fetch('/api/auth/logout'"));
 ok('server gate uses tenant DB names', mode.includes("fitness_crm_db_' + tenant.id"));
+ok('server gate has a forgot-password action', crm.includes('dkg-gate-forgot') && mode.includes('/api/auth/forgot'));
+ok('password reset page exists', fs.existsSync(path.join(root, 'server', 'public', 'reset.html')));
+ok('password reset page posts to the API', read('server/public/reset.html').includes('/api/auth/reset'));
+ok('server serves the reset page', read('server/src/app.ts').includes("'reset'"));
 
 ok('sync engine pushes through /api/sync', sync.includes("fetch('/api/sync'"));
 ok('sync engine pulls through /api/sync', sync.includes("fetch('/api/sync?since="));

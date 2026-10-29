@@ -256,6 +256,39 @@
     var retry = $('dkg-gate-retry');
     if (retry) retry.addEventListener('click', function () { checkSession(); });
 
+    var forgot = $('dkg-gate-forgot');
+    if (forgot) forgot.addEventListener('click', async function (event) {
+      if (event) event.preventDefault();
+      var emailEl = $('dkg-gate-email');
+      var email = emailEl ? emailEl.value.trim() : '';
+      var err = $('dkg-gate-error');
+      var notice = $('dkg-gate-notice');
+      if (!email) {
+        if (err) { err.textContent = 'Сначала введите email.'; err.hidden = false; }
+        if (emailEl) emailEl.focus();
+        return;
+      }
+      if (err) err.hidden = true;
+      if (notice) notice.hidden = true;
+      try {
+        await fetch('/api/auth/forgot', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'content-type': 'application/json', 'accept': 'application/json' },
+          body: JSON.stringify({ email: email })
+        });
+        if (notice) {
+          notice.textContent = 'Если аккаунт с таким email есть, письмо отправлено. Проверьте почту и папку «Спам».';
+          notice.hidden = false;
+        }
+      } catch (e) {
+        if (err) {
+          err.textContent = 'Не удалось отправить письмо. Проверьте интернет и попробуйте ещё раз.';
+          err.hidden = false;
+        }
+      }
+    });
+
     return checkSession();
   })();
 })();

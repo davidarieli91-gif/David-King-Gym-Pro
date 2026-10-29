@@ -127,7 +127,7 @@ ok('dashboard refreshes when persisted portal history lands', crm.indexOf("docum
   /* ---------- versions ---------- */
   ok('trainer build c213', crm.indexOf('<meta name="dk-build" content="c213" />') >= 0);
   ok('trainer RUNNING 213', crm.indexOf('var RUNNING = 213;') >= 0);
-  ok('SW cache v240', sw.indexOf("CACHE_NAME = 'dk-gym-v240'") >= 0);
+  ok('SW cache v241', sw.indexOf("CACHE_NAME = 'dk-gym-v241'") >= 0);
 
   console.log('\n' + pass + ' passed, ' + fail + ' failed');
   process.exit(fail ? 1 : 0);

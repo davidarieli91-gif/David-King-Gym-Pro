@@ -108,7 +108,7 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
   // On the server origin the personal portal is /p/<token>.
   app.get('/client.html', async (_request, reply) => reply.redirect('/fitness-crm.html'));
 
-  for (const page of ['admin', 'join']) {
+  for (const page of ['admin', 'join', 'reset']) {
     app.get(`/${page}`, async (_request, reply) => {
       try {
         const html = readFileSync(join(__dirname, '..', 'public', `${page}.html`), 'utf8');

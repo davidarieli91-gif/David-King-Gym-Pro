@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="no-referrer" />
+  <title>David King Gym — Новый пароль</title>
+  <link rel="icon" type="image/png" href="/icon-512.png" />
+  <style>
+    :root { color-scheme: dark; --bg:#070b14; --line:rgba(255,255,255,.10); --text:#eef5ff; --muted:#91a3bd; --cyan:#3ad6ff; --blue:#3b82f6; }
+    * { box-sizing: border-box; }
+    body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; background: radial-gradient(900px 500px at 15% 0%, rgba(57,214,255,.14), transparent 60%), radial-gradient(800px 500px at 90% 100%, rgba(255,60,172,.10), transparent 60%), var(--bg); color:var(--text); font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+    .card { width:min(440px, 100%); border:1px solid var(--line); border-radius:22px; background:rgba(12,19,34,.88); box-shadow:0 30px 90px rgba(0,0,0,.55); padding:28px; backdrop-filter:blur(18px); }
+    .brand { display:flex; align-items:center; gap:14px; margin-bottom:22px; }
+    .brand img { width:54px; height:54px; object-fit:contain; border-radius:14px; background:rgba(255,255,255,.06); padding:6px; }
+    .brand h1 { margin:0; font-size:21px; letter-spacing:-.02em; }
+    .brand p { margin:4px 0 0; color:var(--muted); font-size:12px; }
+    h2 { margin:0 0 6px; font-size:18px; }
+    .sub { margin:0 0 18px; color:var(--muted); font-size:13px; line-height:1.5; }
+    label { display:block; margin-bottom:12px; color:#aab9cf; font-size:12px; font-weight:600; }
+    input { display:block; width:100%; margin-top:6px; padding:11px 12px; border-radius:10px; border:1px solid var(--line); background:rgba(4,9,18,.72); color:var(--text); font-size:14px; outline:none; }
+    input:focus { border-color:rgba(57,214,255,.65); box-shadow:0 0 0 3px rgba(57,214,255,.12); }
+    button { width:100%; border:0; border-radius:10px; padding:12px 14px; font-size:14px; font-weight:800; cursor:pointer; background:linear-gradient(135deg,var(--cyan),var(--blue)); color:#04101e; }
+    button:disabled { opacity:.6; cursor:wait; }
+    .error { display:none; margin:0 0 12px; padding:10px 12px; border-radius:10px; background:rgba(255,70,90,.12); border:1px solid rgba(255,70,90,.3); color:#ff9aa8; font-size:12px; line-height:1.45; }
+    .ok { display:none; margin:0 0 12px; padding:10px 12px; border-radius:10px; background:rgba(50,213,131,.10); border:1px solid rgba(50,213,131,.3); color:#7ef0b5; font-size:12px; line-height:1.45; }
+    .foot { margin:16px 0 0; text-align:center; color:var(--muted); font-size:11px; }
+    .foot a { color:var(--cyan); text-decoration:none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">
+      <img src="/logo-web.webp" alt="David King Gym" />
+      <div>
+        <h1>David King Gym</h1>
+        <p>Trainer Studio · Provided by David King Gym</p>
+      </div>
+    </div>
+    <h2>Новый пароль</h2>
+    <p class="sub">Придумайте новый пароль для входа. Ссылка действует один час.</p>
+    <div id="error" class="error"></div>
+    <div id="ok" class="ok"></div>
+    <form id="form">
+      <label>Новый пароль<input id="password" type="password" autocomplete="new-password" required minlength="10" /></label>
+      <label>Повторите пароль<input id="confirm" type="password" autocomplete="new-password" required minlength="10" /></label>
+      <button id="submit" type="submit">Сохранить пароль</button>
+    </form>
+    <p class="foot"><a href="/fitness-crm.html">Вернуться к входу</a></p>
+  </div>
+  <script>
+    (function () {
+      'use strict';
+      var params = new URLSearchParams(location.search || '');
+      var token = params.get('token') || '';
+      var error = document.getElementById('error');
+      var ok = document.getElementById('ok');
+      function show(el, text) { el.textContent = text; el.style.display = 'block'; }
+      function hide(el) { el.style.display = 'none'; }
+
+      if (!token) {
+        show(error, 'Ссылка неполная. Запросите новое письмо для сброса пароля.');
+        document.getElementById('form').style.display = 'none';
+        return;
+      }
+
+      document.getElementById('form').addEventListener('submit', async function (event) {
+        event.preventDefault();
+        hide(error); hide(ok);
+        var password = document.getElementById('password').value;
+        var confirm = document.getElementById('confirm').value;
+        if (password.length < 10) { show(error, 'Пароль должен быть не короче 10 символов.'); return; }
+        if (password !== confirm) { show(error, 'Пароли не совпадают.'); return; }
+        var button = document.getElementById('submit');
+        button.disabled = true;
+        try {
+          var response = await fetch('/api/auth/reset', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'content-type': 'application/json', accept: 'application/json' },
+            body: JSON.stringify({ token: token, password: password })
+          });
+          var body = await response.json().catch(function () { return {}; });
+          if (!response.ok) throw new Error((body && body.error && body.error.message) || ('HTTP ' + response.status));
+          show(ok, 'Пароль изменён. Сейчас перейдём ко входу…');
+          setTimeout(function () { location.href = '/fitness-crm.html'; }, 1800);
+        } catch (e) {
+          show(error, e.message || 'Не удалось изменить пароль. Ссылка могла устареть.');
+        } finally {
+          button.disabled = false;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

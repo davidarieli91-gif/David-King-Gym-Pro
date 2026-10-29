@@ -138,6 +138,33 @@ html.dkg-server-gate #app {
   display: none;
 }
 
+.dkg-gate-forgot {
+  display: block;
+  margin: 12px auto 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #5fe0ff;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dkg-gate-notice {
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(50, 213, 131, .10);
+  border: 1px solid rgba(50, 213, 131, .3);
+  color: #7ef0b5;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.dkg-gate-notice[hidden] {
+  display: none;
+}
+
 .dkg-gate-alt {
   margin: 18px 0 0 !important;
   color: #91a3bd;
