@@ -180,6 +180,8 @@
 // v219: c192 - REPDB FREE AS A FOURTH SEPARATE SOURCE: 650 records + 1,147
 // images shipped locally, RepDB tab beside Burnfit / Gym Visual / GymImpulse,
 // separate source/ids, no mixing. Existing bf/gv/gi rows untouched.
+// v240: c213 - server-first multi-tenant edition: login gate, tenant-scoped
+// IndexedDB cache, durable sync outbox, server portal tokens, director console.
 // v239: c212 - dark native search, 1.6x wider profile/nutrition rails and
 // larger product cards on 21:9/32:9.
 // v238: c211 - readable large-monitor typography across every trainer panel,
@@ -239,7 +241,7 @@
 // filled (machine pass + manual key names), corrupted equipment labels
 // repaired, and the exercise media slot no longer shrinks to a small square
 // on short/mobile viewports.
-const CACHE_NAME = 'dk-gym-v239'; // c212
+const CACHE_NAME = 'dk-gym-v240'; // c213
 // v104: c77 — UI sizes can no longer change themselves (zoom-based gif/food/cards, wheel/touch slider guards) + hard pre-login lock (Add Client included) + header theme quick menu with all 33 themes
 // v103: c76 — Exercise DB tab = exact Quick Pick copy (star/eye/+ cards, favorites/recent tabs, View grouping, localized map tabs)
 // v102: c75 — 3D atlas 1.5x + Settings ▸ UI sizes (atlas slider, bodymap/exercise-panel fixes) + Exercise DB tab rebuilt as picker-style browse
@@ -272,6 +274,9 @@ const APP_SHELL = [
   './src/recovery-engine.js',
   './src/analytics-engine.js',
   './src/voice-coach.js',
+  /* c213: server authentication gate + server-first sync */
+  './src/server-mode.js',
+  './src/server-sync.js',
   './assets/manifest.json',
   './vendor/qrcode.min.js',
   './icon-192.png',

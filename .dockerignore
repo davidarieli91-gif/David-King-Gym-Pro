@@ -1,0 +1,15 @@
+# Build context is the repository root because the image ships the prebuilt
+# frontend (dist/) together with the API server.
+/.git
+/node_modules
+/server/node_modules
+/server/data
+/reports
+/shots
+/videos
+/food-images
+/images
+/muscle-icons
+/models
+/vendor
+*.log

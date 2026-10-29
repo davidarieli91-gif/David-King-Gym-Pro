@@ -1,0 +1,189 @@
+/* c213 — server gate. Kept independent from Tailwind/the app theme so it
+   still renders if the app shell fails to boot. */
+html.dkg-server-gate #app {
+  visibility: hidden;
+}
+
+#dkg-server-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(900px 500px at 15% 0%, rgba(57, 214, 255, .14), transparent 60%),
+    radial-gradient(800px 500px at 90% 100%, rgba(255, 60, 172, .12), transparent 60%),
+    #070b14;
+  color: #eef5ff;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+#dkg-server-gate[hidden] {
+  display: none !important;
+}
+
+.dkg-gate-card {
+  width: min(440px, 100%);
+  border: 1px solid rgba(255, 255, 255, .10);
+  border-radius: 22px;
+  background: rgba(12, 19, 34, .86);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(255, 255, 255, .07);
+  padding: 28px;
+  backdrop-filter: blur(18px);
+}
+
+.dkg-gate-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.dkg-gate-brand img {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .06);
+  padding: 6px;
+}
+
+.dkg-gate-brand h1 {
+  margin: 0;
+  font-family: "Space Grotesk", Inter, sans-serif;
+  font-size: 21px;
+  line-height: 1.1;
+  letter-spacing: -.02em;
+}
+
+.dkg-gate-brand p {
+  margin: 4px 0 0;
+  color: #91a3bd;
+  font-size: 12px;
+}
+
+.dkg-gate-card h2 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  letter-spacing: -.01em;
+}
+
+.dkg-gate-card > div > p {
+  margin: 0 0 18px;
+  color: #91a3bd;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.dkg-gate-card label {
+  display: block;
+  margin-bottom: 13px;
+  color: #aab9cf;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.dkg-gate-card input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 6px;
+  padding: 12px 13px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  background: rgba(4, 9, 18, .72);
+  color: #eef5ff;
+  font-size: 15px;
+  outline: none;
+}
+
+.dkg-gate-card input:focus {
+  border-color: rgba(57, 214, 255, .65);
+  box-shadow: 0 0 0 3px rgba(57, 214, 255, .14);
+}
+
+.dkg-gate-card button[type="submit"],
+.dkg-gate-card #dkg-gate-retry {
+  width: 100%;
+  margin-top: 4px;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #3ad6ff, #3b82f6);
+  color: #04101e;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.dkg-gate-card button[disabled] {
+  opacity: .6;
+  cursor: wait;
+}
+
+#dkg-gate-error {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 70, 90, .12);
+  border: 1px solid rgba(255, 70, 90, .3);
+  color: #ff9aa8;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+#dkg-gate-error[hidden] {
+  display: none;
+}
+
+.dkg-gate-alt {
+  margin: 18px 0 0 !important;
+  color: #91a3bd;
+  font-size: 12.5px !important;
+  text-align: center;
+}
+
+.dkg-gate-alt a {
+  color: #5fe0ff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.dkg-gate-note {
+  margin: 14px 0 0 !important;
+  color: #6f8099;
+  font-size: 11px !important;
+  text-align: center;
+}
+
+.dkg-gate-spinner {
+  width: 34px;
+  height: 34px;
+  margin: 6px auto 14px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, .12);
+  border-top-color: #3ad6ff;
+  animation: dkg-gate-spin .8s linear infinite;
+}
+
+@keyframes dkg-gate-spin {
+  to { transform: rotate(360deg); }
+}
+
+#dkg-gate-checking,
+#dkg-gate-login,
+#dkg-gate-offline {
+  text-align: center;
+}
+
+#dkg-gate-login {
+  text-align: start;
+}
+
+#dkg-gate-checking p,
+#dkg-gate-offline p {
+  color: #91a3bd;
+  font-size: 13px;
+}

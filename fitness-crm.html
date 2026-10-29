@@ -17,7 +17,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-<meta name="dk-build" content="c212" />
+<meta name="dk-build" content="c213" />
 <script>
 /* ===== c14 close guard: confirm before the app window closes =====
  * BEFOREUNLOAD ONLY. The app already has its own back-button trap
@@ -67,6 +67,12 @@
   <script type="module" src="src/analytics-engine.js"></script>
   <!-- Local QR generation (privacy: no third-party QR services) -->
   <script src="vendor/qrcode.min.js"></script>
+
+  <!-- c213: server mode (login gate + server-first sync). Classic scripts so
+       they run before the main app bundle and can set the tenant DB name. -->
+  <link rel="stylesheet" href="src/server-gate.css" />
+  <script src="src/server-mode.js"></script>
+  <script src="src/server-sync.js"></script>
 
   <!-- Google Fonts: Inter (UI), Space Grotesk (display), JetBrains Mono (numeric) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -4415,6 +4421,48 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
 </head>
 
 <body class="min-h-full antialiased">
+  <!-- c213: server authentication gate. Shown only when the app is served by
+       the DKG API (not GitHub Pages / Vite preview). -->
+  <div id="dkg-server-gate" hidden>
+    <div class="dkg-gate-card" role="dialog" aria-modal="true" aria-labelledby="dkg-gate-title">
+      <div class="dkg-gate-brand">
+        <img src="logo-web.webp" alt="David King Gym" />
+        <div>
+          <h1 id="dkg-gate-title">David King Gym</h1>
+          <p>Trainer Studio · Provided by David King Gym</p>
+        </div>
+      </div>
+
+      <div id="dkg-gate-checking">
+        <div class="dkg-gate-spinner"></div>
+        <p>Проверяем сессию…</p>
+      </div>
+
+      <div id="dkg-gate-login" hidden>
+        <h2>Вход для тренера</h2>
+        <p>Клиенты, программы и настройки хранятся на сервере. Очистка браузера их не удаляет.</p>
+        <form id="dkg-gate-form" autocomplete="on">
+          <label>Email
+            <input id="dkg-gate-email" type="email" autocomplete="username" required />
+          </label>
+          <label>Пароль
+            <input id="dkg-gate-password" type="password" autocomplete="current-password" required />
+          </label>
+          <p id="dkg-gate-error" hidden></p>
+          <button id="dkg-gate-submit" type="submit">Войти</button>
+        </form>
+        <p class="dkg-gate-alt">Есть инвайт-код? <a href="/join">Зарегистрироваться</a></p>
+        <p class="dkg-gate-note">Нет доступа? Попросите инвайт-код у David King Gym.</p>
+      </div>
+
+      <div id="dkg-gate-offline" hidden>
+        <h2>Нет связи с сервером</h2>
+        <p id="dkg-gate-offline-message">Проверьте интернет и попробуйте снова.</p>
+        <button id="dkg-gate-retry" type="button">Повторить</button>
+      </div>
+    </div>
+  </div>
+
   <div id="v2-scene" aria-hidden="true"></div>
   <div id="v2-orb" aria-hidden="true"><span class="v2-orb v2-orb-a"></span><span class="v2-orb v2-orb-b"></span><span class="v2-orb v2-orb-c"></span></div>
   <div class="v2-grid" aria-hidden="true"></div>
@@ -4534,7 +4582,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           </div>
           <div class="flex items-center gap-2 mb-3">
             <span class="v2-pill v2-pill-live"><span class="w-1.5 h-1.5 rounded-full bg-success"></span> <span data-i18n="clients.online">Online</span></span>
-            <span class="v2-pill" id="v2-side-version">c212</span>
+            <span class="v2-pill" id="v2-side-version">c213</span>
           </div>
         </div>
 
@@ -4681,7 +4729,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
 
-              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c212</p>
+              <p class="text-center text-[11px] text-muted mt-4">v<span id="login-version">-</span> · IndexedDB · 3 languages · c213</p>
             </div>
           </div>
 
@@ -6531,6 +6579,24 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           <div data-screen="settings" class="hidden p-4 sm:p-6 lg:p-8 max-w-3xl mx-auto">
             <h1 class="font-display font-extrabold text-xl tracking-tight mb-4" data-i18n="nav.settings">Settings</h1>
 
+            <!-- c213: server status (visible only in server mode) -->
+            <div id="settings-server-panel" class="hidden bg-surface border border-border rounded-2xl shadow-card mb-4 p-5 settings-panel">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <h3 class="font-display font-bold text-sm">Сервер</h3>
+                  <p id="settings-server-status" class="text-xs text-muted mt-1">Проверяем…</p>
+                </div>
+                <span id="settings-server-dot" class="mt-1 inline-block w-2.5 h-2.5 rounded-full bg-warning"></span>
+              </div>
+              <div class="mt-4 flex flex-wrap gap-2">
+                <button type="button" id="settings-server-sync" class="bg-primary hover:bg-primary-2 text-white text-xs font-semibold px-3 py-2 rounded-lg transition">Синхронизировать</button>
+                <button type="button" id="settings-server-upload" class="bg-surface-2 hover:bg-border/60 border border-border text-xs font-semibold px-3 py-2 rounded-lg transition">Загрузить локальные данные</button>
+                <button type="button" id="settings-server-password" class="bg-surface-2 hover:bg-border/60 border border-border text-xs font-semibold px-3 py-2 rounded-lg transition">Сменить пароль</button>
+                <a id="settings-server-admin" href="/admin" target="_blank" class="hidden bg-surface-2 hover:bg-border/60 border border-border text-xs font-semibold px-3 py-2 rounded-lg transition">Тренеры</a>
+              </div>
+              <p class="text-[10px] text-muted mt-3 leading-relaxed">Данные клиентов хранятся на сервере. Очистка кэша браузера их не удаляет.</p>
+            </div>
+
             <!-- Appearance (collapsible) -->
             <div class="bg-surface border border-border rounded-2xl shadow-card mb-4 settings-panel collapsed">
               <div class="settings-panel-header p-5 pb-3">
@@ -6820,7 +6886,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
             </div>
 
             <!-- Cloud account & online sync (collapsible, additive to local mode) -->
-            <div class="bg-surface border border-border rounded-2xl shadow-card mb-4 settings-panel collapsed">
+            <div id="cloud-settings-panel" class="bg-surface border border-border rounded-2xl shadow-card mb-4 settings-panel collapsed">
               <div class="settings-panel-header p-5 pb-3">
                 <h3 class="font-display font-bold text-sm text-muted uppercase tracking-wider" data-i18n="settings.cloudAccTitle">Online account &amp; cloud sync (Google)</h3>
                 <svg class="w-4 h-4 text-muted settings-panel-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
@@ -8913,8 +8979,16 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
      and indexes. The opener uses this array to drive onupgradeneeded.
      Adding a store or index later means bumping DB_VERSION and editing here.
      ===================================================================== */
-  const DB_NAME    = 'fitness_crm_db';
-  const DB_VERSION = 10; /* c95: + snapshots store (save slots) */
+  /* c213: in server mode the local database is a tenant-scoped cache. The
+     server is the source of truth, so clearing the browser never loses data. */
+  const DB_NAME = (function () {
+    try {
+      const scoped = localStorage.getItem('dkg_db_name');
+      if (scoped) return scoped;
+    } catch (_) {}
+    return 'fitness_crm_db';
+  })();
+  const DB_VERSION = 11; /* c213: + sync_outbox store for the server outbox */
 
   /** @typedef {{name:string,keyPath:string,indexes:Array<{name:string,unique?:boolean}>}} StoreDef */
   const DB_SCHEMA = [
@@ -9021,6 +9095,11 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
        * user-data snapshot: { slot, ts, auto, counts, total_bytes, data } */
       name: 'snapshots',
       keyPath: 'slot'
+    },
+    {
+      /* c213: durable local outbox for server sync. Never uploaded itself. */
+      name: 'sync_outbox',
+      keyPath: 'key'
     }
   ];
 
@@ -9051,6 +9130,24 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
         const v = c === 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
       });
+    }
+
+    /* c213: server sync hooks. They are no-ops in local mode and while the
+       sync engine is applying remote records. */
+    function notifyLocalChange(storeName, record) {
+      try {
+        if (window.DKG_SYNC && !window.DKG_SYNC.applyingRemote) {
+          window.DKG_SYNC.onLocalChange(storeName, record);
+        }
+      } catch (_) {}
+    }
+
+    function notifyLocalDelete(storeName, key) {
+      try {
+        if (window.DKG_SYNC && !window.DKG_SYNC.applyingRemote) {
+          window.DKG_SYNC.onLocalDelete(storeName, key);
+        }
+      } catch (_) {}
     }
 
     /** Wrap an IDBRequest into a Promise. */
@@ -9181,7 +9278,10 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
         }
 
         const putReq = store.put(record);
-        return Promise.all([req(putReq), txDone(tx)]).then(() => record);
+        return Promise.all([req(putReq), txDone(tx)]).then(() => {
+          notifyLocalChange(storeName, record);
+          return record;
+        });
       });
     }
 
@@ -9209,7 +9309,10 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           return record;
         });
         stamped.forEach(r => store.put(r));
-        return txDone(tx).then(() => stamped);
+        return txDone(tx).then(() => {
+          stamped.forEach(r => notifyLocalChange(storeName, r));
+          return stamped;
+        });
       });
     }
 
@@ -9218,7 +9321,10 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       return open().then(idb => {
         const tx = idb.transaction(storeName, 'readwrite');
         const reqDel = tx.objectStore(storeName).delete(key);
-        return Promise.all([req(reqDel), txDone(tx)]).then(() => true);
+        return Promise.all([req(reqDel), txDone(tx)]).then(() => {
+          notifyLocalDelete(storeName, key);
+          return true;
+        });
       });
     }
 
@@ -30508,6 +30614,11 @@ Select foods for each meal. Output as JSON only.`;
 
 
 async function boot() {
+    /* c213: wait for the server session check before deciding which login
+       screen to show. Local mode resolves immediately. */
+    if (window.DKG_SERVER && window.DKG_SERVER.enabled) {
+      try { await window.DKG_SERVER.ready; } catch (_) {}
+    }
     try {
       try {
         await db.open();
@@ -30524,6 +30635,15 @@ async function boot() {
           throw openErr;
         }
       }
+    /* c213: server-first. Pull the tenant's records into this local cache
+       before the screens render. In local mode this block is skipped. */
+    if (window.DKG_SYNC && window.DKG_SERVER && window.DKG_SERVER.authenticated) {
+      try {
+        await window.DKG_SYNC.start();
+      } catch (syncErr) {
+        console.warn('[boot] server sync failed; using local cache', syncErr);
+      }
+    }
     await ensureDefaultSettings();
     const seedCount = await seedExerciseBase(false);
     try { await seedRepDBBase(false); } catch (e) { console.warn('[seed] RepDB seed failed', e); }
@@ -30638,6 +30758,12 @@ async function boot() {
             toast(t('common.cancel'), 'info', 1500);
           } else if (result) {
             toast(t('backup.importDone') + ' · ' + result.imported + ' records', 'success', 4000);
+            /* c213: a backup import writes through raw IDB transactions, which
+               bypass the sync hooks. Clear the one-time migration flag so the
+               next boot uploads the imported data to the server. */
+            if (window.DKG_SERVER && window.DKG_SERVER.authenticated) {
+              try { localStorage.removeItem('dkg_migrated_' + window.DKG_SERVER.tenantId); } catch (_) {}
+            }
             setTimeout(() => { window.dkAllowClose(); location.reload(); }, 1200);
           }
         } catch (err) {
@@ -30662,6 +30788,7 @@ async function boot() {
       wireDashboard();
       // ---- Wire settings screen ----
       wireSettings();
+      wireServerSettings();
       // ---- Wire analytics screen ----
       wireAnalytics();
       // ---- Wire exercises screen (Phase 3 Steps 16-18) ----
@@ -30673,6 +30800,11 @@ async function boot() {
       // ---- Lock button (header) ----
       const lockBtn = document.getElementById('lock-btn');
       if (lockBtn) lockBtn.addEventListener('click', () => {
+        /* c213: in server mode "lock" means sign out of the server session. */
+        if (window.DKG_SERVER && window.DKG_SERVER.enabled) {
+          window.DKG_SERVER.logout();
+          return;
+        }
         auth.lock();
         document.getElementById('lock-btn').classList.add('hidden');
         // Clear password fields
@@ -30683,6 +30815,14 @@ async function boot() {
       });
 
       // ---- Route based on auth state ----
+      /* c213: in server mode the session is already verified by the gate.
+         Never show the legacy local-password screen. */
+      if (window.DKG_SERVER && window.DKG_SERVER.authenticated) {
+        auth.unlock();
+        const serverLockBtn = document.getElementById('lock-btn');
+        if (serverLockBtn) serverLockBtn.classList.remove('hidden');
+        router.show('dashboard');
+      }
       const hasPwd = await auth.isPasswordSet();
       if (!auth.isUnlocked()) {
         // Passwordless device with an active cloud session (return from Google
@@ -31004,6 +31144,97 @@ async function boot() {
         }
       });
     }
+  }
+
+  /* c213: server status panel. Visible only when the app is served by the API. */
+  function wireServerSettings() {
+    if (!window.DKG_SERVER || !window.DKG_SERVER.enabled) return;
+    const panel = document.getElementById('settings-server-panel');
+    if (!panel) return;
+    panel.classList.remove('hidden');
+
+    /* Server mode must never expose the director's Firebase project or let a
+       trainer push data into it. The API sync replaces this panel entirely. */
+    const cloudPanel = document.getElementById('cloud-settings-panel');
+    if (cloudPanel) cloudPanel.classList.add('hidden');
+    const loginCloud = document.getElementById('login-cloud');
+    if (loginCloud) loginCloud.classList.add('hidden');
+
+    const statusEl = document.getElementById('settings-server-status');
+    const dot = document.getElementById('settings-server-dot');
+    const adminLink = document.getElementById('settings-server-admin');
+    if (adminLink && window.DKG_SERVER.role === 'director') adminLink.classList.remove('hidden');
+
+    const refresh = async () => {
+      try {
+        const s = await window.DKG_SYNC.status();
+        const online = s.online && s.authenticated;
+        if (dot) dot.className = 'mt-1 inline-block w-2.5 h-2.5 rounded-full ' + (online ? 'bg-success' : 'bg-danger');
+        if (statusEl) {
+          statusEl.textContent = (online ? 'Онлайн' : 'Офлайн') + ' · '
+            + (s.pending ? (s.pending + ' в очереди') : 'всё сохранено')
+            + ' · rev ' + s.lastRev;
+        }
+      } catch (e) {
+        if (statusEl) statusEl.textContent = 'Не удалось получить статус';
+      }
+    };
+
+    const syncBtn = document.getElementById('settings-server-sync');
+    if (syncBtn) syncBtn.addEventListener('click', async () => {
+      syncBtn.disabled = true;
+      try { await window.DKG_SYNC.syncNow(); } catch (e) { console.warn('[sync] manual sync failed', e); }
+      syncBtn.disabled = false;
+      refresh();
+    });
+
+    const pwdBtn = document.getElementById('settings-server-password');
+    if (pwdBtn) pwdBtn.addEventListener('click', async () => {
+      const current = prompt('Текущий пароль');
+      if (!current) return;
+      const next = prompt('Новый пароль (минимум 10 символов)');
+      if (!next) return;
+      if (next.length < 10) { toast('Пароль должен быть не короче 10 символов', 'warning', 3000); return; }
+      const again = prompt('Повторите новый пароль');
+      if (next !== again) { toast('Пароли не совпадают', 'warning', 3000); return; }
+      try {
+        const match = (document.cookie || '').match(/(?:^|;\s*)dkg_csrf=([^;]+)/);
+        const token = match ? decodeURIComponent(match[1]) : '';
+        const response = await fetch('/api/auth/password', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'content-type': 'application/json', 'x-csrf-token': token },
+          body: JSON.stringify({ currentPassword: current, newPassword: next })
+        });
+        const body = await response.json().catch(function () { return {}; });
+        if (!response.ok) throw new Error((body && body.error && body.error.message) || ('HTTP ' + response.status));
+        toast('Пароль изменён. Остальные сессии завершены.', 'success', 4000);
+      } catch (e) {
+        toast('Не удалось сменить пароль: ' + (e.message || e), 'danger', 5000);
+      }
+    });
+
+    const uploadBtn = document.getElementById('settings-server-upload');
+    if (uploadBtn) uploadBtn.addEventListener('click', async () => {
+      if (!confirm('Загрузить все локальные данные этого браузера на сервер? Существующие записи обновятся.')) return;
+      uploadBtn.disabled = true;
+      try {
+        try { localStorage.removeItem('dkg_migrated_' + window.DKG_SERVER.tenantId); } catch (_) {}
+        await window.DKG_SYNC.migrateLocal();
+        await window.DKG_SYNC.syncNow();
+        toast('Локальные данные загружены на сервер', 'success', 3000);
+      } catch (e) {
+        console.error('[sync] upload failed', e);
+        toast('Не удалось загрузить данные: ' + (e.message || e), 'danger', 5000);
+      }
+      uploadBtn.disabled = false;
+      refresh();
+    });
+
+    refresh();
+    setInterval(() => {
+      if (document.querySelector('[data-screen="settings"]:not(.hidden)')) refresh();
+    }, 5000);
   }
 
   /** STEPS 7-9 — wire dashboard search / sort / filter / add / form modal. */
@@ -32113,7 +32344,103 @@ async function boot() {
       }
     }
 
+    /* c213: server-mode portal. One active token per client, always protected
+       by the client's personal PIN. The Firebase branch below stays untouched
+       for the legacy GitHub Pages build. */
+    async function openServerPortalModal(clientId, opts) {
+      try {
+        const client = await db.get('clients', clientId);
+        if (!client) { toast(t('clients.notFound'), 'danger'); return; }
+
+        if (!client.portal_pass) {
+          client.portal_pass = String(Math.floor(1000 + Math.random() * 9000));
+          await db.put('clients', client);
+        }
+        const pin = String(client.portal_pass);
+
+        const csrfMatch = (document.cookie || '').match(/(?:^|;\s*)dkg_csrf=([^;]+)/);
+        const csrf = csrfMatch ? decodeURIComponent(csrfMatch[1]) : '';
+        const res = await fetch('/api/clients/' + encodeURIComponent(clientId) + '/portal-token', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'content-type': 'application/json', 'x-csrf-token': csrf },
+          body: JSON.stringify({ pin: pin, label: client.full_name })
+        });
+        const data = await res.json().catch(function () { return {}; });
+        if (!res.ok) throw new Error((data && data.error && data.error.message) || ('HTTP ' + res.status));
+
+        const clientUrl = data.url;
+        document.getElementById('portal-modal-client-name').textContent = client.full_name || '';
+        document.getElementById('btn-open-portal-tab').href = clientUrl;
+        document.getElementById('portal-access-code').textContent = pin;
+        const codeLabel = document.querySelector('#client-portal-modal [data-i18n="portal.accessCodeLabel"]');
+        if (codeLabel) codeLabel.textContent = t('portal.passLabel') || 'Client password';
+        const note = document.getElementById('portal-expiry-note');
+        if (note) note.textContent = 'Ссылка хранится на сервере. Новая ссылка отменяет предыдущую.';
+        const phoneStatus = document.getElementById('portal-phone-status');
+        if (phoneStatus) {
+          phoneStatus.textContent = 'Вход по ссылке + пароль клиента.';
+          phoneStatus.className = 'text-[11px] text-success';
+        }
+        const resetBtn = document.getElementById('btn-portal-reset-pass');
+        if (resetBtn) resetBtn.classList.add('hidden');
+
+        const blind = document.getElementById('chk-blind-voice');
+        if (blind) {
+          blind.checked = !!client.portal_blind;
+          blind.onchange = async function () {
+            try {
+              client.portal_blind = !!blind.checked;
+              await db.put('clients', client);
+              toast(t('portal.blindRegen'), 'success', 2500);
+            } catch (e) { console.warn('[portal] blind flag save failed', e); }
+          };
+        }
+
+        try {
+          const qrImg = document.getElementById('portal-qr-img');
+          if (qrImg && typeof QRCode !== 'undefined') {
+            const qrDataUrl = await QRCode.toDataURL(clientUrl, { width: 250, margin: 2, errorCorrectionLevel: 'L' });
+            qrImg.src = qrDataUrl;
+            qrImg.classList.remove('hidden');
+          }
+        } catch (qrErr) { console.warn('[portal] QR failed', qrErr); }
+
+        document.getElementById('btn-copy-portal-link').onclick = function () {
+          navigator.clipboard.writeText(clientUrl).then(function () {
+            toast(t('portal.linkCopied'), 'success', 2000);
+          }).catch(function () {
+            prompt(t('portal.copyLinkManually'), clientUrl);
+          });
+        };
+        document.getElementById('btn-copy-portal-code').onclick = function () {
+          navigator.clipboard.writeText(pin).then(function () {
+            toast(t('portal.codeCopied'), 'success', 2000);
+          }).catch(function () {
+            prompt(t('portal.copyCodeManually'), pin);
+          });
+        };
+        document.getElementById('btn-whatsapp-portal').onclick = function () {
+          const phone = String(client.phone || '').replace(/[^0-9]/g, '');
+          const template = t('clients.waInviteAppPass') || '{name}: {url} ({code})';
+          const msg = encodeURIComponent(template.replace('{name}', client.full_name || '').replace('{url}', clientUrl).replace('{code}', pin));
+          window.open(phone ? ('https://wa.me/' + phone + '?text=' + msg) : ('https://wa.me/?text=' + msg), '_blank');
+        };
+        document.getElementById('client-portal-close').onclick = function () {
+          document.getElementById('client-portal-modal').classList.add('hidden');
+        };
+        document.getElementById('client-portal-modal').classList.remove('hidden');
+      } catch (err) {
+        console.error('[server portal]', err);
+        toast((err && err.message) || t('portal.genError'), 'danger', 5000);
+      }
+    }
+
     async function openClientPortalModal(clientId, opts) {
+      /* c213: server mode uses the API portal token instead of Firebase. */
+      if (window.DKG_SERVER && window.DKG_SERVER.authenticated) {
+        return openServerPortalModal(clientId, opts);
+      }
       try {
         const client = await db.get('clients', clientId);
         if (!client) { toast(t('clients.notFound'), 'danger'); return; }
@@ -33650,7 +33977,12 @@ loadPanelTexture();
             navigator.serviceWorker.ready.then(function (reg) {
               if (shown) return;
               shown = true;
-              if (reg && reg.showNotification) reg.showNotification(m.title, { body: m.body, tag: 'dk-t-' + kind, renotify: false, icon: './icon-192.png', badge: './icon-192.png' });
+              if (reg && reg.showNotification) {
+                try {
+                  const p = reg.showNotification(m.title, { body: m.body, tag: 'dk-t-' + kind, renotify: false, icon: './icon-192.png', badge: './icon-192.png' });
+                  if (p && typeof p.catch === 'function') p.catch(function () {});
+                } catch (_) {}
+              }
             }).catch(function () {});
             setTimeout(function () { if (!shown) { shown = true; fallback(); } }, 3000);
             return;
@@ -37011,6 +37343,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function boot() {
+      /* c213: server mode replaces Firebase with the DKG API. Never initialize
+         Firebase or install its dirty hooks — otherwise a trainer could write
+         into the director's old Firebase project. */
+      if (window.DKG_SERVER && window.DKG_SERVER.enabled) {
+        if (window.cloudSync) window.cloudSync.ready = Promise.resolve();
+        return;
+      }
       try { init(); } catch (e) { log('boot failed', e); }
       try { installHooks(); } catch (e) {}
     }
@@ -37528,6 +37867,19 @@ document.addEventListener('DOMContentLoaded', function () {
     setInterval(function () { snapAutoSave(false); }, 15 * 60 * 1000);
 
     window.cloudSync = { save: saveNow, restore: restoreFromCloud, signIn: signIn, signInGsi: signInGsi, ready: _ready, getState: getState, version: 1 };
+    /* c213: hard-disable Firebase in server mode, even from the console. The
+       API is the only cloud in the trainer edition. */
+    if (window.DKG_SERVER && window.DKG_SERVER.enabled) {
+      window.cloudSync = {
+        ready: Promise.resolve(),
+        getState: function () { return { configured: false, user: null, ready: true, error: null }; },
+        save: function () { return Promise.resolve({ ok: false, error: 'server_mode' }); },
+        restore: function () { return Promise.resolve({ ok: false, error: 'server_mode' }); },
+        signIn: function () { return Promise.resolve({ relay: false }); },
+        signInGsi: function () { return Promise.resolve(null); },
+        version: 1
+      };
+    }
   })();
   </script>
 
@@ -37874,7 +38226,7 @@ document.addEventListener('input', function (e) {
    caused by a stale app window.
    ===================================================================== */
 (function () {
-  var RUNNING = 212; /* numeric part of dk-build c212 */
+  var RUNNING = 213; /* numeric part of dk-build c213 */
   var checkTimer = null, banner = null, checking = false;
 
   function extractLive(html) {

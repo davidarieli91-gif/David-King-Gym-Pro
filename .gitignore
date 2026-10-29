@@ -143,6 +143,9 @@ vite.config.ts.timestamp-*
 .vite/
 
 # Project specifics
+server/data/
+server/dist/
+deploy/.env
 .DS_Store
 Thumbs.db
 desktop.ini

@@ -53,9 +53,9 @@ for (const lang of ['en', 'ru', 'he']) {
 }
 
 /* ---------- versions ---------- */
-ok('build c212', crm.indexOf('<meta name="dk-build" content="c212" />') >= 0);
-ok('RUNNING 212', crm.indexOf('var RUNNING = 212;') >= 0);
-ok('SW cache v239', sw.indexOf("CACHE_NAME = 'dk-gym-v239'") >= 0);
+ok('build c213', crm.indexOf('<meta name="dk-build" content="c213" />') >= 0);
+ok('RUNNING 213', crm.indexOf('var RUNNING = 213;') >= 0);
+ok('SW cache v240', sw.indexOf("CACHE_NAME = 'dk-gym-v240'") >= 0);
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);

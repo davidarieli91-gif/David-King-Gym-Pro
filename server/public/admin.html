@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>David King Gym — Director</title>
+  <link rel="icon" type="image/png" href="/icon-512.png" />
+  <style>
+    :root { color-scheme: dark; --bg:#070b14; --panel:#0d1526; --line:rgba(255,255,255,.10); --text:#eef5ff; --muted:#91a3bd; --cyan:#3ad6ff; --blue:#3b82f6; --danger:#ff5d73; --ok:#32d583; }
+    * { box-sizing: border-box; }
+    body { margin:0; min-height:100vh; background: radial-gradient(900px 500px at 12% 0%, rgba(57,214,255,.14), transparent 60%), radial-gradient(800px 500px at 90% 100%, rgba(255,60,172,.10), transparent 60%), var(--bg); color:var(--text); font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+    a { color: var(--cyan); text-decoration: none; }
+    .wrap { width:min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 60px; }
+    .brand { display:flex; align-items:center; gap:14px; margin-bottom:26px; }
+    .brand img { width:48px; height:48px; object-fit:contain; border-radius:12px; background:rgba(255,255,255,.06); padding:5px; }
+    .brand h1 { margin:0; font-size:20px; letter-spacing:-.02em; }
+    .brand p { margin:3px 0 0; color:var(--muted); font-size:12px; }
+    .card { background: rgba(13,21,38,.88); border:1px solid var(--line); border-radius:18px; padding:20px; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
+    .login { width:min(430px, 100%); margin: 8vh auto 0; }
+    label { display:block; margin-bottom:12px; color:#aab9cf; font-size:12px; font-weight:600; }
+    input, select { display:block; width:100%; margin-top:6px; padding:11px 12px; border-radius:10px; border:1px solid var(--line); background:rgba(4,9,18,.72); color:var(--text); font-size:14px; outline:none; }
+    input:focus, select:focus { border-color: rgba(57,214,255,.65); box-shadow:0 0 0 3px rgba(57,214,255,.12); }
+    button { border:0; border-radius:10px; padding:11px 14px; font-size:13px; font-weight:800; cursor:pointer; background:linear-gradient(135deg,var(--cyan),var(--blue)); color:#04101e; }
+    button.secondary { background:rgba(255,255,255,.08); color:var(--text); border:1px solid var(--line); font-weight:700; }
+    button.danger { background:rgba(255,93,115,.14); color:#ff9aa8; border:1px solid rgba(255,93,115,.35); font-weight:700; }
+    button:disabled { opacity:.6; cursor:wait; }
+    .error { display:none; margin:0 0 12px; padding:10px 12px; border-radius:10px; background:rgba(255,70,90,.12); border:1px solid rgba(255,70,90,.3); color:#ff9aa8; font-size:12px; line-height:1.45; }
+    .muted { color:var(--muted); }
+    .topbar { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:20px; }
+    .topbar .actions { display:flex; gap:10px; flex-wrap:wrap; }
+    .kpis { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:12px; margin-bottom:18px; }
+    .kpi { background:rgba(13,21,38,.88); border:1px solid var(--line); border-radius:16px; padding:16px; }
+    .kpi span { display:block; color:var(--muted); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; }
+    .kpi b { display:block; margin-top:6px; font-size:26px; letter-spacing:-.03em; }
+    .section { margin-top:18px; }
+    .section h2 { margin:0 0 12px; font-size:15px; }
+    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:end; }
+    .row > label { flex:1 1 160px; margin:0; }
+    table { width:100%; border-collapse:collapse; font-size:12.5px; }
+    th { text-align:left; color:var(--muted); font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; padding:9px 8px; border-bottom:1px solid var(--line); white-space:nowrap; }
+    td { padding:11px 8px; border-bottom:1px solid rgba(255,255,255,.06); vertical-align:middle; }
+    tr:last-child td { border-bottom:0; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:3px 8px; border-radius:999px; font-size:10.5px; font-weight:700; }
+    .pill.ok { color:#7ef0b5; background:rgba(50,213,131,.12); border:1px solid rgba(50,213,131,.25); }
+    .pill.off { color:#ff9aa8; background:rgba(255,93,115,.12); border:1px solid rgba(255,93,115,.25); }
+    .code { font-family: "JetBrains Mono", ui-monospace, monospace; font-size:15px; font-weight:800; letter-spacing:.04em; color:#a9f3ff; }
+    .hidden { display:none !important; }
+    .empty { color:var(--muted); font-size:13px; padding:14px 4px; }
+    .note { color:var(--muted); font-size:12px; line-height:1.55; margin:10px 0 0; }
+    @media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+    @media (max-width: 640px) { .kpis { grid-template-columns: 1fr; } table { font-size:11.5px; } th, td { padding:8px 5px; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand">
+      <img src="/logo-web.webp" alt="David King Gym" />
+      <div>
+        <h1>David King Gym — Director</h1>
+        <p>Trainers, invite codes and aggregate client counts. Client records are never shown here.</p>
+      </div>
+    </div>
+
+    <div id="login-view" class="card login">
+      <h2 style="margin:0 0 6px;font-size:18px;">Вход директора</h2>
+      <p class="muted" style="margin:0 0 18px;font-size:13px;line-height:1.5;">Только аккаунт с ролью director.</p>
+      <div id="login-error" class="error"></div>
+      <form id="login-form">
+        <label>Email<input id="login-email" type="email" autocomplete="username" required /></label>
+        <label>Пароль<input id="login-password" type="password" autocomplete="current-password" required /></label>
+        <button id="login-submit" type="submit" style="width:100%;">Войти</button>
+      </form>
+    </div>
+
+    <div id="app-view" class="hidden">
+      <div class="topbar">
+        <div>
+          <h2 style="margin:0;font-size:18px;">Тренеры</h2>
+          <p class="muted" style="margin:4px 0 0;font-size:12px;">Только список и агрегаты. Клиентские данные недоступны.</p>
+        </div>
+        <div class="actions">
+          <a href="/fitness-crm.html"><button type="button" class="secondary">Мой кабинет</button></a>
+          <button type="button" class="secondary" id="logout-btn">Выйти</button>
+        </div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><span>Тренеры</span><b id="kpi-trainers">—</b></div>
+        <div class="kpi"><span>Активные</span><b id="kpi-active">—</b></div>
+        <div class="kpi"><span>Клиенты</span><b id="kpi-clients">—</b></div>
+        <div class="kpi"><span>Хранилище</span><b id="kpi-storage">—</b></div>
+      </div>
+
+      <div class="card section">
+        <h2>Список тренеров</h2>
+        <div style="overflow:auto;">
+          <table>
+            <thead><tr><th>Тренер</th><th>Email</th><th>Регистрация</th><th>Последний вход</th><th>Клиенты</th><th>Хранилище</th><th>Статус</th><th></th></tr></thead>
+            <tbody id="trainers-body"><tr><td colspan="8" class="empty">Загрузка…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card section">
+        <h2>Новый инвайт-код</h2>
+        <div class="row">
+          <label>Название (необязательно)<input id="invite-label" type="text" maxlength="120" placeholder="Например: тренер из зала" /></label>
+          <label>Лимит использований<input id="invite-uses" type="number" min="0" max="100000" value="0" /><span class="muted" style="font-size:10.5px;">0 = без лимита</span></label>
+          <label>Срок, дней<input id="invite-days" type="number" min="1" max="365" placeholder="бессрочно" /></label>
+          <button type="button" id="invite-create">Создать</button>
+        </div>
+        <div id="invite-result" class="hidden" style="margin-top:16px;padding:14px;border:1px solid rgba(57,214,255,.25);background:rgba(57,214,255,.06);border-radius:12px;">
+          <div class="muted" style="font-size:11px;margin-bottom:6px;">Код показывается один раз. Скопируйте его сейчас.</div>
+          <div class="code" id="invite-code">—</div>
+          <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
+            <button type="button" class="secondary" id="invite-copy">Скопировать ссылку</button>
+            <span class="muted" style="font-size:12px;align-self:center;" id="invite-url"></span>
+          </div>
+        </div>
+        <p class="note">Один код можно отправить сразу нескольким тренерам. Тебе не нужно помнить, кому какой код выдан: список ниже покажет, кто зарегистрировался.</p>
+      </div>
+
+      <div class="card section">
+        <h2>Инвайт-коды</h2>
+        <div style="overflow:auto;">
+          <table>
+            <thead><tr><th>Название</th><th>Использовано</th><th>Срок</th><th>Статус</th><th></th></tr></thead>
+            <tbody id="invites-body"><tr><td colspan="5" class="empty">Загрузка…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+      var state = { me: null };
+
+      function $(id) { return document.getElementById(id); }
+      function show(el) { if (el) el.classList.remove('hidden'); }
+      function hide(el) { if (el) el.classList.add('hidden'); }
+      function esc(value) { return String(value == null ? '' : value).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); }
+      function cookie(name) {
+        var parts = (document.cookie || '').split(';');
+        for (var i = 0; i < parts.length; i++) {
+          var p = parts[i].trim();
+          if (p.indexOf(name + '=') === 0) return decodeURIComponent(p.slice(name.length + 1));
+        }
+        return '';
+      }
+      function csrf() { return cookie('dkg_csrf'); }
+      function fmtDate(value) {
+        if (!value) return '—';
+        try { return new Date(value).toLocaleString('ru-RU', { dateStyle: 'short', timeStyle: 'short' }); } catch (_) { return '—'; }
+      }
+      function fmtBytes(value) {
+        var n = Number(value || 0);
+        if (!n) return '0';
+        var units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        var i = 0;
+        while (n >= 1024 && i < units.length - 1) { n /= 1024; i++; }
+        return (Math.round(n * 10) / 10) + ' ' + units[i];
+      }
+      function setError(message) {
+        var el = $('login-error');
+        if (!el) return;
+        if (message) { el.textContent = message; el.style.display = 'block'; }
+        else { el.textContent = ''; el.style.display = 'none'; }
+      }
+
+      async function api(path, options) {
+        options = options || {};
+        options.credentials = 'same-origin';
+        options.headers = Object.assign({ 'accept': 'application/json' }, options.headers || {});
+        if (options.body && typeof options.body !== 'string') {
+          options.body = JSON.stringify(options.body);
+          options.headers['content-type'] = 'application/json';
+        }
+        if (options.method && options.method !== 'GET') {
+          options.headers['x-csrf-token'] = csrf();
+        }
+        var response = await fetch(path, options);
+        var body = await response.json().catch(function () { return {}; });
+        if (!response.ok) {
+          var message = body && body.error && body.error.message ? body.error.message : ('HTTP ' + response.status);
+          throw new Error(message);
+        }
+        return body;
+      }
+
+      async function load() {
+        try {
+          var me = await api('/api/auth/me');
+          if (!me.user || me.user.role !== 'director') {
+            showLogin('Этот аккаунт не является директором.');
+            return;
+          }
+          state.me = me;
+          hide($('login-view'));
+          show($('app-view'));
+          await Promise.all([loadOverview(), loadTrainers(), loadInvites()]);
+        } catch (error) {
+          showLogin('');
+        }
+      }
+
+      function showLogin(message) {
+        show($('login-view'));
+        hide($('app-view'));
+        setError(message || '');
+      }
+
+      async function loadOverview() {
+        var data = await api('/api/admin/overview');
+        $('kpi-trainers').textContent = data.tenants;
+        $('kpi-active').textContent = data.activeTenants;
+        $('kpi-clients').textContent = data.clients;
+        $('kpi-storage').textContent = fmtBytes(data.storageBytes);
+      }
+
+      async function loadTrainers() {
+        var data = await api('/api/admin/trainers?limit=200');
+        var body = $('trainers-body');
+        if (!data.trainers || !data.trainers.length) {
+          body.innerHTML = '<tr><td colspan="8" class="empty">Пока нет тренеров.</td></tr>';
+          return;
+        }
+        body.innerHTML = data.trainers.map(function (t) {
+          var status = t.status === 'active' ? '<span class="pill ok">active</span>' : '<span class="pill off">suspended</span>';
+          var action = t.isSelf ? '<span class="muted" style="font-size:11px;">это ты</span>' : (t.status === 'active'
+            ? '<button type="button" class="danger" data-suspend="' + esc(t.tenantId) + '">Приостановить</button>'
+            : '<button type="button" class="secondary" data-resume="' + esc(t.tenantId) + '">Включить</button>');
+          return '<tr>'
+            + '<td><b>' + esc(t.tenantName) + '</b></td>'
+            + '<td class="muted">' + esc(t.email || '—') + '</td>'
+            + '<td class="muted">' + fmtDate(t.createdAt) + '</td>'
+            + '<td class="muted">' + fmtDate(t.lastLoginAt) + '</td>'
+            + '<td><b>' + Number(t.clientCount || 0) + '</b></td>'
+            + '<td class="muted">' + fmtBytes(t.storageBytes) + '</td>'
+            + '<td>' + status + '</td>'
+            + '<td style="text-align:right;">' + action + '</td>'
+            + '</tr>';
+        }).join('');
+
+        body.querySelectorAll('[data-suspend]').forEach(function (btn) {
+          btn.addEventListener('click', function () { tenantAction(btn.getAttribute('data-suspend'), 'suspend'); });
+        });
+        body.querySelectorAll('[data-resume]').forEach(function (btn) {
+          btn.addEventListener('click', function () { tenantAction(btn.getAttribute('data-resume'), 'resume'); });
+        });
+      }
+
+      async function tenantAction(tenantId, action) {
+        if (action === 'suspend' && !confirm('Приостановить доступ этому тренеру? Его данные сохранятся.')) return;
+        try {
+          await api('/api/admin/tenants/' + encodeURIComponent(tenantId) + '/' + action, { method: 'POST', body: {} });
+          await Promise.all([loadOverview(), loadTrainers()]);
+        } catch (error) {
+          alert(error.message);
+        }
+      }
+
+      async function loadInvites() {
+        var data = await api('/api/admin/invites');
+        var body = $('invites-body');
+        if (!data.invites || !data.invites.length) {
+          body.innerHTML = '<tr><td colspan="5" class="empty">Кодов пока нет.</td></tr>';
+          return;
+        }
+        body.innerHTML = data.invites.map(function (invite) {
+          var status = invite.revokedAt ? '<span class="pill off">revoked</span>'
+            : (invite.expiresAt && new Date(invite.expiresAt).getTime() < Date.now() ? '<span class="pill off">expired</span>' : '<span class="pill ok">active</span>');
+          var uses = Number(invite.uses || 0) + (invite.maxUses ? ' / ' + invite.maxUses : ' / ∞');
+          var action = invite.revokedAt ? '' : '<button type="button" class="danger" data-revoke="' + esc(invite.id) + '">Отозвать</button>';
+          return '<tr>'
+            + '<td>' + esc(invite.label || '—') + '</td>'
+            + '<td>' + uses + '</td>'
+            + '<td class="muted">' + (invite.expiresAt ? fmtDate(invite.expiresAt) : 'бессрочно') + '</td>'
+            + '<td>' + status + '</td>'
+            + '<td style="text-align:right;">' + action + '</td>'
+            + '</tr>';
+        }).join('');
+        body.querySelectorAll('[data-revoke]').forEach(function (btn) {
+          btn.addEventListener('click', async function () {
+            if (!confirm('Отозвать этот код? Уже зарегистрированные тренеры продолжат работать.')) return;
+            try {
+              await api('/api/admin/invites/' + encodeURIComponent(btn.getAttribute('data-revoke')), { method: 'DELETE' });
+              await loadInvites();
+            } catch (error) { alert(error.message); }
+          });
+        });
+      }
+
+      $('login-form').addEventListener('submit', async function (event) {
+        event.preventDefault();
+        setError('');
+        var btn = $('login-submit');
+        btn.disabled = true;
+        try {
+          await api('/api/auth/login', {
+            method: 'POST',
+            body: { email: $('login-email').value.trim(), password: $('login-password').value }
+          });
+          location.reload();
+        } catch (error) {
+          setError(error.message || 'Неверный email или пароль.');
+        } finally {
+          btn.disabled = false;
+        }
+      });
+
+      $('logout-btn').addEventListener('click', async function () {
+        try { await api('/api/auth/logout', { method: 'POST', body: {} }); } catch (_) {}
+        location.reload();
+      });
+
+      $('invite-create').addEventListener('click', async function () {
+        var btn = $('invite-create');
+        btn.disabled = true;
+        hide($('invite-result'));
+        try {
+          var payload = {
+            label: $('invite-label').value.trim() || undefined,
+            maxUses: Number($('invite-uses').value || 0),
+            expiresInDays: $('invite-days').value ? Number($('invite-days').value) : undefined
+          };
+          var data = await api('/api/admin/invites', { method: 'POST', body: payload });
+          $('invite-code').textContent = data.code;
+          $('invite-url').textContent = data.joinUrl;
+          $('invite-copy').setAttribute('data-url', data.joinUrl);
+          show($('invite-result'));
+          await loadInvites();
+        } catch (error) {
+          alert(error.message);
+        } finally {
+          btn.disabled = false;
+        }
+      });
+
+      $('invite-copy').addEventListener('click', async function () {
+        var url = $('invite-copy').getAttribute('data-url') || '';
+        try {
+          await navigator.clipboard.writeText(url);
+          $('invite-copy').textContent = 'Скопировано';
+          setTimeout(function () { $('invite-copy').textContent = 'Скопировать ссылку'; }, 1500);
+        } catch (_) {
+          prompt('Скопируйте ссылку:', url);
+        }
+      });
+
+      load();
+    })();
+  </script>
+</body>
+</html>

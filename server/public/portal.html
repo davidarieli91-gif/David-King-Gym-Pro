@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#070b14" />
+  <meta name="referrer" content="no-referrer" />
+  <title>David King Gym — Кабинет клиента</title>
+  <style>
+    :root { color-scheme: dark; --bg:#070b14; --panel:#0d1526; --panel2:#111c31; --line:rgba(255,255,255,.10); --text:#eef5ff; --muted:#91a3bd; --cyan:#3ad6ff; --blue:#3b82f6; --green:#32d583; --danger:#ff5d73; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body { margin:0; min-height:100vh; background: radial-gradient(900px 500px at 12% 0%, rgba(57,214,255,.14), transparent 60%), radial-gradient(800px 500px at 90% 100%, rgba(255,60,172,.10), transparent 60%), var(--bg); color:var(--text); font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; padding-bottom: 40px; }
+    .wrap { width:min(760px, 100%); margin:0 auto; padding: 20px 16px; }
+    .brand { display:flex; align-items:center; gap:12px; margin-bottom:20px; }
+    .brand img { width:48px; height:48px; object-fit:contain; border-radius:12px; background:rgba(255,255,255,.06); padding:5px; }
+    .brand h1 { margin:0; font-size:19px; letter-spacing:-.02em; }
+    .brand p { margin:3px 0 0; color:var(--muted); font-size:11.5px; }
+    .card { background:rgba(13,21,38,.88); border:1px solid var(--line); border-radius:18px; padding:18px; margin-bottom:14px; box-shadow:0 16px 50px rgba(0,0,0,.3); }
+    .hero { display:flex; align-items:center; gap:16px; }
+    .avatar { width:64px; height:64px; border-radius:18px; object-fit:cover; background:linear-gradient(135deg, rgba(58,214,255,.25), rgba(59,130,246,.25)); display:grid; place-items:center; font-size:24px; font-weight:800; color:#bff4ff; overflow:hidden; flex:0 0 auto; }
+    .avatar img { width:100%; height:100%; object-fit:cover; }
+    .hero h2 { margin:0; font-size:21px; letter-spacing:-.02em; }
+    .hero p { margin:4px 0 0; color:var(--muted); font-size:12.5px; }
+    .chips { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+    .chip { padding:5px 10px; border-radius:999px; background:rgba(57,214,255,.08); border:1px solid rgba(57,214,255,.18); color:#a9ecff; font-size:11.5px; font-weight:700; }
+    .grid { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:8px; }
+    .stat { background:rgba(255,255,255,.035); border:1px solid var(--line); border-radius:14px; padding:12px; }
+    .stat span { display:block; color:var(--muted); font-size:10px; text-transform:uppercase; letter-spacing:.06em; font-weight:700; }
+    .stat b { display:block; margin-top:4px; font-size:18px; }
+    h3 { margin:0 0 12px; font-size:15px; }
+    .day { border:1px solid var(--line); border-radius:14px; padding:12px; margin-bottom:8px; background:rgba(255,255,255,.02); }
+    .day-head { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .day-head b { font-size:13.5px; }
+    .day-head span { color:var(--muted); font-size:11px; }
+    .exercise { padding:9px 0 0; border-top:1px solid rgba(255,255,255,.06); margin-top:9px; }
+    .exercise b { display:block; font-size:12.5px; }
+    .exercise small { color:var(--muted); font-size:11px; }
+    .sets { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+    .set { font-size:10.5px; padding:3px 7px; border-radius:7px; background:rgba(57,214,255,.08); color:#a9ecff; border:1px solid rgba(57,214,255,.16); }
+    .meal { border-bottom:1px solid rgba(255,255,255,.06); padding:10px 0; }
+    .meal:last-child { border-bottom:0; }
+    .meal b { font-size:12.5px; }
+    .meal small { color:var(--muted); font-size:11px; display:block; margin-top:3px; }
+    .item { color:var(--muted); font-size:11.5px; margin-top:4px; }
+    .empty { color:var(--muted); font-size:12.5px; padding:8px 0; }
+    label { display:block; color:#aab9cf; font-size:11.5px; font-weight:600; margin-bottom:10px; }
+    input, textarea { display:block; width:100%; margin-top:5px; padding:10px 11px; border-radius:10px; border:1px solid var(--line); background:rgba(4,9,18,.72); color:var(--text); font-size:14px; font-family:inherit; outline:none; }
+    input:focus, textarea:focus { border-color:rgba(57,214,255,.65); box-shadow:0 0 0 3px rgba(57,214,255,.12); }
+    button { border:0; border-radius:10px; padding:11px 14px; font-size:13px; font-weight:800; cursor:pointer; background:linear-gradient(135deg,var(--cyan),var(--blue)); color:#04101e; }
+    button.secondary { background:rgba(255,255,255,.08); color:var(--text); border:1px solid var(--line); }
+    button:disabled { opacity:.6; cursor:wait; }
+    .error { display:none; margin:0 0 12px; padding:10px 12px; border-radius:10px; background:rgba(255,70,90,.12); border:1px solid rgba(255,70,90,.3); color:#ff9aa8; font-size:12px; line-height:1.45; }
+    .pin-card { max-width:400px; margin:12vh auto 0; }
+    .pin-row { display:flex; gap:8px; }
+    .pin-row input { flex:1; margin-top:0; text-align:center; font-size:24px; letter-spacing:.35em; font-weight:800; }
+    .pin-row button { flex:0 0 auto; }
+    .hidden { display:none !important; }
+    .foot { text-align:center; color:var(--muted); font-size:10.5px; margin-top:18px; line-height:1.6; }
+    .foot b { color:#c9d8ec; }
+    .toast { position:fixed; inset-inline:16px; bottom:20px; max-width:420px; margin:0 auto; padding:12px 14px; border-radius:12px; background:#10243a; border:1px solid rgba(57,214,255,.25); color:#d9f7ff; font-size:12.5px; box-shadow:0 12px 40px rgba(0,0,0,.4); z-index:20; }
+    @media (max-width: 420px) { .grid { grid-template-columns: repeat(2, minmax(0,1fr)); } .hero h2 { font-size:18px; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand">
+      <img id="brand-logo" src="/logo-web.webp" alt="David King Gym" />
+      <div>
+        <h1 id="brand-name">David King Gym</h1>
+        <p id="brand-sub">Кабинет клиента · Provided by David King Gym</p>
+      </div>
+    </div>
+
+    <div id="loading" class="card"><p class="empty">Загружаем ваш кабинет…</p></div>
+    <div id="error-card" class="card hidden"><p id="error-text" class="empty"></p></div>
+
+    <div id="pin-card" class="card pin-card hidden">
+      <h3>Введите пароль</h3>
+      <p class="empty" style="padding-top:0;">Пароль выдал ваш тренер.</p>
+      <div id="pin-error" class="error"></div>
+      <div class="pin-row">
+        <input id="pin" type="password" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="••••" />
+        <button id="pin-submit" type="button">Войти</button>
+      </div>
+    </div>
+
+    <div id="app" class="hidden">
+      <div class="card">
+        <div class="hero">
+          <div class="avatar" id="client-avatar">?</div>
+          <div>
+            <h2 id="client-name">—</h2>
+            <p id="client-goal">—</p>
+          </div>
+        </div>
+        <div class="grid" style="margin-top:16px;">
+          <div class="stat"><span>Вес</span><b id="stat-weight">—</b></div>
+          <div class="stat"><span>Цель</span><b id="stat-target">—</b></div>
+          <div class="stat"><span>Жир</span><b id="stat-fat">—</b></div>
+        </div>
+        <div class="chips" id="client-chips"></div>
+      </div>
+
+      <div class="card">
+        <h3>Тренировки</h3>
+        <div id="programs"><p class="empty">Пока нет активной программы.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Питание</h3>
+        <div id="nutrition"><p class="empty">Пока нет активного плана питания.</p></div>
+      </div>
+
+      <div class="card">
+        <h3>Чек-ин</h3>
+        <div id="checkin-error" class="error"></div>
+        <form id="checkin-form">
+          <label>Дата<input id="checkin-date" type="date" required /></label>
+          <label>Вес, кг<input id="checkin-weight" type="number" step="0.1" min="20" max="400" inputmode="decimal" placeholder="Например: 78.4" /></label>
+          <label>Заметка<textarea id="checkin-note" rows="2" maxlength="500" placeholder="Самочувствие, сон, тренировки…"></textarea></label>
+          <button id="checkin-submit" type="submit" style="width:100%;">Отправить тренеру</button>
+        </form>
+        <div id="checkins" style="margin-top:14px;"></div>
+      </div>
+
+      <div class="card">
+        <h3>История тренировок</h3>
+        <div id="history"><p class="empty">Пока нет записей.</p></div>
+      </div>
+
+      <p class="foot"><b>David King Gym</b> · Данные хранятся на сервере тренера.<br/>Ссылка персональная — не передавайте её другим.</p>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var TOKEN = '';
+      var PIN_KEY = '';
+      var data = null;
+      var records = [];
+      var PIN = '';
+
+      function $(id) { return document.getElementById(id); }
+      function show(el) { if (el) el.classList.remove('hidden'); }
+      function hide(el) { if (el) el.classList.add('hidden'); }
+      function esc(value) { return String(value == null ? '' : value).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); }
+      function fmtDate(value) {
+        if (!value) return '—';
+        try { return new Date(value).toLocaleDateString('ru-RU', { day: '2-digit', month: 'short', year: 'numeric' }); } catch (_) { return '—'; }
+      }
+      function fmtNum(value, suffix) {
+        if (value == null || value === '') return '—';
+        return String(Math.round(Number(value) * 10) / 10) + (suffix || '');
+      }
+      function toast(message) {
+        var el = document.createElement('div');
+        el.className = 'toast';
+        el.textContent = message;
+        document.body.appendChild(el);
+        setTimeout(function () { el.remove(); }, 3200);
+      }
+      function setError(id, message) {
+        var el = $(id);
+        if (!el) return;
+        if (message) { el.textContent = message; el.style.display = 'block'; }
+        else { el.textContent = ''; el.style.display = 'none'; }
+      }
+
+      function parseToken() {
+        var parts = location.pathname.split('/').filter(Boolean);
+        if (parts[0] === 'p' && parts[1]) return decodeURIComponent(parts[1]);
+        return '';
+      }
+
+      async function api(path, options) {
+        options = options || {};
+        options.credentials = 'same-origin';
+        options.headers = Object.assign({ 'accept': 'application/json' }, options.headers || {});
+        if (PIN) options.headers['x-portal-pin'] = PIN;
+        if (options.body && typeof options.body !== 'string') {
+          options.body = JSON.stringify(options.body);
+          options.headers['content-type'] = 'application/json';
+        }
+        var response = await fetch(path, options);
+        var body = await response.json().catch(function () { return {}; });
+        if (!response.ok) {
+          var error = new Error((body && body.error && body.error.message) || ('HTTP ' + response.status));
+          error.status = response.status;
+          error.code = body && body.error && body.error.code;
+          throw error;
+        }
+        return body;
+      }
+
+      async function load() {
+        hide($('pin-card')); hide($('error-card')); show($('loading'));
+        try {
+          data = await api('/api/portal/' + encodeURIComponent(TOKEN));
+          hide($('loading'));
+          applyBrand();
+          renderClient();
+          records = (await api('/api/portal/' + encodeURIComponent(TOKEN) + '/records')).records || [];
+          renderPrograms();
+          renderNutrition();
+          renderHistory();
+          renderCheckins();
+          show($('app'));
+        } catch (error) {
+          hide($('loading'));
+          if (error.status === 401 && error.code === 'pin_required') {
+            show($('pin-card'));
+            setTimeout(function () { var p = $('pin'); if (p) p.focus(); }, 60);
+            return;
+          }
+          show($('error-card'));
+          $('error-text').textContent = error.status === 404
+            ? 'Ссылка недействительна или отозвана. Попросите тренера выдать новую.'
+            : (error.message || 'Не удалось открыть кабинет.');
+        }
+      }
+
+      function applyBrand() {
+        var tenant = data.tenant || {};
+        if (tenant.brand) $('brand-name').textContent = tenant.brand;
+        if (tenant.attribution) $('brand-sub').textContent = 'Кабинет клиента · ' + tenant.attribution;
+      }
+
+      function renderClient() {
+        var client = data.client || {};
+        $('client-name').textContent = client.full_name || 'Клиент';
+        $('client-goal').textContent = goalLabel(client.goal);
+        $('stat-weight').textContent = fmtNum(client.weight, ' кг');
+        $('stat-target').textContent = fmtNum(client.target_weight, ' кг');
+        $('stat-fat').textContent = fmtNum(client.body_fat_pct, '%');
+        var avatar = $('client-avatar');
+        if (client.photo_url) {
+          avatar.innerHTML = '<img alt="" src="' + esc(client.photo_url) + '" />';
+        } else {
+          avatar.textContent = String(client.full_name || '?').trim().charAt(0).toUpperCase() || '?';
+        }
+        var chips = [];
+        if (client.height) chips.push(fmtNum(client.height, ' см'));
+        if (client.age) chips.push(client.age + ' лет');
+        if (client.goal) chips.push(goalLabel(client.goal));
+        $('client-chips').innerHTML = chips.map(function (chip) { return '<span class="chip">' + esc(chip) + '</span>'; }).join('');
+      }
+
+      function goalLabel(goal) {
+        var map = { fat_loss: 'Снижение веса', hypertrophy: 'Набор массы', strength: 'Сила', endurance: 'Выносливость', rehab: 'Реабилитация' };
+        return map[goal] || goal || '—';
+      }
+
+      function recordsOf(collection) {
+        return records.filter(function (record) { return record.collection === collection; });
+      }
+
+      function renderPrograms() {
+        var programs = recordsOf('client_programs').filter(function (record) {
+          return (record.data && record.data.status) === 'active';
+        });
+        if (!programs.length) return;
+        var program = programs[0].data;
+        var days = program.workout_days || program.days || [];
+        var html = '<div class="chip" style="display:inline-block;margin-bottom:10px;">' + esc(program.name || 'Активная программа') + '</div>';
+        if (!days.length) {
+          html += '<p class="empty">В программе пока нет дней.</p>';
+        } else {
+          html += days.map(function (day) {
+            var exercises = day.exercises || [];
+            var exHtml = exercises.map(function (ex) {
+              var name = ex.exercise_name || ex.name || ex.exercise_id || 'Упражнение';
+              var sets = ex.sets || [];
+              var setHtml = sets.map(function (set, index) {
+                var weight = set.weight != null && set.weight !== '' ? fmtNum(set.weight, ' кг') : '';
+                var reps = set.reps != null && set.reps !== '' ? set.reps + ' повт.' : '';
+                return '<span class="set">' + esc([weight, reps].filter(Boolean).join(' × ') || ('Подход ' + (index + 1))) + '</span>';
+              }).join('');
+              var note = ex.notes || ex.note || '';
+              return '<div class="exercise"><b>' + esc(name) + '</b>' + (note ? '<small>' + esc(note) + '</small>' : '') + (setHtml ? '<div class="sets">' + setHtml + '</div>' : '') + '</div>';
+            }).join('');
+            return '<div class="day"><div class="day-head"><b>' + esc(day.name || day.day_letter || 'День') + '</b><span>' + exercises.length + ' упр.</span></div>' + exHtml + '</div>';
+          }).join('');
+        }
+        $('programs').innerHTML = html;
+      }
+
+      function renderNutrition() {
+        var plans = recordsOf('nutrition_plans').filter(function (record) {
+          return (record.data && record.data.status) === 'active';
+        });
+        if (!plans.length) return;
+        var plan = plans[0].data;
+        var meals = plan.meals || [];
+        var html = '<div class="chip" style="display:inline-block;margin-bottom:10px;">' + esc(plan.name || 'Активный план питания') + '</div>';
+        if (!meals.length) {
+          html += '<p class="empty">В плане пока нет приёмов пищи.</p>';
+        } else {
+          html += meals.map(function (meal) {
+            var items = meal.items || meal.foods || [];
+            var itemHtml = items.map(function (item) {
+              var name = item.food_name || item.name || (item.food && (item.food.name_ru || item.food.name_en)) || 'Продукт';
+              var qty = item.quantity || item.qty || item.grams;
+              var kcal = item.calories || item.kcal;
+              return '<div class="item">' + esc(name) + (qty ? ' · ' + esc(qty) + ' г' : '') + (kcal ? ' · ' + esc(kcal) + ' ккал' : '') + '</div>';
+            }).join('');
+            return '<div class="meal"><b>' + esc(meal.name || meal.title || 'Приём пищи') + '</b>' + (meal.time ? '<small>' + esc(meal.time) + '</small>' : '') + itemHtml + '</div>';
+          }).join('');
+        }
+        $('nutrition').innerHTML = html;
+      }
+
+      function renderHistory() {
+        var history = recordsOf('workout_history').slice(0, 12);
+        if (!history.length) return;
+        $('history').innerHTML = history.map(function (record) {
+          var item = record.data || {};
+          return '<div class="meal"><b>' + esc(item.name || 'Тренировка') + '</b><small>' + esc(fmtDate(item.date)) + (item.duration ? ' · ' + Math.round(Number(item.duration) / 60) + ' мин' : '') + '</small></div>';
+        }).join('');
+      }
+
+      function renderCheckins() {
+        var checkins = recordsOf('checkins').slice(0, 12);
+        if (!checkins.length) { $('checkins').innerHTML = '<p class="empty">Чек-инов пока нет.</p>'; return; }
+        $('checkins').innerHTML = checkins.map(function (record) {
+          var item = record.data || {};
+          return '<div class="meal"><b>' + esc(fmtDate(item.date)) + '</b><small>'
+            + (item.weight ? esc(fmtNum(item.weight, ' кг')) : '')
+            + (item.note ? ' · ' + esc(item.note) : '')
+            + '</small></div>';
+        }).join('');
+      }
+
+      $('pin-submit').addEventListener('click', async function () {
+        var value = String($('pin').value || '').trim();
+        if (!value) return;
+        PIN = value;
+        setError('pin-error', '');
+        try {
+          await load();
+          if (data) {
+            try { sessionStorage.setItem(PIN_KEY, PIN); } catch (_) {}
+          }
+        } catch (error) {
+          PIN = '';
+          setError('pin-error', 'Неверный пароль. Попробуйте ещё раз.');
+        }
+      });
+      $('pin').addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') $('pin-submit').click();
+      });
+
+      $('checkin-form').addEventListener('submit', async function (event) {
+        event.preventDefault();
+        setError('checkin-error', '');
+        var button = $('checkin-submit');
+        button.disabled = true;
+        try {
+          var weight = $('checkin-weight').value;
+          var note = $('checkin-note').value.trim();
+          var date = $('checkin-date').value || new Date().toISOString().slice(0, 10);
+          if (!weight && !note) throw new Error('Укажите вес или заметку.');
+          await api('/api/portal/' + encodeURIComponent(TOKEN) + '/records', {
+            method: 'POST',
+            body: {
+              collection: 'checkins',
+              data: {
+                date: date,
+                weight: weight ? Number(weight) : undefined,
+                note: note || undefined
+              }
+            }
+          });
+          $('checkin-weight').value = '';
+          $('checkin-note').value = '';
+          toast('Чек-ин отправлен тренеру');
+          records = (await api('/api/portal/' + encodeURIComponent(TOKEN) + '/records')).records || [];
+          renderCheckins();
+        } catch (error) {
+          setError('checkin-error', error.message || 'Не удалось отправить чек-ин.');
+        } finally {
+          button.disabled = false;
+        }
+      });
+
+      TOKEN = parseToken();
+      PIN_KEY = 'dkg_portal_pin_' + TOKEN;
+      try { PIN = sessionStorage.getItem(PIN_KEY) || ''; } catch (_) {}
+      $('checkin-date').value = new Date().toISOString().slice(0, 10);
+
+      if (!TOKEN) {
+        show($('error-card'));
+        $('error-text').textContent = 'Ссылка неполная. Попросите тренера выдать новую.';
+      } else {
+        load();
+      }
+    })();
+  </script>
+</body>
+</html>

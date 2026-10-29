@@ -34,6 +34,9 @@ const assets = [
   'src/muscle-roles.js',  'src/recovery-engine.js',
   'src/analytics-engine.js',
   'src/voice-coach.js',
+  /* c213: server-mode gate + server-first sync (classic scripts, not bundled) */
+  'src/server-mode.js',
+  'src/server-sync.js',
   'src/i18n',
   'src/input.css',
   'src/nutrition-dashboard.css',

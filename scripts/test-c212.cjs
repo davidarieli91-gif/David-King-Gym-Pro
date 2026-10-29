@@ -16,10 +16,10 @@ ok('nutrition product rail is wider too', css.indexOf('clamp(400px, 29vw, 780px)
 ok('nutrition rail keeps 3 large product cards', css.indexOf('.nutri-rail .nutri-food-grid') >= 0 && css.indexOf('repeat(3, minmax(0, 1fr))') >= 0);
 ok('wide meal list uses 2/3 columns', css.indexOf('.nutri-meal-list') >= 0);
 
-ok('trainer build c212', crm.indexOf('<meta name="dk-build" content="c212" />') >= 0);
-ok('trainer RUNNING 212', crm.indexOf('var RUNNING = 212;') >= 0);
-ok('sidebar + login show c212', crm.indexOf('id="v2-side-version">c212') >= 0 && crm.indexOf('3 languages · c212') >= 0);
-ok('SW cache v239', sw.indexOf("CACHE_NAME = 'dk-gym-v239'") >= 0);
+ok('trainer build c213', crm.indexOf('<meta name="dk-build" content="c213" />') >= 0);
+ok('trainer RUNNING 213', crm.indexOf('var RUNNING = 213;') >= 0);
+ok('sidebar + login show c212', crm.indexOf('id="v2-side-version">c213') >= 0 && crm.indexOf('3 languages · c213') >= 0);
+ok('SW cache v240', sw.indexOf("CACHE_NAME = 'dk-gym-v240'") >= 0);
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
