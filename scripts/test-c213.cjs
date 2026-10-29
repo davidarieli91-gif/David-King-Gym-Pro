@@ -38,6 +38,7 @@ ok('rate limit returns 429, not 500', read('server/src/app.ts').includes('status
 ok('static assets do not consume the API rate limit', read('server/src/app.ts').includes('allowList'));
 ok('logout clears expired sessions', read('server/src/routes/auth.ts').includes('deleteSessionByToken'));
 ok('reset-app recovery page exists', fs.existsSync(path.join(root, 'server', 'public', 'reset-app.html')) && read('server/src/app.ts').includes("'reset-app'"));
+ok('server manifest starts at the server root', read('server/src/app.ts').includes("start_url: '/fitness-crm.html'") && read('server/src/app.ts').includes("scope: '/'"));
 
 ok('sync engine pushes through /api/sync', sync.includes("fetch('/api/sync'"));
 ok('sync engine pulls through /api/sync', sync.includes("fetch('/api/sync?since="));

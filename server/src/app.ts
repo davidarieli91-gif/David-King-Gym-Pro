@@ -120,6 +120,36 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
   // On the server origin the personal portal is /p/<token>.
   app.get('/client.html', async (_request, reply) => reply.redirect('/fitness-crm.html'));
 
+  /* The manifest in dist targets GitHub Pages (/David-King-Gym-Pro/...).
+     On the server that start_url is a 404, so an installed home-screen icon
+     would open a dead page. Serve a server-rooted manifest instead. */
+  const serverManifest = {
+    name: 'David King Gym',
+    short_name: 'DK Gym',
+    description: 'Fitness CRM — clients, training programs, nutrition',
+    id: '/',
+    start_url: '/fitness-crm.html',
+    scope: '/',
+    display: 'standalone',
+    orientation: 'any',
+    background_color: '#0a0a0f',
+    theme_color: '#0a0a0f',
+    lang: 'ru',
+    dir: 'ltr',
+    categories: ['health', 'fitness', 'productivity'],
+    icons: [
+      { src: '/assets/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+      { src: '/assets/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+      { src: '/assets/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: '/assets/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'maskable' },
+    ],
+  };
+  for (const manifestPath of ['/manifest.json', '/assets/manifest.json']) {
+    app.get(manifestPath, async (_request, reply) =>
+      reply.header('Cache-Control', 'no-cache').type('application/json').send(serverManifest)
+    );
+  }
+
   for (const page of ['admin', 'join', 'reset', 'reset-app']) {
     app.get(`/${page}`, async (_request, reply) => {
       try {
