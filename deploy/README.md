@@ -92,6 +92,20 @@ powershell -ExecutionPolicy Bypass -File .\backup.ps1
 A Windows task named `DKG Backup` runs it daily at 03:00. A second physical
 disk is still required for disaster recovery (the same disk is not a backup).
 
+Restore into a fresh database (migrations are applied automatically by the API
+image or by `npm run migrate`):
+
+```powershell
+cd server
+$env:DATABASE_URL = 'postgres://user:pass@host:5432/dkg'
+$env:RESTORE_CONFIRM = 'yes'
+node scripts/restore.mjs 'F:\DKG\backups\db\dkg-2026-10-29T15-02-47.json'
+```
+
+Then copy the matching `server/data/files` directory to the target
+`STORAGE_DIR`. The backup contains password hashes, so existing logins keep
+working; sessions are not restored, so users sign in again.
+
 On the NAS:
 
 - `pg_dump` the `db` service daily;
