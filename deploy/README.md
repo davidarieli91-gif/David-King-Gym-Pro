@@ -66,8 +66,10 @@ address. Portal links and invite links are generated from it.
 
 ### LAN share on the temporary Windows host
 
-`create-smb-share.ps1` exposes only `F:\DKG` on the local network. Run it once
-from an elevated PowerShell (one UAC confirmation is required):
+`create-smb-share.ps1` exposes only the dedicated `F:\DKG\Shared` folder on the
+local network. It never shares the server `.env`, the live PostgreSQL data or
+the backups. Run it once from an elevated PowerShell (one UAC confirmation is
+required):
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\create-smb-share.ps1

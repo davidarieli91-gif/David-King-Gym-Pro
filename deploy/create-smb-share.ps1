@@ -16,7 +16,9 @@ if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administra
     exit 1
 }
 
-$folder = 'F:\DKG'
+# Share ONLY a dedicated folder. F:\DKG also contains the server .env (secrets),
+# the live PostgreSQL data and backups, so it must never be exposed as a share.
+$folder = 'F:\DKG\Shared'
 $shareName = 'DKG'
 
 Write-Host "Creating $folder ..."
