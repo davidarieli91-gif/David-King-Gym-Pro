@@ -52,3 +52,6 @@ Write-Host '     Enable-NetFirewallRule -DisplayGroup "File and Printer Sharing"
 Write-Host '  3. Use the Windows account of this PC when prompted.'
 Write-Host ''
 Write-Host 'Do not forward SMB ports on the router. This share is for the local network only.'
+Write-Host ''
+Write-Host 'Press Enter to close this window...' -ForegroundColor Cyan
+Read-Host | Out-Null

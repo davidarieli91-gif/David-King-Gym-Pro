@@ -10,6 +10,7 @@ const tables = [
   'users',
   'password_resets',
   'invites',
+  'sessions',
   'records',
   'files',
   'portal_tokens',

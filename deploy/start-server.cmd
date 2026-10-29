@@ -1,8 +1,8 @@
 @echo off
 rem Starts the temporary Windows host: embedded PostgreSQL, then the DKG API.
-rem The scheduled task "DKG Server" runs this at logon.
+rem Portable: works from any copy of this repository.
 
-cd /d "G:\OpenCode\David King Gym pro\repo\server"
+cd /d "%~dp0..\server"
 
 start "DKG PostgreSQL" /min cmd /c "npm run dev:db"
 timeout /t 6 /nobreak >nul

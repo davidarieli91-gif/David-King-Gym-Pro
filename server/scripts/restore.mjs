@@ -62,6 +62,7 @@ try {
       await client.query('UPDATE tenants SET owner_user_id = $1 WHERE id = $2', [tenant.owner_user_id, tenant.id]);
     }
   }
+  await insertRows('sessions', dump.tables.sessions || []);
   await insertRows('password_resets', dump.tables.password_resets || []);
   await insertRows('invites', dump.tables.invites || []);
   await insertRows('records', dump.tables.records || []);
