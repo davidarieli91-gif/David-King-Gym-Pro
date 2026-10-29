@@ -366,6 +366,14 @@
     log('started', { tenant: state.tenantId, role: window.DKG_SERVER.role, rev: state.lastRev });
   }
 
+  function stop() {
+    state.started = false;
+    clearInterval(state.pollTimer);
+    clearTimeout(state.flushTimer);
+    state.pollTimer = null;
+    state.flushTimer = null;
+  }
+
   async function status() {
     var pending = 0;
     try { pending = await db.count('sync_outbox'); } catch (_) {}
@@ -387,6 +395,7 @@
 
   window.DKG_SYNC = {
     start: start,
+    stop: stop,
     pull: pull,
     flush: flush,
     syncNow: syncNow,

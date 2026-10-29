@@ -14,7 +14,7 @@ function read(rel) { return fs.readFileSync(path.join(root, rel), 'utf8'); }
 ok('trainer build c213', crm.includes('<meta name="dk-build" content="c213" />'));
 ok('trainer RUNNING 213', crm.includes('var RUNNING = 213;'));
 ok('sidebar + login show c213', crm.includes('id="v2-side-version">c213') && crm.includes('3 languages · c213'));
-ok('SW cache v241', sw.includes("CACHE_NAME = 'dk-gym-v241'"));
+ok('SW cache v242', sw.includes("CACHE_NAME = 'dk-gym-v242'"));
 ok('SW precaches server scripts', sw.includes("./src/server-mode.js") && sw.includes("./src/server-sync.js"));
 
 ok('IndexedDB version 11', crm.includes('const DB_VERSION = 11;'));
@@ -34,6 +34,10 @@ ok('server gate has a forgot-password action', crm.includes('dkg-gate-forgot') &
 ok('password reset page exists', fs.existsSync(path.join(root, 'server', 'public', 'reset.html')));
 ok('password reset page posts to the API', read('server/public/reset.html').includes('/api/auth/reset'));
 ok('server serves the reset page', read('server/src/app.ts').includes("'reset'"));
+ok('rate limit returns 429, not 500', read('server/src/app.ts').includes('statusCode: 429') && read('server/src/app.ts').includes("code: 'too_many_requests'"));
+ok('static assets do not consume the API rate limit', read('server/src/app.ts').includes('allowList'));
+ok('logout clears expired sessions', read('server/src/routes/auth.ts').includes('deleteSessionByToken'));
+ok('reset-app recovery page exists', fs.existsSync(path.join(root, 'server', 'public', 'reset-app.html')) && read('server/src/app.ts').includes("'reset-app'"));
 
 ok('sync engine pushes through /api/sync', sync.includes("fetch('/api/sync'"));
 ok('sync engine pulls through /api/sync', sync.includes("fetch('/api/sync?since="));

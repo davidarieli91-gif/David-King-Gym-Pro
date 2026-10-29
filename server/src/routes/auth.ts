@@ -6,8 +6,9 @@ import { authenticate, csrfProtection } from '../auth/middleware';
 import {
   clearAuthCookies,
   createSession,
-  deleteSession,
+  deleteSessionByToken,
   deleteUserSessions,
+  SESSION_COOKIE,
   setAuthCookies,
 } from '../auth/sessions';
 import { hashPassword, verifyPassword } from '../auth/passwords';
@@ -246,15 +247,13 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     };
   });
 
-  app.post('/logout', { preHandler: [authenticate, csrfProtection] }, async (request, reply) => {
-    await deleteSession(request.auth!.sessionId);
+  app.post('/logout', async (request, reply) => {
+    /* Logout is intentionally unauthenticated: an expired/stale session cookie
+       must still be clearable, otherwise the browser keeps sending it and the
+       gate loops between 401 responses. A cross-site logout is harmless. */
+    const token = request.cookies[SESSION_COOKIE];
+    if (token) await deleteSessionByToken(token);
     clearAuthCookies(reply);
-    await audit({
-      tenantId: request.auth!.tenant.id,
-      actorUserId: request.auth!.user.id,
-      action: 'auth.logout',
-      ip: request.ip,
-    });
     return reply.code(204).send();
   });
 

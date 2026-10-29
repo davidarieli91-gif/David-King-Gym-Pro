@@ -123,6 +123,11 @@ export async function deleteSession(sessionId: string): Promise<void> {
   await pool.query('DELETE FROM sessions WHERE id = $1', [sessionId]);
 }
 
+/** Logout must also work when the session row is already gone or expired. */
+export async function deleteSessionByToken(token: string): Promise<void> {
+  await pool.query('DELETE FROM sessions WHERE token_hash = $1', [hashSessionToken(token)]);
+}
+
 export async function deleteUserSessions(userId: string, exceptSessionId?: string): Promise<void> {
   if (exceptSessionId) {
     await pool.query('DELETE FROM sessions WHERE user_id = $1 AND id <> $2', [userId, exceptSessionId]);
@@ -154,6 +159,18 @@ export function setAuthCookies(
 }
 
 export function clearAuthCookies(reply: FastifyReply): void {
-  reply.clearCookie(SESSION_COOKIE, { path: '/' });
-  reply.clearCookie(CSRF_COOKIE, { path: '/' });
+  // Match the attributes used when the cookies were set. Some browsers refuse
+  // to overwrite a Secure cookie with a deletion cookie that omits Secure.
+  reply.clearCookie(SESSION_COOKIE, {
+    path: '/',
+    httpOnly: true,
+    secure: config.COOKIE_SECURE,
+    sameSite: 'lax',
+  });
+  reply.clearCookie(CSRF_COOKIE, {
+    path: '/',
+    httpOnly: false,
+    secure: config.COOKIE_SECURE,
+    sameSite: 'lax',
+  });
 }

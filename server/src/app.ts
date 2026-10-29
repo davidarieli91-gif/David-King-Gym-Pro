@@ -28,9 +28,13 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
     crossOriginResourcePolicy: { policy: 'same-site' },
   });
   await app.register(rateLimit, {
-    max: 600,
+    max: 1200,
     timeWindow: '1 minute',
+    // Static assets (images, models, JS/CSS) should never consume the API
+    // budget. The trainer app loads hundreds of media files on a cold start.
+    allowList: (request) => !request.url.startsWith('/api/'),
     errorResponseBuilder: () => ({
+      statusCode: 429,
       error: { code: 'too_many_requests', message: 'Too many requests' },
     }),
   });
@@ -60,6 +64,14 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
 
     const statusCode = (error as { statusCode?: number }).statusCode;
     const code = (error as { code?: string }).code;
+    if (statusCode === 429 || code === 'too_many_requests') {
+      return reply.code(429).send({
+        error: {
+          code: 'too_many_requests',
+          message: 'Too many requests',
+        },
+      });
+    }
     if (code === 'FST_REQ_FILE_TOO_LARGE' || statusCode === 413) {
       return reply.code(413).send({
         error: {
@@ -108,7 +120,7 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
   // On the server origin the personal portal is /p/<token>.
   app.get('/client.html', async (_request, reply) => reply.redirect('/fitness-crm.html'));
 
-  for (const page of ['admin', 'join', 'reset']) {
+  for (const page of ['admin', 'join', 'reset', 'reset-app']) {
     app.get(`/${page}`, async (_request, reply) => {
       try {
         const html = readFileSync(join(__dirname, '..', 'public', `${page}.html`), 'utf8');

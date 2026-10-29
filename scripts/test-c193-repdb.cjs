@@ -61,7 +61,7 @@ for (const lang of ['en', 'ru', 'he']) {
 ok('copy-assets ships RepDB JSON', has(copy, "'exercise-db-rdb.json'"));
 ok('SW precaches RepDB JSON', has(sw, "'./exercise-db-rdb.json'"));
 ok('trainer build c213', has(crm, 'name="dk-build" content="c213"'));
-ok('SW cache v241', has(sw, "CACHE_NAME = 'dk-gym-v241'"));
+ok('SW cache v242', has(sw, "CACHE_NAME = 'dk-gym-v242'"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 if (fail) process.exitCode = 1;

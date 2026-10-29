@@ -59,6 +59,16 @@
 
   document.documentElement.classList.add('dkg-server-gate');
 
+  /* Never open the legacy default DB (fitness_crm_db) on the gate. It may
+     contain another trainer's local cache on a shared browser. The gate gets
+     a neutral DB; after auth the real tenant DB is selected and the page
+     reloads once. */
+  try {
+    if (!localStorage.getItem('dkg_db_name')) {
+      localStorage.setItem('dkg_db_name', 'fitness_crm_db_gate');
+    }
+  } catch (_) {}
+
   function $(id) { return document.getElementById(id); }
   function gate() { return $('dkg-server-gate'); }
   function show(el) { if (el) el.hidden = false; }
@@ -136,6 +146,11 @@
       });
 
       if (res.status === 401) {
+        /* Clear a stale/expired session cookie. The logout endpoint is public
+           and idempotent, so it cannot loop or require auth. */
+        try {
+          await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
+        } catch (_) {}
         showLogin('');
         return false;
       }
@@ -220,7 +235,14 @@
     }
   }
 
+  var loggingOut = false;
+
   async function logout() {
+    if (loggingOut) return;
+    loggingOut = true;
+    try {
+      if (window.DKG_SYNC && window.DKG_SYNC.stop) window.DKG_SYNC.stop();
+    } catch (_) {}
     var csrf = getCookie('dkg_csrf');
     try {
       await fetch('/api/auth/logout', {

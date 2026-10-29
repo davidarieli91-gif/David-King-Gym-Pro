@@ -30646,6 +30646,13 @@ async function boot() {
         console.warn('[boot] server sync failed; using local cache', syncErr);
       }
     }
+    /* c213: the login gate is a standalone overlay. Seeding the hidden app
+       and building the whole UI behind it made logout feel like a multi-second
+       flicker. The real tenant DB boots after login. */
+    if (window.DKG_SERVER && window.DKG_SERVER.enabled && !window.DKG_SERVER.authenticated) {
+      console.info('[boot] server gate only');
+      return;
+    }
     await ensureDefaultSettings();
     const seedCount = await seedExerciseBase(false);
     try { await seedRepDBBase(false); } catch (e) { console.warn('[seed] RepDB seed failed', e); }

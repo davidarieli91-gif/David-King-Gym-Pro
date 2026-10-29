@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>David King Gym — Сброс приложения</title>
+  <style>
+    :root { color-scheme: dark; --bg:#070b14; --line:rgba(255,255,255,.10); --text:#eef5ff; --muted:#91a3bd; --cyan:#3ad6ff; --blue:#3b82f6; }
+    * { box-sizing: border-box; }
+    body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; background: radial-gradient(900px 500px at 15% 0%, rgba(57,214,255,.14), transparent 60%), radial-gradient(800px 500px at 90% 100%, rgba(255,60,172,.10), transparent 60%), var(--bg); color:var(--text); font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+    .card { width:min(430px, 100%); border:1px solid var(--line); border-radius:22px; background:rgba(12,19,34,.88); box-shadow:0 30px 90px rgba(0,0,0,.55); padding:28px; text-align:center; }
+    img { width:56px; height:56px; object-fit:contain; border-radius:14px; background:rgba(255,255,255,.06); padding:6px; margin-bottom:16px; }
+    h1 { margin:0 0 8px; font-size:20px; letter-spacing:-.02em; }
+    p { margin:0; color:var(--muted); font-size:13px; line-height:1.55; }
+    .spin { width:30px; height:30px; margin:18px auto 0; border-radius:50%; border:3px solid rgba(255,255,255,.12); border-top-color:var(--cyan); animation: sp .8s linear infinite; }
+    @keyframes sp { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img src="/logo-web.webp" alt="David King Gym" />
+    <h1>Сброс приложения</h1>
+    <p id="status">Очищаем старый кэш и service worker…</p>
+    <div class="spin" id="spin"></div>
+  </div>
+  <script>
+    (async function () {
+      var status = document.getElementById('status');
+      var spin = document.getElementById('spin');
+      try {
+        if ('serviceWorker' in navigator) {
+          var regs = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(regs.map(function (reg) { return reg.unregister(); }));
+        }
+        if (window.caches) {
+          var keys = await caches.keys();
+          await Promise.all(keys.map(function (key) { return caches.delete(key); }));
+        }
+        try { localStorage.clear(); } catch (_) {}
+        try { sessionStorage.clear(); } catch (_) {}
+        status.textContent = 'Готово. Открываем свежую версию…';
+        if (spin) spin.style.display = 'none';
+        setTimeout(function () {
+          location.replace('/fitness-crm.html?fresh=' + Date.now());
+        }, 900);
+      } catch (error) {
+        status.textContent = 'Не удалось сбросить: ' + (error && error.message ? error.message : error);
+        if (spin) spin.style.display = 'none';
+      }
+    })();
+  </script>
+</body>
+</html>
