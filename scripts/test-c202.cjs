@@ -35,7 +35,7 @@ ok('HUD reports the active layer', crm.indexOf('id="atlas-layer-txt"') >= 0 && c
 ok('skeleton labels exist in 3 languages', crm.indexOf('Скелет') >= 0 && crm.indexOf('שלד') >= 0 && crm.indexOf("en: 'Skeleton'") >= 0);
 ok('skeleton is credited', crm.indexOf('Skeleton overlay') >= 0 && read('models/LICENSE-atlas.md').indexOf('z-anatomy-skeleton-v1.glb') >= 0);
 ok('build is c213', crm.indexOf('<meta name="dk-build" content="c213" />') >= 0);
-ok('SW cache is v232', sw.indexOf("const CACHE_NAME = 'dk-gym-v243'") >= 0);
+ok('SW cache is v232', sw.indexOf("const CACHE_NAME = 'dk-gym-v244'") >= 0);
 ok('running build label is c205', crm.indexOf('var RUNNING = 213') >= 0);
 ok('login/sidebar show c205', crm.indexOf('3 languages · c213') >= 0 && crm.indexOf('id="v2-side-version">c213') >= 0);
 

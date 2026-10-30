@@ -32,7 +32,7 @@ ok('profile hero has real stats', crm.indexOf("t('client.age')") >= 0 && crm.ind
 ok('i18n profileEyebrow kept in 3 languages', !!(en.client.profileEyebrow && ru.client.profileEyebrow && he.client.profileEyebrow));
 ok('i18n muscleMap key removed', !(en.client.muscleMap || ru.client.muscleMap || he.client.muscleMap));
 ok('build is c213', crm.indexOf('<meta name="dk-build" content="c213" />') >= 0);
-ok('SW cache is v232', sw.indexOf("const CACHE_NAME = 'dk-gym-v243'") >= 0);
+ok('SW cache is v232', sw.indexOf("const CACHE_NAME = 'dk-gym-v244'") >= 0);
 ok('running build label is c205', crm.indexOf('var RUNNING = 213') >= 0);
 ok('login/sidebar show c205', crm.indexOf('3 languages · c213') >= 0 && crm.indexOf('id="v2-side-version">c213') >= 0);
 

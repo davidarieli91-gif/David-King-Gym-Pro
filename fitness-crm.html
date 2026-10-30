@@ -71,8 +71,8 @@
   <!-- c213: server mode (login gate + server-first sync). Classic scripts so
        they run before the main app bundle and can set the tenant DB name. -->
   <link rel="stylesheet" href="src/server-gate.css" />
-  <script src="src/server-mode.js"></script>
-  <script src="src/server-sync.js"></script>
+  <script src="src/server-mode.js?v=244"></script>
+  <script src="src/server-sync.js?v=244"></script>
 
   <!-- Google Fonts: Inter (UI), Space Grotesk (display), JetBrains Mono (numeric) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33863,6 +33863,13 @@ loadPanelTexture();
     // Lock / sign out (settings screen)
     const lockBtn = document.getElementById('settings-lock');
     if (lockBtn) lockBtn.addEventListener('click', () => {
+      /* c214: in server mode the server session is the only login. The old
+         local-password lock must not be shown, or the app looks stuck behind
+         two different login screens. */
+      if (window.DKG_SERVER && window.DKG_SERVER.enabled) {
+        window.DKG_SERVER.logout();
+        return;
+      }
       auth.lock();
       const headerLock = document.getElementById('lock-btn');
       if (headerLock) headerLock.classList.add('hidden');

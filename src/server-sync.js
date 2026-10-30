@@ -236,10 +236,10 @@
     if (!state.started) return;
     var guard = 0;
     while (guard++ < 1000) {
-      var response = await fetch('/api/sync?since=' + encodeURIComponent(state.lastRev), {
+      var response = await fetch('/api/sync?since=' + encodeURIComponent(state.lastRev) + '&_=' + Date.now(), {
         method: 'GET',
         credentials: 'same-origin',
-        headers: { 'accept': 'application/json' }
+        headers: { 'accept': 'application/json', 'cache-control': 'no-cache' }
       });
 
       if (response.status === 401 || response.status === 403) {
@@ -334,6 +334,11 @@
     try {
       await pull();
     } catch (error) {
+      if (String(error && error.message) === 'auth') {
+        warn('session expired; reloading gate');
+        if (window.DKG_SERVER && window.DKG_SERVER.logout) window.DKG_SERVER.logout();
+        return;
+      }
       warn('initial pull failed; using local cache', error);
     }
 

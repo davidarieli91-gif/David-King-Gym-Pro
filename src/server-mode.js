@@ -151,10 +151,14 @@
   async function checkSession() {
     showChecking();
     try {
-      var res = await fetch('/api/auth/me', {
+      /* The query string is deliberate. Old service workers cached
+         /api/auth/me and served a stale authenticated response after logout,
+         which caused an endless gate reload loop. A unique URL always reaches
+         the network, even while an older worker is still in control. */
+      var res = await fetch('/api/auth/me?t=' + Date.now(), {
         method: 'GET',
         credentials: 'same-origin',
-        headers: { 'accept': 'application/json' }
+        headers: { 'accept': 'application/json', 'cache-control': 'no-cache' }
       });
 
       if (res.status === 401) {

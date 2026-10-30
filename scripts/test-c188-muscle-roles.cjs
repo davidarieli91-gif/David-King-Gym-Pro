@@ -154,7 +154,7 @@ ok('chips delegate to role model', map.includes('window.dkMuscleRoles.renderChip
 ok('SW precaches roles module', sw.includes("'./src/muscle-roles.js'"));
 ok('copy-assets ships roles module', copy.includes("'src/muscle-roles.js'"));
 ok('trainer build c213', crm.includes('name="dk-build" content="c213"'));
-ok('SW cache v243', sw.includes("dk-gym-v243"));
+ok('SW cache v244', sw.includes("dk-gym-v244"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 if (fail) process.exitCode = 1;

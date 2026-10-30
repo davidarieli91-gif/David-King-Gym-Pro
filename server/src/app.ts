@@ -93,7 +93,13 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
   app.addHook('onSend', async (request, reply, payload) => {
     if (!config.SERVE_STATIC) return payload;
     const path = request.url.split('?')[0];
-    if (path === '/health' || path === '/manifest.json' || path === '/assets/manifest.json') {
+    if (path.startsWith('/api/')) {
+      // Session and sync state must never be reused by the browser or a
+      // service worker after logout.
+      reply.header('Cache-Control', 'no-store');
+      return payload;
+    }
+    if (path === '/health' || path === '/sw.js' || path === '/manifest.json' || path === '/assets/manifest.json') {
       reply.header('Cache-Control', 'no-cache');
       return payload;
     }

@@ -14,7 +14,7 @@ function read(rel) { return fs.readFileSync(path.join(root, rel), 'utf8'); }
 ok('trainer build c213', crm.includes('<meta name="dk-build" content="c213" />'));
 ok('trainer RUNNING 213', crm.includes('var RUNNING = 213;'));
 ok('sidebar + login show c213', crm.includes('id="v2-side-version">c213') && crm.includes('3 languages · c213'));
-ok('SW cache v243', sw.includes("CACHE_NAME = 'dk-gym-v243'"));
+ok('SW cache v244', sw.includes("CACHE_NAME = 'dk-gym-v244'"));
 ok('SW precaches server scripts', sw.includes("./src/server-mode.js") && sw.includes("./src/server-sync.js"));
 
 ok('IndexedDB version 11', crm.includes('const DB_VERSION = 11;'));
@@ -26,7 +26,7 @@ ok('boot pulls server records before screens render', crm.includes('window.DKG_S
 ok('server session unlocks the app', crm.includes('window.DKG_SERVER.authenticated'));
 
 ok('server gate CSS exists', fs.existsSync(path.join(root, 'src', 'server-gate.css')));
-ok('server gate script checks /api/auth/me', mode.includes("fetch('/api/auth/me'"));
+ok('server gate script checks /api/auth/me', mode.includes("'/api/auth/me"));
 ok('server gate logs in via /api/auth/login', mode.includes("fetch('/api/auth/login'"));
 ok('server gate logs out via /api/auth/logout', mode.includes("fetch('/api/auth/logout'"));
 ok('server gate uses tenant DB names', mode.includes("fitness_crm_db_' + tenant.id"));
@@ -42,6 +42,7 @@ ok('server manifest starts at the server root', read('server/src/app.ts').includ
 ok('director can jump to the admin console from the trainer app', read('fitness-crm.html').includes('director-console-btn') && read('src/server-mode.js').includes('updateDirectorLink'));
 ok('large static assets are served precompressed', read('server/src/app.ts').includes('preCompressed: true') && fs.existsSync(path.join(root, 'scripts', 'precompress.cjs')));
 ok('static assets get long-lived cache headers', read('server/src/app.ts').includes("app.addHook('onSend'") && read('server/src/app.ts').includes('max-age=86400'));
+ok('service worker never caches API/auth responses', read('sw.js').includes("url.pathname.startsWith('/api/')") && read('server/src/app.ts').includes("path.startsWith('/api/')"));
 
 ok('sync engine pushes through /api/sync', sync.includes("fetch('/api/sync'"));
 ok('sync engine pulls through /api/sync', sync.includes("fetch('/api/sync?since="));

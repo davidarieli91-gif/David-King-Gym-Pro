@@ -98,7 +98,7 @@ ok('portal has dkTaxFix', portal.includes('function dkTaxFix'));
 ok('portal dedupes override synergist groups', portal.includes('Array.from(new Set(fix185.synergists'));
 ok('portal analytics resolves fixed id first', /function aGroupOf\(ex\)[\s\S]{0,350}dkTaxFix\(ex\.exercise_id/.test(portal));
 ok('portal recovery resolves fixed id', /function recpExInfo\(key, ex\)[\s\S]{0,350}dkTaxFix\(key\)/.test(portal));
-ok('SW cache v243', sw.includes("dk-gym-v243"));
+ok('SW cache v244', sw.includes("dk-gym-v244"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 if (fail) process.exitCode = 1;

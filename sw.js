@@ -180,6 +180,7 @@
 // v219: c192 - REPDB FREE AS A FOURTH SEPARATE SOURCE: 650 records + 1,147
 // images shipped locally, RepDB tab beside Burnfit / Gym Visual / GymImpulse,
 // separate source/ids, no mixing. Existing bf/gv/gi rows untouched.
+// v244: c214 - API responses are never cached (stale /api/auth/me caused a logout reload loop).
 // v243: c213 - director console shortcut and resilient hidden server controls.
 // v242: c213 - stable logout (public cookie-clearing endpoint), 429 rate limit,
 // gate-only boot without seeding, and a reset-app recovery page.
@@ -246,7 +247,7 @@
 // filled (machine pass + manual key names), corrupted equipment labels
 // repaired, and the exercise media slot no longer shrinks to a small square
 // on short/mobile viewports.
-const CACHE_NAME = 'dk-gym-v243'; // c213
+const CACHE_NAME = 'dk-gym-v244'; // c213
 // v104: c77 — UI sizes can no longer change themselves (zoom-based gif/food/cards, wheel/touch slider guards) + hard pre-login lock (Add Client included) + header theme quick menu with all 33 themes
 // v103: c76 — Exercise DB tab = exact Quick Pick copy (star/eye/+ cards, favorites/recent tabs, View grouping, localized map tabs)
 // v102: c75 — 3D atlas 1.5x + Settings ▸ UI sizes (atlas slider, bodymap/exercise-panel fixes) + Exercise DB tab rebuilt as picker-style browse
@@ -529,6 +530,15 @@ self.addEventListener('fetch', (event) => {
         )
       )
     );
+    return;
+  }
+
+  /* c214: NEVER cache API responses. The old static branch cached
+     /api/auth/me, so after logout the gate received a stale 200 with the
+     previous user, booted the app, and the sync 401 reloaded the gate in an
+     endless loop. API/auth state must always come from the network. */
+  if (url.pathname.startsWith('/api/') || url.pathname === '/health') {
+    event.respondWith(fetch(req));
     return;
   }
 
