@@ -131,7 +131,7 @@ ok('RepDB JSON is cache-busted', has(crm, "const EXERCISE_DB_BUST = 'v57';"));
 ok('trainer build c213', has(crm, 'name="dk-build" content="c213"'));
 ok('login build c213', has(crm, '3 languages · c213'));
 ok('RUNNING 213', has(crm, 'var RUNNING = 213;'));
-ok('SW cache v242', has(sw, "CACHE_NAME = 'dk-gym-v242'"));
+ok('SW cache v243', has(sw, "CACHE_NAME = 'dk-gym-v243'"));
 ok('SW keeps RepDB precache', has(sw, "'./exercise-db-rdb.json'"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');

@@ -22,6 +22,26 @@ cd server
 npm.cmd test
 ```
 
+### Keeping the temporary Windows host online
+
+`start-server.cmd` now starts PostgreSQL and the API through
+`start-server-hidden.vbs`, so there are no console windows to close by
+accident. Control the host with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\server-control.ps1 status
+powershell -ExecutionPolicy Bypass -File .\server-control.ps1 start
+powershell -ExecutionPolicy Bypass -File .\server-control.ps1 restart
+powershell -ExecutionPolicy Bypass -File .\server-control.ps1 stop
+```
+
+The `DKG Server Watchdog` scheduled task runs the hidden starter every two
+minutes and restarts a crashed API. Logs are written to `deploy/logs/`.
+
+The desktop starters `start-clients.cmd` and `start-director.cmd` start the
+host if needed, wait for `/health`, and open the trainer app or the director
+console.
+
 ## NAS / production
 
 Requirements: Docker Engine + Docker Compose plugin.

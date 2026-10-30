@@ -136,6 +136,18 @@
     return previous !== dbName;
   }
 
+  function updateDirectorLink(role) {
+    var link = document.getElementById('director-console-btn');
+    if (!link) return;
+    if (role === 'director') {
+      link.classList.remove('hidden');
+      link.classList.add('grid');
+    } else {
+      link.classList.add('hidden');
+      link.classList.remove('grid');
+    }
+  }
+
   async function checkSession() {
     showChecking();
     try {
@@ -170,6 +182,7 @@
       state.tenant = data.tenant;
       state.role = data.user.role;
       state.tenantId = data.tenant.id;
+      updateDirectorLink(state.role);
 
       var changed = rememberTenant(data.user, data.tenant);
       if (changed && !sessionStorage.getItem('dkg_db_reloaded')) {

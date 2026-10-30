@@ -52,7 +52,7 @@ ok('client saves performed flag on each set', has(portal, 'performed: !!(s.done 
 /* versions/cache */
 ok('trainer build c213', has(crm, 'name="dk-build" content="c213"'));
 ok('trainer RUNNING 213', has(crm, 'var RUNNING = 213;'));
-ok('SW cache v242', has(sw, "CACHE_NAME = 'dk-gym-v242'"));
+ok('SW cache v243', has(sw, "CACHE_NAME = 'dk-gym-v243'"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 if (fail) process.exitCode = 1;

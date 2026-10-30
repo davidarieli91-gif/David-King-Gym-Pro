@@ -1,4 +1,3 @@
 @echo off
-rem Restarts only the API (the embedded PostgreSQL is already running).
-cd /d "%~dp0..\server"
-start "DKG API" /min cmd /c "npm run start"
+rem Restarts the API and the embedded PostgreSQL in the background.
+powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "%~dp0server-control.ps1" restart

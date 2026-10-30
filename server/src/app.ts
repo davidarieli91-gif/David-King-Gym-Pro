@@ -90,6 +90,24 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
     });
   });
 
+  app.addHook('onSend', async (request, reply, payload) => {
+    if (!config.SERVE_STATIC) return payload;
+    const path = request.url.split('?')[0];
+    if (path === '/health' || path === '/manifest.json' || path === '/assets/manifest.json') {
+      reply.header('Cache-Control', 'no-cache');
+      return payload;
+    }
+    const contentType = String(reply.getHeader('content-type') || '');
+    if (contentType.includes('text/html')) {
+      reply.header('Cache-Control', 'no-store');
+    } else if (contentType.includes('application/json') && !path.startsWith('/api/')) {
+      reply.header('Cache-Control', 'public, max-age=86400');
+    } else if (/\.(js|css|svg|png|webp|woff2?)$/i.test(path)) {
+      reply.header('Cache-Control', 'public, max-age=86400');
+    }
+    return payload;
+  });
+
   app.get('/health', async () => {
     await pool.query('SELECT 1');
     return {
@@ -178,9 +196,12 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
       root: resolve(config.STATIC_DIR),
       prefix: '/',
       index: false,
-      setHeaders(res, path) {
-        if (path.endsWith('.html')) res.header('Cache-Control', 'no-store');
-      },
+      // The exercise database is ~21 MB of JSON. Precompressed .br/.gz files
+      // cut the phone's cold start to a few megabytes without per-request CPU.
+      preCompressed: true,
+      // Cache-Control is set in the onSend hook; the plugin default max-age=0
+      // would otherwise make every phone start re-download the big database.
+      cacheControl: false,
     });
   }
 
