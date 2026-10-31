@@ -21,7 +21,7 @@ const listSchema = z.object({
 });
 
 const recordWriteSchema = z.object({
-  collection: z.enum(['checkins', 'weight_logs', 'workout_logs', 'nutrition_logs', 'arena_progress']),
+  collection: z.enum(['checkins', 'weight_logs', 'workout_logs', 'nutrition_logs', 'workout_history', 'arena_progress']),
   id: z.string().min(1).max(200).optional(),
   data: z.record(z.string(), z.unknown()),
 });
@@ -313,6 +313,31 @@ export const portalRoutes: FastifyPluginAsync = async (app) => {
           })),
         };
       });
+    },
+  );
+
+  app.post(
+    '/portal/:token/password',
+    { config: { rateLimit: { max: 10, timeWindow: '1 minute' } } },
+    async (request) => {
+      const params = parse(z.object({ token: z.string().min(16).max(500) }), request.params);
+      const body = parse(z.object({
+        currentPin: z.string().min(1).max(20),
+        newPin: z.string().regex(/^\d{4,10}$/),
+      }), request.body);
+      const resolved = await resolvePortalToken(params.token, body.currentPin);
+      const pinHash = await hashPassword(body.newPin);
+      await withTenant(resolved.token.tenant_id, async (db) => {
+        await db.query('UPDATE portal_tokens SET pin_hash = $1 WHERE id = $2', [pinHash, resolved.token.id]);
+      });
+      await audit({
+        tenantId: resolved.token.tenant_id,
+        actorUserId: null,
+        action: 'portal.password_changed',
+        target: resolved.token.id,
+        ip: request.ip,
+      });
+      return { ok: true };
     },
   );
 

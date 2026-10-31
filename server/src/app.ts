@@ -187,14 +187,61 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
 
   // Personal trainee portal. The token is resolved by the API; the page itself
   // contains no tenant data.
-  app.get('/p/:token', async (_request, reply) => {
+  app.get('/p/:token', async (request, reply) => {
     try {
-      const html = readFileSync(join(__dirname, '..', 'public', 'portal.html'), 'utf8');
+      const token = encodeURIComponent((request.params as { token?: string }).token || '');
+      const html = readFileSync(join(__dirname, '..', 'public', 'portal.html'), 'utf8')
+        .replace(/__DKG_PORTAL_TOKEN__/g, token);
       reply.header('Cache-Control', 'no-store');
       return reply.type('text/html').send(html);
     } catch {
       throw new ApiError(404, 'not_found', 'Portal page is not installed');
     }
+  });
+
+  /* Token-scoped service worker: the client portal gets its own scope instead
+     of being captured by the trainer PWA at the origin root. */
+  app.get('/p/:token/sw.js', async (request, reply) => {
+    const token = encodeURIComponent((request.params as { token?: string }).token || '');
+    reply.header('Cache-Control', 'no-cache');
+    reply.header('Service-Worker-Allowed', '/p/' + token);
+    return reply.type('application/javascript').send(`
+      const CACHE = 'dk-portal-v1';
+      self.addEventListener('install', (event) => { event.waitUntil(self.skipWaiting()); });
+      self.addEventListener('activate', (event) => { event.waitUntil(self.clients.claim()); });
+      self.addEventListener('fetch', (event) => {
+        const req = event.request;
+        if (req.method !== 'GET') return;
+        const url = new URL(req.url);
+        if (url.origin !== self.location.origin || url.pathname.startsWith('/api/')) return;
+        event.respondWith(fetch(req).catch(() => caches.match(req)));
+      });
+    `);
+  });
+
+  /* A token-scoped manifest gives every client a separate installable app:
+     its own icon, name and start URL instead of the trainer PWA. */
+  app.get('/p/:token/manifest.json', async (request, reply) => {
+    const token = encodeURIComponent((request.params as { token?: string }).token || '');
+    const base = '/p/' + token;
+    return reply.header('Cache-Control', 'no-cache').type('application/manifest+json').send({
+      name: 'David King Gym — Client',
+      short_name: 'DK Client',
+      id: base,
+      start_url: base,
+      scope: base,
+      display: 'standalone',
+      orientation: 'portrait',
+      background_color: '#070b14',
+      theme_color: '#070b14',
+      lang: 'ru',
+      dir: 'ltr',
+      icons: [
+        { src: '/icon-portal-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+        { src: '/icon-portal-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+        { src: '/icon-portal-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+      ],
+    });
   });
 
   if (config.SERVE_STATIC) {

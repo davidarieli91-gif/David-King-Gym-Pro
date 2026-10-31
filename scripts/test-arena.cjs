@@ -24,7 +24,7 @@ ok('trophy names are tier + path', /Бронзов/.test(dl.tiers[0].trophy.name
 ok('trophies are trilingual', mu.tiers.every(t => t.trophy.name.en && t.trophy.name.ru && t.trophy.name.he));
 ok('arena screen exists', crm.includes('data-screen="arena"') && crm.includes('id="arena-root"'));
 ok('arena nav exists', crm.includes('data-nav="arena"') && crm.includes('data-i18n="nav.arena"'));
-ok('arena script is loaded', crm.includes('src/arena.js?v=245'));
+ok('arena script is loaded', crm.includes('src/arena.js?v=246'));
 ok('arena store is in the schema', crm.includes("name: 'arena_progress'") && crm.includes("by_clientId"));
 ok('arena progress is synced', sync.includes("'arena_progress'"));
 ok('arena data and script are copied to dist', copy.includes("'arena-data.json'") && copy.includes("'src/arena.js'"));
@@ -34,6 +34,10 @@ ok('arena has exam + trophy logic', js.includes('submitExam') && js.includes('tr
 ok('client portal can open paths and submit arena exams', read('server/public/portal.html').includes('data-arena-path') && read('server/public/portal.html').includes('saveArenaRecord') && read('server/public/portal.html').includes('data-a-input'));
 ok('portal API allows arena progress', read('server/src/routes/portal.ts').includes("'arena_progress'") && read('server/src/routes/portal.ts').includes('id,'));
 ok('director console links to the arena', read('server/public/admin.html').includes('/fitness-crm.html?screen=arena'));
+ok('client portal has its own installable app identity', read('server/public/portal.html').includes('__DKG_PORTAL_TOKEN__/manifest.json') && read('server/src/app.ts').includes("'/p/:token/manifest.json'") && read('server/src/app.ts').includes("'/p/:token/sw.js'"));
+ok('portal settings expose theme, units, password and install', read('server/public/portal.html').includes('settings-card') && read('server/public/portal.html').includes('set-password') && read('server/public/portal.html').includes('set-install'));
+ok('portal can log a workout into workout_history', read('server/public/portal.html').includes('startPortalWorkout') && read('server/public/portal.html').includes("collection: 'workout_history'") && read('server/src/routes/portal.ts').includes("'workout_history'"));
+ok('portal password change endpoint exists', read('server/src/routes/portal.ts').includes("'/portal/:token/password'"));
 const check = spawnSync(process.execPath, ['--check', path.join(root, 'src', 'arena.js')], { encoding: 'utf8' });
 ok('arena.js parses', check.status === 0);
 

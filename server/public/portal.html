@@ -6,6 +6,12 @@
   <meta name="theme-color" content="#070b14" />
   <meta name="referrer" content="no-referrer" />
   <title>David King Gym — Кабинет клиента</title>
+  <link rel="manifest" href="/p/__DKG_PORTAL_TOKEN__/manifest.json" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icon-portal-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-portal-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/icon-portal-180.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="DK Client" />
   <style>
     :root { color-scheme: dark; --bg:#070b14; --panel:#0d1526; --panel2:#111c31; --line:rgba(255,255,255,.10); --text:#eef5ff; --muted:#91a3bd; --cyan:#3ad6ff; --blue:#3b82f6; --green:#32d583; --danger:#ff5d73; }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -58,6 +64,14 @@
     .foot { text-align:center; color:var(--muted); font-size:10.5px; margin-top:18px; line-height:1.6; }
     .foot b { color:#c9d8ec; }
     .toast { position:fixed; inset-inline:16px; bottom:20px; max-width:420px; margin:0 auto; padding:12px 14px; border-radius:12px; background:#10243a; border:1px solid rgba(57,214,255,.25); color:#d9f7ff; font-size:12.5px; box-shadow:0 12px 40px rgba(0,0,0,.4); z-index:20; }
+    .portal-tabs { display:flex; gap:6px; overflow-x:auto; margin:0 0 16px; padding-bottom:2px; }
+    .portal-tabs a { flex:0 0 auto; padding:7px 11px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.04); color:var(--muted); font-size:11px; font-weight:700; text-decoration:none; }
+    .portal-tabs a:hover { color:var(--text); border-color:rgba(58,214,255,.35); }
+    html[data-theme="light"] { --bg:#f2f6fb; --panel:#ffffff; --panel2:#eef4fb; --line:rgba(16,40,70,.14); --text:#102033; --muted:#5d7189; }
+    html[data-theme="light"] body { background:radial-gradient(900px 500px at 12% 0%, rgba(58,214,255,.16), transparent 60%), var(--bg); }
+    html[data-theme="light"] .card { background:rgba(255,255,255,.94); box-shadow:0 16px 40px rgba(20,50,80,.10); }
+    html[data-theme="light"] .stat, html[data-theme="light"] .day, html[data-theme="light"] .meal { background:rgba(16,40,70,.035); }
+    html[data-theme="light"] input, html[data-theme="light"] textarea { background:#fff; color:var(--text); }
     @media (max-width: 420px) { .grid { grid-template-columns: repeat(2, minmax(0,1fr)); } .hero h2 { font-size:18px; } }
   </style>
 </head>
@@ -70,6 +84,15 @@
         <p id="brand-sub">Кабинет клиента · Provided by David King Gym</p>
       </div>
     </div>
+
+    <nav class="portal-tabs" aria-label="Разделы кабинета">
+      <a href="#overview">Обзор</a>
+      <a href="#training">Тренировки</a>
+      <a href="#nutrition-card">Питание</a>
+      <a href="#arena-card">Арена</a>
+      <a href="#checkin-card">Чек-ин</a>
+      <a href="#settings-card">Настройки</a>
+    </nav>
 
     <div id="loading" class="card"><p class="empty">Загружаем ваш кабинет…</p></div>
     <div id="error-card" class="card hidden"><p id="error-text" class="empty"></p></div>
@@ -85,7 +108,7 @@
     </div>
 
     <div id="app" class="hidden">
-      <div class="card">
+      <div class="card" id="overview">
         <div class="hero">
           <div class="avatar" id="client-avatar">?</div>
           <div>
@@ -107,17 +130,17 @@
         <div id="arena"><p class="empty">Загружаем Арену…</p></div>
       </div>
 
-      <div class="card">
+      <div class="card" id="training">
         <h3>Тренировки</h3>
         <div id="programs"><p class="empty">Пока нет активной программы.</p></div>
       </div>
 
-      <div class="card">
+      <div class="card" id="nutrition-card">
         <h3>Питание</h3>
         <div id="nutrition"><p class="empty">Пока нет активного плана питания.</p></div>
       </div>
 
-      <div class="card">
+      <div class="card" id="checkin-card">
         <h3>Чек-ин</h3>
         <div id="checkin-error" class="error"></div>
         <form id="checkin-form">
@@ -129,10 +152,32 @@
         <div id="checkins" style="margin-top:14px;"></div>
       </div>
 
-      <div class="card">
+      <div class="card" id="history-card">
         <h3>История тренировок</h3>
         <div id="history"><p class="empty">Пока нет записей.</p></div>
       </div>
+
+      <details class="card" id="settings-card">
+        <summary style="cursor:pointer;font-size:15px;font-weight:800;">⚙️ Настройки</summary>
+        <div style="margin-top:14px;display:grid;gap:10px;">
+          <label>Тема
+            <select id="set-theme"><option value="dark">Тёмная</option><option value="light">Светлая</option></select>
+          </label>
+          <label>Единицы веса
+            <select id="set-units"><option value="kg">Килограммы</option><option value="lb">Фунты</option></select>
+          </label>
+          <button type="button" id="set-install" class="secondary" style="display:none;">Установить приложение</button>
+          <form id="set-password" style="display:grid;gap:8px;margin-top:4px;">
+            <b style="font-size:12px;">Сменить пароль портала</b>
+            <input type="password" id="set-current-pin" inputmode="numeric" maxlength="10" placeholder="Текущий пароль" />
+            <input type="password" id="set-new-pin" inputmode="numeric" maxlength="10" placeholder="Новый пароль, 4–10 цифр" />
+            <button type="submit" class="secondary">Сохранить пароль</button>
+          </form>
+          <p id="set-password-status" class="empty" style="font-size:11px;margin:0;"></p>
+          <button type="button" id="set-logout" class="secondary">Выйти из портала</button>
+          <button type="button" id="set-wipe" class="secondary" style="color:#ff9aa8;border-color:rgba(255,70,90,.3);">Очистить данные на устройстве</button>
+        </div>
+      </details>
 
       <p class="foot"><b>David King Gym</b> · Данные хранятся на сервере тренера.<br/>Ссылка персональная — не передавайте её другим.</p>
     </div>
@@ -159,8 +204,17 @@
         try { return new Date(value).toLocaleDateString('ru-RU', { day: '2-digit', month: 'short', year: 'numeric' }); } catch (_) { return '—'; }
       }
       function fmtNum(value, suffix) {
-        if (value == null || value === '') return '—';
+        if (value == null || value === '') return '-';
         return String(Math.round(Number(value) * 10) / 10) + (suffix || '');
+      }
+      function portalUnit() {
+        try { return localStorage.getItem('dk_portal_unit') === 'lb' ? 'lb' : 'kg'; } catch (_) { return 'kg'; }
+      }
+      function fmtWeight(kg) {
+        if (kg == null || kg === '') return '-';
+        var v = Number(kg);
+        if (portalUnit() === 'lb') return fmtNum(v * 2.2046226218, ' lb');
+        return fmtNum(v, ' кг');
       }
       function toast(message) {
         var el = document.createElement('div');
@@ -216,6 +270,7 @@
           renderCheckins();
           renderArena();
           show($('app'));
+          initPortalSettings();
         } catch (error) {
           hide($('loading'));
           if (error.status === 401 && error.code === 'pin_required') {
@@ -240,8 +295,8 @@
         var client = data.client || {};
         $('client-name').textContent = client.full_name || 'Клиент';
         $('client-goal').textContent = goalLabel(client.goal);
-        $('stat-weight').textContent = fmtNum(client.weight, ' кг');
-        $('stat-target').textContent = fmtNum(client.target_weight, ' кг');
+        $('stat-weight').textContent = fmtWeight(client.weight);
+        $('stat-target').textContent = fmtWeight(client.target_weight);
         $('stat-fat').textContent = fmtNum(client.body_fat_pct, '%');
         var avatar = $('client-avatar');
         if (client.photo_url) {
@@ -276,23 +331,95 @@
         if (!days.length) {
           html += '<p class="empty">В программе пока нет дней.</p>';
         } else {
-          html += days.map(function (day) {
+          html += days.map(function (day, dayIndex) {
             var exercises = day.exercises || [];
             var exHtml = exercises.map(function (ex) {
               var name = ex.exercise_name || ex.name || ex.exercise_id || 'Упражнение';
               var sets = ex.sets || [];
               var setHtml = sets.map(function (set, index) {
-                var weight = set.weight != null && set.weight !== '' ? fmtNum(set.weight, ' кг') : '';
+                var weight = set.weight != null && set.weight !== '' ? fmtWeight(set.weight) : '';
                 var reps = set.reps != null && set.reps !== '' ? set.reps + ' повт.' : '';
                 return '<span class="set">' + esc([weight, reps].filter(Boolean).join(' × ') || ('Подход ' + (index + 1))) + '</span>';
               }).join('');
               var note = ex.notes || ex.note || '';
               return '<div class="exercise"><b>' + esc(name) + '</b>' + (note ? '<small>' + esc(note) + '</small>' : '') + (setHtml ? '<div class="sets">' + setHtml + '</div>' : '') + '</div>';
             }).join('');
-            return '<div class="day"><div class="day-head"><b>' + esc(day.name || day.day_letter || 'День') + '</b><span>' + exercises.length + ' упр.</span></div>' + exHtml + '</div>';
+            return '<div class="day"><div class="day-head"><b>' + esc(day.name || day.day_letter || 'День') + '</b><span>' + exercises.length + ' упр.</span></div>' + exHtml +
+              '<button type="button" class="secondary" data-portal-workout="' + dayIndex + '" style="width:100%;margin-top:10px;">▶ Тренироваться</button></div>';
           }).join('');
         }
         $('programs').innerHTML = html;
+        $('programs').querySelectorAll('[data-portal-workout]').forEach(function (button) {
+          button.addEventListener('click', function () {
+            startPortalWorkout(program, days[Number(button.getAttribute('data-portal-workout'))]);
+          });
+        });
+      }
+
+      function startPortalWorkout(program, day) {
+        if (!day) return;
+        var started = Date.now();
+        var exercises = day.exercises || [];
+        var modal = document.createElement('div');
+        modal.id = 'portal-workout-sheet';
+        modal.style.cssText = 'position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.72);display:flex;align-items:flex-end;justify-content:center;padding:0;';
+        var rows = exercises.map(function (ex, exIndex) {
+          var name = ex.exercise_name || ex.name || ex.exercise_id || 'Упражнение';
+          var sets = ex.sets || [];
+          var setRows = sets.map(function (set, setIndex) {
+            return '<div data-set-row="' + exIndex + ':' + setIndex + '" style="display:grid;grid-template-columns:28px 1fr 1fr;gap:6px;align-items:center;margin-top:6px;">' +
+              '<input type="checkbox" data-set-done="' + exIndex + ':' + setIndex + '" style="width:18px;height:18px;margin:0;" />' +
+              '<input type="number" step="0.5" inputmode="decimal" data-set-weight="' + exIndex + ':' + setIndex + '" value="' + esc(set.weight != null ? set.weight : '') + '" placeholder="кг" style="margin:0;" />' +
+              '<input type="number" step="1" inputmode="numeric" data-set-reps="' + exIndex + ':' + setIndex + '" value="' + esc(set.reps != null ? set.reps : '') + '" placeholder="повт" style="margin:0;" />' +
+              '</div>';
+          }).join('');
+          return '<div class="exercise" style="margin-top:10px;"><b>' + esc(name) + '</b><small>' + sets.length + ' подходов</small>' + setRows + '</div>';
+        }).join('');
+        modal.innerHTML = '<div class="card" style="width:min(680px,100%);max-height:92vh;overflow-y:auto;margin:0;border-radius:20px 20px 0 0;">' +
+          '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><h3 style="margin:0;flex:1;">' + esc(day.name || 'Тренировка') + '</h3><button type="button" id="portal-workout-close" class="secondary" style="padding:6px 10px;">✕</button></div>' +
+          '<p class="empty" style="font-size:11px;">Отметь выполненные подходы и нажми «Завершить».</p>' +
+          rows +
+          '<button type="button" id="portal-workout-finish" style="width:100%;margin-top:16px;">Завершить тренировку</button></div>';
+        document.body.appendChild(modal);
+        function close() { if (modal.parentElement) modal.parentElement.removeChild(modal); }
+        $('portal-workout-close').addEventListener('click', close);
+        $('portal-workout-finish').addEventListener('click', async function () {
+          var historyExercises = [];
+          exercises.forEach(function (ex, exIndex) {
+            var name = ex.exercise_name || ex.name || ex.exercise_id || 'Упражнение';
+            var doneSets = [];
+            (ex.sets || []).forEach(function (set, setIndex) {
+              var done = document.querySelector('[data-set-done="' + exIndex + ':' + setIndex + '"]');
+              if (!done || !done.checked) return;
+              var weight = document.querySelector('[data-set-weight="' + exIndex + ':' + setIndex + '"]');
+              var reps = document.querySelector('[data-set-reps="' + exIndex + ':' + setIndex + '"]');
+              doneSets.push({ weight: Number(weight && weight.value) || null, reps: Number(reps && reps.value) || null, done: true });
+            });
+            if (doneSets.length) historyExercises.push({ exercise_id: ex.exercise_id || null, exercise_name: name, name: name, sets: doneSets });
+          });
+          if (!historyExercises.length) { toast('Отметь хотя бы один подход.'); return; }
+          var record = {
+            id: 'portal_' + Date.now(),
+            client_id: arenaClientId(),
+            date: new Date().toISOString().slice(0, 10),
+            name: day.name || program.name || 'Тренировка',
+            duration: Math.max(1, Math.round((Date.now() - started) / 1000)),
+            exercises: historyExercises,
+            source: 'portal'
+          };
+          try {
+            var result = await api('/api/portal/' + encodeURIComponent(TOKEN) + '/records', {
+              method: 'POST',
+              body: { collection: 'workout_history', id: record.id, data: record }
+            });
+            records.push({ collection: 'workout_history', id: record.id, data: record, rev: result.rev });
+            renderHistory();
+            close();
+            toast('Тренировка сохранена. Тренер увидит её в истории.');
+          } catch (error) {
+            toast(error.message || 'Не удалось сохранить тренировку.');
+          }
+        });
       }
 
       function renderNutrition() {
@@ -597,11 +724,94 @@
         $('checkins').innerHTML = checkins.map(function (record) {
           var item = record.data || {};
           return '<div class="meal"><b>' + esc(fmtDate(item.date)) + '</b><small>'
-            + (item.weight ? esc(fmtNum(item.weight, ' кг')) : '')
+            + (item.weight ? esc(fmtWeight(item.weight)) : '')
             + (item.note ? ' · ' + esc(item.note) : '')
             + '</small></div>';
         }).join('');
       }
+
+      var deferredInstall = null;
+      window.addEventListener('beforeinstallprompt', function (event) {
+        event.preventDefault();
+        deferredInstall = event;
+        var button = $('set-install');
+        if (button) button.style.display = 'block';
+      });
+
+      function applyPortalSettings() {
+        var theme = 'dark';
+        var unit = 'kg';
+        try {
+          theme = localStorage.getItem('dk_portal_theme') === 'light' ? 'light' : 'dark';
+          unit = localStorage.getItem('dk_portal_unit') === 'lb' ? 'lb' : 'kg';
+        } catch (_) {}
+        document.documentElement.setAttribute('data-theme', theme);
+        if ($('set-theme')) $('set-theme').value = theme;
+        if ($('set-units')) $('set-units').value = unit;
+      }
+
+      function initPortalSettings() {
+        applyPortalSettings();
+        try {
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/p/__DKG_PORTAL_TOKEN__/sw.js', { scope: '/p/__DKG_PORTAL_TOKEN__' }).catch(function () {});
+          }
+        } catch (_) {}
+        if ($('set-theme')) $('set-theme').addEventListener('change', function () {
+          try { localStorage.setItem('dk_portal_theme', this.value); } catch (_) {}
+          applyPortalSettings();
+        });
+        if ($('set-units')) $('set-units').addEventListener('change', function () {
+          try { localStorage.setItem('dk_portal_unit', this.value); } catch (_) {}
+          renderClient();
+          renderPrograms();
+          renderCheckins();
+        });
+        if ($('set-install')) $('set-install').addEventListener('click', async function () {
+          if (!deferredInstall) {
+            toast('Откройте меню браузера и выберите «Установить приложение».');
+            return;
+          }
+          deferredInstall.prompt();
+          deferredInstall = null;
+          this.style.display = 'none';
+        });
+        if ($('set-password')) $('set-password').addEventListener('submit', async function (event) {
+          event.preventDefault();
+          var status = $('set-password-status');
+          var current = String($('set-current-pin').value || '').trim();
+          var next = String($('set-new-pin').value || '').trim();
+          if (!/^\d{4,10}$/.test(next)) {
+            if (status) { status.textContent = 'Новый пароль: 4–10 цифр.'; status.style.color = 'var(--danger)'; }
+            return;
+          }
+          try {
+            await api('/api/portal/' + encodeURIComponent(TOKEN) + '/password', {
+              method: 'POST',
+              body: { currentPin: current || PIN, newPin: next }
+            });
+            PIN = next;
+            try { sessionStorage.setItem(PIN_KEY, PIN); } catch (_) {}
+            $('set-current-pin').value = '';
+            $('set-new-pin').value = '';
+            if (status) { status.textContent = 'Пароль изменён.'; status.style.color = 'var(--green)'; }
+          } catch (error) {
+            if (status) { status.textContent = error.message || 'Не удалось изменить пароль.'; status.style.color = 'var(--danger)'; }
+          }
+        });
+        if ($('set-logout')) $('set-logout').addEventListener('click', function () {
+          try { sessionStorage.removeItem(PIN_KEY); } catch (_) {}
+          PIN = '';
+          data = null;
+          location.reload();
+        });
+        if ($('set-wipe')) $('set-wipe').addEventListener('click', function () {
+          if (!confirm('Очистить данные портала на этом устройстве? Данные на сервере останутся.')) return;
+          try { localStorage.clear(); sessionStorage.clear(); } catch (_) {}
+          location.reload();
+        });
+      }
+      applyPortalSettings();
 
       $('pin-submit').addEventListener('click', async function () {
         var value = String($('pin').value || '').trim();
