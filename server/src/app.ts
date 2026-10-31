@@ -12,7 +12,7 @@ import { ApiError } from './lib/errors';
 import { authRoutes } from './routes/auth';
 import { adminRoutes } from './routes/admin';
 import { fileRoutes } from './routes/files';
-import { portalRoutes } from './routes/portal';
+import { buildPortalPayload, portalRoutes } from './routes/portal';
 import { syncRoutes } from './routes/sync';
 
 export async function buildApp(options: { logger?: boolean } = {}): Promise<FastifyInstance> {
@@ -188,6 +188,38 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
   // Personal trainee portal. The token is resolved by the API; the page itself
   // contains no tenant data.
   app.get('/p/:token', async (request, reply) => {
+    const rawToken = (request.params as { token?: string }).token || '';
+    const token = encodeURIComponent(rawToken);
+    const payload = await buildPortalPayload(rawToken);
+    const payloadJson = JSON.stringify(payload).replace(/<\/script/gi, '<\\/script');
+    try {
+      const html = readFileSync(join(__dirname, '..', 'public', 'portal-full.html'), 'utf8')
+        .replace(/__DKG_PORTAL_TOKEN__/g, token)
+        .replace('__DKG_PORTAL_PAYLOAD__', payloadJson);
+      reply.header('Cache-Control', 'no-store');
+      return reply.type('text/html').send(html);
+    } catch {
+      throw new ApiError(404, 'not_found', 'Portal page is not installed');
+    }
+  });
+
+  app.get('/p/:token/full', async (request, reply) => {
+    const rawToken = (request.params as { token?: string }).token || '';
+    const token = encodeURIComponent(rawToken);
+    const payload = await buildPortalPayload(rawToken);
+    const payloadJson = JSON.stringify(payload).replace(/<\/script/gi, '<\\/script');
+    try {
+      const html = readFileSync(join(__dirname, '..', 'public', 'portal-full.html'), 'utf8')
+        .replace(/__DKG_PORTAL_TOKEN__/g, token)
+        .replace('__DKG_PORTAL_PAYLOAD__', payloadJson);
+      reply.header('Cache-Control', 'no-store');
+      return reply.type('text/html').send(html);
+    } catch {
+      throw new ApiError(404, 'not_found', 'Full portal page is not installed');
+    }
+  });
+
+  app.get('/p/:token/simple', async (request, reply) => {
     try {
       const token = encodeURIComponent((request.params as { token?: string }).token || '');
       const html = readFileSync(join(__dirname, '..', 'public', 'portal.html'), 'utf8')

@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { config } from '../config';
@@ -125,6 +127,113 @@ async function resolvePortalToken(token: string, pin: string | undefined): Promi
     tenantName: tenant.display_name,
     settings: tenant.settings ?? {},
     client,
+  };
+}
+
+let exerciseMapCache: Record<string, Record<string, unknown>> | null = null;
+
+function legacyExerciseMap(): Record<string, Record<string, unknown>> {
+  if (exerciseMapCache) return exerciseMapCache;
+  const map: Record<string, Record<string, unknown>> = {};
+  const files = ['exercise-db.json', 'exercise-db-rdb.json'];
+  for (const file of files) {
+    try {
+      const rows = JSON.parse(readFileSync(resolve(__dirname, '..', '..', '..', file), 'utf8')) as Array<Record<string, any>>;
+      for (const ex of rows) {
+        if (!ex || !ex.id) continue;
+        map[ex.id] = {
+          name_en: ex.nE || '', name_ru: ex.nR || '', name_he: ex.nH || '',
+          images: ex.i || [], technique_en: ex.t || '', technique_ru: ex.tRu || '', technique_he: ex.tHe || '',
+          group: ex.g || '', group_en: ex.gE || '', group_ru: ex.gR || '', group_he: ex.gH || '',
+          subgroup: ex.sE || '', subgroup_en: ex.sE || '', subgroup_ru: ex.sR || '', subgroup_he: ex.sH || '',
+          equipment: ex.eE || ex.e || '', equipment_en: ex.eE || ex.e || '',
+          equipment_ru: ex.eR || ex.eE || ex.e || '', equipment_he: ex.eH || ex.eE || ex.e || '',
+          synergists: ex.synergists || [], video_url: ex.video_url || '', gif: ex.gif || '',
+        };
+      }
+    } catch (error) {
+      console.warn('[portal] exercise map load failed', file, error);
+    }
+  }
+  exerciseMapCache = map;
+  return map;
+}
+
+export async function buildPortalPayload(token: string): Promise<Record<string, unknown>> {
+  const tokenRow = (await pool.query<{
+    id: string;
+    tenant_id: string;
+    client_id: string;
+  }>(
+    `SELECT id, tenant_id, client_id
+     FROM portal_tokens
+     WHERE token_hash = $1
+       AND revoked_at IS NULL
+       AND (expires_at IS NULL OR expires_at > now())`,
+    [hashPortalToken(token)],
+  )).rows[0];
+  if (!tokenRow) throw errors.notFound('Portal link is invalid or expired');
+
+  await pool.query('UPDATE portal_tokens SET last_used_at = now() WHERE id = $1', [tokenRow.id]);
+  const data = await withTenant(tokenRow.tenant_id, async (db) => {
+    const result = await db.query<{ collection: string; record_id: string; data: Record<string, unknown> }>(
+      `SELECT collection, record_id, data
+       FROM records
+       WHERE collection = ANY($1::text[]) AND deleted_at IS NULL`,
+      [['clients', 'client_programs', 'nutrition_plans', 'workout_history', 'checkins']],
+    );
+    return result.rows;
+  });
+
+  const belongs = (row: Record<string, unknown>) =>
+    !row.client_id || String(row.client_id) === String(tokenRow.client_id);
+  const byCollection = (name: string) =>
+    data.filter((row) => row.collection === name && belongs(row.data)).map((row) => row.data);
+  const client = data.find((row) => row.collection === 'clients' && row.record_id === tokenRow.client_id)?.data;
+  if (!client) throw errors.notFound('Client was not found');
+
+  const source = legacyExerciseMap();
+  const programs = byCollection('client_programs').map((program) => {
+    const days = (program as any).workout_days || (program as any).days || [];
+    return {
+      ...program,
+      workout_days: days.map((day: Record<string, any>) => ({
+        ...day,
+        exercises: (day.exercises || []).map((ex: Record<string, any>) => {
+          const info = ex.exercise_id ? source[String(ex.exercise_id)] : null;
+          const name = ex.name || ex.exercise_name || ex.name_en ||
+            (info && (info.name_ru || info.name_en)) || 'Exercise';
+          return {
+            ...ex,
+            name,
+            name_en: ex.name_en || (info && info.name_en) || name,
+            name_ru: ex.name_ru || (info && info.name_ru) || name,
+            name_he: ex.name_he || (info && info.name_he) || name,
+            group: ex.group || (info && info.group) || 'other',
+          };
+        }),
+      })),
+    };
+  });
+  const ids = new Set<string>();
+  for (const program of programs) {
+    const days = (program as any).workout_days || [];
+    for (const day of days) for (const ex of (day.exercises || [])) {
+      if (ex.exercise_id) ids.add(String(ex.exercise_id));
+    }
+  }
+  const exercises: Record<string, Record<string, unknown>> = {};
+  for (const id of ids) if (source[id]) exercises[id] = source[id];
+
+  return {
+    client,
+    programs,
+    plans: byCollection('nutrition_plans'),
+    history: byCollection('workout_history').sort((a, b) =>
+      String(b.date || '').localeCompare(String(a.date || ''))),
+    checkins: byCollection('checkins').sort((a, b) =>
+      String(b.date || '').localeCompare(String(a.date || ''))),
+    exercises,
   };
 }
 
@@ -315,6 +424,54 @@ export const portalRoutes: FastifyPluginAsync = async (app) => {
       });
     },
   );
+
+  /* Full legacy portal bootstrap. The personal token is the capability; the
+     server returns the same payload shape the old client UI understands. */
+  app.get('/portal/:token/payload', async (request) => {
+    const params = parse(z.object({ token: z.string().min(16).max(500) }), request.params);
+    const tokenRow = (await pool.query<{
+      id: string;
+      tenant_id: string;
+      client_id: string;
+    }>(
+      `SELECT id, tenant_id, client_id
+       FROM portal_tokens
+       WHERE token_hash = $1
+         AND revoked_at IS NULL
+         AND (expires_at IS NULL OR expires_at > now())`,
+      [hashPortalToken(params.token)],
+    )).rows[0];
+    if (!tokenRow) throw errors.notFound('Portal link is invalid or expired');
+
+    await pool.query('UPDATE portal_tokens SET last_used_at = now() WHERE id = $1', [tokenRow.id]);
+    const data = await withTenant(tokenRow.tenant_id, async (db) => {
+      const result = await db.query<{ collection: string; record_id: string; data: Record<string, unknown> }>(
+        `SELECT collection, record_id, data
+         FROM records
+         WHERE collection = ANY($1::text[]) AND deleted_at IS NULL`,
+        [['clients', 'client_programs', 'nutrition_plans', 'workout_history', 'checkins']],
+      );
+      return result.rows;
+    });
+
+    const belongs = (row: Record<string, unknown>) =>
+      !row.client_id || String(row.client_id) === String(tokenRow.client_id);
+    const byCollection = (name: string) =>
+      data.filter((row) => row.collection === name && belongs(row.data)).map((row) => row.data);
+    const client = data.find((row) => row.collection === 'clients' && row.record_id === tokenRow.client_id)?.data;
+    if (!client) throw errors.notFound('Client was not found');
+
+    return {
+      client,
+      programs: byCollection('client_programs'),
+      plans: byCollection('nutrition_plans'),
+      history: byCollection('workout_history').sort((a, b) =>
+        String(b.date || '').localeCompare(String(a.date || ''))),
+      checkins: byCollection('checkins').sort((a, b) =>
+        String(b.date || '').localeCompare(String(a.date || ''))),
+      exercises: {},
+    };
+  });
 
   app.post(
     '/portal/:token/password',
