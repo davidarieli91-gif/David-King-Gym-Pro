@@ -17,7 +17,8 @@
     'settings',
     'food_database',
     'nutrition_plans',
-    'nutrition_templates'
+    'nutrition_templates',
+    'arena_progress'
   ];
 
   var state = {

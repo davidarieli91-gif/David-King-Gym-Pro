@@ -9,6 +9,7 @@ const assets = [
   'exercise-db.json',
   'exercise-db-rdb.json',
   'food-db.json',
+  'arena-data.json',
   'manifest.json',
   'manifest-portal.json',
   'sw.js',
@@ -37,6 +38,7 @@ const assets = [
   /* c213: server-mode gate + server-first sync (classic scripts, not bundled) */
   'src/server-mode.js',
   'src/server-sync.js',
+  'src/arena.js',
   'src/i18n',
   'src/input.css',
   'src/nutrition-dashboard.css',

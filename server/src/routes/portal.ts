@@ -34,6 +34,7 @@ const portalReadCollections = [
   'weight_logs',
   'workout_logs',
   'nutrition_logs',
+  'arena_progress',
 ] as const;
 
 /* The portal never receives the trainer's private client fields (portal

@@ -1,0 +1,38 @@
+/* c215 — DKG Arena content and wiring. */
+const fs = require('fs');
+const path = require('path');
+const { spawnSync } = require('child_process');
+const root = path.join(__dirname, '..');
+let pass = 0, fail = 0;
+function ok(name, cond) { if (cond) { pass++; console.log('PASS ' + name); } else { fail++; console.log('FAIL ' + name); } }
+function read(rel) { return fs.readFileSync(path.join(root, rel), 'utf8'); }
+
+const arena = JSON.parse(read('arena-data.json'));
+const crm = read('fitness-crm.html');
+const js = read('src/arena.js');
+const sync = read('src/server-sync.js');
+const copy = read('scripts/copy-assets.js');
+const sw = read('sw.js');
+
+ok('arena data has eight games', Array.isArray(arena.games) && arena.games.length === 8);
+ok('street workout and strength are available', arena.games.filter(g => g.available).length === 2 && arena.games.some(g => g.id === 'street_workout' && g.available) && arena.games.some(g => g.id === 'strength' && g.available));
+const mu = arena.games.find(g => g.id === 'street_workout').paths.find(p => p.id === 'muscle_up');
+const dl = arena.games.find(g => g.id === 'strength').paths.find(p => p.id === 'deadlift');
+ok('muscle-up has three tiers', mu.tiers.length === 3 && mu.tiers.every(t => t.lessons.length >= 3 && t.exam.stations.length >= 2 && t.trophy.name));
+ok('deadlift has three bodyweight tiers', dl.tiers.length === 3 && dl.tiers.every((t, i) => t.exam.stations.some(s => s.type === 'load_bw' && s.target === [1, 1.5, 2][i])));
+ok('trophy names are tier + path', /Бронзов/.test(dl.tiers[0].trophy.name.ru) && /Серебрян/.test(dl.tiers[1].trophy.name.ru) && /Золот/.test(dl.tiers[2].trophy.name.ru));
+ok('trophies are trilingual', mu.tiers.every(t => t.trophy.name.en && t.trophy.name.ru && t.trophy.name.he));
+ok('arena screen exists', crm.includes('data-screen="arena"') && crm.includes('id="arena-root"'));
+ok('arena nav exists', crm.includes('data-nav="arena"') && crm.includes('data-i18n="nav.arena"'));
+ok('arena script is loaded', crm.includes('src/arena.js?v=245'));
+ok('arena store is in the schema', crm.includes("name: 'arena_progress'") && crm.includes("by_clientId"));
+ok('arena progress is synced', sync.includes("'arena_progress'"));
+ok('arena data and script are copied to dist', copy.includes("'arena-data.json'") && copy.includes("'src/arena.js'"));
+ok('service worker v245 includes arena', sw.includes("CACHE_NAME = 'dk-gym-v245'") && sw.includes('./src/arena.js') && sw.includes('./arena-data.json'));
+ok('profile exposes trophy count and arena shortcut', crm.includes('profile-arena-count') && crm.includes('data-quick-action="arena"'));
+ok('arena has exam + trophy logic', js.includes('submitExam') && js.includes('trophyEarned') && js.includes('exam_attempts'));
+const check = spawnSync(process.execPath, ['--check', path.join(root, 'src', 'arena.js')], { encoding: 'utf8' });
+ok('arena.js parses', check.status === 0);
+
+console.log('\n' + pass + ' passed, ' + fail + ' failed');
+process.exit(fail ? 1 : 0);

@@ -14,10 +14,10 @@ function read(rel) { return fs.readFileSync(path.join(root, rel), 'utf8'); }
 ok('trainer build c213', crm.includes('<meta name="dk-build" content="c213" />'));
 ok('trainer RUNNING 213', crm.includes('var RUNNING = 213;'));
 ok('sidebar + login show c213', crm.includes('id="v2-side-version">c213') && crm.includes('3 languages · c213'));
-ok('SW cache v244', sw.includes("CACHE_NAME = 'dk-gym-v244'"));
+ok('SW cache v245', sw.includes("CACHE_NAME = 'dk-gym-v245'"));
 ok('SW precaches server scripts', sw.includes("./src/server-mode.js") && sw.includes("./src/server-sync.js"));
 
-ok('IndexedDB version 11', crm.includes('const DB_VERSION = 11;'));
+ok('IndexedDB version 12', crm.includes('const DB_VERSION = 12;'));
 ok('durable sync outbox store exists', crm.includes("name: 'sync_outbox'") && crm.includes("keyPath: 'key'"));
 ok('tenant-scoped DB name', crm.includes("localStorage.getItem('dkg_db_name')"));
 ok('local writes notify sync', crm.includes('notifyLocalChange(storeName, record)') && crm.includes('notifyLocalDelete(storeName, key)'));

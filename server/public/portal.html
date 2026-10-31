@@ -124,6 +124,11 @@
       </div>
 
       <div class="card">
+        <h3>Арена · кубки</h3>
+        <div id="arena"><p class="empty">Пока нет кубков.</p></div>
+      </div>
+
+      <div class="card">
         <h3>История тренировок</h3>
         <div id="history"><p class="empty">Пока нет записей.</p></div>
       </div>
@@ -206,6 +211,7 @@
           renderNutrition();
           renderHistory();
           renderCheckins();
+          renderArena();
           show($('app'));
         } catch (error) {
           hide($('loading'));
@@ -309,6 +315,30 @@
           }).join('');
         }
         $('nutrition').innerHTML = html;
+      }
+
+      function renderArena() {
+        var rows = recordsOf('arena_progress');
+        var trophies = [];
+        rows.forEach(function (record) {
+          var data = record.data || {};
+          (data.trophies || []).forEach(function (trophy) { trophies.push(trophy); });
+        });
+        if (!trophies.length) {
+          $('arena').innerHTML = '<p class="empty">Кубков пока нет. Пройди уроки и сдай экзамен в Арене.</p>';
+          return;
+        }
+        trophies.sort(function (a, b) { return (b.earned_at || 0) - (a.earned_at || 0); });
+        var tierLabel = { bronze: 'Бронза', silver: 'Серебро', gold: 'Золото' };
+        var n = trophies.length;
+        var countText = n === 1 ? '1 кубок' : (n >= 2 && n <= 4 ? n + ' кубка' : n + ' кубков');
+        $('arena').innerHTML = '<div class="chip" style="display:inline-block;margin-bottom:10px;">' + countText + '</div>' + trophies.map(function (trophy) {
+          var name = (trophy.name && (trophy.name.ru || trophy.name.en)) || 'Кубок';
+          var results = (trophy.results || []).map(function (result) {
+            return '<div class="item">' + esc(result.label || '') + ': <b>' + esc(result.display || '') + '</b></div>';
+          }).join('');
+          return '<div class="meal"><b>' + esc(name) + '</b><small>' + esc(tierLabel[trophy.tier] || '') + ' · ' + esc(fmtDate(trophy.earned_at)) + '</small>' + results + '</div>';
+        }).join('');
       }
 
       function renderHistory() {

@@ -72,7 +72,7 @@
        they run before the main app bundle and can set the tenant DB name. -->
   <link rel="stylesheet" href="src/server-gate.css" />
   <script src="src/server-mode.js?v=244"></script>
-  <script src="src/server-sync.js?v=244"></script>
+  <script src="src/server-sync.js?v=245"></script>
 
   <!-- Google Fonts: Inter (UI), Space Grotesk (display), JetBrains Mono (numeric) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -4531,6 +4531,11 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
             <div id="theme-menu" class="hidden absolute end-0 top-full mt-2 w-60 max-h-[70vh] overflow-y-auto rounded-xl border border-border bg-surface shadow-float z-50 p-1.5" role="menu" aria-label="Choose theme"></div>
           </div>
 
+          <!-- Arena (always available when unlocked) -->
+          <button type="button" id="arena-header-btn" data-nav="arena" class="w-9 h-9 grid place-items-center rounded-lg bg-surface-2 hover:bg-warning/15 hover:text-warning transition border border-border" aria-label="Арена" title="Арена">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 4h8v4a4 4 0 0 1-8 0V4z"/><path d="M8 5H4v2a4 4 0 0 0 4 4M16 5h4v2a4 4 0 0 1-4 4"/><path d="M12 12v5M8 21h8M9 17h6"/></svg>
+          </button>
+
           <!-- Director console (visible only for the director account) -->
           <a id="director-console-btn" href="/admin" class="hidden w-9 h-9 place-items-center rounded-lg bg-surface-2 hover:bg-accent/25 hover:text-accent transition border border-border" aria-label="Портал директора" title="Портал директора">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>
@@ -4607,6 +4612,12 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M6 12h12"/></svg>
             </span>
             <span data-i18n="nav.workouts">Workouts</span>
+          </button>
+          <button data-nav="arena" class="nav-pill w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-surface-2 transition">
+            <span class="w-8 h-8 grid place-items-center rounded-lg bg-warning/15 text-warning">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 4h8v4a4 4 0 0 1-8 0V4z"/><path d="M8 5H4v2a4 4 0 0 0 4 4M16 5h4v2a4 4 0 0 1-4 4"/><path d="M12 12v5M8 21h8M9 17h6"/></svg>
+            </span>
+            <span data-i18n="nav.arena">Arena</span>
           </button>
           <button data-nav="nutrition" class="nav-pill w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-surface-2 transition">
             <span class="w-8 h-8 grid place-items-center rounded-lg bg-success/15 text-success">
@@ -4829,6 +4840,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 <div class="dk-rail-card">
                   <div class="dk-rail-head"><span class="dk-panel-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></span><h3 data-i18n="clients.quickActions">Quick actions</h3><span class="v2-pill" data-i18n="clients.live">Live</span></div>
                   <button class="dk-quick-row" data-nav="workouts"><span class="dk-quick-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M6 12h12"/></svg></span><span class="dk-quick-copy"><b data-i18n="workouts.startWorkout">Start workout</b><small data-i18n="clients.startWorkoutHint">Open the live session</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+                  <button class="dk-quick-row" data-nav="arena"><span class="dk-quick-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 4h8v4a4 4 0 0 1-8 0V4z"/><path d="M8 5H4v2a4 4 0 0 0 4 4M16 5h4v2a4 4 0 0 1-4 4"/><path d="M12 12v5M8 21h8M9 17h6"/></svg></span><span class="dk-quick-copy"><b data-i18n="nav.arena">Arena</b><small data-i18n="arena.profileHint">Lessons, exams and trophies</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
                   <button class="dk-quick-row" id="dash-quick-add"><span class="dk-quick-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></span><span class="dk-quick-copy"><b data-i18n="aside.addClient">Add Client</b><small data-i18n="clients.addClientHint">Create a new profile</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
                   <button class="dk-quick-row" data-nav="nutrition"><span class="dk-quick-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zM12 8v4M12 16h.01"/></svg></span><span class="dk-quick-copy"><b data-i18n="nav.nutrition">Nutrition</b><small data-i18n="clients.nutritionHint">Plans and food database</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
                   <button class="dk-quick-row" data-nav="analytics"><span class="dk-quick-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 4 5-6"/></svg></span><span class="dk-quick-copy"><b data-i18n="nav.analytics">Analytics</b><small data-i18n="clients.coachHint">Based on real client data</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
@@ -4849,6 +4861,11 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
             </div>
+          </div>
+
+          <!-- ============= ARENA (c215) ============= -->
+          <div data-screen="arena" class="hidden p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto w-full">
+            <div id="arena-root"></div>
           </div>
 
           <!-- ============= CLIENT PROFILE SCREEN (Steps 10-12) ============= -->
@@ -8995,7 +9012,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     } catch (_) {}
     return 'fitness_crm_db';
   })();
-  const DB_VERSION = 11; /* c213: + sync_outbox store for the server outbox */
+  const DB_VERSION = 12; /* c215: + arena_progress store */
 
   /** @typedef {{name:string,keyPath:string,indexes:Array<{name:string,unique?:boolean}>}} StoreDef */
   const DB_SCHEMA = [
@@ -9102,6 +9119,15 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
        * user-data snapshot: { slot, ts, auto, counts, total_bytes, data } */
       name: 'snapshots',
       keyPath: 'slot'
+    },
+    {
+      /* c215: Arena progress — one row per client + path, synced like normal records. */
+      name: 'arena_progress',
+      keyPath: 'id',
+      indexes: [
+        { name: 'by_clientId', keyPath: 'client_id', unique: false },
+        { name: 'by_pathId', keyPath: 'path_id', unique: false }
+      ]
     },
     {
       /* c213: durable local outbox for server sync. Never uploaded itself. */
@@ -10774,6 +10800,9 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       }
       if (name === 'tools' && screens.tools) {
         safe('tools', () => screens.tools.refresh());
+      }
+      if (name === 'arena' && window.DK_ARENA) {
+        safe('arena', () => window.DK_ARENA.refresh());
       }
       if (name === 'settings') {
         safe('settings', () => {
@@ -12950,6 +12979,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       try { loadProfileStats(c); } catch (_) {}
       try { loadProfileQuickActivity(c); } catch (_) {}
       wireProfileHero(c);
+      try { if (window.DK_ARENA && window.DK_ARENA.fillProfileSummary) window.DK_ARENA.fillProfileSummary(c.id); } catch (_) {}
     }
 
     /* ---- Panel move mode: 5-sec long-press picks a panel up,
@@ -13096,6 +13126,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
               ${active ? '<span class="dk-hero-chip">? ' + escapeHTML(t('clients.active') || 'Active') + '</span>' : ''}
               ${goalTxt ? '<span class="dk-hero-chip goal">' + escapeHTML(goalTxt) + '</span>' : ''}
               ${c.portal_pass ? '<span class="dk-hero-chip portal">' + escapeHTML(t('programs.clientPortal') || 'Client portal') + '</span>' : ''}
+              <span class="dk-hero-chip" id="profile-arena-chip" title="Arena">🏆 <b id="profile-arena-count">0</b></span>
               <span class="dk-hero-chip">${escapeHTML(t('client.lastSeen'))}: ${escapeHTML(lastActive)}</span>
             </div>
             <div class="dk-hero-actions">
@@ -13127,6 +13158,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
         <button class="dk-quick-row" data-quick-action="workout"><span class="dk-quick-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M6 12h12"/></svg></span><span class="dk-quick-copy"><b>${escapeHTML(t('workouts.startWorkout'))}</b><small>${escapeHTML(t('clients.startWorkoutHint'))}</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
         <button class="dk-quick-row" data-quick-action="program"><span class="dk-quick-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></span><span class="dk-quick-copy"><b>${escapeHTML(t('programs.new'))}</b><small>${escapeHTML(t('programs.newHint'))}</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
         <button class="dk-quick-row" data-quick-action="nutrition"><span class="dk-quick-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zM12 8v4M12 16h.01"/></svg></span><span class="dk-quick-copy"><b>${escapeHTML(t('nutrition.newPlan') || 'New nutrition plan')}</b><small>${escapeHTML(t('nutrition.newPlanHint'))}</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+        <button class="dk-quick-row" data-quick-action="arena"><span class="dk-quick-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 4h8v4a4 4 0 0 1-8 0V4z"/><path d="M8 5H4v2a4 4 0 0 0 4 4M16 5h4v2a4 4 0 0 1-4 4"/><path d="M12 12v5M8 21h8M9 17h6"/></svg></span><span class="dk-quick-copy"><b>${escapeHTML(t('nav.arena') || 'Arena')}</b><small id="profile-arena-summary">${escapeHTML(t('arena.profileHint') || 'Lessons, exams and trophies')}</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
         <button class="dk-quick-row" data-quick-action="note"><span class="dk-quick-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span><span class="dk-quick-copy"><b>${escapeHTML(t('client.notesLabel') || 'Notes')}</b><small>${escapeHTML(t('client.note') || 'Add a note')}</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
         <div class="dk-rail-head" style="margin-top:10px"><h3>${escapeHTML(t('clients.lastActivity'))}</h3></div>
         <div class="dk-quick-activity" id="profile-quick-activity"></div>
@@ -13249,6 +13281,10 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       }));
       document.querySelectorAll('[data-quick-action]').forEach(b => b.addEventListener('click', () => {
         const a = b.getAttribute('data-quick-action');
+        if (a === 'arena') {
+          if (window.DK_ARENA && window.DK_ARENA.open) window.DK_ARENA.open(c.id);
+          return;
+        }
         const id = a === 'workout' ? 'profile-new-workout' : (a === 'program' ? 'profile-create-program' : (a === 'nutrition' ? 'profile-create-np' : 'profile-edit'));
         const target = document.getElementById(id);
         if (target) target.click();
@@ -30836,6 +30872,12 @@ async function boot() {
         const serverLockBtn = document.getElementById('lock-btn');
         if (serverLockBtn) serverLockBtn.classList.remove('hidden');
         router.show('dashboard');
+        /* c215: director console deep link: ?screen=arena */
+        try {
+          if (new URLSearchParams(location.search || '').get('screen') === 'arena' && window.DK_ARENA) {
+            window.DK_ARENA.open('self');
+          }
+        } catch (_) {}
       }
       const hasPwd = await auth.isPasswordSet();
       if (!auth.isUnlocked()) {
@@ -40615,5 +40657,6 @@ document.addEventListener('input', function (e) {
     }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   })();
 </script>
+<script src="src/arena.js?v=245"></script>
 </body>
 </html>

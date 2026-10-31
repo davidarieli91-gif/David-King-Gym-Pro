@@ -1,0 +1,789 @@
+{
+  "version": 1,
+  "updated": "2026-10-31",
+  "games": [
+    {
+      "id": "street_workout",
+      "name": { "en": "Street Workout", "ru": "Стрит-воркаут", "he": "סטריט וורקאאוט" },
+      "description": {
+        "en": "Bar, floor and ring skills. Bronze, Silver and Gold exams turn real strength into trophies.",
+        "ru": "Навыки на турнике, полу и кольцах. Экзамены на бронзу, серебро и золото превращают реальную силу в кубки.",
+        "he": "כישורי מוט, רצפה וטבעות. מבחני ארד, כסף וזהב הופכים כוח אמיתי לגביעים."
+      },
+      "color": "#22d3ee",
+      "available": true,
+      "paths": [
+        {
+          "id": "muscle_up",
+          "name": { "en": "Muscle-Up", "ru": "Выход силой", "he": "מאסל אפ" },
+          "subtitle": {
+            "en": "From strict pull-ups to a clean bar muscle-up.",
+            "ru": "От строгих подтягиваний до чистого выхода силой на перекладине.",
+            "he": "ממשיכות חזה למוט ועד מאסל אפ נקי."
+          },
+          "description": {
+            "en": "A three-tier skill path. Each tier has four lessons and a practical exam. Pass the exam to earn the trophy and unlock the next tier.",
+            "ru": "Путь навыка из трёх тиров. В каждом тире четыре урока и практический экзамен. Сдал экзамен — получил кубок и открыл следующий тир.",
+            "he": "מסלול כישור בשלוש דרגות. בכל דרגה ארבעה שיעורים ומבחן מעשי. עוברים את המבחן, מקבלים גביע ופותחים את הדרגה הבאה."
+          },
+          "tiers": [
+            {
+              "id": "bronze",
+              "tier": "bronze",
+              "name": { "en": "Bronze", "ru": "Бронза", "he": "ארד" },
+              "goal": {
+                "en": "Build the pulling, pressing and core base for a muscle-up.",
+                "ru": "Построить базу тяги, жима и кора для выхода силой.",
+                "he": "לבנות בסיס משיכה, דחיפה וליבה למאסל אפ."
+              },
+              "lessons": [
+                {
+                  "id": "dead_hang",
+                  "name": { "en": "Dead Hang", "ru": "Вис на перекладине", "he": "תלייה על המוט" },
+                  "prescription": { "en": "3 × 30 sec", "ru": "3 × 30 сек", "he": "3 × 30 שנ׳" },
+                  "technique": {
+                    "en": "Grip the bar slightly wider than shoulders.|Hang with straight arms and active shoulders.|Breathe slowly and keep the body still.",
+                    "ru": "Возьмись за перекладину чуть шире плеч.|Виси на прямых руках, плечи активны, не проваливайся.|Дыши ровно, тело не раскачивай.",
+                    "he": "אחוז במוט מעט רחב מהכתפיים.|תלה עם ידיים ישרות וכתפיים פעילות.|נשום לאט ושמור על גוף יציב."
+                  },
+                  "checkpoints": {
+                    "en": "Thumb around the bar|Shoulders pulled down|No swinging",
+                    "ru": "Большой палец обхватывает гриф|Плечи опущены|Без раскачивания",
+                    "he": "אגודל סביב המוט|כתפיים למטה|בלי נדנוד"
+                  },
+                  "mistakes": {
+                    "en": "Fully relaxed shoulders|Bent elbows|Holding your breath",
+                    "ru": "Полностью расслабленные плечи|Согнутые локти|Задержка дыхания",
+                    "he": "כתפיים רפויות לגמרי|מרפקים כפופים|עצירת נשימה"
+                  }
+                },
+                {
+                  "id": "scapular_pullups",
+                  "name": { "en": "Scapular Pull-Ups", "ru": "Лопаточные подтягивания", "he": "משיכות שכמות" },
+                  "prescription": { "en": "3 × 8", "ru": "3 × 8", "he": "3 × 8" },
+                  "technique": {
+                    "en": "Start in a straight-arm hang.|Pull the shoulder blades down and together without bending the elbows.|Pause at the top, then lower slowly.",
+                    "ru": "Начни с виса на прямых руках.|Сведи и опусти лопатки, не сгибая локти.|Задержись сверху и медленно вернись в вис.",
+                    "he": "התחל בתלייה עם ידיים ישרות.|משוך את השכמות למטה ולפנים בלי לכופף מרפקים.|עצור למעלה וחזור לאט."
+                  },
+                  "checkpoints": {
+                    "en": "Elbows stay straight|Chest lifts slightly|Movement comes from the shoulder blades",
+                    "ru": "Локти прямые|Грудь слегка поднимается|Движение идёт от лопаток",
+                    "he": "מרפקים ישרים|החזה מתרומם מעט|התנועה מהשכמות"
+                  },
+                  "mistakes": {
+                    "en": "Bending the elbows into a pull-up|Shrugging up instead of pulling down|Swinging the legs",
+                    "ru": "Сгибание рук в подтягивание|Поднятие плеч вместо опускания|Раскачивание ногами",
+                    "he": "כיפוף מרפקים למשיכה|הרמת כתפיים במקום הורדה|נדנוד רגליים"
+                  }
+                },
+                {
+                  "id": "hollow_body",
+                  "name": { "en": "Hollow Body Hold", "ru": "Удержание hollow body", "he": "החזקת גוף חלול" },
+                  "prescription": { "en": "3 × 30 sec", "ru": "3 × 30 сек", "he": "3 × 30 שנ׳" },
+                  "technique": {
+                    "en": "Lie on your back and press the lower back into the floor.|Lift the shoulders and legs slightly, arms overhead.|Keep the ribs down and hold the dish shape.",
+                    "ru": "Ляг на спину и прижми поясницу к полу.|Слегка подними плечи и ноги, руки за голову.|Держи рёбра вниз и сохраняй форму лодочки.",
+                    "he": "שכב על הגב והצמד את הגב התחתון לרצפה.|הרם מעט כתפיים ורגליים, ידיים מעל הראש.|שמור צלעות למטה והחזק צורת סירה."
+                  },
+                  "checkpoints": {
+                    "en": "Lower back stays on the floor|Ribs down|Legs straight and together",
+                    "ru": "Поясница на полу|Рёбра вниз|Ноги прямые и вместе",
+                    "he": "גב תחתון על הרצפה|צלעות למטה|רגליים ישרות ויחד"
+                  },
+                  "mistakes": {
+                    "en": "Arching the lower back|Legs too high|Holding the breath",
+                    "ru": "Прогиб в пояснице|Ноги слишком высоко|Задержка дыхания",
+                    "he": "קשת בגב התחתון|רגליים גבוה מדי|עצירת נשימה"
+                  }
+                },
+                {
+                  "id": "pushups",
+                  "name": { "en": "Push-Ups", "ru": "Отжимания", "he": "שכיבות סמיכה" },
+                  "prescription": { "en": "3 × 12", "ru": "3 × 12", "he": "3 × 12" },
+                  "technique": {
+                    "en": "Set hands under the shoulders and body in one line.|Lower the chest with elbows about 45 degrees.|Press the floor away and lock out.",
+                    "ru": "Поставь руки под плечи, тело одной линией.|Опускай грудь, локти примерно под 45 градусов.|Оттолкнись от пола и выпрями руки.",
+                    "he": "ידיים מתחת לכתפיים, גוף בקו אחד.|הורד חזה עם מרפקים כ-45 מעלות.|דחוף מהרצפה ויישר ידיים."
+                  },
+                  "checkpoints": {
+                    "en": "Body stays rigid|Chest reaches near the floor|Full lockout",
+                    "ru": "Тело жёсткое|Грудь близко к полу|Полное выпрямление",
+                    "he": "גוף יציב|חזה קרוב לרצפה|יישור מלא"
+                  },
+                  "mistakes": {
+                    "en": "Sagging hips|Flaring elbows to 90 degrees|Half reps",
+                    "ru": "Провал таза|Локти в стороны под 90 градусов|Недоделанные повторы",
+                    "he": "אגן נופל|מרפקים פרושים ל-90 מעלות|חזרות חלקיות"
+                  }
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "Complete all stations. Rest 2–3 minutes between them.",
+                  "ru": "Пройди все станции. Отдых между ними 2–3 минуты.",
+                  "he": "עבור את כל התחנות. מנוחה 2–3 דקות ביניהן."
+                },
+                "stations": [
+                  { "id": "pullups", "type": "reps", "sets": 3, "target": 8, "name": { "en": "Strict pull-ups", "ru": "Строгие подтягивания", "he": "מתח נקי" }, "hint": { "en": "Chin over the bar, no kipping.", "ru": "Подбородок выше перекладины, без киппинга.", "he": "סנטר מעל המוט, בלי קיפינג." } },
+                  { "id": "dips", "type": "reps", "sets": 3, "target": 10, "name": { "en": "Parallel bar dips", "ru": "Брусья", "he": "מקבילים" }, "hint": { "en": "Lower to about 90 degrees, press to lockout.", "ru": "Опускайся примерно до 90 градусов, выжимай до конца.", "he": "רד לכ-90 מעלות, דחוף עד יישור." } },
+                  { "id": "hollow", "type": "hold", "sets": 1, "target": 30, "name": { "en": "Hollow body hold", "ru": "Hollow body", "he": "גוף חלול" } },
+                  { "id": "technique", "type": "manual", "name": { "en": "Technique verified", "ru": "Техника подтверждена", "he": "טכניקה אומתה" } }
+                ]
+              },
+              "trophy": {
+                "id": "muscle_up_bronze",
+                "name": { "en": "Bronze Muscle-Up", "ru": "Бронзовый выход силой", "he": "מאסל אפ ארד" },
+                "description": {
+                  "en": "The pulling, pressing and core base is verified.",
+                  "ru": "База тяги, жима и кора подтверждена.",
+                  "he": "בסיס המשיכה, הדחיפה והליבה אומת."
+                }
+              }
+            },
+            {
+              "id": "silver",
+              "tier": "silver",
+              "name": { "en": "Silver", "ru": "Серебро", "he": "כסף" },
+              "goal": {
+                "en": "Build the high pull, false grip and transition strength.",
+                "ru": "Развить высокую тягу, false grip и силу перехода.",
+                "he": "לפתח משיכה גבוהה, אחיזת false ומעבר."
+              },
+              "lessons": [
+                {
+                  "id": "high_pullup",
+                  "name": { "en": "High Pull-Up", "ru": "Высокая тяга", "he": "משיכה גבוהה" },
+                  "prescription": { "en": "3 × 5", "ru": "3 × 5", "he": "3 × 5" },
+                  "technique": {
+                    "en": "Start from a dead hang with a false or normal grip.|Pull the bar to the lower chest, driving elbows down and back.|Lower under control without swinging.",
+                    "ru": "Начни из виса с обычным или false-хватом.|Тяни перекладину к нижней части груди, локти вниз и назад.|Опускайся под контролем, без раскачивания.",
+                    "he": "התחל מתלייה עם אחיזה רגילה או false.|משוך את המוט לחזה התחתון, מרפקים למטה ולאחור.|רד בשליטה בלי נדנוד."
+                  },
+                  "checkpoints": {
+                    "en": "Bar reaches the lower chest|Chest up|No kipping",
+                    "ru": "Перекладина доходит до низа груди|Грудь вверх|Без киппинга",
+                    "he": "המוט מגיע לחזה התחתון|חזה למעלה|בלי קיפינג"
+                  },
+                  "mistakes": {
+                    "en": "Stopping at the chin|Using momentum|Shrugging the shoulders",
+                    "ru": "Остановка на подбородке|Использование инерции|Поднятие плеч",
+                    "he": "עצירה בסנטר|שימוש בתנופה|הרמת כתפיים"
+                  }
+                },
+                {
+                  "id": "false_grip",
+                  "name": { "en": "False Grip Hang", "ru": "Вис с false-хватом", "he": "תלייה באחיזת false" },
+                  "prescription": { "en": "3 × 20 sec", "ru": "3 × 20 сек", "he": "3 × 20 שנ׳" },
+                  "technique": {
+                    "en": "Place the wrist over the bar and wrap the fingers lightly.|Hang with active shoulders and a tall chest.|Keep the wrist close to the bar, not behind it.",
+                    "ru": "Положи запястье на перекладину и слегка обхвати пальцами.|Виси с активными плечами и высоким положением груди.|Держи запястье близко к перекладине, не за ней.",
+                    "he": "הנח את שורש כף היד על המוט ועטוף אצבעות קלות.|תלה עם כתפיים פעילות וחזה גבוה.|שמור את כף היד קרוב למוט."
+                  },
+                  "checkpoints": {
+                    "en": "Wrist over the bar|Shoulders active|Straight arms",
+                    "ru": "Запястье над перекладиной|Плечи активны|Руки прямые",
+                    "he": "כף יד מעל המוט|כתפיים פעילות|ידיים ישרות"
+                  },
+                  "mistakes": {
+                    "en": "Gripping only with the fingers|Letting the wrist slip behind the bar|Relaxed shoulders",
+                    "ru": "Хват только пальцами|Запястье уходит за перекладину|Расслабленные плечи",
+                    "he": "אחיזה באצבעות בלבד|כף יד מחליקה מאחורי המוט|כתפיים רפויות"
+                  }
+                },
+                {
+                  "id": "straight_bar_dips",
+                  "name": { "en": "Straight-Bar Dips", "ru": "Отжимания на прямой перекладине", "he": "דיפים על מוט ישר" },
+                  "prescription": { "en": "3 × 5", "ru": "3 × 5", "he": "3 × 5" },
+                  "technique": {
+                    "en": "Support yourself on a straight bar with straight arms.|Lower the chest toward the bar, elbows close.|Press back to a strong support position.",
+                    "ru": "Встань на прямые руки над перекладиной.|Опускай грудь к перекладине, локти близко.|Выжми себя обратно в поддержку.",
+                    "he": "תמוך על מוט ישר עם ידיים ישרות.|הורד חזה למוט, מרפקים קרובים.|דחוף חזרה לתמיכה חזקה."
+                  },
+                  "checkpoints": {
+                    "en": "Bar close to the body|Chest leads|Elbows stay controlled",
+                    "ru": "Перекладина близко к телу|Грудь вперёд|Локти под контролем",
+                    "he": "מוט קרוב לגוף|חזה מוביל|מרפקים בשליטה"
+                  },
+                  "mistakes": {
+                    "en": "Leaning too far back|Elbows flaring|Dropping into the bottom",
+                    "ru": "Сильный наклон назад|Локти в стороны|Падение в нижнюю точку",
+                    "he": "הטיה אחורה מדי|מרפקים פרושים|נפילה לתחתית"
+                  }
+                },
+                {
+                  "id": "negative_pullup",
+                  "name": { "en": "Negative Pull-Ups", "ru": "Негативные подтягивания", "he": "מתח שלילי" },
+                  "prescription": { "en": "3 × 3, 5 sec lower", "ru": "3 × 3, опускание 5 сек", "he": "3 × 3, ירידה 5 שנ׳" },
+                  "technique": {
+                    "en": "Jump or step to the top position, chin over the bar.|Lower yourself as slowly as possible.|Finish in a full dead hang.",
+                    "ru": "Запрыгни или подставь ноги, подбородок выше перекладины.|Опускайся как можно медленнее.|Закончи в полном висе.",
+                    "he": "קפוץ או עלה למצב העליון, סנטר מעל המוט.|רד לאט ככל האפשר.|סיים בתלייה מלאה."
+                  },
+                  "checkpoints": {
+                    "en": "5 seconds or slower|Chest up|Full hang at the bottom",
+                    "ru": "5 секунд или медленнее|Грудь вверх|Полный вис внизу",
+                    "he": "5 שניות או יותר|חזה למעלה|תלייה מלאה למטה"
+                  },
+                  "mistakes": {
+                    "en": "Dropping fast|Bending the elbows at the bottom|Using a kip to start",
+                    "ru": "Быстрое падение|Сгибание локтей внизу|Киппинг для старта",
+                    "he": "ירידה מהירה|כיפוף מרפקים למטה|קיפינג בהתחלה"
+                  }
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "The transition test. Clean reps only.",
+                  "ru": "Тест перехода. Только чистые повторы.",
+                  "he": "מבחן המעבר. חזרות נקיות בלבד."
+                },
+                "stations": [
+                  { "id": "high_pullup", "type": "reps", "sets": 3, "target": 5, "name": { "en": "High pull-ups", "ru": "Высокая тяга", "he": "משיכה גבוהה" } },
+                  { "id": "false_grip", "type": "hold", "sets": 1, "target": 20, "name": { "en": "False grip hang", "ru": "Вис false-хватом", "he": "תליית false" } },
+                  { "id": "straight_bar_dips", "type": "reps", "sets": 3, "target": 5, "name": { "en": "Straight-bar dips", "ru": "Отжимания на прямой перекладине", "he": "דיפים על מוט ישר" } },
+                  { "id": "negative_pullup", "type": "reps", "sets": 3, "target": 3, "name": { "en": "Negative pull-ups", "ru": "Негативные подтягивания", "he": "מתח שלילי" } },
+                  { "id": "technique", "type": "manual", "name": { "en": "Technique verified", "ru": "Техника подтверждена", "he": "טכניקה אומתה" } }
+                ]
+              },
+              "trophy": {
+                "id": "muscle_up_silver",
+                "name": { "en": "Silver Muscle-Up", "ru": "Серебряный выход силой", "he": "מאסל אפ כסף" },
+                "description": {
+                  "en": "The high pull, false grip and transition are verified.",
+                  "ru": "Высокая тяга, false-хват и переход подтверждены.",
+                  "he": "המשיכה הגבוהה, אחיזת false והמעבר אומתו."
+                }
+              }
+            },
+            {
+              "id": "gold",
+              "tier": "gold",
+              "name": { "en": "Gold", "ru": "Золото", "he": "זהב" },
+              "goal": {
+                "en": "Perform a clean strict muscle-up and repeat it.",
+                "ru": "Выполнить чистый строгий выход силой и повторить его.",
+                "he": "לבצע מאסל אפ נקי ולחזור עליו."
+              },
+              "lessons": [
+                {
+                  "id": "jumping_mu",
+                  "name": { "en": "Jumping Muscle-Up", "ru": "Выход силой с прыжком", "he": "מאסל אפ בקפיצה" },
+                  "prescription": { "en": "3 × 3", "ru": "3 × 3", "he": "3 × 3" },
+                  "technique": {
+                    "en": "Use a low bar or a small jump to reach the top.|Pull the chest over the bar and press into support.|Lower with control and repeat.",
+                    "ru": "Используй низкую перекладину или небольшой прыжок.|Протяни грудь над перекладиной и выжми себя в поддержку.|Опускайся под контролем и повторяй.",
+                    "he": "השתמש במוט נמוך או קפיצה קטנה.|משוך חזה מעל המוט ודחוף לתמיכה.|רד בשליטה וחזור."
+                  },
+                  "checkpoints": {
+                    "en": "Chest over the bar|Elbows finish locked|Controlled descent",
+                    "ru": "Грудь над перекладиной|Локти выпрямлены|Контролируемое опускание",
+                    "he": "חזה מעל המוט|מרפקים נעולים|ירידה בשליטה"
+                  },
+                  "mistakes": {
+                    "en": "Jumping too high and skipping the pull|Chicken-winging one elbow|Dropping from the top",
+                    "ru": "Слишком высокий прыжок без тяги|Один локоть уходит в сторону|Падение сверху",
+                    "he": "קפיצה גבוהה מדי בלי משיכה|מרפק אחד בורח|נפילה מהעליון"
+                  }
+                },
+                {
+                  "id": "negative_mu",
+                  "name": { "en": "Negative Muscle-Up", "ru": "Негативный выход силой", "he": "מאסל אפ שלילי" },
+                  "prescription": { "en": "3 × 3, 5 sec lower", "ru": "3 × 3, опускание 5 сек", "he": "3 × 3, ירידה 5 שנ׳" },
+                  "technique": {
+                    "en": "Start in support above the bar.|Lower through the transition slowly, keeping the bar close.|Finish in a dead hang.",
+                    "ru": "Начни в поддержке над перекладиной.|Медленно проходи переход, держа перекладину близко.|Закончи в висе.",
+                    "he": "התחל בתמיכה מעל המוט.|רד דרך המעבר לאט, המוט קרוב.|סיים בתלייה."
+                  },
+                  "checkpoints": {
+                    "en": "Slow through the transition|Bar stays close|No free fall",
+                    "ru": "Медленно через переход|Перекладина близко|Без свободного падения",
+                    "he": "לאט דרך המעבר|המוט קרוב|בלי נפילה חופשית"
+                  },
+                  "mistakes": {
+                    "en": "Dropping through the middle|Losing the false grip|Bending the legs",
+                    "ru": "Провал в середине|Потеря false-хвата|Сгибание ног",
+                    "he": "נפילה באמצע|איבוד אחיזת false|כיפוף רגליים"
+                  }
+                },
+                {
+                  "id": "transition_drill",
+                  "name": { "en": "Transition Drill", "ru": "Отработка перехода", "he": "תרגול מעבר" },
+                  "prescription": { "en": "3 × 5", "ru": "3 × 5", "he": "3 × 5" },
+                  "technique": {
+                    "en": "Use a low bar and start with the chest at bar height.|Practise pulling the elbows down and rotating the chest over.|Finish in support, then reset.",
+                    "ru": "На низкой перекладине начни с грудью на уровне грифа.|Отрабатывай опускание локтей и перевод груди над перекладиной.|Выходи в поддержку и сбрасывай положение.",
+                    "he": "על מוט נמוך התחל עם חזה בגובה המוט.|תרגל הורדת מרפקים וסיבוב החזה מעל המוט.|סיים בתמיכה וחזור להתחלה."
+                  },
+                  "checkpoints": {
+                    "en": "Elbows lead down|Chest rotates over|No wild swing",
+                    "ru": "Локти идут вниз|Грудь переходит сверху|Без сильного маха",
+                    "he": "מרפקים מובילים למטה|חזה מסתובב מעל|בלי תנופה פרועה"
+                  },
+                  "mistakes": {
+                    "en": "Pulling with the arms only|Letting the hips drift back|Rushing the rotation",
+                    "ru": "Тяга только руками|Таз уходит назад|Спешка в ротации",
+                    "he": "משיכה בידיים בלבד|אגן בורח אחורה|מהר מדי בסיבוב"
+                  }
+                },
+                {
+                  "id": "strict_mu",
+                  "name": { "en": "Strict Muscle-Up", "ru": "Строгий выход силой", "he": "מאסל אפ נקי" },
+                  "prescription": { "en": "5 × 1", "ru": "5 × 1", "he": "5 × 1" },
+                  "technique": {
+                    "en": "Start from a full dead hang.|Pull explosively, keep the bar close and rotate the chest over.|Press to lockout and lower under control.",
+                    "ru": "Начни из полного виса.|Тяни взрывно, держи перекладину близко и переводи грудь сверху.|Выжми до выпрямления и опустись под контролем.",
+                    "he": "התחל מתלייה מלאה.|משוך בעוצמה, שמור מוט קרוב וסובב חזה מעל.|דחוף ליישור ורד בשליטה."
+                  },
+                  "checkpoints": {
+                    "en": "No kip|Chest over the bar|Elbows lock at the top",
+                    "ru": "Без киппинга|Грудь над перекладиной|Локти выпрямлены сверху",
+                    "he": "בלי קיפ|חזה מעל המוט|מרפקים נעולים למעלה"
+                  },
+                  "mistakes": {
+                    "en": "Using a kip|Chicken wing|Dropping from support",
+                    "ru": "Киппинг|Куриное крыло|Падение из поддержки",
+                    "he": "קיפ|כנף עוף|נפילה מהתמיכה"
+                  }
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "The gold exam. One clean strict muscle-up, then repeat.",
+                  "ru": "Золотой экзамен. Один чистый строгий выход силой, затем повтор.",
+                  "he": "מבחן הזהב. מאסל אפ נקי אחד, ואז חזרה."
+                },
+                "stations": [
+                  { "id": "strict_mu", "type": "reps", "sets": 3, "target": 1, "name": { "en": "Strict muscle-ups", "ru": "Строгие выходы силой", "he": "מאסל אפ נקי" }, "hint": { "en": "3 singles, full dead hang start, no kip.", "ru": "3 сингла из полного виса, без киппинга.", "he": "3 חזרות בודדות מתלייה מלאה, בלי קיפ." } },
+                  { "id": "technique", "type": "manual", "name": { "en": "Technique verified", "ru": "Техника подтверждена", "he": "טכניקה אומתה" } }
+                ]
+              },
+              "trophy": {
+                "id": "muscle_up_gold",
+                "name": { "en": "Gold Muscle-Up", "ru": "Золотой выход силой", "he": "מאסל אפ זהב" },
+                "description": {
+                  "en": "A clean strict muscle-up is verified.",
+                  "ru": "Чистый строгий выход силой подтверждён.",
+                  "he": "מאסל אפ נקי אומת."
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "strength",
+      "name": { "en": "Strength", "ru": "Сила", "he": "כוח" },
+      "description": {
+        "en": "Barbell strength standards. Bronze, Silver and Gold trophies for the deadlift.",
+        "ru": "Силовые стандарты со штангой. Бронза, серебро и золото в становой тяге.",
+        "he": "סטנדרטים של כוח עם מוט. גביעי ארד, כסף וזהב בדדליפט."
+      },
+      "color": "#f59e0b",
+      "available": true,
+      "paths": [
+        {
+          "id": "deadlift",
+          "name": { "en": "Deadlift", "ru": "Становая тяга", "he": "דדליפט" },
+          "subtitle": {
+            "en": "Build a strong, technical conventional deadlift.",
+            "ru": "Построй сильную и техничную классическую становую тягу.",
+            "he": "בנה דדליפט קלאסי חזק וטכני."
+          },
+          "description": {
+            "en": "Three tiers based on bodyweight multiples. The exam is a real top set or 1RM; the app checks the ratio.",
+            "ru": "Три тира по кратности веса тела. Экзамен — реальный тяжёлый подход или 1ПМ; приложение проверяет соотношение.",
+            "he": "שלוש דרגות לפי משקל גוף. המבחן הוא סט כבד או 1RM; האפליקציה בודקת את היחס."
+          },
+          "tiers": [
+            {
+              "id": "bronze",
+              "tier": "bronze",
+              "name": { "en": "Bronze", "ru": "Бронза", "he": "ארד" },
+              "goal": {
+                "en": "Deadlift 1.0× bodyweight with clean technique.",
+                "ru": "Становая 1.0× веса тела с чистой техникой.",
+                "he": "דדליפט 1.0× משקל גוף עם טכניקה נקייה."
+              },
+              "lessons": [
+                {
+                  "id": "setup_brace",
+                  "name": { "en": "Setup & Brace", "ru": "Установка и брейсинг", "he": "התחלה וביסוס" },
+                  "prescription": { "en": "3 × 5 empty bar", "ru": "3 × 5 с пустым грифом", "he": "3 × 5 עם מוט ריק" },
+                  "technique": {
+                    "en": "Stand with the bar over mid-foot, feet hip-width.|Hinge down, grip just outside the legs, chest up.|Brace the trunk, pull the slack out of the bar.",
+                    "ru": "Встань так, чтобы гриф был над серединой стопы, стопы на ширине таза.|Наклонись, возьми гриф чуть шире ног, грудь вверх.|Напряги корпус и выбери слабину грифа.",
+                    "he": "עמוד עם המוט מעל אמצע כף הרגל, רגליים ברוחב אגן.|התכופף, אחוז מעט מחוץ לרגליים, חזה למעלה.|בסס את הגוף ומשוך את החופש מהמוט."
+                  },
+                  "checkpoints": {
+                    "en": "Bar over mid-foot|Neutral spine|Lats engaged",
+                    "ru": "Гриф над серединой стопы|Нейтральная спина|Широчайшие включены",
+                    "he": "מוט מעל אמצע כף רגל|עמוד שדרה ניטרלי|לטיסימוס פעיל"
+                  },
+                  "mistakes": {
+                    "en": "Bar too far from the shins|Rounded upper back|Bending the elbows",
+                    "ru": "Гриф далеко от голеней|Круглая верхняя спина|Сгибание локтей",
+                    "he": "מוט רחוק מהשוקיים|גב עליון עגול|כיפוף מרפקים"
+                  }
+                },
+                {
+                  "id": "conventional_deadlift",
+                  "name": { "en": "Conventional Deadlift", "ru": "Классическая становая", "he": "דדליפט קלאסי" },
+                  "prescription": { "en": "4 × 5 @ 70–75%", "ru": "4 × 5 @ 70–75%", "he": "4 × 5 @ 70–75%" },
+                  "technique": {
+                    "en": "Push the floor away and keep the bar against the legs.|Stand tall by squeezing the glutes, not by leaning back.|Lower by hinging the hips back.",
+                    "ru": "Отталкивайся от пола и веди гриф вдоль ног.|Вставай за счёт ягодиц, не отклоняйся назад.|Опускай, отводя таз назад.",
+                    "he": "דחוף את הרצפה והשאר מוט צמוד לרגליים.|עמוד זקוף על ידי כיווץ ישבן, לא הטיה אחורה.|רד על ידי הוצאת אגן אחורה."
+                  },
+                  "checkpoints": {
+                    "en": "Bar path vertical|Hips and shoulders rise together|Glutes lock the top",
+                    "ru": "Вертикальный путь грифа|Таз и плечи поднимаются вместе|Ягодицы фиксируют верх",
+                    "he": "מסלול מוט אנכי|אגן וכתפיים עולים יחד|ישבן נועל למעלה"
+                  },
+                  "mistakes": {
+                    "en": "Jerking the bar|Hips shooting up first|Hyperextending at the top",
+                    "ru": "Рывок грифа|Таз уходит вверх первым|Переразгибание сверху",
+                    "he": "משיכת מוט בפתאומיות|אגן עולה ראשון|הארכה יתרה למעלה"
+                  }
+                },
+                {
+                  "id": "romanian_deadlift",
+                  "name": { "en": "Romanian Deadlift", "ru": "Румынская тяга", "he": "דדליפט רומני" },
+                  "prescription": { "en": "3 × 8 @ 60–65%", "ru": "3 × 8 @ 60–65%", "he": "3 × 8 @ 60–65%" },
+                  "technique": {
+                    "en": "Start at the top with soft knees.|Hinge the hips back and lower the bar along the thighs.|Stop when the hamstrings stretch, then drive the hips forward.",
+                    "ru": "Начни сверху с мягкими коленями.|Отводи таз назад и веди гриф по бёдрам.|Остановись на растяжении бицепса бедра и верни таз вперёд.",
+                    "he": "התחל למעלה עם ברכיים רכות.|הוצא אגן אחורה והורד מוט לאורך הירכיים.|עצור במתיחת המיתר ודחוף אגן קדימה."
+                  },
+                  "checkpoints": {
+                    "en": "Bar close to the legs|Flat back|Hips drive the movement",
+                    "ru": "Гриф близко к ногам|Плоская спина|Движение от таза",
+                    "he": "מוט קרוב לרגליים|גב שטוח|אגן מוביל"
+                  },
+                  "mistakes": {
+                    "en": "Squatting the bar down|Rounding the back|Bending the knees too much",
+                    "ru": "Приседание с грифом|Круглая спина|Слишком сильное сгибание коленей",
+                    "he": "סקוואט עם המוט|גב עגול|כיפוף ברכיים יתר"
+                  }
+                },
+                {
+                  "id": "rack_pull",
+                  "name": { "en": "Rack Pull", "ru": "Тяга со стоек", "he": "משיכה מהסטנדים" },
+                  "prescription": { "en": "3 × 6 @ 80–85%", "ru": "3 × 6 @ 80–85%", "he": "3 × 6 @ 80–85%" },
+                  "technique": {
+                    "en": "Set the bar just below the knees.|Brace and pull with a neutral spine.|Lock out with the glutes and lower under control.",
+                    "ru": "Поставь гриф чуть ниже коленей.|Напряги корпус и тяни с нейтральной спиной.|Зафиксируй ягодицами и опусти под контролем.",
+                    "he": "הנח מוט מעט מתחת לברכיים.|בסס ומשוך עם עמוד שדרה ניטרלי.|נעל עם ישבן ורד בשליטה."
+                  },
+                  "checkpoints": {
+                    "en": "Bar near the legs|Chest up|No bounce",
+                    "ru": "Гриф у ног|Грудь вверх|Без отбива",
+                    "he": "מוט ליד הרגליים|חזה למעלה|בלי קפיצה"
+                  },
+                  "mistakes": {
+                    "en": "Starting too high|Leaning back|Dropping the bar",
+                    "ru": "Слишком высокий старт|Наклон назад|Бросок грифа",
+                    "he": "התחלה גבוהה מדי|הטיה אחורה|זריקת מוט"
+                  }
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "Warm up, then perform a clean top set. Enter the weight and your bodyweight.",
+                  "ru": "Разомнись и выполни чистый тяжёлый подход. Введи вес и вес тела.",
+                  "he": "תחמם ואז בצע סט כבד נקי. הזן משקל ומשקל גוף."
+                },
+                "stations": [
+                  { "id": "one_rm", "type": "load_bw", "sets": 1, "target": 1.0, "name": { "en": "Deadlift top set", "ru": "Тяжёлый подход в становой", "he": "סט כבד בדדליפט" }, "hint": { "en": "A clean single or a top set converted to e1RM.", "ru": "Чистый сингл или тяжёлый подход с пересчётом в e1RM.", "he": "חזרה בודדת נקייה או סט כבד המרה ל-e1RM." } },
+                  { "id": "technique", "type": "manual", "name": { "en": "Technique verified", "ru": "Техника подтверждена", "he": "טכניקה אומתה" } }
+                ]
+              },
+              "trophy": {
+                "id": "deadlift_bronze",
+                "name": { "en": "Bronze Deadlift", "ru": "Бронзовая становая тяга", "he": "דדליפט ארד" },
+                "description": {
+                  "en": "A 1.0× bodyweight deadlift with clean technique.",
+                  "ru": "Становая 1.0× веса тела с чистой техникой.",
+                  "he": "דדליפט 1.0× משקל גוף עם טכניקה נקייה."
+                }
+              }
+            },
+            {
+              "id": "silver",
+              "tier": "silver",
+              "name": { "en": "Silver", "ru": "Серебро", "he": "כסף" },
+              "goal": {
+                "en": "Deadlift 1.5× bodyweight.",
+                "ru": "Становая 1.5× веса тела.",
+                "he": "דדליפט 1.5× משקל גוף."
+              },
+              "lessons": [
+                {
+                  "id": "paused_deadlift",
+                  "name": { "en": "Paused Deadlift", "ru": "Становая с паузой", "he": "דדליפט עם עצירה" },
+                  "prescription": { "en": "4 × 4 @ 75–80%", "ru": "4 × 4 @ 75–80%", "he": "4 × 4 @ 75–80%" },
+                  "technique": {
+                    "en": "Pull to just below the knee and pause for 2 seconds.|Keep the bar close and the trunk braced.|Finish the rep without losing position.",
+                    "ru": "Потяни до чуть ниже колена и задержись на 2 секунды.|Держи гриф близко, корпус напряжён.|Заверши повтор без потери положения.",
+                    "he": "משוך למעט מתחת לברך ועצור 2 שניות.|שמור מוט קרוב וגוף מבוסס.|סיים בלי לאבד מנח."
+                  },
+                  "checkpoints": {
+                    "en": "Pause below the knee|Bar stays close|No rounding",
+                    "ru": "Пауза ниже колена|Гриф близко|Без округления",
+                    "he": "עצירה מתחת לברך|מוט קרוב|בלי עיגול"
+                  },
+                  "mistakes": {
+                    "en": "Relaxing in the pause|Letting the bar drift|Rushing the lockout",
+                    "ru": "Расслабление в паузе|Гриф уходит|Спешка в фиксации",
+                    "he": "הרפיה בעצירה|מוט בורח|מהר בנעילה"
+                  }
+                },
+                {
+                  "id": "deficit_deadlift",
+                  "name": { "en": "Deficit Deadlift", "ru": "Становая с дефицита", "he": "דדליפט מהגבהה" },
+                  "prescription": { "en": "3 × 5 @ 70–75%", "ru": "3 × 5 @ 70–75%", "he": "3 × 5 @ 70–75%" },
+                  "technique": {
+                    "en": "Stand on a 2–5 cm plate or platform.|Set the back and pull from a deeper start.|Keep the bar close and finish tall.",
+                    "ru": "Встань на платформу 2–5 см.|Зафиксируй спину и тяни из более глубокого старта.|Держи гриф близко и заверши в полной стойке.",
+                    "he": "עמוד על פלטה 2–5 ס״מ.|קבע גב ומשוך מהתחלה עמוקה יותר.|שמור מוט קרוב וסיים זקוף."
+                  },
+                  "checkpoints": {
+                    "en": "Back stays neutral|Bar close|Full lockout",
+                    "ru": "Спина нейтральная|Гриф близко|Полная фиксация",
+                    "he": "גב ניטרלי|מוט קרוב|נעילה מלאה"
+                  },
+                  "mistakes": {
+                    "en": "Too much deficit|Rounding to reach the bar|Bouncing out of the bottom",
+                    "ru": "Слишком большой дефицит|Округление, чтобы достать гриф|Отбив снизу",
+                    "he": "גובה יתר|עיגול כדי להגיע למוט|קפיצה מהתחתית"
+                  }
+                },
+                {
+                  "id": "deadlift_volume",
+                  "name": { "en": "Deadlift Volume", "ru": "Объёмная становая", "he": "נפח דדליפט" },
+                  "prescription": { "en": "5 × 5 @ 70%", "ru": "5 × 5 @ 70%", "he": "5 × 5 @ 70%" },
+                  "technique": {
+                    "en": "Use a moderate load and perfect setup.|Keep every rep identical.|Stop the set if technique breaks.",
+                    "ru": "Работай с умеренным весом и идеальной установкой.|Каждый повтор делай одинаково.|Останавливай подход, если техника ломается.",
+                    "he": "עבוד במשקל בינוני והתחלה מושלמת.|כל חזרה זהה.|עצור סט אם הטכניקה נשברת."
+                  },
+                  "checkpoints": {
+                    "en": "Same start every rep|Controlled eccentric|No grinders",
+                    "ru": "Одинаковый старт|Контролируемое опускание|Без отказных повторов",
+                    "he": "אותה התחלה בכל חזרה|ירידה בשליטה|בלי חזרות כשל"
+                  },
+                  "mistakes": {
+                    "en": "Chasing weight|Losing brace|Rushing between reps",
+                    "ru": "Погоня за весом|Потеря брейсинга|Спешка между повторами",
+                    "he": "רדיפה אחרי משקל|איבוד ביסוס|מהר בין חזרות"
+                  }
+                },
+                {
+                  "id": "grip_rows",
+                  "name": { "en": "Grip & Rows", "ru": "Хват и тяги", "he": "אחיזה וחתירות" },
+                  "prescription": { "en": "3 × 8 rows + 3 × 20 sec hold", "ru": "3 × 8 тяги + 3 × 20 сек удержание", "he": "3 × 8 חתירה + 3 × 20 שנ׳ אחיזה" },
+                  "technique": {
+                    "en": "Train rows with a strong upper-back squeeze.|Finish with heavy holds or farmer carries.|Keep the spine neutral.",
+                    "ru": "Делай тяги с сильным сведением лопаток.|Заверши тяжёлыми удержаниями или переносками.|Держи спину нейтральной.",
+                    "he": "בצע חתירות עם כיווץ גב עליון.|סיים עם החזקות כבדות או נשיאה.|שמור עמוד שדרה ניטרלי."
+                  },
+                  "checkpoints": {
+                    "en": "Elbows drive back|Grip stays closed|No shrugging",
+                    "ru": "Локти назад|Хват закрыт|Без поднятия плеч",
+                    "he": "מרפקים אחורה|אחיזה סגורה|בלי הרמת כתפיים"
+                  },
+                  "mistakes": {
+                    "en": "Using straps all the time|Pulling with the arms only|Rounding the back",
+                    "ru": "Постоянные лямки|Тяга только руками|Круглая спина",
+                    "he": "שימוש קבוע ברצועות|משיכה בידיים בלבד|גב עגול"
+                  }
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "A clean 1.5× bodyweight deadlift.",
+                  "ru": "Чистая становая 1.5× веса тела.",
+                  "he": "דדליפט נקי 1.5× משקל גוף."
+                },
+                "stations": [
+                  { "id": "one_rm", "type": "load_bw", "sets": 1, "target": 1.5, "name": { "en": "Deadlift top set", "ru": "Тяжёлый подход в становой", "he": "סט כבד בדדליפט" } },
+                  { "id": "technique", "type": "manual", "name": { "en": "Technique verified", "ru": "Техника подтверждена", "he": "טכניקה אומתה" } }
+                ]
+              },
+              "trophy": {
+                "id": "deadlift_silver",
+                "name": { "en": "Silver Deadlift", "ru": "Серебряная становая тяга", "he": "דדליפט כסף" },
+                "description": {
+                  "en": "A 1.5× bodyweight deadlift with clean technique.",
+                  "ru": "Становая 1.5× веса тела с чистой техникой.",
+                  "he": "דדליפט 1.5× משקל גוף עם טכניקה נקייה."
+                }
+              }
+            },
+            {
+              "id": "gold",
+              "tier": "gold",
+              "name": { "en": "Gold", "ru": "Золото", "he": "זהב" },
+              "goal": {
+                "en": "Deadlift 2.0× bodyweight.",
+                "ru": "Становая 2.0× веса тела.",
+                "he": "דדליפט 2.0× משקל גוף."
+              },
+              "lessons": [
+                {
+                  "id": "heavy_singles",
+                  "name": { "en": "Heavy Singles", "ru": "Тяжёлые синглы", "he": "חזרות בודדות כבדות" },
+                  "prescription": { "en": "5 × 1 @ 90–95%", "ru": "5 × 1 @ 90–95%", "he": "5 × 1 @ 90–95%" },
+                  "technique": {
+                    "en": "Warm up thoroughly and take full rest between singles.|Use the same setup every time.|Stop if the bar slows dramatically or the back rounds.",
+                    "ru": "Хорошо разомнись и отдыхай между синглами.|Используй одинаковую установку каждый раз.|Останавливайся, если гриф резко замедляется или спина круглеет.",
+                    "he": "תחמם היטב ונוח בין חזרות.|אותה התחלה בכל פעם.|עצור אם המוט מאט מאוד או הגב מתעגל."
+                  },
+                  "checkpoints": {
+                    "en": "Full rest|Same setup|Clean lockout",
+                    "ru": "Полный отдых|Одинаковая установка|Чистая фиксация",
+                    "he": "מנוחה מלאה|אותה התחלה|נעילה נקייה"
+                  },
+                  "mistakes": {
+                    "en": "Rushing singles|Changing technique|Grinding ugly reps",
+                    "ru": "Спешка между синглами|Смена техники|Уродливые отказные повторы",
+                    "he": "מהר בין חזרות|שינוי טכניקה|חזרות כשל מכוערות"
+                  }
+                },
+                {
+                  "id": "weak_point",
+                  "name": { "en": "Weak-Point Block", "ru": "Блок слабого места", "he": "בלוק נקודת חולשה" },
+                  "prescription": { "en": "3 × 6–8 accessory + 3 × 5 paused", "ru": "3 × 6–8 вспомогательное + 3 × 5 с паузой", "he": "3 × 6–8 עזר + 3 × 5 עם עצירה" },
+                  "technique": {
+                    "en": "Choose one weak point: off the floor, below the knee or lockout.|Train it with a targeted variation and moderate volume.|Keep the main lift fresh.",
+                    "ru": "Выбери слабое место: съём с пола, ниже колена или фиксация.|Прорабатывай его целевым вариантом и умеренным объёмом.|Основную тягу держи свежей.",
+                    "he": "בחר נקודת חולשה: מהרצפה, מתחת לברך או נעילה.|עבוד עליה בווריאציה ממוקדת ונפח בינוני.|שמור את התרגיל הראשי רענן."
+                  },
+                  "checkpoints": {
+                    "en": "Target the weak range|Controlled reps|No maxing",
+                    "ru": "Работа в слабой амплитуде|Контролируемые повторы|Без максимумов",
+                    "he": "עבודה בטווח החלש|חזרות בשליטה|בלי מקסימום"
+                  },
+                  "mistakes": {
+                    "en": "Training everything at once|Too much volume|Ignoring technique",
+                    "ru": "Тренировать всё сразу|Слишком много объёма|Игнорировать технику",
+                    "he": "לאמן הכל בבת אחת|נפח יתר|התעלמות מטכניקה"
+                  }
+                },
+                {
+                  "id": "peaking",
+                  "name": { "en": "Peaking Block", "ru": "Пиковый блок", "he": "בלוק שיא" },
+                  "prescription": { "en": "3 weeks: 3×3 → 2×2 → 1×1", "ru": "3 недели: 3×3 → 2×2 → 1×1", "he": "3 שבועות: 3×3 → 2×2 → 1×1" },
+                  "technique": {
+                    "en": "Reduce volume and keep intensity high.|Practise the exact competition setup.|Finish the block with a planned test.",
+                    "ru": "Снижай объём и держи высокую интенсивность.|Отрабатывай точную соревновательную установку.|Заверши блок запланированным тестом.",
+                    "he": "הפחת נפח ושמור עצימות גבוהה.|תרגל התחלה תחרותית מדויקת.|סיים את הבלוק במבחן מתוכנן."
+                  },
+                  "checkpoints": {
+                    "en": "Volume drops|Intensity rises|Test is planned",
+                    "ru": "Объём падает|Интенсивность растёт|Тест запланирован",
+                    "he": "נפח יורד|עצימות עולה|מבחן מתוכנן"
+                  },
+                  "mistakes": {
+                    "en": "Adding volume at the last minute|Testing too often|Changing the setup",
+                    "ru": "Добавлять объём в последний момент|Слишком частые тесты|Менять установку",
+                    "he": "הוספת נפח ברגע האחרון|מבחנים תכופים מדי|שינוי התחלה"
+                  }
+                },
+                {
+                  "id": "recovery",
+                  "name": { "en": "Recovery", "ru": "Восстановление", "he": "התאוששות" },
+                  "prescription": { "en": "Sleep 7–9 h + 2 easy days", "ru": "Сон 7–9 ч + 2 лёгких дня", "he": "שינה 7–9 ש׳ + 2 ימים קלים" },
+                  "technique": {
+                    "en": "Keep easy days truly easy.|Prioritise sleep and protein.|Stop if pain changes your technique.",
+                    "ru": "Лёгкие дни должны быть действительно лёгкими.|Приоритет — сон и белок.|Остановись, если боль меняет технику.",
+                    "he": "ימים קלים באמת קלים.|תעדף שינה וחלבון.|עצור אם כאב משנה את הטכניקה."
+                  },
+                  "checkpoints": {
+                    "en": "Sleep 7–9 h|No pain|Ready for the test",
+                    "ru": "Сон 7–9 ч|Без боли|Готов к тесту",
+                    "he": "שינה 7–9 ש׳|בלי כאב|מוכן למבחן"
+                  },
+                  "mistakes": {
+                    "en": "Training hard every day|Ignoring pain|Testing sleep-deprived",
+                    "ru": "Тренироваться тяжело каждый день|Игнорировать боль|Тестироваться невыспавшимся",
+                    "he": "אימון קשה כל יום|התעלמות מכאב|מבחן בלי שינה"
+                  }
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "A clean 2.0× bodyweight deadlift.",
+                  "ru": "Чистая становая 2.0× веса тела.",
+                  "he": "דדליפט נקי 2.0× משקל גוף."
+                },
+                "stations": [
+                  { "id": "one_rm", "type": "load_bw", "sets": 1, "target": 2.0, "name": { "en": "Deadlift top set", "ru": "Тяжёлый подход в становой", "he": "סט כבד בדדליפט" } },
+                  { "id": "technique", "type": "manual", "name": { "en": "Technique verified", "ru": "Техника подтверждена", "he": "טכניקה אומתה" } }
+                ]
+              },
+              "trophy": {
+                "id": "deadlift_gold",
+                "name": { "en": "Gold Deadlift", "ru": "Золотая становая тяга", "he": "דדליפט זהב" },
+                "description": {
+                  "en": "A 2.0× bodyweight deadlift with clean technique.",
+                  "ru": "Становая 2.0× веса тела с чистой техникой.",
+                  "he": "דדליפט 2.0× משקל גוף עם טכניקה נקייה."
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "speed",
+      "name": { "en": "Speed", "ru": "Скорость", "he": "מהירות" },
+      "description": { "en": "Sprint, jump and agility tests. Coming next.", "ru": "Спринты, прыжки и agility-тесты. Скоро.", "he": "ספרינטים, קפיצות וזריזות. בקרוב." },
+      "color": "#a78bfa",
+      "available": false,
+      "paths": []
+    },
+    {
+      "id": "endurance",
+      "name": { "en": "Endurance", "ru": "Выносливость", "he": "סיבולת" },
+      "description": { "en": "5K, rowing and conditioning benchmarks. Coming next.", "ru": "5 км, гребля и кондиционные нормативы. Скоро.", "he": "5 ק״מ, חתירה וכושר. בקרוב." },
+      "color": "#34d399",
+      "available": false,
+      "paths": []
+    },
+    {
+      "id": "hypertrophy",
+      "name": { "en": "Muscle", "ru": "Масса", "he": "מסת שריר" },
+      "description": { "en": "Weekly volume and physique quests. Coming next.", "ru": "Недельный объём и квесты на форму. Скоро.", "he": "נפח שבועי ומשימות פיזיק. בקרוב." },
+      "color": "#f472b6",
+      "available": false,
+      "paths": []
+    },
+    {
+      "id": "mobility",
+      "name": { "en": "Mobility", "ru": "Мобильность", "he": "גמישות" },
+      "description": { "en": "Splits, shoulders and deep squat milestones. Coming next.", "ru": "Шпагаты, плечи и глубокий присед. Скоро.", "he": "שפגטים, כתפיים וסקוואט עמוק. בקרוב." },
+      "color": "#38bdf8",
+      "available": false,
+      "paths": []
+    },
+    {
+      "id": "kettlebell",
+      "name": { "en": "Kettlebell", "ru": "Гири", "he": "קטלבל" },
+      "description": { "en": "Swings, get-ups and carries. Coming next.", "ru": "Свинги, get-up и переноски. Скоро.", "he": "סווינגים,get-up ונשיאות. בקרוב." },
+      "color": "#fb923c",
+      "available": false,
+      "paths": []
+    },
+    {
+      "id": "olympic",
+      "name": { "en": "Olympic Lifting", "ru": "Олимпийская тяжёлая атлетика", "he": "הרמת משקולות אולימפית" },
+      "description": { "en": "Snatch and clean & jerk progressions. Coming next.", "ru": "Прогрессии рывка и толчка. Скоро.", "he": "התקדמות סנאץ׳ וקלין אנד ג׳רק. בקרוב." },
+      "color": "#fbbf24",
+      "available": false,
+      "paths": []
+    }
+  ]
+}
