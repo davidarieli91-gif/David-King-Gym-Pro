@@ -23,6 +23,7 @@
     },
     games: { en: 'Games', ru: 'Игры', he: 'משחקים' },
     trophies: { en: 'Trophies', ru: 'Кубки', he: 'גביעים' },
+    trophySingular: { en: 'trophy', ru: 'кубок', he: 'גביע' },
     selectClient: { en: 'Athlete', ru: 'Спортсмен', he: 'ספורטאי' },
     self: { en: 'Me', ru: 'Я', he: 'אני' },
     comingSoon: { en: 'Coming soon', ru: 'Скоро', he: 'בקרוב' },
@@ -636,7 +637,7 @@
       var count = document.getElementById('profile-arena-count');
       if (count) count.textContent = String(n);
       var summary = document.getElementById('profile-arena-summary');
-      if (summary) summary.textContent = n + ' ' + u('trophies');
+      if (summary) summary.textContent = n + ' ' + (n === 1 ? u('trophySingular') : u('trophies'));
       var chip = document.getElementById('profile-arena-chip');
       if (chip && !count) chip.textContent = '🏆 ' + n;
     } catch (_) {}

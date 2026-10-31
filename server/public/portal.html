@@ -146,6 +146,8 @@
       var data = null;
       var records = [];
       var PIN = '';
+      var ARENA_DATA = null;
+      var ARENA_PATH = null;
 
       function $(id) { return document.getElementById(id); }
       function show(el) { if (el) el.classList.remove('hidden'); }
@@ -317,28 +319,256 @@
         $('nutrition').innerHTML = html;
       }
 
-      function renderArena() {
-        var rows = recordsOf('arena_progress');
-        var trophies = [];
-        rows.forEach(function (record) {
-          var data = record.data || {};
-          (data.trophies || []).forEach(function (trophy) { trophies.push(trophy); });
+      function arenaText(obj) {
+        if (!obj) return '';
+        if (typeof obj === 'string') return obj;
+        return obj.ru || obj.en || obj.he || '';
+      }
+      function arenaClientId() { return (data && data.client && data.client.id) || ''; }
+      function arenaTierLabel(tier) {
+        return ({ bronze: 'Бронза', silver: 'Серебро', gold: 'Золото' })[tier] || '';
+      }
+      function arenaRecord(pathId) {
+        var id = arenaClientId() + '::' + pathId;
+        var row = recordsOf('arena_progress').filter(function (record) {
+          return String(record.id || (record.data && record.data.id)) === id;
+        })[0];
+        return row && row.data ? row.data : {
+          id: id,
+          client_id: arenaClientId(),
+          path_id: pathId,
+          current_tier: 0,
+          completed_lessons: [],
+          exam_attempts: [],
+          trophies: [],
+          bodyweight: null
+        };
+      }
+      async function saveArenaRecord(record) {
+        record.updated_at = Date.now();
+        var result = await api('/api/portal/' + encodeURIComponent(TOKEN) + '/records', {
+          method: 'POST',
+          body: { collection: 'arena_progress', id: record.id, data: record }
         });
-        if (!trophies.length) {
-          $('arena').innerHTML = '<p class="empty">Кубков пока нет. Пройди уроки и сдай экзамен в Арене.</p>';
-          return;
+        var row = {
+          collection: 'arena_progress',
+          id: record.id,
+          data: record,
+          rev: result.rev
+        };
+        var index = records.findIndex(function (r) {
+          return r.collection === 'arena_progress' && String(r.id) === String(record.id);
+        });
+        if (index >= 0) records[index] = row;
+        else records.push(row);
+        return record;
+      }
+      function arenaTrophies() {
+        var list = [];
+        recordsOf('arena_progress').forEach(function (row) {
+          ((row.data && row.data.trophies) || []).forEach(function (trophy) { list.push(trophy); });
+        });
+        return list.sort(function (a, b) { return (b.earned_at || 0) - (a.earned_at || 0); });
+      }
+      async function renderArena() {
+        if (!ARENA_DATA) {
+          try {
+            ARENA_DATA = await fetch('/arena-data.json?v=1', { cache: 'no-cache' }).then(function (r) { return r.json(); });
+          } catch (error) {
+            $('arena').innerHTML = '<p class="empty">Не удалось загрузить Арену.</p>';
+            return;
+          }
         }
-        trophies.sort(function (a, b) { return (b.earned_at || 0) - (a.earned_at || 0); });
-        var tierLabel = { bronze: 'Бронза', silver: 'Серебро', gold: 'Золото' };
-        var n = trophies.length;
-        var countText = n === 1 ? '1 кубок' : (n >= 2 && n <= 4 ? n + ' кубка' : n + ' кубков');
-        $('arena').innerHTML = '<div class="chip" style="display:inline-block;margin-bottom:10px;">' + countText + '</div>' + trophies.map(function (trophy) {
-          var name = (trophy.name && (trophy.name.ru || trophy.name.en)) || 'Кубок';
-          var results = (trophy.results || []).map(function (result) {
-            return '<div class="item">' + esc(result.label || '') + ': <b>' + esc(result.display || '') + '</b></div>';
+        if (ARENA_PATH) return renderArenaPath();
+        var active = (ARENA_DATA.games || []).filter(function (game) {
+          return game.available && (game.paths || []).length;
+        });
+        var html = '<div style="display:grid;gap:8px;">' + active.map(function (game) {
+          return (game.paths || []).map(function (path) {
+            var rec = arenaRecord(path.id);
+            var done = (rec.trophies || []).length;
+            var total = (path.tiers || []).length;
+            return '<button type="button" data-arena-path="' + esc(path.id) + '" style="text-align:start;background:rgba(255,255,255,.035);border:1px solid var(--line);color:var(--text);padding:12px;">' +
+              '<b style="display:block;font-size:13px;">' + esc(arenaText(path.name)) + '</b>' +
+              '<small style="display:block;color:var(--muted);font-size:11px;margin-top:3px;">' + esc(arenaText(path.subtitle)) + '</small>' +
+              '<span class="chip" style="display:inline-block;margin-top:7px;">' + done + '/' + total + ' кубков</span>' +
+              '</button>';
           }).join('');
-          return '<div class="meal"><b>' + esc(name) + '</b><small>' + esc(tierLabel[trophy.tier] || '') + ' · ' + esc(fmtDate(trophy.earned_at)) + '</small>' + results + '</div>';
+        }).join('') + '</div>';
+        var trophies = arenaTrophies();
+        if (trophies.length) {
+          html += '<div style="margin-top:14px;"><div class="chip" style="display:inline-block;margin-bottom:8px;">' + trophies.length + ' кубков</div>' +
+            trophies.map(function (trophy) {
+              var name = (trophy.name && (trophy.name.ru || trophy.name.en)) || 'Кубок';
+              var results = (trophy.results || []).map(function (result) {
+                return '<div class="item">' + esc(result.label || '') + ': <b>' + esc(result.display || '') + '</b></div>';
+              }).join('');
+              return '<div class="meal"><b>' + esc(name) + '</b><small>' + esc(arenaTierLabel(trophy.tier)) + ' · ' + esc(fmtDate(trophy.earned_at)) + '</small>' + results + '</div>';
+            }).join('');
+        } else {
+          html += '<p class="empty" style="margin-top:12px;">Кубков пока нет. Пройди уроки и сдай экзамен.</p>';
+        }
+        $('arena').innerHTML = html;
+        $('arena').querySelectorAll('[data-arena-path]').forEach(function (button) {
+          button.addEventListener('click', function () {
+            ARENA_PATH = button.getAttribute('data-arena-path');
+            renderArena();
+          });
+        });
+      }
+      function renderArenaPath() {
+        var games = (ARENA_DATA && ARENA_DATA.games) || [];
+        var found = null;
+        games.forEach(function (game) {
+          (game.paths || []).forEach(function (path) {
+            if (path.id === ARENA_PATH) found = { game: game, path: path };
+          });
+        });
+        if (!found) { ARENA_PATH = null; renderArena(); return; }
+        var path = found.path;
+        var rec = arenaRecord(path.id);
+        var tiers = path.tiers || [];
+        var html = '<button type="button" id="arena-back" class="secondary" style="margin-bottom:10px;">← Назад</button>' +
+          '<div style="margin-bottom:10px;"><h3 style="margin:0;">' + esc(arenaText(path.name)) + '</h3><p class="empty" style="margin:4px 0 0;">' + esc(arenaText(path.description)) + '</p></div>';
+        tiers.forEach(function (tier, index) {
+          var completed = (rec.trophies || []).some(function (t) { return t.tier_id === tier.id; });
+          var current = !completed && index === Number(rec.current_tier || 0);
+          var locked = !completed && index > Number(rec.current_tier || 0);
+          var lessonsDone = (tier.lessons || []).every(function (lesson) {
+            return completed || (rec.completed_lessons || []).indexOf(tier.id + '::' + lesson.id) !== -1;
+          });
+          html += '<div class="day" style="border-color:' + (current ? 'rgba(58,214,255,.45)' : 'var(--line)') + ';">' +
+            '<div class="day-head"><b>' + (index + 1) + '. ' + esc(arenaText(tier.name)) + '</b><span>' + (completed ? 'Пройдено' : (current ? 'Текущий' : 'Закрыто')) + '</span></div>' +
+            '<small style="color:var(--muted);font-size:11px;">' + esc(arenaText(tier.goal)) + '</small>';
+          (tier.lessons || []).forEach(function (lesson) {
+            var key = tier.id + '::' + lesson.id;
+            var checked = completed || (rec.completed_lessons || []).indexOf(key) !== -1;
+            html += '<label style="display:flex;gap:8px;align-items:flex-start;margin:9px 0 0;font-weight:400;color:var(--text);">' +
+              '<input type="checkbox" data-arena-lesson="' + esc(key) + '" ' + (checked ? 'checked' : '') + ' ' + (!current || completed ? 'disabled' : '') + ' style="width:16px;margin:2px 0 0;flex:0 0 auto;" />' +
+              '<span><b style="display:block;font-size:12px;">' + esc(arenaText(lesson.name)) + '</b><small style="color:var(--muted);font-size:10.5px;">' + esc(arenaText(lesson.prescription)) + '</small></span></label>';
+          });
+          if (completed) {
+            var trophy = (rec.trophies || []).filter(function (t) { return t.tier_id === tier.id; })[0];
+            html += '<div class="chip" style="display:inline-block;margin-top:9px;">🏆 ' + esc(trophy ? arenaText(trophy.name) : arenaText(tier.trophy.name)) + '</div>';
+          } else if (!current || locked) {
+            html += '<p class="empty" style="font-size:11px;">Сначала пройди предыдущий тир.</p>';
+          } else if (!lessonsDone) {
+            html += '<p class="empty" style="font-size:11px;">Экзамен откроется после всех уроков.</p>';
+          } else {
+            html += arenaExamHtml(tier, rec);
+          }
+          html += '</div>';
+        });
+        $('arena').innerHTML = html;
+        var back = $('arena-back');
+        if (back) back.addEventListener('click', function () { ARENA_PATH = null; renderArena(); });
+        $('arena').querySelectorAll('[data-arena-lesson]').forEach(function (box) {
+          box.addEventListener('change', async function () {
+            var key = box.getAttribute('data-arena-lesson');
+            var current = arenaRecord(path.id);
+            var pos = (current.completed_lessons || []).indexOf(key);
+            if (pos === -1) current.completed_lessons = (current.completed_lessons || []).concat(key);
+            else current.completed_lessons.splice(pos, 1);
+            try { await saveArenaRecord(current); renderArenaPath(); } catch (error) { toast(error.message || 'Не удалось сохранить'); }
+          });
+        });
+        var submit = $('arena-exam-submit');
+        if (submit) submit.addEventListener('click', function () { submitArenaExam(path, rec); });
+      }
+      function arenaExamHtml(tier, rec) {
+        var bw = rec.bodyweight || (data.client && data.client.weight) || 80;
+        var stations = (tier.exam && tier.exam.stations) || [];
+        var fields = stations.map(function (station) {
+          var label = '<div style="font-size:11.5px;font-weight:700;">' + esc(arenaText(station.name)) + '</div>';
+          if (station.type === 'reps' || station.type === 'hold') {
+            var sets = Math.max(1, Number(station.sets) || 1);
+            var inputs = '';
+            for (var i = 0; i < sets; i++) {
+              inputs += '<input type="number" min="0" step="1" inputmode="numeric" data-a-input="' + esc(station.id) + ':' + i + '" placeholder="' + (station.type === 'hold' ? 'сек' : 'повт') + '" style="width:100%;margin-top:5px;text-align:center;" />';
+            }
+            return '<div style="margin-top:8px;">' + label + '<div style="display:grid;grid-template-columns:repeat(' + sets + ',minmax(0,1fr));gap:5px;">' + inputs + '</div></div>';
+          }
+          if (station.type === 'load_bw') {
+            return '<div style="margin-top:8px;">' + label +
+              '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:5px;">' +
+              '<input type="number" min="0" step="0.5" inputmode="decimal" data-a-input="' + esc(station.id) + ':weight" placeholder="вес, кг" style="margin:0;" />' +
+              '<input type="number" min="0" step="0.1" inputmode="decimal" data-a-input="' + esc(station.id) + ':bodyweight" value="' + esc(bw) + '" placeholder="вес тела, кг" style="margin:0;" />' +
+              '</div></div>';
+          }
+          if (station.type === 'manual') {
+            return '<label style="display:flex;gap:8px;align-items:center;margin-top:9px;font-weight:400;color:var(--text);"><input type="checkbox" data-a-input="' + esc(station.id) + ':manual" style="width:16px;margin:0;" /> Подтверждаю чистую технику</label>';
+          }
+          return '';
         }).join('');
+        return '<div style="margin-top:10px;padding:10px;border:1px solid rgba(58,214,255,.28);border-radius:12px;background:rgba(58,214,255,.05);">' +
+          '<b style="font-size:12px;">Экзамен</b>' + (tier.exam && tier.exam.intro ? '<p class="empty" style="font-size:10.5px;margin:4px 0 0;">' + esc(arenaText(tier.exam.intro)) + '</p>' : '') +
+          fields +
+          '<label style="margin-top:8px;">Ссылка на видео (необязательно)<input type="url" data-a-input="video:url" placeholder="https://..." style="margin-top:4px;" /></label>' +
+          '<button type="button" id="arena-exam-submit" style="width:100%;margin-top:8px;">Сдать экзамен</button>' +
+          '<p class="empty" style="font-size:10px;margin:6px 0 0;">Пересдача — в любое время. Результат увидит тренер.</p></div>';
+      }
+      async function submitArenaExam(path, rec) {
+        var tier = (path.tiers || []).filter(function (t, index) { return index === Number(rec.current_tier || 0); })[0];
+        if (!tier) return;
+        var results = [];
+        var bodyweight = 0;
+        ((tier.exam && tier.exam.stations) || []).forEach(function (station) {
+          var display = '', passed = false;
+          if (station.type === 'reps' || station.type === 'hold') {
+            var sets = Math.max(1, Number(station.sets) || 1);
+            var values = [];
+            for (var i = 0; i < sets; i++) {
+              var input = document.querySelector('[data-a-input="' + station.id + ':' + i + '"]');
+              values.push(Number(input && input.value) || 0);
+            }
+            passed = values.every(function (v) { return v >= Number(station.target || 0); });
+            display = values.join(' / ') + (station.type === 'hold' ? ' сек' : ' повт');
+          } else if (station.type === 'load_bw') {
+            var w = document.querySelector('[data-a-input="' + station.id + ':weight"]');
+            var bw = document.querySelector('[data-a-input="' + station.id + ':bodyweight"]');
+            var weight = Number(w && w.value) || 0;
+            bodyweight = Number(bw && bw.value) || 0;
+            var ratio = bodyweight > 0 ? weight / bodyweight : 0;
+            passed = ratio >= Number(station.target || 0);
+            display = weight + ' кг / ' + bodyweight + ' кг = ' + ratio.toFixed(2) + '×';
+          } else if (station.type === 'manual') {
+            var check = document.querySelector('[data-a-input="' + station.id + ':manual"]');
+            passed = !!(check && check.checked);
+            display = passed ? 'подтверждено' : 'не подтверждено';
+          }
+          results.push({ station_id: station.id, label: arenaText(station.name), display: display, passed: passed });
+        });
+        var video = document.querySelector('[data-a-input="video:url"]');
+        var passedAll = results.length > 0 && results.every(function (r) { return r.passed; });
+        var attempt = { id: 'att_' + Date.now(), at: Date.now(), passed: passedAll, results: results, video: video ? video.value.trim() : '', source: 'portal' };
+        rec.exam_attempts = (rec.exam_attempts || []).concat(attempt).slice(-20);
+        if (bodyweight) rec.bodyweight = bodyweight;
+        if (passedAll) {
+          var existing = (rec.trophies || []).some(function (t) { return t.tier_id === tier.id; });
+          if (!existing) {
+            rec.trophies = (rec.trophies || []).concat({
+              id: tier.trophy.id,
+              tier_id: tier.id,
+              tier: tier.tier,
+              path_id: path.id,
+              game_id: 'portal',
+              name: tier.trophy.name,
+              earned_at: Date.now(),
+              results: results,
+              video: attempt.video,
+              attempt_id: attempt.id,
+              source: 'portal'
+            });
+            rec.current_tier = Math.max(Number(rec.current_tier || 0), (path.tiers || []).findIndex(function (t) { return t.id === tier.id; }) + 1);
+          }
+        }
+        try {
+          await saveArenaRecord(rec);
+          toast(passedAll ? 'Экзамен сдан. Кубок добавлен!' : 'Экзамен не сдан. Можно пересдать.');
+          renderArenaPath();
+        } catch (error) {
+          toast(error.message || 'Не удалось сохранить экзамен');
+        }
       }
 
       function renderHistory() {

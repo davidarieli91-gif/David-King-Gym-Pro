@@ -31,6 +31,9 @@ ok('arena data and script are copied to dist', copy.includes("'arena-data.json'"
 ok('service worker v245 includes arena', sw.includes("CACHE_NAME = 'dk-gym-v245'") && sw.includes('./src/arena.js') && sw.includes('./arena-data.json'));
 ok('profile exposes trophy count and arena shortcut', crm.includes('profile-arena-count') && crm.includes('data-quick-action="arena"'));
 ok('arena has exam + trophy logic', js.includes('submitExam') && js.includes('trophyEarned') && js.includes('exam_attempts'));
+ok('client portal can open paths and submit arena exams', read('server/public/portal.html').includes('data-arena-path') && read('server/public/portal.html').includes('saveArenaRecord') && read('server/public/portal.html').includes('data-a-input'));
+ok('portal API allows arena progress', read('server/src/routes/portal.ts').includes("'arena_progress'") && read('server/src/routes/portal.ts').includes('id,'));
+ok('director console links to the arena', read('server/public/admin.html').includes('/fitness-crm.html?screen=arena'));
 const check = spawnSync(process.execPath, ['--check', path.join(root, 'src', 'arena.js')], { encoding: 'utf8' });
 ok('arena.js parses', check.status === 0);
 

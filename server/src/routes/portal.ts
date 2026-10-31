@@ -21,7 +21,7 @@ const listSchema = z.object({
 });
 
 const recordWriteSchema = z.object({
-  collection: z.enum(['checkins', 'weight_logs', 'workout_logs', 'nutrition_logs']),
+  collection: z.enum(['checkins', 'weight_logs', 'workout_logs', 'nutrition_logs', 'arena_progress']),
   id: z.string().min(1).max(200).optional(),
   data: z.record(z.string(), z.unknown()),
 });
@@ -41,6 +41,7 @@ const portalReadCollections = [
    password, share key, internal notes, phone, email…). It only gets what the
    trainee needs to see on their own screen. */
 const PORTAL_CLIENT_FIELDS = [
+  'id',
   'full_name',
   'goal',
   'weight',
