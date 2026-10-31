@@ -61,6 +61,8 @@
     video: { en: 'Video', ru: 'Видео', he: 'וידאו' },
     bodyweightKg: { en: 'Bodyweight, kg', ru: 'Вес тела, кг', he: 'משקל גוף, ק״ג' },
     technique: { en: 'Technique', ru: 'Техника', he: 'טכניקה' },
+    exerciseCard: { en: 'Exercise card', ru: 'Карточка упражнения', he: 'כרטיס תרגיל' },
+    openInDb: { en: 'Open in exercise database', ru: 'Открыть в базе упражнений', he: 'פתח במאגר התרגילים' },
     checkpoints: { en: 'Checkpoints', ru: 'Чек-поинты', he: 'נקודות ביקורת' },
     mistakes: { en: 'Common mistakes', ru: 'Частые ошибки', he: 'טעויות נפוצות' },
     sets: { en: 'Sets', ru: 'Подходы', he: 'סטים' },
@@ -153,7 +155,7 @@
   async function ensureData() {
     if (state.data) return state.data;
     if (state.loading) return state.loading;
-    state.loading = fetch('arena-data.json?v=1', { cache: 'no-cache' })
+    state.loading = fetch('arena-data.json?v=3', { cache: 'no-cache' })
       .then(function (res) {
         if (!res.ok) throw new Error('Arena data HTTP ' + res.status);
         return res.json();
@@ -410,11 +412,13 @@
             </span>
           </label>
           <details class="mt-2 group">
-            <summary class="cursor-pointer text-[11px] font-semibold text-primary-2 select-none">${esc(u('technique'))} · ${esc(u('checkpoints'))} · ${esc(u('mistakes'))}</summary>
+            <summary class="cursor-pointer text-[11px] font-semibold text-primary-2 select-none">📖 ${esc(u('exerciseCard'))}</summary>
             <div class="mt-2 space-y-2 text-[11px] leading-relaxed text-muted border-t border-border pt-2">
+              ${lesson.image ? `<img src="${esc(lesson.image)}" alt="${esc(tr(lesson.name))}" loading="lazy" class="w-full max-h-56 object-contain rounded-xl bg-surface border border-border" />` : ''}
               <div><b class="text-text">${esc(u('technique'))}:</b><br>${lines(tr(lesson.technique)).map(esc).join('<br>')}</div>
               <div><b class="text-text">${esc(u('checkpoints'))}:</b><br>${lines(tr(lesson.checkpoints)).map(esc).join('<br>')}</div>
               <div><b class="text-text">${esc(u('mistakes'))}:</b><br>${lines(tr(lesson.mistakes)).map(esc).join('<br>')}</div>
+              ${lesson.exerciseId ? `<button type="button" data-arena-action="open-exercise" data-exercise="${esc(lesson.exerciseId)}" class="w-full mt-1 bg-surface-2 border border-border rounded-lg px-2 py-2 text-[11px] font-semibold text-primary-2">${esc(u('openInDb'))}</button>` : ''}
             </div>
           </details>
         </div>`;
@@ -679,6 +683,9 @@
       toggleLesson(el.getAttribute('data-tier'), el.getAttribute('data-lesson'));
     } else if (action === 'submit-exam') {
       submitExam(el.getAttribute('data-path'), el.getAttribute('data-tier'), el);
+    } else if (action === 'open-exercise') {
+      var exerciseId = el.getAttribute('data-exercise');
+      if (exerciseId && typeof openExerciseModal === 'function') openExerciseModal(exerciseId);
     } else if (action === 'close-flash') {
       state.flash = null;
       render();

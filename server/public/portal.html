@@ -99,6 +99,12 @@
           <div class="stat"><span>Жир</span><b id="stat-fat">—</b></div>
         </div>
         <div class="chips" id="client-chips"></div>
+        <a href="#arena-card" style="display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:linear-gradient(135deg,var(--cyan),var(--blue));color:#04101e;font-size:12px;font-weight:800;text-decoration:none;">🏆 Открыть Арену</a>
+      </div>
+
+      <div class="card" id="arena-card">
+        <h3>🏆 Арена</h3>
+        <div id="arena"><p class="empty">Загружаем Арену…</p></div>
       </div>
 
       <div class="card">
@@ -121,11 +127,6 @@
           <button id="checkin-submit" type="submit" style="width:100%;">Отправить тренеру</button>
         </form>
         <div id="checkins" style="margin-top:14px;"></div>
-      </div>
-
-      <div class="card">
-        <h3>Арена · кубки</h3>
-        <div id="arena"><p class="empty">Пока нет кубков.</p></div>
       </div>
 
       <div class="card">
@@ -328,6 +329,9 @@
       function arenaTierLabel(tier) {
         return ({ bronze: 'Бронза', silver: 'Серебро', gold: 'Золото' })[tier] || '';
       }
+      function arenaLines(text) {
+        return String(text || '').split('|').map(function (line) { return esc(line.trim()); }).filter(Boolean).join('<br>');
+      }
       function arenaRecord(pathId) {
         var id = arenaClientId() + '::' + pathId;
         var row = recordsOf('arena_progress').filter(function (record) {
@@ -373,7 +377,7 @@
       async function renderArena() {
         if (!ARENA_DATA) {
           try {
-            ARENA_DATA = await fetch('/arena-data.json?v=1', { cache: 'no-cache' }).then(function (r) { return r.json(); });
+            ARENA_DATA = await fetch('/arena-data.json?v=3', { cache: 'no-cache' }).then(function (r) { return r.json(); });
           } catch (error) {
             $('arena').innerHTML = '<p class="empty">Не удалось загрузить Арену.</p>';
             return;
@@ -443,9 +447,16 @@
           (tier.lessons || []).forEach(function (lesson) {
             var key = tier.id + '::' + lesson.id;
             var checked = completed || (rec.completed_lessons || []).indexOf(key) !== -1;
-            html += '<label style="display:flex;gap:8px;align-items:flex-start;margin:9px 0 0;font-weight:400;color:var(--text);">' +
+            html += '<div style="border-top:1px solid rgba(255,255,255,.06);padding:8px 0 2px;">' +
+              '<label style="display:flex;gap:8px;align-items:flex-start;margin:0;font-weight:400;color:var(--text);">' +
               '<input type="checkbox" data-arena-lesson="' + esc(key) + '" ' + (checked ? 'checked' : '') + ' ' + (!current || completed ? 'disabled' : '') + ' style="width:16px;margin:2px 0 0;flex:0 0 auto;" />' +
-              '<span><b style="display:block;font-size:12px;">' + esc(arenaText(lesson.name)) + '</b><small style="color:var(--muted);font-size:10.5px;">' + esc(arenaText(lesson.prescription)) + '</small></span></label>';
+              '<span><b style="display:block;font-size:12px;">' + esc(arenaText(lesson.name)) + '</b><small style="color:var(--muted);font-size:10.5px;">' + esc(arenaText(lesson.prescription)) + '</small></span></label>' +
+              '<details style="margin:5px 0 0 24px;"><summary style="cursor:pointer;color:var(--cyan);font-size:10.5px;font-weight:700;">📖 Карточка упражнения</summary>' +
+              (lesson.image ? '<img src="' + esc(lesson.image) + '" alt="" loading="lazy" style="width:100%;max-height:220px;object-fit:contain;border:1px solid var(--line);border-radius:10px;margin-top:7px;background:rgba(255,255,255,.04);" />' : '') +
+              '<div style="color:var(--muted);font-size:10.5px;line-height:1.5;margin-top:6px;"><b style="color:var(--text);">Техника:</b><br>' + arenaLines(arenaText(lesson.technique)) + '</div>' +
+              '<div style="color:var(--muted);font-size:10.5px;line-height:1.5;margin-top:5px;"><b style="color:var(--text);">Чек-поинты:</b><br>' + arenaLines(arenaText(lesson.checkpoints)) + '</div>' +
+              '<div style="color:var(--muted);font-size:10.5px;line-height:1.5;margin-top:5px;"><b style="color:var(--text);">Ошибки:</b><br>' + arenaLines(arenaText(lesson.mistakes)) + '</div>' +
+              '</details></div>';
           });
           if (completed) {
             var trophy = (rec.trophies || []).filter(function (t) { return t.tier_id === tier.id; })[0];
