@@ -4361,6 +4361,19 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     applyTaxonomyFixesToDB(); /* c185: correct old share snapshots by id */
     _aExNameIdx = null; _aExHistIdx = null; /* c156: rebuild the analytics name indexes */
     sessions = {};
+    /* Seed the check-in journal from the server payload so a device that has
+       never opened this client keeps the full measurement history. Local
+       entries win for the same date (they may be newer than the payload). */
+    try {
+      const remoteCheckins = Array.isArray(d.checkins) ? d.checkins : [];
+      if (remoteCheckins.length) {
+        const byDate = {};
+        remoteCheckins.forEach(r => { if (r && r.date) byDate[String(r.date)] = r; });
+        loadCheckins().forEach(r => { if (r && r.date) byDate[String(r.date)] = r; });
+        const merged = Object.keys(byDate).sort().map(k => byDate[k]);
+        localStorage.setItem(nsKey('dk_checkins'), JSON.stringify(merged.slice(-365)));
+      }
+    } catch (e) {}
     renderAll();
     checkDraft();
     /* c216: the server-backed portal uses the server API, not Firebase.
@@ -5917,7 +5930,26 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
      transaction (read failure/corruption aborts instead of overwriting) and
      the merge backfills waist and hip INDEPENDENTLY. Cap 90, writes only when
      something is actually missing (a cheap boot no-op once everything is up). */
-  function dkPushChecks() {
+  function dkPushChecks(only) {
+    /* c216: server mode mirrors check-ins into the server records table. */
+    if (window.__DKG_SERVER_MODE__) {
+      try {
+        var client = (window.__DKG_SERVER_PAYLOAD__ && window.__DKG_SERVER_PAYLOAD__.client) || {};
+        var clientId = String(client.id || '');
+        var pin = String(client.portal_pass || '');
+        var list = only ? [only] : (loadCheckins() || []);
+        if (!clientId || !list.length) return Promise.resolve(false);
+        return Promise.all(list.map(function (rec) {
+          var id = clientId + '_' + String(rec.date || '');
+          var data = Object.assign({}, rec, { id: id, client_id: clientId, source: 'portal' });
+          return fetch('/api/portal/' + encodeURIComponent('__DKG_PORTAL_TOKEN__') + '/records', {
+            method: 'POST', credentials: 'same-origin',
+            headers: { 'content-type': 'application/json', accept: 'application/json', 'x-portal-pin': pin },
+            body: JSON.stringify({ collection: 'checkins', id: id, data: data })
+          }).then(function (r) { return r.ok; }).catch(function () { return false; });
+        })).then(function (all) { return all.every(Boolean); });
+      } catch (error) { return Promise.resolve(false); }
+    }
     const docId = dkHistDocId();
     if (!docId) return Promise.resolve(false);
     const mine = loadCheckins().map(dkCheckinToCloud).filter(Boolean).sort((a, b) => a.ts - b.ts);
@@ -6005,7 +6037,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     }
     /* c125: mirror the check-in into the shared doc (weight+energy only) so
        the trainer's recovery map uses the real body weight */
-    try { dkPushChecks(); } catch (e) {}
+    try { dkPushChecks(rec); } catch (e) {}
     st.textContent = t('checkinSaved'); st.className = 'text-[11px] text-center text-emerald-400 min-h-[1rem]';
     renderHistory();
     renderAnalytics();
@@ -8458,12 +8490,28 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     if (!f) return '?';
     return f['name_' + currentLang] || f.name_ru || f.name_en || f.name_he || f.name || f.food_name || '?';
   }
-  function foodGramsOf(f) { return Number(f && (f.grams != null ? f.grams : f.amount_g)) || 0; }
+  function foodGramsOf(f) {
+    if (!f) return 0;
+    const v = f.grams != null ? f.grams
+      : f.amount_g != null ? f.amount_g
+      : f.quantity != null ? f.quantity
+      : f.amount;
+    return Number(v) || 0;
+  }
   function foodCalOf(f) {
     if (!f) return 0;
     if (f.calories != null && f.calories !== '') return Number(f.calories) || 0;
     const n = f.nutrition || {};
     return (Number(n.calories) || 0) * foodGramsOf(f) / 100;
+  }
+  /* Macros may arrive either as a TOTAL on the item (trainer plan shape:
+     quantity in grams + protein/carbs/fat) or per 100 g inside `nutrition`
+     (legacy share shape). Both are supported here. */
+  function foodMacroOf(f, key, grams) {
+    if (!f) return 0;
+    if (f[key] != null && f[key] !== '') return Number(f[key]) || 0;
+    const n = f.nutrition || {};
+    return (Number(n[key]) || 0) * grams / 100;
   }
   /* c147: product photo — the LOCAL mirror first (food-images/<id>.jpg, all
      2180 downloaded, 19.7 MB), the external URL as the second chance, and the
@@ -8494,11 +8542,14 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         const n = f.nutrition || {};
         const g = foodGramsOf(f);
         const cal = foodCalOf(f);
+        const p = foodMacroOf(f, 'protein', g);
+        const cb = foodMacroOf(f, 'carbs', g);
+        const fat = foodMacroOf(f, 'fat', g);
         totals.c += cal;
-        totals.p += (Number(n.protein) || 0) * g / 100;
-        totals.cb += (Number(n.carbs) || 0) * g / 100;
-        totals.f += (Number(n.fat) || 0) * g / 100;
-        items.push({ n: foodNameOf(f), g: g, cal: cal, nut: n });
+        totals.p += p;
+        totals.cb += cb;
+        totals.f += fat;
+        items.push({ n: foodNameOf(f), g: g, cal: cal, p: p, cb: cb, f: fat, nut: n });
       }));
     }
     loadDiary().forEach(e => {
@@ -8578,22 +8629,101 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     const plan = currentPlan;
     if (!plan) return null;
     const { totals, items } = nutrTotals();
-    const diary = loadDiary().map(e => ({
-      n: String(e.name || '').slice(0, 60),
-      g: Math.round(Number(e.grams) || 0),
-      k: Math.round((Number(e.per100 && e.per100.calories) || 0) * (Number(e.grams) || 0) / 100)
+    /* Plans authored in the trainer app may not carry explicit targets. Their
+       published meals are the target: sum them so the coach's «факт/план»
+       analytics still gets a meaningful denominator. */
+    let planCal = 0, planP = 0, planCb = 0, planF = 0;
+    (plan.meals || []).forEach(m => (m.foods || m.items || []).forEach(f => {
+      const g = foodGramsOf(f);
+      planCal += foodCalOf(f);
+      planP += foodMacroOf(f, 'protein', g);
+      planCb += foodMacroOf(f, 'carbs', g);
+      planF += foodMacroOf(f, 'fat', g);
     }));
+    const diary = loadDiary().map(e => {
+      const g = Number(e.grams) || 0, per = e.per100 || {};
+      return {
+        n: String(e.name || '').slice(0, 60),
+        g: Math.round(g),
+        k: Math.round((Number(per.calories) || 0) * g / 100),
+        p: Math.round((Number(per.protein) || 0) * g / 100),
+        cb: Math.round((Number(per.carbs) || 0) * g / 100),
+        f: Math.round((Number(per.fat) || 0) * g / 100)
+      };
+    });
     return {
       date: todayKey(), ts: Date.now(),
       plan: String(plan.name || '').slice(0, 60),
-      target: { c: Math.round(plan.target_calories || 0), p: Math.round(plan.target_protein || 0), cb: Math.round(plan.target_carbs || 0), f: Math.round(plan.target_fat || 0) },
+      target: {
+        c: Math.round(plan.target_calories || planCal || 0),
+        p: Math.round(plan.target_protein || planP || 0),
+        cb: Math.round(plan.target_carbs || planCb || 0),
+        f: Math.round(plan.target_fat || planF || 0)
+      },
       totals: { c: Math.round(totals.c), p: Math.round(totals.p), cb: Math.round(totals.cb), f: Math.round(totals.f) },
-      items: items.slice(0, 40).map(it => ({ n: it.n.slice(0, 60), g: Math.round(it.g), k: Math.round(it.cal) })),
+      items: items.slice(0, 40).map(it => ({ n: it.n.slice(0, 60), g: Math.round(it.g), k: Math.round(it.cal), p: Math.round(it.p), cb: Math.round(it.cb), f: Math.round(it.f) })),
       diary: diary.slice(0, 30)
     };
   }
   window.dkNutrSnapshot = dkNutrSnapshot;
   function dkPushNutr() {
+    /* c216: server mode writes the daily nutrition snapshot into
+       nutrition_history, the collection the trainer's analytics already syncs. */
+    if (window.__DKG_SERVER_MODE__) {
+      try {
+        var serverSnap = dkNutrSnapshot();
+        var client = (window.__DKG_SERVER_PAYLOAD__ && window.__DKG_SERVER_PAYLOAD__.client) || {};
+        var clientId = String(client.id || '');
+        if (!serverSnap || !clientId) return Promise.resolve(false);
+        var id = 'nh_' + clientId + '_' + serverSnap.date;
+        var planItems = (serverSnap.items || []).map(function (item) {
+          return {
+            name: item.n,
+            grams: item.g,
+            calories: item.k,
+            protein: item.p || 0,
+            carbs: item.cb || 0,
+            fat: item.f || 0
+          };
+        });
+        var diaryItems = (serverSnap.diary || []).map(function (item) {
+          return {
+            name: item.n,
+            grams: item.g,
+            calories: item.k,
+            protein: item.p || 0,
+            carbs: item.cb || 0,
+            fat: item.f || 0
+          };
+        });
+        var meals = [];
+        if (planItems.length) meals.push({ type: 'plan', items: planItems });
+        if (diaryItems.length) meals.push({ type: 'diary', items: diaryItems });
+        var data = {
+          id: id,
+          client_id: clientId,
+          date: new Date(serverSnap.date + 'T00:00:00').getTime(),
+          plan: serverSnap.plan,
+          target_calories: serverSnap.target.c,
+          target_protein: serverSnap.target.p,
+          target_carbs: serverSnap.target.cb,
+          target_fat: serverSnap.target.f,
+          totals: {
+            calories: serverSnap.totals.c,
+            protein: serverSnap.totals.p,
+            carbs: serverSnap.totals.cb,
+            fat: serverSnap.totals.f
+          },
+          meals: meals,
+          source: 'portal'
+        };
+        return fetch('/api/portal/' + encodeURIComponent('__DKG_PORTAL_TOKEN__') + '/records', {
+          method: 'POST', credentials: 'same-origin',
+          headers: { 'content-type': 'application/json', accept: 'application/json', 'x-portal-pin': String(client.portal_pass || '') },
+          body: JSON.stringify({ collection: 'nutrition_history', id: id, data: data })
+        }).then(function (r) { return r.ok; }).catch(function () { return false; });
+      } catch (error) { return Promise.resolve(false); }
+    }
     const docId = dkHistDocId();
     const snap = dkNutrSnapshot();
     if (!docId || !snap) return Promise.resolve(false);

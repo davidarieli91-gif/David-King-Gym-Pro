@@ -23,7 +23,7 @@ const listSchema = z.object({
 });
 
 const recordWriteSchema = z.object({
-  collection: z.enum(['checkins', 'weight_logs', 'workout_logs', 'nutrition_logs', 'workout_history', 'arena_progress']),
+  collection: z.enum(['checkins', 'weight_logs', 'workout_logs', 'nutrition_logs', 'workout_history', 'nutrition_history', 'arena_progress']),
   id: z.string().min(1).max(200).optional(),
   data: z.record(z.string(), z.unknown()),
 });

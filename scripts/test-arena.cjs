@@ -41,6 +41,11 @@ ok('portal password change endpoint exists', read('server/src/routes/portal.ts')
 ok('full legacy portal is the default client experience', fs.existsSync(path.join(root, 'server', 'public', 'portal-full.html')) && read('server/src/app.ts').includes("'portal-full.html'") && read('server/src/app.ts').includes('buildPortalPayload'));
 ok('full portal skips blocking draft/cloud boot', read('server/public/portal-full.html').includes('if (window.__DKG_SERVER_MODE__) return;') && read('server/public/portal-full.html').includes('__DKG_SERVER_MODE__'));
 ok('full portal saves workouts to the server', read('server/public/portal-full.html').includes("collection: 'workout_history'") && read('server/public/portal-full.html').includes('x-portal-pin'));
+ok('full portal saves check-ins to the server', read('server/public/portal-full.html').includes("collection: 'checkins'") && read('server/public/portal-full.html').includes('function dkPushChecks'));
+ok('full portal saves nutrition snapshots to the server', read('server/public/portal-full.html').includes("collection: 'nutrition_history'") && read('server/public/portal-full.html').includes('function dkPushNutr'));
+ok('portal writes allow nutrition history', read('server/src/routes/portal.ts').includes("'nutrition_history'"));
+ok('full portal understands trainer plan quantities', read('server/public/portal-full.html').includes('f.quantity != null'));
+ok('full portal seeds server check-ins into the journal', read('server/public/portal-full.html').includes('remoteCheckins') && read('server/public/portal-full.html').includes("nsKey('dk_checkins')"));
 const check = spawnSync(process.execPath, ['--check', path.join(root, 'src', 'arena.js')], { encoding: 'utf8' });
 ok('arena.js parses', check.status === 0);
 
