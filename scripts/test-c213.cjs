@@ -17,7 +17,10 @@ ok('sidebar + login show c213', crm.includes('id="v2-side-version">c213') && crm
 ok('SW cache v245', sw.includes("CACHE_NAME = 'dk-gym-v245'"));
 ok('SW precaches server scripts', sw.includes("./src/server-mode.js") && sw.includes("./src/server-sync.js"));
 
-ok('IndexedDB version 12', crm.includes('const DB_VERSION = 12;'));
+ok('IndexedDB version 13', crm.includes('const DB_VERSION = 13;'));
+ok('check-ins have a synced store', crm.includes("name: 'checkins'") && sync.includes("'checkins'"));
+ok('trainer reads check-ins from the synced store', crm.includes("db.find('checkins', 'by_clientId'"));
+ok('trainer analytics reads server nutrition days', crm.includes('const normNutr') && crm.includes("const rows = await db.find('nutrition_history', 'by_clientId', clientId)"));
 ok('durable sync outbox store exists', crm.includes("name: 'sync_outbox'") && crm.includes("keyPath: 'key'"));
 ok('tenant-scoped DB name', crm.includes("localStorage.getItem('dkg_db_name')"));
 ok('local writes notify sync', crm.includes('notifyLocalChange(storeName, record)') && crm.includes('notifyLocalDelete(storeName, key)'));

@@ -72,7 +72,7 @@
        they run before the main app bundle and can set the tenant DB name. -->
   <link rel="stylesheet" href="src/server-gate.css" />
   <script src="src/server-mode.js?v=244"></script>
-  <script src="src/server-sync.js?v=246"></script>
+  <script src="src/server-sync.js?v=247"></script>
 
   <!-- Google Fonts: Inter (UI), Space Grotesk (display), JetBrains Mono (numeric) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -9012,7 +9012,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     } catch (_) {}
     return 'fitness_crm_db';
   })();
-  const DB_VERSION = 12; /* c215: + arena_progress store */
+  const DB_VERSION = 13; /* c218: + checkins store (portal → trainer) */
 
   /** @typedef {{name:string,keyPath:string,indexes:Array<{name:string,unique?:boolean}>}} StoreDef */
   const DB_SCHEMA = [
@@ -9047,6 +9047,18 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     },
     {
       name: 'nutrition_history',
+      keyPath: 'id',
+      indexes: [
+        { name: 'by_clientId',  keyPath: 'client_id', unique: false },
+        { name: 'by_date',      keyPath: 'date', unique: false },
+        { name: 'by_clientDate',keyPath: ['client_id','date'], unique: false }
+      ]
+    },
+    {
+      /* c218: the client portal's check-ins. Synced like every other user
+       * record; the recovery map and the analytics body card read this store
+       * through dkFetchClientChecks (server-first, legacy Firebase merged). */
+      name: 'checkins',
       keyPath: 'id',
       indexes: [
         { name: 'by_clientId',  keyPath: 'client_id', unique: false },
@@ -32118,84 +32130,169 @@ async function boot() {
       } catch (e) { console.warn('[hist-sync] CRM fetch failed', e); return []; }
     };
 
-    /* c125: read the portal's check-ins from the SAME shared doc (additive
-       `checks` field: [{ts, date, weight, energy}] — ts/weight/energy ONLY,
-       waist/hip/note never leave the portal). Read-only: never creates the
-       doc. The trainer's recovery map uses the latest weight as the body
-       weight and the latest energy for the optional τ modifier. */
+    /* c218: the trainer reads the portal's check-ins SERVER-FIRST from the
+       synced `checkins` store (weight/waist/hip/fat/energy), then merges the
+       legacy Firebase `checks` field for old share links. Read-only. The
+       recovery map uses the latest weight/body fat and the optional energy
+       τ modifier; the analytics body card uses waist/hip. */
     window.dkFetchClientChecks = async function (clientId) {
+      if (!clientId) return [];
+      const cm = v => { const n = parseFloat(v); return (isFinite(n) && n >= 30 && n <= 200) ? Math.round(n * 10) / 10 : null; };
+      const pf = v => { const n = parseFloat(v); return (isFinite(n) && n >= 3 && n <= 70) ? Math.round(n * 10) / 10 : null; };
+      const normCheck = c => {
+        if (!c) return null;
+        const weight = Number(c.weight);
+        if (!(weight > 0)) return null;
+        const dateStr = /^\d{4}-\d{2}-\d{2}$/.test(String(c.date || '')) ? String(c.date) : '';
+        const ts = Number(c.ts) || (dateStr ? (Date.parse(dateStr + 'T12:00:00') || 0) : 0) || Number(c.date) || 0;
+        if (!(ts > 0)) return null;
+        const out = {
+          ts: ts,
+          date: dateStr || new Date(ts).toISOString().slice(0, 10),
+          weight: weight,
+          energy: isFinite(parseFloat(c.energy)) ? parseFloat(c.energy) : null,
+          waist: cm(c.waist),
+          hip: cm(c.hip)
+        };
+        const bf = pf(c.body_fat);
+        if (bf != null) out.body_fat = bf;
+        return out;
+      };
+      const byDate = {};
+      /* c218: the server-synced check-ins are the primary source. They are
+         already in IndexedDB thanks to src/server-sync.js; this makes the
+         recovery map and the body card read the SAME records the portal
+         writes (weight/waist/hip/fat/energy). */
       try {
-        if (!clientId) return [];
-        const docId = await portalHistoryDocId(clientId);
-        await ensurePortalFirebase();
-        if (!firebase.apps.length) firebase.initializeApp(PORTAL_SHARE_CFG);
-        const snap = await Promise.race([
-          firebase.firestore().collection('portal_shares').doc(docId).get({ source: 'server' }),
-          new Promise(res => setTimeout(() => res(null), 5000))
+        const rows = await db.find('checkins', 'by_clientId', clientId) || [];
+        rows.forEach(row => {
+          const n = normCheck(row);
+          if (n) byDate[n.date] = n;
+        });
+      } catch (_) {}
+      /* Legacy Firebase shares stay readable for old portal links. Merge them
+         by date; the newer record wins. A Firebase failure never discards the
+         server-synced check-ins. */
+      try {
+        await Promise.race([
+          (async () => {
+            const docId = await portalHistoryDocId(clientId);
+            await ensurePortalFirebase();
+            if (!firebase.apps.length) firebase.initializeApp(PORTAL_SHARE_CFG);
+            const snap = await firebase.firestore().collection('portal_shares').doc(docId).get({ source: 'server' });
+            if (snap && snap.exists && snap.data() && snap.data().d) {
+              const p = JSON.parse(snap.data().d);
+              (Array.isArray(p.checks) ? p.checks : []).forEach(c => {
+                const n = normCheck(c);
+                if (n && (!byDate[n.date] || n.ts >= byDate[n.date].ts)) byDate[n.date] = n;
+              });
+            }
+          })().catch(e => console.warn('[hist-sync] CRM checks fetch failed', e)),
+          /* Never let the retired Firebase share delay the server records
+             behind the caller's 4–5 s guard. */
+          new Promise(res => setTimeout(res, 1800))
         ]);
-        if (!snap || !snap.exists) return [];
-        const data = snap.data() || {};
-        if (!data.d) return [];
-        const p = JSON.parse(data.d);
-        return (Array.isArray(p.checks) ? p.checks : [])
-          .filter(c => c && Number(c.ts) > 0 && Number(c.weight) > 0)
-          .map(c => {
-            /* c129: waist/hip travel with the check-in now (cm, 30..200
-               sanity, the portal side enforces the same band) — the analytics
-               body card and the recovery body-weight strip share ONE source.
-               c174: body_fat % (3..70) rides the same doc — it feeds the
-               recovery model's composition scaling. */
-            const cm = v => { const n = parseFloat(v); return (isFinite(n) && n >= 30 && n <= 200) ? Math.round(n * 10) / 10 : null; };
-            const pf = v => { const n = parseFloat(v); return (isFinite(n) && n >= 3 && n <= 70) ? Math.round(n * 10) / 10 : null; };
-            const out174 = {
-              ts: Number(c.ts),
-              date: String(c.date || new Date(Number(c.ts)).toISOString().slice(0, 10)),
-              weight: Number(c.weight),
-              energy: isFinite(parseFloat(c.energy)) ? parseFloat(c.energy) : null,
-              waist: cm(c.waist),
-              hip: cm(c.hip)
-            };
-            const bf174 = pf(c.body_fat);
-            if (bf174 != null) out174.body_fat = bf174;
-            return out174;
-          })
-          .sort((a, b) => a.ts - b.ts);
-      } catch (e) { console.warn('[hist-sync] CRM checks fetch failed', e); return []; }
+      } catch (e) { console.warn('[hist-sync] CRM checks fetch failed', e); }
+      return Object.keys(byDate).sort().map(k => byDate[k]);
     };
 
-    /* c148: read the portal's nutrition days from the SAME shared doc (additive
-       `nutr` field: [{date, ts, plan, target{c,p,cb,f}, totals{c,p,cb,f},
-       items[≤40], diary[≤30]}]). Read-only: never creates the doc. The
-       analytics adherence merges these days («факт/план») with the trainer's
-       own logs — cloud wins for a date the client actually logged. */
+    /* c218: the trainer reads the portal's nutrition days SERVER-FIRST from
+       the synced `nutrition_history` store, then merges the legacy Firebase
+       `nutr` field for old share links. Both shapes are normalized to
+       {date, ts, plan, target{c,p,cb,f}, totals{c,p,cb,f}, items, diary};
+       the analytics adherence merges these days («факт/план») with the
+       trainer's own logs — the portal day wins for a date it logged. */
     window.dkFetchClientNutr = async function (clientId) {
+      if (!clientId) return [];
+      /* c218: accept BOTH shapes — the portal's Firebase day
+         ({date:'YYYY-MM-DD', target{c,p,cb,f}, totals{c,p,cb,f}}) and a
+         server nutrition_history row (timestamp date, target_* fields,
+         meals[].items[]). The analytics card and the calendar consume one
+         normalized day shape, whichever transport delivered it. */
+      const nutrDateKey = ms => {
+        const d = new Date(Number(ms));
+        if (isNaN(d)) return '';
+        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      };
+      const normNutr = r => {
+        if (!r) return null;
+        let date = '';
+        const rawDate = r.date;
+        if (typeof rawDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(rawDate)) date = rawDate;
+        else if (rawDate != null && Number(rawDate) > 0) date = nutrDateKey(rawDate);
+        else if (r.ts != null && Number(r.ts) > 0) date = nutrDateKey(r.ts);
+        if (!date) return null;
+        const t = r.target || {};
+        const target = {
+          c: Number(t.c != null ? t.c : r.target_calories) || 0,
+          p: Number(t.p != null ? t.p : r.target_protein) || 0,
+          cb: Number(t.cb != null ? t.cb : r.target_carbs) || 0,
+          f: Number(t.f != null ? t.f : r.target_fat) || 0
+        };
+        const tt = r.totals || {};
+        const hasTotals = ['c', 'calories', 'p', 'protein', 'cb', 'carbs', 'f', 'fat'].some(k => tt[k] != null);
+        const totals = {
+          c: Number(tt.c != null ? tt.c : tt.calories) || 0,
+          p: Number(tt.p != null ? tt.p : tt.protein) || 0,
+          cb: Number(tt.cb != null ? tt.cb : tt.carbs) || 0,
+          f: Number(tt.f != null ? tt.f : tt.fat) || 0
+        };
+        const items = [];
+        if (Array.isArray(r.items)) {
+          r.items.forEach(i => items.push(i));
+        }
+        (r.meals || []).forEach(m => (m.items || []).forEach(i => {
+          const g = Number(i.grams) || 0;
+          const n = i.nutrition || {};
+          const cal = Number(i.calories != null ? i.calories : (Number(n.calories) || 0) * g / 100) || 0;
+          const p = Number(i.protein != null ? i.protein : (Number(n.protein) || 0) * g / 100) || 0;
+          const cb = Number(i.carbs != null ? i.carbs : (Number(n.carbs) || 0) * g / 100) || 0;
+          const f = Number(i.fat != null ? i.fat : (Number(n.fat) || 0) * g / 100) || 0;
+          if (!hasTotals) {
+            totals.c += cal;
+            totals.p += p;
+            totals.cb += cb;
+            totals.f += f;
+          }
+          items.push({ n: String(i.name || i.food_name || '').slice(0, 60), g: Math.round(g), k: Math.round(cal) });
+        }));
+        if (!target.c && !target.p && !target.cb && !target.f && !totals.c && !items.length) return null;
+        return {
+          date: date,
+          ts: Number(r.ts) || Date.parse(date + 'T12:00:00') || 0,
+          plan: String(r.plan || r.name || '').slice(0, 60),
+          target: target,
+          totals: totals,
+          items: items.slice(0, 40),
+          diary: (Array.isArray(r.diary) ? r.diary : []).slice(0, 30).map(i => ({ n: String(i.n || '').slice(0, 60), g: Math.round(Number(i.g) || 0), k: Math.round(Number(i.k) || 0) }))
+        };
+      };
+      const byDate = {};
+      /* Server-first: nutrition_history is already synced into IndexedDB. */
       try {
-        if (!clientId) return [];
-        const docId = await portalHistoryDocId(clientId);
-        await ensurePortalFirebase();
-        if (!firebase.apps.length) firebase.initializeApp(PORTAL_SHARE_CFG);
-        const snap = await Promise.race([
-          firebase.firestore().collection('portal_shares').doc(docId).get({ source: 'server' }),
-          new Promise(res => setTimeout(() => res(null), 5000))
+        const rows = await db.find('nutrition_history', 'by_clientId', clientId) || [];
+        rows.forEach(r => { const n = normNutr(r); if (n) byDate[n.date] = n; });
+      } catch (_) {}
+      /* Legacy Firebase shares remain readable; server wins for a date. */
+      try {
+        await Promise.race([
+          (async () => {
+            const docId = await portalHistoryDocId(clientId);
+            await ensurePortalFirebase();
+            if (!firebase.apps.length) firebase.initializeApp(PORTAL_SHARE_CFG);
+            const snap = await firebase.firestore().collection('portal_shares').doc(docId).get({ source: 'server' });
+            if (snap && snap.exists && snap.data() && snap.data().d) {
+              const p = JSON.parse(snap.data().d);
+              (Array.isArray(p.nutr) ? p.nutr : []).forEach(r => {
+                const n = normNutr(r);
+                if (n && !byDate[n.date]) byDate[n.date] = n;
+              });
+            }
+          })().catch(e => console.warn('[hist-sync] CRM nutr fetch failed', e)),
+          new Promise(res => setTimeout(res, 1800))
         ]);
-        if (!snap || !snap.exists) return [];
-        const data = snap.data() || {};
-        if (!data.d) return [];
-        const p = JSON.parse(data.d);
-        return (Array.isArray(p.nutr) ? p.nutr : [])
-          .filter(r => r && /^\d{4}-\d{2}-\d{2}$/.test(String(r.date || '')) && r.target && r.totals)
-          .map(r => ({
-            date: String(r.date),
-            ts: Number(r.ts) || Date.parse(r.date + 'T12:00:00') || 0,
-            plan: String(r.plan || '').slice(0, 60),
-            target: { c: Number(r.target.c) || 0, p: Number(r.target.p) || 0, cb: Number(r.target.cb) || 0, f: Number(r.target.f) || 0 },
-            totals: { c: Number(r.totals.c) || 0, p: Number(r.totals.p) || 0, cb: Number(r.totals.cb) || 0, f: Number(r.totals.f) || 0 },
-            items: (Array.isArray(r.items) ? r.items : []).slice(0, 40).map(i => ({ n: String(i.n || '').slice(0, 60), g: Math.round(Number(i.g) || 0), k: Math.round(Number(i.k) || 0) })),
-            diary: (Array.isArray(r.diary) ? r.diary : []).slice(0, 30).map(i => ({ n: String(i.n || '').slice(0, 60), g: Math.round(Number(i.g) || 0), k: Math.round(Number(i.k) || 0) }))
-          }))
-          .sort((a, b) => (Date.parse(a.date) || 0) - (Date.parse(b.date) || 0))
-          .slice(-90);
-      } catch (e) { console.warn('[hist-sync] CRM nutr fetch failed', e); return []; }
+      } catch (e) { console.warn('[hist-sync] CRM nutr fetch failed', e); }
+      return Object.keys(byDate).sort().map(k => byDate[k]).slice(-90);
     };
 
     /* c94: convert a CRM workout_history record to the portal schema

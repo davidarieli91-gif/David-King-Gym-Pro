@@ -84,7 +84,7 @@ ok('legacy #data= link decodes UTF-8 (no mojibake)', html.indexOf("new TextDecod
 
 /* ---------- STATIC: trainer ---------- */
 ok('trainer fetch exposed', trainer.indexOf('window.dkFetchClientNutr = async function') >= 0);
-ok('fetch validates date/target/totals + caps', trainer.indexOf("/^\\d{4}-\\d{2}-\\d{2}$/.test(String(r.date || ''))") >= 0 && trainer.indexOf('.slice(-90)') >= 0);
+ok('fetch normalizes server/cloud dates + caps', trainer.indexOf('const normNutr') >= 0 && trainer.indexOf("/^\\d{4}-\\d{2}-\\d{2}$/.test(rawDate)") >= 0 && trainer.indexOf('.slice(-90)') >= 0);
 ok('nutrition card HTML next to the body card', trainer.indexOf('id="analytics-nutr"') >= 0 && trainer.indexOf('id="analytics-nutr-days"') >= 0 && trainer.indexOf('id="analytics-nutr-last"') >= 0);
 ok('renderClientNutr wired in render + on resolve', trainer.indexOf('renderClientNutr(nutr148)') >= 0 && trainer.indexOf('renderClientNutr(_cloudNutr148)') >= 0);
 ok('stale-client guard for the fetched days', trainer.indexOf('_cloudNutrCid148 === _clientId') >= 0);

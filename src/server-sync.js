@@ -13,6 +13,7 @@
     'workout_templates',
     'workout_history',
     'nutrition_history',
+    'checkins',
     'client_programs',
     'settings',
     'food_database',

@@ -81,7 +81,7 @@ ok('trainer buildCtx: latest check-in fat overrides the profile', trainer.indexO
 ok('trainer ctx carries fat to the engine (compute + trend)', trainer.indexOf('bodyFatPct: ctx.fat,           /* c174: body composition */') >= 0 && (trainer.match(/bodyFatPct: ctx\.fat/g) || []).length === 2);
 ok('trainer strip shows 🔥 fat%', trainer.indexOf("' · 🔥 <b class=\"text-text\">' + (Math.round(_ctx.fat * 10) / 10) + '%</b>'") >= 0);
 ok('trainer share payload includes client.body_fat', trainer.indexOf('target_weight: client.target_weight, body_fat: client.body_fat_pct') >= 0);
-ok('trainer dkFetchClientChecks passes body_fat (3..70 sanity)', trainer.indexOf('const pf = v => { const n = parseFloat(v); return (isFinite(n) && n >= 3 && n <= 70) ? Math.round(n * 10) / 10 : null; };') >= 0 && trainer.indexOf('if (bf174 != null) out174.body_fat = bf174;') >= 0);
+ok('trainer dkFetchClientChecks passes body_fat (3..70 sanity)', trainer.indexOf('const pf = v => { const n = parseFloat(v); return (isFinite(n) && n >= 3 && n <= 70) ? Math.round(n * 10) / 10 : null; };') >= 0 && trainer.indexOf('const bf = pf(c.body_fat);') >= 0 && trainer.indexOf('if (bf != null) out.body_fat = bf;') >= 0);
 
 /* ---------- PORTAL: the «54 kg vs 75 kg» fix ---------- */
 ok('portal recpBodyWeight falls back to the payload profile weight', portal.indexOf("if (source !== 'checkin' && cc) {") >= 0 && portal.indexOf("bw = pw; source = 'profile';") >= 0);
