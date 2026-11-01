@@ -15,8 +15,14 @@ const copy = read('scripts/copy-assets.js');
 const sw = read('sw.js');
 
 ok('arena data has eight games', Array.isArray(arena.games) && arena.games.length === 8);
-ok('street workout, strength and kettlebell are available', arena.games.filter(g => g.available).length === 3 && ['street_workout', 'strength', 'kettlebell'].every(id => arena.games.some(g => g.id === id && g.available)));
-ok('kettlebell path has three tiers of four lessons', (function () { const k = arena.games.find(g => g.id === 'kettlebell'); const p = k && k.paths && k.paths[0]; return !!p && p.tiers.length === 3 && p.tiers.every(t => t.lessons.length === 4 && t.exam && t.exam.stations.length >= 4 && t.trophy); })());
+ok('street workout, strength, kettlebell and mobility are available', arena.games.filter(g => g.available).length === 4 && ['street_workout', 'strength', 'kettlebell', 'mobility'].every(id => arena.games.some(g => g.id === id && g.available)));
+for (const [gameId, label] of [['kettlebell', 'kettlebell'], ['mobility', 'mobility']]) {
+  ok(label + ' path has three tiers of four lessons', (function () {
+    const g = arena.games.find(x => x.id === gameId);
+    const p = g && g.paths && g.paths[0];
+    return !!p && p.tiers.length === 3 && p.tiers.every(t => t.lessons.length === 4 && t.exam && t.exam.stations.length >= 4 && t.trophy);
+  })());
+}
 const mu = arena.games.find(g => g.id === 'street_workout').paths.find(p => p.id === 'muscle_up');
 const dl = arena.games.find(g => g.id === 'strength').paths.find(p => p.id === 'deadlift');
 ok('muscle-up has three tiers', mu.tiers.length === 3 && mu.tiers.every(t => t.lessons.length >= 3 && t.exam.stations.length >= 2 && t.trophy.name));
@@ -52,6 +58,9 @@ ok('full portal saves nutrition snapshots to the server', read('server/public/po
 ok('portal writes allow nutrition history', read('server/src/routes/portal.ts').includes("'nutrition_history'"));
 ok('full portal understands trainer plan quantities', read('server/public/portal-full.html').includes('f.quantity != null'));
 ok('full portal seeds server check-ins into the journal', read('server/public/portal-full.html').includes('remoteCheckins') && read('server/public/portal-full.html').includes("nsKey('dk_checkins')"));
+ok('client portal has a dedicated arena page', fs.existsSync(path.join(root, 'server', 'public', 'portal-arena.html')) && read('server/src/app.ts').includes("'/p/:token/arena'") && read('server/public/portal-full.html').includes('portal-arena-btn'));
+ok('client arena reads and writes arena_progress', read('server/public/portal-arena.html').includes('collection=arena_progress') && read('server/public/portal-arena.html').includes("collection: 'arena_progress'"));
+ok('client arena gets a server-injected boot payload', read('server/public/portal-arena.html').includes('__DKG_PORTAL_BOOT__') && read('server/src/app.ts').includes('buildPortalPayload(rawToken)'));
 const check = spawnSync(process.execPath, ['--check', path.join(root, 'src', 'arena.js')], { encoding: 'utf8' });
 ok('arena.js parses', check.status === 0);
 

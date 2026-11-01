@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 5,
   "updated": "2026-11-01",
   "games": [
     {
@@ -1896,6 +1896,691 @@
       ]
     },
     {
+      "id": "mobility",
+      "name": {
+        "en": "Mobility",
+        "ru": "Мобильность",
+        "he": "ניידות"
+      },
+      "description": {
+        "en": "Deep squat, shoulders, hips and splits. Bronze, Silver and Gold standards for usable range.",
+        "ru": "Глубокий присед, плечи, таз и шпагаты. Бронза, серебро и золото за рабочий диапазон.",
+        "he": "סקוואט עמוק, כתפיים, אגן ושפגטים. תקני ארד, כסף וזהב לטווח תנועה שמיש."
+      },
+      "color": "#38bdf8",
+      "available": true,
+      "paths": [
+        {
+          "id": "mobility_foundations",
+          "name": {
+            "en": "Mobility Foundations",
+            "ru": "База мобильности",
+            "he": "יסודות הניידות"
+          },
+          "subtitle": {
+            "en": "Open the hips, shoulders and ankles without losing control.",
+            "ru": "Открой таз, плечи и голеностопы, не теряя контроля.",
+            "he": "פתח את האגן, הכתפיים והקרסוליים בלי לאבד שליטה."
+          },
+          "description": {
+            "en": "A three-tier path: hips and ankles, shoulders and T-spine, then full-range holds. Each tier has four lessons and a practical exam.",
+            "ru": "Три уровня: таз и голеностопы, плечи и грудной отдел, затем удержания в полном диапазоне. На каждом уровне четыре урока и практический экзамен.",
+            "he": "מסלול בשלוש דרגות: אגן וקרסוליים, כתפיים ועמוד שדרה חזי, ואז מנחים בטווח מלא. בכל דרגה ארבעה שיעורים ומבחן מעשי."
+          },
+          "tiers": [
+            {
+              "id": "bronze",
+              "tier": "bronze",
+              "name": {
+                "en": "Hips & Ankles",
+                "ru": "Таз и голеностопы",
+                "he": "אגן וקרסוליים"
+              },
+              "goal": {
+                "en": "Deep squat, hip flexors, glutes and ankles.",
+                "ru": "Глубокий присед, сгибатели бедра, ягодицы и голеностопы.",
+                "he": "סקוואט עמוק, מכופפי ירך, ישבן וקרסוליים."
+              },
+              "lessons": [
+                {
+                  "id": "mob_deep_squat",
+                  "name": {
+                    "en": "Deep Squat Hold",
+                    "ru": "Глубокий присед",
+                    "he": "סקוואט עמוק"
+                  },
+                  "prescription": {
+                    "en": "3 × 30 sec",
+                    "ru": "3 × 30 сек",
+                    "he": "3 × 30 שנ׳"
+                  },
+                  "technique": {
+                    "en": "Stand with feet shoulder-width and toes slightly out.|Sit down into the deepest pain-free squat.|Keep the chest tall and breathe; use a support if needed.",
+                    "ru": "Встань на ширине плеч, носки чуть наружу.|Опустись в самый глубокий безболезненный присед.|Держи грудь высоко и дыши; при необходимости держись за опору.",
+                    "he": "עמוד ברוחב כתפיים עם בהונות מעט החוצה.|רד לסקוואט העמוק ביותר ללא כאב.|שמור חזה זקוף ונשום; היעזר בתמיכה אם צריך."
+                  },
+                  "checkpoints": {
+                    "en": "Heels down|Chest tall|Knees track out",
+                    "ru": "Пятки на полу|Грудь высоко|Колени наружу",
+                    "he": "עקבים על הרצפה|חזה זקוף|ברכיים החוצה"
+                  },
+                  "mistakes": {
+                    "en": "Heels lifting|Rounding the back|Holding the breath",
+                    "ru": "Пятки отрываются|Спина округляется|Задержка дыхания",
+                    "he": "עקבים מתרוממים|גב מתעגל|עצירת נשימה"
+                  },
+                  "exerciseId": "rdb_deep-squat-hold",
+                  "image": "/images/rdb/deep-squat-hold-main.webp"
+                },
+                {
+                  "id": "mob_hip_flexor",
+                  "name": {
+                    "en": "Half-Kneeling Hip Flexor Rock",
+                    "ru": "Раскачка сгибателя бедра",
+                    "he": "נדנוד מכופף ירך"
+                  },
+                  "prescription": {
+                    "en": "3 × 8 / side",
+                    "ru": "3 × 8 / сторона",
+                    "he": "3 × 8 / צד"
+                  },
+                  "technique": {
+                    "en": "Kneel on one knee with the front foot planted.|Tuck the pelvis and shift forward until you feel the hip flexor.|Rock gently and switch sides.",
+                    "ru": "Встань на одно колено, передняя стопа на полу.|Подкрути таз и подайся вперёд до ощущения натяжения.|Плавно покачайся и поменяй сторону.",
+                    "he": "כרע על ברך אחת עם כף הרגל הקדמית על הרצפה.|סובב את האגן והיכנס קדימה עד לתחושת מתיחה.|נדנד בעדינות והחלף צד."
+                  },
+                  "checkpoints": {
+                    "en": "Ribs down|Back glute active|No lower-back arch",
+                    "ru": "Рёбра вниз|Ягодица задней ноги включена|Без прогиба в пояснице",
+                    "he": "צלעות למטה|ישבן הרגל האחורית פעיל|בלי קשת בגב התחתון"
+                  },
+                  "mistakes": {
+                    "en": "Arching the lower back|Front knee collapsing|Rushing the rocks",
+                    "ru": "Прогиб в пояснице|Переднее колено заваливается|Спешка в раскачке",
+                    "he": "קשת בגב התחתון|ברך קדמית קורסת|מהר מדי בנדנוד"
+                  },
+                  "exerciseId": "rdb_half-kneeling-hip-flexor-rock",
+                  "image": "/images/rdb/half-kneeling-hip-flexor-rock-start.webp"
+                },
+                {
+                  "id": "mob_pigeon",
+                  "name": {
+                    "en": "Pigeon Stretch",
+                    "ru": "Растяжка «голубь»",
+                    "he": "מתיחת יונה"
+                  },
+                  "prescription": {
+                    "en": "3 × 30 sec / side",
+                    "ru": "3 × 30 сек / сторона",
+                    "he": "3 × 30 שנ׳ / צד"
+                  },
+                  "technique": {
+                    "en": "Bring one shin forward and the other leg back.|Keep the hips square and lower the chest.|Breathe into the glute; switch sides.",
+                    "ru": "Вынеси одну голень вперёд, другую ногу назад.|Держи таз ровно и опускай грудь.|Дыши в ягодицу; поменяй сторону.",
+                    "he": "הבא שוק אחת קדימה ואת הרגל השנייה אחורה.|שמור אגן ישר והורד את החזה.|נשום אל הישבן; החלף צד."
+                  },
+                  "checkpoints": {
+                    "en": "Hips square|Back leg straight|Relaxed shoulders",
+                    "ru": "Таз ровно|Задняя нога прямая|Плечи расслаблены",
+                    "he": "אגן ישר|רגל אחורית ישרה|כתפיים רפויות"
+                  },
+                  "mistakes": {
+                    "en": "Hips rotating open|Forcing the knee|Holding the breath",
+                    "ru": "Таз разворачивается|Давление на колено|Задержка дыхания",
+                    "he": "אגן מסתובב|לחיצה על הברך|עצירת נשימה"
+                  },
+                  "exerciseId": "rdb_pigeon-stretch",
+                  "image": "/images/rdb/pigeon-stretch-main.webp"
+                },
+                {
+                  "id": "mob_ankle",
+                  "name": {
+                    "en": "Bench Ankle Stretch",
+                    "ru": "Растяжка голеностопа на скамье",
+                    "he": "מתיחת קרסול על ספסל"
+                  },
+                  "prescription": {
+                    "en": "3 × 30 sec / side",
+                    "ru": "3 × 30 сек / сторона",
+                    "he": "3 × 30 שנ׳ / צד"
+                  },
+                  "technique": {
+                    "en": "Place the ball of the foot on a bench or step.|Keep the heel down and drive the knee forward.|Hold, then switch sides.",
+                    "ru": "Поставь подушечку стопы на скамью или ступень.|Держи пятку внизу и веди колено вперёд.|Удерживай, затем поменяй сторону.",
+                    "he": "הנח את כרית כף הרגל על ספסל או מדרגה.|שמור עקב למטה והובל את הברך קדימה.|החזק, ואז החלף צד."
+                  },
+                  "checkpoints": {
+                    "en": "Heel down|Knee over toes|Tall posture",
+                    "ru": "Пятка внизу|Колено над носком|Прямая осанка",
+                    "he": "עקב למטה|ברך מעל הבהונות|יציבה זקופה"
+                  },
+                  "mistakes": {
+                    "en": "Heel lifting|Knee caving in|Bouncing",
+                    "ru": "Пятка отрывается|Колено внутрь|Пружинистые движения",
+                    "he": "עקב מתרומם|ברך פנימה|קפיצות"
+                  },
+                  "exerciseId": "rdb_bench-ankle-stretch",
+                  "image": "/images/rdb/bench-ankle-stretch-main.webp"
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "Move slowly. Range without control does not count.",
+                  "ru": "Двигайся медленно. Диапазон без контроля не считается.",
+                  "he": "נוע לאט. טווח בלי שליטה לא נחשב."
+                },
+                "stations": [
+                  {
+                    "id": "deep_squat",
+                    "type": "hold",
+                    "name": {
+                      "en": "Deep squat hold",
+                      "ru": "Глубокий присед",
+                      "he": "סקוואט עמוק"
+                    },
+                    "hint": {
+                      "en": "Heels down, chest tall.",
+                      "ru": "Пятки внизу, грудь высоко.",
+                      "he": "עקבים למטה, חזה זקוף."
+                    },
+                    "sets": 3,
+                    "target": 30
+                  },
+                  {
+                    "id": "hip_flexor",
+                    "type": "reps",
+                    "name": {
+                      "en": "Hip flexor rock",
+                      "ru": "Раскачка сгибателя бедра",
+                      "he": "נדנוד מכופף ירך"
+                    },
+                    "hint": {
+                      "en": "Ribs down, no arch.",
+                      "ru": "Рёбра вниз, без прогиба.",
+                      "he": "צלעות למטה, בלי קשת."
+                    },
+                    "sets": 3,
+                    "target": 8
+                  },
+                  {
+                    "id": "pigeon",
+                    "type": "hold",
+                    "name": {
+                      "en": "Pigeon hold",
+                      "ru": "Удержание «голубь»",
+                      "he": "החזקת יונה"
+                    },
+                    "hint": {
+                      "en": "Square hips, relaxed breath.",
+                      "ru": "Таз ровно, дыхание свободное.",
+                      "he": "אגן ישר, נשימה רגועה."
+                    },
+                    "sets": 2,
+                    "target": 30
+                  },
+                  {
+                    "id": "technique",
+                    "type": "manual",
+                    "name": {
+                      "en": "Technique verified",
+                      "ru": "Техника подтверждена",
+                      "he": "טכניקה אומתה"
+                    },
+                    "hint": null
+                  }
+                ]
+              },
+              "trophy": {
+                "id": "mobility_bronze",
+                "name": {
+                  "en": "Bronze Mobility",
+                  "ru": "Бронзовая мобильность",
+                  "he": "ניידות ארד"
+                },
+                "description": {
+                  "en": "The hips, ankles and deep squat are verified.",
+                  "ru": "Таз, голеностопы и глубокий присед подтверждены.",
+                  "he": "האגן, הקרסוליים והסקוואט העמוק אומתו."
+                }
+              }
+            },
+            {
+              "id": "silver",
+              "tier": "silver",
+              "name": {
+                "en": "Shoulders & T-Spine",
+                "ru": "Плечи и грудной отдел",
+                "he": "כתפיים ועמוד שדרה חזי"
+              },
+              "goal": {
+                "en": "Thoracic spine, shoulders and overhead reach.",
+                "ru": "Грудной отдел, плечи и вытяжение над головой.",
+                "he": "עמוד שדרה חזי, כתפיים והגעה מעל הראש."
+              },
+              "lessons": [
+                {
+                  "id": "mob_cat_cow",
+                  "name": {
+                    "en": "Cat-Cow",
+                    "ru": "«Кошка-корова»",
+                    "he": "חתול-פרה"
+                  },
+                  "prescription": {
+                    "en": "3 × 10",
+                    "ru": "3 × 10",
+                    "he": "3 × 10"
+                  },
+                  "technique": {
+                    "en": "Start on all fours with a neutral spine.|Round the back, then arch and open the chest.|Move slowly with the breath.",
+                    "ru": "Встань на четвереньки с нейтральной спиной.|Округли спину, затем прогнись и раскрой грудь.|Двигайся медленно, синхронно с дыханием.",
+                    "he": "עמוד על שש עם עמוד שדרה ניטרלי.|עגל את הגב, ואז פתח את החזה.|נוע לאט עם הנשימה."
+                  },
+                  "checkpoints": {
+                    "en": "Hands under shoulders|Knees under hips|Full spinal wave",
+                    "ru": "Ладони под плечами|Колени под тазом|Полная волна позвоночника",
+                    "he": "ידיים מתחת לכתפיים|ברכיים מתחת לאגן|גל מלא בעמוד השדרה"
+                  },
+                  "mistakes": {
+                    "en": "Rushing the reps|Moving only the lower back|Locking the elbows",
+                    "ru": "Спешка|Двигается только поясница|Жёсткие локти",
+                    "he": "מהר מדי|תנועה רק בגב התחתון|נעילת מרפקים"
+                  },
+                  "exerciseId": "rdb_cat-cow",
+                  "image": "/images/rdb/cat-cow-main.webp"
+                },
+                {
+                  "id": "mob_wall_slide",
+                  "name": {
+                    "en": "Forearm Wall Slide",
+                    "ru": "Скольжение предплечьями по стене",
+                    "he": "החלקת אמות על הקיר"
+                  },
+                  "prescription": {
+                    "en": "3 × 10",
+                    "ru": "3 × 10",
+                    "he": "3 × 10"
+                  },
+                  "technique": {
+                    "en": "Place the forearms on a wall at shoulder height.|Slide up while keeping the ribs down.|Return slowly without losing contact.",
+                    "ru": "Поставь предплечья на стену на высоте плеч.|Скользи вверх, держа рёбра вниз.|Возвращайся медленно, не отрываясь от стены.",
+                    "he": "הנח את האמות על הקיר בגובה הכתפיים.|החלק למעלה תוך שמירת הצלעות למטה.|חזור לאט בלי לאבד מגע."
+                  },
+                  "checkpoints": {
+                    "en": "Ribs down|Forearms on the wall|Shoulders away from ears",
+                    "ru": "Рёбра вниз|Предплечья на стене|Плечи дальше от ушей",
+                    "he": "צלעות למטה|אמות על הקיר|כתפיים רחוקות מהאוזניים"
+                  },
+                  "mistakes": {
+                    "en": "Arching the back|Shrugging|Losing wall contact",
+                    "ru": "Прогиб в спине|Поднятые плечи|Потеря контакта со стеной",
+                    "he": "קשת בגב|הרמת כתפיים|איבוד מגע עם הקיר"
+                  },
+                  "exerciseId": "gi_2941",
+                  "image": "/images/gi_2941.webp"
+                },
+                {
+                  "id": "mob_thoracic_bridge",
+                  "name": {
+                    "en": "Thoracic Bridge",
+                    "ru": "Грудной мостик",
+                    "he": "גשר חזי"
+                  },
+                  "prescription": {
+                    "en": "3 × 20 sec",
+                    "ru": "3 × 20 сек",
+                    "he": "3 × 20 שנ׳"
+                  },
+                  "technique": {
+                    "en": "Sit with hands behind you and fingers turned out.|Lift the hips and open the chest.|Keep the glutes active and breathe.",
+                    "ru": "Сядь, руки сзади, пальцы развёрнуты наружу.|Подними таз и раскрой грудь.|Держи ягодицы включёнными и дыши.",
+                    "he": "שב עם ידיים מאחור ואצבעות פונות החוצה.|הרם את האגן ופתח את החזה.|שמור ישבן פעיל ונשום."
+                  },
+                  "checkpoints": {
+                    "en": "Chest open|Hips lifted|Elbows soft",
+                    "ru": "Грудь раскрыта|Таз поднят|Локти мягкие",
+                    "he": "חזה פתוח|אגן מורם|מרפקים רכים"
+                  },
+                  "mistakes": {
+                    "en": "Crunching the neck|Elbows locked hard|Hips sagging",
+                    "ru": "Шея сжимается|Локти жёстко заблокированы|Таз провисает",
+                    "he": "צוואר דחוס|מרפקים נעולים מדי|אגן שוקע"
+                  },
+                  "exerciseId": "rdb_thoracic-bridge",
+                  "image": "/images/rdb/thoracic-bridge-main.webp"
+                },
+                {
+                  "id": "mob_shoulder_stretch",
+                  "name": {
+                    "en": "Cross-Body Shoulder Stretch",
+                    "ru": "Растяжка плеча через корпус",
+                    "he": "מתיחת כתף חוצה גוף"
+                  },
+                  "prescription": {
+                    "en": "3 × 30 sec / side",
+                    "ru": "3 × 30 сек / сторона",
+                    "he": "3 × 30 שנ׳ / צד"
+                  },
+                  "technique": {
+                    "en": "Bring one arm across the chest.|Pull it gently with the opposite hand.|Keep the shoulder down and switch sides.",
+                    "ru": "Заведи одну руку поперёк груди.|Мягко подтяни противоположной рукой.|Держи плечо внизу и поменяй сторону.",
+                    "he": "הבא יד אחת לרוחב החזה.|משוך בעדינות עם היד השנייה.|שמור כתף למטה והחלף צד."
+                  },
+                  "checkpoints": {
+                    "en": "Shoulder down|No torso twist|Gentle pull",
+                    "ru": "Плечо внизу|Без разворота корпуса|Мягкое натяжение",
+                    "he": "כתף למטה|בלי סיבוב פלג גוף|משיכה עדינה"
+                  },
+                  "mistakes": {
+                    "en": "Shrugging|Overstretching|Rotating the torso",
+                    "ru": "Поднятое плечо|Чрезмерное растяжение|Разворот корпуса",
+                    "he": "הרמת כתף|מתיחה יתר|סיבוב פלג הגוף"
+                  },
+                  "exerciseId": "rdb_cross-body-shoulder-stretch",
+                  "image": "/images/rdb/cross-body-shoulder-stretch-main.webp"
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "Keep the ribs down and the neck relaxed.",
+                  "ru": "Держи рёбра вниз, шею расслабленной.",
+                  "he": "שמור צלעות למטה וצוואר רגוע."
+                },
+                "stations": [
+                  {
+                    "id": "wall_slide",
+                    "type": "reps",
+                    "name": {
+                      "en": "Forearm wall slide",
+                      "ru": "Скольжение предплечьями по стене",
+                      "he": "החלקת אמות על הקיר"
+                    },
+                    "hint": {
+                      "en": "Stay in contact with the wall.",
+                      "ru": "Не отрывайся от стены.",
+                      "he": "הישאר במגע עם הקיר."
+                    },
+                    "sets": 3,
+                    "target": 10
+                  },
+                  {
+                    "id": "thoracic_bridge",
+                    "type": "hold",
+                    "name": {
+                      "en": "Thoracic bridge",
+                      "ru": "Грудной мостик",
+                      "he": "גשר חזי"
+                    },
+                    "hint": {
+                      "en": "Chest open, hips up.",
+                      "ru": "Грудь раскрыта, таз вверх.",
+                      "he": "חזה פתוח, אגן למעלה."
+                    },
+                    "sets": 3,
+                    "target": 20
+                  },
+                  {
+                    "id": "shoulder_stretch",
+                    "type": "hold",
+                    "name": {
+                      "en": "Cross-body shoulder stretch",
+                      "ru": "Растяжка плеча через корпус",
+                      "he": "מתיחת כתף חוצה גוף"
+                    },
+                    "hint": {
+                      "en": "Shoulder down, gentle pull.",
+                      "ru": "Плечо внизу, мягкое натяжение.",
+                      "he": "כתף למטה, משיכה עדינה."
+                    },
+                    "sets": 2,
+                    "target": 30
+                  },
+                  {
+                    "id": "technique",
+                    "type": "manual",
+                    "name": {
+                      "en": "Technique verified",
+                      "ru": "Техника подтверждена",
+                      "he": "טכניקה אומתה"
+                    },
+                    "hint": null
+                  }
+                ]
+              },
+              "trophy": {
+                "id": "mobility_silver",
+                "name": {
+                  "en": "Silver Mobility",
+                  "ru": "Серебряная мобильность",
+                  "he": "ניידות כסף"
+                },
+                "description": {
+                  "en": "Shoulder and thoracic control are verified.",
+                  "ru": "Контроль плеч и грудного отдела подтверждён.",
+                  "he": "שליטת הכתפיים ועמוד השדרה החזי אומתה."
+                }
+              }
+            },
+            {
+              "id": "gold",
+              "tier": "gold",
+              "name": {
+                "en": "Full Range",
+                "ru": "Полный диапазон",
+                "he": "טווח מלא"
+              },
+              "goal": {
+                "en": "Rotation, adductors and full-range control.",
+                "ru": "Ротация, приводящие мышцы и контроль в полном диапазоне.",
+                "he": "סיבוב, מקרבים ושליטה בטווח מלא."
+              },
+              "lessons": [
+                {
+                  "id": "mob_9090",
+                  "name": {
+                    "en": "90/90 Hold",
+                    "ru": "Удержание 90/90",
+                    "he": "החזקת 90/90"
+                  },
+                  "prescription": {
+                    "en": "3 × 30 sec / side",
+                    "ru": "3 × 30 сек / сторона",
+                    "he": "3 × 30 שנ׳ / צד"
+                  },
+                  "technique": {
+                    "en": "Sit with both knees bent at 90 degrees.|Keep both feet flat and the chest tall.|Hold, then switch the front leg.",
+                    "ru": "Сядь, оба колена согнуты под 90 градусов.|Держи обе стопы на полу, грудь высоко.|Удерживай, затем поменяй переднюю ногу.",
+                    "he": "שב עם שתי ברכיים כפופות ל-90 מעלות.|שמור את שתי כפות הרגליים על הרצפה וחזה זקוף.|החזק, ואז החלף את הרגל הקדמית."
+                  },
+                  "checkpoints": {
+                    "en": "Both feet down|Hips level|Chest tall",
+                    "ru": "Обе стопы на полу|Таз ровно|Грудь высоко",
+                    "he": "שתי הרגליים למטה|אגן ישר|חזה זקוף"
+                  },
+                  "mistakes": {
+                    "en": "Leaning back|One hip lifting|Knees collapsing",
+                    "ru": "Наклон назад|Один тазобедренный сустав поднимается|Колени заваливаются",
+                    "he": "הטיה לאחור|ירך אחת מתרוממת|ברכיים קורסות"
+                  },
+                  "exerciseId": "rdb_90-90-hold",
+                  "image": "/images/rdb/90-90-hold-main.webp"
+                },
+                {
+                  "id": "mob_butterfly",
+                  "name": {
+                    "en": "Butterfly Stretch",
+                    "ru": "Растяжка «бабочка»",
+                    "he": "מתיחת פרפר"
+                  },
+                  "prescription": {
+                    "en": "3 × 45 sec",
+                    "ru": "3 × 45 сек",
+                    "he": "3 × 45 שנ׳"
+                  },
+                  "technique": {
+                    "en": "Sit with the soles of the feet together.|Let the knees fall open and hold the ankles.|Hinge forward from the hips and breathe.",
+                    "ru": "Сядь, соединив стопы.|Дай коленям раскрыться и держи стопы.|Наклонись из таза и дыши.",
+                    "he": "שב עם כפות הרגליים יחד.|תן לברכיים להיפתח והחזק את הקרסוליים.|התכופף מהאגן ונשום."
+                  },
+                  "checkpoints": {
+                    "en": "Soles together|Knees relaxed open|Spine long",
+                    "ru": "Стопы вместе|Колени расслабленно раскрыты|Спина длинная",
+                    "he": "כפות יחד|ברכיים פתוחות ורפויות|עמוד שדרה ארוך"
+                  },
+                  "mistakes": {
+                    "en": "Pressing the knees down|Rounding the back|Bouncing",
+                    "ru": "Давление на колени|Округление спины|Пружинистые движения",
+                    "he": "לחיצת הברכיים למטה|עיגול הגב|קפיצות"
+                  },
+                  "exerciseId": "rdb_butterfly-stretch",
+                  "image": "/images/rdb/butterfly-stretch-main.webp"
+                },
+                {
+                  "id": "mob_cossack",
+                  "name": {
+                    "en": "Cossack Squat",
+                    "ru": "Казачий присед",
+                    "he": "סקוואט קוזאק"
+                  },
+                  "prescription": {
+                    "en": "3 × 8 / side",
+                    "ru": "3 × 8 / сторона",
+                    "he": "3 × 8 / צד"
+                  },
+                  "technique": {
+                    "en": "Stand wide with toes slightly out.|Shift to one side and sit into that hip.|Keep the other leg straight and alternate.",
+                    "ru": "Встань широко, носки чуть наружу.|Сместись на одну сторону и сядь в этот таз.|Держи другую ногу прямой и чередуй.",
+                    "he": "עמוד ברוחב עם בהונות מעט החוצה.|עבור לצד אחד ושב אל תוך הירך.|שמור את הרגל השנייה ישרה והחלף."
+                  },
+                  "checkpoints": {
+                    "en": "Working heel down|Chest up|Straight leg active",
+                    "ru": "Пятка рабочей ноги внизу|Грудь вверх|Прямая нога активна",
+                    "he": "עקב הרגל העובדת למטה|חזה למעלה|רגל ישרה פעילה"
+                  },
+                  "mistakes": {
+                    "en": "Collapsing the knee|Heel lifting|Twisting the torso",
+                    "ru": "Колено заваливается|Пятка отрывается|Разворот корпуса",
+                    "he": "ברך קורסת|עקב מתרומם|סיבוב פלג הגוף"
+                  },
+                  "exerciseId": "rdb_cossack-squat",
+                  "image": "/images/rdb/cossack-squat-start.webp"
+                },
+                {
+                  "id": "mob_half_split",
+                  "name": {
+                    "en": "Low Lunge to Half Split",
+                    "ru": "Низкий выпад в полушпагат",
+                    "he": "זינוק נמוך לחצי שפגט"
+                  },
+                  "prescription": {
+                    "en": "3 × 8 / side",
+                    "ru": "3 × 8 / сторона",
+                    "he": "3 × 8 / צד"
+                  },
+                  "technique": {
+                    "en": "Start in a low lunge with the front foot planted.|Shift the hips back and straighten the front leg.|Move slowly between the two positions.",
+                    "ru": "Начни с низкого выпада, передняя стопа на полу.|Уведи таз назад и выпрями переднюю ногу.|Двигайся медленно между двумя положениями.",
+                    "he": "התחל בזינוק נמוך עם כף הרגל הקדמית על הרצפה.|העבר את האגן אחורה ויישר את הרגל הקדמית.|נוע לאט בין שני המצבים."
+                  },
+                  "checkpoints": {
+                    "en": "Front heel down|Hips square|Controlled transition",
+                    "ru": "Передняя пятка внизу|Таз ровно|Контролируемый переход",
+                    "he": "עקב קדמי למטה|אגן ישר|מעבר מבוקר"
+                  },
+                  "mistakes": {
+                    "en": "Rounding the back|Locking the front knee|Rushing",
+                    "ru": "Округление спины|Жёсткая фиксация переднего колена|Спешка",
+                    "he": "עיגול הגב|נעילת הברך הקדמית|מהר מדי"
+                  },
+                  "exerciseId": "rdb_low-lunge-to-half-split",
+                  "image": "/images/rdb/low-lunge-to-half-split-start.webp"
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "This is a control exam. Stop before pain.",
+                  "ru": "Это экзамен на контроль. Остановись до боли.",
+                  "he": "זה מבחן שליטה. עצור לפני כאב."
+                },
+                "stations": [
+                  {
+                    "id": "ninety_ninety",
+                    "type": "hold",
+                    "name": {
+                      "en": "90/90 hold",
+                      "ru": "Удержание 90/90",
+                      "he": "החזקת 90/90"
+                    },
+                    "hint": {
+                      "en": "Both feet down, hips level.",
+                      "ru": "Обе стопы внизу, таз ровно.",
+                      "he": "שתי הרגליים למטה, אגן ישר."
+                    },
+                    "sets": 2,
+                    "target": 30
+                  },
+                  {
+                    "id": "butterfly",
+                    "type": "hold",
+                    "name": {
+                      "en": "Butterfly hold",
+                      "ru": "Удержание «бабочка»",
+                      "he": "החזקת פרפר"
+                    },
+                    "hint": {
+                      "en": "Long spine, relaxed knees.",
+                      "ru": "Длинная спина, расслабленные колени.",
+                      "he": "עמוד שדרה ארוך, ברכיים רפויות."
+                    },
+                    "sets": 1,
+                    "target": 45
+                  },
+                  {
+                    "id": "cossack",
+                    "type": "reps",
+                    "name": {
+                      "en": "Cossack squat",
+                      "ru": "Казачий присед",
+                      "he": "סקוואט קוזאק"
+                    },
+                    "hint": {
+                      "en": "Working heel down, chest up.",
+                      "ru": "Пятка рабочей ноги внизу, грудь вверх.",
+                      "he": "עקב הרגל העובדת למטה, חזה למעלה."
+                    },
+                    "sets": 3,
+                    "target": 8
+                  },
+                  {
+                    "id": "technique",
+                    "type": "manual",
+                    "name": {
+                      "en": "Technique verified",
+                      "ru": "Техника подтверждена",
+                      "he": "טכניקה אומתה"
+                    },
+                    "hint": null
+                  }
+                ]
+              },
+              "trophy": {
+                "id": "mobility_gold",
+                "name": {
+                  "en": "Gold Mobility",
+                  "ru": "Золотая мобильность",
+                  "he": "ניידות זהב"
+                },
+                "description": {
+                  "en": "Full-range hip and shoulder control is verified.",
+                  "ru": "Контроль таза и плеч в полном диапазоне подтверждён.",
+                  "he": "שליטת האגן והכתפיים בטווח מלא אומתה."
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "speed",
       "name": {
         "en": "Speed",
@@ -1940,22 +2625,6 @@
         "he": "נפח שבועי ומשימות פיזיק. בקרוב."
       },
       "color": "#f472b6",
-      "available": false,
-      "paths": []
-    },
-    {
-      "id": "mobility",
-      "name": {
-        "en": "Mobility",
-        "ru": "Мобильность",
-        "he": "גמישות"
-      },
-      "description": {
-        "en": "Splits, shoulders and deep squat milestones. Coming next.",
-        "ru": "Шпагаты, плечи и глубокий присед. Скоро.",
-        "he": "שפגטים, כתפיים וסקוואט עמוק. בקרוב."
-      },
-      "color": "#38bdf8",
       "available": false,
       "paths": []
     },

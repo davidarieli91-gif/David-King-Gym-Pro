@@ -157,7 +157,7 @@
   async function ensureData() {
     if (state.data) return state.data;
     if (state.loading) return state.loading;
-    state.loading = fetch('arena-data.json?v=4', { cache: 'no-cache' })
+    state.loading = fetch('arena-data.json?v=5', { cache: 'no-cache' })
       .then(function (res) {
         if (!res.ok) throw new Error('Arena data HTTP ' + res.status);
         return res.json();

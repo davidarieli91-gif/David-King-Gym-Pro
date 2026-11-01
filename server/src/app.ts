@@ -219,6 +219,32 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
     }
   });
 
+  /* Client Arena: a focused full-screen page inside the client PWA scope.
+     The token is the capability; the PIN is only injected so the page can
+     write arena_progress (reads also accept the same PIN). */
+  app.get('/p/:token/arena', async (request, reply) => {
+    const rawToken = (request.params as { token?: string }).token || '';
+    const token = encodeURIComponent(rawToken);
+    const payload = await buildPortalPayload(rawToken);
+    const client = (payload.client || {}) as Record<string, unknown>;
+    const boot = JSON.stringify({
+      token: rawToken,
+      clientId: client.id,
+      pin: client.portal_pass,
+      name: client.full_name,
+      weight: client.weight,
+    }).replace(/<\/script/gi, '<\\/script');
+    try {
+      const html = readFileSync(join(__dirname, '..', 'public', 'portal-arena.html'), 'utf8')
+        .replace(/__DKG_PORTAL_TOKEN__/g, token)
+        .replace('__DKG_PORTAL_BOOT__', boot);
+      reply.header('Cache-Control', 'no-store');
+      return reply.type('text/html').send(html);
+    } catch {
+      throw new ApiError(404, 'not_found', 'Arena page is not installed');
+    }
+  });
+
   app.get('/p/:token/simple', async (request, reply) => {
     try {
       const token = encodeURIComponent((request.params as { token?: string }).token || '');

@@ -2226,6 +2226,8 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
     .tab-btn.active { color: rgb(var(--c-primary)); }
     .tab-btn.active .tab-icon { stroke: rgb(var(--c-primary)); }
     .tab-btn.active .tab-label { font-weight: 700; }
+    /* c219: seven header controls must still fit a 320 px phone */
+    @media (max-width: 360px) { .dk-topbar-row .ms-auto { gap: 4px; } }
     .nutri-check:checked + .meal-label { opacity: .45; text-decoration: line-through; }
     .macro-ring { transition: stroke-dashoffset .8s cubic-bezier(.4,0,.2,1); }
     #unlock-screen { z-index: 150; } /* c118: above the exercise card (110) when the manual lock fires */
@@ -2704,6 +2706,10 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
           </button>
           <div id="theme-menu" class="hidden absolute end-0 top-full mt-2 w-60 max-h-[70vh] overflow-y-auto rounded-xl border border-border bg-[rgb(var(--c-surface))] shadow-float z-50 p-1.5" role="menu" aria-label="Choose theme"></div>
         </div>
+        <!-- c219: Arena — same client PWA scope, dedicated focused page -->
+        <a id="portal-arena-btn" href="/p/__DKG_PORTAL_TOKEN__/arena" class="w-9 h-9 grid place-items-center rounded-lg bg-surface-2 hover:opacity-80 transition border border-border" aria-label="Arena" title="Arena">
+          <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v4a4 4 0 0 1-8 0V4z"/><path d="M8 5H4v2a4 4 0 0 0 4 4M16 5h4v2a4 4 0 0 1-4 4"/><path d="M12 12v5M8 21h8M9 17h6"/></svg>
+        </a>
         <!-- c85: settings — themes, texture effects and opacity (same engine as the trainer app) -->
         <button id="portal-settings-btn" class="w-9 h-9 grid place-items-center rounded-lg bg-surface-2 hover:opacity-80 transition border border-border" aria-label="Settings" title="Settings">
           <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -9207,10 +9213,16 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         }
       } catch (e151) {}
     });
-    /* c151: never lose an active workout to an accidental exit */
+    /* c151: never lose an active workout to an accidental exit. A prepared
+       day (started_at = null) is not an active workout — guarding it made
+       every in-scope navigation ask «Leave site?». */
     window.addEventListener('beforeunload', function (e) {
       try {
-        if (!Object.keys(sessions).length) return;
+        var active = Object.keys(sessions).some(function (key) {
+          var s = sessions[key];
+          return s && s.started_at;
+        });
+        if (!active) return;
         e.preventDefault();
         e.returnValue = '';
       } catch (err) {}
@@ -9220,7 +9232,11 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       history.pushState({ dk151: 1 }, '');
       window.addEventListener('popstate', function () {
         try {
-          if (Object.keys(sessions).length && !confirm(t('exitWorkoutConfirm'))) { history.pushState({ dk151: 1 }, ''); return; }
+          var active = Object.keys(sessions).some(function (key) {
+            var s = sessions[key];
+            return s && s.started_at;
+          });
+          if (active && !confirm(t('exitWorkoutConfirm'))) { history.pushState({ dk151: 1 }, ''); return; }
         } catch (err) {}
       });
     } catch (e151b) {}
@@ -10708,6 +10724,12 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
       var col = e.target.closest('[data-wunit-col]');
       if (col) { wOpen(null); return; }
       if (e.target.closest('#portal-settings-btn')) { openSettingsSheet(); return; }
+      /* c219: Arena is an in-scope page, not "leaving the portal" — bypass
+         the c14 close guard; the active-workout guard below still applies. */
+      if (e.target.closest('#portal-arena-btn')) {
+        try { if (window.dkAllowClose) window.dkAllowClose(); } catch (err) {}
+        return;
+      }
       if (e.target.closest('[data-cps-backdrop]') || e.target.closest('[data-cps-close]')) { closeSettingsSheet(); return; }
       /* c134: wipe client data on this device (confirm first, then reload) */
       if (e.target.closest('#cps-wipe')) {
