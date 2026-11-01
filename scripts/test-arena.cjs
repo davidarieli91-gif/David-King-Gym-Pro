@@ -68,6 +68,8 @@ ok('client arena reads and writes arena_progress', read('server/public/portal-ar
 ok('client arena gets a server-injected boot payload', read('server/public/portal-arena.html').includes('__DKG_PORTAL_BOOT__') && read('server/src/app.ts').includes('buildPortalPayload(rawToken)'));
 ok('simple portal loads the latest arena data', read('server/public/portal.html').includes('arena-data.json?v=6') && read('server/public/portal-arena.html').includes('/arena-data.json?v=6'));
 ok('simple portal opens the full arena page', read('server/public/portal.html').includes('/p/__DKG_PORTAL_TOKEN__/arena'));
+ok('client portal service worker caches the arena shell', read('server/src/app.ts').includes('dk-portal-v2') && read('server/src/app.ts').includes("BASE + '/arena'") && read('server/src/app.ts').includes('arena-data.json?v=6'));
+ok('client arena keeps an offline progress cache', read('server/public/portal-arena.html').includes('dk_arena_records_') && read('server/public/portal-arena.html').includes('serviceWorker.register'));
 const check = spawnSync(process.execPath, ['--check', path.join(root, 'src', 'arena.js')], { encoding: 'utf8' });
 ok('arena.js parses', check.status === 0);
 

@@ -385,29 +385,49 @@
 
     async function load() {
       try {
-        var dataRes = await fetch('/arena-data.json?v=6', { cache: 'no-cache' });
-        if (!dataRes.ok) throw new Error('data');
-        state.data = await dataRes.json();
+        var cachedData = null, cachedRecords = null;
+        try { cachedData = JSON.parse(localStorage.getItem('dk_arena_data_v6') || 'null'); } catch (_) {}
+        try { cachedRecords = JSON.parse(localStorage.getItem('dk_arena_records_' + CLIENT_ID) || 'null'); } catch (_) {}
+        if (cachedData && cachedData.games) state.data = cachedData;
+        if (cachedRecords && typeof cachedRecords === 'object') state.records = cachedRecords;
+        try {
+          var dataRes = await fetch('/arena-data.json?v=6', { cache: 'no-cache' });
+          if (!dataRes.ok) throw new Error('data');
+          state.data = await dataRes.json();
+          try { localStorage.setItem('dk_arena_data_v6', JSON.stringify(state.data)); } catch (_) {}
+        } catch (dataError) {
+          if (!state.data) throw dataError;
+        }
         if (CLIENT_ID) {
-          var recRes = await fetch('/api/portal/' + encodeURIComponent(TOKEN) + '/records?collection=arena_progress', {
-            headers: { 'accept': 'application/json', 'x-portal-pin': PIN }
-          });
-          if (recRes.ok) {
-            var payload = await recRes.json();
-            (payload.records || []).forEach(function (row) {
-              var data = row.data || {};
-              var pathId = data.path_id || String(row.id || '').split('::')[1];
-              if (pathId) state.records[pathId] = data;
+          try {
+            var recRes = await fetch('/api/portal/' + encodeURIComponent(TOKEN) + '/records?collection=arena_progress', {
+              headers: { 'accept': 'application/json', 'x-portal-pin': PIN }
             });
-          }
+            if (recRes.ok) {
+              var payload = await recRes.json();
+              var fresh = {};
+              (payload.records || []).forEach(function (row) {
+                var data = row.data || {};
+                var pathId = data.path_id || String(row.id || '').split('::')[1];
+                if (pathId) fresh[pathId] = data;
+              });
+              state.records = fresh;
+              try { localStorage.setItem('dk_arena_records_' + CLIENT_ID, JSON.stringify(state.records)); } catch (_) {}
+            }
+          } catch (_) { /* offline: keep the last cached progress */ }
         }
         state.loading = false;
+        state.error = '';
         render();
       } catch (error) {
         state.loading = false;
         state.error = t('error');
         render();
       }
+    }
+
+    function cacheRecords() {
+      try { localStorage.setItem('dk_arena_records_' + CLIENT_ID, JSON.stringify(state.records)); } catch (_) {}
     }
 
     async function saveRecord(rec) {
@@ -419,6 +439,7 @@
       });
       if (!res.ok) throw new Error('save');
       state.records[rec.path_id] = rec;
+      cacheRecords();
     }
 
     function syncChrome() {
@@ -738,6 +759,11 @@
     document.documentElement.dir = state.lang === 'he' ? 'rtl' : 'ltr';
     langSel.value = state.lang;
     langSel.addEventListener('change', function () { setLang(langSel.value); });
+    try {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/p/__DKG_PORTAL_TOKEN__/sw.js', { scope: '/p/__DKG_PORTAL_TOKEN__' }).catch(function () {});
+      }
+    } catch (_) {}
     load();
   })();
   </script>

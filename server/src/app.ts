@@ -261,18 +261,44 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
      of being captured by the trainer PWA at the origin root. */
   app.get('/p/:token/sw.js', async (request, reply) => {
     const token = encodeURIComponent((request.params as { token?: string }).token || '');
+    const base = '/p/' + token;
     reply.header('Cache-Control', 'no-cache');
-    reply.header('Service-Worker-Allowed', '/p/' + token);
+    reply.header('Service-Worker-Allowed', base);
     return reply.type('application/javascript').send(`
-      const CACHE = 'dk-portal-v1';
-      self.addEventListener('install', (event) => { event.waitUntil(self.skipWaiting()); });
-      self.addEventListener('activate', (event) => { event.waitUntil(self.clients.claim()); });
+      const BASE = ${JSON.stringify(base)};
+      const CACHE = 'dk-portal-v2';
+      const SHELL = [BASE, BASE + '/arena', '/arena-data.json?v=6', '/icon-portal-192.png', '/icon-portal-32.png'];
+      self.addEventListener('install', (event) => {
+        event.waitUntil(
+          caches.open(CACHE)
+            .then((cache) => Promise.all(SHELL.map((u) => cache.add(u).catch(() => null))))
+            .then(() => self.skipWaiting())
+        );
+      });
+      self.addEventListener('activate', (event) => {
+        event.waitUntil(
+          caches.keys()
+            .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+            .then(() => self.clients.claim())
+        );
+      });
       self.addEventListener('fetch', (event) => {
         const req = event.request;
         if (req.method !== 'GET') return;
         const url = new URL(req.url);
-        if (url.origin !== self.location.origin || url.pathname.startsWith('/api/')) return;
-        event.respondWith(fetch(req).catch(() => caches.match(req)));
+        if (url.origin !== self.location.origin || url.pathname.startsWith('/api/') || url.pathname.endsWith('/sw.js')) return;
+        event.respondWith(
+          caches.match(req).then((cached) => cached || fetch(req).then((res) => {
+            if (res && res.ok && res.type === 'basic') {
+              const clone = res.clone();
+              caches.open(CACHE).then((cache) => cache.put(req, clone)).catch(() => {});
+            }
+            return res;
+          }).catch(() => {
+            if (req.mode === 'navigate') return caches.match(BASE) || caches.match(BASE + '/arena');
+            return caches.match(req);
+          }))
+        );
       });
     `);
   });
