@@ -36,6 +36,7 @@
     lessonsDone: { en: 'All lessons done', ru: 'Все уроки выполнены', he: 'כל השיעורים הושלמו' },
     examLocked: { en: 'The exam unlocks after all lessons.', ru: 'Экзамен откроется после всех уроков.', he: 'המבחן ייפתח לאחר כל השיעורים.' },
     submitExam: { en: 'Take the exam', ru: 'Сдать экзамен', he: 'בצע מבחן' },
+    fillStations: { en: 'Fill in every station before submitting.', ru: 'Заполни все станции перед отправкой.', he: 'מלא את כל התחנות לפני השליחה.' },
     examPassed: { en: 'Exam passed', ru: 'Экзамен сдан', he: 'המבחן עבר' },
     examFailed: { en: 'Exam not passed', ru: 'Экзамен не сдан', he: 'המבחן לא עבר' },
     weakStations: { en: 'Work on these stations', ru: 'Доработай эти станции', he: 'עבוד על התחנות האלה' },
@@ -72,6 +73,7 @@
     pathLocked: { en: 'Pass the previous tier first.', ru: 'Сначала пройди предыдущий тир.', he: 'עבור קודם את הדרגה הקודמת.' },
     openArena: { en: 'Open Arena', ru: 'Открыть Арену', he: 'פתח ארנה' },
     lastAttempt: { en: 'Last attempt', ru: 'Последняя попытка', he: 'ניסיון אחרון' },
+    attemptHistory: { en: 'Attempt history', ru: 'История попыток', he: 'היסטוריית ניסיונות' },
     passed: { en: 'Passed', ru: 'Сдано', he: 'עבר' },
     failed: { en: 'Failed', ru: 'Не сдано', he: 'לא עבר' },
     goal: { en: 'Goal', ru: 'Цель', he: 'מטרה' },
@@ -155,7 +157,7 @@
   async function ensureData() {
     if (state.data) return state.data;
     if (state.loading) return state.loading;
-    state.loading = fetch('arena-data.json?v=3', { cache: 'no-cache' })
+    state.loading = fetch('arena-data.json?v=4', { cache: 'no-cache' })
       .then(function (res) {
         if (!res.ok) throw new Error('Arena data HTTP ' + res.status);
         return res.json();
@@ -393,14 +395,16 @@
     var trophyCount = (rec.trophies || []).length;
     var tierHtml = tiers.map(function (tier, index) {
       var info = tierInfo(tier.tier);
+      var tierLessons = tier.lessons || [];
       var completed = (rec.trophies || []).some(function (t) { return t.tier_id === tier.id; });
       var current = !completed && index === Number(rec.current_tier || 0);
       var locked = !completed && index > Number(rec.current_tier || 0);
-      var lessonsDone = (tier.lessons || []).every(function (lesson) {
+      var checkedLessons = tierLessons.filter(function (lesson) {
         return completed || (rec.completed_lessons || []).indexOf(tier.id + '::' + lesson.id) !== -1;
-      });
+      }).length;
+      var lessonsDone = tierLessons.length > 0 && checkedLessons === tierLessons.length;
       var status = completed ? u('completed') : (current ? u('current') : (locked ? u('locked') : u('locked')));
-      var lessonsHtml = (tier.lessons || []).map(function (lesson) {
+      var lessonsHtml = tierLessons.map(function (lesson) {
         var key = tier.id + '::' + lesson.id;
         var checked = completed || (rec.completed_lessons || []).indexOf(key) !== -1;
         return `<div class="rounded-xl border border-border bg-surface-2/50 p-3">
@@ -441,7 +445,7 @@
         <div class="p-4 border-b border-border flex items-center gap-3" style="background:${info.color}0d">
           <span class="w-9 h-9 rounded-xl grid place-items-center font-display font-extrabold text-sm" style="color:${info.color};background:${info.color}1f">${index + 1}</span>
           <div class="min-w-0 flex-1">
-            <div class="flex items-center gap-2"><h4 class="font-display font-bold text-sm">${esc(tr(tier.name))}</h4><span class="text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded" style="color:${info.color};background:${info.color}18">${esc(status)}</span></div>
+            <div class="flex flex-wrap items-center gap-2"><h4 class="font-display font-bold text-sm">${esc(tr(tier.name))}</h4><span class="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-surface-2 text-muted tabular-nums">${checkedLessons}/${tierLessons.length}</span><span class="text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded" style="color:${info.color};background:${info.color}18">${esc(status)}</span></div>
             <div class="text-[11px] text-muted mt-0.5">${esc(tr(tier.goal))}</div>
           </div>
         </div>
@@ -464,6 +468,19 @@
       <div class="space-y-3">${tierHtml}</div>`;
   }
 
+  function examResultRows(attempt) {
+    return ((attempt && attempt.results) || []).map(function (r) {
+      var ok = !!r.passed;
+      return `<div class="flex items-center justify-between gap-2 text-[10px] py-0.5">
+        <span class="min-w-0 truncate ${ok ? 'text-muted' : 'text-danger font-semibold'}">${esc(r.label)}</span>
+        <span class="flex items-center gap-1.5 shrink-0">
+          <b class="tabular-nums ${ok ? 'text-text' : 'text-danger'}">${esc(r.display)}</b>
+          <span class="${ok ? 'text-success' : 'text-danger'} font-bold">${ok ? '✓' : '✕'}</span>
+        </span>
+      </div>`;
+    }).join('');
+  }
+
   function renderExamForm(tier, rec) {
     var bodyweight = rec.bodyweight;
     if (!bodyweight && state.clientId !== 'self') {
@@ -472,33 +489,59 @@
     }
     if (!bodyweight) bodyweight = 80;
     var stations = (tier.exam && tier.exam.stations) || [];
+    var attempts = rec.exam_attempts || [];
+    var last = attempts.slice(-1)[0];
     var fields = stations.map(function (station) {
+      var lastResult = last && (last.results || []).filter(function (r) { return r.station_id === station.id; })[0];
+      var lastValues = lastResult && lastResult.values;
       var label = `<div class="flex items-center justify-between gap-2"><span class="text-xs font-semibold">${esc(tr(station.name))}</span>${station.type !== 'manual' ? `<span class="text-[10px] text-muted">${station.type === 'hold' ? esc(u('seconds')) : (station.type === 'load_bw' ? '× BW' : esc(u('reps')))}</span>` : ''}</div>`;
       var input = '';
       if (station.type === 'reps' || station.type === 'hold') {
         var sets = Math.max(1, Number(station.sets) || 1);
         input = '<div class="grid gap-1.5 mt-1.5" style="grid-template-columns:repeat(' + sets + ',minmax(0,1fr))">' + Array.from({ length: sets }).map(function (_, i) {
-          return `<input type="number" min="0" step="1" inputmode="numeric" data-arena-input="${esc(station.id)}:${i}" placeholder="${station.type === 'hold' ? esc(u('seconds')) : esc(u('reps'))}" class="w-full min-w-0 bg-surface border border-border rounded-lg px-2 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/60" />`;
+          var prev = Array.isArray(lastValues) && lastValues[i] != null && lastValues[i] !== '' ? lastValues[i] : '';
+          return `<input type="number" min="0" step="1" inputmode="numeric" data-arena-input="${esc(station.id)}:${i}" value="${prev !== '' ? esc(prev) : ''}" placeholder="${station.type === 'hold' ? esc(u('seconds')) : esc(u('reps'))}" class="w-full min-w-0 bg-surface border border-border rounded-lg px-2 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/60" />`;
         }).join('') + '</div>';
       } else if (station.type === 'load_bw') {
+        var lv = lastValues || {};
         input = `<div class="grid grid-cols-2 gap-2 mt-1.5">
-          <label class="text-[10px] text-muted">${esc(u('weightKg'))}<input type="number" min="0" step="0.5" inputmode="decimal" data-arena-input="${esc(station.id)}:weight" class="w-full bg-surface border border-border rounded-lg px-2 py-2 text-sm font-mono mt-1" /></label>
-          <label class="text-[10px] text-muted">${esc(u('bodyweightKg'))}<input type="number" min="0" step="0.1" inputmode="decimal" data-arena-input="${esc(station.id)}:bodyweight" value="${esc(bodyweight)}" class="w-full bg-surface border border-border rounded-lg px-2 py-2 text-sm font-mono mt-1" /></label>
+          <label class="text-[10px] text-muted">${esc(u('weightKg'))}<input type="number" min="0" step="0.5" inputmode="decimal" data-arena-input="${esc(station.id)}:weight" value="${lv.weight != null && lv.weight !== '' ? esc(lv.weight) : ''}" class="w-full bg-surface border border-border rounded-lg px-2 py-2 text-sm font-mono mt-1" /></label>
+          <label class="text-[10px] text-muted">${esc(u('bodyweightKg'))}<input type="number" min="0" step="0.1" inputmode="decimal" data-arena-input="${esc(station.id)}:bodyweight" value="${lv.bodyweight != null && lv.bodyweight !== '' ? esc(lv.bodyweight) : esc(bodyweight)}" class="w-full bg-surface border border-border rounded-lg px-2 py-2 text-sm font-mono mt-1" /></label>
         </div>`;
       } else if (station.type === 'manual') {
-        input = `<label class="flex items-center gap-2 text-[11px] text-muted mt-1.5"><input type="checkbox" data-arena-input="${esc(station.id)}:manual" class="w-4 h-4 rounded border-border text-primary focus:ring-primary/50" />${esc(u('manualHint'))}</label>`;
+        var wasChecked = !!(lastValues && lastValues.checked);
+        input = `<label class="flex items-center gap-2 text-[11px] text-muted mt-1.5"><input type="checkbox" data-arena-input="${esc(station.id)}:manual" ${wasChecked ? 'checked' : ''} class="w-4 h-4 rounded border-border text-primary focus:ring-primary/50" />${esc(u('manualHint'))}</label>`;
       }
       return `<div class="rounded-xl border border-border bg-surface p-3">${label}${input}${station.hint ? `<div class="text-[10px] text-muted mt-1.5">${esc(tr(station.hint))}</div>` : ''}</div>`;
     }).join('');
-    var last = (rec.exam_attempts || []).slice(-1)[0];
-    var lastHtml = last ? `<div class="text-[10px] text-muted mt-2">${esc(u('lastAttempt'))}: <b class="${last.passed ? 'text-success' : 'text-danger'}">${esc(last.passed ? u('passed') : u('failed'))}</b> · ${esc(fmtDate(last.at))}</div>` : '';
+    var weak = last ? (last.results || []).filter(function (r) { return !r.passed; }) : [];
+    var lastHtml = last ? `<div data-arena-last-attempt class="rounded-xl border ${last.passed ? 'border-success/30 bg-success/5' : 'border-danger/30 bg-danger/5'} p-3 mt-2">
+      <div class="flex items-center justify-between gap-2">
+        <div class="text-[10px] uppercase tracking-wider font-bold ${last.passed ? 'text-success' : 'text-danger'}">${esc(u('lastAttempt'))} · ${esc(last.passed ? u('passed') : u('failed'))}</div>
+        <div class="text-[10px] text-muted">${esc(fmtDate(last.at))}</div>
+      </div>
+      <div class="mt-1.5">${examResultRows(last)}</div>
+      ${weak.length ? `<div class="mt-2 text-[10px] font-semibold text-danger">${esc(u('weakStations'))}: ${weak.map(function (r) { return esc(r.label); }).join(', ')}</div>` : ''}
+      ${last.video ? `<a href="${esc(last.video)}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-[10px] font-semibold text-primary-2 mt-1.5">${esc(u('video'))} ↗</a>` : ''}
+    </div>` : '';
+    var historyHtml = attempts.length ? `<details class="mt-2">
+      <summary class="cursor-pointer text-[10px] font-semibold text-muted select-none">${esc(u('attemptHistory'))} · ${attempts.length}</summary>
+      <div class="mt-1.5 space-y-1">${attempts.slice(-10).reverse().map(function (a) {
+        var fails = (a.results || []).filter(function (r) { return !r.passed; }).length;
+        return `<div class="flex items-center justify-between gap-2 text-[10px]">
+          <span class="text-muted">${esc(fmtDate(a.at))}</span>
+          <span class="flex items-center gap-1.5"><b class="${a.passed ? 'text-success' : 'text-danger'}">${esc(a.passed ? u('passed') : u('failed'))}</b>${fails ? `<span class="text-muted">${fails} ✕</span>` : ''}</span>
+        </div>`;
+      }).join('')}</div>
+    </details>` : '';
     return `<div class="arena-exam-panel rounded-xl border border-primary/30 bg-primary/5 p-3 mt-1">
       <div class="flex items-center justify-between gap-2 mb-1"><h5 class="text-xs font-bold">${esc(u('exam'))}</h5><span class="text-[9px] text-muted">${esc(u('retake'))}</span></div>
       ${tier.exam && tier.exam.intro ? `<p class="text-[10px] text-muted mb-2">${esc(tr(tier.exam.intro))}</p>` : ''}
       <div class="space-y-2">${fields}</div>
-      <label class="block text-[10px] text-muted mt-2">${esc(u('videoOptional'))}<input type="url" data-arena-input="video:url" placeholder="https://..." class="w-full bg-surface border border-border rounded-lg px-2 py-2 text-xs mt-1" /></label>
+      <label class="block text-[10px] text-muted mt-2">${esc(u('videoOptional'))}<input type="url" data-arena-input="video:url" placeholder="https://..." value="${last && last.video ? esc(last.video) : ''}" class="w-full bg-surface border border-border rounded-lg px-2 py-2 text-xs mt-1" /></label>
       <button type="button" data-arena-action="submit-exam" data-path="${esc(state.pathId)}" data-tier="${esc(tier.id)}" class="w-full mt-3 bg-primary hover:bg-primary-2 text-white text-xs font-bold py-2.5 rounded-xl transition">${esc(u('submitExam'))}</button>
       ${lastHtml}
+      ${historyHtml}
     </div>`;
   }
 
@@ -564,32 +607,54 @@
     var rec = await getRecord(state.clientId, pathId);
     var results = [];
     var bodyweight = 0;
-    ((tier.exam && tier.exam.stations) || []).forEach(function (station) {
-      var label = tr(station.name);
-      var display = '', passed = false;
+    var stations = (tier.exam && tier.exam.stations) || [];
+    var missingStation = false;
+    stations.forEach(function (station) {
       if (station.type === 'reps' || station.type === 'hold') {
         var sets = Math.max(1, Number(station.sets) || 1);
-        var values = [];
+        for (var si = 0; si < sets; si++) {
+          var siEl = form.querySelector('[data-arena-input="' + station.id + ':' + si + '"]');
+          if (!siEl || String(siEl.value).trim() === '') missingStation = true;
+        }
+      } else if (station.type === 'load_bw') {
+        var wEl = form.querySelector('[data-arena-input="' + station.id + ':weight"]');
+        var bwEl = form.querySelector('[data-arena-input="' + station.id + ':bodyweight"]');
+        if (!wEl || !bwEl || String(wEl.value).trim() === '' || String(bwEl.value).trim() === '') missingStation = true;
+      }
+    });
+    if (missingStation) {
+      toastSafe(u('fillStations'), 'warning');
+      return;
+    }
+    stations.forEach(function (station) {
+      var label = tr(station.name);
+      var display = '', passed = false, values = null;
+      if (station.type === 'reps' || station.type === 'hold') {
+        var sets = Math.max(1, Number(station.sets) || 1);
+        var setValues = [];
         for (var i = 0; i < sets; i++) {
           var input = form.querySelector('[data-arena-input="' + station.id + ':' + i + '"]');
-          values.push(num(input ? input.value : 0));
+          setValues.push(num(input ? input.value : 0));
         }
-        passed = values.every(function (v) { return v >= Number(station.target || 0); });
-        display = values.join(' / ') + (station.type === 'hold' ? ' ' + u('seconds') : ' ' + u('reps'));
+        values = setValues;
+        passed = setValues.every(function (v) { return v >= Number(station.target || 0); });
+        display = setValues.join(' / ') + (station.type === 'hold' ? ' ' + u('seconds') : ' ' + u('reps'));
       } else if (station.type === 'load_bw') {
         var w = form.querySelector('[data-arena-input="' + station.id + ':weight"]');
         var bw = form.querySelector('[data-arena-input="' + station.id + ':bodyweight"]');
         var weight = num(w ? w.value : 0);
         bodyweight = num(bw ? bw.value : 0);
+        values = { weight: weight, bodyweight: bodyweight };
         var ratio = bodyweight > 0 ? weight / bodyweight : 0;
         passed = ratio >= Number(station.target || 0);
         display = weight + ' kg / ' + bodyweight + ' kg = ' + ratio.toFixed(2) + '×';
       } else if (station.type === 'manual') {
         var check = form.querySelector('[data-arena-input="' + station.id + ':manual"]');
         passed = !!(check && check.checked);
+        values = { checked: passed };
         display = passed ? u('passed') : u('failed');
       }
-      results.push({ station_id: station.id, label: label, display: display, passed: passed });
+      results.push({ station_id: station.id, label: label, display: display, passed: passed, values: values });
     });
     var passedAll = results.length > 0 && results.every(function (r) { return r.passed; });
     var videoEl = form.querySelector('[data-arena-input="video:url"]');
@@ -627,6 +692,12 @@
     var all = await allRecords(state.clientId);
     state.summary = calcSummary(all);
     await render();
+    if (!passedAll) {
+      try {
+        var lastPanel = document.querySelector('[data-arena-last-attempt]');
+        if (lastPanel && lastPanel.scrollIntoView) lastPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } catch (_) {}
+    }
   }
 
   function bindProfileSummary() {

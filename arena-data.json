@@ -1,6 +1,6 @@
 {
-  "version": 3,
-  "updated": "2026-10-31",
+  "version": 4,
+  "updated": "2026-11-01",
   "games": [
     {
       "id": "street_workout",
@@ -1211,6 +1211,691 @@
       ]
     },
     {
+      "id": "kettlebell",
+      "name": {
+        "en": "Kettlebell",
+        "ru": "Гири",
+        "he": "קטלבל"
+      },
+      "description": {
+        "en": "Swings, cleans, presses and get-ups. Bronze, Silver and Gold standards for real kettlebell control.",
+        "ru": "Махи, взятия, жимы и турецкие подъёмы. Бронза, серебро и золото за реальный контроль гири.",
+        "he": "נדנודים, ניקויים, לחיצות וקימות טורקיות. תקני ארד, כסף וזהב לשליטה אמיתית בקטלבל."
+      },
+      "color": "#fb923c",
+      "available": true,
+      "paths": [
+        {
+          "id": "kettlebell_fundamentals",
+          "name": {
+            "en": "Kettlebell Fundamentals",
+            "ru": "База с гирей",
+            "he": "יסודות הקטלבל"
+          },
+          "subtitle": {
+            "en": "From the first hinge to a confident snatch.",
+            "ru": "От первого наклона до уверенного рывка.",
+            "he": "מההינג׳ הראשון ועד סנאץ׳ בטוח."
+          },
+          "description": {
+            "en": "A three-tier path: hinge and carry, single-arm control, then snatch and get-up. Each tier has four lessons and a practical exam.",
+            "ru": "Три уровня: наклон и переноска, контроль одной рукой, затем рывок и турецкий подъём. На каждом уровне четыре урока и практический экзамен.",
+            "he": "מסלול בשלוש דרגות: הינג׳ ונשיאה, שליטה ביד אחת, ואז סנאץ׳ וקימה טורקית. בכל דרגה ארבעה שיעורים ומבחן מעשי."
+          },
+          "tiers": [
+            {
+              "id": "bronze",
+              "tier": "bronze",
+              "name": {
+                "en": "Foundation",
+                "ru": "База",
+                "he": "בסיס"
+              },
+              "goal": {
+                "en": "Hinge, squat, swing and carry with a neutral spine.",
+                "ru": "Наклон, присед, мах и переноска с нейтральной спиной.",
+                "he": "הינג׳, סקוואט, נדנוד ונשיאה עם עמוד שדרה ניטרלי."
+              },
+              "lessons": [
+                {
+                  "id": "kb_deadlift",
+                  "name": {
+                    "en": "Kettlebell Deadlift",
+                    "ru": "Тяга гири",
+                    "he": "דדליפט קטלבל"
+                  },
+                  "prescription": {
+                    "en": "3 × 8",
+                    "ru": "3 × 8",
+                    "he": "3 × 8"
+                  },
+                  "technique": {
+                    "en": "Stand over the bell with feet hip-width.|Hinge at the hips, grip the handle and brace.|Drive the floor away and stand tall; reverse the hinge to lower.",
+                    "ru": "Встань над гирей, стопы на ширине таза.|Наклонись в тазобедренном суставе, возьмись за ручку и зафиксируй кор.|Оттолкнись от пола и выпрямись; опускай гирю обратным наклоном.",
+                    "he": "עמוד מעל הקטלבל עם רגליים ברוחב האגן.|התכופף מהמותניים, אחוז בידית והדק את הליבה.|דחוף את הרצפה והתיישר; הורד בהינג׳ הפוך."
+                  },
+                  "checkpoints": {
+                    "en": "Neutral spine|Lats engaged|Bell close to the body",
+                    "ru": "Нейтральная спина|Широчайшие включены|Гиря близко к телу",
+                    "he": "עמוד שדרה ניטרלי|שרירי הגב פעילים|קטלבל קרוב לגוף"
+                  },
+                  "mistakes": {
+                    "en": "Rounding the lower back|Pulling with the arms|Bell drifting forward",
+                    "ru": "Округление поясницы|Тяга руками|Гиря уходит вперёд",
+                    "he": "עיגול הגב התחתון|משיכה עם הידיים|קטלבל בורח קדימה"
+                  },
+                  "exerciseId": "rdb_kettlebell-deadlift",
+                  "image": "/images/rdb/kettlebell-deadlift-start.webp"
+                },
+                {
+                  "id": "kb_goblet",
+                  "name": {
+                    "en": "Goblet Squat",
+                    "ru": "Присед с гирей у груди",
+                    "he": "סקוואט גביע"
+                  },
+                  "prescription": {
+                    "en": "3 × 10",
+                    "ru": "3 × 10",
+                    "he": "3 × 10"
+                  },
+                  "technique": {
+                    "en": "Hold the bell at the chest with elbows under the handle.|Sit down between the hips and keep the chest tall.|Drive through the whole foot and squeeze the glutes at the top.",
+                    "ru": "Держи гирю у груди, локти под ручкой.|Садись между бёдрами, грудь держи высокой.|Выжимайся всей стопой и сжимай ягодицы вверху.",
+                    "he": "החזק את הקטלבל בחזה עם המרפקים מתחת לידית.|רד בין הירכיים ושמור על חזה זקוף.|דחוף דרך כל כף הרגל וכווץ את הישבן למעלה."
+                  },
+                  "checkpoints": {
+                    "en": "Chest up|Knees track over toes|Heels stay down",
+                    "ru": "Грудь вверх|Колени по линии носков|Пятки не отрываются",
+                    "he": "חזה זקוף|ברכיים מעל בהונות|עקבים על הרצפה"
+                  },
+                  "mistakes": {
+                    "en": "Knees caving in|Heels lifting|Lowering the head",
+                    "ru": "Колени заваливаются внутрь|Пятки отрываются|Опускается голова",
+                    "he": "ברכיים נופלות פנימה|עקבים מתרוממים|הראש יורד"
+                  },
+                  "exerciseId": "rdb_goblet-squat",
+                  "image": "/images/rdb/goblet-squat-start.webp"
+                },
+                {
+                  "id": "kb_swing",
+                  "name": {
+                    "en": "Two-Hand Swing",
+                    "ru": "Мах двумя руками",
+                    "he": "נדנוד בשתי ידיים"
+                  },
+                  "prescription": {
+                    "en": "3 × 15",
+                    "ru": "3 × 15",
+                    "he": "3 × 15"
+                  },
+                  "technique": {
+                    "en": "Hinge and hike the bell back between the legs.|Snap the hips forward and let the arms float.|Let the bell swing to chest height, then hinge again.",
+                    "ru": "Наклонись и заведи гирю назад между ногами.|Резко вытолкни таз вперёд, руки расслаблены.|Дай гире взлететь до груди и снова уйди в наклон.",
+                    "he": "הינג׳ והחזר את הקטלבל בין הרגליים.|פתח את האגן קדימה ותן לידיים לרחף.|תן לקטלבל לעלות לגובה החזה ואז חזור להינג׳."
+                  },
+                  "checkpoints": {
+                    "en": "Hips drive the bell|Arms stay relaxed|Neutral spine at the bottom",
+                    "ru": "Таз двигает гирю|Руки расслаблены|Нейтральная спина внизу",
+                    "he": "האגן מניע את הקטלבל|הידיים רפויות|עמוד שדרה ניטרלי למטה"
+                  },
+                  "mistakes": {
+                    "en": "Squatting the swing|Pulling with the shoulders|Overextending at the top",
+                    "ru": "Приседание вместо маха|Тяга плечами|Переразгибание вверху",
+                    "he": "סקוואט במקום נדנוד|משיכה בכתפיים|התמתחות יתר למעלה"
+                  },
+                  "exerciseId": "rdb_kettlebell-swing",
+                  "image": "/images/rdb/kettlebell-swing-start.webp"
+                },
+                {
+                  "id": "kb_carry",
+                  "name": {
+                    "en": "Farmer's Walk",
+                    "ru": "Переноска фермера",
+                    "he": "נשיאת חקלאי"
+                  },
+                  "prescription": {
+                    "en": "3 × 30 sec",
+                    "ru": "3 × 30 сек",
+                    "he": "3 × 30 שנ׳"
+                  },
+                  "technique": {
+                    "en": "Stand tall with a bell in each hand.|Brace the trunk and walk with short, controlled steps.|Keep the shoulders down and the bells from swinging.",
+                    "ru": "Встань прямо с гирей в каждой руке.|Зафиксируй кор и иди короткими контролируемыми шагами.|Плечи опущены, гири не раскачиваются.",
+                    "he": "עמוד זקוף עם קטלבל בכל יד.|הדק את הליבה וצעד בצעדים קצרים ומבוקרים.|שמור את הכתפיים למטה והקטלבלים לא מתנדנדים."
+                  },
+                  "checkpoints": {
+                    "en": "Tall posture|Grip locked|No side lean",
+                    "ru": "Прямая осанка|Хват закрыт|Нет наклона в сторону",
+                    "he": "יציבה זקופה|אחיזה נעולה|בלי הטיה הצידה"
+                  },
+                  "mistakes": {
+                    "en": "Shrugging the shoulders|Leaning to one side|Rushing the steps",
+                    "ru": "Плечи подняты|Наклон в одну сторону|Спешка в шагах",
+                    "he": "הרמת כתפיים|הטיה לצד אחד|מהר מדי בצעדים"
+                  },
+                  "exerciseId": "rdb_kettlebell-farmers-walk",
+                  "image": "/images/rdb/kettlebell-farmers-walk-main.webp"
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "Complete all stations. Rest 2–3 minutes between them.",
+                  "ru": "Пройди все станции. Отдых между ними 2–3 минуты.",
+                  "he": "עבור את כל התחנות. מנוחה 2–3 דקות ביניהן."
+                },
+                "stations": [
+                  {
+                    "id": "swing",
+                    "type": "reps",
+                    "name": {
+                      "en": "Two-hand swing",
+                      "ru": "Мах двумя руками",
+                      "he": "נדנוד בשתי ידיים"
+                    },
+                    "hint": {
+                      "en": "Bell to chest height, hips do the work.",
+                      "ru": "Гиря до груди, работает таз.",
+                      "he": "קטלבל לגובה החזה, האגן עובד."
+                    },
+                    "sets": 3,
+                    "target": 15
+                  },
+                  {
+                    "id": "goblet",
+                    "type": "reps",
+                    "name": {
+                      "en": "Goblet squat",
+                      "ru": "Присед с гирей у груди",
+                      "he": "סקוואט גביע"
+                    },
+                    "hint": {
+                      "en": "Elbows inside the knees, chest tall.",
+                      "ru": "Локти внутри коленей, грудь высоко.",
+                      "he": "מרפקים בין הברכיים, חזה זקוף."
+                    },
+                    "sets": 3,
+                    "target": 10
+                  },
+                  {
+                    "id": "carry",
+                    "type": "hold",
+                    "name": {
+                      "en": "Farmer's carry",
+                      "ru": "Переноска фермера",
+                      "he": "נשיאת חקלאי"
+                    },
+                    "hint": {
+                      "en": "Tall posture, no leaning.",
+                      "ru": "Прямая осанка, без наклона.",
+                      "he": "יציבה זקופה, בלי הטיה."
+                    },
+                    "sets": 1,
+                    "target": 45
+                  },
+                  {
+                    "id": "technique",
+                    "type": "manual",
+                    "name": {
+                      "en": "Technique verified",
+                      "ru": "Техника подтверждена",
+                      "he": "טכניקה אומתה"
+                    },
+                    "hint": null
+                  }
+                ]
+              },
+              "trophy": {
+                "id": "kettlebell_bronze",
+                "name": {
+                  "en": "Bronze Kettlebell",
+                  "ru": "Бронзовая гиря",
+                  "he": "קטלבל ארד"
+                },
+                "description": {
+                  "en": "The hinge, squat, swing and carry are verified.",
+                  "ru": "Наклон, присед, мах и переноска подтверждены.",
+                  "he": "ההינג׳, הסקוואט, הנדנוד והנשיאה אומתו."
+                }
+              }
+            },
+            {
+              "id": "silver",
+              "tier": "silver",
+              "name": {
+                "en": "Control",
+                "ru": "Контроль",
+                "he": "שליטה"
+              },
+              "goal": {
+                "en": "Single-arm swings, cleans and overhead positions without leaking power.",
+                "ru": "Махи одной рукой, взятия и фиксация над головой без потери мощности.",
+                "he": "נדנודים ביד אחת, ניקויים ומנחים מעל הראש בלי לאבד כוח."
+              },
+              "lessons": [
+                {
+                  "id": "kb_one_arm_swing",
+                  "name": {
+                    "en": "One-Arm Swing",
+                    "ru": "Мах одной рукой",
+                    "he": "נדנוד ביד אחת"
+                  },
+                  "prescription": {
+                    "en": "3 × 10 / arm",
+                    "ru": "3 × 10 / рука",
+                    "he": "3 × 10 / יד"
+                  },
+                  "technique": {
+                    "en": "Hinge and hike the bell back with one hand.|Snap the hips and let the bell float to chest height.|Keep the free arm relaxed and the shoulders square.",
+                    "ru": "Наклонись и заведи гирю одной рукой назад.|Резко вытолкни таз, дай гире взлететь до груди.|Свободная рука расслаблена, плечи ровно.",
+                    "he": "הינג׳ והחזר את הקטלבל ביד אחת.|פתח את האגן ותן לקטלבל לרחף לגובה החזה.|שמור את היד החופשית רפויה ואת הכתפיים ישרות."
+                  },
+                  "checkpoints": {
+                    "en": "Shoulders square|Hips lead|Bell stays close",
+                    "ru": "Плечи ровно|Таз ведёт|Гиря близко",
+                    "he": "כתפיים ישרות|האגן מוביל|קטלבל קרוב"
+                  },
+                  "mistakes": {
+                    "en": "Rotating the torso|Pulling with the arm|Losing the hinge",
+                    "ru": "Разворот корпуса|Тяга рукой|Пропадает наклон",
+                    "he": "סיבוב פלג הגוף|משיכה עם היד|אובדן ההינג׳"
+                  },
+                  "exerciseId": "rdb_one-arm-kettlebell-swing",
+                  "image": "/images/rdb/one-arm-kettlebell-swing-start.webp"
+                },
+                {
+                  "id": "kb_clean",
+                  "name": {
+                    "en": "Swing Clean",
+                    "ru": "Взятие гири",
+                    "he": "ניקוי קטלבל"
+                  },
+                  "prescription": {
+                    "en": "3 × 6",
+                    "ru": "3 × 6",
+                    "he": "3 × 6"
+                  },
+                  "technique": {
+                    "en": "Swing the bell back and drive the hips.|Guide the bell into the rack without banging the wrist.|Catch softly with the elbow close and the ribs down.",
+                    "ru": "Заведи гирю назад и вытолкни таз.|Проведи гирю в стойку, не ударяя по запястью.|Мягко поймай, локоть близко, рёбра вниз.",
+                    "he": "החזר את הקטלבל ופתח את האגן.|הובל את הקטלבל לראק בלי לפגוע בפרק היד.|תפוס ברכות עם מרפק קרוב וצלעות למטה."
+                  },
+                  "checkpoints": {
+                    "en": "Soft catch|Elbow close|Wrist straight",
+                    "ru": "Мягкий приём|Локоть близко|Запястье прямо",
+                    "he": "תפיסה רכה|מרפק קרוב|פרק יד ישר"
+                  },
+                  "mistakes": {
+                    "en": "Bell slamming the wrist|Elbow flaring out|Leaning back",
+                    "ru": "Гиря бьёт по запястью|Локоть уходит в сторону|Наклон назад",
+                    "he": "קטלבל מכה בפרק היד|מרפק בורח|הטיה לאחור"
+                  },
+                  "exerciseId": "rdb_kettlebell-swing-clean",
+                  "image": "/images/rdb/kettlebell-swing-clean-start.webp"
+                },
+                {
+                  "id": "kb_overhead_carry",
+                  "name": {
+                    "en": "Overhead Carry",
+                    "ru": "Переноска над головой",
+                    "he": "נשיאה מעל הראש"
+                  },
+                  "prescription": {
+                    "en": "3 × 30 sec / arm",
+                    "ru": "3 × 30 сек / рука",
+                    "he": "3 × 30 שנ׳ / יד"
+                  },
+                  "technique": {
+                    "en": "Press the bell overhead and lock the elbow.|Keep the ribs down and the arm vertical.|Walk slowly without letting the bell drift.",
+                    "ru": "Выжми гирю над головой и зафиксируй локоть.|Держи рёбра вниз, рука вертикально.|Иди медленно, не давая гире уходить.",
+                    "he": "לחץ את הקטלבל מעל הראש ונעל את המרפק.|שמור צלעות למטה ואת היד אנכית.|צעד לאט בלי שהקטלבל ייסחף."
+                  },
+                  "checkpoints": {
+                    "en": "Elbow locked|Ribs down|Arm vertical",
+                    "ru": "Локоть зафиксирован|Рёбра вниз|Рука вертикально",
+                    "he": "מרפק נעול|צלעות למטה|יד אנכית"
+                  },
+                  "mistakes": {
+                    "en": "Bending the elbow|Arching the back|Shrugging the shoulder",
+                    "ru": "Сгибание локтя|Прогиб в спине|Поднятое плечо",
+                    "he": "כיפוף מרפק|קשת בגב|הרמת כתף"
+                  },
+                  "exerciseId": "rdb_kettlebell-overhead-carry",
+                  "image": "/images/rdb/kettlebell-overhead-carry-main.webp"
+                },
+                {
+                  "id": "kb_reverse_lunge",
+                  "name": {
+                    "en": "Reverse Lunge",
+                    "ru": "Обратный выпад",
+                    "he": "זינוק אחורי"
+                  },
+                  "prescription": {
+                    "en": "3 × 8 / leg",
+                    "ru": "3 × 8 / нога",
+                    "he": "3 × 8 / רגל"
+                  },
+                  "technique": {
+                    "en": "Hold the bell in the rack or at the chest.|Step back and lower the knee toward the floor.|Push through the front heel to return.",
+                    "ru": "Держи гирю в стойке или у груди.|Шагни назад и опусти колено к полу.|Вернись, отталкиваясь передней пяткой.",
+                    "he": "החזק את הקטלבל בראק או בחזה.|צעד אחורה והורד את הברך לרצפה.|חזור בדחיפה דרך העקב הקדמי."
+                  },
+                  "checkpoints": {
+                    "en": "Front knee tracks|Torso upright|Control the descent",
+                    "ru": "Переднее колено по линии|Корпус прямой|Контроль опускания",
+                    "he": "ברך קדמית במסלול|פלג גוף זקוף|שליטה בירידה"
+                  },
+                  "mistakes": {
+                    "en": "Front knee caving|Leaning forward|Crashing the back knee",
+                    "ru": "Переднее колено внутрь|Наклон вперёд|Удар задним коленом",
+                    "he": "ברך קדמית פנימה|הטיה קדימה|חבטת ברך אחורית"
+                  },
+                  "exerciseId": "rdb_kettlebell-reverse-lunge",
+                  "image": "/images/rdb/kettlebell-reverse-lunge-start.webp"
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "Show control on both sides. No rushing between stations.",
+                  "ru": "Покажи контроль на обе стороны. Без спешки между станциями.",
+                  "he": "הראה שליטה בשני הצדדים. בלי למהר בין התחנות."
+                },
+                "stations": [
+                  {
+                    "id": "one_arm_swing",
+                    "type": "reps",
+                    "name": {
+                      "en": "One-arm swing",
+                      "ru": "Мах одной рукой",
+                      "he": "נדנוד ביד אחת"
+                    },
+                    "hint": {
+                      "en": "Shoulders stay square.",
+                      "ru": "Плечи остаются ровно.",
+                      "he": "הכתפיים נשארות ישרות."
+                    },
+                    "sets": 3,
+                    "target": 10
+                  },
+                  {
+                    "id": "clean",
+                    "type": "reps",
+                    "name": {
+                      "en": "Swing clean",
+                      "ru": "Взятие гири",
+                      "he": "ניקוי קטלבל"
+                    },
+                    "hint": {
+                      "en": "Soft catch, no wrist bang.",
+                      "ru": "Мягкий приём, без удара по запястью.",
+                      "he": "תפיסה רכה, בלי חבטה בפרק היד."
+                    },
+                    "sets": 3,
+                    "target": 6
+                  },
+                  {
+                    "id": "overhead_carry",
+                    "type": "hold",
+                    "name": {
+                      "en": "Overhead carry",
+                      "ru": "Переноска над головой",
+                      "he": "נשיאה מעל הראש"
+                    },
+                    "hint": {
+                      "en": "Elbow locked, ribs down.",
+                      "ru": "Локоть зафиксирован, рёбра вниз.",
+                      "he": "מרפק נעול, צלעות למטה."
+                    },
+                    "sets": 3,
+                    "target": 30
+                  },
+                  {
+                    "id": "technique",
+                    "type": "manual",
+                    "name": {
+                      "en": "Technique verified",
+                      "ru": "Техника подтверждена",
+                      "he": "טכניקה אומתה"
+                    },
+                    "hint": null
+                  }
+                ]
+              },
+              "trophy": {
+                "id": "kettlebell_silver",
+                "name": {
+                  "en": "Silver Kettlebell",
+                  "ru": "Серебряная гиря",
+                  "he": "קטלבל כסף"
+                },
+                "description": {
+                  "en": "Single-arm control and overhead stability are verified.",
+                  "ru": "Контроль одной рукой и стабильность над головой подтверждены.",
+                  "he": "שליטה ביד אחת ויציבות מעל הראש אומתו."
+                }
+              }
+            },
+            {
+              "id": "gold",
+              "tier": "gold",
+              "name": {
+                "en": "Power",
+                "ru": "Мощность",
+                "he": "כוח"
+              },
+              "goal": {
+                "en": "Snatch, get-up and double-kettlebell work under control.",
+                "ru": "Рывок, турецкий подъём и работа с двумя гирями под контролем.",
+                "he": "סנאץ׳, קימה טורקית ועבודה עם שני קטלבלים בשליטה."
+              },
+              "lessons": [
+                {
+                  "id": "kb_snatch",
+                  "name": {
+                    "en": "Kettlebell Snatch",
+                    "ru": "Рывок гири",
+                    "he": "סנאץ׳ קטלבל"
+                  },
+                  "prescription": {
+                    "en": "3 × 5 / arm",
+                    "ru": "3 × 5 / рука",
+                    "he": "3 × 5 / יד"
+                  },
+                  "technique": {
+                    "en": "Swing the bell back and drive the hips hard.|Guide it close to the body and punch through at the top.|Catch overhead with a straight arm and soft knees.",
+                    "ru": "Заведи гирю назад и мощно вытолкни таз.|Веди близко к телу и протолкни вверх.|Поймай над головой прямой рукой с мягкими коленями.",
+                    "he": "החזר את הקטלבל ופתח את האגן בעוצמה.|הובל אותו קרוב לגוף ודחוף למעלה.|תפוס מעל הראש עם יד ישרה וברכיים רכות."
+                  },
+                  "checkpoints": {
+                    "en": "Bell close to the body|Punch through at the top|Lockout overhead",
+                    "ru": "Гиря близко к телу|Проталкивание вверх|Фиксация над головой",
+                    "he": "קטלבל קרוב לגוף|דחיפה למעלה|נעילה מעל הראש"
+                  },
+                  "mistakes": {
+                    "en": "Flipping the bell over the hand|Bending the elbow early|Leaning back at lockout",
+                    "ru": "Гиря перелетает через кисть|Ранний сгиб локтя|Наклон назад в фиксации",
+                    "he": "הקטלבל מתהפך על היד|כיפוף מוקדם של המרפק|הטיה לאחור בנעילה"
+                  },
+                  "exerciseId": "bf_kettlebell-snatch",
+                  "image": "/images/bf_KB_SNATCH.webp"
+                },
+                {
+                  "id": "kb_tgu",
+                  "name": {
+                    "en": "Turkish Get-Up",
+                    "ru": "Турецкий подъём",
+                    "he": "קימה טורקית"
+                  },
+                  "prescription": {
+                    "en": "3 × 1 / arm",
+                    "ru": "3 × 1 / рука",
+                    "he": "3 × 1 / יד"
+                  },
+                  "technique": {
+                    "en": "Lie down and press the bell straight up.|Move through the elbow, hand, bridge and half-kneel.|Keep your eyes on the bell and reverse the path.",
+                    "ru": "Ляг и выжми гирю строго вверх.|Пройди через локоть, ладонь, мост и полуприсед.|Смотри на гирю и вернись тем же путём.",
+                    "he": "שכב ולחץ את הקטלבל ישר למעלה.|עבור דרך המרפק, כף היד, הגשר וחצי כריעה.|שמור עיניים על הקטלבל וחזור באותו מסלול."
+                  },
+                  "checkpoints": {
+                    "en": "Eyes on the bell|Elbow locked|Smooth transitions",
+                    "ru": "Взгляд на гирю|Локоть зафиксирован|Плавные переходы",
+                    "he": "עיניים על הקטלבל|מרפק נעול|מעברים חלקים"
+                  },
+                  "mistakes": {
+                    "en": "Rushing the movement|Letting the arm drift|Skipping the half-kneel",
+                    "ru": "Спешка|Рука уходит|Пропуск полуприседа",
+                    "he": "מהר מדי|היד נסחפת|דילוג על חצי הכריעה"
+                  },
+                  "exerciseId": "rdb_kettlebell-turkish-get-ups",
+                  "image": "/images/rdb/kettlebell-turkish-get-ups-start.webp"
+                },
+                {
+                  "id": "kb_double_clean_press",
+                  "name": {
+                    "en": "Double Clean & Press",
+                    "ru": "Взятие и жим двух гирь",
+                    "he": "ניקוי ולחיצה כפולים"
+                  },
+                  "prescription": {
+                    "en": "3 × 5",
+                    "ru": "3 × 5",
+                    "he": "3 × 5"
+                  },
+                  "technique": {
+                    "en": "Clean both bells to the rack with soft elbows.|Brace and press them overhead without leaning back.|Lower to the rack and then to the hinge.",
+                    "ru": "Возьми обе гири в стойку с мягкими локтями.|Зафиксируй кор и выжми над головой без наклона назад.|Опусти в стойку, затем в наклон.",
+                    "he": "נקה את שני הקטלבלים לראק עם מרפקים רכים.|הדק את הליבה ולחץ מעל הראש בלי הטיה לאחור.|הורד לראק ואז להינג׳."
+                  },
+                  "checkpoints": {
+                    "en": "Bells rest on the forearms|Ribs down|Press to lockout",
+                    "ru": "Гири лежат на предплечьях|Рёбра вниз|Жим до фиксации",
+                    "he": "קטלבלים נחים על האמות|צלעות למטה|לחיצה לנעילה"
+                  },
+                  "mistakes": {
+                    "en": "Banging the wrists|Leaning back|Pressing unevenly",
+                    "ru": "Удары по запястьям|Наклон назад|Неравномерный жим",
+                    "he": "חבטה בפרקי היד|הטיה לאחור|לחיצה לא אחידה"
+                  },
+                  "exerciseId": "rdb_double-kettlebell-clean-and-press",
+                  "image": "/images/rdb/double-kettlebell-clean-and-press-start.webp"
+                },
+                {
+                  "id": "kb_windmill",
+                  "name": {
+                    "en": "Kettlebell Windmill",
+                    "ru": "Мельница с гирей",
+                    "he": "טחנת רוח עם קטלבל"
+                  },
+                  "prescription": {
+                    "en": "3 × 5 / side",
+                    "ru": "3 × 5 / сторона",
+                    "he": "3 × 5 / צד"
+                  },
+                  "technique": {
+                    "en": "Press the bell overhead and turn the feet.|Hinge to the side, keeping the top arm vertical.|Look at the bell and return with control.",
+                    "ru": "Выжми гирю над головой и разверни стопы.|Наклонись в сторону, верхняя рука вертикально.|Смотри на гирю и вернись под контролем.",
+                    "he": "לחץ את הקטלבל מעל הראש וסובב את כפות הרגליים.|הינג׳ הצידה תוך שמירה על היד העליונה אנכית.|הבט בקטלבל וחזור בשליטה."
+                  },
+                  "checkpoints": {
+                    "en": "Top arm vertical|Hips shift back|Eyes on the bell",
+                    "ru": "Верхняя рука вертикально|Таз уходит назад|Взгляд на гирю",
+                    "he": "יד עליונה אנכית|אגן לאחור|עיניים על הקטלבל"
+                  },
+                  "mistakes": {
+                    "en": "Bending the top arm|Twisting the knee|Rushing the return",
+                    "ru": "Сгиб верхней руки|Скручивание колена|Спешка при возврате",
+                    "he": "כיפוף היד העליונה|סיבוב הברך|מהר בחזרה"
+                  },
+                  "exerciseId": "rdb_kettlebell-windmills",
+                  "image": "/images/rdb/kettlebell-windmills-start.webp"
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "This is a skill exam, not a grind. Stop the set if technique breaks.",
+                  "ru": "Это экзамен на технику, а не на выносливость. Останови подход, если техника ломается.",
+                  "he": "זה מבחן מיומנות, לא סבל. עצור את הסט אם הטכניקה נשברת."
+                },
+                "stations": [
+                  {
+                    "id": "snatch",
+                    "type": "reps",
+                    "name": {
+                      "en": "Kettlebell snatch",
+                      "ru": "Рывок гири",
+                      "he": "סנאץ׳ קטלבל"
+                    },
+                    "hint": {
+                      "en": "Punch through, no flop.",
+                      "ru": "Проталкивание вверх, без перелёта.",
+                      "he": "דחיפה למעלה, בלי התהפכות."
+                    },
+                    "sets": 3,
+                    "target": 5
+                  },
+                  {
+                    "id": "getup",
+                    "type": "reps",
+                    "name": {
+                      "en": "Turkish get-up",
+                      "ru": "Турецкий подъём",
+                      "he": "קימה טורקית"
+                    },
+                    "hint": {
+                      "en": "One clean rep per side.",
+                      "ru": "Один чистый повтор на сторону.",
+                      "he": "חזרה נקייה אחת לכל צד."
+                    },
+                    "sets": 2,
+                    "target": 1
+                  },
+                  {
+                    "id": "double_clean_press",
+                    "type": "reps",
+                    "name": {
+                      "en": "Double clean & press",
+                      "ru": "Взятие и жим двух гирь",
+                      "he": "ניקוי ולחיצה כפולים"
+                    },
+                    "hint": {
+                      "en": "Rack, brace, press, lockout.",
+                      "ru": "Стойка, кор, жим, фиксация.",
+                      "he": "ראק, ליבה, לחיצה, נעילה."
+                    },
+                    "sets": 3,
+                    "target": 5
+                  },
+                  {
+                    "id": "technique",
+                    "type": "manual",
+                    "name": {
+                      "en": "Technique verified",
+                      "ru": "Техника подтверждена",
+                      "he": "טכניקה אומתה"
+                    },
+                    "hint": null
+                  }
+                ]
+              },
+              "trophy": {
+                "id": "kettlebell_gold",
+                "name": {
+                  "en": "Gold Kettlebell",
+                  "ru": "Золотая гиря",
+                  "he": "קטלבל זהב"
+                },
+                "description": {
+                  "en": "Snatch, get-up and double-kettlebell power are verified.",
+                  "ru": "Рывок, турецкий подъём и мощность с двумя гирями подтверждены.",
+                  "he": "סנאץ׳, קימה טורקית וכוח עם שני קטלבלים אומתו."
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "speed",
       "name": {
         "en": "Speed",
@@ -1271,22 +1956,6 @@
         "he": "שפגטים, כתפיים וסקוואט עמוק. בקרוב."
       },
       "color": "#38bdf8",
-      "available": false,
-      "paths": []
-    },
-    {
-      "id": "kettlebell",
-      "name": {
-        "en": "Kettlebell",
-        "ru": "Гири",
-        "he": "קטלבל"
-      },
-      "description": {
-        "en": "Swings, get-ups and carries. Coming next.",
-        "ru": "Свинги, get-up и переноски. Скоро.",
-        "he": "סווינגים,get-up ונשיאות. בקרוב."
-      },
-      "color": "#fb923c",
       "available": false,
       "paths": []
     },
