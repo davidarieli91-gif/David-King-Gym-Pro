@@ -69,6 +69,12 @@
     sets: { en: 'Sets', ru: 'Подходы', he: 'סטים' },
     reps: { en: 'Reps', ru: 'Повторы', he: 'חזרות' },
     seconds: { en: 'Seconds', ru: 'Секунды', he: 'שניות' },
+    time: { en: 'Time', ru: 'Время', he: 'זמן' },
+    distance: { en: 'Distance', ru: 'Дистанция', he: 'מרחק' },
+    metersShort: { en: 'm', ru: 'м', he: 'מ׳' },
+    cmShort: { en: 'cm', ru: 'см', he: 'ס״מ' },
+    secShort: { en: 's', ru: 'с', he: 'שנ׳' },
+    timeHint: { en: 'mm:ss or seconds', ru: 'мм:сс или секунды', he: 'דקות:שניות או שניות' },
     manualHint: { en: 'I confirm the technique is clean.', ru: 'Подтверждаю чистую технику.', he: 'אני מאשר טכניקה נקייה.' },
     pathLocked: { en: 'Pass the previous tier first.', ru: 'Сначала пройди предыдущий тир.', he: 'עבור קודם את הדרגה הקודמת.' },
     openArena: { en: 'Open Arena', ru: 'Открыть Арену', he: 'פתח ארנה' },
@@ -81,7 +87,13 @@
     profileHint: { en: 'Lessons, exams and trophies', ru: 'Уроки, экзамены и кубки', he: 'שיעורים, מבחנים וגביעים' },
     notStarted: { en: 'Not started', ru: 'Не начато', he: 'לא התחיל' },
     level: { en: 'Tier', ru: 'Тир', he: 'דרגה' },
-    close: { en: 'Close', ru: 'Закрыть', he: 'סגור' }
+    close: { en: 'Close', ru: 'Закрыть', he: 'סגור' },
+    resetProgress: { en: 'Reset progress', ru: 'Сбросить прогресс', he: 'אפס התקדמות' },
+    resetConfirm: { en: 'Reset all lessons, exams and trophies for this path?', ru: 'Сбросить все уроки, экзамены и кубки этого пути?', he: 'לאפס את כל השיעורים, המבחנים והגביעים במסלול הזה?' },
+    resetDone: { en: 'Progress reset', ru: 'Прогресс сброшен', he: 'ההתקדמות אופסה' },
+    resetFailed: { en: 'Could not reset progress', ru: 'Не удалось сбросить прогресс', he: 'לא ניתן לאפס התקדמות' },
+    share: { en: 'Share', ru: 'Поделиться', he: 'שתף' },
+    copied: { en: 'Copied', ru: 'Скопировано', he: 'הועתק' }
   };
 
   var state = {
@@ -131,6 +143,35 @@
       });
     } catch (_) { return ''; }
   }
+  function pad2(n) { return String(n).padStart(2, '0'); }
+  function fmtTime(value) {
+    var sec = Math.round(Number(value) || 0);
+    if (sec <= 0) return '';
+    var h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+    return h ? h + ':' + pad2(m) + ':' + pad2(s) : m + ':' + pad2(s);
+  }
+  function fmtPerfTime(value) {
+    var sec = Number(value) || 0;
+    return sec > 0 && sec < 60 ? (Math.round(sec * 100) / 100) + ' ' + u('secShort') : fmtTime(sec);
+  }
+  function parseTime(value) {
+    var raw = String(value == null ? '' : value).trim().replace(',', '.');
+    if (!raw) return 0;
+    if (raw.indexOf(':') !== -1) {
+      var parts = raw.split(':');
+      var mins = 0, secs = 0;
+      if (parts.length >= 3) {
+        mins = (Number(parts[0]) || 0) * 60 + (Number(parts[1]) || 0);
+        secs = Number(parts[2]) || 0;
+      } else {
+        mins = Number(parts[0]) || 0;
+        secs = Number(parts[1]) || 0;
+      }
+      return mins * 60 + secs;
+    }
+    var n = Number(raw);
+    return isFinite(n) ? n : 0;
+  }
   function tierInfo(tier) { return TIER[tier] || TIER.bronze; }
   function toastSafe(message, type) {
     try { if (typeof toast === 'function') toast(message, type || 'info', 2600); } catch (_) {}
@@ -157,7 +198,7 @@
   async function ensureData() {
     if (state.data) return state.data;
     if (state.loading) return state.loading;
-    state.loading = fetch('arena-data.json?v=5', { cache: 'no-cache' })
+    state.loading = fetch('arena-data.json?v=6', { cache: 'no-cache' })
       .then(function (res) {
         if (!res.ok) throw new Error('Arena data HTTP ' + res.status);
         return res.json();
@@ -465,7 +506,10 @@
           </div>
         </div>
       </div>
-      <div class="space-y-3">${tierHtml}</div>`;
+      <div class="space-y-3">${tierHtml}</div>
+      <div class="mt-4 text-center">
+        <button type="button" data-arena-action="reset-path" class="inline-flex items-center gap-1.5 rounded-xl border border-danger/30 bg-danger/5 px-3 py-2 text-[11px] font-semibold text-danger hover:bg-danger/10 transition">${esc(u('resetProgress'))}</button>
+      </div>`;
   }
 
   function examResultRows(attempt) {
@@ -494,7 +538,12 @@
     var fields = stations.map(function (station) {
       var lastResult = last && (last.results || []).filter(function (r) { return r.station_id === station.id; })[0];
       var lastValues = lastResult && lastResult.values;
-      var label = `<div class="flex items-center justify-between gap-2"><span class="text-xs font-semibold">${esc(tr(station.name))}</span>${station.type !== 'manual' ? `<span class="text-[10px] text-muted">${station.type === 'hold' ? esc(u('seconds')) : (station.type === 'load_bw' ? '× BW' : esc(u('reps')))}</span>` : ''}</div>`;
+      var unit = station.type === 'hold' ? u('seconds')
+        : station.type === 'load_bw' ? '× BW'
+        : station.type === 'time' ? u('timeHint')
+        : station.type === 'distance' ? (station.unit === 'cm' ? u('cmShort') : u('metersShort'))
+        : u('reps');
+      var label = `<div class="flex items-center justify-between gap-2"><span class="text-xs font-semibold">${esc(tr(station.name))}</span>${station.type !== 'manual' ? `<span class="text-[10px] text-muted">${esc(unit)}</span>` : ''}</div>`;
       var input = '';
       if (station.type === 'reps' || station.type === 'hold') {
         var sets = Math.max(1, Number(station.sets) || 1);
@@ -502,6 +551,13 @@
           var prev = Array.isArray(lastValues) && lastValues[i] != null && lastValues[i] !== '' ? lastValues[i] : '';
           return `<input type="number" min="0" step="1" inputmode="numeric" data-arena-input="${esc(station.id)}:${i}" value="${prev !== '' ? esc(prev) : ''}" placeholder="${station.type === 'hold' ? esc(u('seconds')) : esc(u('reps'))}" class="w-full min-w-0 bg-surface border border-border rounded-lg px-2 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/60" />`;
         }).join('') + '</div>';
+      } else if (station.type === 'time') {
+        var prevTime = lastValues != null && lastValues !== '' ? (Number(lastValues) < 60 ? String(lastValues) : fmtTime(lastValues)) : '';
+        input = `<input type="text" inputmode="numeric" data-arena-input="${esc(station.id)}:time" value="${prevTime ? esc(prevTime) : ''}" placeholder="мм:сс" class="w-full min-w-0 bg-surface border border-border rounded-lg px-2 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/60" />`;
+      } else if (station.type === 'distance') {
+        var prevDist = lastValues != null && lastValues !== '' ? lastValues : '';
+        var distUnit = station.unit === 'cm' ? u('cmShort') : u('metersShort');
+        input = `<input type="number" min="0" step="0.01" inputmode="decimal" data-arena-input="${esc(station.id)}:distance" value="${prevDist !== '' ? esc(prevDist) : ''}" placeholder="${esc(distUnit)}" class="w-full min-w-0 bg-surface border border-border rounded-lg px-2 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/60" />`;
       } else if (station.type === 'load_bw') {
         var lv = lastValues || {};
         input = `<div class="grid grid-cols-2 gap-2 mt-1.5">
@@ -578,7 +634,10 @@
           </div>
         </div>
         ${results ? `<div class="mt-3 pt-2 border-t border-border space-y-1">${results}</div>` : ''}
-        ${t.video ? `<a href="${esc(t.video)}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-[10px] font-semibold text-primary-2 mt-2">${esc(u('video'))} ↗</a>` : ''}
+        <div class="mt-2 flex flex-wrap items-center gap-3">
+          ${t.video ? `<a href="${esc(t.video)}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-[10px] font-semibold text-primary-2">${esc(u('video'))} ↗</a>` : ''}
+          <button type="button" data-arena-action="share-trophy" data-path="${esc(t.path_id || '')}" data-tier="${esc(t.tier_id)}" class="inline-flex items-center gap-1 text-[10px] font-semibold text-muted hover:text-text">${esc(u('share'))}</button>
+        </div>
       </div>`;
     }).join('')}</div>`;
   }
@@ -616,6 +675,12 @@
           var siEl = form.querySelector('[data-arena-input="' + station.id + ':' + si + '"]');
           if (!siEl || String(siEl.value).trim() === '') missingStation = true;
         }
+      } else if (station.type === 'time') {
+        var tEl = form.querySelector('[data-arena-input="' + station.id + ':time"]');
+        if (!tEl || parseTime(tEl.value) <= 0) missingStation = true;
+      } else if (station.type === 'distance') {
+        var dEl = form.querySelector('[data-arena-input="' + station.id + ':distance"]');
+        if (!dEl || String(dEl.value).trim() === '') missingStation = true;
       } else if (station.type === 'load_bw') {
         var wEl = form.querySelector('[data-arena-input="' + station.id + ':weight"]');
         var bwEl = form.querySelector('[data-arena-input="' + station.id + ':bodyweight"]');
@@ -639,6 +704,18 @@
         values = setValues;
         passed = setValues.every(function (v) { return v >= Number(station.target || 0); });
         display = setValues.join(' / ') + (station.type === 'hold' ? ' ' + u('seconds') : ' ' + u('reps'));
+      } else if (station.type === 'time') {
+        var tInput = form.querySelector('[data-arena-input="' + station.id + ':time"]');
+        var seconds = parseTime(tInput ? tInput.value : 0);
+        values = seconds;
+        passed = seconds > 0 && seconds <= Number(station.target || 0);
+        display = fmtPerfTime(seconds);
+      } else if (station.type === 'distance') {
+        var dInput = form.querySelector('[data-arena-input="' + station.id + ':distance"]');
+        var meters = num(dInput ? dInput.value : 0);
+        values = meters;
+        passed = meters >= Number(station.target || 0);
+        display = meters + ' ' + (station.unit === 'cm' ? u('cmShort') : u('metersShort'));
       } else if (station.type === 'load_bw') {
         var w = form.querySelector('[data-arena-input="' + station.id + ':weight"]');
         var bw = form.querySelector('[data-arena-input="' + station.id + ':bodyweight"]');
@@ -731,7 +808,7 @@
     if (document.getElementById('arena-root')) await render();
   }
 
-  document.addEventListener('click', function (event) {
+  document.addEventListener('click', async function (event) {
     var el = event.target.closest && event.target.closest('[data-arena-action]');
     if (!el) return;
     var action = el.getAttribute('data-arena-action');
@@ -757,6 +834,31 @@
     } else if (action === 'open-exercise') {
       var exerciseId = el.getAttribute('data-exercise');
       if (exerciseId && typeof openExerciseModal === 'function') openExerciseModal(exerciseId);
+    } else if (action === 'share-trophy') {
+      var sharePath = el.getAttribute('data-path');
+      var shareTier = el.getAttribute('data-tier');
+      var shareRec = state.records[sharePath];
+      var shareTrophy = shareRec && (shareRec.trophies || []).filter(function (x) { return x.tier_id === shareTier; })[0];
+      if (!shareTrophy) return;
+      var shareText = tr(shareTrophy.name) + ' — David King Gym Arena · ' + fmtDate(shareTrophy.earned_at);
+      if (navigator.share) {
+        navigator.share({ title: 'David King Gym Arena', text: shareText }).catch(function () {});
+      } else if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(shareText).then(function () { toastSafe(u('copied'), 'success'); }).catch(function () {});
+      } else {
+        toastSafe(shareText, 'info');
+      }
+    } else if (action === 'reset-path') {
+      if (!confirm(u('resetConfirm'))) return;
+      try {
+        await db.del('arena_progress', progressId(state.clientId, state.pathId));
+        delete state.records[state.pathId];
+        state.flash = null;
+        await render();
+        toastSafe(u('resetDone'), 'success');
+      } catch (e) {
+        toastSafe(u('resetFailed'), 'danger');
+      }
     } else if (action === 'close-flash') {
       state.flash = null;
       render();

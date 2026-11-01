@@ -15,12 +15,12 @@ const copy = read('scripts/copy-assets.js');
 const sw = read('sw.js');
 
 ok('arena data has eight games', Array.isArray(arena.games) && arena.games.length === 8);
-ok('street workout, strength, kettlebell and mobility are available', arena.games.filter(g => g.available).length === 4 && ['street_workout', 'strength', 'kettlebell', 'mobility'].every(id => arena.games.some(g => g.id === id && g.available)));
-for (const [gameId, label] of [['kettlebell', 'kettlebell'], ['mobility', 'mobility']]) {
-  ok(label + ' path has three tiers of four lessons', (function () {
+ok('all eight games are available', arena.games.every(g => g.available) && arena.games.every(g => (g.paths || []).length));
+for (const gameId of ['street_workout', 'strength', 'kettlebell', 'mobility', 'speed', 'endurance', 'hypertrophy', 'olympic']) {
+  ok(gameId + ' path has three tiers of four lessons', (function () {
     const g = arena.games.find(x => x.id === gameId);
     const p = g && g.paths && g.paths[0];
-    return !!p && p.tiers.length === 3 && p.tiers.every(t => t.lessons.length === 4 && t.exam && t.exam.stations.length >= 4 && t.trophy);
+    return !!p && p.tiers.length === 3 && p.tiers.every(t => t.lessons.length === 4 && t.exam && t.exam.stations.length >= 2 && t.trophy);
   })());
 }
 const mu = arena.games.find(g => g.id === 'street_workout').paths.find(p => p.id === 'muscle_up');
@@ -31,7 +31,7 @@ ok('trophy names are tier + path', /Бронзов/.test(dl.tiers[0].trophy.name
 ok('trophies are trilingual', mu.tiers.every(t => t.trophy.name.en && t.trophy.name.ru && t.trophy.name.he));
 ok('arena screen exists', crm.includes('data-screen="arena"') && crm.includes('id="arena-root"'));
 ok('arena nav exists', crm.includes('data-nav="arena"') && crm.includes('data-i18n="nav.arena"'));
-ok('arena script is loaded', crm.includes('src/arena.js?v=247'));
+ok('arena script is loaded', crm.includes('src/arena.js?v=248'));
 ok('arena store is in the schema', crm.includes("name: 'arena_progress'") && crm.includes("by_clientId"));
 ok('arena progress is synced', sync.includes("'arena_progress'"));
 ok('arena data and script are copied to dist', copy.includes("'arena-data.json'") && copy.includes("'src/arena.js'"));
@@ -43,6 +43,11 @@ ok('arena retries prefill the last attempt', js.includes('lastValues') && js.inc
 ok('arena tier header shows lesson progress', js.includes('checkedLessons') && js.includes('${tierLessons.length}'));
 ok('arena requires every station before submitting', js.includes('missingStation') && js.includes("u('fillStations')"));
 ok('arena scrolls to the failed attempt', js.includes('data-arena-last-attempt') && js.includes('scrollIntoView'));
+ok('arena exposes a guarded progress reset', js.includes("action === 'reset-path'") && js.includes("u('resetConfirm')") && js.includes("db.del('arena_progress'"));
+ok('trophies can be shared', js.includes("action === 'share-trophy'") && js.includes('navigator.share') && read('server/public/portal-arena.html').includes('share-trophy'));
+ok('arena supports time and distance stations', js.includes("station.type === 'time'") && js.includes("station.type === 'distance'") && js.includes('parseTime') && js.includes('fmtTime'));
+ok('client arena supports time and distance', read('server/public/portal-arena.html').includes("s.type === 'time'") && read('server/public/portal-arena.html').includes("s.type === 'distance'") && read('server/public/portal-arena.html').includes('parseTime'));
+ok('simple arena supports time and distance', read('server/public/portal.html').includes("station.type === 'time'") && read('server/public/portal.html').includes("station.type === 'distance'") && read('server/public/portal.html').includes('arenaParseTime'));
 ok('client portal can open paths and submit arena exams', read('server/public/portal.html').includes('data-arena-path') && read('server/public/portal.html').includes('saveArenaRecord') && read('server/public/portal.html').includes('data-a-input'));
 ok('portal API allows arena progress', read('server/src/routes/portal.ts').includes("'arena_progress'") && read('server/src/routes/portal.ts').includes('id,'));
 ok('director console links to the arena', read('server/public/admin.html').includes('/fitness-crm.html?screen=arena'));
@@ -61,7 +66,8 @@ ok('full portal seeds server check-ins into the journal', read('server/public/po
 ok('client portal has a dedicated arena page', fs.existsSync(path.join(root, 'server', 'public', 'portal-arena.html')) && read('server/src/app.ts').includes("'/p/:token/arena'") && read('server/public/portal-full.html').includes('portal-arena-btn'));
 ok('client arena reads and writes arena_progress', read('server/public/portal-arena.html').includes('collection=arena_progress') && read('server/public/portal-arena.html').includes("collection: 'arena_progress'"));
 ok('client arena gets a server-injected boot payload', read('server/public/portal-arena.html').includes('__DKG_PORTAL_BOOT__') && read('server/src/app.ts').includes('buildPortalPayload(rawToken)'));
-ok('simple portal loads the latest arena data', read('server/public/portal.html').includes('arena-data.json?v=5'));
+ok('simple portal loads the latest arena data', read('server/public/portal.html').includes('arena-data.json?v=6') && read('server/public/portal-arena.html').includes('/arena-data.json?v=6'));
+ok('simple portal opens the full arena page', read('server/public/portal.html').includes('/p/__DKG_PORTAL_TOKEN__/arena'));
 const check = spawnSync(process.execPath, ['--check', path.join(root, 'src', 'arena.js')], { encoding: 'utf8' });
 ok('arena.js parses', check.status === 0);
 

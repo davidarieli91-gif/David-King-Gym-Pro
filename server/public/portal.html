@@ -122,7 +122,7 @@
           <div class="stat"><span>Жир</span><b id="stat-fat">—</b></div>
         </div>
         <div class="chips" id="client-chips"></div>
-        <a href="#arena-card" style="display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:linear-gradient(135deg,var(--cyan),var(--blue));color:#04101e;font-size:12px;font-weight:800;text-decoration:none;">🏆 Открыть Арену</a>
+        <a href="/p/__DKG_PORTAL_TOKEN__/arena" style="display:inline-block;margin-top:12px;padding:10px 14px;border-radius:10px;background:linear-gradient(135deg,var(--cyan),var(--blue));color:#04101e;font-size:12px;font-weight:800;text-decoration:none;">🏆 Открыть Арену</a>
       </div>
 
       <div class="card" id="arena-card">
@@ -459,6 +459,34 @@
       function arenaLines(text) {
         return String(text || '').split('|').map(function (line) { return esc(line.trim()); }).filter(Boolean).join('<br>');
       }
+      function arenaPad2(n) { return String(n).padStart(2, '0'); }
+      function arenaFmtTime(value) {
+        var sec = Math.round(Number(value) || 0);
+        if (sec <= 0) return '';
+        var h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+        return h ? h + ':' + arenaPad2(m) + ':' + arenaPad2(s) : m + ':' + arenaPad2(s);
+      }
+      function arenaFmtPerfTime(value) {
+        var sec = Number(value) || 0;
+        return sec > 0 && sec < 60 ? (Math.round(sec * 100) / 100) + ' с' : arenaFmtTime(sec);
+      }
+      function arenaParseTime(value) {
+        var raw = String(value == null ? '' : value).trim().replace(',', '.');
+        if (!raw) return 0;
+        if (raw.indexOf(':') !== -1) {
+          var p = raw.split(':'), mins = 0, secs = 0;
+          if (p.length >= 3) {
+            mins = (Number(p[0]) || 0) * 60 + (Number(p[1]) || 0);
+            secs = Number(p[2]) || 0;
+          } else {
+            mins = Number(p[0]) || 0;
+            secs = Number(p[1]) || 0;
+          }
+          return mins * 60 + secs;
+        }
+        var n = Number(raw);
+        return isFinite(n) ? n : 0;
+      }
       function arenaRecord(pathId) {
         var id = arenaClientId() + '::' + pathId;
         var row = recordsOf('arena_progress').filter(function (record) {
@@ -504,7 +532,7 @@
       async function renderArena() {
         if (!ARENA_DATA) {
           try {
-            ARENA_DATA = await fetch('/arena-data.json?v=5', { cache: 'no-cache' }).then(function (r) { return r.json(); });
+            ARENA_DATA = await fetch('/arena-data.json?v=6', { cache: 'no-cache' }).then(function (r) { return r.json(); });
           } catch (error) {
             $('arena').innerHTML = '<p class="empty">Не удалось загрузить Арену.</p>';
             return;
@@ -617,7 +645,8 @@
         var bw = rec.bodyweight || (data.client && data.client.weight) || 80;
         var stations = (tier.exam && tier.exam.stations) || [];
         var fields = stations.map(function (station) {
-          var label = '<div style="font-size:11.5px;font-weight:700;">' + esc(arenaText(station.name)) + '</div>';
+          var unit = station.type === 'hold' ? 'сек' : station.type === 'load_bw' ? '× BW' : station.type === 'time' ? 'мм:сс' : station.type === 'distance' ? (station.unit === 'cm' ? 'см' : 'м') : 'повт';
+          var label = '<div style="font-size:11.5px;font-weight:700;">' + esc(arenaText(station.name)) + (station.type !== 'manual' ? ' <small style="color:var(--muted);font-weight:400;">' + unit + '</small>' : '') + '</div>';
           if (station.type === 'reps' || station.type === 'hold') {
             var sets = Math.max(1, Number(station.sets) || 1);
             var inputs = '';
@@ -625,6 +654,12 @@
               inputs += '<input type="number" min="0" step="1" inputmode="numeric" data-a-input="' + esc(station.id) + ':' + i + '" placeholder="' + (station.type === 'hold' ? 'сек' : 'повт') + '" style="width:100%;margin-top:5px;text-align:center;" />';
             }
             return '<div style="margin-top:8px;">' + label + '<div style="display:grid;grid-template-columns:repeat(' + sets + ',minmax(0,1fr));gap:5px;">' + inputs + '</div></div>';
+          }
+          if (station.type === 'time') {
+            return '<div style="margin-top:8px;">' + label + '<input type="text" inputmode="numeric" data-a-input="' + esc(station.id) + ':time" placeholder="мм:сс" style="width:100%;margin-top:5px;text-align:center;" /></div>';
+          }
+          if (station.type === 'distance') {
+            return '<div style="margin-top:8px;">' + label + '<input type="number" min="0" step="0.01" inputmode="decimal" data-a-input="' + esc(station.id) + ':distance" placeholder="' + (station.unit === 'cm' ? 'см' : 'м') + '" style="width:100%;margin-top:5px;text-align:center;" /></div>';
           }
           if (station.type === 'load_bw') {
             return '<div style="margin-top:8px;">' + label +
@@ -648,9 +683,31 @@
       async function submitArenaExam(path, rec) {
         var tier = (path.tiers || []).filter(function (t, index) { return index === Number(rec.current_tier || 0); })[0];
         if (!tier) return;
+        var stations = (tier.exam && tier.exam.stations) || [];
+        var missing = false;
+        stations.forEach(function (station) {
+          if (station.type === 'reps' || station.type === 'hold') {
+            var sets = Math.max(1, Number(station.sets) || 1);
+            for (var i = 0; i < sets; i++) {
+              var inp = document.querySelector('[data-a-input="' + station.id + ':' + i + '"]');
+              if (!inp || String(inp.value).trim() === '') missing = true;
+            }
+          } else if (station.type === 'time') {
+            var tinp = document.querySelector('[data-a-input="' + station.id + ':time"]');
+            if (!tinp || arenaParseTime(tinp.value) <= 0) missing = true;
+          } else if (station.type === 'distance') {
+            var dinp = document.querySelector('[data-a-input="' + station.id + ':distance"]');
+            if (!dinp || String(dinp.value).trim() === '') missing = true;
+          } else if (station.type === 'load_bw') {
+            var winp = document.querySelector('[data-a-input="' + station.id + ':weight"]');
+            var binp = document.querySelector('[data-a-input="' + station.id + ':bodyweight"]');
+            if (!winp || !binp || String(winp.value).trim() === '' || String(binp.value).trim() === '') missing = true;
+          }
+        });
+        if (missing) { toast('Заполни все станции перед отправкой.'); return; }
         var results = [];
         var bodyweight = 0;
-        ((tier.exam && tier.exam.stations) || []).forEach(function (station) {
+        stations.forEach(function (station) {
           var display = '', passed = false;
           if (station.type === 'reps' || station.type === 'hold') {
             var sets = Math.max(1, Number(station.sets) || 1);
@@ -661,6 +718,16 @@
             }
             passed = values.every(function (v) { return v >= Number(station.target || 0); });
             display = values.join(' / ') + (station.type === 'hold' ? ' сек' : ' повт');
+          } else if (station.type === 'time') {
+            var timeInput = document.querySelector('[data-a-input="' + station.id + ':time"]');
+            var seconds = arenaParseTime(timeInput ? timeInput.value : 0);
+            passed = seconds > 0 && seconds <= Number(station.target || 0);
+            display = arenaFmtPerfTime(seconds);
+          } else if (station.type === 'distance') {
+            var distInput = document.querySelector('[data-a-input="' + station.id + ':distance"]');
+            var meters = Number(distInput && distInput.value) || 0;
+            passed = meters >= Number(station.target || 0);
+            display = meters + (station.unit === 'cm' ? ' см' : ' м');
           } else if (station.type === 'load_bw') {
             var w = document.querySelector('[data-a-input="' + station.id + ':weight"]');
             var bw = document.querySelector('[data-a-input="' + station.id + ':bodyweight"]');

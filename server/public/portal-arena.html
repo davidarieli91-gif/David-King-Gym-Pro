@@ -286,10 +286,18 @@
       bodyweightKg: { en: 'Bodyweight, kg', ru: 'Вес тела, кг', he: 'משקל גוף, ק״ג' },
       reps: { en: 'Reps', ru: 'Повторы', he: 'חזרות' },
       seconds: { en: 'Seconds', ru: 'Секунды', he: 'שניות' },
+      time: { en: 'Time', ru: 'Время', he: 'זמן' },
+      distance: { en: 'Distance', ru: 'Дистанция', he: 'מרחק' },
+      metersShort: { en: 'm', ru: 'м', he: 'מ׳' },
+      cmShort: { en: 'cm', ru: 'см', he: 'ס״מ' },
+      secShort: { en: 's', ru: 'с', he: 'שנ׳' },
+      timeHint: { en: 'mm:ss or seconds', ru: 'мм:сс или секунды', he: 'דקות:שניות או שניות' },
       fillStations: { en: 'Fill in every station before submitting.', ru: 'Заполни все станции перед отправкой.', he: 'מלא את כל התחנות לפני השליחה.' },
       noTrophies: { en: 'No trophies yet', ru: 'Пока нет кубков', he: 'אין גביעים עדיין' },
       noTrophiesHint: { en: 'Complete the lessons, pass the exam and the trophy appears here.', ru: 'Пройди уроки, сдай экзамен — и кубок появится здесь.', he: 'השלם שיעורים, עבור מבחן והגביע יופיע כאן.' },
       newTrophy: { en: 'New trophy', ru: 'Новый кубок', he: 'גביע חדש' },
+      share: { en: 'Share', ru: 'Поделиться', he: 'שתף' },
+      copied: { en: 'Copied', ru: 'Скопировано', he: 'הועתק' },
       noGames: { en: 'No games available yet.', ru: 'Пока нет доступных игр.', he: 'אין משחקים זמינים עדיין.' },
       saved: { en: 'Saved', ru: 'Сохранено', he: 'נשמר' },
       saveFailed: { en: 'Could not save. Try again.', ru: 'Не удалось сохранить. Попробуй ещё раз.', he: 'לא ניתן לשמור. נסה שוב.' },
@@ -303,6 +311,34 @@
     function lines(text) { return esc(text || '').split('|').map(function (x) { return x.trim(); }).filter(Boolean).join('<br>'); }
     function num(v) { var n = Number(String(v == null ? '' : v).replace(',', '.')); return isFinite(n) ? n : 0; }
     function fmtDate(ts) { try { return new Date(ts).toLocaleDateString(state.lang === 'he' ? 'he-IL' : (state.lang === 'ru' ? 'ru-RU' : 'en-GB'), { day: '2-digit', month: 'short', year: 'numeric' }); } catch (_) { return ''; } }
+    function pad2(n) { return String(n).padStart(2, '0'); }
+    function fmtTime(value) {
+      var sec = Math.round(Number(value) || 0);
+      if (sec <= 0) return '';
+      var h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+      return h ? h + ':' + pad2(m) + ':' + pad2(s) : m + ':' + pad2(s);
+    }
+    function fmtPerfTime(value) {
+      var sec = Number(value) || 0;
+      return sec > 0 && sec < 60 ? (Math.round(sec * 100) / 100) + ' ' + t('secShort') : fmtTime(sec);
+    }
+    function parseTime(value) {
+      var raw = String(value == null ? '' : value).trim().replace(',', '.');
+      if (!raw) return 0;
+      if (raw.indexOf(':') !== -1) {
+        var parts = raw.split(':'), mins = 0, secs = 0;
+        if (parts.length >= 3) {
+          mins = (Number(parts[0]) || 0) * 60 + (Number(parts[1]) || 0);
+          secs = Number(parts[2]) || 0;
+        } else {
+          mins = Number(parts[0]) || 0;
+          secs = Number(parts[1]) || 0;
+        }
+        return mins * 60 + secs;
+      }
+      var n = Number(raw);
+      return isFinite(n) ? n : 0;
+    }
     function toast(msg, type) { toastEl.textContent = msg; toastEl.className = 'toast show ' + (type || ''); clearTimeout(toast._t); toast._t = setTimeout(function () { toastEl.className = 'toast'; }, 2600); }
     function tierColor(tier) { return tier === 'gold' ? '#f5c542' : tier === 'silver' ? '#c0c0c0' : '#cd7f32'; }
     function tierLabel(tier) { return { bronze: { ru: 'Бронза', en: 'Bronze', he: 'ארד' }, silver: { ru: 'Серебро', en: 'Silver', he: 'כסף' }, gold: { ru: 'Золото', en: 'Gold', he: 'זהב' } }[tier] || {}; }
@@ -349,7 +385,7 @@
 
     async function load() {
       try {
-        var dataRes = await fetch('/arena-data.json?v=5', { cache: 'no-cache' });
+        var dataRes = await fetch('/arena-data.json?v=6', { cache: 'no-cache' });
         if (!dataRes.ok) throw new Error('data');
         state.data = await dataRes.json();
         if (CLIENT_ID) {
@@ -404,11 +440,11 @@
 
     function renderFlash() {
       if (!state.flash || !state.flash.trophy) return '';
-      var t = state.flash.trophy;
-      var c = tierColor(t.tier);
+      var flashTrophy = state.flash.trophy;
+      var c = tierColor(flashTrophy.tier);
       return '<div class="flash" style="border-color:' + c + '55;background:' + c + '14">' +
         '<span class="flash-ic" style="color:' + c + ';background:' + c + '20">' + trophySvg() + '</span>' +
-        '<div><b style="color:' + c + '">' + esc(t('newTrophy')) + '</b><strong>' + esc(tr(t.name)) + '</strong></div>' +
+        '<div><b style="color:' + c + '">' + esc(t('newTrophy')) + '</b><strong>' + esc(tr(flashTrophy.name)) + '</strong></div>' +
         '<button type="button" data-a="close-flash" style="margin-left:auto;background:none;border:0;color:var(--muted);font-size:18px;cursor:pointer">✕</button></div>';
     }
 
@@ -420,7 +456,8 @@
         var c = tierColor(t.tier);
         return '<div class="trophy" style="border-color:' + c + '44">' +
           '<span class="trophy-ic" style="color:' + c + ';background:' + c + '1c">' + trophySvg() + '</span>' +
-          '<span><b>' + esc(tr(t.name)) + '</b><small>' + esc(fmtDate(t.earned_at)) + ' · ' + esc(tierLabel(t.tier)[state.lang] || tierLabel(t.tier).en || '') + '</small></span></div>';
+          '<span style="min-width:0"><b>' + esc(tr(t.name)) + '</b><small>' + esc(fmtDate(t.earned_at)) + ' · ' + esc(tierLabel(t.tier)[state.lang] || tierLabel(t.tier).en || '') + '</small></span>' +
+          '<button type="button" data-a="share-trophy" data-path="' + esc(t.path_id || '') + '" data-tier="' + esc(t.tier_id) + '" style="margin-left:auto;background:none;border:0;color:var(--muted);font-size:10px;font-weight:700;cursor:pointer">' + esc(t('share')) + '</button></div>';
       }).join('') + '</div>' : '<div class="card empty" style="padding:24px"><b>' + esc(t('noTrophies')) + '</b>' + esc(t('noTrophiesHint')) + '</div>';
 
       return renderFlash() +
@@ -509,7 +546,8 @@
       var fields = stations.map(function (station) {
         var lastResult = last && (last.results || []).filter(function (r) { return r.station_id === station.id; })[0];
         var vals = lastResult && lastResult.values;
-        var label = '<div class="station-top"><b>' + esc(tr(station.name)) + '</b>' + (station.type !== 'manual' ? '<span>' + (station.type === 'hold' ? esc(t('seconds')) : station.type === 'load_bw' ? '× BW' : esc(t('reps'))) + '</span>' : '') + '</div>';
+        var unit = station.type === 'hold' ? t('seconds') : station.type === 'load_bw' ? '× BW' : station.type === 'time' ? t('timeHint') : station.type === 'distance' ? (station.unit === 'cm' ? t('cmShort') : t('metersShort')) : t('reps');
+        var label = '<div class="station-top"><b>' + esc(tr(station.name)) + '</b>' + (station.type !== 'manual' ? '<span>' + esc(unit) + '</span>' : '') + '</div>';
         var input = '';
         if (station.type === 'reps' || station.type === 'hold') {
           var sets = Math.max(1, Number(station.sets) || 1);
@@ -517,6 +555,12 @@
             var v = Array.isArray(vals) && vals[i] != null && vals[i] !== '' ? vals[i] : '';
             return '<input type="number" min="0" step="1" inputmode="numeric" data-a-input="' + esc(station.id) + ':' + i + '" value="' + (v !== '' ? esc(v) : '') + '" placeholder="' + (station.type === 'hold' ? esc(t('seconds')) : esc(t('reps'))) + '" />';
           }).join('') + '</div>';
+        } else if (station.type === 'time') {
+          var prevTime = vals != null && vals !== '' ? (Number(vals) < 60 ? String(vals) : fmtTime(vals)) : '';
+          input = '<input type="text" inputmode="numeric" data-a-input="' + esc(station.id) + ':time" value="' + (prevTime ? esc(prevTime) : '') + '" placeholder="мм:сс" />';
+        } else if (station.type === 'distance') {
+          var prevDist = vals != null && vals !== '' ? vals : '';
+          input = '<input type="number" min="0" step="0.01" inputmode="decimal" data-a-input="' + esc(station.id) + ':distance" value="' + (prevDist !== '' ? esc(prevDist) : '') + '" placeholder="' + esc(station.unit === 'cm' ? t('cmShort') : t('metersShort')) + '" />';
         } else if (station.type === 'load_bw') {
           var lv = vals || {};
           input = '<div class="two"><label style="color:var(--muted);font-size:9.5px">' + esc(t('weightKg')) + '<input type="number" min="0" step="0.5" inputmode="decimal" data-a-input="' + esc(station.id) + ':weight" value="' + (lv.weight != null && lv.weight !== '' ? esc(lv.weight) : '') + '" /></label><label style="color:var(--muted);font-size:9.5px">' + esc(t('bodyweightKg')) + '<input type="number" min="0" step="0.1" inputmode="decimal" data-a-input="' + esc(station.id) + ':bodyweight" value="' + (lv.bodyweight != null && lv.bodyweight !== '' ? esc(lv.bodyweight) : esc(bw)) + '" /></label></div>';
@@ -537,12 +581,29 @@
         '<button type="button" class="cta" data-a="submit-exam" data-path="' + esc(state.pathId) + '" data-tier="' + esc(tier.id) + '">' + esc(t('submitExam')) + '</button>' + lastHtml + history + '</div>';
     }
 
+    function shareTrophy(pathId, tierId) {
+      var rec = state.records[pathId];
+      var trophy = rec && (rec.trophies || []).filter(function (t) { return t.tier_id === tierId; })[0];
+      if (!trophy) return;
+      var text = tr(trophy.name) + ' — David King Gym Arena · ' + fmtDate(trophy.earned_at);
+      if (navigator.share) {
+        navigator.share({ title: 'David King Gym Arena', text: text }).catch(function () {});
+      } else if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { toast(t('copied'), 'ok'); }).catch(function () {});
+      } else {
+        toast(text, 'ok');
+      }
+    }
+
     function bindCommon() {
       langSel.value = state.lang;
       var back = app.querySelector('[data-a="back"]');
       if (back) back.addEventListener('click', function () { state.view = 'games'; state.pathId = null; state.flash = null; render(); });
       var close = app.querySelector('[data-a="close-flash"]');
       if (close) close.addEventListener('click', function () { state.flash = null; render(); });
+      app.querySelectorAll('[data-a="share-trophy"]').forEach(function (btn) {
+        btn.addEventListener('click', function () { shareTrophy(btn.getAttribute('data-path'), btn.getAttribute('data-tier')); });
+      });
     }
     function bindGames() {
       app.querySelectorAll('[data-a="open-path"]').forEach(function (b) {
@@ -578,6 +639,12 @@
         if (s.type === 'reps' || s.type === 'hold') {
           var sets = Math.max(1, Number(s.sets) || 1);
           for (var i = 0; i < sets; i++) { var el = panel.querySelector('[data-a-input="' + s.id + ':' + i + '"]'); if (!el || String(el.value).trim() === '') missing = true; }
+        } else if (s.type === 'time') {
+          var tEl = panel.querySelector('[data-a-input="' + s.id + ':time"]');
+          if (!tEl || parseTime(tEl.value) <= 0) missing = true;
+        } else if (s.type === 'distance') {
+          var dEl = panel.querySelector('[data-a-input="' + s.id + ':distance"]');
+          if (!dEl || String(dEl.value).trim() === '') missing = true;
         } else if (s.type === 'load_bw') {
           var w = panel.querySelector('[data-a-input="' + s.id + ':weight"]');
           var bw = panel.querySelector('[data-a-input="' + s.id + ':bodyweight"]');
@@ -597,6 +664,18 @@
           values = vals;
           passed = vals.every(function (v) { return v >= Number(s.target || 0); });
           display = vals.join(' / ') + (s.type === 'hold' ? ' ' + t('seconds') : ' ' + t('reps'));
+        } else if (s.type === 'time') {
+          var tInput = panel.querySelector('[data-a-input="' + s.id + ':time"]');
+          var seconds = parseTime(tInput ? tInput.value : 0);
+          values = seconds;
+          passed = seconds > 0 && seconds <= Number(s.target || 0);
+          display = fmtPerfTime(seconds);
+        } else if (s.type === 'distance') {
+          var dInput = panel.querySelector('[data-a-input="' + s.id + ':distance"]');
+          var meters = num(dInput ? dInput.value : 0);
+          values = meters;
+          passed = meters >= Number(s.target || 0);
+          display = meters + ' ' + (s.unit === 'cm' ? t('cmShort') : t('metersShort'));
         } else if (s.type === 'load_bw') {
           var w = panel.querySelector('[data-a-input="' + s.id + ':weight"]');
           var bw = panel.querySelector('[data-a-input="' + s.id + ':bodyweight"]');
@@ -639,7 +718,10 @@
         } else {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-      } catch (e) { toast(t('saveFailed'), 'bad'); }
+      } catch (e) {
+        console.error('[arena] exam save failed', e);
+        toast(t('saveFailed'), 'bad');
+      }
     }
 
     function setLang(l) {

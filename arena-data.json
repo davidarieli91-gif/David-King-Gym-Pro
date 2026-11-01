@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "updated": "2026-11-01",
   "games": [
     {
@@ -286,7 +286,8 @@
                     "ru": "Остановка на подбородке|Использование инерции|Поднятие плеч",
                     "he": "עצירה בסנטר|שימוש בתנופה|הרמת כתפיים"
                   },
-                  "image": "/images/bf_PULL_UP.webp"
+                  "image": "/images/bf_PULL_UP.webp",
+                  "exerciseId": "bf_pull-up"
                 },
                 {
                   "id": "false_grip",
@@ -315,7 +316,8 @@
                     "ru": "Хват только пальцами|Запястье уходит за перекладину|Расслабленные плечи",
                     "he": "אחיזה באצבעות בלבד|כף יד מחליקה מאחורי המוט|כתפיים רפויות"
                   },
-                  "image": "/images/bf_BAR_MU.webp"
+                  "image": "/images/bf_BAR_MU.webp",
+                  "exerciseId": "rdb_dead-hang"
                 },
                 {
                   "id": "straight_bar_dips",
@@ -495,7 +497,8 @@
                     "ru": "Слишком высокий прыжок без тяги|Один локоть уходит в сторону|Падение сверху",
                     "he": "קפיצה גבוהה מדי בלי משיכה|מרפק אחד בורח|נפילה מהעליון"
                   },
-                  "image": "/images/bf_BAR_MU.webp"
+                  "image": "/images/bf_BAR_MU.webp",
+                  "exerciseId": "bf_bar-muscle-up"
                 },
                 {
                   "id": "negative_mu",
@@ -524,7 +527,8 @@
                     "ru": "Провал в середине|Потеря false-хвата|Сгибание ног",
                     "he": "נפילה באמצע|איבוד אחיזת false|כיפוף רגליים"
                   },
-                  "image": "/images/bf_BAR_MU.webp"
+                  "image": "/images/bf_BAR_MU.webp",
+                  "exerciseId": "bf_bar-muscle-up"
                 },
                 {
                   "id": "transition_drill",
@@ -553,7 +557,8 @@
                     "ru": "Тяга только руками|Таз уходит назад|Спешка в ротации",
                     "he": "משיכה בידיים בלבד|אגן בורח אחורה|מהר מדי בסיבוב"
                   },
-                  "image": "/images/bf_BAR_MU.webp"
+                  "image": "/images/bf_BAR_MU.webp",
+                  "exerciseId": "bf_bar-muscle-up"
                 },
                 {
                   "id": "strict_mu",
@@ -895,7 +900,8 @@
                     "ru": "Расслабление в паузе|Гриф уходит|Спешка в фиксации",
                     "he": "הרפיה בעצירה|מוט בורח|מהר בנעילה"
                   },
-                  "image": "/images/bf_BB_DL.webp"
+                  "image": "/images/bf_BB_DL.webp",
+                  "exerciseId": "rdb_pause-deadlift"
                 },
                 {
                   "id": "deficit_deadlift",
@@ -1132,7 +1138,8 @@
                     "ru": "Добавлять объём в последний момент|Слишком частые тесты|Менять установку",
                     "he": "הוספת נפח ברגע האחרון|מבחנים תכופים מדי|שינוי התחלה"
                   },
-                  "image": "/images/bf_BB_DL.webp"
+                  "image": "/images/bf_BB_DL.webp",
+                  "exerciseId": "rdb_deadlift"
                 },
                 {
                   "id": "recovery",
@@ -1160,7 +1167,9 @@
                     "en": "Training hard every day|Ignoring pain|Testing sleep-deprived",
                     "ru": "Тренироваться тяжело каждый день|Игнорировать боль|Тестироваться невыспавшимся",
                     "he": "אימון קשה כל יום|התעלמות מכאב|מבחן בלי שינה"
-                  }
+                  },
+                  "exerciseId": "rdb_pigeon-stretch",
+                  "image": "/images/rdb/pigeon-stretch-main.webp"
                 }
               ],
               "exam": {
@@ -2588,13 +2597,682 @@
         "he": "מהירות"
       },
       "description": {
-        "en": "Sprint, jump and agility tests. Coming next.",
-        "ru": "Спринты, прыжки и agility-тесты. Скоро.",
-        "he": "ספרינטים, קפיצות וזריזות. בקרוב."
+        "en": "Sprint, jump and agility tests with real speed standards.",
+        "ru": "Спринты, прыжки и agility-тесты с реальными нормативами скорости.",
+        "he": "ספרינטים, קפיצות ומבחני זריזות בתקני מהירות אמיתיים."
       },
       "color": "#a78bfa",
-      "available": false,
-      "paths": []
+      "available": true,
+      "paths": [
+        {
+          "id": "speed_power",
+          "name": {
+            "en": "Speed & Power",
+            "ru": "Скорость и мощность",
+            "he": "מהירות וכוח"
+          },
+          "subtitle": {
+            "en": "Sprint faster, jump farther and cut sharper.",
+            "ru": "Беги быстрее, прыгай дальше и режь резче.",
+            "he": "רוץ מהר יותר, קפוץ רחוק יותר וחתוך חד יותר."
+          },
+          "description": {
+            "en": "A three-tier path: acceleration, top speed, then agility and power. Each tier has four lessons and a practical exam.",
+            "ru": "Три уровня: ускорение, максимальная скорость, затем ловкость и мощность. На каждом уровне четыре урока и практический экзамен.",
+            "he": "מסלול בשלוש דרגות: האצה, מהירות שיא, ואז זריזות וכוח. בכל דרגה ארבעה שיעורים ומבחן מעשי."
+          },
+          "tiers": [
+            {
+              "id": "bronze",
+              "tier": "bronze",
+              "name": {
+                "en": "Acceleration",
+                "ru": "Ускорение",
+                "he": "האצה"
+              },
+              "goal": {
+                "en": "First-step power, sprint mechanics and a standing jump.",
+                "ru": "Мощь первого шага, техника спринта и прыжок с места.",
+                "he": "כוח צעד ראשון, מכניקת ספרינט וקפיצה מהמקום."
+              },
+              "lessons": [
+                {
+                  "id": "sp_wall_sprint",
+                  "name": {
+                    "en": "Wall Sprint Drill",
+                    "ru": "Спринт у стены",
+                    "he": "ספרינט מול קיר"
+                  },
+                  "prescription": {
+                    "en": "3 × 10 sec",
+                    "ru": "3 × 10 сек",
+                    "he": "3 × 10 שנ׳"
+                  },
+                  "technique": {
+                    "en": "Stand in a strong forward lean with hands on a wall.|Drive the knees and switch legs quickly.|Keep the hips tall and the core braced.",
+                    "ru": "Встань в сильном наклоне, руки на стене.|Быстро поднимай колени и меняй ноги.|Держи таз высоко, кор напряжён.",
+                    "he": "עמוד בהטיה קדימה חזקה עם ידיים על הקיר.|דחוף את הברכיים והחלף רגליים במהירות.|שמור אגן גבוה וליבה מהודקת."
+                  },
+                  "checkpoints": {
+                    "en": "Strong lean|Fast knee switch|Hips tall",
+                    "ru": "Сильный наклон|Быстрая смена ног|Таз высоко",
+                    "he": "הטיה חזקה|החלפת רגליים מהירה|אגן גבוה"
+                  },
+                  "mistakes": {
+                    "en": "Standing too upright|Reaching with the feet|Losing the brace",
+                    "ru": "Слишком вертикально|Загребание стопами|Теряется кор",
+                    "he": "זקוף מדי|הושטת רגליים|אובדן הליבה"
+                  },
+                  "exerciseId": "gi_9040",
+                  "image": "/images/gi_9040.webp"
+                },
+                {
+                  "id": "sp_high_knee",
+                  "name": {
+                    "en": "High Knee Sprints",
+                    "ru": "Спринт с высоким коленом",
+                    "he": "ספרינט ברך גבוהה"
+                  },
+                  "prescription": {
+                    "en": "3 × 20 sec",
+                    "ru": "3 × 20 сек",
+                    "he": "3 × 20 שנ׳"
+                  },
+                  "technique": {
+                    "en": "Run in place or forward with tall posture.|Drive the knees to hip height and strike under the body.|Stay light on the feet.",
+                    "ru": "Беги на месте или вперёд с высокой осанкой.|Поднимай колени до уровня таза, ставь стопу под корпус.|Держи стопы лёгкими.",
+                    "he": "רוץ במקום או קדימה עם יציבה זקופה.|הרם ברכיים לגובה האגן ונגע מתחת לגוף.|שמור רגליים קלות."
+                  },
+                  "checkpoints": {
+                    "en": "Knees to hip height|Quick ground contact|Tall posture",
+                    "ru": "Колени до таза|Быстрый контакт с полом|Высокая осанка",
+                    "he": "ברכיים לגובה האגן|מגע מהיר עם הרצפה|יציבה זקופה"
+                  },
+                  "mistakes": {
+                    "en": "Leaning back|Heavy heel strikes|Short choppy steps",
+                    "ru": "Наклон назад|Тяжёлые пятки|Короткие семенящие шаги",
+                    "he": "הטיה לאחור|נחיתות עקב כבדות|צעדים קצרים"
+                  },
+                  "exerciseId": "gi_3701",
+                  "image": "/images/gi_3701.webp"
+                },
+                {
+                  "id": "sp_long_jump",
+                  "name": {
+                    "en": "Standing Long Jump",
+                    "ru": "Прыжок в длину с места",
+                    "he": "קפיצה לרוחק מהמקום"
+                  },
+                  "prescription": {
+                    "en": "3 × 3",
+                    "ru": "3 × 3",
+                    "he": "3 × 3"
+                  },
+                  "technique": {
+                    "en": "Stand with feet shoulder-width and arms back.|Swing the arms and jump forward, landing softly.|Stick the landing with bent knees.",
+                    "ru": "Встань на ширине плеч, руки отведены назад.|Махни руками и прыгни вперёд, мягко приземляясь.|Зафиксируй приземление с согнутыми коленями.",
+                    "he": "עמוד ברוחב כתפיים עם ידיים לאחור.|נדנד ידיים וקפוץ קדימה עם נחיתה רכה.|עצור בנחיתה עם ברכיים כפופות."
+                  },
+                  "checkpoints": {
+                    "en": "Full arm swing|Hips back|Soft landing",
+                    "ru": "Полный мах руками|Таз назад|Мягкое приземление",
+                    "he": "נדנוד ידיים מלא|אגן לאחור|נחיתה רכה"
+                  },
+                  "mistakes": {
+                    "en": "Jumping flat-footed|Landing stiff-legged|Falling forward",
+                    "ru": "Прыжок с плоских стоп|Жёсткие ноги|Падение вперёд",
+                    "he": "קפיצה משטח כף רגל|נחיתה ברגליים נוקשות|נפילה קדימה"
+                  },
+                  "exerciseId": "gi_1600",
+                  "image": "/images/gi_1600.webp"
+                },
+                {
+                  "id": "sp_ladder",
+                  "name": {
+                    "en": "Ladder Drill",
+                    "ru": "Лестница",
+                    "he": "תרגיל סולם"
+                  },
+                  "prescription": {
+                    "en": "3 × 20 sec",
+                    "ru": "3 × 20 сек",
+                    "he": "3 × 20 שנ׳"
+                  },
+                  "technique": {
+                    "en": "Stay low with quick, light feet.|Step in and out of each square without crossing.|Keep the arms relaxed.",
+                    "ru": "Держись низко, работай быстро и легко.|Входи и выходи из каждой клетки, не перекрещивая ноги.|Руки расслаблены.",
+                    "he": "הישאר נמוך עם רגליים מהירות וקלות.|היכנס וצא מכל משבצת בלי להצליב רגליים.|שמור ידיים רפויות."
+                  },
+                  "checkpoints": {
+                    "en": "Light feet|Quick rhythm|Eyes forward",
+                    "ru": "Лёгкие стопы|Быстрый ритм|Взгляд вперёд",
+                    "he": "רגליים קלות|קצב מהיר|מבט קדימה"
+                  },
+                  "mistakes": {
+                    "en": "Looking at the feet|Heavy contact|Crossing the feet",
+                    "ru": "Взгляд на стопы|Тяжёлый контакт|Перекрещенные ноги",
+                    "he": "מבט על הרגליים|מגע כבד|הצלבת רגליים"
+                  },
+                  "exerciseId": "gi_5972",
+                  "image": "/images/gi_5972.webp"
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "Warm up fully. Rest 2 minutes between stations.",
+                  "ru": "Полностью разомнись. Отдых 2 минуты между станциями.",
+                  "he": "התחמם היטב. מנוחה 2 דקות בין תחנות."
+                },
+                "stations": [
+                  {
+                    "id": "sprint30",
+                    "type": "time",
+                    "name": {
+                      "en": "30 m sprint",
+                      "ru": "Спринт 30 м",
+                      "he": "ספרינט 30 מ׳"
+                    },
+                    "hint": {
+                      "en": "From a standing start.",
+                      "ru": "Со старта с места.",
+                      "he": "מזינוק מהמקום."
+                    },
+                    "target": 5,
+                    "sets": 1
+                  },
+                  {
+                    "id": "long_jump",
+                    "type": "distance",
+                    "name": {
+                      "en": "Standing long jump",
+                      "ru": "Прыжок в длину с места",
+                      "he": "קפיצה לרוחק מהמקום"
+                    },
+                    "hint": {
+                      "en": "Best of three attempts.",
+                      "ru": "Лучшая из трёх попыток.",
+                      "he": "הטוב משלושה ניסיונות."
+                    },
+                    "target": 200,
+                    "unit": "cm"
+                  },
+                  {
+                    "id": "shuttle",
+                    "type": "time",
+                    "name": {
+                      "en": "5-10-5 shuttle",
+                      "ru": "Челнок 5-10-5",
+                      "he": "שאטל 5-10-5"
+                    },
+                    "hint": {
+                      "en": "Touch each line.",
+                      "ru": "Коснись каждой линии.",
+                      "he": "גע בכל קו."
+                    },
+                    "target": 5.5,
+                    "sets": 1
+                  },
+                  {
+                    "id": "technique",
+                    "type": "manual",
+                    "name": {
+                      "en": "Technique verified",
+                      "ru": "Техника подтверждена",
+                      "he": "טכניקה אומתה"
+                    },
+                    "hint": null
+                  }
+                ]
+              },
+              "trophy": {
+                "id": "speed_bronze",
+                "name": {
+                  "en": "Bronze Speed",
+                  "ru": "Бронзовая скорость",
+                  "he": "מהירות ארד"
+                },
+                "description": {
+                  "en": "Acceleration and jump power are verified.",
+                  "ru": "Ускорение и прыжковая мощность подтверждены.",
+                  "he": "האצה וכוח קפיצה אומתו."
+                }
+              }
+            },
+            {
+              "id": "silver",
+              "tier": "silver",
+              "name": {
+                "en": "Top Speed",
+                "ru": "Максимальная скорость",
+                "he": "מהירות שיא"
+              },
+              "goal": {
+                "en": "Sprint at top speed, bound laterally and stay coordinated.",
+                "ru": "Спринт на максимуме, боковые прыжки и координация.",
+                "he": "ספרינט במהירות שיא, קפיצות צדיות וקואורדינציה."
+              },
+              "lessons": [
+                {
+                  "id": "sp_sprint30",
+                  "name": {
+                    "en": "30 m Sprint",
+                    "ru": "Спринт 30 м",
+                    "he": "ספרינט 30 מ׳"
+                  },
+                  "prescription": {
+                    "en": "4 × 30 m",
+                    "ru": "4 × 30 м",
+                    "he": "4 × 30 מ׳"
+                  },
+                  "technique": {
+                    "en": "Start tall and drive out of the first steps.|Reach top speed by 20 m and stay relaxed.|Decelerate smoothly after the line.",
+                    "ru": "Стартуй высоко и мощно выходи из первых шагов.|Набери максимум к 20 м и оставайся расслабленным.|Плавно тормози после финиша.",
+                    "he": "התחל זקוף וצא בעוצמה מהצעדים הראשונים.|הגע למהירות שיא עד 20 מ׳ והישאר רגוע.|האט בעדינות אחרי הקו."
+                  },
+                  "checkpoints": {
+                    "en": "Strong first steps|Relaxed shoulders|Full speed mechanics",
+                    "ru": "Мощные первые шаги|Расслабленные плечи|Техника на максимуме",
+                    "he": "צעדים ראשונים חזקים|כתפיים רגועות|מכניקה במהירות מלאה"
+                  },
+                  "mistakes": {
+                    "en": "Popping upright early|Tensing the shoulders|Overstriding",
+                    "ru": "Раннее выпрямление|Зажатые плечи|Перешагивание",
+                    "he": "התיישרות מוקדמת|מתח בכתפיים|צעדים ארוכים מדי"
+                  },
+                  "exerciseId": "gi_5216",
+                  "image": "/images/gi_5216.webp"
+                },
+                {
+                  "id": "sp_band_sprint",
+                  "name": {
+                    "en": "Band-Assisted Sprint",
+                    "ru": "Спринт с резиной",
+                    "he": "ספרינט עם גומי"
+                  },
+                  "prescription": {
+                    "en": "4 × 20 m",
+                    "ru": "4 × 20 м",
+                    "he": "4 × 20 מ׳"
+                  },
+                  "technique": {
+                    "en": "Attach the band around the hips with a partner behind.|Sprint forward at full speed with a strong lean.|Keep the arms driving.",
+                    "ru": "Закрепи резину на тазу, партнёр сзади.|Беги на полной скорости с сильным наклоном.|Руки активно работают.",
+                    "he": "חבר גומי סביב האגן עם בן זוג מאחור.|ספרינט קדימה במהירות מלאה עם הטיה חזקה.|שמור ידיים דוחפות."
+                  },
+                  "checkpoints": {
+                    "en": "Forward lean|Full effort|Relaxed face",
+                    "ru": "Наклон вперёд|Полная отдача|Расслабленное лицо",
+                    "he": "הטיה קדימה|מאמץ מלא|פנים רגועות"
+                  },
+                  "mistakes": {
+                    "en": "Fighting the band|Short steps|Looking down",
+                    "ru": "Борьба с резиной|Короткие шаги|Взгляд вниз",
+                    "he": "מאבק בגומי|צעדים קצרים|מבט למטה"
+                  },
+                  "exerciseId": "gi_3653",
+                  "image": "/images/gi_3653.webp"
+                },
+                {
+                  "id": "sp_lateral_bound",
+                  "name": {
+                    "en": "Lateral Bound",
+                    "ru": "Боковой прыжок",
+                    "he": "קפיצה צדית"
+                  },
+                  "prescription": {
+                    "en": "3 × 6 / side",
+                    "ru": "3 × 6 / сторона",
+                    "he": "3 × 6 / צד"
+                  },
+                  "technique": {
+                    "en": "Stand on one leg and load the hip.|Bound sideways and land on the opposite leg.|Stick each landing for a moment.",
+                    "ru": "Встань на одну ногу и загрузи таз.|Прыгни в сторону и приземлись на другую ногу.|Зафиксируй каждое приземление.",
+                    "he": "עמוד על רגל אחת וטען את האגן.|קפוץ הצידה ונחות על הרגל השנייה.|עצור בכל נחיתה לרגע."
+                  },
+                  "checkpoints": {
+                    "en": "Hip load|Soft single-leg landing|Controlled balance",
+                    "ru": "Загрузка таза|Мягкое приземление на одну ногу|Контроль баланса",
+                    "he": "טעינת אגן|נחיתה רכה על רגל אחת|שיווי משקל מבוקר"
+                  },
+                  "mistakes": {
+                    "en": "Landing on a straight leg|Knee caving in|Rushing the next bound",
+                    "ru": "Приземление на прямую ногу|Колено внутрь|Спешка со следующим прыжком",
+                    "he": "נחיתה על רגל ישרה|ברך פנימה|מהר מדי לקפיצה הבאה"
+                  },
+                  "exerciseId": "gi_3095",
+                  "image": "/images/gi_3095.webp"
+                },
+                {
+                  "id": "sp_ladder_lateral",
+                  "name": {
+                    "en": "Lateral Ladder Drill",
+                    "ru": "Боковая лестница",
+                    "he": "סולם צדי"
+                  },
+                  "prescription": {
+                    "en": "3 × 20 sec",
+                    "ru": "3 × 20 сек",
+                    "he": "3 × 20 שנ׳"
+                  },
+                  "technique": {
+                    "en": "Face forward and move sideways through the ladder.|Step in and out with quick feet.|Keep the hips low and the chest up.",
+                    "ru": "Смотри вперёд и двигайся боком по лестнице.|Входи и выходи быстрыми стопами.|Таз низко, грудь вверх.",
+                    "he": "פנה קדימה ונוע הצידה דרך הסולם.|היכנס וצא עם רגליים מהירות.|אגן נמוך וחזה למעלה."
+                  },
+                  "checkpoints": {
+                    "en": "Sideways rhythm|Low hips|Light feet",
+                    "ru": "Боковой ритм|Низкий таз|Лёгкие стопы",
+                    "he": "קצב צדי|אגן נמוך|רגליים קלות"
+                  },
+                  "mistakes": {
+                    "en": "Crossing the feet|Standing tall|Watching the feet",
+                    "ru": "Перекрещивание ног|Слишком высоко|Взгляд на стопы",
+                    "he": "הצלבת רגליים|זקוף מדי|מבט על הרגליים"
+                  },
+                  "exerciseId": "gi_5973",
+                  "image": "/images/gi_5973.webp"
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "Run each sprint at full effort. Walk back between attempts.",
+                  "ru": "Каждый спринт — на полную. Между попытками иди шагом.",
+                  "he": "רוץ כל ספרינט במלוא המאמץ. חזור בהליכה בין ניסיונות."
+                },
+                "stations": [
+                  {
+                    "id": "flying20",
+                    "type": "time",
+                    "name": {
+                      "en": "Flying 20 m",
+                      "ru": "Спринт с хода 20 м",
+                      "he": "ספרינט 20 מ׳ בתנועה"
+                    },
+                    "hint": {
+                      "en": "Build up 20 m, then sprint 20 m.",
+                      "ru": "Разгон 20 м, затем спринт 20 м.",
+                      "he": "האצה 20 מ׳ ואז ספרינט 20 מ׳."
+                    },
+                    "target": 2.5,
+                    "sets": 1
+                  },
+                  {
+                    "id": "lateral_bound",
+                    "type": "distance",
+                    "name": {
+                      "en": "Lateral bound",
+                      "ru": "Боковой прыжок",
+                      "he": "קפיצה צדית"
+                    },
+                    "hint": {
+                      "en": "Best single bound, cm.",
+                      "ru": "Лучший одиночный прыжок, см.",
+                      "he": "הקפיצה הטובה, ס״מ."
+                    },
+                    "target": 160,
+                    "unit": "cm"
+                  },
+                  {
+                    "id": "shuttle",
+                    "type": "time",
+                    "name": {
+                      "en": "5-10-5 shuttle",
+                      "ru": "Челнок 5-10-5",
+                      "he": "שאטל 5-10-5"
+                    },
+                    "hint": {
+                      "en": "Touch each line.",
+                      "ru": "Коснись каждой линии.",
+                      "he": "גע בכל קו."
+                    },
+                    "target": 5.2,
+                    "sets": 1
+                  },
+                  {
+                    "id": "technique",
+                    "type": "manual",
+                    "name": {
+                      "en": "Technique verified",
+                      "ru": "Техника подтверждена",
+                      "he": "טכניקה אומתה"
+                    },
+                    "hint": null
+                  }
+                ]
+              },
+              "trophy": {
+                "id": "speed_silver",
+                "name": {
+                  "en": "Silver Speed",
+                  "ru": "Серебряная скорость",
+                  "he": "מהירות כסף"
+                },
+                "description": {
+                  "en": "Top speed and lateral power are verified.",
+                  "ru": "Максимальная скорость и боковая мощность подтверждены.",
+                  "he": "מהירות שיא וכוח צדי אומתו."
+                }
+              }
+            },
+            {
+              "id": "gold",
+              "tier": "gold",
+              "name": {
+                "en": "Agility & Power",
+                "ru": "Ловкость и мощность",
+                "he": "זריזות וכוח"
+              },
+              "goal": {
+                "en": "Reactive speed, vertical power and sharp change of direction.",
+                "ru": "Реактивная скорость, вертикальная мощность и резкая смена направления.",
+                "he": "מהירות תגובה, כוח אנכי ושינוי כיוון חד."
+              },
+              "lessons": [
+                {
+                  "id": "sp_depth_jump",
+                  "name": {
+                    "en": "Depth Jump",
+                    "ru": "Прыжок в глубину",
+                    "he": "קפיצת עומק"
+                  },
+                  "prescription": {
+                    "en": "3 × 5",
+                    "ru": "3 × 5",
+                    "he": "3 × 5"
+                  },
+                  "technique": {
+                    "en": "Step off a low box and land softly.|React immediately into a vertical jump.|Keep the ground contact short.",
+                    "ru": "Сойди с низкой тумбы и мягко приземлись.|Сразу выпрыгни вверх.|Минимальное время контакта с полом.",
+                    "he": "רד מקופסה נמוכה ונחות ברכות.|הגב מיד לקפיצה אנכית.|שמור מגע קצר עם הרצפה."
+                  },
+                  "checkpoints": {
+                    "en": "Soft landing|Quick reaction|Tall jump",
+                    "ru": "Мягкое приземление|Быстрая реакция|Высокий прыжок",
+                    "he": "נחיתה רכה|תגובה מהירה|קפיצה גבוהה"
+                  },
+                  "mistakes": {
+                    "en": "Deep landing|Long ground contact|Knees collapsing",
+                    "ru": "Глубокое приземление|Долгий контакт|Колени заваливаются",
+                    "he": "נחיתה עמוקה|מגע ארוך|ברכיים קורסות"
+                  },
+                  "exerciseId": "gi_4844",
+                  "image": "/images/gi_4844.webp"
+                },
+                {
+                  "id": "sp_single_vertical",
+                  "name": {
+                    "en": "Single-Leg Vertical Jump",
+                    "ru": "Прыжок вверх на одной ноге",
+                    "he": "קפיצה אנכית על רגל אחת"
+                  },
+                  "prescription": {
+                    "en": "3 × 5 / side",
+                    "ru": "3 × 5 / сторона",
+                    "he": "3 × 5 / צד"
+                  },
+                  "technique": {
+                    "en": "Stand on one leg with the knee slightly bent.|Swing the arms and jump straight up.|Land on the same leg with control.",
+                    "ru": "Встань на одну ногу, колено слегка согнуто.|Махни руками и прыгни строго вверх.|Приземлись на ту же ногу под контролем.",
+                    "he": "עמוד על רגל אחת עם ברך כפופה מעט.|נדנד ידיים וקפוץ ישר למעלה.|נחות על אותה רגל בשליטה."
+                  },
+                  "checkpoints": {
+                    "en": "Strong arm swing|Vertical line|Controlled landing",
+                    "ru": "Сильный мах руками|Вертикальная линия|Контролируемое приземление",
+                    "he": "נדנוד ידיים חזק|קו אנכי|נחיתה מבוקרת"
+                  },
+                  "mistakes": {
+                    "en": "Drifting sideways|Straight-leg landing|Knee caving",
+                    "ru": "Уход в сторону|Приземление на прямую ногу|Колено внутрь",
+                    "he": "סחיפה הצידה|נחיתה על רגל ישרה|ברך פנימה"
+                  },
+                  "exerciseId": "gi_4254",
+                  "image": "/images/gi_4254.webp"
+                },
+                {
+                  "id": "sp_cone_drill",
+                  "name": {
+                    "en": "Cone Drill",
+                    "ru": "Работа с конусами",
+                    "he": "תרגיל קונוסים"
+                  },
+                  "prescription": {
+                    "en": "3 × 20 sec",
+                    "ru": "3 × 20 сек",
+                    "he": "3 × 20 שנ׳"
+                  },
+                  "technique": {
+                    "en": "Set three cones in a line or triangle.|Move quickly around each cone with short steps.|Stay low and change direction under control.",
+                    "ru": "Поставь три конуса в линию или треугольник.|Быстро двигайся вокруг конусов короткими шагами.|Держись низко и меняй направление под контролем.",
+                    "he": "הצב שלושה קונוסים בקו או במשולש.|נוע מהר סביב כל קונוס בצעדים קצרים.|הישאר נמוך ושנה כיוון בשליטה."
+                  },
+                  "checkpoints": {
+                    "en": "Low center of gravity|Sharp cuts|Eyes up",
+                    "ru": "Низкий центр тяжести|Резкие смены|Взгляд вперёд",
+                    "he": "מרכז כובד נמוך|חיתוכים חדים|מבט למעלה"
+                  },
+                  "mistakes": {
+                    "en": "Standing tall|Wide turns|Slipping on the cuts",
+                    "ru": "Высокая стойка|Широкие повороты|Проскальзывание",
+                    "he": "זקוף מדי|פניות רחבות|החלקה בפניות"
+                  },
+                  "exerciseId": "gi_5986",
+                  "image": "/images/gi_5986.webp"
+                },
+                {
+                  "id": "sp_band_shuttle",
+                  "name": {
+                    "en": "Resistance Band Shuttle",
+                    "ru": "Челнок с резиной",
+                    "he": "שאטל עם גומי"
+                  },
+                  "prescription": {
+                    "en": "3 × 15 sec",
+                    "ru": "3 × 15 сек",
+                    "he": "3 × 15 שנ׳"
+                  },
+                  "technique": {
+                    "en": "Attach a band and shuffle sideways against resistance.|Stay low with the chest up.|Drive from the hips, not the feet.",
+                    "ru": "Закрепи резину и двигайся боком против сопротивления.|Держись низко, грудь вверх.|Работай тазом, а не стопами.",
+                    "he": "חבר גומי ונוע הצידה נגד התנגדות.|הישאר נמוך עם חזה למעלה.|דחוף מהאגן, לא מהרגליים."
+                  },
+                  "checkpoints": {
+                    "en": "Low stance|Strong hip drive|Controlled shuffle",
+                    "ru": "Низкая стойка|Сильный таз|Контролируемый челнок",
+                    "he": "עמידה נמוכה|דחיפת אגן חזקה|שאטל מבוקר"
+                  },
+                  "mistakes": {
+                    "en": "Leaning away from the band|Crossing the feet|Standing up",
+                    "ru": "Наклон от резины|Перекрещивание ног|Выпрямление",
+                    "he": "הטיה מהגומי|הצלבת רגליים|התיישרות"
+                  },
+                  "exerciseId": "gi_4241",
+                  "image": "/images/gi_4241.webp"
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "Stop if a landing feels unstable. Quality first.",
+                  "ru": "Остановись, если приземление нестабильно. Сначала качество.",
+                  "he": "עצור אם הנחיתה לא יציבה. איכות קודם."
+                },
+                "stations": [
+                  {
+                    "id": "sprint10",
+                    "type": "time",
+                    "name": {
+                      "en": "10 m sprint",
+                      "ru": "Спринт 10 м",
+                      "he": "ספרינט 10 מ׳"
+                    },
+                    "hint": {
+                      "en": "From a standing start.",
+                      "ru": "Со старта с места.",
+                      "he": "מזינוק מהמקום."
+                    },
+                    "target": 1.8,
+                    "sets": 1
+                  },
+                  {
+                    "id": "vertical_jump",
+                    "type": "distance",
+                    "name": {
+                      "en": "Vertical jump",
+                      "ru": "Прыжок вверх",
+                      "he": "קפיצה אנכית"
+                    },
+                    "hint": {
+                      "en": "Standing vertical, cm.",
+                      "ru": "С места, см.",
+                      "he": "מהמקום, ס״מ."
+                    },
+                    "target": 45,
+                    "unit": "cm"
+                  },
+                  {
+                    "id": "shuttle",
+                    "type": "time",
+                    "name": {
+                      "en": "5-10-5 shuttle",
+                      "ru": "Челнок 5-10-5",
+                      "he": "שאטל 5-10-5"
+                    },
+                    "hint": {
+                      "en": "Touch each line.",
+                      "ru": "Коснись каждой линии.",
+                      "he": "גע בכל קו."
+                    },
+                    "target": 5,
+                    "sets": 1
+                  },
+                  {
+                    "id": "technique",
+                    "type": "manual",
+                    "name": {
+                      "en": "Technique verified",
+                      "ru": "Техника подтверждена",
+                      "he": "טכניקה אומתה"
+                    },
+                    "hint": null
+                  }
+                ]
+              },
+              "trophy": {
+                "id": "speed_gold",
+                "name": {
+                  "en": "Gold Speed",
+                  "ru": "Золотая скорость",
+                  "he": "מהירות זהב"
+                },
+                "description": {
+                  "en": "Elite acceleration, agility and jump power are verified.",
+                  "ru": "Элитное ускорение, ловкость и прыжковая мощность подтверждены.",
+                  "he": "האצה, זריזות וכוח קפיצה ברמה גבוהה אומתו."
+                }
+              }
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "endurance",
@@ -2604,13 +3282,682 @@
         "he": "סיבולת"
       },
       "description": {
-        "en": "5K, rowing and conditioning benchmarks. Coming next.",
-        "ru": "5 км, гребля и кондиционные нормативы. Скоро.",
-        "he": "5 ק״מ, חתירה וכושר. בקרוב."
+        "en": "5K, rowing and conditioning benchmarks for a stronger engine.",
+        "ru": "5 км, гребля и кондиционные нормативы для сильного двигателя.",
+        "he": "5 ק״מ, חתירה ותקני כושר למנוע חזק."
       },
       "color": "#34d399",
-      "available": false,
-      "paths": []
+      "available": true,
+      "paths": [
+        {
+          "id": "endurance_engine",
+          "name": {
+            "en": "Engine",
+            "ru": "Двигатель",
+            "he": "מנוע"
+          },
+          "subtitle": {
+            "en": "Build an engine that lasts from the first minute to the last.",
+            "ru": "Построй двигатель, которого хватит от первой минуты до последней.",
+            "he": "בנה מנוע שמחזיק מהדקה הראשונה ועד האחרונה."
+          },
+          "description": {
+            "en": "A three-tier path: aerobic base, threshold work and race-ready conditioning. Each tier has four lessons and a practical exam.",
+            "ru": "Три уровня: аэробная база, пороговая работа и гоночная форма. На каждом уровне четыре урока и практический экзамен.",
+            "he": "מסלול בשלוש דרגות: בסיס אירובי, עבודת סף וכושר למרוץ. בכל דרגה ארבעה שיעורים ומבחן מעשי."
+          },
+          "tiers": [
+            {
+              "id": "bronze",
+              "tier": "bronze",
+              "name": {
+                "en": "Aerobic Base",
+                "ru": "Аэробная база",
+                "he": "בסיס אירובי"
+              },
+              "goal": {
+                "en": "Easy running, jump rope and core endurance.",
+                "ru": "Лёгкий бег, скакалка и выносливость кора.",
+                "he": "ריצה קלה, חבל קפיצה וסיבולת ליבה."
+              },
+              "lessons": [
+                {
+                  "id": "en_easy_run",
+                  "name": {
+                    "en": "Easy Run",
+                    "ru": "Лёгкий бег",
+                    "he": "ריצה קלה"
+                  },
+                  "prescription": {
+                    "en": "20 min",
+                    "ru": "20 мин",
+                    "he": "20 דק׳"
+                  },
+                  "technique": {
+                    "en": "Run at a conversational pace.|Keep the shoulders relaxed and the steps light.|Stay in nose-breathing range.",
+                    "ru": "Беги в разговорном темпе.|Плечи расслаблены, шаги лёгкие.|Дыши носом, держись в аэробной зоне.",
+                    "he": "רוץ בקצב שיחה.|שמור כתפיים רגועות וצעדים קלים.|הישאר בטווח נשימת אף."
+                  },
+                  "checkpoints": {
+                    "en": "Conversational pace|Relaxed shoulders|Light steps",
+                    "ru": "Разговорный темп|Расслабленные плечи|Лёгкие шаги",
+                    "he": "קצב שיחה|כתפיים רגועות|צעדים קלים"
+                  },
+                  "mistakes": {
+                    "en": "Starting too fast|Heavy heel strikes|Holding the breath",
+                    "ru": "Слишком быстрый старт|Тяжёлые пятки|Задержка дыхания",
+                    "he": "התחלה מהירה מדי|נחיתות עקב כבדות|עצירת נשימה"
+                  },
+                  "exerciseId": "rdb_running",
+                  "image": "/images/rdb/running-main.webp"
+                },
+                {
+                  "id": "en_jump_rope",
+                  "name": {
+                    "en": "Jump Rope",
+                    "ru": "Скакалка",
+                    "he": "חבל קפיצה"
+                  },
+                  "prescription": {
+                    "en": "3 × 2 min",
+                    "ru": "3 × 2 мин",
+                    "he": "3 × 2 דק׳"
+                  },
+                  "technique": {
+                    "en": "Hold the handles softly and jump low.|Turn the rope with the wrists, not the arms.|Land on the balls of the feet.",
+                    "ru": "Держи ручки мягко и прыгай низко.|Вращай скакалку кистями, а не руками.|Приземляйся на носки.",
+                    "he": "החזק ידיות ברכות וקפוץ נמוך.|סובב את החבל עם פרקי הידיים, לא עם הידיים.|נחות על כריות כף הרגל."
+                  },
+                  "checkpoints": {
+                    "en": "Low jumps|Wrist turn|Soft landing",
+                    "ru": "Низкие прыжки|Вращение кистями|Мягкое приземление",
+                    "he": "קפיצות נמוכות|סיבוב פרקי יד|נחיתה רכה"
+                  },
+                  "mistakes": {
+                    "en": "Jumping too high|Swinging with the arms|Landing on the heels",
+                    "ru": "Слишком высоко|Мах руками|Приземление на пятки",
+                    "he": "קפיצה גבוהה מדי|נדנוד ידיים|נחיתה על עקבים"
+                  },
+                  "exerciseId": "rdb_jump-rope",
+                  "image": "/images/rdb/jump-rope-main.webp"
+                },
+                {
+                  "id": "en_mountain",
+                  "name": {
+                    "en": "Mountain Climbers",
+                    "ru": "Альпинист",
+                    "he": "מטפס הרים"
+                  },
+                  "prescription": {
+                    "en": "3 × 30 sec",
+                    "ru": "3 × 30 сек",
+                    "he": "3 × 30 שנ׳"
+                  },
+                  "technique": {
+                    "en": "Start in a high plank with the shoulders over the hands.|Drive one knee toward the chest and switch.|Keep the hips low and steady.",
+                    "ru": "Встань в планку, плечи над ладонями.|Подтяни колено к груди и поменяй ногу.|Таз низко и стабильно.",
+                    "he": "התחל בפלאנק גבוה עם כתפיים מעל הידיים.|הבא ברך לחזה והחלף.|שמור אגן נמוך ויציב."
+                  },
+                  "checkpoints": {
+                    "en": "Shoulders over hands|Hips steady|Quick switch",
+                    "ru": "Плечи над ладонями|Таз стабилен|Быстрая смена",
+                    "he": "כתפיים מעל הידיים|אגן יציב|החלפה מהירה"
+                  },
+                  "mistakes": {
+                    "en": "Hips bouncing|Shoulders behind hands|Short range",
+                    "ru": "Таз прыгает|Плечи сзади|Короткая амплитуда",
+                    "he": "אגן מקפץ|כתפיים מאחור|טווח קצר"
+                  },
+                  "exerciseId": "rdb_mountain-climbers",
+                  "image": "/images/rdb/mountain-climbers-start.webp"
+                },
+                {
+                  "id": "en_plank",
+                  "name": {
+                    "en": "Plank",
+                    "ru": "Планка",
+                    "he": "פלאנק"
+                  },
+                  "prescription": {
+                    "en": "3 × 45 sec",
+                    "ru": "3 × 45 сек",
+                    "he": "3 × 45 שנ׳"
+                  },
+                  "technique": {
+                    "en": "Set the elbows under the shoulders.|Squeeze the glutes and brace the core.|Keep a straight line from head to heels.",
+                    "ru": "Поставь локти под плечи.|Сожми ягодицы и напряги кор.|Держи прямую линию от головы до пят.",
+                    "he": "הנח מרפקים מתחת לכתפיים.|כווץ ישבן והדק ליבה.|שמור קו ישר מהראש עד העקבים."
+                  },
+                  "checkpoints": {
+                    "en": "Elbows under shoulders|Glutes tight|Straight line",
+                    "ru": "Локти под плечами|Ягодицы сжаты|Прямая линия",
+                    "he": "מרפקים מתחת לכתפיים|ישבן מהודק|קו ישר"
+                  },
+                  "mistakes": {
+                    "en": "Hips sagging|Hips too high|Holding the breath",
+                    "ru": "Таз провисает|Таз слишком высоко|Задержка дыхания",
+                    "he": "אגן שוקע|אגן גבוה מדי|עצירת נשימה"
+                  },
+                  "exerciseId": "rdb_plank",
+                  "image": "/images/rdb/plank-main.webp"
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "Keep the pace honest but controlled. Rest 2 minutes between stations.",
+                  "ru": "Держи честный, но контролируемый темп. Отдых 2 минуты между станциями.",
+                  "he": "שמור על קצב כן אך מבוקר. מנוחה 2 דקות בין תחנות."
+                },
+                "stations": [
+                  {
+                    "id": "run1k",
+                    "type": "time",
+                    "name": {
+                      "en": "1 km run",
+                      "ru": "Бег 1 км",
+                      "he": "ריצת 1 ק״מ"
+                    },
+                    "hint": {
+                      "en": "Outdoor or treadmill.",
+                      "ru": "Улица или дорожка.",
+                      "he": "בחוץ או על מסלול."
+                    },
+                    "target": 360,
+                    "sets": 1
+                  },
+                  {
+                    "id": "rope",
+                    "type": "hold",
+                    "name": {
+                      "en": "Jump rope",
+                      "ru": "Скакалка",
+                      "he": "חבל קפיצה"
+                    },
+                    "hint": {
+                      "en": "Continuous, low jumps.",
+                      "ru": "Непрерывно, низкие прыжки.",
+                      "he": "רציף, קפיצות נמוכות."
+                    },
+                    "sets": 1,
+                    "target": 120
+                  },
+                  {
+                    "id": "plank",
+                    "type": "hold",
+                    "name": {
+                      "en": "Plank",
+                      "ru": "Планка",
+                      "he": "פלאנק"
+                    },
+                    "hint": {
+                      "en": "Straight line, no sagging.",
+                      "ru": "Прямая линия, без провисания.",
+                      "he": "קו ישר, בלי שקיעה."
+                    },
+                    "sets": 1,
+                    "target": 60
+                  },
+                  {
+                    "id": "technique",
+                    "type": "manual",
+                    "name": {
+                      "en": "Technique verified",
+                      "ru": "Техника подтверждена",
+                      "he": "טכניקה אומתה"
+                    },
+                    "hint": null
+                  }
+                ]
+              },
+              "trophy": {
+                "id": "endurance_bronze",
+                "name": {
+                  "en": "Bronze Engine",
+                  "ru": "Бронзовый двигатель",
+                  "he": "מנוע ארד"
+                },
+                "description": {
+                  "en": "Aerobic base and core endurance are verified.",
+                  "ru": "Аэробная база и выносливость кора подтверждены.",
+                  "he": "בסיס אירובי וסיבולת ליבה אומתו."
+                }
+              }
+            },
+            {
+              "id": "silver",
+              "tier": "silver",
+              "name": {
+                "en": "Threshold",
+                "ru": "Порог",
+                "he": "סף"
+              },
+              "goal": {
+                "en": "Rowing, running and burpee capacity at threshold.",
+                "ru": "Гребля, бег и бёрпи на пороге.",
+                "he": "חתירה, ריצה וברפי בסף."
+              },
+              "lessons": [
+                {
+                  "id": "en_row",
+                  "name": {
+                    "en": "Rowing Machine",
+                    "ru": "Гребной тренажёр",
+                    "he": "מכונת חתירה"
+                  },
+                  "prescription": {
+                    "en": "4 × 500 m",
+                    "ru": "4 × 500 м",
+                    "he": "4 × 500 מ׳"
+                  },
+                  "technique": {
+                    "en": "Drive with the legs first, then swing the body and pull the arms.|Return arms, body, legs.|Keep a steady rhythm.",
+                    "ru": "Сначала ноги, затем корпус и руки.|Возврат: руки, корпус, ноги.|Держи ровный ритм.",
+                    "he": "דחוף קודם עם הרגליים, אחר כך נדנד גוף ומשוך ידיים.|חזרה: ידיים, גוף, רגליים.|שמור קצב יציב."
+                  },
+                  "checkpoints": {
+                    "en": "Legs first|Strong finish|Controlled return",
+                    "ru": "Сначала ноги|Сильный финиш|Контролируемый возврат",
+                    "he": "רגליים ראשונות|סיום חזק|חזרה מבוקרת"
+                  },
+                  "mistakes": {
+                    "en": "Pulling with the arms first|Rushing the slide|Rounding the back",
+                    "ru": "Тяга руками первой|Спешка на слайде|Округление спины",
+                    "he": "משיכה בידיים ראשונה|מהר מדי בהחלקה|עיגול הגב"
+                  },
+                  "exerciseId": "rdb_rowing-machine",
+                  "image": "/images/rdb/rowing-machine-start.webp"
+                },
+                {
+                  "id": "en_air_bike",
+                  "name": {
+                    "en": "Air Bike",
+                    "ru": "Эйр-байк",
+                    "he": "אופני אוויר"
+                  },
+                  "prescription": {
+                    "en": "5 × 30 sec",
+                    "ru": "5 × 30 сек",
+                    "he": "5 × 30 שנ׳"
+                  },
+                  "technique": {
+                    "en": "Sit tall with the feet on the pedals.|Drive arms and legs together at a steady pace.|Keep the core braced.",
+                    "ru": "Сиди прямо, стопы на педалях.|Толкай руки и ноги вместе в ровном темпе.|Держи кор напряжённым.",
+                    "he": "שב זקוף עם רגליים על הדוושות.|דחוף ידיים ורגליים יחד בקצב יציב.|שמור ליבה מהודקת."
+                  },
+                  "checkpoints": {
+                    "en": "Tall posture|Steady pace|Core braced",
+                    "ru": "Прямая осанка|Ровный темп|Кор напряжён",
+                    "he": "יציבה זקופה|קצב יציב|ליבה מהודקת"
+                  },
+                  "mistakes": {
+                    "en": "Slouching|All arms, no legs|Sprinting then stopping",
+                    "ru": "Сутулость|Только руки|Рывок и остановка",
+                    "he": "שפיפה|רק ידיים|ספרינט ואז עצירה"
+                  },
+                  "exerciseId": "rdb_air-bike",
+                  "image": "/images/rdb/air-bike-main.webp"
+                },
+                {
+                  "id": "en_burpee",
+                  "name": {
+                    "en": "Burpees",
+                    "ru": "Бёрпи",
+                    "he": "ברפי"
+                  },
+                  "prescription": {
+                    "en": "3 × 15",
+                    "ru": "3 × 15",
+                    "he": "3 × 15"
+                  },
+                  "technique": {
+                    "en": "Drop to a plank, chest to the floor.|Jump the feet in and stand up.|Jump at the top with a soft landing.",
+                    "ru": "Упади в планку, грудь к полу.|Прыжком подтяни стопы и встань.|Прыжок вверху с мягким приземлением.",
+                    "he": "רד לפלאנק, חזה לרצפה.|קפוץ את הרגליים פנימה וקום.|קפוץ למעלה עם נחיתה רכה."
+                  },
+                  "checkpoints": {
+                    "en": "Chest to floor|Fast feet|Soft landing",
+                    "ru": "Грудь к полу|Быстрые стопы|Мягкое приземление",
+                    "he": "חזה לרצפה|רגליים מהירות|נחיתה רכה"
+                  },
+                  "mistakes": {
+                    "en": "Sagging hips|Half push-up|Landing stiff",
+                    "ru": "Провисший таз|Неполное отжимание|Жёсткое приземление",
+                    "he": "אגן שוקע|חצי שכיבת סמיכה|נחיתה נוקשה"
+                  },
+                  "exerciseId": "rdb_burpees",
+                  "image": "/images/rdb/burpees-main.webp"
+                },
+                {
+                  "id": "en_stepup",
+                  "name": {
+                    "en": "Bodyweight Step-Up",
+                    "ru": "Зашагивания",
+                    "he": "עלייה על מדרגה"
+                  },
+                  "prescription": {
+                    "en": "3 × 12 / side",
+                    "ru": "3 × 12 / сторона",
+                    "he": "3 × 12 / צד"
+                  },
+                  "technique": {
+                    "en": "Place the whole foot on a sturdy box.|Drive through the front leg to stand tall.|Lower with control.",
+                    "ru": "Поставь всю стопу на устойчивую тумбу.|Выжми себя передней ногой и выпрямись.|Опускайся под контролем.",
+                    "he": "הנח את כל כף הרגל על קופסה יציבה.|דחוף דרך הרגל הקדמית וקום זקוף.|רד בשליטה."
+                  },
+                  "checkpoints": {
+                    "en": "Whole foot on box|Front-leg drive|Controlled descent",
+                    "ru": "Вся стопа на тумбе|Работа передней ноги|Контролируемый спуск",
+                    "he": "כל כף הרגל על הקופסה|דחיפה מהרגל הקדמית|ירידה מבוקרת"
+                  },
+                  "mistakes": {
+                    "en": "Pushing off the back foot|Knee caving|Dropping down",
+                    "ru": "Толчок задней ногой|Колено внутрь|Падение вниз",
+                    "he": "דחיפה מהרגל האחורית|ברך פנימה|נפילה למטה"
+                  },
+                  "exerciseId": "gi_4579",
+                  "image": "/images/gi_4579.webp"
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "These are hard efforts. Stop if form breaks.",
+                  "ru": "Это тяжёлые усилия. Остановись, если техника ломается.",
+                  "he": "אלה מאמצים קשים. עצור אם הטכניקה נשברת."
+                },
+                "stations": [
+                  {
+                    "id": "row2k",
+                    "type": "time",
+                    "name": {
+                      "en": "2K row",
+                      "ru": "Гребля 2 км",
+                      "he": "חתירה 2 ק״מ"
+                    },
+                    "hint": {
+                      "en": "Rowing machine, 2000 m.",
+                      "ru": "Гребной тренажёр, 2000 м.",
+                      "he": "מכונת חתירה, 2000 מ׳."
+                    },
+                    "target": 480,
+                    "sets": 1
+                  },
+                  {
+                    "id": "run1k",
+                    "type": "time",
+                    "name": {
+                      "en": "1 km run",
+                      "ru": "Бег 1 км",
+                      "he": "ריצת 1 ק״מ"
+                    },
+                    "hint": {
+                      "en": "Outdoor or treadmill.",
+                      "ru": "Улица или дорожка.",
+                      "he": "בחוץ או על מסלול."
+                    },
+                    "target": 300,
+                    "sets": 1
+                  },
+                  {
+                    "id": "burpees",
+                    "type": "reps",
+                    "name": {
+                      "en": "Burpees",
+                      "ru": "Бёрпи",
+                      "he": "ברפי"
+                    },
+                    "hint": {
+                      "en": "Three sets, chest to floor.",
+                      "ru": "Три подхода, грудь к полу.",
+                      "he": "שלושה סטים, חזה לרצפה."
+                    },
+                    "sets": 3,
+                    "target": 15
+                  },
+                  {
+                    "id": "technique",
+                    "type": "manual",
+                    "name": {
+                      "en": "Technique verified",
+                      "ru": "Техника подтверждена",
+                      "he": "טכניקה אומתה"
+                    },
+                    "hint": null
+                  }
+                ]
+              },
+              "trophy": {
+                "id": "endurance_silver",
+                "name": {
+                  "en": "Silver Engine",
+                  "ru": "Серебряный двигатель",
+                  "he": "מנוע כסף"
+                },
+                "description": {
+                  "en": "Threshold running, rowing and burpee capacity are verified.",
+                  "ru": "Пороговый бег, гребля и бёрпи подтверждены.",
+                  "he": "ריצת סף, חתירה ויכולת ברפי אומתו."
+                }
+              }
+            },
+            {
+              "id": "gold",
+              "tier": "gold",
+              "name": {
+                "en": "Race Ready",
+                "ru": "Гоночная форма",
+                "he": "מוכן למרוץ"
+              },
+              "goal": {
+                "en": "5K, 12-minute distance and a strong 2K row.",
+                "ru": "5 км, 12-минутный тест и сильная гребля 2 км.",
+                "he": "5 ק״מ, מבחן 12 דקות וחתירת 2 ק״מ חזקה."
+              },
+              "lessons": [
+                {
+                  "id": "en_run5k",
+                  "name": {
+                    "en": "5K Run",
+                    "ru": "Бег 5 км",
+                    "he": "ריצת 5 ק״מ"
+                  },
+                  "prescription": {
+                    "en": "1 × 5 km",
+                    "ru": "1 × 5 км",
+                    "he": "1 × 5 ק״מ"
+                  },
+                  "technique": {
+                    "en": "Start conservatively and settle into a steady rhythm.|Keep the cadence quick and the shoulders relaxed.|Finish strong without sprinting from the start.",
+                    "ru": "Начни сдержанно и войди в ровный ритм.|Держи быстрый каденс и расслабленные плечи.|Финишируй сильно, но не спринтуй со старта.",
+                    "he": "התחל בשמרנות והיכנס לקצב יציב.|שמור קצב צעדים מהיר וכתפיים רגועות.|סיים חזק בלי ספרינט מההתחלה."
+                  },
+                  "checkpoints": {
+                    "en": "Even pacing|Relaxed shoulders|Strong finish",
+                    "ru": "Ровный темп|Расслабленные плечи|Сильный финиш",
+                    "he": "קצב אחיד|כתפיים רגועות|סיום חזק"
+                  },
+                  "mistakes": {
+                    "en": "Going out too fast|Overstriding|Tensing the arms",
+                    "ru": "Слишком быстрый старт|Перешагивание|Зажатые руки",
+                    "he": "התחלה מהירה מדי|צעדים ארוכים|מתח בידיים"
+                  },
+                  "exerciseId": "rdb_running",
+                  "image": "/images/rdb/running-main.webp"
+                },
+                {
+                  "id": "en_ski",
+                  "name": {
+                    "en": "SkiErg",
+                    "ru": "SkiErg",
+                    "he": "סקי ארג"
+                  },
+                  "prescription": {
+                    "en": "4 × 250 m",
+                    "ru": "4 × 250 м",
+                    "he": "4 × 250 מ׳"
+                  },
+                  "technique": {
+                    "en": "Stand tall with the handles at eye level.|Drive the hands down past the hips.|Return slowly and keep the core tight.",
+                    "ru": "Стой прямо, ручки на уровне глаз.|Веди руки вниз за бёдра.|Возвращай медленно, кор напряжён.",
+                    "he": "עמוד זקוף עם ידיות בגובה העיניים.|הובל ידיים למטה מעבר לירכיים.|חזור לאט ושמור ליבה מהודקת."
+                  },
+                  "checkpoints": {
+                    "en": "Tall posture|Full pull|Controlled return",
+                    "ru": "Прямая осанка|Полная тяга|Контролируемый возврат",
+                    "he": "יציבה זקופה|משיכה מלאה|חזרה מבוקרת"
+                  },
+                  "mistakes": {
+                    "en": "Bending the back|Short pulls|Rushing the return",
+                    "ru": "Прогиб спины|Короткие тяги|Спешка на возврате",
+                    "he": "כיפוף גב|משיכות קצרות|מהר בחזרה"
+                  },
+                  "exerciseId": "rdb_ski-erg",
+                  "image": "/images/rdb/ski-erg-start.webp"
+                },
+                {
+                  "id": "en_cycle",
+                  "name": {
+                    "en": "Cycling",
+                    "ru": "Велотренажёр",
+                    "he": "אופניים"
+                  },
+                  "prescription": {
+                    "en": "20 min",
+                    "ru": "20 мин",
+                    "he": "20 דק׳"
+                  },
+                  "technique": {
+                    "en": "Set the saddle so the knee is slightly bent at the bottom.|Keep a smooth cadence.|Relax the grip and breathe.",
+                    "ru": "Настрой седло так, чтобы колено снизу было чуть согнуто.|Держи плавный каденс.|Расслабь хват и дыши.",
+                    "he": "כוון את המושב כך שהברך כפופה מעט למטה.|שמור קצב חלק.|הרפה מאחיזה ונשום."
+                  },
+                  "checkpoints": {
+                    "en": "Smooth cadence|Relaxed grip|Steady breathing",
+                    "ru": "Плавный каденс|Расслабленный хват|Ровное дыхание",
+                    "he": "קצב חלק|אחיזה רגועה|נשימה יציבה"
+                  },
+                  "mistakes": {
+                    "en": "Saddle too low|Mashing the pedals|Hunched shoulders",
+                    "ru": "Седло слишком низко|Вдавливание педалей|Сгорбленные плечи",
+                    "he": "מושב נמוך מדי|דחיסת דוושות|כתפיים שפופות"
+                  },
+                  "exerciseId": "rdb_cycling",
+                  "image": "/images/rdb/cycling-main.webp"
+                },
+                {
+                  "id": "en_burpee_long",
+                  "name": {
+                    "en": "Burpee Long Jump",
+                    "ru": "Бёрпи с прыжком в длину",
+                    "he": "ברפי עם קפיצה לרוחק"
+                  },
+                  "prescription": {
+                    "en": "3 × 8",
+                    "ru": "3 × 8",
+                    "he": "3 × 8"
+                  },
+                  "technique": {
+                    "en": "Perform a burpee with a push-up.|Explode forward into a long jump.|Land softly and reset.",
+                    "ru": "Сделай бёрпи с отжиманием.|Взорвись вперёд в прыжок в длину.|Мягко приземлись и перезапустись.",
+                    "he": "בצע ברפי עם שכיבת סמיכה.|התפרץ קדימה לקפיצה לרוחק.|נחות ברכות והתאפס."
+                  },
+                  "checkpoints": {
+                    "en": "Full burpee|Powerful jump|Soft landing",
+                    "ru": "Полное бёрпи|Мощный прыжок|Мягкое приземление",
+                    "he": "ברפי מלא|קפיצה חזקה|נחיתה רכה"
+                  },
+                  "mistakes": {
+                    "en": "Skipping the push-up|Short jump|Stiff landing",
+                    "ru": "Пропуск отжимания|Короткий прыжок|Жёсткое приземление",
+                    "he": "דילוג על שכיבת סמיכה|קפיצה קצרה|נחיתה נוקשה"
+                  },
+                  "exerciseId": "gi_5187",
+                  "image": "/images/gi_5187.webp"
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "Pace yourself. A positive split is not a pass.",
+                  "ru": "Рассчитай силы. Положительный сплит — не сдача.",
+                  "he": "חשב קצב. פיצול חיובי אינו עובר."
+                },
+                "stations": [
+                  {
+                    "id": "run5k",
+                    "type": "time",
+                    "name": {
+                      "en": "5K run",
+                      "ru": "Бег 5 км",
+                      "he": "ריצת 5 ק״מ"
+                    },
+                    "hint": {
+                      "en": "Outdoor or treadmill.",
+                      "ru": "Улица или дорожка.",
+                      "he": "בחוץ או על מסלול."
+                    },
+                    "target": 1500,
+                    "sets": 1
+                  },
+                  {
+                    "id": "cooper",
+                    "type": "distance",
+                    "name": {
+                      "en": "12-minute distance",
+                      "ru": "Дистанция за 12 минут",
+                      "he": "מרחק ב-12 דקות"
+                    },
+                    "hint": {
+                      "en": "Cooper test, metres.",
+                      "ru": "Тест Купера, метры.",
+                      "he": "מבחן קופר, מטרים."
+                    },
+                    "target": 2400,
+                    "unit": "m"
+                  },
+                  {
+                    "id": "row2k",
+                    "type": "time",
+                    "name": {
+                      "en": "2K row",
+                      "ru": "Гребля 2 км",
+                      "he": "חתירה 2 ק״מ"
+                    },
+                    "hint": {
+                      "en": "Rowing machine, 2000 m.",
+                      "ru": "Гребной тренажёр, 2000 м.",
+                      "he": "מכונת חתירה, 2000 מ׳."
+                    },
+                    "target": 450,
+                    "sets": 1
+                  },
+                  {
+                    "id": "technique",
+                    "type": "manual",
+                    "name": {
+                      "en": "Technique verified",
+                      "ru": "Техника подтверждена",
+                      "he": "טכניקה אומתה"
+                    },
+                    "hint": null
+                  }
+                ]
+              },
+              "trophy": {
+                "id": "endurance_gold",
+                "name": {
+                  "en": "Gold Engine",
+                  "ru": "Золотой двигатель",
+                  "he": "מנוע זהב"
+                },
+                "description": {
+                  "en": "Race-ready 5K, 12-minute and 2K standards are verified.",
+                  "ru": "Гоночные нормативы 5 км, 12 минут и 2 км подтверждены.",
+                  "he": "תקני 5 ק״מ, 12 דקות ו-2 ק״מ למרוץ אומתו."
+                }
+              }
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "hypertrophy",
@@ -2620,13 +3967,675 @@
         "he": "מסת שריר"
       },
       "description": {
-        "en": "Weekly volume and physique quests. Coming next.",
-        "ru": "Недельный объём и квесты на форму. Скоро.",
-        "he": "נפח שבועי ומשימות פיזיק. בקרוב."
+        "en": "Volume, working sets and strength-endurance standards.",
+        "ru": "Объём, рабочие подходы и стандарты силовой выносливости.",
+        "he": "נפח, סטים עובדים ותקני סיבולת כוח."
       },
       "color": "#f472b6",
-      "available": false,
-      "paths": []
+      "available": true,
+      "paths": [
+        {
+          "id": "hypertrophy_standards",
+          "name": {
+            "en": "Hypertrophy Standards",
+            "ru": "Стандарты массы",
+            "he": "תקני מסת שריר"
+          },
+          "subtitle": {
+            "en": "Build muscle with honest loads and clean reps.",
+            "ru": "Строй мышцы с честными весами и чистыми повторами.",
+            "he": "בנה שריר עם משקלים כנים וחזרות נקיות."
+          },
+          "description": {
+            "en": "A three-tier path: foundation lifts, working sets and strength-endurance. Each tier has four lessons and a practical exam.",
+            "ru": "Три уровня: базовые движения, рабочие подходы и силовая выносливость. На каждом уровне четыре урока и практический экзамен.",
+            "he": "מסלול בשלוש דרגות: תרגילי בסיס, סטים עובדים וסיבולת כוח. בכל דרגה ארבעה שיעורים ומבחן מעשי."
+          },
+          "tiers": [
+            {
+              "id": "bronze",
+              "tier": "bronze",
+              "name": {
+                "en": "Foundation",
+                "ru": "База",
+                "he": "בסיס"
+              },
+              "goal": {
+                "en": "Squat, bench, row and hinge with controlled reps.",
+                "ru": "Присед, жим, тяга и наклон с контролем повторов.",
+                "he": "סקוואט, לחיצה, חתירה והינג׳ עם חזרות מבוקרות."
+              },
+              "lessons": [
+                {
+                  "id": "hy_squat",
+                  "name": {
+                    "en": "Barbell Back Squat",
+                    "ru": "Присед со штангой",
+                    "he": "סקוואט עם מוט"
+                  },
+                  "prescription": {
+                    "en": "3 × 10",
+                    "ru": "3 × 10",
+                    "he": "3 × 10"
+                  },
+                  "technique": {
+                    "en": "Set the bar on the upper back and brace.|Sit down between the hips with the chest tall.|Drive through the whole foot.",
+                    "ru": "Положи штангу на верх спины и зафиксируй кор.|Садись между бёдрами, грудь высоко.|Выжимайся всей стопой.",
+                    "he": "הנח מוט על הגב העליון והדק ליבה.|רד בין הירכיים עם חזה זקוף.|דחוף דרך כל כף הרגל."
+                  },
+                  "checkpoints": {
+                    "en": "Chest up|Knees track out|Full foot",
+                    "ru": "Грудь вверх|Колени наружу|Вся стопа",
+                    "he": "חזה למעלה|ברכיים החוצה|כל כף הרגל"
+                  },
+                  "mistakes": {
+                    "en": "Knees caving|Heels lifting|Rounding the back",
+                    "ru": "Колени внутрь|Пятки отрываются|Округление спины",
+                    "he": "ברכיים פנימה|עקבים מתרוממים|עיגול גב"
+                  },
+                  "exerciseId": "rdb_squat",
+                  "image": "/images/rdb/squat-start.webp"
+                },
+                {
+                  "id": "hy_bench",
+                  "name": {
+                    "en": "Barbell Bench Press",
+                    "ru": "Жим штанги лёжа",
+                    "he": "לחיצת מוט בשכיבה"
+                  },
+                  "prescription": {
+                    "en": "3 × 10",
+                    "ru": "3 × 10",
+                    "he": "3 × 10"
+                  },
+                  "technique": {
+                    "en": "Set the shoulders and feet, then unrack.|Lower the bar to the chest with elbows under the wrists.|Press to lockout without lifting the hips.",
+                    "ru": "Зафиксируй плечи и стопы, сними штангу.|Опусти к груди, локти под запястьями.|Выжми до фиксации, не поднимая таз.",
+                    "he": "קבע כתפיים ורגליים, הוצא את המוט.|הורד לחזה עם מרפקים מתחת לפרקי היד.|לחץ לנעילה בלי להרים אגן."
+                  },
+                  "checkpoints": {
+                    "en": "Shoulders set|Elbows under wrists|Feet planted",
+                    "ru": "Плечи зафиксированы|Локти под запястьями|Стопы на полу",
+                    "he": "כתפיים קבועות|מרפקים מתחת לפרקי יד|רגליים על הרצפה"
+                  },
+                  "mistakes": {
+                    "en": "Flaring elbows|Bouncing the bar|Lifting the hips",
+                    "ru": "Локти в стороны|Отбив штанги|Подъём таза",
+                    "he": "מרפקים החוצה|הקפצת מוט|הרמת אגן"
+                  },
+                  "exerciseId": "rdb_bench-press",
+                  "image": "/images/rdb/bench-press-start.webp"
+                },
+                {
+                  "id": "hy_row",
+                  "name": {
+                    "en": "Bent-Over Barbell Row",
+                    "ru": "Тяга штанги в наклоне",
+                    "he": "חתירת מוט בהטיה"
+                  },
+                  "prescription": {
+                    "en": "3 × 10",
+                    "ru": "3 × 10",
+                    "he": "3 × 10"
+                  },
+                  "technique": {
+                    "en": "Hinge to about 45 degrees with a neutral spine.|Pull the bar to the lower ribs.|Lower with control.",
+                    "ru": "Наклонись примерно на 45 градусов с нейтральной спиной.|Тяни штангу к нижним рёбрам.|Опускай под контролем.",
+                    "he": "התכופף כ-45 מעלות עם עמוד שדרה ניטרלי.|משוך את המוט לצלעות התחתונות.|הורד בשליטה."
+                  },
+                  "checkpoints": {
+                    "en": "Neutral spine|Bar to ribs|Controlled lower",
+                    "ru": "Нейтральная спина|Штанга к рёбрам|Контролируемый спуск",
+                    "he": "עמוד שדרה ניטרלי|מוט לצלעות|הורדה מבוקרת"
+                  },
+                  "mistakes": {
+                    "en": "Standing up|Yanking with the arms|Rounding the back",
+                    "ru": "Выпрямление|Рывок руками|Округление спины",
+                    "he": "התיישרות|משיכה בידיים|עיגול גב"
+                  },
+                  "exerciseId": "rdb_barbell-row",
+                  "image": "/images/rdb/barbell-row-start.webp"
+                },
+                {
+                  "id": "hy_rdl",
+                  "name": {
+                    "en": "Romanian Deadlift",
+                    "ru": "Румынская тяга",
+                    "he": "דדליפט רומני"
+                  },
+                  "prescription": {
+                    "en": "3 × 10",
+                    "ru": "3 × 10",
+                    "he": "3 × 10"
+                  },
+                  "technique": {
+                    "en": "Stand tall with the bar at the hips.|Push the hips back and lower the bar along the legs.|Stand by driving the hips forward.",
+                    "ru": "Стой прямо, штанга у бёдер.|Отведи таз назад и веди штангу вдоль ног.|Встань, выталкивая таз вперёд.",
+                    "he": "עמוד זקוף עם מוט בירכיים.|העבר אגן אחורה והורד את המוט לאורך הרגליים.|קום בדחיפת אגן קדימה."
+                  },
+                  "checkpoints": {
+                    "en": "Hips back|Bar close|Neutral spine",
+                    "ru": "Таз назад|Штанга близко|Нейтральная спина",
+                    "he": "אגן אחורה|מוט קרוב|עמוד שדרה ניטרלי"
+                  },
+                  "mistakes": {
+                    "en": "Bending the knees too much|Bar drifting forward|Rounding the back",
+                    "ru": "Слишком много коленей|Штанга уходит вперёд|Округление спины",
+                    "he": "כיפוף ברכיים יתר|מוט נסחף קדימה|עיגול גב"
+                  },
+                  "exerciseId": "rdb_romanian-deadlift",
+                  "image": "/images/rdb/romanian-deadlift-start.webp"
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "Use a weight you can control for every rep. No grinding.",
+                  "ru": "Бери вес, который контролируешь в каждом повторе. Без отказа.",
+                  "he": "בחר משקל שאתה שולט בו בכל חזרה. בלי מאמץ קיצוני."
+                },
+                "stations": [
+                  {
+                    "id": "squat10",
+                    "type": "load_bw",
+                    "name": {
+                      "en": "Squat 10RM",
+                      "ru": "Присед 10ПМ",
+                      "he": "סקוואט 10RM"
+                    },
+                    "hint": {
+                      "en": "One set of 10 clean reps.",
+                      "ru": "Один подход из 10 чистых повторов.",
+                      "he": "סט אחד של 10 חזרות נקיות."
+                    },
+                    "target": 0.9
+                  },
+                  {
+                    "id": "bench10",
+                    "type": "load_bw",
+                    "name": {
+                      "en": "Bench 10RM",
+                      "ru": "Жим 10ПМ",
+                      "he": "לחיצה 10RM"
+                    },
+                    "hint": {
+                      "en": "One set of 10 clean reps.",
+                      "ru": "Один подход из 10 чистых повторов.",
+                      "he": "סט אחד של 10 חזרות נקיות."
+                    },
+                    "target": 0.65
+                  },
+                  {
+                    "id": "row10",
+                    "type": "load_bw",
+                    "name": {
+                      "en": "Row 10RM",
+                      "ru": "Тяга 10ПМ",
+                      "he": "חתירה 10RM"
+                    },
+                    "hint": {
+                      "en": "One set of 10 clean reps.",
+                      "ru": "Один подход из 10 чистых повторов.",
+                      "he": "סט אחד של 10 חזרות נקיות."
+                    },
+                    "target": 0.55
+                  },
+                  {
+                    "id": "technique",
+                    "type": "manual",
+                    "name": {
+                      "en": "Technique verified",
+                      "ru": "Техника подтверждена",
+                      "he": "טכניקה אומתה"
+                    },
+                    "hint": null
+                  }
+                ]
+              },
+              "trophy": {
+                "id": "hyper_bronze",
+                "name": {
+                  "en": "Bronze Physique",
+                  "ru": "Бронзовая форма",
+                  "he": "פיזיק ארד"
+                },
+                "description": {
+                  "en": "The foundation lifts are verified.",
+                  "ru": "Базовые движения подтверждены.",
+                  "he": "תרגילי הבסיס אומתו."
+                }
+              }
+            },
+            {
+              "id": "silver",
+              "tier": "silver",
+              "name": {
+                "en": "Working Sets",
+                "ru": "Рабочие подходы",
+                "he": "סטים עובדים"
+              },
+              "goal": {
+                "en": "Upper-body volume, pull-ups and leg press capacity.",
+                "ru": "Объём верха, подтягивания и жим ногами.",
+                "he": "נפח פלג עליון, עליות מתח ויכולת לחיצת רגליים."
+              },
+              "lessons": [
+                {
+                  "id": "hy_incline",
+                  "name": {
+                    "en": "Incline Bench Press",
+                    "ru": "Жим на наклонной",
+                    "he": "לחיצה בשיפוע"
+                  },
+                  "prescription": {
+                    "en": "3 × 8",
+                    "ru": "3 × 8",
+                    "he": "3 × 8"
+                  },
+                  "technique": {
+                    "en": "Set the bench to 30 degrees.|Lower the bar to the upper chest.|Press up and slightly back.",
+                    "ru": "Поставь скамью на 30 градусов.|Опусти штангу к верхней части груди.|Выжимай вверх и немного назад.",
+                    "he": "כוון ספסל ל-30 מעלות.|הורד מוט לחזה העליון.|לחץ למעלה ומעט אחורה."
+                  },
+                  "checkpoints": {
+                    "en": "Upper-chest touch|Elbows under wrists|Stable feet",
+                    "ru": "Верх груди|Локти под запястьями|Устойчивые стопы",
+                    "he": "מגע חזה עליון|מרפקים מתחת לפרקי יד|רגליים יציבות"
+                  },
+                  "mistakes": {
+                    "en": "Bench too steep|Bar to the neck|Bouncing",
+                    "ru": "Слишком крутая скамья|Штанга к шее|Отбив",
+                    "he": "ספסל תלול מדי|מוט לצוואר|הקפצה"
+                  },
+                  "exerciseId": "rdb_incline-bench-press",
+                  "image": "/images/rdb/incline-bench-press-start.webp"
+                },
+                {
+                  "id": "hy_pullup",
+                  "name": {
+                    "en": "Pull-Up",
+                    "ru": "Подтягивания",
+                    "he": "עליות מתח"
+                  },
+                  "prescription": {
+                    "en": "3 × 8",
+                    "ru": "3 × 8",
+                    "he": "3 × 8"
+                  },
+                  "technique": {
+                    "en": "Hang with active shoulders and a tight core.|Pull the chest toward the bar.|Lower with control.",
+                    "ru": "Виси с активными плечами и напряжённым кором.|Тяни грудь к перекладине.|Опускайся под контролем.",
+                    "he": "תלה עם כתפיים פעילות וליבה מהודקת.|משוך חזה לעבר המוט.|רד בשליטה."
+                  },
+                  "checkpoints": {
+                    "en": "Active shoulders|Chest to bar|Controlled lower",
+                    "ru": "Активные плечи|Грудь к перекладине|Контролируемый спуск",
+                    "he": "כתפיים פעילות|חזה למוט|ירידה מבוקרת"
+                  },
+                  "mistakes": {
+                    "en": "Kipping|Half range|Swinging legs",
+                    "ru": "Киппинг|Половина амплитуды|Болтание ногами",
+                    "he": "קיפינג|חצי טווח|נדנוד רגליים"
+                  },
+                  "exerciseId": "rdb_pull-up",
+                  "image": "/images/rdb/pull-up-start.webp"
+                },
+                {
+                  "id": "hy_legpress",
+                  "name": {
+                    "en": "Leg Press",
+                    "ru": "Жим ногами",
+                    "he": "לחיצת רגליים"
+                  },
+                  "prescription": {
+                    "en": "3 × 12",
+                    "ru": "3 × 12",
+                    "he": "3 × 12"
+                  },
+                  "technique": {
+                    "en": "Set the feet shoulder-width on the platform.|Lower until the knees are near 90 degrees.|Press through the whole foot without locking hard.",
+                    "ru": "Поставь стопы на ширине плеч на платформу.|Опускайся, пока колени не дойдут до 90 градусов.|Выжимай всей стопой, не блокируя колени жёстко.",
+                    "he": "הנח רגליים ברוחב כתפיים על הפלטפורמה.|רד עד שהברכיים קרובות ל-90 מעלות.|דחוף דרך כל כף הרגל בלי לנעול חזק."
+                  },
+                  "checkpoints": {
+                    "en": "Feet flat|Knees track|Controlled depth",
+                    "ru": "Стопы на платформе|Колени по линии|Контролируемая глубина",
+                    "he": "כפות רגליים שטוחות|ברכיים במסלול|עומק מבוקר"
+                  },
+                  "mistakes": {
+                    "en": "Knees caving|Lifting the hips|Slamming the knees",
+                    "ru": "Колени внутрь|Таз отрывается|Удар в коленях",
+                    "he": "ברכיים פנימה|אגן מתרומם|חבטה בברכיים"
+                  },
+                  "exerciseId": "rdb_leg-press",
+                  "image": "/images/rdb/leg-press-start.webp"
+                },
+                {
+                  "id": "hy_lateral",
+                  "name": {
+                    "en": "Dumbbell Lateral Raise",
+                    "ru": "Махи гантелями в стороны",
+                    "he": "הרמת משקולות לצד"
+                  },
+                  "prescription": {
+                    "en": "3 × 15",
+                    "ru": "3 × 15",
+                    "he": "3 × 15"
+                  },
+                  "technique": {
+                    "en": "Stand tall with a slight bend in the elbows.|Raise the arms to shoulder height.|Lower slowly.",
+                    "ru": "Стой прямо, локти слегка согнуты.|Поднимай руки до уровня плеч.|Опускай медленно.",
+                    "he": "עמוד זקוף עם מרפקים כפופים מעט.|הרם ידיים לגובה הכתפיים.|הורד לאט."
+                  },
+                  "checkpoints": {
+                    "en": "Shoulder height|Soft elbows|Controlled lower",
+                    "ru": "До уровня плеч|Мягкие локти|Контролируемый спуск",
+                    "he": "גובה כתפיים|מרפקים רכים|הורדה מבוקרת"
+                  },
+                  "mistakes": {
+                    "en": "Swinging|Shrugging|Going too high",
+                    "ru": "Раскачка|Подъём плеч|Слишком высоко",
+                    "he": "נדנוד|הרמת כתפיים|גבוה מדי"
+                  },
+                  "exerciseId": "rdb_lateral-raise",
+                  "image": "/images/rdb/lateral-raise-start.webp"
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "Leave one rep in reserve on every set.",
+                  "ru": "Оставляй один повтор в запасе в каждом подходе.",
+                  "he": "השאר חזרה אחת ברזרבה בכל סט."
+                },
+                "stations": [
+                  {
+                    "id": "incline8",
+                    "type": "load_bw",
+                    "name": {
+                      "en": "Incline bench 8RM",
+                      "ru": "Жим на наклонной 8ПМ",
+                      "he": "לחיצה בשיפוע 8RM"
+                    },
+                    "hint": {
+                      "en": "One set of 8 clean reps.",
+                      "ru": "Один подход из 8 чистых повторов.",
+                      "he": "סט אחד של 8 חזרות נקיות."
+                    },
+                    "target": 0.55
+                  },
+                  {
+                    "id": "pullups",
+                    "type": "reps",
+                    "name": {
+                      "en": "Pull-ups",
+                      "ru": "Подтягивания",
+                      "he": "עליות מתח"
+                    },
+                    "hint": {
+                      "en": "Three sets, full range.",
+                      "ru": "Три подхода, полная амплитуда.",
+                      "he": "שלושה סטים, טווח מלא."
+                    },
+                    "sets": 3,
+                    "target": 8
+                  },
+                  {
+                    "id": "legpress12",
+                    "type": "load_bw",
+                    "name": {
+                      "en": "Leg press 12RM",
+                      "ru": "Жим ногами 12ПМ",
+                      "he": "לחיצת רגליים 12RM"
+                    },
+                    "hint": {
+                      "en": "One set of 12 controlled reps.",
+                      "ru": "Один подход из 12 контролируемых повторов.",
+                      "he": "סט אחד של 12 חזרות מבוקרות."
+                    },
+                    "target": 1.8
+                  },
+                  {
+                    "id": "technique",
+                    "type": "manual",
+                    "name": {
+                      "en": "Technique verified",
+                      "ru": "Техника подтверждена",
+                      "he": "טכניקה אומתה"
+                    },
+                    "hint": null
+                  }
+                ]
+              },
+              "trophy": {
+                "id": "hyper_silver",
+                "name": {
+                  "en": "Silver Physique",
+                  "ru": "Серебряная форма",
+                  "he": "פיזיק כסף"
+                },
+                "description": {
+                  "en": "Upper-body and leg volume are verified.",
+                  "ru": "Объём верха и ног подтверждён.",
+                  "he": "נפח פלג עליון ורגליים אומתו."
+                }
+              }
+            },
+            {
+              "id": "gold",
+              "tier": "gold",
+              "name": {
+                "en": "Strength-Endurance",
+                "ru": "Силовая выносливость",
+                "he": "סיבולת כוח"
+              },
+              "goal": {
+                "en": "Press, dip and squat strength under fatigue.",
+                "ru": "Жим, брусья и присед под усталостью.",
+                "he": "לחיצה, מקבילים וסקוואט תחת עייפות."
+              },
+              "lessons": [
+                {
+                  "id": "hy_curl",
+                  "name": {
+                    "en": "Dumbbell Bicep Curl",
+                    "ru": "Сгибания на бицепс",
+                    "he": "כפיפות מרפקים"
+                  },
+                  "prescription": {
+                    "en": "3 × 12",
+                    "ru": "3 × 12",
+                    "he": "3 × 12"
+                  },
+                  "technique": {
+                    "en": "Stand tall with the elbows close to the body.|Curl without swinging.|Lower slowly to full extension.",
+                    "ru": "Стой прямо, локти близко к корпусу.|Сгибай руки без раскачки.|Опускай медленно до полного разгибания.",
+                    "he": "עמוד זקוף עם מרפקים קרובים לגוף.|כופף בלי נדנוד.|הורד לאט ליישור מלא."
+                  },
+                  "checkpoints": {
+                    "en": "Elbows still|No swing|Full range",
+                    "ru": "Локти неподвижны|Без раскачки|Полная амплитуда",
+                    "he": "מרפקים יציבים|בלי נדנוד|טווח מלא"
+                  },
+                  "mistakes": {
+                    "en": "Leaning back|Half reps|Dropping the weight",
+                    "ru": "Наклон назад|Половина повторов|Бросок веса",
+                    "he": "הטיה לאחור|חזרות חלקיות|הפלת משקל"
+                  },
+                  "exerciseId": "rdb_bicep-curl",
+                  "image": "/images/rdb/bicep-curl-start.webp"
+                },
+                {
+                  "id": "hy_dips",
+                  "name": {
+                    "en": "Chest Dips",
+                    "ru": "Отжимания на брусьях",
+                    "he": "מקבילים לחזה"
+                  },
+                  "prescription": {
+                    "en": "3 × 10",
+                    "ru": "3 × 10",
+                    "he": "3 × 10"
+                  },
+                  "technique": {
+                    "en": "Set the shoulders down and lean slightly forward.|Lower until the upper arms are parallel.|Press to lockout.",
+                    "ru": "Опусти плечи и немного наклонись вперёд.|Опускайся, пока плечи не станут параллельны полу.|Выжми до фиксации.",
+                    "he": "הורד כתפיים והטה מעט קדימה.|רד עד שהזרועות מקבילות.|לחץ לנעילה."
+                  },
+                  "checkpoints": {
+                    "en": "Shoulders down|Controlled depth|Full lockout",
+                    "ru": "Плечи вниз|Контролируемая глубина|Полная фиксация",
+                    "he": "כתפיים למטה|עומק מבוקר|נעילה מלאה"
+                  },
+                  "mistakes": {
+                    "en": "Shrugging|Half reps|Swinging",
+                    "ru": "Подъём плеч|Половина повторов|Раскачка",
+                    "he": "הרמת כתפיים|חזרות חלקיות|נדנוד"
+                  },
+                  "exerciseId": "rdb_dips",
+                  "image": "/images/rdb/dips-start.webp"
+                },
+                {
+                  "id": "hy_ohp",
+                  "name": {
+                    "en": "Barbell Overhead Press",
+                    "ru": "Жим штанги над головой",
+                    "he": "לחיצת מוט מעל הראש"
+                  },
+                  "prescription": {
+                    "en": "3 × 8",
+                    "ru": "3 × 8",
+                    "he": "3 × 8"
+                  },
+                  "technique": {
+                    "en": "Brace the core and set the bar at the shoulders.|Press overhead without leaning back.|Lower to the shoulders.",
+                    "ru": "Напряги кор и поставь штангу на плечи.|Выжимай над головой без наклона назад.|Опускай к плечам.",
+                    "he": "הדק ליבה והנח מוט על הכתפיים.|לחץ מעל הראש בלי הטיה לאחור.|הורד לכתפיים."
+                  },
+                  "checkpoints": {
+                    "en": "Ribs down|Bar over mid-foot|Full lockout",
+                    "ru": "Рёбра вниз|Штанга над серединой стопы|Полная фиксация",
+                    "he": "צלעות למטה|מוט מעל אמצע כף הרגל|נעילה מלאה"
+                  },
+                  "mistakes": {
+                    "en": "Leaning back|Pressing around the head|Half range",
+                    "ru": "Наклон назад|Жим вокруг головы|Половина амплитуды",
+                    "he": "הטיה לאחור|לחיצה סביב הראש|חצי טווח"
+                  },
+                  "exerciseId": "rdb_ohp",
+                  "image": "/images/rdb/ohp-start.webp"
+                },
+                {
+                  "id": "hy_calf",
+                  "name": {
+                    "en": "Barbell Calf Raise",
+                    "ru": "Подъёмы на носки со штангой",
+                    "he": "עליות עקבים עם מוט"
+                  },
+                  "prescription": {
+                    "en": "4 × 15",
+                    "ru": "4 × 15",
+                    "he": "4 × 15"
+                  },
+                  "technique": {
+                    "en": "Stand with the balls of the feet on a step.|Lower the heels and press up high.|Pause at the top.",
+                    "ru": "Встань носками на ступень.|Опусти пятки и выжми вверх высоко.|Задержись вверху.",
+                    "he": "עמוד על כריות כף הרגל על מדרגה.|הורד עקבים ולחץ גבוה.|עצור למעלה."
+                  },
+                  "checkpoints": {
+                    "en": "Full stretch|High squeeze|Slow tempo",
+                    "ru": "Полное растяжение|Высокое сокращение|Медленный темп",
+                    "he": "מתיחה מלאה|כיווץ גבוה|קצב איטי"
+                  },
+                  "mistakes": {
+                    "en": "Bouncing|Partial range|Rolling the ankles",
+                    "ru": "Пружинистость|Частичная амплитуда|Подворот стоп",
+                    "he": "קפיצות|טווח חלקי|גלגול קרסוליים"
+                  },
+                  "exerciseId": "rdb_barbell-calf-raise",
+                  "image": "/images/rdb/barbell-calf-raise-start.webp"
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "Rest 2–3 minutes between stations. Stop at technical failure.",
+                  "ru": "Отдых 2–3 минуты между станциями. Останавливайся при техническом отказе.",
+                  "he": "מנוחה 2–3 דקות בין תחנות. עצור בכשל טכני."
+                },
+                "stations": [
+                  {
+                    "id": "ohp8",
+                    "type": "load_bw",
+                    "name": {
+                      "en": "Overhead press 8RM",
+                      "ru": "Жим над головой 8ПМ",
+                      "he": "לחיצה מעל הראש 8RM"
+                    },
+                    "hint": {
+                      "en": "One set of 8 clean reps.",
+                      "ru": "Один подход из 8 чистых повторов.",
+                      "he": "סט אחד של 8 חזרות נקיות."
+                    },
+                    "target": 0.5
+                  },
+                  {
+                    "id": "dips",
+                    "type": "reps",
+                    "name": {
+                      "en": "Chest dips",
+                      "ru": "Отжимания на брусьях",
+                      "he": "מקבילים לחזה"
+                    },
+                    "hint": {
+                      "en": "Three sets, full lockout.",
+                      "ru": "Три подхода, полная фиксация.",
+                      "he": "שלושה סטים, נעילה מלאה."
+                    },
+                    "sets": 3,
+                    "target": 10
+                  },
+                  {
+                    "id": "squat5",
+                    "type": "load_bw",
+                    "name": {
+                      "en": "Squat 5RM",
+                      "ru": "Присед 5ПМ",
+                      "he": "סקוואט 5RM"
+                    },
+                    "hint": {
+                      "en": "One set of 5 clean reps.",
+                      "ru": "Один подход из 5 чистых повторов.",
+                      "he": "סט אחד של 5 חזרות נקיות."
+                    },
+                    "target": 1.2
+                  },
+                  {
+                    "id": "technique",
+                    "type": "manual",
+                    "name": {
+                      "en": "Technique verified",
+                      "ru": "Техника подтверждена",
+                      "he": "טכניקה אומתה"
+                    },
+                    "hint": null
+                  }
+                ]
+              },
+              "trophy": {
+                "id": "hyper_gold",
+                "name": {
+                  "en": "Gold Physique",
+                  "ru": "Золотая форма",
+                  "he": "פיזיק זהב"
+                },
+                "description": {
+                  "en": "Strength-endurance standards are verified.",
+                  "ru": "Стандарты силовой выносливости подтверждены.",
+                  "he": "תקני סיבולת כוח אומתו."
+                }
+              }
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "olympic",
@@ -2636,13 +4645,674 @@
         "he": "הרמת משקולות אולימפית"
       },
       "description": {
-        "en": "Snatch and clean & jerk progressions. Coming next.",
-        "ru": "Прогрессии рывка и толчка. Скоро.",
-        "he": "התקדמות סנאץ׳ וקלין אנד ג׳רק. בקרוב."
+        "en": "Snatch and clean & jerk progressions with barbell standards.",
+        "ru": "Прогрессии рывка и толчка со штанговыми нормативами.",
+        "he": "התקדמות סנאץ׳ וניקוי וג׳רק בתקני מוט."
       },
       "color": "#fbbf24",
-      "available": false,
-      "paths": []
+      "available": true,
+      "paths": [
+        {
+          "id": "olympic_lifts",
+          "name": {
+            "en": "Olympic Lifts",
+            "ru": "Олимпийские движения",
+            "he": "הרמות אולימפיות"
+          },
+          "subtitle": {
+            "en": "Positions first, then power, then the competition lifts.",
+            "ru": "Сначала положения, затем мощность, затем соревновательные движения.",
+            "he": "קודם עמדות, אחר כך כוח, ואז תרגילי התחרות."
+          },
+          "description": {
+            "en": "A three-tier path: positions, power variations and competition lifts. Each tier has four lessons and a practical exam.",
+            "ru": "Три уровня: положения, мощностные вариации и соревновательные движения. На каждом уровне четыре урока и практический экзамен.",
+            "he": "מסלול בשלוש דרגות: עמדות, וריאציות כוח ותרגילי תחרות. בכל דרגה ארבעה שיעורים ומבחן מעשי."
+          },
+          "tiers": [
+            {
+              "id": "bronze",
+              "tier": "bronze",
+              "name": {
+                "en": "Positions",
+                "ru": "Положения",
+                "he": "עמדות"
+              },
+              "goal": {
+                "en": "Overhead, front rack and hang positions.",
+                "ru": "Положение над головой, передняя стойка и вис.",
+                "he": "מעל הראש, ראק קדמי ותלייה."
+              },
+              "lessons": [
+                {
+                  "id": "ol_ohs",
+                  "name": {
+                    "en": "Overhead Squat",
+                    "ru": "Присед над головой",
+                    "he": "סקוואט מעל הראש"
+                  },
+                  "prescription": {
+                    "en": "3 × 5",
+                    "ru": "3 × 5",
+                    "he": "3 × 5"
+                  },
+                  "technique": {
+                    "en": "Set the bar overhead with a wide grip.|Sit down between the hips and keep the bar over mid-foot.|Stand up without losing the overhead position.",
+                    "ru": "Поставь штангу над головой широким хватом.|Садись между бёдрами, штанга над серединой стопы.|Вставай, не теряя положение над головой.",
+                    "he": "הנח מוט מעל הראש באחיזה רחבה.|רד בין הירכיים ושמור מוט מעל אמצע כף הרגל.|קום בלי לאבד את המצב מעל הראש."
+                  },
+                  "checkpoints": {
+                    "en": "Bar over mid-foot|Chest up|Heels down",
+                    "ru": "Штанга над стопой|Грудь вверх|Пятки внизу",
+                    "he": "מוט מעל אמצע כף רגל|חזה למעלה|עקבים למטה"
+                  },
+                  "mistakes": {
+                    "en": "Bar drifting forward|Knees caving|Rounding the back",
+                    "ru": "Штанга вперёд|Колени внутрь|Округление спины",
+                    "he": "מוט נסחף קדימה|ברכיים פנימה|עיגול גב"
+                  },
+                  "exerciseId": "rdb_overhead-squat",
+                  "image": "/images/rdb/overhead-squat-start.webp"
+                },
+                {
+                  "id": "ol_front_squat",
+                  "name": {
+                    "en": "Front Squat",
+                    "ru": "Фронтальный присед",
+                    "he": "פרונט סקוואט"
+                  },
+                  "prescription": {
+                    "en": "3 × 5",
+                    "ru": "3 × 5",
+                    "he": "3 × 5"
+                  },
+                  "technique": {
+                    "en": "Set the bar in the front rack with the elbows high.|Sit down with the chest tall.|Drive up through the whole foot.",
+                    "ru": "Поставь штангу в переднюю стойку, локти высоко.|Садись с высокой грудью.|Выжимайся всей стопой.",
+                    "he": "הנח מוט בראק קדמי עם מרפקים גבוהים.|רד עם חזה זקוף.|דחוף דרך כל כף הרגל."
+                  },
+                  "checkpoints": {
+                    "en": "Elbows high|Chest up|Heels down",
+                    "ru": "Локти высоко|Грудь вверх|Пятки внизу",
+                    "he": "מרפקים גבוהים|חזה למעלה|עקבים למטה"
+                  },
+                  "mistakes": {
+                    "en": "Elbows dropping|Knees caving|Leaning forward",
+                    "ru": "Локти падают|Колени внутрь|Наклон вперёд",
+                    "he": "מרפקים נופלים|ברכיים פנימה|הטיה קדימה"
+                  },
+                  "exerciseId": "rdb_front-squat",
+                  "image": "/images/rdb/front-squat-start.webp"
+                },
+                {
+                  "id": "ol_hang_clean",
+                  "name": {
+                    "en": "Hang Clean",
+                    "ru": "Взятие с виса",
+                    "he": "ניקוי מהתלייה"
+                  },
+                  "prescription": {
+                    "en": "3 × 5",
+                    "ru": "3 × 5",
+                    "he": "3 × 5"
+                  },
+                  "technique": {
+                    "en": "Start from the hang with the bar at mid-thigh.|Extend the hips and pull the bar to the shoulders.|Catch in a quarter squat with the elbows high.",
+                    "ru": "Начни с виса, штанга на середине бедра.|Разгони таз и подтяни штангу к плечам.|Поймай в полуприседе с высокими локтями.",
+                    "he": "התחל מהתלייה עם מוט באמצע הירך.|פתח אגן ומשוך מוט לכתפיים.|תפוס בחצי סקוואט עם מרפקים גבוהים."
+                  },
+                  "checkpoints": {
+                    "en": "Hip extension|Bar close|Fast elbows",
+                    "ru": "Разгибание таза|Штанга близко|Быстрые локти",
+                    "he": "פתיחת אגן|מוט קרוב|מרפקים מהירים"
+                  },
+                  "mistakes": {
+                    "en": "Pulling with the arms early|Bar away from the body|Slow elbows",
+                    "ru": "Ранняя тяга руками|Штанга далеко|Медленные локти",
+                    "he": "משיכה מוקדמת בידיים|מוט רחוק|מרפקים איטיים"
+                  },
+                  "exerciseId": "rdb_hang-clean",
+                  "image": "/images/rdb/hang-clean-start.webp"
+                },
+                {
+                  "id": "ol_push_press",
+                  "name": {
+                    "en": "Push Press",
+                    "ru": "Швунг жимовой",
+                    "he": "לחיצת דחיפה"
+                  },
+                  "prescription": {
+                    "en": "3 × 5",
+                    "ru": "3 × 5",
+                    "he": "3 × 5"
+                  },
+                  "technique": {
+                    "en": "Set the bar at the shoulders and brace.|Dip slightly and drive with the legs.|Press to lockout and lower with control.",
+                    "ru": "Поставь штангу на плечи и напряги кор.|Слегка присядь и вытолкни ногами.|Выжми до фиксации и опусти под контролем.",
+                    "he": "הנח מוט על הכתפיים והדק ליבה.|רד מעט ודחוף עם הרגליים.|לחץ לנעילה והורד בשליטה."
+                  },
+                  "checkpoints": {
+                    "en": "Short dip|Leg drive|Lockout",
+                    "ru": "Короткий подсед|Работа ног|Фиксация",
+                    "he": "ירידה קצרה|דחיפת רגליים|נעילה"
+                  },
+                  "mistakes": {
+                    "en": "Deep dip|Leaning back|Pressing unevenly",
+                    "ru": "Глубокий подсед|Наклон назад|Неравномерный жим",
+                    "he": "ירידה עמוקה|הטיה לאחור|לחיצה לא אחידה"
+                  },
+                  "exerciseId": "rdb_push-press",
+                  "image": "/images/rdb/push-press-start.webp"
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "Use a load you can catch cleanly. Technique decides the pass.",
+                  "ru": "Бери вес, который чисто ловишь. Техника решает сдачу.",
+                  "he": "בחר משקל שאתה תופס נקי. הטכניקה קובעת."
+                },
+                "stations": [
+                  {
+                    "id": "ohs",
+                    "type": "reps",
+                    "name": {
+                      "en": "Overhead squat",
+                      "ru": "Присед над головой",
+                      "he": "סקוואט מעל הראש"
+                    },
+                    "hint": {
+                      "en": "Three sets of five.",
+                      "ru": "Три подхода по пять.",
+                      "he": "שלושה סטים של חמש."
+                    },
+                    "sets": 3,
+                    "target": 5
+                  },
+                  {
+                    "id": "front_squat",
+                    "type": "load_bw",
+                    "name": {
+                      "en": "Front squat 5RM",
+                      "ru": "Фронтальный присед 5ПМ",
+                      "he": "פרונט סקוואט 5RM"
+                    },
+                    "hint": {
+                      "en": "One set of five.",
+                      "ru": "Один подход из пяти.",
+                      "he": "סט אחד של חמש."
+                    },
+                    "target": 0.8
+                  },
+                  {
+                    "id": "hang_clean",
+                    "type": "load_bw",
+                    "name": {
+                      "en": "Hang clean 5RM",
+                      "ru": "Взятие с виса 5ПМ",
+                      "he": "ניקוי מהתלייה 5RM"
+                    },
+                    "hint": {
+                      "en": "One set of five.",
+                      "ru": "Один подход из пяти.",
+                      "he": "סט אחד של חמש."
+                    },
+                    "target": 0.6
+                  },
+                  {
+                    "id": "technique",
+                    "type": "manual",
+                    "name": {
+                      "en": "Technique verified",
+                      "ru": "Техника подтверждена",
+                      "he": "טכניקה אומתה"
+                    },
+                    "hint": null
+                  }
+                ]
+              },
+              "trophy": {
+                "id": "olympic_bronze",
+                "name": {
+                  "en": "Bronze Lifter",
+                  "ru": "Бронзовый штангист",
+                  "he": "מרים ארד"
+                },
+                "description": {
+                  "en": "The base positions are verified.",
+                  "ru": "Базовые положения подтверждены.",
+                  "he": "עמדות הבסיס אומתו."
+                }
+              }
+            },
+            {
+              "id": "silver",
+              "tier": "silver",
+              "name": {
+                "en": "Power",
+                "ru": "Мощность",
+                "he": "כוח"
+              },
+              "goal": {
+                "en": "Hang snatch, power clean and split jerk.",
+                "ru": "Рывок с виса, взятие в полуприсед и толчок в шпагате.",
+                "he": "סנאץ׳ מהתלייה, ניקוי כוח וג׳רק בפיצול."
+              },
+              "lessons": [
+                {
+                  "id": "ol_hang_snatch",
+                  "name": {
+                    "en": "Hang Snatch",
+                    "ru": "Рывок с виса",
+                    "he": "סנאץ׳ מהתלייה"
+                  },
+                  "prescription": {
+                    "en": "3 × 3",
+                    "ru": "3 × 3",
+                    "he": "3 × 3"
+                  },
+                  "technique": {
+                    "en": "Start from the hang with a wide grip.|Extend the hips and pull the bar overhead.|Catch with straight arms and soft knees.",
+                    "ru": "Начни с виса широким хватом.|Разгони таз и выведи штангу над головой.|Поймай прямыми руками с мягкими коленями.",
+                    "he": "התחל מהתלייה באחיזה רחבה.|פתח אגן והוצא מוט מעל הראש.|תפוס עם ידיים ישרות וברכיים רכות."
+                  },
+                  "checkpoints": {
+                    "en": "Bar close|Fast turn-over|Stable overhead",
+                    "ru": "Штанга близко|Быстрый переворот|Стабильно над головой",
+                    "he": "מוט קרוב|היפוך מהיר|יציב מעל הראש"
+                  },
+                  "mistakes": {
+                    "en": "Bar forward|Bending the arms early|Soft lockout",
+                    "ru": "Штанга вперёд|Ранний сгиб рук|Мягкая фиксация",
+                    "he": "מוט קדימה|כיפוף ידיים מוקדם|נעילה רכה"
+                  },
+                  "exerciseId": "rdb_hang-snatch",
+                  "image": "/images/rdb/hang-snatch-start.webp"
+                },
+                {
+                  "id": "ol_hang_power_clean",
+                  "name": {
+                    "en": "Hang Power Clean",
+                    "ru": "Взятие с виса в полуприсед",
+                    "he": "ניקוי כוח מהתלייה"
+                  },
+                  "prescription": {
+                    "en": "3 × 3",
+                    "ru": "3 × 3",
+                    "he": "3 × 3"
+                  },
+                  "technique": {
+                    "en": "Start from the hang and extend the hips.|Pull the bar to the shoulders and catch above parallel.|Stand tall.",
+                    "ru": "Начни с виса и разгони таз.|Подтяни штангу к плечам и поймай выше параллели.|Выпрямись.",
+                    "he": "התחל מהתלייה ופתח אגן.|משוך מוט לכתפיים ותפוס מעל מקביל.|קום זקוף."
+                  },
+                  "checkpoints": {
+                    "en": "Hip drive|High catch|Elbows high",
+                    "ru": "Работа таза|Высокий приём|Локти высоко",
+                    "he": "דחיפת אגן|תפיסה גבוהה|מרפקים גבוהים"
+                  },
+                  "mistakes": {
+                    "en": "Catching too low|Bar forward|Slow elbows",
+                    "ru": "Низкий приём|Штанга вперёд|Медленные локти",
+                    "he": "תפיסה נמוכה|מוט קדימה|מרפקים איטיים"
+                  },
+                  "exerciseId": "rdb_hang-power-clean",
+                  "image": "/images/rdb/hang-power-clean-start.webp"
+                },
+                {
+                  "id": "ol_split_jerk",
+                  "name": {
+                    "en": "Split Jerk",
+                    "ru": "Толчок в шпагате",
+                    "he": "ג׳רק בפיצול"
+                  },
+                  "prescription": {
+                    "en": "3 × 3",
+                    "ru": "3 × 3",
+                    "he": "3 × 3"
+                  },
+                  "technique": {
+                    "en": "Dip and drive the bar overhead.|Split the feet front and back.|Lock the elbows and recover.",
+                    "ru": "Присядь и вытолкни штангу над головой.|Разведи стопы вперёд и назад.|Зафиксируй локти и встань.",
+                    "he": "רד ודחוף את המוט מעל הראש.|פצל רגליים קדימה ואחורה.|נעל מרפקים והתאושש."
+                  },
+                  "checkpoints": {
+                    "en": "Vertical dip|Fast split|Locked elbows",
+                    "ru": "Вертикальный подсед|Быстрый шпагат|Локти зафиксированы",
+                    "he": "ירידה אנכית|פיצול מהיר|מרפקים נעולים"
+                  },
+                  "mistakes": {
+                    "en": "Leaning back|Short split|Bent elbows",
+                    "ru": "Наклон назад|Короткий шпагат|Согнутые локти",
+                    "he": "הטיה לאחור|פיצול קצר|מרפקים כפופים"
+                  },
+                  "exerciseId": "rdb_split-jerk",
+                  "image": "/images/rdb/split-jerk-start.webp"
+                },
+                {
+                  "id": "ol_snatch_balance",
+                  "name": {
+                    "en": "Snatch Balance",
+                    "ru": "Рывковый баланс",
+                    "he": "איזון סנאץ׳"
+                  },
+                  "prescription": {
+                    "en": "3 × 3",
+                    "ru": "3 × 3",
+                    "he": "3 × 3"
+                  },
+                  "technique": {
+                    "en": "Set the bar on the back with a wide grip.|Drive up and drop under the bar.|Catch overhead in a squat.",
+                    "ru": "Поставь штангу на спину широким хватом.|Вытолкни вверх и уйди под штангу.|Поймай над головой в приседе.",
+                    "he": "הנח מוט על הגב באחיזה רחבה.|דחוף למעלה ורד מתחת למוט.|תפוס מעל הראש בסקוואט."
+                  },
+                  "checkpoints": {
+                    "en": "Fast drop|Stable overhead|Heels down",
+                    "ru": "Быстрый уход|Стабильно над головой|Пятки внизу",
+                    "he": "ירידה מהירה|יציב מעל הראש|עקבים למטה"
+                  },
+                  "mistakes": {
+                    "en": "Bar forward|Landing wide|Soft lockout",
+                    "ru": "Штанга вперёд|Широкая постановка|Мягкая фиксация",
+                    "he": "מוט קדימה|נחיתה רחבה|נעילה רכה"
+                  },
+                  "exerciseId": "bf_snatch-balance",
+                  "image": "/images/bf_BB_SNATCH_BAL.webp"
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "Catch every rep above parallel. If the catch is low, reduce the load.",
+                  "ru": "Лови каждый повтор выше параллели. Низкий приём — снизь вес.",
+                  "he": "תפוס כל חזרה מעל מקביל. תפיסה נמוכה — הורד משקל."
+                },
+                "stations": [
+                  {
+                    "id": "hang_snatch",
+                    "type": "load_bw",
+                    "name": {
+                      "en": "Hang snatch 3RM",
+                      "ru": "Рывок с виса 3ПМ",
+                      "he": "סנאץ׳ מהתלייה 3RM"
+                    },
+                    "hint": {
+                      "en": "One set of three.",
+                      "ru": "Один подход из трёх.",
+                      "he": "סט אחד של שלוש."
+                    },
+                    "target": 0.5
+                  },
+                  {
+                    "id": "power_clean",
+                    "type": "load_bw",
+                    "name": {
+                      "en": "Hang power clean 3RM",
+                      "ru": "Взятие в полуприсед 3ПМ",
+                      "he": "ניקוי כוח 3RM"
+                    },
+                    "hint": {
+                      "en": "One set of three.",
+                      "ru": "Один подход из трёх.",
+                      "he": "סט אחד של שלוש."
+                    },
+                    "target": 0.7
+                  },
+                  {
+                    "id": "split_jerk",
+                    "type": "load_bw",
+                    "name": {
+                      "en": "Split jerk 3RM",
+                      "ru": "Толчок в шпагате 3ПМ",
+                      "he": "ג׳רק בפיצול 3RM"
+                    },
+                    "hint": {
+                      "en": "One set of three.",
+                      "ru": "Один подход из трёх.",
+                      "he": "סט אחד של שלוש."
+                    },
+                    "target": 0.8
+                  },
+                  {
+                    "id": "technique",
+                    "type": "manual",
+                    "name": {
+                      "en": "Technique verified",
+                      "ru": "Техника подтверждена",
+                      "he": "טכניקה אומתה"
+                    },
+                    "hint": null
+                  }
+                ]
+              },
+              "trophy": {
+                "id": "olympic_silver",
+                "name": {
+                  "en": "Silver Lifter",
+                  "ru": "Серебряный штангист",
+                  "he": "מרים כסף"
+                },
+                "description": {
+                  "en": "Power variations are verified.",
+                  "ru": "Мощностные вариации подтверждены.",
+                  "he": "וריאציות הכוח אומתו."
+                }
+              }
+            },
+            {
+              "id": "gold",
+              "tier": "gold",
+              "name": {
+                "en": "Competition",
+                "ru": "Соревнование",
+                "he": "תחרות"
+              },
+              "goal": {
+                "en": "Snatch and clean & jerk under competition standards.",
+                "ru": "Рывок и толчок по соревновательным стандартам.",
+                "he": "סנאץ׳ וניקוי וג׳רק בתקני תחרות."
+              },
+              "lessons": [
+                {
+                  "id": "ol_snatch",
+                  "name": {
+                    "en": "Snatch",
+                    "ru": "Рывок",
+                    "he": "סנאץ׳"
+                  },
+                  "prescription": {
+                    "en": "5 × 1",
+                    "ru": "5 × 1",
+                    "he": "5 × 1"
+                  },
+                  "technique": {
+                    "en": "Set the start position with the bar over mid-foot.|Extend the hips and pull the bar close.|Catch overhead with straight arms.",
+                    "ru": "Встань так, чтобы штанга была над серединой стопы.|Разгони таз и веди штангу близко.|Поймай над головой прямыми руками.",
+                    "he": "קבע עמדת התחלה עם מוט מעל אמצע כף הרגל.|פתח אגן ומשוך מוט קרוב.|תפוס מעל הראש עם ידיים ישרות."
+                  },
+                  "checkpoints": {
+                    "en": "Bar close|Full extension|Stable catch",
+                    "ru": "Штанга близко|Полное разгибание|Стабильный приём",
+                    "he": "מוט קרוב|התמתחות מלאה|תפיסה יציבה"
+                  },
+                  "mistakes": {
+                    "en": "Bar forward|Early arm bend|Soft lockout",
+                    "ru": "Штанга вперёд|Ранний сгиб рук|Мягкая фиксация",
+                    "he": "מוט קדימה|כיפוף יד מוקדם|נעילה רכה"
+                  },
+                  "exerciseId": "rdb_snatch",
+                  "image": "/images/rdb/snatch-start.webp"
+                },
+                {
+                  "id": "ol_clean_jerk",
+                  "name": {
+                    "en": "Clean & Jerk",
+                    "ru": "Взятие и толчок",
+                    "he": "ניקוי וג׳רק"
+                  },
+                  "prescription": {
+                    "en": "5 × 1",
+                    "ru": "5 × 1",
+                    "he": "5 × 1"
+                  },
+                  "technique": {
+                    "en": "Clean the bar to the shoulders.|Dip and drive into the jerk.|Lock overhead and recover.",
+                    "ru": "Возьми штангу на плечи.|Присядь и вытолкни в толчке.|Зафиксируй над головой и встань.",
+                    "he": "נקה את המוט לכתפיים.|רד ודחוף לג׳רק.|נעל מעל הראש והתאושש."
+                  },
+                  "checkpoints": {
+                    "en": "Strong clean|Vertical drive|Locked jerk",
+                    "ru": "Сильное взятие|Вертикальный вылет|Зафиксированный толчок",
+                    "he": "ניקוי חזק|דחיפה אנכית|ג׳רק נעול"
+                  },
+                  "mistakes": {
+                    "en": "Slow elbows|Leaning back|Short split",
+                    "ru": "Медленные локти|Наклон назад|Короткий шпагат",
+                    "he": "מרפקים איטיים|הטיה לאחור|פיצול קצר"
+                  },
+                  "exerciseId": "rdb_clean-and-jerk",
+                  "image": "/images/rdb/clean-and-jerk-start.webp"
+                },
+                {
+                  "id": "ol_snatch_pull",
+                  "name": {
+                    "en": "Snatch Pull",
+                    "ru": "Рывковая тяга",
+                    "he": "משיכת סנאץ׳"
+                  },
+                  "prescription": {
+                    "en": "4 × 3",
+                    "ru": "4 × 3",
+                    "he": "4 × 3"
+                  },
+                  "technique": {
+                    "en": "Set the snatch grip and start position.|Extend the hips and pull the bar close.|Keep the arms straight.",
+                    "ru": "Поставь рывковый хват и стартовое положение.|Разгони таз и веди штангу близко.|Руки остаются прямыми.",
+                    "he": "קבע אחיזת סנאץ׳ ועמדת התחלה.|פתח אגן ומשוך מוט קרוב.|שמור ידיים ישרות."
+                  },
+                  "checkpoints": {
+                    "en": "Bar close|Full extension|Straight arms",
+                    "ru": "Штанга близко|Полное разгибание|Прямые руки",
+                    "he": "מוט קרוב|התמתחות מלאה|ידיים ישרות"
+                  },
+                  "mistakes": {
+                    "en": "Bending the arms|Bar forward|Cutting the pull",
+                    "ru": "Сгиб рук|Штанга вперёд|Короткая тяга",
+                    "he": "כיפוף ידיים|מוט קדימה|קיצור המשיכה"
+                  },
+                  "exerciseId": "gi_0776",
+                  "image": "/images/gi_0776.webp"
+                },
+                {
+                  "id": "ol_clean_pull",
+                  "name": {
+                    "en": "Clean Pull",
+                    "ru": "Тяга для взятия",
+                    "he": "משיכת ניקוי"
+                  },
+                  "prescription": {
+                    "en": "4 × 3",
+                    "ru": "4 × 3",
+                    "he": "4 × 3"
+                  },
+                  "technique": {
+                    "en": "Set the clean grip and start position.|Drive with the legs and extend the hips.|Keep the bar close to the body.",
+                    "ru": "Поставь хват для взятия и стартовое положение.|Работай ногами и разгибай таз.|Держи штангу близко к телу.",
+                    "he": "קבע אחיזת ניקוי ועמדת התחלה.|דחוף עם הרגליים ופתח אגן.|שמור מוט קרוב לגוף."
+                  },
+                  "checkpoints": {
+                    "en": "Leg drive|Bar close|Full extension",
+                    "ru": "Работа ног|Штанга близко|Полное разгибание",
+                    "he": "דחיפת רגליים|מוט קרוב|התמתחות מלאה"
+                  },
+                  "mistakes": {
+                    "en": "Pulling early with the arms|Bar forward|Short extension",
+                    "ru": "Ранняя тяга руками|Штанга вперёд|Короткое разгибание",
+                    "he": "משיכה מוקדמת בידיים|מוט קדימה|התמתחות קצרה"
+                  },
+                  "exerciseId": "gi_1517",
+                  "image": "/images/gi_1517.webp"
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "Singles only. Full recovery, full lockout, no press-out.",
+                  "ru": "Только одиночные. Полное вставание, фиксация, без дожима.",
+                  "he": "רק חזרות בודדות. התאוששות מלאה, נעילה מלאה, בלי דחיפה."
+                },
+                "stations": [
+                  {
+                    "id": "snatch1",
+                    "type": "load_bw",
+                    "name": {
+                      "en": "Snatch 1RM",
+                      "ru": "Рывок 1ПМ",
+                      "he": "סנאץ׳ 1RM"
+                    },
+                    "hint": {
+                      "en": "One clean single.",
+                      "ru": "Один чистый повтор.",
+                      "he": "חזרה בודדת נקייה."
+                    },
+                    "target": 0.6
+                  },
+                  {
+                    "id": "cj1",
+                    "type": "load_bw",
+                    "name": {
+                      "en": "Clean & jerk 1RM",
+                      "ru": "Взятие и толчок 1ПМ",
+                      "he": "ניקוי וג׳רק 1RM"
+                    },
+                    "hint": {
+                      "en": "One clean single.",
+                      "ru": "Один чистый повтор.",
+                      "he": "חזרה בודדת נקייה."
+                    },
+                    "target": 0.8
+                  },
+                  {
+                    "id": "front_squat3",
+                    "type": "load_bw",
+                    "name": {
+                      "en": "Front squat 3RM",
+                      "ru": "Фронтальный присед 3ПМ",
+                      "he": "פרונט סקוואט 3RM"
+                    },
+                    "hint": {
+                      "en": "One set of three.",
+                      "ru": "Один подход из трёх.",
+                      "he": "סט אחד של שלוש."
+                    },
+                    "target": 1
+                  },
+                  {
+                    "id": "technique",
+                    "type": "manual",
+                    "name": {
+                      "en": "Technique verified",
+                      "ru": "Техника подтверждена",
+                      "he": "טכניקה אומתה"
+                    },
+                    "hint": null
+                  }
+                ]
+              },
+              "trophy": {
+                "id": "olympic_gold",
+                "name": {
+                  "en": "Gold Lifter",
+                  "ru": "Золотой штангист",
+                  "he": "מרים זהב"
+                },
+                "description": {
+                  "en": "Competition lifts are verified.",
+                  "ru": "Соревновательные движения подтверждены.",
+                  "he": "תרגילי התחרות אומתו."
+                }
+              }
+            }
+          ]
+        }
+      ]
     }
   ]
 }
