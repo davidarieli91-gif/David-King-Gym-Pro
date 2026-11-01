@@ -61,6 +61,7 @@ ok('full portal seeds server check-ins into the journal', read('server/public/po
 ok('client portal has a dedicated arena page', fs.existsSync(path.join(root, 'server', 'public', 'portal-arena.html')) && read('server/src/app.ts').includes("'/p/:token/arena'") && read('server/public/portal-full.html').includes('portal-arena-btn'));
 ok('client arena reads and writes arena_progress', read('server/public/portal-arena.html').includes('collection=arena_progress') && read('server/public/portal-arena.html').includes("collection: 'arena_progress'"));
 ok('client arena gets a server-injected boot payload', read('server/public/portal-arena.html').includes('__DKG_PORTAL_BOOT__') && read('server/src/app.ts').includes('buildPortalPayload(rawToken)'));
+ok('simple portal loads the latest arena data', read('server/public/portal.html').includes('arena-data.json?v=5'));
 const check = spawnSync(process.execPath, ['--check', path.join(root, 'src', 'arena.js')], { encoding: 'utf8' });
 ok('arena.js parses', check.status === 0);
 

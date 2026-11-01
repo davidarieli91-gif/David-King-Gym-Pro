@@ -504,7 +504,7 @@
       async function renderArena() {
         if (!ARENA_DATA) {
           try {
-            ARENA_DATA = await fetch('/arena-data.json?v=3', { cache: 'no-cache' }).then(function (r) { return r.json(); });
+            ARENA_DATA = await fetch('/arena-data.json?v=5', { cache: 'no-cache' }).then(function (r) { return r.json(); });
           } catch (error) {
             $('arena').innerHTML = '<p class="empty">Не удалось загрузить Арену.</p>';
             return;
