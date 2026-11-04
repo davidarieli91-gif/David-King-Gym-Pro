@@ -47,6 +47,22 @@
     .hidden { display:none !important; }
     .empty { color:var(--muted); font-size:13px; padding:14px 4px; }
     .note { color:var(--muted); font-size:12px; line-height:1.55; margin:10px 0 0; }
+    .section-sub { margin:-6px 0 14px; color:var(--muted); font-size:12px; line-height:1.55; }
+    .hint { display:block; margin-top:5px; color:var(--muted); font-size:10.5px; font-weight:500; line-height:1.45; }
+    button.small { padding:8px 10px; font-size:11.5px; border-radius:8px; }
+    .action-row { display:flex; gap:6px; justify-content:flex-end; flex-wrap:wrap; }
+    .info { background:rgba(57,214,255,.055); border-color:rgba(57,214,255,.22); }
+    .info b { color:var(--text); }
+    .steps { margin:10px 0 0; padding-left:18px; color:#b7c8de; font-size:12px; line-height:1.7; }
+    .steps li { margin:2px 0; }
+    .modal { position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; padding:16px; background:rgba(2,6,14,.72); backdrop-filter:blur(6px); }
+    .modal-card { width:min(520px,100%); max-height:92vh; overflow:auto; background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:22px; box-shadow:0 30px 80px rgba(0,0,0,.5); }
+    .modal-card h3 { margin:0 0 4px; font-size:18px; }
+    .modal-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:18px; flex-wrap:wrap; }
+    .toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%); z-index:120; max-width:min(520px, calc(100vw - 32px)); padding:11px 16px; border-radius:12px; background:#0d1526; border:1px solid rgba(57,214,255,.35); color:var(--text); font-size:13px; font-weight:600; box-shadow:0 20px 50px rgba(0,0,0,.5); opacity:0; pointer-events:none; transition:.2s; }
+    .toast.show { opacity:1; }
+    .toast.ok { border-color:rgba(50,213,131,.45); }
+    .toast.bad { border-color:rgba(255,93,115,.5); }
     @media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, minmax(0,1fr)); } }
     @media (max-width: 640px) { .kpis { grid-template-columns: 1fr; } table { font-size:11.5px; } th, td { padding:8px 5px; } }
   </style>
@@ -57,7 +73,7 @@
       <img src="/logo-web.webp" alt="David King Gym" />
       <div>
         <h1>David King Gym — Director</h1>
-        <p>Trainers, invite codes and aggregate client counts. Client records are never shown here.</p>
+        <p>Тренеры, приглашения и сводка по клиентам. Клиентские данные здесь не показываются.</p>
       </div>
     </div>
 
@@ -75,8 +91,8 @@
     <div id="app-view" class="hidden">
       <div class="topbar">
         <div>
-          <h2 style="margin:0;font-size:18px;">Тренеры</h2>
-          <p class="muted" style="margin:4px 0 0;font-size:12px;">Только список и агрегаты. Клиентские данные недоступны.</p>
+          <h2 style="margin:0;font-size:18px;">Тренеры и доступы</h2>
+          <p class="muted" style="margin:4px 0 0;font-size:12px;">Добавляйте новых тренеров, редактируйте их данные и управляйте доступом. Клиентские данные здесь не показываются.</p>
         </div>
         <div class="actions">
           <a href="/fitness-crm.html?screen=arena" target="_blank"><button type="button" class="secondary">Арена</button></a>
@@ -85,49 +101,106 @@
         </div>
       </div>
 
+      <p class="section-sub" style="margin-top:0;">Сводка по всем кабинетам: сколько тренеров зарегистрировано, у кого есть доступ, сколько всего клиентов и сколько данных хранится на сервере.</p>
       <div class="kpis">
-        <div class="kpi"><span>Тренеры</span><b id="kpi-trainers">—</b></div>
-        <div class="kpi"><span>Активные</span><b id="kpi-active">—</b></div>
-        <div class="kpi"><span>Клиенты</span><b id="kpi-clients">—</b></div>
-        <div class="kpi"><span>Хранилище</span><b id="kpi-storage">—</b></div>
+        <div class="kpi"><span>Все тренеры</span><b id="kpi-trainers">—</b></div>
+        <div class="kpi"><span>С доступом</span><b id="kpi-active">—</b></div>
+        <div class="kpi"><span>Всего клиентов</span><b id="kpi-clients">—</b></div>
+        <div class="kpi"><span>Объём данных</span><b id="kpi-storage">—</b></div>
       </div>
 
       <div class="card section">
         <h2>Список тренеров</h2>
+        <p class="section-sub">«Редактировать» меняет имя, email и пароль. «Приостановить» временно закрывает доступ. «Удалить» полностью удаляет кабинет и всех его клиентов — это необратимо.</p>
         <div style="overflow:auto;">
           <table>
-            <thead><tr><th>Тренер</th><th>Email</th><th>Регистрация</th><th>Последний вход</th><th>Клиенты</th><th>Хранилище</th><th>Статус</th><th></th></tr></thead>
+            <thead><tr><th>Тренер</th><th>Email</th><th>Регистрация</th><th>Последний вход</th><th>Клиенты</th><th>Данные</th><th>Статус</th><th>Действия</th></tr></thead>
             <tbody id="trainers-body"><tr><td colspan="8" class="empty">Загрузка…</td></tr></tbody>
           </table>
         </div>
       </div>
 
+      <div class="card section info">
+        <b>Как добавить нового тренера</b>
+        <ol class="steps">
+          <li>Создайте приглашение ниже — это ссылка с кодом.</li>
+          <li>Скопируйте ссылку и отправьте её тренеру любым удобным способом.</li>
+          <li>Тренер откроет ссылку, зарегистрируется и получит свой отдельный кабинет. Он сразу появится в списке выше.</li>
+        </ol>
+      </div>
+
       <div class="card section">
-        <h2>Новый инвайт-код</h2>
+        <h2>Добавить нового тренера</h2>
+        <p class="section-sub">Создайте приглашение и отправьте тренеру ссылку. После регистрации он появится в списке выше — там его можно редактировать или удалить.</p>
         <div class="row">
-          <label>Название (необязательно)<input id="invite-label" type="text" maxlength="120" placeholder="Например: тренер из зала" /></label>
-          <label>Лимит использований<input id="invite-uses" type="number" min="0" max="100000" value="0" /><span class="muted" style="font-size:10.5px;">0 = без лимита</span></label>
-          <label>Срок, дней<input id="invite-days" type="number" min="1" max="365" placeholder="бессрочно" /></label>
-          <button type="button" id="invite-create">Создать</button>
+          <label>Название приглашения
+            <input id="invite-label" type="text" maxlength="120" placeholder="Например: тренер из зала" />
+            <span class="hint">Необязательно. Поможет понять, кому вы отправили эту ссылку.</span>
+          </label>
+          <label>Сколько тренеров может использовать
+            <input id="invite-uses" type="number" min="0" max="100000" value="0" />
+            <span class="hint">0 — без ограничений. Один код можно отправить нескольким людям.</span>
+          </label>
+          <label>Срок действия, дней
+            <input id="invite-days" type="number" min="1" max="365" placeholder="Бессрочно" />
+            <span class="hint">Пусто — ссылка не истекает. Иначе укажите число дней.</span>
+          </label>
+          <button type="button" id="invite-create">Создать приглашение</button>
         </div>
         <div id="invite-result" class="hidden" style="margin-top:16px;padding:14px;border:1px solid rgba(57,214,255,.25);background:rgba(57,214,255,.06);border-radius:12px;">
-          <div class="muted" style="font-size:11px;margin-bottom:6px;">Код показывается один раз. Скопируйте его сейчас.</div>
+          <div class="muted" style="font-size:11px;margin-bottom:6px;">Ссылка показывается один раз. Скопируйте её сейчас и отправьте тренеру.</div>
           <div class="code" id="invite-code">—</div>
           <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
             <button type="button" class="secondary" id="invite-copy">Скопировать ссылку</button>
             <span class="muted" style="font-size:12px;align-self:center;" id="invite-url"></span>
           </div>
         </div>
-        <p class="note">Один код можно отправить сразу нескольким тренерам. Тебе не нужно помнить, кому какой код выдан: список ниже покажет, кто зарегистрировался.</p>
       </div>
 
       <div class="card section">
-        <h2>Инвайт-коды</h2>
+        <h2>Созданные приглашения</h2>
+        <p class="section-sub">Здесь видно, какие ссылки созданы, сколько раз их использовали и действуют ли они. Отзыв ссылки не удаляет уже зарегистрированных тренеров.</p>
         <div style="overflow:auto;">
           <table>
-            <thead><tr><th>Название</th><th>Использовано</th><th>Срок</th><th>Статус</th><th></th></tr></thead>
+            <thead><tr><th>Название</th><th>Использовано</th><th>Срок</th><th>Статус</th><th>Действие</th></tr></thead>
             <tbody id="invites-body"><tr><td colspan="5" class="empty">Загрузка…</td></tr></tbody>
           </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <div id="edit-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="edit-title">
+      <div class="modal-card">
+        <h3 id="edit-title">Редактировать тренера</h3>
+        <p class="section-sub">Имя видно в списке и в кабинете тренера. Email используется для входа.</p>
+        <div id="edit-error" class="error"></div>
+        <label>Имя тренера<input id="edit-name" type="text" maxlength="120" required /></label>
+        <label>Email для входа<input id="edit-email" type="email" maxlength="254" required /></label>
+        <label>Новый пароль (необязательно)
+          <input id="edit-password" type="password" minlength="10" maxlength="200" autocomplete="new-password" placeholder="Оставьте пустым, чтобы не менять" />
+          <span class="hint">Минимум 10 символов. После смены пароля другие устройства тренера выйдут из аккаунта.</span>
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="secondary" id="edit-cancel">Отмена</button>
+          <button type="button" id="edit-save">Сохранить</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="delete-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="delete-title">
+      <div class="modal-card">
+        <h3 id="delete-title">Удалить тренера?</h3>
+        <p class="section-sub">Будут удалены кабинет, все клиенты, программы, история, файлы и доступы. Это действие нельзя отменить.</p>
+        <div id="delete-error" class="error"></div>
+        <label>Введите имя тренера для подтверждения
+          <input id="delete-confirm" type="text" maxlength="120" autocomplete="off" placeholder="Точное имя из списка" />
+          <span class="hint" id="delete-target-name"></span>
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="secondary" id="delete-cancel">Отмена</button>
+          <button type="button" class="danger" id="delete-submit" disabled>Удалить навсегда</button>
         </div>
       </div>
     </div>
@@ -136,7 +209,7 @@
   <script>
     (function () {
       'use strict';
-      var state = { me: null };
+      var state = { me: null, trainers: [], editTenantId: null, deleteTenantId: null };
 
       function $(id) { return document.getElementById(id); }
       function show(el) { if (el) el.classList.remove('hidden'); }
@@ -168,6 +241,28 @@
         if (!el) return;
         if (message) { el.textContent = message; el.style.display = 'block'; }
         else { el.textContent = ''; el.style.display = 'none'; }
+      }
+
+      function setModalError(id, message) {
+        var el = $(id);
+        if (!el) return;
+        if (message) { el.textContent = message; el.style.display = 'block'; }
+        else { el.textContent = ''; el.style.display = 'none'; }
+      }
+
+      function showModal(id) { var el = $(id); if (el) el.classList.remove('hidden'); }
+      function hideModal(id) { var el = $(id); if (el) el.classList.add('hidden'); }
+      function toast(message, type) {
+        var el = $('toast');
+        if (!el) return;
+        el.textContent = message;
+        el.className = 'toast show ' + (type || '');
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(function () { el.className = 'toast'; }, 2600);
+      }
+
+      function trainerById(tenantId) {
+        return state.trainers.filter(function (t) { return String(t.tenantId) === String(tenantId); })[0] || null;
       }
 
       async function api(path, options) {
@@ -222,16 +317,23 @@
 
       async function loadTrainers() {
         var data = await api('/api/admin/trainers?limit=200');
+        state.trainers = data.trainers || [];
         var body = $('trainers-body');
-        if (!data.trainers || !data.trainers.length) {
-          body.innerHTML = '<tr><td colspan="8" class="empty">Пока нет тренеров.</td></tr>';
+        if (!state.trainers.length) {
+          body.innerHTML = '<tr><td colspan="8" class="empty">Пока нет тренеров. Создайте приглашение ниже.</td></tr>';
           return;
         }
-        body.innerHTML = data.trainers.map(function (t) {
-          var status = t.status === 'active' ? '<span class="pill ok">active</span>' : '<span class="pill off">suspended</span>';
-          var action = t.isSelf ? '<span class="muted" style="font-size:11px;">это ты</span>' : (t.status === 'active'
-            ? '<button type="button" class="danger" data-suspend="' + esc(t.tenantId) + '">Приостановить</button>'
-            : '<button type="button" class="secondary" data-resume="' + esc(t.tenantId) + '">Включить</button>');
+        body.innerHTML = state.trainers.map(function (t) {
+          var status = t.status === 'active' ? '<span class="pill ok">Активен</span>' : '<span class="pill off">Приостановлен</span>';
+          var buttons = '<button type="button" class="secondary small" data-edit="' + esc(t.tenantId) + '">Редактировать</button>';
+          if (t.isSelf) {
+            buttons += '<span class="muted" style="font-size:11px;align-self:center;">это ты</span>';
+          } else {
+            buttons += t.status === 'active'
+              ? '<button type="button" class="danger small" data-suspend="' + esc(t.tenantId) + '">Приостановить</button>'
+              : '<button type="button" class="secondary small" data-resume="' + esc(t.tenantId) + '">Возобновить</button>';
+            buttons += '<button type="button" class="danger small" data-delete="' + esc(t.tenantId) + '">Удалить</button>';
+          }
           return '<tr>'
             + '<td><b>' + esc(t.tenantName) + '</b></td>'
             + '<td class="muted">' + esc(t.email || '—') + '</td>'
@@ -240,25 +342,114 @@
             + '<td><b>' + Number(t.clientCount || 0) + '</b></td>'
             + '<td class="muted">' + fmtBytes(t.storageBytes) + '</td>'
             + '<td>' + status + '</td>'
-            + '<td style="text-align:right;">' + action + '</td>'
+            + '<td><div class="action-row">' + buttons + '</div></td>'
             + '</tr>';
         }).join('');
 
+        body.querySelectorAll('[data-edit]').forEach(function (btn) {
+          btn.addEventListener('click', function () { openEdit(btn.getAttribute('data-edit')); });
+        });
         body.querySelectorAll('[data-suspend]').forEach(function (btn) {
           btn.addEventListener('click', function () { tenantAction(btn.getAttribute('data-suspend'), 'suspend'); });
         });
         body.querySelectorAll('[data-resume]').forEach(function (btn) {
           btn.addEventListener('click', function () { tenantAction(btn.getAttribute('data-resume'), 'resume'); });
         });
+        body.querySelectorAll('[data-delete]').forEach(function (btn) {
+          btn.addEventListener('click', function () { openDelete(btn.getAttribute('data-delete')); });
+        });
       }
 
       async function tenantAction(tenantId, action) {
-        if (action === 'suspend' && !confirm('Приостановить доступ этому тренеру? Его данные сохранятся.')) return;
+        if (action === 'suspend' && !confirm('Приостановить доступ? Тренер не сможет войти, но клиенты и данные сохранятся.')) return;
         try {
           await api('/api/admin/tenants/' + encodeURIComponent(tenantId) + '/' + action, { method: 'POST', body: {} });
           await Promise.all([loadOverview(), loadTrainers()]);
+          toast(action === 'suspend' ? 'Доступ приостановлен' : 'Доступ возобновлён', 'ok');
         } catch (error) {
           alert(error.message);
+        }
+      }
+
+      function openEdit(tenantId) {
+        var trainer = trainerById(tenantId);
+        if (!trainer) return;
+        state.editTenantId = trainer.tenantId;
+        $('edit-name').value = trainer.tenantName || '';
+        $('edit-email').value = trainer.email || '';
+        $('edit-password').value = '';
+        setModalError('edit-error', '');
+        showModal('edit-modal');
+        setTimeout(function () { $('edit-name').focus(); }, 30);
+      }
+
+      async function saveEdit() {
+        var trainer = trainerById(state.editTenantId);
+        if (!trainer) return;
+        var name = $('edit-name').value.trim();
+        var email = $('edit-email').value.trim();
+        var password = $('edit-password').value;
+        setModalError('edit-error', '');
+        if (name.length < 2) { setModalError('edit-error', 'Имя должно быть не короче 2 символов.'); return; }
+        if (!$('edit-email').checkValidity() || !email) { setModalError('edit-error', 'Введите корректный email.'); return; }
+        if (password && password.length < 10) { setModalError('edit-error', 'Пароль должен быть не короче 10 символов.'); return; }
+
+        var payload = {};
+        if (name !== trainer.tenantName) payload.name = name;
+        if (email.toLowerCase() !== String(trainer.email || '').toLowerCase()) payload.email = email;
+        if (password) payload.newPassword = password;
+        if (!Object.keys(payload).length) { hideModal('edit-modal'); return; }
+
+        var btn = $('edit-save');
+        btn.disabled = true;
+        try {
+          await api('/api/admin/tenants/' + encodeURIComponent(trainer.tenantId) + '/update', { method: 'POST', body: payload });
+          hideModal('edit-modal');
+          state.editTenantId = null;
+          await Promise.all([loadOverview(), loadTrainers()]);
+          toast('Изменения сохранены', 'ok');
+        } catch (error) {
+          setModalError('edit-error', error.message || 'Не удалось сохранить изменения.');
+        } finally {
+          btn.disabled = false;
+        }
+      }
+
+      function openDelete(tenantId) {
+        var trainer = trainerById(tenantId);
+        if (!trainer || trainer.isSelf) return;
+        state.deleteTenantId = trainer.tenantId;
+        $('delete-confirm').value = '';
+        $('delete-target-name').textContent = 'Введите точное имя из списка: «' + trainer.tenantName + '»';
+        $('delete-submit').disabled = true;
+        setModalError('delete-error', '');
+        showModal('delete-modal');
+        setTimeout(function () { $('delete-confirm').focus(); }, 30);
+      }
+
+      async function confirmDelete() {
+        var trainer = trainerById(state.deleteTenantId);
+        if (!trainer) return;
+        var value = $('delete-confirm').value.trim();
+        if (value !== trainer.tenantName) {
+          setModalError('delete-error', 'Имя не совпадает. Введите имя точно как в списке.');
+          return;
+        }
+        var btn = $('delete-submit');
+        btn.disabled = true;
+        try {
+          await api('/api/admin/tenants/' + encodeURIComponent(trainer.tenantId) + '/delete', {
+            method: 'POST',
+            body: { confirmName: value }
+          });
+          hideModal('delete-modal');
+          state.deleteTenantId = null;
+          await Promise.all([loadOverview(), loadTrainers()]);
+          toast('Тренер удалён', 'ok');
+        } catch (error) {
+          setModalError('delete-error', error.message || 'Не удалось удалить тренера.');
+        } finally {
+          btn.disabled = false;
         }
       }
 
@@ -270,10 +461,10 @@
           return;
         }
         body.innerHTML = data.invites.map(function (invite) {
-          var status = invite.revokedAt ? '<span class="pill off">revoked</span>'
-            : (invite.expiresAt && new Date(invite.expiresAt).getTime() < Date.now() ? '<span class="pill off">expired</span>' : '<span class="pill ok">active</span>');
+          var status = invite.revokedAt ? '<span class="pill off">Отозван</span>'
+            : (invite.expiresAt && new Date(invite.expiresAt).getTime() < Date.now() ? '<span class="pill off">Истёк</span>' : '<span class="pill ok">Активен</span>');
           var uses = Number(invite.uses || 0) + (invite.maxUses ? ' / ' + invite.maxUses : ' / ∞');
-          var action = invite.revokedAt ? '' : '<button type="button" class="danger" data-revoke="' + esc(invite.id) + '">Отозвать</button>';
+          var action = invite.revokedAt ? '<span class="muted" style="font-size:11px;">—</span>' : '<button type="button" class="danger small" data-revoke="' + esc(invite.id) + '">Отозвать</button>';
           return '<tr>'
             + '<td>' + esc(invite.label || '—') + '</td>'
             + '<td>' + uses + '</td>'
@@ -288,6 +479,7 @@
             try {
               await api('/api/admin/invites/' + encodeURIComponent(btn.getAttribute('data-revoke')), { method: 'DELETE' });
               await loadInvites();
+              toast('Код отозван', 'ok');
             } catch (error) { alert(error.message); }
           });
         });
@@ -332,6 +524,7 @@
           $('invite-copy').setAttribute('data-url', data.joinUrl);
           show($('invite-result'));
           await loadInvites();
+          toast('Приглашение создано', 'ok');
         } catch (error) {
           alert(error.message);
         } finally {
@@ -347,6 +540,38 @@
           setTimeout(function () { $('invite-copy').textContent = 'Скопировать ссылку'; }, 1500);
         } catch (_) {
           prompt('Скопируйте ссылку:', url);
+        }
+      });
+
+      $('edit-cancel').addEventListener('click', function () {
+        hideModal('edit-modal');
+        state.editTenantId = null;
+      });
+      $('edit-save').addEventListener('click', saveEdit);
+      $('delete-cancel').addEventListener('click', function () {
+        hideModal('delete-modal');
+        state.deleteTenantId = null;
+      });
+      $('delete-confirm').addEventListener('input', function () {
+        var trainer = trainerById(state.deleteTenantId);
+        $('delete-submit').disabled = !trainer || $('delete-confirm').value.trim() !== trainer.tenantName;
+      });
+      $('delete-submit').addEventListener('click', confirmDelete);
+      document.querySelectorAll('.modal').forEach(function (modal) {
+        modal.addEventListener('click', function (event) {
+          if (event.target === modal) {
+            hideModal(modal.id);
+            state.editTenantId = null;
+            state.deleteTenantId = null;
+          }
+        });
+      });
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+          hideModal('edit-modal');
+          hideModal('delete-modal');
+          state.editTenantId = null;
+          state.deleteTenantId = null;
         }
       });
 

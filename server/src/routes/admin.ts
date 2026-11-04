@@ -1,12 +1,15 @@
 import { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { authenticate, csrfProtection, requireDirector } from '../auth/middleware';
+import { hashPassword } from '../auth/passwords';
+import { deleteUserSessions } from '../auth/sessions';
 import { config } from '../config';
-import { pool } from '../db';
+import { pool, withTransaction } from '../db';
 import { audit } from '../lib/audit';
 import { errors } from '../lib/errors';
 import { hashInviteCode, inviteCode } from '../lib/tokens';
 import { parse } from '../lib/validate';
+import { deleteObject } from '../storage/local';
 
 const trainersQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(200).default(50),
@@ -18,6 +21,22 @@ const inviteCreateSchema = z.object({
   maxUses: z.coerce.number().int().min(0).max(100000).default(0),
   expiresInDays: z.coerce.number().int().min(1).max(365).optional(),
 });
+
+const trainerUpdateSchema = z.object({
+  name: z.string().trim().min(2).max(120).optional(),
+  email: z.string().trim().email().max(254).optional(),
+  newPassword: z.string().min(10).max(200).optional(),
+}).refine((value) => Boolean(value.name || value.email || value.newPassword), {
+  message: 'Nothing to update',
+});
+
+const trainerDeleteSchema = z.object({
+  confirmName: z.string().trim().min(1).max(120),
+});
+
+function isUniqueViolation(error: unknown): boolean {
+  return Boolean(error && typeof error === 'object' && (error as { code?: string }).code === '23505');
+}
 
 const auditQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(500).default(100),
@@ -232,6 +251,126 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     });
     return { ok: true };
   });
+
+  app.post('/tenants/:id/update', { preHandler: guard }, async (request) => {
+    const params = parse(z.object({ id: z.string().uuid() }), request.params);
+    const body = parse(trainerUpdateSchema, request.body);
+    const passwordHash = body.newPassword ? await hashPassword(body.newPassword) : null;
+    const changed: string[] = [];
+
+    const result = await withTransaction(async (client) => {
+      const tenantResult = await client.query<{
+        id: string;
+        display_name: string;
+        owner_user_id: string | null;
+      }>(
+        `SELECT id, display_name, owner_user_id FROM tenants WHERE id = $1`,
+        [params.id],
+      );
+      const tenant = tenantResult.rows[0];
+      if (!tenant) throw errors.notFound('Trainer not found');
+
+      const userResult = await client.query<{ id: string; email: string; display_name: string }>(
+        `SELECT id, email, display_name
+         FROM users
+         WHERE tenant_id = $1
+         ORDER BY (id = $2) DESC, created_at ASC
+         LIMIT 1`,
+        [params.id, tenant.owner_user_id],
+      );
+      const user = userResult.rows[0];
+      if (!user) throw errors.notFound('Trainer account not found');
+
+      if (body.name !== undefined && body.name !== tenant.display_name) {
+        await client.query(
+          'UPDATE tenants SET display_name = $1, updated_at = now() WHERE id = $2',
+          [body.name, params.id],
+        );
+        await client.query('UPDATE users SET display_name = $1 WHERE id = $2', [body.name, user.id]);
+        changed.push('name');
+      }
+
+      if (body.email !== undefined) {
+        const email = body.email.toLowerCase();
+        if (email !== user.email.toLowerCase()) {
+          try {
+            await client.query('UPDATE users SET email = $1 WHERE id = $2', [email, user.id]);
+          } catch (error) {
+            if (isUniqueViolation(error)) throw errors.conflict('A trainer with this email already exists');
+            throw error;
+          }
+          changed.push('email');
+        }
+      }
+
+      if (passwordHash) {
+        await client.query('UPDATE users SET password_hash = $1 WHERE id = $2', [passwordHash, user.id]);
+        changed.push('password');
+      }
+
+      return { userId: user.id };
+    });
+
+    if (changed.includes('password')) {
+      await deleteUserSessions(
+        result.userId,
+        params.id === request.auth!.tenant.id ? request.auth!.sessionId : undefined,
+      );
+    }
+
+    if (changed.length) {
+      await audit({
+        tenantId: request.auth!.tenant.id,
+        actorUserId: request.auth!.user.id,
+        action: 'admin.tenant_updated',
+        target: params.id,
+        meta: { fields: changed },
+        ip: request.ip,
+      });
+    }
+
+    return { ok: true, changed };
+  });
+
+  app.post(
+    '/tenants/:id/delete',
+    { preHandler: guard, config: { rateLimit: { max: 10, timeWindow: '1 hour' } } },
+    async (request) => {
+      const params = parse(z.object({ id: z.string().uuid() }), request.params);
+      if (params.id === request.auth!.tenant.id) {
+        throw errors.badRequest('You cannot delete your own workspace');
+      }
+      const body = parse(trainerDeleteSchema, request.body);
+      const result = await pool.query<{ display_name: string; email: string | null }>(
+        `SELECT t.display_name, u.email
+         FROM tenants t
+         LEFT JOIN users u ON u.id = t.owner_user_id
+         WHERE t.id = $1`,
+        [params.id],
+      );
+      const trainer = result.rows[0];
+      if (!trainer) throw errors.notFound('Trainer not found');
+      if (trainer.display_name.trim() !== body.confirmName) {
+        throw errors.badRequest('Type the trainer name exactly to confirm deletion');
+      }
+
+      const files = await pool.query<{ object_key: string }>(
+        `SELECT object_key FROM files WHERE tenant_id = $1`,
+        [params.id],
+      );
+      await pool.query('DELETE FROM tenants WHERE id = $1', [params.id]);
+      await Promise.allSettled(files.rows.map((file) => deleteObject(file.object_key)));
+      await audit({
+        tenantId: request.auth!.tenant.id,
+        actorUserId: request.auth!.user.id,
+        action: 'admin.tenant_deleted',
+        target: params.id,
+        meta: { name: trainer.display_name, email: trainer.email },
+        ip: request.ip,
+      });
+      return { ok: true };
+    },
+  );
 
   app.get('/audit', { preHandler: guard }, async (request) => {
     const query = parse(auditQuerySchema, request.query);

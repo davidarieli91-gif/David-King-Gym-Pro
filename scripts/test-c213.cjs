@@ -61,6 +61,8 @@ ok('director admin never reads tenant records', !read('server/src/routes/admin.t
 ok('portal response strips private client fields', read('server/src/routes/portal.ts').includes('PORTAL_CLIENT_FIELDS') && read('server/src/routes/portal.ts').includes('portalClient(resolved.client)'));
 ok('portal page exists', fs.existsSync(path.join(root, 'server', 'public', 'portal.html')));
 ok('director console exists', fs.existsSync(path.join(root, 'server', 'public', 'admin.html')));
+ok('director can edit and delete trainers', read('server/src/routes/admin.ts').includes("'/tenants/:id/update'") && read('server/src/routes/admin.ts').includes("'/tenants/:id/delete'"));
+ok('director console has clear add/edit/delete trainer controls', read('server/public/admin.html').includes('Добавить нового тренера') && read('server/public/admin.html').includes('data-edit') && read('server/public/admin.html').includes('data-delete') && read('server/public/admin.html').includes('Редактировать'));
 ok('invite registration page exists', fs.existsSync(path.join(root, 'server', 'public', 'join.html')));
 ok('docker image ships the frontend and public pages', read('server/Dockerfile').includes('COPY dist ./public-app') && read('server/Dockerfile').includes('COPY server/public ./public'));
 ok('compose builds from the repository root', read('deploy/docker-compose.yml').includes('context: ..') && read('deploy/docker-compose.yml').includes('dockerfile: server/Dockerfile'));

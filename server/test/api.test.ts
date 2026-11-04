@@ -270,6 +270,70 @@ test('portal tokens are tenant-scoped and can require a PIN', async () => {
   assert.equal(afterRevoke.statusCode, 404);
 });
 
+test('director can edit and delete a trainer', async () => {
+  const director = await seedDirector();
+  const loginResult = await login(director.email, director.password);
+
+  const trainerPassword = await hashPassword('Trainer12345!');
+  const tenant = await pool.query(
+    `INSERT INTO tenants (slug, display_name, settings)
+     VALUES ('edit-trainer', 'Edit Trainer Gym', '{}')
+     RETURNING id`,
+  );
+  const tenantId = tenant.rows[0].id as string;
+  const user = await pool.query(
+    `INSERT INTO users (tenant_id, email, password_hash, role, display_name)
+     VALUES ($1, 'edit@test.local', $2, 'trainer', 'Edit Trainer')
+     RETURNING id`,
+    [tenantId, trainerPassword],
+  );
+  await pool.query('UPDATE tenants SET owner_user_id = $1 WHERE id = $2', [user.rows[0].id, tenantId]);
+  await pool.query('INSERT INTO trainer_stats (tenant_id) VALUES ($1)', [tenantId]);
+
+  const updated = await inject('POST', `/api/admin/tenants/${tenantId}/update`, {
+    cookies: loginResult.cookies,
+    headers: { 'x-csrf-token': loginResult.csrf },
+    payload: { name: 'Renamed Trainer', email: 'renamed@test.local', newPassword: 'Renamed12345!' },
+  });
+  assert.equal(updated.statusCode, 200, updated.body);
+  assert.deepEqual(updated.json().changed.sort(), ['email', 'name', 'password']);
+
+  const afterUpdate = await inject('GET', '/api/admin/trainers', { cookies: loginResult.cookies });
+  const row = afterUpdate.json().trainers.find((item: { tenantId: string }) => item.tenantId === tenantId);
+  assert.equal(row.tenantName, 'Renamed Trainer');
+  assert.equal(row.email, 'renamed@test.local');
+
+  const oldLogin = await inject('POST', '/api/auth/login', { payload: { email: 'edit@test.local', password: 'Trainer12345!' } });
+  assert.equal(oldLogin.statusCode, 401);
+  const newLogin = await login('renamed@test.local', 'Renamed12345!');
+
+  const wrongConfirm = await inject('POST', `/api/admin/tenants/${tenantId}/delete`, {
+    cookies: loginResult.cookies,
+    headers: { 'x-csrf-token': loginResult.csrf },
+    payload: { confirmName: 'Wrong name' },
+  });
+  assert.equal(wrongConfirm.statusCode, 400);
+
+  const deleted = await inject('POST', `/api/admin/tenants/${tenantId}/delete`, {
+    cookies: loginResult.cookies,
+    headers: { 'x-csrf-token': loginResult.csrf },
+    payload: { confirmName: 'Renamed Trainer' },
+  });
+  assert.equal(deleted.statusCode, 200, deleted.body);
+
+  const gone = await inject('GET', '/api/admin/trainers', { cookies: loginResult.cookies });
+  assert.equal(gone.json().trainers.some((item: { tenantId: string }) => item.tenantId === tenantId), false);
+  const deadSession = await inject('GET', '/api/auth/me', { cookies: newLogin.cookies });
+  assert.equal(deadSession.statusCode, 401);
+
+  const selfDelete = await inject('POST', `/api/admin/tenants/${director.tenantId}/delete`, {
+    cookies: loginResult.cookies,
+    headers: { 'x-csrf-token': loginResult.csrf },
+    payload: { confirmName: 'Director Gym' },
+  });
+  assert.equal(selfDelete.statusCode, 400);
+});
+
 test('suspending a tenant locks its trainer out until resumed', async () => {
   const director = await seedDirector();
   const loginResult = await login(director.email, director.password);
