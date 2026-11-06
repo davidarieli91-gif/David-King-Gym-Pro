@@ -54,6 +54,9 @@ ok('sync engine migrates the director cache once', sync.includes('migrateLocal')
 ok('reference food catalogue is not synced', sync.includes('skipFood') && sync.includes('OpenFoodFacts'));
 ok('device seed flags are not synced', sync.includes('seeded_') && sync.includes('skipSetting'));
 ok('build copies server scripts', copy.includes("'src/server-mode.js'") && copy.includes("'src/server-sync.js'"));
+ok('build generates exercise thumbnails', fs.existsSync(path.join(root, 'scripts', 'build-exercise-thumbs.cjs')) && JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).scripts.build.includes('build-exercise-thumbs.cjs'));
+ok('exercise grids use static thumbnails', crm.includes('function exerciseThumb') && crm.includes('exerciseCardImages') && crm.includes('images/thumbs/'));
+ok('service worker caches the exercise DB on first use', !sw.includes("'./exercise-db.json'") && sw.includes('isExerciseDb') && sw.includes('caches.match(req)'));
 
 ok('server migration exists', fs.existsSync(path.join(root, 'server', 'migrations', '001_init.sql')));
 ok('server isolates records by tenant', read('server/migrations/001_init.sql').includes('record_rev_seq') && read('server/migrations/001_init.sql').includes('FORCE ROW LEVEL SECURITY'));

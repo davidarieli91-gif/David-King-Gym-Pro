@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node scripts/copy-assets.js && node scripts/precompress.cjs",
+    "build": "vite build && node scripts/copy-assets.js && node scripts/build-exercise-thumbs.cjs && node scripts/precompress.cjs",
     "preview": "vite preview --port 4173"
   },
   "devDependencies": {

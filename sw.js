@@ -265,7 +265,10 @@ const APP_SHELL = [
   './index.html',
   './fitness-crm.html',
   './client.html',
-  './exercise-db.json',
+  /* The 22 MB exercise DB is cached on first use by the fetch handler below.
+     Precaching it here downloaded it TWICE on a cold install (install +
+     the app's ?v=... request) and made first boot dramatically slower.
+     The small dedicated RepDB JSON stays precached for offline use. */
   './exercise-db-rdb.json',
   './food-db.json',
   './manifest.json',
@@ -561,6 +564,30 @@ self.addEventListener('fetch', (event) => {
       }).catch(() =>
         caches.match(req).then((cached) => cached || caches.match('./index.html'))
       )
+    );
+    return;
+  }
+
+  /* The exercise DB is large (22 MB source / ~3 MB brotli). Cache the exact
+     versioned request on first use (cache-first), so a cold install no longer
+     downloads it twice (precache + the app's ?v= request) and repeat boots
+     are instant. A version bump changes the query and fetches the new file. */
+  const isExerciseDb = /\/exercise-db(-rdb)?\.json$/i.test(url.pathname);
+  if (isExerciseDb) {
+    event.respondWith(
+      caches.match(req).then((cached) => cached || fetch(req).then((res) => {
+        if (res && res.ok) {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(req, clone);
+            /* Keep only the current ?v= entry for this DB. */
+            cache.keys().then((keys) => keys.forEach((key) => {
+              if (key.url !== req.url && new URL(key.url).pathname === url.pathname) cache.delete(key);
+            })).catch(() => {});
+          });
+        }
+        return res;
+      }).catch(() => caches.match(req)))
     );
     return;
   }

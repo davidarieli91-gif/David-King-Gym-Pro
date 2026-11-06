@@ -9415,6 +9415,19 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
      Called once on first app boot. Re-runnable via the diagnostic button.
      ===================================================================== */
   async function seedExerciseBase(force = false) {
+    /* Check the local seed FIRST. The 22 MB JSON must not be fetched/parsed
+       on every warm boot just to discover that exercise_base is already
+       seeded — that alone added a visible delay to every app start. */
+    const v5Flag = await db.get('settings', 'seeded_exercise_base_v95');
+    if (!v5Flag) {
+      force = true;
+      console.info('[seed] v95 flag missing — forcing re-seed of exercise_base (c60: subgroup pass — hammer curls → brachioradialis, reverse curls → brachialis + 35 subgroup dispositions; muscle selection now preserved across source tabs)');
+    }
+    const current = await db.count('exercise_base');
+    if (current > 0 && !force) {
+      console.info(`[seed] exercise_base already has ${current} rows — skipping`);
+      return current;
+    }
       if (typeof _exerciseDbLoaded !== 'undefined' && !_exerciseDbLoaded) {
         await loadExerciseDbExternal();
       }
@@ -9462,16 +9475,6 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     //      + PG "General" subgroups removed + technique fields added
     // v4 = new folder_path structure (no "General" subgroup, no equipment level)
     // v3 = original 1265-exercise seed
-    const v5Flag = await db.get('settings', 'seeded_exercise_base_v95');
-    if (!v5Flag) {
-      force = true;
-      console.info('[seed] v95 flag missing — forcing re-seed of exercise_base (c60: subgroup pass — hammer curls → brachioradialis, reverse curls → brachialis + 35 subgroup dispositions; muscle selection now preserved across source tabs)');
-    }
-    const current = await db.count('exercise_base');
-    if (current > 0 && !force) {
-      console.info(`[seed] exercise_base already has ${current} rows — skipping`);
-      return current;
-    }
     /* v52 CRASH-SAFETY: the old order cleared the store BEFORE unpacking the
      * json — a failed/partial fetch then left devices with an empty or
      * source-less base (GymVisual / GymImpulse " disappeared", reported
@@ -9563,6 +9566,17 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
      ===================================================================== */
   async function healExerciseImagePaths() {
     try {
+      /* One-time migration: after the first successful pass the stored rows
+         already use the shipped WebP paths. Re-reading all ~5k exercise rows
+         on every boot was a measurable startup cost. */
+      const FLAG = 'migrated_images_c16';
+      if (await db.get('settings', FLAG)) return 0;
+      /* The one-time heal needs the shipped JSON to restore a BF row whose
+         old .gif path was stripped. (Warm boots skip both the JSON and this
+         migration entirely.) */
+      if (typeof _exerciseDbLoaded !== 'undefined' && !_exerciseDbLoaded) {
+        await loadExerciseDbExternal();
+      }
       const all = await db.all('exercise_base');
       if (!all.length) return 0;
       let shipped = null;
@@ -9602,6 +9616,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
         await db.bulkPut('exercise_base', changed);
         console.info('[img-heal] fixed exercise image paths:', changed.length);
       }
+      await db.put('settings', { key: FLAG, value: true });
       return changed.length;
     } catch (e) {
       console.warn('[img-heal] failed:', e);
@@ -11750,7 +11765,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     const cached = lookupExerciseGlobal(ex.exercise_id);
     if (cached) {
       const imgs = cached.images || cached.i || [];
-      return imgs[0] || '';
+      return exerciseThumb(cached) || imgs[0] || '';
     }
     return '';
   }
@@ -11767,6 +11782,31 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     // - avatarGradient / initials / goalBadgeClass: previously duplicated in dashboard + profile IIFEs
     function escHTML(s) { return escapeHTML(s); }
     function escAttr(s) { return escapeAttr(s); }
+
+    /* Burnfit (bf_*) media is animated WebP: 0.5-2.1 MB and 179-352 frames
+       per file. Grids must never load the full animation for every card.
+       The build creates first-frame thumbs in images/thumbs/; the detail
+       modal still uses the original animated file. */
+    function exerciseThumb(e) {
+      if (!e) return '';
+      const first = (Array.isArray(e.images) && e.images[0]) || (Array.isArray(e.i) && e.i[0]) || '';
+      if (!first) return '';
+      const source = e.source || e.src;
+      if ((source === 'burnfit' || source === 'bf' || source === 'gymimpulse' || source === 'gi') && first.indexOf('images/') === 0) {
+        return 'images/thumbs/' + first.slice('images/'.length);
+      }
+      return first;
+    }
+
+    function exerciseCardImages(e) {
+      if (!e) return [];
+      const source = e.source || e.src;
+      if (source === 'burnfit' || source === 'bf' || source === 'gymimpulse' || source === 'gi') {
+        const thumb = exerciseThumb(e);
+        return thumb ? [thumb] : [];
+      }
+      return e.images || e.i || [];
+    }
     function setText(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
     function goalBadgeClass(goal) {
       return {
@@ -14734,7 +14774,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
                   _pb._exMapSize = _pb.exerciseCache.length;
                 }
                 const full = _pb._exMap.get(ex.exercise_id);
-                const imgs = full ? (full.images || full.i || []) : [];
+                const imgs = full ? exerciseCardImages(full) : [];
                 const img1 = imgs[0] || '';
                 /* c119: thumbnail is 3× bigger (32→96px, the live-workout card size)
                    and ANIMATED — same two-frame crossfade (.ex-anim-container) the
@@ -15111,10 +15151,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
                   const name = e['name_' + lang] || e.name_en || '?';
                   const src = e.source === 'repdb' ? 'RDB' : (e.source === 'gymvisual' ? 'GV' : (e.source === 'gymimpulse' ? 'GI' : (e.source === 'burnfit' ? 'BF' : 'BF')));
                   const srcClass = e.source === 'repdb' ? 'bg-primary/15 text-primary-2' : (e.source === 'gymvisual' ? 'bg-warning/15 text-warning' : (e.source === 'gymimpulse' ? 'bg-accent/15 text-accent' : 'bg-success/15 text-success'));
-                  const hasPhoto = e.images && e.images.length > 0;
+                  const thumb = exerciseThumb(e);
+                  const hasPhoto = !!thumb;
                   html += `<div data-pb-pick="${escapeAttr(e.id)}" class="flex items-center gap-2 bg-surface-2 border border-border rounded-lg p-2 hover:bg-border/30 hover:border-primary/30 transition cursor-pointer" style="margin-inline-start: ${(depth + 1) * 16 + 8}px">
                     <div class="w-7 h-7 rounded-lg shrink-0 overflow-hidden bg-surface border border-border grid place-items-center">
-                      ${hasPhoto ? `<img src="${escapeAttr(e.images[0])}" alt="" class="w-full h-full object-cover" loading="lazy" />` : `<svg class="w-3 h-3 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`}
+                      ${hasPhoto ? `<img src="${escapeAttr(thumb)}" alt="" class="w-full h-full object-cover" loading="lazy" />` : `<svg class="w-3 h-3 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`}
                     </div>
                     <div class="flex-1 min-w-0"><div class="text-sm font-medium truncate">${escapeHTML(name)}</div></div>
                     <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${srcClass} shrink-0">${src}</span>
@@ -15163,10 +15204,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           const group = e['group_' + lang] || e.group_en || '';
           const src = e.source === 'repdb' ? 'RDB' : (e.source === 'gymvisual' ? 'GV' : (e.source === 'gymimpulse' ? 'GI' : (e.source === 'burnfit' ? 'BF' : 'BF')));
           const srcClass = e.source === 'repdb' ? 'bg-primary/15 text-primary-2' : (e.source === 'gymvisual' ? 'bg-warning/15 text-warning' : (e.source === 'gymimpulse' ? 'bg-accent/15 text-accent' : 'bg-success/15 text-success'));
-          const hasPhoto = e.images && e.images.length > 0;
+          const thumb = exerciseThumb(e);
+          const hasPhoto = !!thumb;
           return `<div data-pb-pick="${escapeAttr(e.id)}" class="flex items-center gap-3 bg-surface-2 border border-border rounded-xl p-3 hover:bg-border/30 hover:border-primary/30 transition cursor-pointer">
             <div class="w-9 h-9 rounded-lg shrink-0 overflow-hidden bg-surface border border-border grid place-items-center">
-              ${hasPhoto ? `<img src="${escapeAttr(e.images[0])}" alt="" class="w-full h-full object-cover" loading="lazy" />` : `<svg class="w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`}
+              ${hasPhoto ? `<img src="${escapeAttr(thumb)}" alt="" class="w-full h-full object-cover" loading="lazy" />` : `<svg class="w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`}
             </div>
             <div class="flex-1 min-w-0"><div class="font-medium text-sm truncate">${escapeHTML(name)}</div><div class="text-[11px] text-muted truncate">${escapeHTML(group)}</div></div>
             <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${srcClass} shrink-0">${src}</span>
@@ -17312,11 +17354,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             const name = exName(e);
             const src = e.source === 'repdb' ? 'RDB' : (e.source === 'gymvisual' ? 'GV' : (e.source === 'gymimpulse' ? 'GI' : (e.source === 'burnfit' ? 'BF' : 'BF')));
             const srcClass = e.source === 'repdb' ? 'bg-primary/15 text-primary-2' : (e.source === 'gymvisual' ? 'bg-warning/15 text-warning' : (e.source === 'gymimpulse' ? 'bg-accent/15 text-accent' : 'bg-success/15 text-success'));
-            const hasPhoto = e.images && e.images.length > 0;
+            const thumb = exerciseThumb(e);
+            const hasPhoto = !!thumb;
             const hasVideo = e.video_url && extractYouTubeId(e.video_url);
             html += `<div data-exercise-id="${escAttr(e.id)}" class="exercise-card flex items-center gap-2 bg-surface-2 border border-border rounded-lg p-2 hover:bg-border/30 hover:border-primary/30 transition cursor-pointer" style="margin-inline-start: ${(depth + 1) * 20}px"${_editMode ? ' draggable="true"' : ''}>
               <div class="w-7 h-7 rounded-lg shrink-0 overflow-hidden bg-surface border border-border grid place-items-center">
-                ${hasPhoto ? `<img src="${escAttr(e.images[0])}" alt="" class="w-full h-full object-cover" loading="lazy" />` : `<svg class="w-3.5 h-3.5 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`}
+                ${hasPhoto ? `<img src="${escAttr(thumb)}" alt="" class="w-full h-full object-cover" loading="lazy" />` : `<svg class="w-3.5 h-3.5 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`}
               </div>
               <div class="flex-1 min-w-0">
                 <div class="text-sm font-medium truncate ${_archiveMode ? 'opacity-60' : ''}">${escHTML(name)}</div>
@@ -19492,7 +19535,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         _exMapSize = _exerciseCache.length;
       }
       const fullEx = _exMap.get(ex.exercise_id);
-      const exImgs = fullEx ? (fullEx.images || fullEx.i || []) : [];
+      const exImgs = fullEx ? exerciseCardImages(fullEx) : [];
       const _srcCode = fullEx ? (fullEx.source === 'repdb' || fullEx.src === 'rdb' ? 'rdb'
         : (fullEx.source === 'gymvisual' || fullEx.src === 'gv' ? 'gv'
         : (fullEx.source === 'burnfit' || fullEx.src === 'bf' ? 'bf'
@@ -20417,10 +20460,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
                   const name = e['name_' + lang] || e.name_en || '?';
                   const src = e.source === 'repdb' ? 'RDB' : (e.source === 'gymvisual' ? 'GV' : (e.source === 'gymimpulse' ? 'GI' : (e.source === 'burnfit' ? 'BF' : 'BF')));
                   const srcClass = e.source === 'repdb' ? 'bg-primary/15 text-primary-2' : (e.source === 'gymvisual' ? 'bg-warning/15 text-warning' : (e.source === 'gymimpulse' ? 'bg-accent/15 text-accent' : 'bg-success/15 text-success'));
-                  const hasPhoto = e.images && e.images.length > 0;
+                  const thumb = exerciseThumb(e);
+                  const hasPhoto = !!thumb;
                   html += `<div data-pick-exercise="${escapeAttr(e.id)}" class="flex items-center gap-2 bg-surface-2 border border-border rounded-lg p-2 hover:bg-border/30 hover:border-primary/30 transition cursor-pointer" style="margin-inline-start: ${(depth + 1) * 16 + 8}px">
                     <div class="w-7 h-7 rounded-lg shrink-0 overflow-hidden bg-surface border border-border grid place-items-center">
-                      ${hasPhoto ? `<img src="${escapeAttr(e.images[0])}" alt="" class="w-full h-full object-cover" loading="lazy" />` : `<svg class="w-3 h-3 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`}
+                      ${hasPhoto ? `<img src="${escapeAttr(thumb)}" alt="" class="w-full h-full object-cover" loading="lazy" />` : `<svg class="w-3 h-3 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`}
                     </div>
                     <div class="flex-1 min-w-0"><div class="text-sm font-medium truncate">${escapeHTML(name)}</div></div>
                     <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${srcClass} shrink-0">${src}</span>
@@ -20456,11 +20500,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           const group = e['group_' + lang] || e.group_en || '';
           const src = e.source === 'repdb' ? 'RDB' : (e.source === 'gymvisual' ? 'GV' : (e.source === 'gymimpulse' ? 'GI' : (e.source === 'burnfit' ? 'BF' : 'BF')));
           const srcClass = e.source === 'repdb' ? 'bg-primary/15 text-primary-2' : (e.source === 'gymvisual' ? 'bg-warning/15 text-warning' : (e.source === 'gymimpulse' ? 'bg-accent/15 text-accent' : 'bg-success/15 text-success'));
-          const hasPhoto = e.images && e.images.length > 0;
+          const thumb = exerciseThumb(e);
+          const hasPhoto = !!thumb;
           return `
             <div data-pick-exercise="${escapeAttr(e.id)}" class="flex items-center gap-3 bg-surface-2 border border-border rounded-xl p-3 hover:bg-border/30 hover:border-primary/30 transition cursor-pointer">
               <div class="w-9 h-9 rounded-lg shrink-0 overflow-hidden bg-surface border border-border grid place-items-center">
-                ${hasPhoto ? `<img src="${escapeAttr(e.images[0])}" alt="" class="w-full h-full object-cover" loading="lazy" />` : `<svg class="w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`}
+                ${hasPhoto ? `<img src="${escapeAttr(thumb)}" alt="" class="w-full h-full object-cover" loading="lazy" />` : `<svg class="w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`}
               </div>
               <div class="flex-1 min-w-0">
                 <div class="font-medium text-sm truncate">${escapeHTML(name)}</div>
@@ -24030,9 +24075,10 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const lang = currentLang();
       function renderExCard(e) {
         const name = e['name_' + lang] || e.name_en || '?';
-        const imgs = e.images || e.i || [];
+        const imgs = exerciseCardImages(e);
         const img1 = imgs[0] || '';
         const img2 = imgs[1] || '';
+        const isBurnfitCard = e.source === 'burnfit' || e.src === 'bf';
         const id = e.id;
         const isFav = _favorites.includes(id);
         const src = e.source === 'repdb' || e.src === 'rdb' ? 'RDB' : (e.source === 'muscle_motion' || e.src === 'mm' ? 'MM' : (e.source === 'burnfit' || e.src === 'bf' ? 'BF' : (e.source === 'gymvisual' || e.src === 'gv' ? 'GV' : (e.source === 'gymimpulse' || e.src === 'gi' ? 'GI' : 'PG'))));
@@ -24045,14 +24091,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               <img src="${esc(img2)}" alt="" class="ex-anim-frame-2" loading="lazy" style="object-fit:contain" />
             </div>`
           : img1
-          ? (e.gif
-            ? `<img src="${esc(e.gif)}" alt="" class="w-full h-full object-cover" loading="lazy"/>`
-            : `<img src="${esc(img1)}" alt="" class="w-full h-full object-cover" loading="lazy"/>`)
+          ? `<img src="${esc(img1)}" alt="" class="w-full h-full object-cover" loading="lazy"/>`
           : (vectorHtml || `<div class="w-full h-full grid place-items-center"><svg class="w-8 h-8 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>`);
         return `<div class="bm-ex-card v2-src-${src.toLowerCase()}${e.source === 'repdb' ? ' rdb-card' : ''} bg-surface-2 border border-border rounded-xl overflow-hidden hover:border-primary/30 transition cursor-pointer" data-bm-add="${esc(id)}">
           <div class="aspect-square bg-surface relative overflow-hidden">
             ${imgHtml}
-            ${img1 && img2 ? '<span class="v2-anim-badge">ANIM</span>' : ''}
+            ${(img1 && img2) || isBurnfitCard ? '<span class="v2-anim-badge">ANIM</span>' : ''}
             <button class="absolute top-1 end-1 w-6 h-6 grid place-items-center rounded-full bg-black/40 text-white z-10" data-bm-fav="${esc(id)}">
               <svg class="w-3.5 h-3.5 ${isFav ? 'text-yellow-400' : 'text-white/60'}" viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
             </button>
@@ -24244,7 +24288,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const favExercises = _favorites.map(id => _cache.find(e => e.id === id)).filter(Boolean);
       grid.innerHTML = favExercises.map(e => {
         const name = e['name_' + lang] || e.name_en || '?';
-        const img = e.gif || (e.images && e.images[0]) || (e.i && e.i[0]) || '';
+        const img = exerciseThumb(e) || e.gif || '';
         const src = e.source === 'repdb' || e.src === 'rdb' ? 'RDB' : (e.source === 'muscle_motion' || e.src === 'mm' ? 'MM' : (e.source === 'burnfit' || e.src === 'bf' ? 'BF' : (e.source === 'gymvisual' || e.src === 'gv' ? 'GV' : (e.source === 'gymimpulse' || e.src === 'gi' ? 'GI' : 'PG'))));
         const srcClass = src === 'RDB' ? 'bg-primary/15 text-primary-2' : (src === 'MM' ? 'bg-accent/15 text-accent' : (src === 'BF' ? 'bg-success/15 text-success' : (src === 'GV' ? 'bg-warning/15 text-warning' : (src === 'GI' ? 'bg-accent/15 text-accent' : 'bg-primary/15 text-primary-2'))));
         return `<div class="bm-ex-card v2-src-${src.toLowerCase()}${e.source === 'repdb' ? ' rdb-card' : ''} bg-surface-2 border border-border rounded-xl overflow-hidden hover:border-primary/30 transition cursor-pointer" data-bm-add="${esc(e.id)}">
@@ -24302,7 +24346,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const recentExercises = _recent.map(id => _cache.find(e => e.id === id)).filter(Boolean);
       grid.innerHTML = recentExercises.map(e => {
         const name = e['name_' + lang] || e.name_en || '?';
-        const img = e.gif || (e.images && e.images[0]) || (e.i && e.i[0]) || '';
+        const img = exerciseThumb(e) || e.gif || '';
         const src = e.source === 'repdb' || e.src === 'rdb' ? 'RDB' : (e.source === 'muscle_motion' || e.src === 'mm' ? 'MM' : (e.source === 'burnfit' || e.src === 'bf' ? 'BF' : (e.source === 'gymvisual' || e.src === 'gv' ? 'GV' : (e.source === 'gymimpulse' || e.src === 'gi' ? 'GI' : 'PG'))));
         const srcClass = src === 'RDB' ? 'bg-primary/15 text-primary-2' : (src === 'MM' ? 'bg-accent/15 text-accent' : (src === 'BF' ? 'bg-success/15 text-success' : (src === 'GV' ? 'bg-warning/15 text-warning' : (src === 'GI' ? 'bg-accent/15 text-accent' : 'bg-primary/15 text-primary-2'))));
         return `<div class="bm-ex-card v2-src-${src.toLowerCase()}${e.source === 'repdb' ? ' rdb-card' : ''} bg-surface-2 border border-border rounded-xl overflow-hidden hover:border-primary/30 transition cursor-pointer" data-bm-add="${esc(e.id)}">
@@ -40457,7 +40501,7 @@ document.addEventListener('input', function (e) {
       /* c76: exact copy of the picker renderExCard — animated frames, star, eye, "+", chips */
       var L = lang();
       var name = exName(e);
-      var imgs = e.images || e.i || [];
+      var imgs = exerciseCardImages(e);
       var img1 = imgs[0] || '';
       var img2 = imgs[1] || '';
       var id = e.id;
@@ -40473,9 +40517,7 @@ document.addEventListener('input', function (e) {
           '<img src="' + esc(img2) + '" alt="" class="ex-anim-frame-2" loading="lazy" style="object-fit:contain" />' +
           '</div>'
         : (img1
-          ? (e.gif
-            ? '<img src="' + esc(e.gif) + '" alt="" class="w-full h-full object-cover" loading="lazy"/>'
-            : '<img src="' + esc(img1) + '" alt="" class="w-full h-full object-cover" loading="lazy"/>')
+          ? '<img src="' + esc(img1) + '" alt="" class="w-full h-full object-cover" loading="lazy"/>'
           : (vectorHtml || '<div class="w-full h-full grid place-items-center"><svg class="w-8 h-8 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>'));
       return '<div class="bm-ex-card v2-src-' + code.toLowerCase() + (e.source === 'repdb' ? ' rdb-card' : '') + ' bg-surface-2 border border-border rounded-xl overflow-hidden hover:border-primary/30 transition cursor-pointer" data-exb-id="' + esc(id) + '">' +
         '<div class="aspect-square bg-surface relative overflow-hidden">' + imgHtml +
