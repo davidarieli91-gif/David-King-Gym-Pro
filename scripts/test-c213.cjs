@@ -56,6 +56,13 @@ ok('device seed flags are not synced', sync.includes('seeded_') && sync.includes
 ok('build copies server scripts', copy.includes("'src/server-mode.js'") && copy.includes("'src/server-sync.js'"));
 ok('build generates exercise thumbnails', fs.existsSync(path.join(root, 'scripts', 'build-exercise-thumbs.cjs')) && JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).scripts.build.includes('build-exercise-thumbs.cjs'));
 ok('exercise grids use static thumbnails', crm.includes('function exerciseThumb') && crm.includes('exerciseCardImages') && crm.includes('images/thumbs/'));
+
+/* c227: dark-mode exercise renders */
+const portalFull = read('server/public/portal-full.html');
+ok('dark mode darkens exercise renders in every trainer view', crm.includes('html[data-mode="dark"] img[src*="images/thumbs/"]') && crm.includes('img[src*="images/rdb/"]') && crm.includes('hue-rotate(180deg)'));
+ok('client portal dark mode darkens exercise renders', portalFull.includes('html[data-mode="dark"] img[src*="images/thumbs/"]') && portalFull.includes('img[src*="images/rdb/"]') && portalFull.includes('hue-rotate(180deg)'));
+ok('legacy client app dark mode darkens exercise renders', read('client.html').includes('html[data-mode="dark"] img[src*="images/thumbs/"]') && read('client.html').includes('hue-rotate(180deg)'));
+ok('exercise renders keep their normal look when printing', crm.includes('@media print') && crm.includes('mix-blend-mode: normal !important') && portalFull.includes('mix-blend-mode: normal !important'));
 ok('service worker caches the exercise DB on first use', !sw.includes("'./exercise-db.json'") && sw.includes('isExerciseDb') && sw.includes('caches.match(req)'));
 
 ok('server migration exists', fs.existsSync(path.join(root, 'server', 'migrations', '001_init.sql')));

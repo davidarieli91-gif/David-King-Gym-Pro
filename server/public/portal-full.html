@@ -2656,6 +2656,26 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
     filter: invert(1) brightness(1.18) contrast(1.04);
     mix-blend-mode: screen;
   }
+  /* c227: BF/GV/RDB exercise renders have white/light backgrounds. In dark mode
+     every occurrence — workout card, technique modal, picker — becomes a dark
+     plate, not a white card. invert+rotate keeps the figure's hues. */
+  html[data-mode="dark"] img[src*="images/thumbs/"],
+  html[data-mode="dark"] img[src*="images/bf_"],
+  html[data-mode="dark"] img[src*="images/gv_"],
+  html[data-mode="dark"] img[src*="images/gi_"],
+  html[data-mode="dark"] img[src*="images/rdb/"],
+  html[data-mode="dark"] img[src*="videos/gv_"],
+  html[data-mode="dark"] img[src*="videos/bf_"],
+  html[data-mode="dark"] img[src*="videos/gi_"] {
+    filter: invert(1) hue-rotate(180deg) brightness(.98) saturate(1.12) contrast(1.05);
+  }
+  @media print {
+    img[src*="images/thumbs/"], img[src*="images/bf_"], img[src*="images/gv_"],
+    img[src*="images/gi_"], img[src*="images/rdb/"], img[src*="videos/"] {
+      filter: none !important;
+      mix-blend-mode: normal !important;
+    }
+  }
   html[data-ui="v2"] .bm-chip { background: rgba(255,255,255,.045); border-color: var(--v2-border); color: rgb(var(--c-muted)); }
   html[data-ui="v2"] .bm-chip.active { background: var(--v2-primary-grad); border-color: transparent; color: #fff; }
   html[data-ui="v2"] nav.bottom-nav, html[data-ui="v2"] nav.fixed.bottom-0 { background: var(--v2-glass-bg) !important; border-color: var(--v2-border) !important; backdrop-filter: blur(26px) saturate(135%); }

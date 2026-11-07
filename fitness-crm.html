@@ -4374,6 +4374,27 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
   html[data-ui="v2"] #exercise-gif-slot img { object-fit: contain !important; background: transparent !important; }
   html[data-ui="v2"][data-mode="dark"] #exercise-gif-slot[data-src="gv"] img,
   html[data-ui="v2"][data-mode="dark"] #exercise-gif-slot[data-src="bf"] img { transform: scale(1.1); }
+  /* c227: exercise renders from BF/GV/RDB are delivered on white/light plates.
+     In dark themes every thumbnail (builder, day preview, program list, picker,
+     live workout, technique view) must become a dark plate — not a white card.
+     invert+rotate keeps the figure's hues, and turns the white background dark. */
+  html[data-mode="dark"] img[src*="images/thumbs/"],
+  html[data-mode="dark"] img[src*="images/bf_"],
+  html[data-mode="dark"] img[src*="images/gv_"],
+  html[data-mode="dark"] img[src*="images/gi_"],
+  html[data-mode="dark"] img[src*="images/rdb/"],
+  html[data-mode="dark"] img[src*="videos/gv_"],
+  html[data-mode="dark"] img[src*="videos/bf_"],
+  html[data-mode="dark"] img[src*="videos/gi_"] {
+    filter: invert(1) hue-rotate(180deg) brightness(.98) saturate(1.12) contrast(1.05);
+  }
+  @media print {
+    img[src*="images/thumbs/"], img[src*="images/bf_"], img[src*="images/gv_"],
+    img[src*="images/gi_"], img[src*="images/rdb/"], img[src*="videos/"] {
+      filter: none !important;
+      mix-blend-mode: normal !important;
+    }
+  }
   html[data-ui="v2"] #exercise-gif-slot .ex-anim-badge,
   html[data-ui="v2"] #exercise-gif-slot .absolute.bottom-2 {
     background: rgba(3,7,18,.72) !important; color: rgb(var(--c-accent)) !important;
