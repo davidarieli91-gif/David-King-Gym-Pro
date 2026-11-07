@@ -78,17 +78,18 @@ ok('docker image ships the frontend and public pages', read('server/Dockerfile')
 ok('compose builds from the repository root', read('deploy/docker-compose.yml').includes('context: ..') && read('deploy/docker-compose.yml').includes('dockerfile: server/Dockerfile'));
 
 /* c226: adaptive program workspace */
-ok('program builder has an adaptive 3-pane workspace', crm.includes('id="pb-shell"') && crm.includes('class="pb-workspace"') && crm.includes('id="pb-left-body"') && crm.includes('id="pb-side-body"'));
+ok('program builder has an adaptive 3-pane workspace', crm.includes('id="pb-shell"') && crm.includes('class="pb-workspace"') && crm.includes('id="pb-left-body"') && crm.includes('id="pb-composer-host"'));
 ok('program builder keeps its stable modal ids', crm.includes('id="program-builder-modal"') && crm.includes('id="program-day-preview-modal"') && crm.includes('id="bodymap-picker-modal"'));
 ok('program builder uses the full desktop width', crm.includes('md:max-w-[min(97vw,1280px)]') && crm.includes('xl:max-w-[min(98vw,1900px)]'));
 ok('program builder has a reorder mode', crm.includes('id="pb-reorder-btn"') && crm.includes('pbUI.reorderMode') && crm.includes("shellEl.classList.toggle('pb-reorder-on'"));
 ok('touch reordering has quick move controls', crm.includes('data-pb-quick-move') && crm.includes('function pbQuickMove') && crm.includes('function pbMoveExercise'));
 ok('each builder card has a touch action menu', crm.includes('data-pb-menu=') && crm.includes('id="pb-card-menu"') && crm.includes('function pbMenuAction') && crm.includes("item('top'"));
-ok('builder library filters sources safely', crm.includes("const srcMap = { bf: ['burnfit', 'bf']") && crm.includes("rdb: ['repdb', 'rdb']"));
-ok('wide builder uses the side library instead of nesting a modal', crm.includes('window.innerWidth >= 1440') && crm.includes('pbOpenExercisePicker(forceModal)'));
-ok('narrow screens open the touch action sheet instead of a hidden inspector', crm.includes("window.innerWidth >= 1440 ? item('inspect'") && crm.includes('pbOpenMenu(exi, el)'));
+ok('desktop composer mounts the full body-map picker inline', crm.includes("bodyMapPicker.mountInline('pb-composer-host'") && crm.includes('function pbEnsureComposer') && crm.includes("root.classList.add('bm-builder-inline')"));
+ok('composer gets the add-to-day callback', crm.includes('.mountInline(\'pb-composer-host\', _pb.exerciseCache, function (pickedEx)') && crm.includes('pbAddExercise(pickedEx.id)'));
+ok('center editor is compact, composer takes the remaining width', crm.includes('.pb-center { flex: 0 0 360px; }') && crm.includes('.pb-right { flex: 1 1 auto;') && crm.includes('@container bmPicker (min-width: 1040px)'));
+ok('phone muscle tree stacks the icon and readable group name', crm.includes('.picker-tree-col .bm-group-header {') && crm.includes('flex-direction: column;') && crm.includes('.picker-tree-col .bm-group-header > .flex-1'));
 ok('new workspace labels follow EN/RU/HE', crm.includes('const PB_L =') && crm.includes('function pbT(key, vars)') && crm.includes('muscleSplit:'));
-ok('phone builder skips the hidden side library render', crm.includes('if (window.innerWidth >= 1440) renderPbSidePanel()'));
+ok('phone builder skips the hidden side library render', crm.includes('if (window.innerWidth >= 1280) pbEnsureComposer()'));
 
 ok('day preview is wide on desktop', crm.includes('lg:max-w-[min(96vw,1024px)] xl:max-w-[min(96vw,1440px)]') && crm.includes('.dp-grid {'));
 ok('day preview has day chips and a summary side panel', crm.includes('id="program-day-preview-days"') && crm.includes('data-preview-day') && crm.includes('dp-side-card') && crm.includes("pbT('muscleSplit')"));

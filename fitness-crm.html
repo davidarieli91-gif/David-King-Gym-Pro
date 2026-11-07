@@ -874,8 +874,56 @@
       #bm-body-view .p-3 { padding: 8px; }
     }
     @media (max-width: 479px) {
-      .picker-tree-col { width: 108px; }
-      html[data-ui="v2"] .picker-tree-col { width: 108px !important; }
+      .picker-tree-col { width: 116px; }
+      html[data-ui="v2"] .picker-tree-col { width: 116px !important; }
+    }
+    /* c228: on phones the muscle tree becomes vertical — icon on top, readable
+       group name below (the old 108px row clipped every label). */
+    @media (max-width: 639px) {
+      .picker-tree-col .bm-group-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 2px;
+        padding: 6px 2px;
+        position: relative;
+      }
+      .picker-tree-col .bm-group-header .bm-caret {
+        position: absolute;
+        top: 2px;
+        inset-inline-end: 2px;
+        width: 10px;
+      }
+      .picker-tree-col .bm-group-header .mg-icon-box { --mg-size: 30px; }
+      .picker-tree-col .bm-group-header > .flex-1 {
+        flex: 0 0 auto;
+        width: 100%;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+        font-size: 9.5px !important;
+        line-height: 1.15;
+      }
+      .picker-tree-col .bm-group-header > span:last-child { font-size: 9px !important; }
+      .picker-tree-col .bm-subgroups { padding-inline-start: 2px !important; }
+      .picker-tree-col .bm-subgroup-btn {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 1px;
+        padding: 4px 2px;
+      }
+      .picker-tree-col .bm-subgroup-btn .mg-icon-box { --mg-size: 26px; }
+      .picker-tree-col .bm-subgroup-btn > .flex-1 {
+        flex: 0 0 auto;
+        width: 100%;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+        font-size: 8.5px !important;
+        line-height: 1.15;
+      }
+      .picker-tree-col .bm-subgroup-btn > span:last-child { font-size: 8px !important; }
     }
 
 /* ============================================================
@@ -910,12 +958,21 @@
       border-width: 1px; transition: all .12s; min-width: 0; text-align: center; }
     .pb-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
     .pb-btn span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    /* c226: adaptive Program Workspace: left summary / center editor / right library. */
+    /* c228: compact editor + full exercise composer on desktop */
     .pb-workspace { display: flex; flex: 1; min-height: 0; min-width: 0; }
-    .pb-center { display: flex; flex-direction: column; flex: 1; min-width: 0; min-height: 0; }
+    .pb-center { display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0; min-height: 0; }
     .pb-left, .pb-right { display: none; flex-direction: column; min-width: 0; min-height: 0; background: rgb(var(--c-surface) / .45); }
-    .pb-left { flex: 0 0 260px; width: 260px; border-inline-end: 1px solid rgb(var(--c-border) / .7); }
-    .pb-right { flex: 0 0 340px; width: 340px; border-inline-start: 1px solid rgb(var(--c-border) / .7); }
+    .pb-left { flex: 0 0 240px; width: 240px; border-inline-end: 1px solid rgb(var(--c-border) / .7); }
+    .pb-right { flex: 1 1 auto; border-inline-start: 1px solid rgb(var(--c-border) / .7); }
+    .pb-composer-host { flex: 1; min-height: 0; display: flex; overflow: hidden; }
+    #pb-composer-host #bm-root { width: 100% !important; max-width: none !important; height: 100% !important; max-height: none !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; }
+    /* Compact composer: body map only when the composer panel is really wide. */
+    #bm-root.bm-builder-inline .picker-map-col { display: none !important; }
+    #bm-root.bm-builder-inline .picker-tree-col { width: clamp(150px, 18cqw, 200px) !important; }
+    @container bmPicker (min-width: 1040px) {
+      #bm-root.bm-builder-inline .picker-map-col { display: flex !important; }
+      #bm-root.bm-builder-inline .picker-tree-col { width: clamp(180px, 16cqw, 230px) !important; }
+    }
     .pb-panel-head { padding: 12px 14px; border-bottom: 1px solid rgb(var(--c-border) / .7); }
     .pb-panel-eyebrow { font-size: 9px; letter-spacing: .14em; font-weight: 800; color: rgb(var(--c-muted)); text-transform: uppercase; }
     .pb-panel-title { font-size: 13px; font-weight: 700; margin-top: 2px; }
@@ -953,21 +1010,25 @@
     .pb-menu-sep { height: 1px; background: rgb(var(--c-border) / .7); margin: 4px 3px; }
     @media (min-width: 1024px) {
       .pb-left { display: flex; }
-      #pb-day-content > * { max-width: 920px; width: 100%; margin-inline: auto; }
+    }
+    @media (min-width: 1280px) {
+      .pb-center { flex: 0 0 360px; }
+      .pb-right { display: flex; }
+      /* the compact editor uses the phone-sized exercise photo */
+      .pb-center .pb-draggable .ex-anim-container,
+      .pb-center .pb-draggable .w-24.h-24 { width: 72px !important; height: 72px !important; }
     }
     @media (min-width: 1440px) {
-      .pb-right { display: flex; }
-      .pb-left { flex-basis: 280px; width: 280px; }
+      .pb-left { flex-basis: 250px; width: 250px; }
+      .pb-center { flex-basis: 380px; }
     }
     @media (min-width: 1900px) {
-      .pb-left { flex-basis: 320px; width: 320px; }
-      .pb-right { flex-basis: 420px; width: 420px; }
-      #pb-day-content > * { max-width: 980px; }
+      .pb-left { flex-basis: 280px; width: 280px; }
+      .pb-center { flex-basis: 400px; max-width: 420px; }
     }
     @media (min-width: 2200px) {
-      .pb-left { flex-basis: 340px; width: 340px; }
-      .pb-right { flex-basis: 480px; width: 480px; }
-      #pb-day-content > * { max-width: 1180px; }
+      .pb-left { flex-basis: 300px; width: 300px; }
+      .pb-center { flex-basis: 420px; max-width: 440px; }
       .pb-panel-body { padding: 14px; }
     }
     @media (max-width: 639px) {
@@ -1584,7 +1645,7 @@
       .picker-tree-col { width: calc(128px * var(--ui-exercise-panel, 1)); }
     }
     @media (max-width: 479px) {
-      .picker-tree-col { width: calc(108px * var(--ui-exercise-panel, 1)); }
+      .picker-tree-col { width: calc(116px * var(--ui-exercise-panel, 1)); }
     }
     /* c75: picker map column follows the Body map SVG size slider */
     .picker-map-col { width: calc(clamp(200px, 20cqw, 320px) * var(--ui-bodymap, 1)); }
@@ -5417,12 +5478,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                   <div id="pb-day-content" class="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2"></div>
                 </div>
                 <aside class="pb-right">
-                  <div class="pb-side-tabs">
-                    <button type="button" class="pb-side-tab active" data-pb-side="library"><span data-pb-side-label>Библиотека</span></button>
-                    <button type="button" class="pb-side-tab" data-pb-side="inspect"><span data-pb-side-label>Упражнение</span></button>
-                    <button type="button" class="pb-side-tab" data-pb-side="checks"><span data-pb-side-label>Проверки</span> <span id="pb-checks-count" class="opacity-60"></span></button>
-                  </div>
-                  <div id="pb-side-body" class="pb-panel-body"></div>
+                  <div id="pb-composer-host" class="pb-composer-host"></div>
                 </aside>
               </div>
 <!-- Footer: нагрузка → экспорт → главные действия -->
@@ -14213,6 +14269,38 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       pbUI = { sideTab: 'library', selectedEx: null, libQuery: '', libSource: 'all', reorderMode: false, menuEx: null };
       const menu = document.getElementById('pb-card-menu');
       if (menu) menu.classList.add('hidden');
+      /* c228: give the shared picker back to the modal; the builder will mount
+         a fresh composer with the new program's cache. */
+      if (typeof bodyMapPicker !== 'undefined' && bodyMapPicker.detachInline) bodyMapPicker.detachInline();
+    }
+
+    /* c228: the desktop right pane is the FULL exercise composer (body map,
+       muscle tree, filters and cards), not the former narrow list. */
+    function pbUpdateComposerTitle() {
+      const root = document.getElementById('bm-root');
+      if (!root || !root.classList.contains('bm-builder-inline')) return;
+      const title = root.querySelector('h3');
+      if (!title) return;
+      const day = _pb && _pb.days && _pb.days[_pb.activeDay];
+      const letter = day ? (day.day_letter || String(_pb.activeDay + 1)) : '';
+      title.removeAttribute('data-i18n');
+      title.textContent = pbT('addToDay', { day: letter });
+    }
+
+    function pbEnsureComposer() {
+      if (!_pb || window.innerWidth < 1280) return;
+      const builderModal = document.getElementById('program-builder-modal');
+      if (!builderModal || builderModal.classList.contains('hidden')) return;
+      const host = document.getElementById('pb-composer-host');
+      const root = document.getElementById('bm-root');
+      if (!host || !root || typeof bodyMapPicker === 'undefined' || !bodyMapPicker.mountInline) return;
+      if (root.parentElement !== host) {
+        bodyMapPicker.mountInline('pb-composer-host', _pb.exerciseCache, function (pickedEx) {
+          if (pickedEx && pickedEx.id) pbAddExercise(pickedEx.id);
+        });
+      }
+      root.classList.add('bm-builder-inline');
+      pbUpdateComposerTitle();
     }
 
     /* c226: compact localizer for the adaptive workspace (EN/RU/HE) so the new
@@ -14221,6 +14309,8 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       program: ['Program', 'Программа', 'תוכנית'],
       daysSummary: ['Days & summary', 'Дни и сводка', 'ימים וסיכום'],
       programDays: ['Program days', 'Дни программы', 'ימי תוכנית'],
+      addToDay: ['Add to Day {day}', 'Добавить в день {day}', 'הוסף ליום {day}'],
+      applyAllShort: ['Apply', 'Применить', 'החל'],
       library: ['Library', 'Библиотека', 'ספרייה'],
       exercise: ['Exercise', 'Упражнение', 'תרגיל'],
       checks: ['Checks', 'Проверки', 'בדיקות'],
@@ -14288,17 +14378,6 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
         renderBuilder();
         if (pbUI.reorderMode) toast(pbT('reorderOn'), 'info', 2600);
       });
-      document.querySelectorAll('[data-pb-side]').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          pbUI.sideTab = btn.getAttribute('data-pb-side') || 'library';
-          pbCloseMenu();
-          renderPbSidePanel();
-          if (pbUI.sideTab === 'library') {
-            const search = document.getElementById('pb-lib-search');
-            if (search) search.focus();
-          }
-        });
-      });
       document.addEventListener('click', function (e) {
         const menu = document.getElementById('pb-card-menu');
         if (!menu || menu.classList.contains('hidden')) return;
@@ -14316,7 +14395,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
         pbCloseMenu();
         if (pbResizeTimer) clearTimeout(pbResizeTimer);
         pbResizeTimer = setTimeout(function () {
-          if (_pb && window.innerWidth >= 1440) renderPbSidePanel();
+          if (_pb && window.innerWidth >= 1280) pbEnsureComposer();
         }, 180);
       });
     })();
@@ -14997,11 +15076,6 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       if (titleEl) titleEl.textContent = pbT('daysSummary');
       const eyebrowEl = document.querySelector('.pb-panel-head .pb-panel-eyebrow');
       if (eyebrowEl) eyebrowEl.textContent = pbT('program');
-      document.querySelectorAll('[data-pb-side]').forEach(function (btn) {
-        const label = btn.querySelector('[data-pb-side-label]');
-        const key = btn.getAttribute('data-pb-side');
-        if (label) label.textContent = key === 'library' ? pbT('library') : key === 'inspect' ? pbT('exercise') : pbT('checks');
-      });
       const reorderLabel = document.getElementById('pb-reorder-label');
       if (reorderLabel) reorderLabel.textContent = pbT('reorder');
       body.innerHTML =
@@ -15039,7 +15113,6 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         btn.addEventListener('click', function () {
           _pb.activeDay = parseInt(btn.getAttribute('data-pb-check-day'), 10) || 0;
           pbUI.selectedEx = btn.getAttribute('data-pb-check-ex') === '' ? null : parseInt(btn.getAttribute('data-pb-check-ex'), 10);
-          pbUI.sideTab = pbUI.selectedEx == null ? 'checks' : 'inspect';
           renderBuilder();
           const card = document.querySelector('#pb-day-content [data-pb-ex-index="' + pbUI.selectedEx + '"]');
           if (card && card.scrollIntoView) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -15243,11 +15316,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       } else {
         /* c104: bulk rest — one value for EVERY exercise of the program */
         const firstRestB = (day.exercises[0] && day.exercises[0].rest_sec != null) ? day.exercises[0].rest_sec : 90;
-        const bulkRestB = `<div class="flex items-center gap-2 mb-3 bg-surface rounded-xl border border-border px-3 py-2">
+        const bulkRestB = `<div class="flex flex-wrap items-center gap-2 mb-3 bg-surface rounded-xl border border-border px-3 py-2">
           <span class="text-xs font-semibold text-muted flex-1 min-w-0 truncate">${t('programs.restForAll') || 'Rest for all exercises'}</span>
           <input type="number" min="0" max="600" step="15" value="${firstRestB}" data-pb-rest-all class="rest-sec-input w-16 bg-surface-2 border border-border rounded-lg px-2 py-1 text-xs text-center font-bold focus:outline-none focus:ring-1 focus:ring-primary/60" />
           <span class="text-[10px] text-muted shrink-0">${(typeof currentLang === 'function' && currentLang() === 'en') ? 's' : (currentLang() === 'he' ? 'ש׳' : 'с')}</span>
-          <button data-pb-rest-all-apply class="text-[11px] font-bold px-3 py-1.5 rounded-lg bg-primary/15 text-primary-2 border border-primary/30 hover:bg-primary/25 transition shrink-0">${t('wunit.applyAll') || 'Apply to all'}</button>
+          <button data-pb-rest-all-apply class="text-[11px] font-bold px-2 py-1.5 rounded-lg bg-primary/15 text-primary-2 border border-primary/30 hover:bg-primary/25 transition shrink-0" title="${escapeAttr(t('wunit.applyAll') || 'Apply to all')}">${pbT('applyAllShort')}</button>
         </div>`;
         contentEl.innerHTML = (pbUI.reorderMode
           ? `<div class="flex items-center gap-2 mb-3 rounded-xl border border-primary/30 bg-primary/10 px-3 py-2 text-[11px] font-semibold text-primary-2">
@@ -15513,21 +15586,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           });
         });
 
-        /* c226: inspector, per-card ⋯ menu and quick-move arrows. These keep
-           touch reordering reliable — no HTML5 drag required. */
+        /* c226/c228: the number opens the touch action sheet on every screen
+           (the desktop right pane is now the exercise composer, not inspector). */
         contentEl.querySelectorAll('[data-pb-inspect]').forEach(el => {
           el.addEventListener('click', (e) => {
             e.stopPropagation();
-            const exi = parseInt(el.getAttribute('data-pb-inspect'), 10);
-            if (window.innerWidth >= 1440) {
-              pbUI.selectedEx = exi;
-              pbUI.sideTab = 'inspect';
-              renderBuilder();
-            } else {
-              /* narrow screens have no persistent inspector — open the
-                 touch action sheet with the same quick actions. */
-              pbOpenMenu(exi, el);
-            }
+            pbOpenMenu(parseInt(el.getAttribute('data-pb-inspect'), 10), el);
           });
         });
         contentEl.querySelectorAll('[data-pb-menu]').forEach(btn => {
@@ -15687,21 +15751,18 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         });
       }
 
-      /* c226: keep the adaptive side panels in sync with the editor. The
-         library is only materialized when the right pane is actually visible
-         (>=1440) — phones skip 60 rows of DOM on every render. */
+      /* c228: the desktop right pane is the full exercise composer. */
       renderPbLeftPanel();
-      if (window.innerWidth >= 1440) renderPbSidePanel();
+      if (window.innerWidth >= 1280) pbEnsureComposer();
     }
 
     /** Open exercise picker for program builder. */
     function pbOpenExercisePicker(forceModal) {
-      /* On wide screens the right-hand library is always visible: the "+"
-         focuses it instead of opening a second, nested modal. */
-      if (!forceModal && window.innerWidth >= 1440 && document.getElementById('pb-side-body')) {
-        pbUI.sideTab = 'library';
-        renderBuilder();
-        const search = document.getElementById('pb-lib-search');
+      /* On desktop the composer is always in the right pane: focus its search
+         instead of opening a second modal. */
+      if (!forceModal && window.innerWidth >= 1280) {
+        pbEnsureComposer();
+        const search = document.querySelector('#pb-composer-host #bm-search');
         if (search) { search.focus(); search.select(); }
         return;
       }
@@ -15975,7 +16036,6 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         item('down', '↓', pbT('down'), { disabled: last }) +
         item('bottom', '⇥', pbT('toBottom'), { disabled: last }) +
         '<div class="pb-menu-sep"></div>' +
-        (window.innerWidth >= 1440 ? item('inspect', '◉', pbT('openInspector')) : '') +
         item('duplicate', '⧉', pbT('duplicateAction')) +
         item('replace', '⇄', pbT('replace')) +
         '<div class="pb-menu-sep"></div>' +
@@ -16016,12 +16076,6 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const exi = pbUI.menuEx;
       pbCloseMenu();
       if (exi == null) return;
-      if (action === 'inspect') {
-        pbUI.selectedEx = exi;
-        pbUI.sideTab = 'inspect';
-        renderBuilder();
-        return;
-      }
       if (action === 'duplicate') { pbDuplicateExercise(exi); return; }
       if (action === 'replace') { pbReplaceExercise(exi); return; }
       if (action === 'delete') {
@@ -24026,6 +24080,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     let _tab = 'body';
     let _favOnly = false; // NEW: favorites tab reuses the full body layout (map + tree + grid), pool = favorites
     let _callback = null;
+    let _inlineHostId = null;
     let _favorites = [];
     let _recent = [];
 
@@ -24201,17 +24256,19 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       document.getElementById('bodymap-picker-modal').classList.add('hidden');
     }
 
-    /* c84: move the panel back into the modal shell if it was mounted inline */
+    /* c84/c228: move the panel back into the modal shell from ANY inline host */
     function __detachInline() {
       try {
         const modal = document.getElementById('bodymap-picker-modal');
         const root = document.getElementById('bm-root');
         if (!modal || !root) return;
-        if (root.parentElement && root.parentElement.id === 'exb-qp-host') {
-          root.parentElement.classList.add('hidden');
+        const parent = root.parentElement;
+        if (parent && parent !== modal) {
+          parent.classList.add('hidden');
           modal.appendChild(root);
         }
-        root.classList.remove('bm-inline');
+        root.classList.remove('bm-inline', 'bm-builder-inline');
+        _inlineHostId = null;
       } catch (_e) {}
     }
 
@@ -24226,16 +24283,16 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       if (searchInput) searchInput.placeholder = t('exercise.searchPlaceholder') || 'Search...';
     }
 
-    /* c84: mount THE SAME picker component inline in the Workouts screen.
-       Browse mode: _callback = null → cards never add to a workout (the user
-       request); clicking a card opens its details instead. The panel is the
-       single shared DOM — any future edit applies to both mounts. */
-    function mountInline(hostId, cache) {
+    /* c84/c228: mount THE SAME picker component inline.
+       Workouts browse mode: no onPick → cards open details.
+       Builder composer: onPick → a card adds the exercise to the active day. */
+    function mountInline(hostId, cache, onPick) {
       const host = document.getElementById(hostId);
       const root = document.getElementById('bm-root');
       const modal = document.getElementById('bodymap-picker-modal');
       if (!host || !root || !modal) return;
-      _callback = null;
+      _inlineHostId = hostId;
+      _callback = onPick || null;
       _cache = cache || _cache || [];
       modal.classList.add('hidden');
       if (root.parentElement !== host) host.appendChild(root);
@@ -25174,7 +25231,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       renderAll();
     }
 
-    return { open, close, refresh, mountInline, setGroupFilter };
+    return { open, close, refresh, mountInline, detachInline: __detachInline, setGroupFilter };
   })();
 
   /* =====================================================================
