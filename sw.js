@@ -181,6 +181,8 @@
 // images shipped locally, RepDB tab beside Burnfit / Gym Visual / GymImpulse,
 // separate source/ids, no mixing. Existing bf/gv/gi rows untouched.
 // v245: c215 - DKG Arena: games, lessons, exams, trophies.
+// v246: c226 - adaptive program workspace, day preview and touch reordering;
+//              new Tailwind layout utilities — refresh the cached CSS once.
 // v244: c214 - API responses are never cached (stale /api/auth/me caused a logout reload loop).
 // v243: c213 - director console shortcut and resilient hidden server controls.
 // v242: c213 - stable logout (public cookie-clearing endpoint), 429 rate limit,
@@ -248,7 +250,7 @@
 // filled (machine pass + manual key names), corrupted equipment labels
 // repaired, and the exercise media slot no longer shrinks to a small square
 // on short/mobile viewports.
-const CACHE_NAME = 'dk-gym-v245'; // c215
+const CACHE_NAME = 'dk-gym-v246'; // c226
 // v104: c77 — UI sizes can no longer change themselves (zoom-based gif/food/cards, wheel/touch slider guards) + hard pre-login lock (Add Client included) + header theme quick menu with all 33 themes
 // v103: c76 — Exercise DB tab = exact Quick Pick copy (star/eye/+ cards, favorites/recent tabs, View grouping, localized map tabs)
 // v102: c75 — 3D atlas 1.5x + Settings ▸ UI sizes (atlas slider, bodymap/exercise-panel fixes) + Exercise DB tab rebuilt as picker-style browse

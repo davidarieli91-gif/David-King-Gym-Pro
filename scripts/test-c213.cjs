@@ -14,7 +14,7 @@ function read(rel) { return fs.readFileSync(path.join(root, rel), 'utf8'); }
 ok('trainer build c213', crm.includes('<meta name="dk-build" content="c213" />'));
 ok('trainer RUNNING 213', crm.includes('var RUNNING = 213;'));
 ok('sidebar + login show c213', crm.includes('id="v2-side-version">c213') && crm.includes('3 languages · c213'));
-ok('SW cache v245', sw.includes("CACHE_NAME = 'dk-gym-v245'"));
+ok('SW cache v246', sw.includes("CACHE_NAME = 'dk-gym-v246'"));
 ok('SW precaches server scripts', sw.includes("./src/server-mode.js") && sw.includes("./src/server-sync.js"));
 
 ok('IndexedDB version 13', crm.includes('const DB_VERSION = 13;'));
@@ -69,6 +69,24 @@ ok('director console has clear add/edit/delete trainer controls', read('server/p
 ok('invite registration page exists', fs.existsSync(path.join(root, 'server', 'public', 'join.html')));
 ok('docker image ships the frontend and public pages', read('server/Dockerfile').includes('COPY dist ./public-app') && read('server/Dockerfile').includes('COPY server/public ./public'));
 ok('compose builds from the repository root', read('deploy/docker-compose.yml').includes('context: ..') && read('deploy/docker-compose.yml').includes('dockerfile: server/Dockerfile'));
+
+/* c226: adaptive program workspace */
+ok('program builder has an adaptive 3-pane workspace', crm.includes('id="pb-shell"') && crm.includes('class="pb-workspace"') && crm.includes('id="pb-left-body"') && crm.includes('id="pb-side-body"'));
+ok('program builder keeps its stable modal ids', crm.includes('id="program-builder-modal"') && crm.includes('id="program-day-preview-modal"') && crm.includes('id="bodymap-picker-modal"'));
+ok('program builder uses the full desktop width', crm.includes('md:max-w-[min(97vw,1280px)]') && crm.includes('xl:max-w-[min(98vw,1900px)]'));
+ok('program builder has a reorder mode', crm.includes('id="pb-reorder-btn"') && crm.includes('pbUI.reorderMode') && crm.includes("shellEl.classList.toggle('pb-reorder-on'"));
+ok('touch reordering has quick move controls', crm.includes('data-pb-quick-move') && crm.includes('function pbQuickMove') && crm.includes('function pbMoveExercise'));
+ok('each builder card has a touch action menu', crm.includes('data-pb-menu=') && crm.includes('id="pb-card-menu"') && crm.includes('function pbMenuAction') && crm.includes("item('top'"));
+ok('builder library filters sources safely', crm.includes("const srcMap = { bf: ['burnfit', 'bf']") && crm.includes("rdb: ['repdb', 'rdb']"));
+ok('wide builder uses the side library instead of nesting a modal', crm.includes('window.innerWidth >= 1440') && crm.includes('pbOpenExercisePicker(forceModal)'));
+ok('narrow screens open the touch action sheet instead of a hidden inspector', crm.includes("window.innerWidth >= 1440 ? item('inspect'") && crm.includes('pbOpenMenu(exi, el)'));
+ok('new workspace labels follow EN/RU/HE', crm.includes('const PB_L =') && crm.includes('function pbT(key, vars)') && crm.includes('muscleSplit:'));
+ok('phone builder skips the hidden side library render', crm.includes('if (window.innerWidth >= 1440) renderPbSidePanel()'));
+
+ok('day preview is wide on desktop', crm.includes('lg:max-w-[min(96vw,1024px)] xl:max-w-[min(96vw,1440px)]') && crm.includes('.dp-grid {'));
+ok('day preview has day chips and a summary side panel', crm.includes('id="program-day-preview-days"') && crm.includes('data-preview-day') && crm.includes('dp-side-card') && crm.includes("pbT('muscleSplit')"));
+ok('exercise picker widens on ultrawide screens', crm.includes('min-[1900px]:max-w-[min(96vw,1720px)]') && crm.includes('min-[2200px]:max-w-[min(94vw,2100px)]'));
+ok('exercise picker shows the body map from 1280px', crm.includes('@media (max-width: 1279px)') && crm.includes('.picker-map-col { display: none !important; }'));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);

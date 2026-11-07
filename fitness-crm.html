@@ -855,21 +855,27 @@
     @media (min-width: 640px) { #bm-ex-grid.bm-grouped > .bm-section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (min-width: 1024px) { #bm-ex-grid.bm-grouped > .bm-section-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
-    /* Пикер: 3 колонки - человечек | группы | упражнения (только десктоп >=1440px).
+    /* Пикер: 3 колонки - человечек | группы | упражнения (десктоп >=1280px).
        Телефон/планшет: человечек скрыт, шрифт групп уменьшен - влезает в кнопки. */
     .picker-map-col { width: clamp(200px, 20cqw, 320px); }
     .picker-tree-col { width: clamp(160px, 18cqw, 260px); }
-    @media (max-width: 1439px) {
+    @media (max-width: 1279px) {
       .picker-map-col { display: none !important; }
       .picker-tree-col { width: clamp(140px, 26vw, 210px); }
       .bm-group-header { font-size: 12px !important; }
       .bm-group-header > span:last-child { font-size: 10px !important; }
       .bm-subgroup-btn { font-size: 10px !important; }
     }
-    @media (max-width: 767px) {
-      .picker-tree-col { width: 150px; }
-      .bm-group-header { font-size: 11px !important; }
-      .bm-subgroup-btn { font-size: 9.5px !important; }
+    @media (max-width: 639px) {
+      .picker-tree-col { width: 128px; padding: 4px; overflow-x: hidden; }
+      html[data-ui="v2"] .picker-tree-col { width: 128px !important; }
+      .bm-group-header { font-size: 10.5px !important; }
+      .bm-subgroup-btn { font-size: 9px !important; }
+      #bm-body-view .p-3 { padding: 8px; }
+    }
+    @media (max-width: 479px) {
+      .picker-tree-col { width: 108px; }
+      html[data-ui="v2"] .picker-tree-col { width: 108px !important; }
     }
 
 /* ============================================================
@@ -884,7 +890,7 @@
     #bm-ex-grid.bm-grouped > .bm-section-grid {
       display: grid;
       gap: 0.5rem;
-      grid-template-columns: repeat(auto-fill, minmax(clamp(120px, 15cqw, 200px), 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(clamp(108px, 15cqw, 200px), 1fr));
     }
     /* Карточка упражнения: картинка 1:1, компактная типографика на любой плотности */
     .bm-cq-grid .bm-ex-card .aspect-square { aspect-ratio: 1 / 1; width: 100%; max-width: 200px; margin-inline: auto; }
@@ -904,6 +910,97 @@
       border-width: 1px; transition: all .12s; min-width: 0; text-align: center; }
     .pb-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
     .pb-btn span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    /* c226: adaptive Program Workspace: left summary / center editor / right library. */
+    .pb-workspace { display: flex; flex: 1; min-height: 0; min-width: 0; }
+    .pb-center { display: flex; flex-direction: column; flex: 1; min-width: 0; min-height: 0; }
+    .pb-left, .pb-right { display: none; flex-direction: column; min-width: 0; min-height: 0; background: rgb(var(--c-surface) / .45); }
+    .pb-left { flex: 0 0 260px; width: 260px; border-inline-end: 1px solid rgb(var(--c-border) / .7); }
+    .pb-right { flex: 0 0 340px; width: 340px; border-inline-start: 1px solid rgb(var(--c-border) / .7); }
+    .pb-panel-head { padding: 12px 14px; border-bottom: 1px solid rgb(var(--c-border) / .7); }
+    .pb-panel-eyebrow { font-size: 9px; letter-spacing: .14em; font-weight: 800; color: rgb(var(--c-muted)); text-transform: uppercase; }
+    .pb-panel-title { font-size: 13px; font-weight: 700; margin-top: 2px; }
+    .pb-panel-body { flex: 1; min-height: 0; overflow-y: auto; padding: 10px; }
+    .pb-panel-label { font-size: 9px; letter-spacing: .1em; font-weight: 800; color: rgb(var(--c-muted)); text-transform: uppercase; margin: 12px 2px 6px; }
+    .pb-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .pb-stat { border: 1px solid rgb(var(--c-border) / .7); background: rgb(var(--c-surface-2) / .55); border-radius: 10px; padding: 8px 9px; }
+    .pb-stat span { display: block; font-size: 8px; letter-spacing: .08em; text-transform: uppercase; color: rgb(var(--c-muted)); font-weight: 700; }
+    .pb-stat b { display: block; margin-top: 3px; font-size: 17px; line-height: 1; }
+    .pb-day-row { display: flex; align-items: center; gap: 8px; width: 100%; text-align: start; padding: 8px; border-radius: 10px; border: 1px solid transparent; background: transparent; color: rgb(var(--c-text)); cursor: pointer; }
+    .pb-day-row:hover { background: rgb(var(--c-surface-2) / .8); }
+    .pb-day-row.active { border-color: rgb(var(--c-primary) / .45); background: rgb(var(--c-primary) / .1); }
+    .pb-day-letter { width: 24px; height: 24px; flex: 0 0 24px; border-radius: 7px; display: grid; place-items: center; font-size: 10px; font-weight: 800; background: rgb(var(--c-primary) / .16); color: rgb(var(--c-primary-2)); }
+    .pb-day-meta { margin-left: auto; font-size: 9px; font-weight: 700; color: rgb(var(--c-muted)); white-space: nowrap; }
+    .pb-side-tabs { display: flex; gap: 2px; padding: 8px; border-bottom: 1px solid rgb(var(--c-border) / .7); }
+    .pb-side-tab { flex: 1; min-width: 0; padding: 7px 4px; border-radius: 8px; font-size: 9.5px; font-weight: 700; color: rgb(var(--c-muted)); background: transparent; border: 0; cursor: pointer; }
+    .pb-side-tab:hover { background: rgb(var(--c-surface-2) / .8); }
+    .pb-side-tab.active { background: rgb(var(--c-primary) / .14); color: rgb(var(--c-primary-2)); }
+    .pb-lib-search { width: 100%; background: rgb(var(--c-surface-2) / .8); border: 1px solid rgb(var(--c-border) / .8); border-radius: 9px; padding: 8px 9px; font-size: 11px; color: rgb(var(--c-text)); outline: none; }
+    .pb-lib-search:focus { border-color: rgb(var(--c-primary) / .6); }
+    .pb-lib-row { display: flex; align-items: center; gap: 7px; width: 100%; padding: 6px; border-radius: 9px; border: 1px solid transparent; background: transparent; color: rgb(var(--c-text)); text-align: start; cursor: pointer; }
+    .pb-lib-row:hover { background: rgb(var(--c-surface-2) / .75); border-color: rgb(var(--c-border) / .8); }
+    .pb-lib-thumb { width: 30px; height: 30px; flex: 0 0 30px; border-radius: 7px; overflow: hidden; border: 1px solid rgb(var(--c-border) / .8); background: rgb(var(--c-surface-2)); display: grid; place-items: center; }
+    .pb-check { width: 100%; text-align: start; border: 1px solid rgb(var(--c-border) / .7); background: rgb(var(--c-surface-2) / .45); border-radius: 9px; padding: 8px; color: rgb(var(--c-text)); font-size: 10px; line-height: 1.4; cursor: pointer; }
+    .pb-check:hover { border-color: rgb(var(--c-primary) / .4); }
+    .pb-reorder-controls { display: flex; gap: 4px; margin: 0 0 7px; }
+    .pb-reorder-controls button { flex: 1; min-width: 0; padding: 6px 2px; border-radius: 7px; border: 1px solid rgb(var(--c-border) / .8); background: rgb(var(--c-surface-2)); color: rgb(var(--c-muted)); font-size: 11px; font-weight: 800; }
+    .pb-reorder-controls button:hover { color: rgb(var(--c-text)); border-color: rgb(var(--c-primary) / .5); }
+    .pb-reorder-on .pb-draggable > .space-y-1 { display: none; }
+    #pb-reorder-btn.active { border-color: rgb(var(--c-primary) / .55); background: rgb(var(--c-primary) / .14); color: rgb(var(--c-primary-2)); }
+    #pb-card-menu { position: fixed; z-index: 120; width: 210px; background: rgb(var(--c-surface)); border: 1px solid rgb(var(--c-border)); border-radius: 12px; box-shadow: 0 24px 60px -24px #000; padding: 5px; }
+    .pb-menu-item { display: flex; align-items: center; gap: 7px; width: 100%; text-align: start; padding: 8px 9px; border-radius: 8px; border: 0; background: transparent; color: rgb(var(--c-text)); font-size: 11.5px; font-weight: 600; cursor: pointer; }
+    .pb-menu-item:hover { background: rgb(var(--c-surface-2)); }
+    .pb-menu-item.danger { color: rgb(var(--c-danger)); }
+    .pb-menu-sep { height: 1px; background: rgb(var(--c-border) / .7); margin: 4px 3px; }
+    @media (min-width: 1024px) {
+      .pb-left { display: flex; }
+      #pb-day-content > * { max-width: 920px; width: 100%; margin-inline: auto; }
+    }
+    @media (min-width: 1440px) {
+      .pb-right { display: flex; }
+      .pb-left { flex-basis: 280px; width: 280px; }
+    }
+    @media (min-width: 1900px) {
+      .pb-left { flex-basis: 320px; width: 320px; }
+      .pb-right { flex-basis: 420px; width: 420px; }
+      #pb-day-content > * { max-width: 980px; }
+    }
+    @media (min-width: 2200px) {
+      .pb-left { flex-basis: 340px; width: 340px; }
+      .pb-right { flex-basis: 480px; width: 480px; }
+      #pb-day-content > * { max-width: 1180px; }
+      .pb-panel-body { padding: 14px; }
+    }
+    @media (max-width: 639px) {
+      #pb-card-menu { left: 12px !important; right: 12px; top: auto !important; bottom: 12px; width: auto; max-height: 70vh; overflow-y: auto; }
+    }
+    /* c226: adaptive day preview — list + summary, day chips, balanced columns. */
+    .dp-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; align-items: start; }
+    .dp-side { display: none; }
+    .dp-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+    .dp-chip { flex: 0 0 auto; padding: 6px 10px; border-radius: 8px; border: 1px solid rgb(var(--c-border) / .8); background: rgb(var(--c-surface-2) / .6); font-size: 10px; font-weight: 700; color: rgb(var(--c-muted)); cursor: pointer; white-space: nowrap; }
+    .dp-chip:hover { color: rgb(var(--c-text)); border-color: rgb(var(--c-primary) / .4); }
+    .dp-chip.active { background: rgb(var(--c-primary)); color: #fff; border-color: transparent; }
+    .dp-side-card { border: 1px solid rgb(var(--c-border) / .8); background: rgb(var(--c-surface-2) / .5); border-radius: 12px; padding: 12px; }
+    .dp-side-card + .dp-side-card { margin-top: 10px; }
+    .dp-mobile-stats { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+    .dp-mobile-stats .pb-stat { flex: 1 1 30%; }
+    @media (min-width: 1024px) { .dp-mobile-stats { display: none; } }
+    .dp-bar-row + .dp-bar-row { margin-top: 7px; }
+    .dp-bar-track { height: 5px; border-radius: 999px; background: rgb(var(--c-border) / .6); overflow: hidden; }
+    .dp-bar-fill { height: 100%; border-radius: 999px; background: rgb(var(--c-primary)); }
+    @media (min-width: 1024px) {
+      .dp-grid { grid-template-columns: minmax(0, 1fr) 300px; }
+      .dp-side { display: block; }
+      .dp-list { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    }
+    @media (min-width: 1600px) {
+      .dp-grid { grid-template-columns: minmax(0, 1fr) 340px; }
+      .dp-list { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); }
+    }
+    @media (min-width: 2200px) {
+      .dp-grid { grid-template-columns: minmax(0, 1fr) 380px; }
+      .dp-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
     @media (max-width: 480px) {
       .pb-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .pb-btn { font-size: 11px; padding: 0.5rem 0.25rem; }
@@ -1480,11 +1577,14 @@
     .picker-tree-col {
       width: calc(clamp(160px, 18cqw, 260px) * var(--ui-exercise-panel, 1));
     }
-    @media (max-width: 1439px) {
+    @media (max-width: 1279px) {
       .picker-tree-col { width: calc(clamp(140px, 26vw, 210px) * var(--ui-exercise-panel, 1)); }
     }
-    @media (max-width: 767px) {
-      .picker-tree-col { width: calc(150px * var(--ui-exercise-panel, 1)); }
+    @media (max-width: 639px) {
+      .picker-tree-col { width: calc(128px * var(--ui-exercise-panel, 1)); }
+    }
+    @media (max-width: 479px) {
+      .picker-tree-col { width: calc(108px * var(--ui-exercise-panel, 1)); }
     }
     /* c75: picker map column follows the Body map SVG size slider */
     .picker-map-col { width: calc(clamp(200px, 20cqw, 320px) * var(--ui-bodymap, 1)); }
@@ -5225,8 +5325,8 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                the workout. User reviews exercises, then clicks "Start workout"
                inside this modal to begin the live workout (timer starts). -->
           <div id="program-day-preview-modal" class="hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
-            <div class="bg-surface w-full sm:max-w-lg max-h-[90vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
-              <div class="p-4 border-b border-border flex items-center gap-3">
+            <div class="bg-surface w-full sm:max-w-[min(96vw,640px)] md:max-w-[min(96vw,820px)] lg:max-w-[min(96vw,1024px)] xl:max-w-[min(96vw,1440px)] min-[2200px]:max-w-[min(94vw,1800px)] max-h-[92vh] sm:max-h-[92vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
+              <div class="p-4 border-b border-border flex items-center gap-3 shrink-0">
                 <div class="flex-1 min-w-0">
                   <h3 id="program-day-preview-title" class="font-display font-bold text-base truncate">Workout</h3>
                   <p id="program-day-preview-subtitle" class="text-xs text-muted truncate"></p>
@@ -5235,7 +5335,8 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
                 </button>
               </div>
-              <div id="program-day-preview-body" class="flex-1 overflow-y-auto p-4 space-y-2"></div>
+              <div id="program-day-preview-days" class="flex gap-1 px-4 py-2 border-b border-border overflow-x-auto no-scrollbar shrink-0"></div>
+              <div id="program-day-preview-body" class="flex-1 overflow-y-auto p-3 sm:p-4"></div>
               <div class="p-3 border-t border-border flex gap-2">
                 <button id="program-day-preview-cancel" class="flex-1 bg-surface-2 hover:bg-border/40 border border-border text-sm font-semibold py-2.5 rounded-xl transition" data-i18n="common.close">Cancel</button>
                 <button id="program-day-preview-start" class="flex-1 bg-success hover:bg-success/90 text-white text-sm font-semibold py-2.5 rounded-xl transition shadow-card inline-flex items-center justify-center gap-2">
@@ -5248,7 +5349,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
 
           <!-- ============= PROGRAM BUILDER MODAL ============= -->
           <div id="program-builder-modal" class="hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
-            <div class="bg-surface w-full max-w-[min(96vw,880px)] max-h-[calc(100dvh-1rem)] sm:max-h-[95vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
+            <div id="pb-shell" class="bg-surface w-full max-w-[min(96vw,880px)] md:max-w-[min(97vw,1280px)] xl:max-w-[min(98vw,1900px)] min-[2200px]:max-w-[min(96vw,2380px)] h-[calc(100dvh-1rem)] sm:h-[calc(100dvh-2rem)] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float">
               <!-- Header -->
               <div class="p-4 border-b border-border flex items-center gap-3 shrink-0">
                 <div class="flex-1 min-w-0">
@@ -5272,14 +5373,37 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                     <span id="pb-freq-hint" class="text-[10px] text-muted"></span>
                   </div>
                 </div>
+                <button type="button" id="pb-reorder-btn" class="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-[11px] font-bold text-muted hover:text-text transition" title="Режим перестановки упражнений" aria-label="Режим перестановки упражнений">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/></svg>
+                  <span id="pb-reorder-label" class="hidden sm:inline">Переставить</span>
+                </button>
                 <button id="pb-close" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-surface-2 text-muted shrink-0">
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
                 </button>
               </div>
-              <!-- Day tabs -->
-              <div id="pb-day-tabs" class="flex gap-1 p-2 border-b border-border overflow-x-auto no-scrollbar shrink-0"></div>
-              <!-- Day content -->
-              <div id="pb-day-content" class="flex-1 overflow-y-auto p-4 space-y-2"></div>
+              <div class="pb-workspace">
+                <aside class="pb-left">
+                  <div class="pb-panel-head">
+                    <div class="pb-panel-eyebrow">Program</div>
+                    <div class="pb-panel-title">Дни и сводка</div>
+                  </div>
+                  <div id="pb-left-body" class="pb-panel-body"></div>
+                </aside>
+                <div class="pb-center">
+                  <!-- Day tabs -->
+                  <div id="pb-day-tabs" class="flex gap-1 p-2 border-b border-border overflow-x-auto no-scrollbar shrink-0"></div>
+                  <!-- Day content -->
+                  <div id="pb-day-content" class="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2"></div>
+                </div>
+                <aside class="pb-right">
+                  <div class="pb-side-tabs">
+                    <button type="button" class="pb-side-tab active" data-pb-side="library"><span data-pb-side-label>Библиотека</span></button>
+                    <button type="button" class="pb-side-tab" data-pb-side="inspect"><span data-pb-side-label>Упражнение</span></button>
+                    <button type="button" class="pb-side-tab" data-pb-side="checks"><span data-pb-side-label>Проверки</span> <span id="pb-checks-count" class="opacity-60"></span></button>
+                  </div>
+                  <div id="pb-side-body" class="pb-panel-body"></div>
+                </aside>
+              </div>
 <!-- Footer: нагрузка → экспорт → главные действия -->
           <div class="pb-footer p-3 border-t border-border shrink-0">
             <div class="pb-row">
@@ -5319,6 +5443,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           </div>
     </div>
     </div>
+    <div id="pb-card-menu" class="hidden" role="menu" aria-label="Exercise actions"></div>
 
 <!-- ============= RECOVERY MAP MODAL (Tier 3 #1 — Fitbod-style recovery heat-map) ============= -->
           <div id="recovery-map-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
@@ -5484,7 +5609,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
 
                     <!-- ============= BODY MAP PICKER MODAL (Quick Pick) ============= -->
           <div id="bodymap-picker-modal" class="hidden fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4" role="dialog" aria-modal="true">
-            <div id="bm-root" class="bg-surface w-full max-w-[min(96vw,1152px)] max-h-[calc(100dvh-1rem)] sm:max-h-[92vh] flex flex-col rounded-2xl border border-border shadow-float" style="container-type:inline-size;container-name:bmPicker">
+            <div id="bm-root" class="bg-surface w-full max-w-[min(96vw,1152px)] min-[1440px]:max-w-[min(96vw,1500px)] min-[1900px]:max-w-[min(96vw,1720px)] min-[2200px]:max-w-[min(94vw,2100px)] max-h-[calc(100dvh-1rem)] sm:max-h-[92vh] flex flex-col rounded-2xl border border-border shadow-float" style="container-type:inline-size;container-name:bmPicker">
               <!-- Header -->
               <div class="px-3 pt-1.5 pb-1 min-[1440px]:p-3 border-b border-border shrink-0">
                 <div class="flex items-center gap-2">
@@ -13858,23 +13983,37 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
 
         // Build exercise list
         const exercises = day.exercises || [];
+        const totalSets = exercises.reduce((s, ex) => s + ((ex.sets || []).length), 0);
+        const estMin = exercises.length ? Math.max(1, Math.round(exercises.reduce((s, ex) => {
+          const n = (ex.sets || []).length;
+          return s + n * ((Number(ex.rest_sec) || 90) + 40);
+        }, 0) / 60)) : 0;
+        const muscleCounts = {};
+        exercises.forEach(ex => {
+          const g = globalExGroup(ex) || (t('common.other') || 'Other');
+          muscleCounts[g] = (muscleCounts[g] || 0) + 1;
+        });
+        const muscleRows = Object.keys(muscleCounts).sort((a, b) => muscleCounts[b] - muscleCounts[a]).slice(0, 6);
+        const maxMuscle = muscleRows.length ? muscleCounts[muscleRows[0]] : 1;
+
+        let listHtml;
         if (exercises.length === 0) {
-          bodyEl.innerHTML = rotHtml + `<div class="text-center py-8 text-sm text-muted">${t('programs.dayEmpty') || 'No exercises in this day'}</div>`;
+          listHtml = `<div class="text-center py-8 text-sm text-muted">${t('programs.dayEmpty') || 'No exercises in this day'}</div>`;
         } else {
-          bodyEl.innerHTML = rotHtml + exercises.map((ex, i) => {
+          listHtml = '<div class="dp-list">' + exercises.map((ex, i) => {
             const sets = ex.sets || [];
             const setCount = sets.length;
             const repsInfo = sets[0] ? (sets[0].reps || '—') : '—';
-            const weightInfo = sets[0] && sets[0].weight ? sets[0].weight + 'kg' : '';
-            // Exercise thumbnail (Sprint 3+)
+            const weightInfo = sets[0] && sets[0].weight ? sets[0].weight + ' ' + (ex.unit === 'lb' ? 'lb' : 'kg') : '';
+            // Exercise thumbnail (Sprint 3+) — exerciseThumb keeps Burnfit/GymImpulse static
             const exImg = globalExImage(ex);
             const thumbHtml = exImg
-              ? `<div class="w-10 h-10 rounded-lg shrink-0 overflow-hidden bg-surface border border-border grid place-items-center">
+              ? `<div class="w-12 h-12 rounded-lg shrink-0 overflow-hidden bg-surface border border-border grid place-items-center">
                 <img src="${escapeAttr(exImg)}" alt="" class="w-full h-full object-contain" loading="lazy" onerror="this.style.display='none'" />
               </div>`
-              : `<div class="w-7 h-7 rounded-lg bg-primary/15 text-primary-2 grid place-items-center font-mono font-bold text-xs shrink-0">${i + 1}</div>`;
-            return `<div class="flex items-center gap-3 bg-surface-2 border border-border rounded-xl p-3 cursor-pointer hover:border-primary/30 transition" data-preview-ex="${escapeAttr(ex.exercise_id || '')}">
-              ${exImg ? `<div class="w-7 h-7 rounded-lg bg-primary/15 text-primary-2 grid place-items-center font-mono font-bold text-xs shrink-0">${i + 1}</div>` : ''}
+              : `<div class="w-8 h-8 rounded-lg bg-primary/15 text-primary-2 grid place-items-center font-mono font-bold text-xs shrink-0">${i + 1}</div>`;
+            return `<div class="flex items-center gap-3 bg-surface-2 border border-border rounded-xl p-3 cursor-pointer hover:border-primary/30 transition min-w-0" data-preview-ex="${escapeAttr(ex.exercise_id || '')}">
+              <div class="w-7 h-7 rounded-lg bg-primary/15 text-primary-2 grid place-items-center font-mono font-bold text-xs shrink-0">${i + 1}</div>
               ${thumbHtml}
               <div class="flex-1 min-w-0">
                 <div class="text-sm font-semibold truncate">${escapeHTML(globalExName(ex))}</div>
@@ -13885,7 +14024,59 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 </div>
               </div>
             </div>`;
+          }).join('') + '</div>';
+        }
+
+        const mobileStatsHtml = `<div class="dp-mobile-stats">
+          <div class="pb-stat"><span>${pbT('exercises')}</span><b>${exercises.length}</b></div>
+          <div class="pb-stat"><span>${pbT('sets')}</span><b>${totalSets}</b></div>
+          <div class="pb-stat"><span>${pbT('time')}</span><b>${estMin} <small style="font-size:8px">${pbT('min')}</small></b></div>
+        </div>`;
+
+        const sideHtml = `<div class="dp-side">
+          <div class="dp-side-card">
+            <div class="pb-panel-eyebrow">${pbT('daySummary')}</div>
+            <div class="pb-stat-grid" style="margin-top:8px">
+              <div class="pb-stat"><span>${pbT('exercises')}</span><b>${exercises.length}</b></div>
+              <div class="pb-stat"><span>${pbT('sets')}</span><b>${totalSets}</b></div>
+              <div class="pb-stat"><span>${pbT('time')}</span><b>${estMin} <small style="font-size:8px">${pbT('min')}</small></b></div>
+              <div class="pb-stat"><span>${pbT('groups')}</span><b>${muscleRows.length}</b></div>
+            </div>
+          </div>
+          <div class="dp-side-card">
+            <div class="pb-panel-eyebrow">${pbT('muscleSplit')}</div>
+            ${muscleRows.length ? muscleRows.map(g => `<div class="dp-bar-row">
+              <div style="display:flex;justify-content:space-between;gap:8px;font-size:10px;margin-bottom:3px"><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHTML(g)}</span><b>${muscleCounts[g]}</b></div>
+              <div class="dp-bar-track"><div class="dp-bar-fill" style="width:${Math.round(muscleCounts[g] / maxMuscle * 100)}%"></div></div>
+            </div>`).join('') : `<div style="font-size:10px;color:rgb(var(--c-muted));margin-top:5px">${pbT('noData')}</div>`}
+          </div>
+          <div class="dp-side-card">
+            <div class="pb-panel-eyebrow">${pbT('program')}</div>
+            <div style="font-size:12px;font-weight:700;margin-top:4px">${escapeHTML(prog.name || '')}</div>
+            <div style="font-size:10px;color:rgb(var(--c-muted));margin-top:3px">${escapeHTML(String(prog.split_type || '').replace(/_/g, ' ').toUpperCase())} · ${parseInt(prog.duration_months, 10) || 3} ${pbT('monthsShort')} · ${(prog.workout_days || []).length} ${pbT('daysShort')}</div>
+          </div>
+        </div>`;
+
+        bodyEl.innerHTML = '<div class="dp-grid"><div class="min-w-0">' + rotHtml + mobileStatsHtml + listHtml + '</div>' + sideHtml + '</div>';
+        try { bodyEl.scrollTop = 0; } catch (_e) {}
+
+        /* c226: day chips — switch the preview day without closing the modal. */
+        const chipsEl = document.getElementById('program-day-preview-days');
+        if (chipsEl) {
+          chipsEl.innerHTML = (prog.workout_days || []).map((d, di) => {
+            const letter = d.day_letter || String(di + 1);
+            const dn = defaultDayNameT(d.name, letter);
+            const def = (t('programs.day') || 'Day') + ' ' + letter;
+            const label = (dn === def) ? def : ((dn || 'Workout') + ' ' + letter);
+            const count = (d.exercises || []).length;
+            return `<button type="button" class="dp-chip${di === dayIdx ? ' active' : ''}" data-preview-day="${di}">${escapeHTML(label)}${d.is_rest_day ? '' : ' · ' + count}</button>`;
           }).join('');
+          chipsEl.querySelectorAll('[data-preview-day]').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const nextIdx = parseInt(btn.getAttribute('data-preview-day'), 10);
+              if (!isNaN(nextIdx) && nextIdx !== dayIdx) openProgramDayPreview(programId, nextIdx);
+            });
+          });
         }
 
         // Wire exercise click
@@ -13996,6 +14187,118 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
 
     // ===== PROGRAM BUILDER STATE =====
     let _pb = null;  // { clientId, name, splitType, duration, days: [{letter,name,exercises:[]}], activeDay: 0, exerciseCache: [] }
+    let pbUI = { sideTab: 'library', selectedEx: null, libQuery: '', libSource: 'all', reorderMode: false, menuEx: null };
+    function pbResetUI() {
+      pbUI = { sideTab: 'library', selectedEx: null, libQuery: '', libSource: 'all', reorderMode: false, menuEx: null };
+      const menu = document.getElementById('pb-card-menu');
+      if (menu) menu.classList.add('hidden');
+    }
+
+    /* c226: compact localizer for the adaptive workspace (EN/RU/HE) so the new
+       panels follow the app language without growing the shared dictionaries. */
+    const PB_L = {
+      program: ['Program', 'Программа', 'תוכנית'],
+      daysSummary: ['Days & summary', 'Дни и сводка', 'ימים וסיכום'],
+      programDays: ['Program days', 'Дни программы', 'ימי תוכנית'],
+      library: ['Library', 'Библиотека', 'ספרייה'],
+      exercise: ['Exercise', 'Упражнение', 'תרגיל'],
+      checks: ['Checks', 'Проверки', 'בדיקות'],
+      exercises: ['Exercises', 'Упражнения', 'תרגילים'],
+      sets: ['Sets', 'Подходы', 'סטים'],
+      time: ['Time', 'Время', 'זמן'],
+      groups: ['Groups', 'Групп', 'קבוצות'],
+      min: ['min', 'мин', 'דק׳'],
+      rest: ['Rest', 'Отдых', 'מנוחה'],
+      sec: ['sec', 'с', 'שנ׳'],
+      exercisesCount: ['{n} exercises', '{n} упражнений', '{n} תרגילים'],
+      checksCount: ['Checks {n}', 'Проверки {n}', 'בדיקות {n}'],
+      noProblems: ['No problems found', 'Проблем не найдено', 'לא נמצאו בעיות'],
+      noExercisesDay: ['No exercises in this day', 'В дне нет упражнений', 'אין תרגילים ביום הזה'],
+      noSets: ['No sets: {name}', 'Без подходов: {name}', 'בלי סטים: {name}'],
+      duplicateCheck: ['Duplicate: {name}', 'Дубликат: {name}', 'כפילות: {name}'],
+      checksPassed: ['All checks passed: no empty days, duplicates or exercises without sets.', 'Проверки пройдены: пустых дней, дублей и упражнений без подходов нет.', 'כל הבדיקות עברו: אין ימים ריקים, כפילויות או תרגילים בלי סטים.'],
+      inspectorHint: ['Tap an exercise number to open the inspector. Sets, rest and quick actions appear here.', 'Нажмите на номер упражнения в списке, чтобы открыть инспектор. Здесь будут подходы, отдых и быстрые действия.', 'הקישו על מספר התרגיל כדי לפתוח את המפקח. כאן יופיעו הסטים, המנוחה והפעולות המהירות.'],
+      quickActions: ['Quick actions', 'Быстрые действия', 'פעולות מהירות'],
+      toTop: ['To start of day', 'В начало дня', 'לתחילת היום'],
+      up: ['Move up', 'Выше', 'למעלה'],
+      down: ['Move down', 'Ниже', 'למטה'],
+      toBottom: ['To end of day', 'В конец дня', 'לסוף היום'],
+      replace: ['Replace exercise', 'Заменить упражнение', 'החלף תרגיל'],
+      deleteExercise: ['Delete exercise', 'Удалить упражнение', 'מחק תרגיל'],
+      openInspector: ['Open inspector', 'Открыть инспектор', 'פתח מפקח'],
+      actions: ['Exercise actions', 'Действия с упражнением', 'פעולות לתרגיל'],
+      duplicateAction: ['Duplicate', 'Дублировать', 'שכפל'],
+      deleteAction: ['Delete', 'Удалить', 'מחק'],
+      searchExercise: ['Search exercise…', 'Поиск упражнения…', 'חפש תרגיל…'],
+      allSources: ['All sources', 'Все источники', 'כל המקורות'],
+      bodyMap: ['Body map', 'Карта тела', 'מפת גוף'],
+      first60: ['{n} exercises · first 60', '{n} упражнений · первые 60', '{n} תרגילים · 60 הראשונים'],
+      reorder: ['Reorder', 'Переставить', 'סדר'],
+      reorderHint: ['Reorder mode: ⇤ to start, ⇥ to end, ↑↓ one step. Sets are hidden for a compact view.', 'Режим перестановки: ⇤ — в начало, ⇥ — в конец, ↑↓ — на шаг. Наборы скрыты для компактности.', 'מצב סידור: ⇤ להתחלה, ⇥ לסוף, ↑↓ צעד אחד. הסטים מוסתרים לתצוגה קומפקטית.'],
+      reorderOn: ['Reorder mode: use ⇤ ⇥ ↑ ↓ on the cards', 'Режим перестановки: используйте ⇤ ⇥ ↑ ↓ на карточках', 'מצב סידור: השתמשו ב־⇤ ⇥ ↑ ↓ בכרטיסים'],
+      movedTop: ['Exercise moved to the start', 'Упражнение перемещено в начало', 'התרגיל הועבר להתחלה'],
+      movedBottom: ['Exercise moved to the end', 'Упражнение перемещено в конец', 'התרגיל הועבר לסוף'],
+      moved: ['Exercise moved', 'Упражнение перемещено', 'התרגיל הועבר'],
+      duplicated: ['Exercise duplicated', 'Упражнение дублировано', 'התרגיל שוכפל'],
+      deleted: ['Exercise deleted', 'Упражнение удалено', 'התרגיל נמחק'],
+      daySummary: ['Day summary', 'Сводка дня', 'סיכום היום'],
+      muscleSplit: ['Muscle distribution', 'Распределение мышц', 'פיזור שרירים'],
+      noData: ['No data', 'Нет данных', 'אין נתונים'],
+      monthsShort: ['mo', 'мес', 'חד׳'],
+      daysShort: ['days', 'дн.', 'ימים']
+    };
+    function pbT(key, vars) {
+      const lang = (typeof currentLang === 'function') ? currentLang() : 'en';
+      const row = PB_L[key] || [];
+      let str = row[lang === 'ru' ? 1 : (lang === 'he' ? 2 : 0)] || row[0] || key;
+      if (vars) str = str.replace(/\{(\w+)\}/g, (m, k) => (vars[k] != null ? vars[k] : m));
+      return str;
+    }
+
+    /* c226: adaptive workspace controls — the reorder toggle, side tabs and
+       card-menu dismissal live in the static builder markup, so they are wired
+       once here, inside the profile module. */
+    (function wirePbWorkspace() {
+      const reorderBtn = document.getElementById('pb-reorder-btn');
+      if (reorderBtn) reorderBtn.addEventListener('click', function () {
+        if (!_pb) return;
+        pbUI.reorderMode = !pbUI.reorderMode;
+        pbCloseMenu();
+        renderBuilder();
+        if (pbUI.reorderMode) toast(pbT('reorderOn'), 'info', 2600);
+      });
+      document.querySelectorAll('[data-pb-side]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          pbUI.sideTab = btn.getAttribute('data-pb-side') || 'library';
+          pbCloseMenu();
+          renderPbSidePanel();
+          if (pbUI.sideTab === 'library') {
+            const search = document.getElementById('pb-lib-search');
+            if (search) search.focus();
+          }
+        });
+      });
+      document.addEventListener('click', function (e) {
+        const menu = document.getElementById('pb-card-menu');
+        if (!menu || menu.classList.contains('hidden')) return;
+        if (menu.contains(e.target)) return;
+        if (e.target.closest && e.target.closest('[data-pb-menu]')) return;
+        pbCloseMenu();
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') pbCloseMenu();
+      }, true);
+      const scroller = document.getElementById('pb-day-content');
+      if (scroller) scroller.addEventListener('scroll', pbCloseMenu, { passive: true });
+      let pbResizeTimer = null;
+      window.addEventListener('resize', function () {
+        pbCloseMenu();
+        if (pbResizeTimer) clearTimeout(pbResizeTimer);
+        pbResizeTimer = setTimeout(function () {
+          if (_pb && window.innerWidth >= 1440) renderPbSidePanel();
+        }, 180);
+      });
+    })();
 
       // === Split configuration — GLOBAL so all modules can access ===
   window.SPLIT_CONFIGS = {
@@ -14046,6 +14349,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
 
     async function openProgramCreator(clientId) {
       _pb = { clientId, name: '', splitType: 'full_body', duration: 3, activeDay: 0, exerciseCache: [], days: [] };
+      pbResetUI();
       // Load exercise cache — AWAIT before showing modal so the body map
       // picker has the full exercise list when the user opens it.
       // Previously this was fire-and-forget (.then), which meant the picker
@@ -14093,6 +14397,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
         exerciseCache: [],
         days: []
       };
+      pbResetUI();
       // Same cache-first discipline as openProgramCreator — the body-map
       // picker must work the moment the builder is visible.
       try {
@@ -14631,11 +14936,236 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       return t('wunit.' + (u === 'sec' ? 'secShort' : 'minShort')) || (u === 'sec' ? 'сек' : 'мин');
     }
 
+    function pbStats() {
+      let totalEx = 0, totalSets = 0, totalSeconds = 0;
+      (_pb && _pb.days ? _pb.days : []).forEach(d => {
+        (d.exercises || []).forEach(ex => {
+          const sets = (ex.sets || []).length;
+          totalEx += 1;
+          totalSets += sets;
+          totalSeconds += sets * (Number(ex.rest_sec) || 90) + sets * 40;
+        });
+      });
+      return { totalEx: totalEx, totalSets: totalSets, minutes: Math.max(0, Math.round(totalSeconds / 60)) };
+    }
+
+    function pbChecks() {
+      const out = [];
+      (_pb && _pb.days ? _pb.days : []).forEach((d, di) => {
+        if (d.is_rest_day) return;
+        const exercises = d.exercises || [];
+        if (!exercises.length) out.push({ day: di, ex: null, type: 'empty', text: pbT('noExercisesDay') });
+        const seen = new Map();
+        exercises.forEach((ex, ei) => {
+          if (!(ex.sets || []).length) out.push({ day: di, ex: ei, type: 'no-sets', text: pbT('noSets', { name: getLocalizedExName(ex) }) });
+          const key = ex.exercise_id || ex.name || '';
+          if (key && seen.has(key)) out.push({ day: di, ex: ei, type: 'dup', text: pbT('duplicateCheck', { name: getLocalizedExName(ex) }) });
+          else if (key) seen.set(key, ei);
+        });
+      });
+      return out;
+    }
+
+    function renderPbLeftPanel() {
+      const body = document.getElementById('pb-left-body');
+      if (!body || !_pb) return;
+      const stats = pbStats();
+      const checks = pbChecks();
+      const days = _pb.days || [];
+      const titleEl = document.querySelector('.pb-panel-head .pb-panel-title');
+      if (titleEl) titleEl.textContent = pbT('daysSummary');
+      const eyebrowEl = document.querySelector('.pb-panel-head .pb-panel-eyebrow');
+      if (eyebrowEl) eyebrowEl.textContent = pbT('program');
+      document.querySelectorAll('[data-pb-side]').forEach(function (btn) {
+        const label = btn.querySelector('[data-pb-side-label]');
+        const key = btn.getAttribute('data-pb-side');
+        if (label) label.textContent = key === 'library' ? pbT('library') : key === 'inspect' ? pbT('exercise') : pbT('checks');
+      });
+      const reorderLabel = document.getElementById('pb-reorder-label');
+      if (reorderLabel) reorderLabel.textContent = pbT('reorder');
+      body.innerHTML =
+        '<div class="pb-stat-grid">' +
+          '<div class="pb-stat"><span>' + pbT('exercises') + '</span><b>' + stats.totalEx + '</b></div>' +
+          '<div class="pb-stat"><span>' + pbT('sets') + '</span><b>' + stats.totalSets + '</b></div>' +
+          '<div class="pb-stat"><span>' + pbT('time') + '</span><b>' + stats.minutes + ' <small style="font-size:8px">' + pbT('min') + '</small></b></div>' +
+          '<div class="pb-stat"><span>' + pbT('checks') + '</span><b style="color:' + (checks.length ? 'rgb(var(--c-danger))' : 'rgb(var(--c-success))') + '">' + checks.length + '</b></div>' +
+        '</div>' +
+        '<div class="pb-panel-label">' + pbT('programDays') + '</div>' +
+        '<div class="space-y-1">' +
+          days.map(function (d, di) {
+            const count = (d.exercises || []).length;
+            return '<button type="button" class="pb-day-row' + (di === _pb.activeDay ? ' active' : '') + '" data-pb-left-day="' + di + '">' +
+              '<span class="pb-day-letter">' + escapeHTML(d.day_letter || String(di + 1)) + '</span>' +
+              '<span style="min-width:0;flex:1"><span style="display:block;font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escapeHTML(d.name || ((t('programs.day') || 'Day') + ' ' + (di + 1))) + '</span>' +
+              '<span style="display:block;font-size:9px;color:rgb(var(--c-muted))">' + (d.is_rest_day ? pbT('rest') : pbT('exercisesCount', { n: count })) + '</span></span>' +
+              '<span class="pb-day-meta">' + (d.is_rest_day ? '—' : count) + '</span></button>';
+          }).join('') +
+        '</div>' +
+        '<div class="pb-panel-label">' + pbT('checks') + ' <span style="opacity:.6">' + checks.length + '</span></div>' +
+        (checks.length
+          ? checks.slice(0, 8).map(function (c) {
+              return '<button type="button" class="pb-check" data-pb-check-day="' + c.day + '" data-pb-check-ex="' + (c.ex == null ? '' : c.ex) + '">' + escapeHTML(c.text) + '</button>';
+            }).join('')
+          : '<div style="font-size:10px;color:rgb(var(--c-muted));padding:4px 2px">' + pbT('noProblems') + '</div>');
+      body.querySelectorAll('[data-pb-left-day]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          _pb.activeDay = parseInt(btn.getAttribute('data-pb-left-day'), 10) || 0;
+          pbUI.selectedEx = null;
+          renderBuilder();
+        });
+      });
+      body.querySelectorAll('[data-pb-check-day]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          _pb.activeDay = parseInt(btn.getAttribute('data-pb-check-day'), 10) || 0;
+          pbUI.selectedEx = btn.getAttribute('data-pb-check-ex') === '' ? null : parseInt(btn.getAttribute('data-pb-check-ex'), 10);
+          pbUI.sideTab = pbUI.selectedEx == null ? 'checks' : 'inspect';
+          renderBuilder();
+          const card = document.querySelector('#pb-day-content [data-pb-ex-index="' + pbUI.selectedEx + '"]');
+          if (card && card.scrollIntoView) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+      });
+    }
+
+    function renderPbSidePanel() {
+      const body = document.getElementById('pb-side-body');
+      if (!body || !_pb) return;
+      const checks = pbChecks();
+      document.querySelectorAll('[data-pb-side]').forEach(function (btn) {
+        btn.classList.toggle('active', btn.getAttribute('data-pb-side') === pbUI.sideTab);
+      });
+      const countEl = document.getElementById('pb-checks-count');
+      if (countEl) countEl.textContent = checks.length ? String(checks.length) : '';
+
+      if (pbUI.sideTab === 'library') {
+        const q = String(pbUI.libQuery || '').trim().toLowerCase();
+        const src = pbUI.libSource || 'all';
+        const srcMap = { bf: ['burnfit', 'bf'], gv: ['gymvisual', 'gv'], gi: ['gymimpulse', 'gi'], rdb: ['repdb', 'rdb'] };
+        const wanted = srcMap[src] || [];
+        let list = (_pb.exerciseCache || []).filter(function (e) {
+          const source = String(e.source || e.src || '');
+          if (wanted.length && wanted.indexOf(source) === -1) return false;
+          if (!q) return true;
+          return [e.name_en, e.name_ru, e.name_he, e.group_en, e.group_ru, e.group_he].filter(Boolean).join(' ').toLowerCase().indexOf(q) !== -1;
+        });
+        const total = list.length;
+        list = list.slice(0, 60);
+        body.innerHTML =
+          '<input id="pb-lib-search" class="pb-lib-search" type="search" placeholder="' + escapeHTML(pbT('searchExercise')) + '" value="' + escapeHTML(pbUI.libQuery) + '" />' +
+          '<div class="flex gap-1 mt-2">' +
+            '<select id="pb-lib-source" class="flex-1 min-w-0 bg-surface-2 border border-border rounded-lg text-[10px] px-1.5 py-1.5 text-text focus:outline-none">' +
+              '<option value="all"' + (src === 'all' ? ' selected' : '') + '>' + pbT('allSources') + '</option>' +
+              '<option value="bf"' + (src === 'bf' ? ' selected' : '') + '>Burnfit</option>' +
+              '<option value="gv"' + (src === 'gv' ? ' selected' : '') + '>Gym Visual</option>' +
+              '<option value="gi"' + (src === 'gi' ? ' selected' : '') + '>GymImpulse</option>' +
+              '<option value="rdb"' + (src === 'rdb' ? ' selected' : '') + '>RepDB</option>' +
+            '</select>' +
+            '<button type="button" id="pb-lib-open-picker" class="shrink-0 rounded-lg border border-border bg-surface-2 px-2 py-1.5 text-[10px] font-bold text-muted hover:text-text">' + pbT('bodyMap') + '</button>' +
+          '</div>' +
+          '<div class="pb-panel-label">' + (total > 60 ? pbT('first60', { n: total }) : pbT('exercisesCount', { n: total })) + '</div>' +
+          '<div class="space-y-0.5">' + list.map(function (e) {
+            const thumb = exerciseThumb(e);
+            const name = e['name_' + currentLang()] || e.name_en || '?';
+            const group = e['group_' + currentLang()] || e.group_en || '';
+            return '<button type="button" class="pb-lib-row" data-pb-lib-add="' + escapeHTML(e.id) + '">' +
+              '<span class="pb-lib-thumb">' + (thumb ? '<img src="' + escapeHTML(thumb) + '" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover" />' : '') + '</span>' +
+              '<span style="min-width:0;flex:1"><b style="display:block;font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escapeHTML(name) + '</b><small style="display:block;font-size:9px;color:rgb(var(--c-muted))">' + escapeHTML(group) + '</small></span>' +
+              '<span style="color:rgb(var(--c-primary-2));font-weight:800">+</span></button>';
+          }).join('') + '</div>';
+        const search = document.getElementById('pb-lib-search');
+        if (search) {
+          search.addEventListener('input', function () {
+            const caret = search.selectionStart;
+            pbUI.libQuery = search.value;
+            renderPbSidePanel();
+            const next = document.getElementById('pb-lib-search');
+            if (next) { next.focus(); const pos = Math.min(caret == null ? next.value.length : caret, next.value.length); next.setSelectionRange(pos, pos); }
+          });
+        }
+        const source = document.getElementById('pb-lib-source');
+        if (source) source.addEventListener('change', function () { pbUI.libSource = source.value; renderPbSidePanel(); });
+        const openPicker = document.getElementById('pb-lib-open-picker');
+        if (openPicker) openPicker.addEventListener('click', function () { pbOpenExercisePicker(true); });
+        body.querySelectorAll('[data-pb-lib-add]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            pbAddExercise(btn.getAttribute('data-pb-lib-add'));
+            pbUI.sideTab = 'library';
+            const next = document.getElementById('pb-lib-search');
+            if (next) { next.focus(); next.setSelectionRange(next.value.length, next.value.length); }
+          });
+        });
+        return;
+      }
+
+      if (pbUI.sideTab === 'inspect') {
+        const day = _pb.days[_pb.activeDay];
+        const ex = day && day.exercises && day.exercises[pbUI.selectedEx];
+        if (!ex) {
+          body.innerHTML = '<div style="font-size:11px;color:rgb(var(--c-muted));line-height:1.6;padding:8px 4px">' + pbT('inspectorHint') + '</div>';
+          return;
+        }
+        const sets = ex.sets || [];
+        body.innerHTML =
+          '<div style="font-weight:800;font-size:13px;line-height:1.3">' + escapeHTML(getLocalizedExName(ex)) + '</div>' +
+          '<div style="font-size:10px;color:rgb(var(--c-muted));margin-top:3px">' + escapeHTML(getLocalizedExGroup(ex) || '') + '</div>' +
+          '<div class="pb-stat-grid" style="margin-top:10px"><div class="pb-stat"><span>' + pbT('sets') + '</span><b>' + sets.length + '</b></div><div class="pb-stat"><span>' + pbT('rest') + '</span><b>' + (Number(ex.rest_sec) || 90) + ' <small style="font-size:8px">' + pbT('sec') + '</small></b></div></div>' +
+          '<div class="pb-panel-label">' + pbT('quickActions') + '</div>' +
+          '<div class="space-y-1">' +
+            '<button class="pb-check" data-pb-insp-action="top">' + pbT('toTop') + '</button>' +
+            '<button class="pb-check" data-pb-insp-action="up">' + pbT('up') + '</button>' +
+            '<button class="pb-check" data-pb-insp-action="down">' + pbT('down') + '</button>' +
+            '<button class="pb-check" data-pb-insp-action="bottom">' + pbT('toBottom') + '</button>' +
+            '<button class="pb-check" data-pb-insp-action="replace">' + pbT('replace') + '</button>' +
+            '<button class="pb-check" data-pb-insp-action="duplicate">' + pbT('duplicateAction') + '</button>' +
+            '<button class="pb-check" data-pb-insp-action="delete" style="color:rgb(var(--c-danger))">' + pbT('deleteExercise') + '</button>' +
+          '</div>';
+        body.querySelectorAll('[data-pb-insp-action]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            const action = btn.getAttribute('data-pb-insp-action');
+            if (action === 'replace') { pbReplaceExercise(pbUI.selectedEx); return; }
+            if (action === 'duplicate') { pbDuplicateExercise(pbUI.selectedEx); return; }
+            if (action === 'delete') {
+              const d = _pb.days[_pb.activeDay];
+              if (!d || !d.exercises[pbUI.selectedEx]) return;
+              d.exercises.splice(pbUI.selectedEx, 1);
+              pbUI.selectedEx = null;
+              renderBuilder();
+              toast(pbT('deleted'), 'info', 1200);
+              return;
+            }
+            pbQuickMove(pbUI.selectedEx, action);
+          });
+        });
+        return;
+      }
+
+      body.innerHTML = checks.length
+        ? '<div class="space-y-1">' + checks.map(function (c) {
+            return '<button type="button" class="pb-check" data-pb-check-day="' + c.day + '" data-pb-check-ex="' + (c.ex == null ? '' : c.ex) + '">' + escapeHTML(c.text) + '</button>';
+          }).join('') + '</div>'
+        : '<div style="font-size:11px;color:rgb(var(--c-muted));line-height:1.6;padding:8px 4px">' + pbT('checksPassed') + '</div>';
+      body.querySelectorAll('[data-pb-check-day]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          _pb.activeDay = parseInt(btn.getAttribute('data-pb-check-day'), 10) || 0;
+          pbUI.selectedEx = btn.getAttribute('data-pb-check-ex') === '' ? null : parseInt(btn.getAttribute('data-pb-check-ex'), 10);
+          pbUI.sideTab = pbUI.selectedEx == null ? 'checks' : 'inspect';
+          renderBuilder();
+          const card = document.querySelector('#pb-day-content [data-pb-ex-index="' + pbUI.selectedEx + '"]');
+          if (card && card.scrollIntoView) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+      });
+    }
+
     function renderBuilder() {
       window.__refreshBuilder = function () { renderBuilder(); }; /* c63: live lang refresh */
       const freqHint = document.getElementById('pb-freq-hint');
       const config = SPLIT_CONFIGS[_pb.splitType];
       if (freqHint) freqHint.textContent = config ? config.freq : '';
+
+      /* c226: reorder mode is a compact, movement-focused view. */
+      const shellEl = document.getElementById('pb-shell');
+      if (shellEl) shellEl.classList.toggle('pb-reorder-on', !!pbUI.reorderMode);
+      const reorderBtn = document.getElementById('pb-reorder-btn');
+      if (reorderBtn) reorderBtn.classList.toggle('active', !!pbUI.reorderMode);
 
       // Day tabs
       const tabsEl = document.getElementById('pb-day-tabs');
@@ -14698,7 +15228,12 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           <span class="text-[10px] text-muted shrink-0">${(typeof currentLang === 'function' && currentLang() === 'en') ? 's' : (currentLang() === 'he' ? 'ש׳' : 'с')}</span>
           <button data-pb-rest-all-apply class="text-[11px] font-bold px-3 py-1.5 rounded-lg bg-primary/15 text-primary-2 border border-primary/30 hover:bg-primary/25 transition shrink-0">${t('wunit.applyAll') || 'Apply to all'}</button>
         </div>`;
-        contentEl.innerHTML = bulkRestB + day.exercises.map((ex, ei) => {
+        contentEl.innerHTML = (pbUI.reorderMode
+          ? `<div class="flex items-center gap-2 mb-3 rounded-xl border border-primary/30 bg-primary/10 px-3 py-2 text-[11px] font-semibold text-primary-2">
+               <span class="shrink-0">⇅</span>
+               <span class="min-w-0">${pbT('reorderHint')}</span>
+             </div>`
+          : '') + bulkRestB + day.exercises.map((ex, ei) => {
           const sets = ex.sets || [];
           /* c102: stretching sets are TIME-first — a dedicated time input sits
              before the weight/reps cells (hold duration is the primary metric) */
@@ -14766,7 +15301,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               <div class="pb-grip text-muted/60 hover:text-muted transition cursor-grab active:cursor-grabbing shrink-0" title="${t('programs.dragToReorder') || 'Drag to reorder'}">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>
               </div>
-              <div class="w-7 h-7 rounded-lg bg-primary/10 text-primary-2 grid place-items-center font-mono font-bold text-xs shrink-0">${ei + 1}</div>
+              <div class="w-7 h-7 rounded-lg bg-primary/10 text-primary-2 grid place-items-center font-mono font-bold text-xs shrink-0 cursor-pointer" data-pb-inspect="${ei}" title="${escapeAttr(pbT('openInspector'))}">${ei + 1}</div>
               ${(() => {
                 // Sprint 3+: exercise thumbnail next to name for quick visual identification
                 if (!_pb._exMap || _pb._exMapSize !== _pb.exerciseCache.length) {
@@ -14810,10 +15345,19 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
               <button data-pb-replace-ex="${ei}" class="text-muted hover:text-accent transition w-6 h-6 grid place-items-center shrink-0" title="${t('programs.replaceExercise') || 'Replace exercise'}">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
               </button>
+              <button data-pb-menu="${ei}" class="text-muted hover:text-text transition w-6 h-6 grid place-items-center shrink-0" title="${escapeAttr(pbT('actions'))}" aria-label="${escapeAttr(pbT('actions'))}">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+              </button>
               <button data-pb-del-ex="${ei}" class="text-muted hover:text-danger transition w-6 h-6 grid place-items-center shrink-0">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
               </button>
             </div>
+            ${pbUI.reorderMode ? `<div class="pb-reorder-controls">
+              <button type="button" data-pb-quick-move="top" data-pb-quick-ex="${ei}" title="${escapeAttr(pbT('toTop'))}" aria-label="${escapeAttr(pbT('toTop'))}">⇤</button>
+              <button type="button" data-pb-quick-move="up" data-pb-quick-ex="${ei}" title="${escapeAttr(pbT('up'))}" aria-label="${escapeAttr(pbT('up'))}">↑</button>
+              <button type="button" data-pb-quick-move="down" data-pb-quick-ex="${ei}" title="${escapeAttr(pbT('down'))}" aria-label="${escapeAttr(pbT('down'))}">↓</button>
+              <button type="button" data-pb-quick-move="bottom" data-pb-quick-ex="${ei}" title="${escapeAttr(pbT('toBottom'))}" aria-label="${escapeAttr(pbT('toBottom'))}">⇥</button>
+            </div>` : ''}
             <div class="space-y-1">${setsHtml}</div>
           </div>`;
         }).join('');
@@ -14948,6 +15492,38 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           });
         });
 
+        /* c226: inspector, per-card ⋯ menu and quick-move arrows. These keep
+           touch reordering reliable — no HTML5 drag required. */
+        contentEl.querySelectorAll('[data-pb-inspect]').forEach(el => {
+          el.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const exi = parseInt(el.getAttribute('data-pb-inspect'), 10);
+            if (window.innerWidth >= 1440) {
+              pbUI.selectedEx = exi;
+              pbUI.sideTab = 'inspect';
+              renderBuilder();
+            } else {
+              /* narrow screens have no persistent inspector — open the
+                 touch action sheet with the same quick actions. */
+              pbOpenMenu(exi, el);
+            }
+          });
+        });
+        contentEl.querySelectorAll('[data-pb-menu]').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const exi = parseInt(btn.getAttribute('data-pb-menu'), 10);
+            const menu = document.getElementById('pb-card-menu');
+            if (menu && pbUI.menuEx === exi && !menu.classList.contains('hidden')) { pbCloseMenu(); return; }
+            pbOpenMenu(exi, btn);
+          });
+        });
+        contentEl.querySelectorAll('[data-pb-quick-move]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            pbQuickMove(parseInt(btn.getAttribute('data-pb-quick-ex'), 10), btn.getAttribute('data-pb-quick-move'));
+          });
+        });
+
         /* c104: per-exercise weight unit chip (kg⇄lb — converts the set values) */
         contentEl.querySelectorAll('[data-pb-wunit]').forEach(btn => {
           btn.addEventListener('click', () => {
@@ -15023,6 +15599,21 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             _pb._dragFrom = null;
           });
         });
+        /* c226: auto-scroll the editor while a card is dragged near its edges —
+           makes bottom→top moves possible in one continuous gesture. */
+        if (!contentEl._pbDragScrollWired) {
+          contentEl._pbDragScrollWired = true;
+          contentEl.addEventListener('dragover', (e) => {
+            if (!_pb._dragFrom) return;
+            const rect = contentEl.getBoundingClientRect();
+            const edge = 84;
+            if (e.clientY < rect.top + edge) {
+              contentEl.scrollTop -= Math.max(6, (rect.top + edge - e.clientY) * 0.55);
+            } else if (e.clientY > rect.bottom - edge) {
+              contentEl.scrollTop += Math.max(6, (e.clientY - (rect.bottom - edge)) * 0.55);
+            }
+          });
+        }
         // Drop targets: each exercise card
         contentEl.querySelectorAll('.pb-draggable').forEach(card => {
           card.addEventListener('dragover', (e) => {
@@ -15074,10 +15665,25 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           });
         });
       }
+
+      /* c226: keep the adaptive side panels in sync with the editor. The
+         library is only materialized when the right pane is actually visible
+         (>=1440) — phones skip 60 rows of DOM on every render. */
+      renderPbLeftPanel();
+      if (window.innerWidth >= 1440) renderPbSidePanel();
     }
 
     /** Open exercise picker for program builder. */
-    function pbOpenExercisePicker() {
+    function pbOpenExercisePicker(forceModal) {
+      /* On wide screens the right-hand library is always visible: the "+"
+         focuses it instead of opening a second, nested modal. */
+      if (!forceModal && window.innerWidth >= 1440 && document.getElementById('pb-side-body')) {
+        pbUI.sideTab = 'library';
+        renderBuilder();
+        const search = document.getElementById('pb-lib-search');
+        if (search) { search.focus(); search.select(); }
+        return;
+      }
       // Use Body Map Picker for fast exercise selection
       bodyMapPicker.open((ex) => {
         pbAddExercise(ex.id);
@@ -15272,6 +15878,141 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       });
       toast(t('programs.exerciseAddedToDay', {day: day.day_letter}), 'success', 1500);
       renderBuilder();
+    }
+
+    function pbQuickMove(exi, action) {
+      const day = _pb && _pb.days && _pb.days[_pb.activeDay];
+      if (!day || !day.exercises || !day.exercises[exi]) return;
+      const last = day.exercises.length - 1;
+      let target = exi;
+      if (action === 'top') target = 0;
+      else if (action === 'bottom') target = last;
+      else if (action === 'up') target = Math.max(0, exi - 1);
+      else if (action === 'down') target = Math.min(last, exi + 1);
+      if (target === exi) return;
+      pbUI.selectedEx = target;
+      pbMoveExercise(exi, target);
+      const card = document.querySelector('#pb-day-content [data-pb-ex-index="' + target + '"]');
+      if (card && card.scrollIntoView) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      toast(action === 'top' ? pbT('movedTop') : action === 'bottom' ? pbT('movedBottom') : pbT('moved'), 'success', 1200);
+    }
+
+    function pbDuplicateExercise(exi) {
+      const day = _pb && _pb.days && _pb.days[_pb.activeDay];
+      const source = day && day.exercises && day.exercises[exi];
+      if (!source) return;
+      const clone = JSON.parse(JSON.stringify(source));
+      clone.is_superset = false;
+      delete clone.superset_partner;
+      delete clone.ss_link;
+      day.exercises.splice(exi + 1, 0, clone);
+      pbUI.selectedEx = exi + 1;
+      renderBuilder();
+      toast(pbT('duplicated'), 'success', 1200);
+    }
+
+    function pbReplaceExercise(exi) {
+      const day = _pb && _pb.days && _pb.days[_pb.activeDay];
+      const oldEx = day && day.exercises && day.exercises[exi];
+      if (!oldEx) return;
+      bodyMapPicker.open((pickedEx) => {
+        const lang = currentLang();
+        oldEx.exercise_id = pickedEx.id;
+        oldEx.name = pickedEx['name_' + lang] || pickedEx.name_en || pickedEx.nE || '?';
+        oldEx.group = pickedEx['group_' + lang] || pickedEx.group_en || pickedEx.gE || '';
+        oldEx.cardio = pickedEx.category === 'cardio';
+        renderBuilder();
+        toast((t('programs.exerciseReplaced') || 'Exercise replaced'), 'success', 2000);
+      }, _pb.exerciseCache);
+    }
+
+    /* c226: per-card action menu — the fast, touch-friendly path for moving an
+       exercise to the top/bottom, duplicating, replacing or deleting it. */
+    function pbCloseMenu() {
+      const menu = document.getElementById('pb-card-menu');
+      if (menu) { menu.classList.add('hidden'); menu.innerHTML = ''; }
+      pbUI.menuEx = null;
+    }
+
+    function pbOpenMenu(exi, anchor) {
+      const menu = document.getElementById('pb-card-menu');
+      const day = _pb && _pb.days && _pb.days[_pb.activeDay];
+      const ex = day && day.exercises && day.exercises[exi];
+      if (!menu || !ex) return;
+      const first = exi === 0;
+      const last = exi === day.exercises.length - 1;
+      pbUI.menuEx = exi;
+      pbUI.selectedEx = exi;
+      const item = (action, icon, label, opts) =>
+        '<button type="button" class="pb-menu-item' + ((opts && opts.danger) ? ' danger' : '') + '"' +
+        (opts && opts.disabled ? ' disabled style="opacity:.38;pointer-events:none"' : '') +
+        ' data-pb-menu-action="' + action + '">' +
+        '<span style="width:16px;text-align:center;flex:0 0 16px">' + icon + '</span><span>' + label + '</span></button>';
+      menu.innerHTML =
+        item('top', '⇤', pbT('toTop'), { disabled: first }) +
+        item('up', '↑', pbT('up'), { disabled: first }) +
+        item('down', '↓', pbT('down'), { disabled: last }) +
+        item('bottom', '⇥', pbT('toBottom'), { disabled: last }) +
+        '<div class="pb-menu-sep"></div>' +
+        (window.innerWidth >= 1440 ? item('inspect', '◉', pbT('openInspector')) : '') +
+        item('duplicate', '⧉', pbT('duplicateAction')) +
+        item('replace', '⇄', pbT('replace')) +
+        '<div class="pb-menu-sep"></div>' +
+        item('delete', '⌫', pbT('deleteAction'), { danger: true });
+      menu.classList.remove('hidden');
+      if (window.innerWidth >= 640 && anchor) {
+        const r = anchor.getBoundingClientRect();
+        const w = 210;
+        const h = Math.min(menu.offsetHeight || 300, window.innerHeight - 16);
+        let left = Math.max(8, Math.min(window.innerWidth - w - 8, r.right - w));
+        let top = r.bottom + 6;
+        if (top + h > window.innerHeight - 8) top = Math.max(8, r.top - h - 6);
+        menu.style.left = left + 'px';
+        menu.style.top = top + 'px';
+        menu.style.right = 'auto';
+        menu.style.bottom = 'auto';
+        menu.style.maxHeight = 'calc(100dvh - 16px)';
+        menu.style.overflowY = 'auto';
+      } else {
+        /* mobile bottom sheet: clear desktop inline positioning so the
+           stylesheet's full-width/bottom-sheet rules win after a resize. */
+        menu.style.left = '';
+        menu.style.top = '';
+        menu.style.right = '';
+        menu.style.bottom = '';
+        menu.style.maxHeight = '';
+        menu.style.overflowY = '';
+      }
+      menu.querySelectorAll('[data-pb-menu-action]').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          pbMenuAction(btn.getAttribute('data-pb-menu-action'));
+        });
+      });
+    }
+
+    function pbMenuAction(action) {
+      const exi = pbUI.menuEx;
+      pbCloseMenu();
+      if (exi == null) return;
+      if (action === 'inspect') {
+        pbUI.selectedEx = exi;
+        pbUI.sideTab = 'inspect';
+        renderBuilder();
+        return;
+      }
+      if (action === 'duplicate') { pbDuplicateExercise(exi); return; }
+      if (action === 'replace') { pbReplaceExercise(exi); return; }
+      if (action === 'delete') {
+        const day = _pb.days[_pb.activeDay];
+        if (!day || !day.exercises[exi]) return;
+        day.exercises.splice(exi, 1);
+        pbUI.selectedEx = null;
+        renderBuilder();
+        toast(pbT('deleted'), 'info', 1200);
+        return;
+      }
+      pbQuickMove(exi, action);
     }
 
     /** Make the active day's workout easier: lower RPE, raise reps, drop a set if >3. */
@@ -15585,6 +16326,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         })),
         editId: programId
       };
+      pbResetUI();
       // AWAIT exercise cache load so the body map picker works immediately
       try {
         _pb.exerciseCache = (await db.all('exercise_base')).filter(e => !e.is_archived);  // Archive feature: exclude archived;
