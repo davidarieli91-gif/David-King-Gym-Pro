@@ -96,5 +96,19 @@ ok('day preview has day chips and a summary side panel', crm.includes('id="progr
 ok('exercise picker widens on ultrawide screens', crm.includes('min-[1900px]:max-w-[min(96vw,1720px)]') && crm.includes('min-[2200px]:max-w-[min(94vw,2100px)]'));
 ok('exercise picker shows the body map from 1280px', crm.includes('@media (max-width: 1279px)') && crm.includes('.picker-map-col { display: none !important; }'));
 
+/* c229: portion units + nutrient comparison */
+ok('portion units exist with piece/pack/glass/tbsp/tsp/handful/can', crm.includes("const DK_UNIT_ORDER = ['serving','piece','pack','package','glass','tbsp','tsp','handful','can']") && crm.includes("handful: { en: 'handful'") && crm.includes("can:     { en: 'can'"));
+ok('food detail edit form stores unit weights', crm.includes('name="unit_piece"') && crm.includes('name="unit_handful"') && crm.includes('name="unit_can"') && crm.includes('units: Object.values(unitMap)'));
+ok('portion modal converts quantity × unit to grams', crm.includes('id="food-portion-qty"') && crm.includes('id="food-portion-unit"') && crm.includes('const syncUnitGrams') && crm.includes('u.grams * q'));
+ok('products tab has a comparison tab', crm.includes('data-nutrition-tab="compare"') && crm.includes('id="cmp-root"') && crm.includes('const nutritionCompare'));
+ok('comparison ranks per 1 g / 10 g / 100 g / 100 kcal', crm.includes("if (_basis === '10g') return 10") && crm.includes("_basis === '100kcal'") && crm.includes("seg('basis'"));
+ok('comparison has a usefulness score with penalties', crm.includes('function scoreOf(f)') && crm.includes('saturated_fat) || 0) / 22') && crm.includes('n.sugars) || 0) / 50'));
+ok('implausible imported values are ignored in rankings', crm.includes('const PLAUSIBLE_MAX = {') && crm.includes('function plausible(key, value)') && crm.includes('if (kcal < 20) return 0;'));
+ok('products can be compared side by side', crm.includes('function compareRows()') && crm.includes('data-cmp-toggle') && crm.includes("cmpT('compareTitle')"));
+ok('client portal has portion units and a compare button', (function () {
+  const p = read('server/public/portal-full.html');
+  return p.includes('function cpFoodUnits') && p.includes("piece:   { en: 'piece'") && p.includes('id="btn-portal-compare"') && p.includes('const CP_NUTRIENTS');
+})());
+
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);

@@ -5812,6 +5812,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           <nav class="nutri-tabs" role="tablist" aria-label="Nutrition sections">
             <button type="button" data-nutrition-tab="log" class="nutri-tab active" data-i18n="nutrition.tabPlan">Plan</button>
             <button type="button" data-nutrition-tab="database" class="nutri-tab" data-i18n="nutrition.tabProducts">Products</button>
+            <button type="button" data-nutrition-tab="compare" class="nutri-tab" data-i18n="nutrition.tabCompare">Сравнение</button>
             <button type="button" data-nutrition-tab="recipes" class="nutri-tab" data-i18n="nutrition.tabRecipes">Recipes</button>
             <button type="button" data-nutrition-tab="templates" class="nutri-tab" data-i18n="nutrition.tabTemplates">Templates</button>
             <button type="button" data-nutrition-tab="history" class="nutri-tab" data-i18n="nutrition.tabHistory">History</button>
@@ -6028,6 +6029,11 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
 
             <!-- ===== Tab: Meal templates ===== -->
 
+          <!-- c229: nutrient leaderboards + product comparison -->
+          <div data-nutrition-panel="compare" class="hidden nutri-tabpanel">
+            <div id="cmp-root"></div>
+          </div>
+
           <div data-nutrition-panel="recipes" class="hidden nutri-tabpanel">
             <div class="nutri-tab-head">
               <div><span class="nutri-eyebrow" data-i18n="nutrition.recipesEyebrow">Inspiration</span><h2 data-i18n="nutrition.tabRecipes">Recipes</h2></div>
@@ -6220,8 +6226,14 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                     <span data-i18n="nutrition.serving">Serving</span>
                     <span class="text-muted">(g / ml)</span>
                   </label>
-                  <!-- c150: quick portions from the product's real serving/package -->
+                  <!-- c150/c229: quick portions from the product's real serving/package/units -->
                   <div id="food-portion-units" class="hidden flex flex-wrap gap-1.5 mb-2"></div>
+                  <div id="food-portion-conv" class="flex items-center gap-2 mb-2">
+                    <input type="number" id="food-portion-qty" min="0.25" step="0.25" value="1" class="w-20 bg-surface-2 border border-border rounded-xl px-2 py-2 text-sm text-center font-mono focus:outline-none focus:ring-2 focus:ring-primary/60" />
+                    <span class="text-muted text-sm">×</span>
+                    <select id="food-portion-unit" class="flex-1 min-w-0 bg-surface-2 border border-border rounded-xl px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60 cursor-pointer"></select>
+                    <span id="food-portion-eq" class="text-[10px] text-muted whitespace-nowrap"></span>
+                  </div>
                   <input type="number" id="food-portion-grams" min="1" step="1" value="100" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
                 </div>
                 <div class="bg-surface-2 border border-border rounded-xl p-3">
@@ -7676,6 +7688,12 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
             <div class="grid grid-cols-2 gap-1.5 text-xs" id="fd-detail-grid"></div>
           </div>
 
+          <!-- c229: portions & units -->
+          <div id="fd-units-section" class="hidden">
+            <h4 class="text-[11px] uppercase tracking-wider text-muted font-semibold mb-2" data-i18n="food.units">Portions & units</h4>
+            <div id="fd-units" class="flex flex-wrap gap-1.5 text-xs"></div>
+          </div>
+
           <!-- Vitamins -->
           <div id="fd-vitamins-section" class="hidden">
             <h4 class="text-[11px] uppercase tracking-wider text-muted font-semibold mb-2" data-i18n="nutrition.vitamins">Vitamins</h4>
@@ -7739,6 +7757,49 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
             <div>
               <label class="block text-[11px] uppercase tracking-wider text-muted font-semibold mb-1" data-i18n="food.imageUrl">Image URL</label>
               <input name="image_url" type="url" class="w-full bg-surface-2 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
+            </div>
+          </div>
+          <div class="text-[11px] uppercase tracking-wider text-muted font-semibold pt-2" data-i18n="food.units">Portions &amp; units</div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div>
+              <label class="block text-[10px] font-semibold mb-0.5" data-i18n="food.portionServing">Serving</label>
+              <input name="serving_quantity" type="number" min="0" step="0.1" class="w-full bg-surface-2 border border-border rounded-lg px-2 py-1.5 text-sm" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold mb-0.5" data-i18n="food.portionPackage">Package</label>
+              <input name="package_grams" type="number" min="0" step="0.1" class="w-full bg-surface-2 border border-border rounded-lg px-2 py-1.5 text-sm" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold mb-0.5"><span data-unit-label="piece">шт</span> (g)</label>
+              <input name="unit_piece" type="number" min="0" step="0.1" class="w-full bg-surface-2 border border-border rounded-lg px-2 py-1.5 text-sm" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold mb-0.5"><span data-unit-label="pack">пачка</span> (g)</label>
+              <input name="unit_pack" type="number" min="0" step="0.1" class="w-full bg-surface-2 border border-border rounded-lg px-2 py-1.5 text-sm" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold mb-0.5"><span data-unit-label="package">упаковка</span> (g)</label>
+              <input name="unit_package" type="number" min="0" step="0.1" class="w-full bg-surface-2 border border-border rounded-lg px-2 py-1.5 text-sm" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold mb-0.5"><span data-unit-label="glass">стакан</span> (g)</label>
+              <input name="unit_glass" type="number" min="0" step="0.1" class="w-full bg-surface-2 border border-border rounded-lg px-2 py-1.5 text-sm" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold mb-0.5"><span data-unit-label="tbsp">ст. л.</span> (g)</label>
+              <input name="unit_tbsp" type="number" min="0" step="0.1" class="w-full bg-surface-2 border border-border rounded-lg px-2 py-1.5 text-sm" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold mb-0.5"><span data-unit-label="tsp">ч. л.</span> (g)</label>
+              <input name="unit_tsp" type="number" min="0" step="0.1" class="w-full bg-surface-2 border border-border rounded-lg px-2 py-1.5 text-sm" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold mb-0.5"><span data-unit-label="handful">горсть</span> (g)</label>
+              <input name="unit_handful" type="number" min="0" step="0.1" class="w-full bg-surface-2 border border-border rounded-lg px-2 py-1.5 text-sm" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold mb-0.5"><span data-unit-label="can">банка</span> (g)</label>
+              <input name="unit_can" type="number" min="0" step="0.1" class="w-full bg-surface-2 border border-border rounded-lg px-2 py-1.5 text-sm" />
             </div>
           </div>
           <div class="text-[11px] uppercase tracking-wider text-muted font-semibold pt-2" data-i18n="food.per100g">Per 100 g / ml</div>
@@ -23640,23 +23701,72 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         const preIdx = input && input.dataset.preselectMeal ? parseInt(input.dataset.preselectMeal, 10) : null;
         if (preIdx != null && meals[preIdx]) mealSel.value = String(preIdx);
       }
-      // Reset grams + preview — c150: start from the product's REAL portion
+      // c229: portion chips + quantity / unit conversion
       const gramsInput = document.getElementById('food-portion-grams');
-      const sq = Number(food.serving_quantity) || 0;
-      const pg = Number(food.package_grams) || 0;
-      const units = document.getElementById('food-portion-units');
-      if (units) {
-        const btns = [{ g: 100, label: t('food.portion100') }];
-        if (sq > 0 && Math.round(sq) !== 100) btns.push({ g: Math.round(sq), label: t('food.portionServing') + ' · ' + Math.round(sq) + ' g' });
-        if (pg > 0 && Math.round(pg) !== 100 && Math.round(pg) !== Math.round(sq)) btns.push({ g: Math.round(pg), label: t('food.portionPackage') + ' · ' + Math.round(pg) + ' g' });
-        units.innerHTML = btns.map(b => `<button type="button" data-portion-g="${b.g}" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold border border-border bg-surface-2 hover:bg-border/40 transition">${escapeHTML(b.label)}</button>`).join('');
-        units.classList.toggle('hidden', btns.length < 2);
-        units.querySelectorAll('[data-portion-g]').forEach(b => b.addEventListener('click', () => {
-          if (gramsInput) gramsInput.value = b.getAttribute('data-portion-g');
-          updatePreview();
+      const qtyInput = document.getElementById('food-portion-qty');
+      const unitSel = document.getElementById('food-portion-unit');
+      const eqLabel = document.getElementById('food-portion-eq');
+      const unitList = dkFoodUnits(food);
+      const convRow = document.getElementById('food-portion-conv');
+      if (convRow) convRow.classList.toggle('hidden', unitList.length === 0);
+      const unitBox = document.getElementById('food-portion-units');
+      const gramShort = t('nutrition.gramShort') || 'г';
+      if (unitBox) {
+        const btns = [{ id: 'g', g: 100, label: t('food.portion100') || '100 г' }];
+        unitList.forEach((u) => {
+          if (Math.round(u.grams) === 100 && u.id !== 'piece') return;
+          btns.push({ id: u.id, g: u.grams, label: '1 ' + dkUnitLabel(u.id) + ' · ' + Math.round(u.grams) + ' ' + gramShort });
+        });
+        unitBox.innerHTML = btns.map((b) => `<button type="button" data-portion-unit="${escapeAttr(b.id)}" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold border border-border bg-surface-2 hover:bg-border/40 transition">${escapeHTML(b.label)}</button>`).join('');
+        unitBox.classList.toggle('hidden', btns.length < 2);
+        unitBox.querySelectorAll('[data-portion-unit]').forEach((b) => b.addEventListener('click', () => {
+          const id = b.getAttribute('data-portion-unit');
+          if (unitSel) unitSel.value = id === 'g' ? 'g' : id;
+          if (id === 'g') {
+            if (gramsInput) gramsInput.value = '100';
+            if (qtyInput) qtyInput.value = '100';
+            if (eqLabel) eqLabel.textContent = '';
+            updatePreview();
+          } else if (unitSel) {
+            unitSel.dispatchEvent(new Event('change'));
+          }
         }));
       }
-      if (gramsInput) gramsInput.value = sq > 0 ? String(Math.round(sq)) : '100';
+      if (unitSel) {
+        unitSel.innerHTML = '<option value="g">' + escapeHTML(t('nutrition.grams') || 'grams') + '</option>' +
+          unitList.map((u) => `<option value="${escapeAttr(u.id)}">1 ${escapeHTML(dkUnitLabel(u.id))} · ${Math.round(u.grams)} ${gramShort}</option>`).join('');
+      }
+      const defaultUnit = unitList.find((u) => u.id === 'serving') || unitList.find((u) => u.id === 'piece') || null;
+      if (gramsInput) gramsInput.value = defaultUnit ? String(Math.round(defaultUnit.grams)) : '100';
+      if (qtyInput) qtyInput.value = defaultUnit ? '1' : '100';
+      if (unitSel) unitSel.value = defaultUnit ? defaultUnit.id : 'g';
+      if (eqLabel) eqLabel.textContent = defaultUnit ? ('= ' + Math.round(defaultUnit.grams) + ' ' + gramShort) : '';
+      const syncUnitGrams = (resetQty) => {
+        if (!unitSel || !gramsInput) return;
+        const id = unitSel.value;
+        if (id === 'g') {
+          if (resetQty) qtyInput.value = gramsInput.value || '100';
+          if (eqLabel) eqLabel.textContent = '';
+          updatePreview();
+          return;
+        }
+        const u = unitList.find((x) => x.id === id);
+        if (!u) return;
+        if (resetQty && qtyInput) qtyInput.value = '1';
+        const q = Math.max(0.25, parseFloat(qtyInput && qtyInput.value) || 1);
+        const grams = Math.round(u.grams * q * 10) / 10;
+        gramsInput.value = String(grams);
+        if (eqLabel) eqLabel.textContent = '= ' + grams + ' ' + gramShort;
+        updatePreview();
+      };
+      if (unitSel) unitSel.onchange = () => syncUnitGrams(true);
+      if (qtyInput) qtyInput.oninput = () => syncUnitGrams(false);
+      if (gramsInput) gramsInput.oninput = () => {
+        if (unitSel && unitSel.value !== 'g') unitSel.value = 'g';
+        if (qtyInput) qtyInput.value = gramsInput.value || '';
+        if (eqLabel) eqLabel.textContent = '';
+        updatePreview();
+      };
       updatePreview();
       // Close search modal, open portion modal
       document.getElementById('food-search-modal').classList.add('hidden');
@@ -30321,7 +30431,7 @@ Select foods for each meal. Output as JSON only.`;
     if (!f) return null;
     const out = Object.assign({}, f);
     const n = Object.assign({}, f.nutrition || {});
-    const micro = ['calories','protein','carbs','fat','fiber','sugars','saturated_fat','sodium','cholesterol','potassium','calcium','iron','magnesium','phosphorus','zinc','water','vitamin_a','vitamin_b1','vitamin_b2','vitamin_b3','vitamin_b5','vitamin_b6','vitamin_b_total','folate','vitamin_c','vitamin_d','vitamin_e','vitamin_k','polyunsaturated_fat','monounsaturated_fat','omega_3','omega_6','omega_9','amino_acids'];
+    const micro = ['calories','protein','carbs','fat','fiber','sugars','saturated_fat','sodium','cholesterol','potassium','calcium','iron','magnesium','phosphorus','zinc','water','vitamin_a','vitamin_b1','vitamin_b2','vitamin_b3','vitamin_b5','vitamin_b6','vitamin_b_total','folate','vitamin_c','vitamin_d','vitamin_e','vitamin_k','polyunsaturated_fat','monounsaturated_fat','omega_3','omega_6','omega_9','amino_acids','vitamin_b12','copper','manganese','selenium'];
     micro.forEach(function (k) {
       if (n[k] == null && f[k] != null && f[k] !== '') n[k] = Number(f[k]) || 0;
     });
@@ -30334,6 +30444,94 @@ Select foods for each meal. Output as JSON only.`;
     out._ref = out._store === 'food_database';
     return out;
   }
+
+  /* =====================================================================
+     c229: PORTION UNITS — piece, pack, package, glass, tablespoon, teaspoon,
+     handful, can. Products may store manual weights in `units`; sensible
+     per-category defaults are derived when the trainer has not set them.
+     ===================================================================== */
+  const DK_UNIT_ORDER = ['serving','piece','pack','package','glass','tbsp','tsp','handful','can'];
+  const DK_UNIT_LABELS = {
+    serving: { en: 'serving', ru: 'порция', he: 'מנה' },
+    piece:   { en: 'piece',   ru: 'шт',     he: 'יח׳' },
+    pack:    { en: 'pack',    ru: 'пачка',  he: 'אריזה' },
+    package: { en: 'package', ru: 'упаковка', he: 'חבילה' },
+    glass:   { en: 'glass',   ru: 'стакан', he: 'כוס' },
+    tbsp:    { en: 'tbsp',    ru: 'ст. л.', he: 'כף' },
+    tsp:     { en: 'tsp',     ru: 'ч. л.',  he: 'כפית' },
+    handful: { en: 'handful', ru: 'горсть', he: 'חופן' },
+    can:     { en: 'can',     ru: 'банка',  he: 'פחית' }
+  };
+  function dkUnitLabel(id) {
+    const def = DK_UNIT_LABELS[id];
+    if (!def) return String(id || '');
+    const lang = (typeof currentLang === 'function') ? currentLang() : 'en';
+    return def[lang] || def.en;
+  }
+  function dkSmartUnitGrams(food) {
+    const cat = String((food && food.category) || '').toLowerCase();
+    const name = [food && food.name_en, food && food.name_ru, food && food.name_he].filter(Boolean).join(' ').toLowerCase();
+    const has = (re) => re.test(name);
+    const u = {};
+    const piece = (g) => { u.piece = g; };
+    if (cat === 'eggs' || has(/egg|яйц|ביצ/)) piece(50);
+    else if (cat === 'bakery' || has(/bread|хлеб|לחם|bun|булоч|toast|тост/)) piece(30);
+    else if (has(/banana|банан|בננה/)) piece(120);
+    else if (has(/apple|яблок|תפוח/)) piece(180);
+    else if (has(/orange|апельсин|תפוז/)) piece(140);
+    else if (has(/pear|груш|אגס/)) piece(170);
+    else if (has(/peach|персик|אפרסק/)) piece(150);
+    else if (has(/kiwi|киви|קיווי/)) piece(75);
+    else if (cat === 'fruit') piece(150);
+    else if (has(/cucumber|огурец|מלפפון/)) piece(100);
+    else if (has(/tomato|помидор|עגבני/)) piece(120);
+    else if (has(/potato|картоф|תפוח אדמה/)) piece(150);
+    else if (has(/carrot|морков|גזר/)) piece(80);
+    else if (has(/onion|лук|בצל/)) piece(110);
+    else if (has(/avocado|авокадо/)) piece(150);
+    else if (cat === 'vegetable') piece(100);
+    else if (cat === 'sweets' || has(/chocolate|шоколад|שוקולד|candy|конфет/)) piece(10);
+    else if (cat === 'dairy' || has(/cheese|сыр|גבינ/)) piece(20);
+    else if (cat === 'meat' || cat === 'fish') piece(100);
+    if (cat === 'drinks' || has(/juice|сок|מיץ|water|вода|מים|milk|молоко|חלב|kefir|кефир|tea|чай|תה|coffee|кофе|קפה/)) {
+      u.glass = 200;
+      if (has(/can|банк|פחית|cola|кола|soda|газир/)) u.can = 330;
+    }
+    if (cat === 'oils' || cat === 'sauces' || has(/oil|масло|שמן|sauce|соус|רוטב|honey|мёд|мед|דבש|jam|варенье|ריבה/)) { u.tbsp = 15; u.tsp = 5; }
+    if (cat === 'nuts' || cat === 'seeds' || has(/nut|орех|אגוז|seed|семеч|גרעינ/)) { u.handful = 30; u.tbsp = 10; }
+    if (cat === 'grains' || cat === 'legumes' || has(/rice|рис|אורז|flour|мука|קמח|sugar|сахар|סוכר|salt|соль|מלח|spice|специ|תבלין/)) { u.glass = 180; u.tbsp = 15; u.tsp = 5; }
+    if (cat === 'protein' || has(/protein|протеин|whey|גבינת/)) { u.tbsp = 15; u.glass = 250; }
+    if (cat === 'greens' || has(/spinach|шпинат|תרד|parsley|петруш|פטרוזיל|cilantro|кинза|כוסברה|dill|укроп|שמיר/)) u.handful = 30;
+    return u;
+  }
+  /** Resolved unit list for a food: manual overrides + serving + package + smart defaults. */
+  function dkFoodUnits(food) {
+    if (!food) return [];
+    const out = [];
+    const seen = new Set();
+    const push = (id, grams, source) => {
+      const g = Number(grams);
+      if (!id || !isFinite(g) || g <= 0 || seen.has(id)) return;
+      seen.add(id);
+      out.push({ id: id, grams: Math.round(g * 10) / 10, source: source || 'auto' });
+    };
+    (Array.isArray(food.units) ? food.units : []).forEach((u) => {
+      if (u) push(u.id || u.unit, u.grams != null ? u.grams : u.weight, 'manual');
+    });
+    if (Number(food.serving_quantity) > 0) push('serving', Number(food.serving_quantity), 'serving');
+    if (Number(food.package_grams) > 0) push('pack', Number(food.package_grams), 'package');
+    const smart = dkSmartUnitGrams(food);
+    Object.keys(smart).forEach((id) => push(id, smart[id], 'auto'));
+    out.sort((a, b) => DK_UNIT_ORDER.indexOf(a.id) - DK_UNIT_ORDER.indexOf(b.id));
+    return out;
+  }
+  function dkFoodUnitLabel(food, unitId, grams) {
+    const units = dkFoodUnits(food);
+    const u = units.find((x) => x.id === unitId);
+    if (!u) return '';
+    return dkUnitLabel(u.id) + ' · ' + Math.round(u.grams) + ' ' + (t('nutrition.gramShort') || 'g');
+  }
+
   function dkFoodMacroBadges(n) {
     return '<span class="dk-macro p"><b>' + Math.round(Number(n && n.protein) || 0) + '</b>P</span>'
       + '<span class="dk-macro c"><b>' + Math.round(Number(n && n.carbs) || 0) + '</b>C</span>'
@@ -30530,6 +30728,9 @@ Select foods for each meal. Output as JSON only.`;
       const img = '<span class="dk-food-ph" aria-hidden="true">🥗</span>' + window.dkFoodImgTag(f, 'dk-food-img');
       const del = _editMode ? '<button type="button" class="food-tile-x" data-delete-food="' + escapeAttr(f.id) + '" title="' + escapeAttr(t('common.delete') || 'Delete') + '">✕</button>' : '';
       const restore = _archiveMode ? '<button type="button" class="food-tile-restore" data-restore-food="' + escapeAttr(f.id) + '">↩</button>' : '';
+      const _units = dkFoodUnits(f);
+      const _hintUnit = _units.find((u) => u.id === 'piece') || _units.find((u) => u.id === 'glass') || _units.find((u) => u.id === 'tbsp') || _units.find((u) => u.id === 'handful');
+      const unitHint = _hintUnit ? '<div class="dk-product-unit">1 ' + escapeHTML(dkUnitLabel(_hintUnit.id)) + ' · ' + Math.round(_hintUnit.grams) + ' ' + escapeHTML(t('nutrition.gramShort') || 'g') + '</div>' : '';
       return '<div class="food-tile dk-product-card" data-food-id="' + escapeAttr(f.id) + '">'
         + '<div class="dk-product-media">' + img + del + restore
         + '<span class="dk-source-badge ' + srcInfo.class + '">' + srcInfo.badge + '</span>'
@@ -30538,6 +30739,7 @@ Select foods for each meal. Output as JSON only.`;
         + '<div class="food-tile-name dk-product-name">' + escapeHTML(name) + '</div>'
         + '<div class="dk-product-kcal"><b>' + Math.round(n.calories || 0) + '</b> ' + t('nutrition.kcal') + '</div>'
         + '<div class="dk-macros">' + dkFoodMacroBadges(n) + '</div>'
+        + unitHint
         + (foodBadgeHTML(f) ? '<div class="food-badges flex flex-wrap gap-1 mt-1.5">' + foodBadgeHTML(f) + '</div>' : '')
         + '</div></div>';
     }
@@ -30821,9 +31023,413 @@ Select foods for each meal. Output as JSON only.`;
   })();
 
   /* =====================================================================
-     FOOD DETAIL MODAL — view + edit a single food.
-     Mirrors openExerciseModal for the nutrition domain.
+     c229: NUTRIENT COMPARISON — leaderboards by vitamin/mineral and a
+     composite usefulness score, with a 2–4 product side-by-side comparison.
      ===================================================================== */
+  const nutritionCompare = (function () {
+    const CMP_L = {
+      eyebrow: ['Nutrition science', 'Пищевая ценность', 'מדע התזונה'],
+      title: ['Compare products', 'Сравнение продуктов', 'השוואת מוצרים'],
+      subtitle: ['Find the richest source of any vitamin or mineral — per gram, per 10 g, per 100 g, per serving or per 100 kcal.', 'Найдите самый богатый источник витамина или минерала — на грамм, на 10 г, на 100 г, на порцию или на 100 ккал.', 'מצאו את המקור העשיר ביותר לוויטמין או מינרל — ל-1 ג׳, ל-10 ג׳, ל-100 ג׳, למנה או ל-100 קק״ל.'],
+      byNutrient: ['By nutrient', 'По веществу', 'לפי רכיב'],
+      byScore: ['Usefulness', 'Полезность', 'מועילות'],
+      per1g: ['per 1 g', 'на 1 г', 'ל-1 ג׳'],
+      per10g: ['per 10 g', 'на 10 г', 'ל-10 ג׳'],
+      per100g: ['per 100 g', 'на 100 г', 'ל-100 ג׳'],
+      perPortion: ['per serving', 'на порцию', 'למנה'],
+      per100kcal: ['per 100 kcal', 'на 100 ккал', 'ל-100 קק״ל'],
+      search: ['Search product…', 'Поиск продукта…', 'חיפוש מוצר…'],
+      allCats: ['All categories', 'Все категории', 'כל הקטגוריות'],
+      rank: ['#', '#', '#'],
+      product: ['Product', 'Продукт', 'מוצר'],
+      value: ['Value', 'Значение', 'ערך'],
+      daily: ['% daily', '% нормы', '% מהתצרוכת'],
+      per100: ['per 100 g', 'на 100 г', 'ל-100 ג׳'],
+      kcal: ['kcal', 'ккал', 'קק״ל'],
+      score: ['Score', 'Балл', 'ניקוד'],
+      protein: ['Protein', 'Белок', 'חלבון'],
+      fiber: ['Fiber', 'Клетчатка', 'סיבים'],
+      category: ['Category', 'Категория', 'קטגוריה'],
+      compare: ['Compare', 'Сравнить', 'השווה'],
+      selected: ['Selected', 'Выбрано', 'נבחרו'],
+      clear: ['Clear', 'Очистить', 'נקה'],
+      compareTitle: ['Comparison', 'Сравнение', 'השוואה'],
+      best: ['Best', 'Лучший', 'הטוב'],
+      showAll: ['Show all', 'Показать все', 'הצג הכל'],
+      empty: ['No products with this nutrient', 'Нет продуктов с этим веществом', 'אין מוצרים עם רכיב זה'],
+      noKcal: ['Products with 0 kcal are not ranked per 100 kcal.', 'Продукты с 0 ккал не участвуют в пересчёте на 100 ккал.', 'מוצרים עם 0 קק״ל לא מדורגים ל-100 קק״ל.'],
+      maxSelected: ['You can compare up to 4 products', 'Можно сравнивать до 4 продуктов', 'אפשר להשוות עד 4 מוצרים'],
+      pickTwo: ['Add 2–4 products to compare', 'Добавьте 2–4 продукта для сравнения', 'הוסיפו 2–4 מוצרים להשוואה'],
+      groupVitamins: ['Vitamins', 'Витамины', 'ויטמינים'],
+      groupMinerals: ['Minerals', 'Минералы', 'מינרלים'],
+      groupOther: ['Other', 'Другое', 'אחר'],
+      groupMacros: ['Macros', 'Макросы', 'מאקרו'],
+      scoreHelp: ['Score = sum of daily values of vitamins/minerals + fiber + protein, minus sugar, saturated fat and sodium, per 100 kcal.', 'Балл = сумма % суточных норм витаминов и минералов + клетчатка + белок, минус сахар, насыщенный жир и натрий, на 100 ккал.', 'ניקוד = סכום אחוזי התצרוכת של ויטמינים ומינרלים + סיבים + חלבון, פחות סוכר, שומן רווי ונתרן, ל-100 קק״ל.'],
+      limit: ['limit', 'предел', 'גבול'],
+      noPlan: ['—', '—', '—']
+    };
+    const EXTRA_META = {
+      protein: { rdi: 50, unit: 'g', label: { en: 'Protein', ru: 'Белок', he: 'חלבון' }, group: 'macro' },
+      omega_3: { rdi: 1.6, unit: 'g', label: { en: 'Omega-3', ru: 'Омега-3', he: 'אומגה-3' }, group: 'macro' },
+      omega_6: { rdi: 17, unit: 'g', label: { en: 'Omega-6', ru: 'Омега-6', he: 'אומגה-6' }, group: 'macro' },
+      water: { rdi: 2500, unit: 'g', label: { en: 'Water', ru: 'Вода', he: 'מים' }, group: 'other' }
+    };
+    const COMPARE_META = {
+      calories: { unit: 'kcal', label: { en: 'Calories', ru: 'Калории', he: 'קלוריות' } },
+      protein: { unit: 'g', label: { en: 'Protein', ru: 'Белок', he: 'חלבון' } },
+      carbs: { unit: 'g', label: { en: 'Carbs', ru: 'Углеводы', he: 'פחמימות' } },
+      fat: { unit: 'g', label: { en: 'Fat', ru: 'Жиры', he: 'שומנים' } },
+      sugars: { unit: 'g', isLimit: true, label: { en: 'Sugars', ru: 'Сахар', he: 'סוכרים' } },
+      saturated_fat: { unit: 'g', isLimit: true, label: { en: 'Saturated fat', ru: 'Насыщенный жир', he: 'שומן רווי' } }
+    };
+    const LIMIT_KEYS = { sodium: true, cholesterol: true, sugars: true, saturated_fat: true };
+    /* Reference-upper bounds per 100 g. A value above the bound is a broken
+       import (OFF sometimes ships per-serving or mis-mapped minerals — e.g.
+       cola with 1400 mg calcium), so the nutrient is ignored for that row
+       instead of crowning junk food as the healthiest product. */
+    const PLAUSIBLE_MAX = {
+      vitamin_a: 30000, vitamin_c: 5000, vitamin_d: 250, vitamin_e: 200, vitamin_k: 3000,
+      vitamin_b1: 50, vitamin_b2: 50, vitamin_b3: 200, vitamin_b5: 100, vitamin_b6: 50,
+      vitamin_b12: 200, folate: 5000, choline: 2000,
+      calcium: 3000, iron: 120, magnesium: 1500, phosphorus: 3000, potassium: 6000,
+      sodium: 40000, zinc: 200, copper: 50, manganese: 50, selenium: 2000,
+      fiber: 90, protein: 100, omega_3: 100, omega_6: 100, water: 100
+    };
+    function plausible(key, value) {
+      const cap = PLAUSIBLE_MAX[key];
+      if (!cap) return true;
+      return value <= cap;
+    }
+    /* Some scraped rows share ONE identical micronutrient template (a default
+       block repeated across hundreds of unrelated products — chocolate, coffee,
+       cookies all with 1412 mg calcium). Those numbers are not measurements:
+       a signature seen on many different products is treated as unreliable and
+       ignored, so the score keeps comparing real data only. */
+    const SIGNATURE_KEYS = ['vitamin_a','vitamin_c','vitamin_d','vitamin_e','vitamin_k','vitamin_b1','vitamin_b2','vitamin_b3','vitamin_b5','vitamin_b6','vitamin_b12','folate','calcium','iron','magnesium','phosphorus','potassium','zinc','copper','manganese','selenium'];
+    let _badSignatures = null;
+    function badSignatures() {
+      if (_badSignatures) return _badSignatures;
+      const seen = new Map();
+      allFoods().forEach((f) => {
+        const n = f.nutrition || {};
+        const parts = SIGNATURE_KEYS.map((k) => Number(n[k]) || 0);
+        if (parts.filter((v) => v > 0).length < 4) return;
+        const sig = parts.join(',');
+        seen.set(sig, (seen.get(sig) || 0) + 1);
+      });
+      _badSignatures = new Set();
+      seen.forEach((count, sig) => { if (count >= 5) _badSignatures.add(sig); });
+      return _badSignatures;
+    }
+    function reliableMicro(f) {
+      const n = (f && f.nutrition) || {};
+      const parts = SIGNATURE_KEYS.map((k) => Number(n[k]) || 0);
+      if (parts.filter((v) => v > 0).length < 4) return true;
+      return !badSignatures().has(parts.join(','));
+    }
+    let _basis = '100g';
+    let _mode = 'nutrient';
+    let _nutrient = 'vitamin_c';
+    let _q = '';
+    let _cat = 'all';
+    let _selected = [];
+    let _showAll = false;
+    let _loaded = false;
+
+    function cmpT(key) {
+      const row = CMP_L[key] || [];
+      const lang = (typeof currentLang === 'function') ? currentLang() : 'en';
+      return row[lang === 'ru' ? 1 : (lang === 'he' ? 2 : 0)] || row[0] || key;
+    }
+    function langCode() { return (typeof currentLang === 'function') ? currentLang() : 'en'; }
+    function meta(key) { return MICRONUTRIENT_RDI[key] || EXTRA_META[key] || COMPARE_META[key] || null; }
+    function metaLabel(key) {
+      const m = meta(key);
+      if (!m) return key;
+      return (m.label && (m.label[langCode()] || m.label.en)) || key;
+    }
+    function allFoods() { return ((foodDatabase && foodDatabase._all) || []).filter((f) => f && !f.is_archived); }
+    function matchCat(f) {
+      if (_cat === 'all') return true;
+      const g = dkFoodGroupById(_cat);
+      return g ? g.cats.indexOf(String(f.category || '').toLowerCase()) >= 0 : true;
+    }
+    function matchQuery(f) {
+      if (!_q) return true;
+      const s = [f.name_en, f.name_ru, f.name_he, f.brand].filter(Boolean).join(' ').toLowerCase();
+      return s.indexOf(_q) !== -1;
+    }
+    function val(f, key) {
+      const v = Number((f.nutrition || {})[key]);
+      if (!isFinite(v) || v <= 0) return 0;
+      if (!plausible(key, v)) return 0;
+      if (!reliableMicro(f)) return 0;
+      return v;
+    }
+    function basisGrams(f) {
+      if (_basis === '1g') return 1;
+      if (_basis === '10g') return 10;
+      if (_basis === '100g') return 100;
+      if (_basis === 'portion') {
+        const units = dkFoodUnits(f);
+        const u = units.find((x) => x.id === 'serving') || units.find((x) => x.id === 'piece');
+        return u ? u.grams : 100;
+      }
+      return 100;
+    }
+    function valueAt(f, key) {
+      const raw = val(f, key);
+      if (!raw) return 0;
+      if (_basis === '100kcal') {
+        const kcal = Number((f.nutrition || {}).calories) || 0;
+        return kcal > 4 ? raw / kcal * 100 : 0;
+      }
+      return raw * basisGrams(f) / 100;
+    }
+    function percentAt(f, key) {
+      const m = meta(key);
+      if (!m || !m.rdi) return null;
+      return valueAt(f, key) / m.rdi * 100;
+    }
+    function scoreOf(f) {
+      const n = f.nutrition || {};
+      let pos = 0;
+      const microOk = reliableMicro(f);
+      Object.keys(MICRONUTRIENT_RDI).forEach((k) => {
+        const m = MICRONUTRIENT_RDI[k];
+        if (!m || m.isLimit) return;
+        const v = Number(n[k]) || 0;
+        if (v > 0 && microOk && plausible(k, v)) pos += Math.min(v / m.rdi, 1);
+      });
+      pos += Math.min((Number(n.fiber) || 0) / 28, 1);
+      pos += Math.min((Number(n.protein) || 0) / 50, 1) * 0.5;
+      const neg = Math.min((Number(n.sugars) || 0) / 50, 1) * 0.5
+        + Math.min((Number(n.saturated_fat) || 0) / 22, 1) * 0.5
+        + Math.min((Number(n.sodium) || 0) / 2300, 1);
+      const net = Math.max(0, pos - neg);
+      const kcal = Number(n.calories) || 0;
+      /* The score is a density per 100 kcal — drinks with almost no calories
+         would otherwise get meaningless huge numbers, so they are not scored. */
+      if (kcal < 20) return 0;
+      return Math.min(100, net / kcal * 100);
+    }
+    function fmt(v, digits) {
+      if (!isFinite(v) || v === 0) return '—';
+      if (digits != null) return Number(v).toFixed(digits).replace(/\.?0+$/, '');
+      if (v >= 1000) return Math.round(v).toLocaleString();
+      if (v >= 100) return v.toFixed(1).replace(/\.0$/, '');
+      if (v >= 10) return v.toFixed(1);
+      if (v >= 1) return v.toFixed(2).replace(/0$/, '');
+      if (v >= 0.01) return v.toFixed(3);
+      return v.toFixed(4);
+    }
+    function pctText(p) {
+      if (p == null || !isFinite(p)) return '—';
+      return (p >= 100 ? Math.round(p) : p.toFixed(1).replace(/\.0$/, '')) + '%';
+    }
+    function basisLabel() {
+      return _basis === '1g' ? cmpT('per1g') : _basis === '10g' ? cmpT('per10g')
+        : _basis === '100g' ? cmpT('per100g') : _basis === 'portion' ? cmpT('perPortion') : cmpT('per100kcal');
+    }
+    function currentRows() {
+      let list = allFoods().filter(matchCat).filter(matchQuery);
+      if (_mode === 'score') {
+        list = list.filter((f) => scoreOf(f) > 0);
+        list.sort((a, b) => scoreOf(b) - scoreOf(a));
+      } else {
+        list = list.filter((f) => valueAt(f, _nutrient) > 0);
+        list.sort((a, b) => valueAt(b, _nutrient) - valueAt(a, _nutrient));
+      }
+      return list;
+    }
+    function nutrientOptions() {
+      const groups = { vitamin: [], mineral: [], other: [], macro: [] };
+      Object.keys(MICRONUTRIENT_RDI).forEach((k) => {
+        const m = MICRONUTRIENT_RDI[k];
+        if (m.isLimit) return;
+        const g = groups[m.group] || groups.other;
+        g.push(k);
+      });
+      Object.keys(EXTRA_META).forEach((k) => groups.macro.push(k));
+      const groupLabel = (g) => g === 'vitamin' ? cmpT('groupVitamins') : g === 'mineral' ? cmpT('groupMinerals') : g === 'macro' ? cmpT('groupMacros') : cmpT('groupOther');
+      return ['vitamin', 'mineral', 'macro', 'other'].map((g) => groups[g].length
+        ? `<optgroup label="${escapeAttr(groupLabel(g))}">` + groups[g].map((k) => `<option value="${k}"${k === _nutrient ? ' selected' : ''}>${escapeHTML(metaLabel(k))}</option>`).join('') + '</optgroup>'
+        : '').join('');
+    }
+    function catOptions() {
+      return `<option value="all">${escapeHTML(cmpT('allCats'))}</option>` + DK_FOOD_GROUPS.map((g) =>
+        `<option value="${g.id}"${_cat === g.id ? ' selected' : ''}>${escapeHTML(t(g.nameKey) || g.id)}</option>`).join('');
+    }
+    function seg(kind, values, current) {
+      return values.map((v) => `<button type="button" data-cmp-${kind}="${v[0]}" class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold transition ${current === v[0] ? 'bg-primary text-white' : 'text-muted hover:text-text'}">${escapeHTML(v[1])}</button>`).join('');
+    }
+    function renderShell(root) {
+      root.innerHTML = `
+        <div class="nutri-tab-head">
+          <div><span class="nutri-eyebrow">${escapeHTML(cmpT('eyebrow'))}</span><h2>${escapeHTML(cmpT('title'))}</h2></div>
+          <p class="text-[11px] text-muted max-w-2xl mt-1">${escapeHTML(cmpT('subtitle'))}</p>
+        </div>
+        <div class="rounded-2xl border border-border bg-surface p-3 space-y-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <div class="flex items-center gap-1 bg-surface-2 border border-border rounded-xl p-0.5">
+              ${seg('mode', [['nutrient', cmpT('byNutrient')], ['score', cmpT('byScore')]], _mode)}
+            </div>
+            <select id="cmp-nutrient" class="bg-surface-2 border border-border rounded-xl px-2 py-1.5 text-[11px] font-semibold focus:outline-none focus:ring-2 focus:ring-primary/60 max-w-full min-w-0">${nutrientOptions()}</select>
+            <div class="flex items-center gap-1 bg-surface-2 border border-border rounded-xl p-0.5 flex-wrap">
+              ${seg('basis', [['1g', cmpT('per1g')], ['10g', cmpT('per10g')], ['100g', cmpT('per100g')], ['portion', cmpT('perPortion')], ['100kcal', cmpT('per100kcal')]], _basis)}
+            </div>
+            <input id="cmp-search" type="search" value="${escapeAttr(_q)}" placeholder="${escapeAttr(cmpT('search'))}" class="flex-1 min-w-[150px] bg-surface-2 border border-border rounded-xl px-3 py-1.5 text-[11px] focus:outline-none focus:ring-2 focus:ring-primary/60" />
+            <select id="cmp-cat" class="bg-surface-2 border border-border rounded-xl px-2 py-1.5 text-[11px] focus:outline-none focus:ring-2 focus:ring-primary/60">${catOptions()}</select>
+          </div>
+          <div id="cmp-help" class="text-[10px] text-muted leading-relaxed">${escapeHTML(cmpT('scoreHelp'))}</div>
+          <div id="cmp-selected" class="flex flex-wrap gap-1.5"></div>
+          <div id="cmp-table"></div>
+          <div id="cmp-compare"></div>
+        </div>`;
+      root.onclick = (e) => {
+        const mode = e.target.closest('[data-cmp-mode]');
+        if (mode) { _mode = mode.getAttribute('data-cmp-mode'); _showAll = false; renderShell(root); return; }
+        const basis = e.target.closest('[data-cmp-basis]');
+        if (basis) { _basis = basis.getAttribute('data-cmp-basis'); _showAll = false; renderShell(root); return; }
+        const open = e.target.closest('[data-cmp-open]');
+        if (open) { const id = open.getAttribute('data-cmp-open'); if (id) openFoodDetailModal(id); return; }
+        const toggle = e.target.closest('[data-cmp-toggle]');
+        if (toggle) {
+          const id = toggle.getAttribute('data-cmp-toggle');
+          const i = _selected.indexOf(id);
+          if (i >= 0) _selected.splice(i, 1);
+          else if (_selected.length >= 4) { toast(cmpT('maxSelected'), 'warning', 2200); return; }
+          else _selected.push(id);
+          renderSelected(); renderTable(); renderCompare(); return;
+        }
+        const rm = e.target.closest('[data-cmp-remove]');
+        if (rm) { _selected = _selected.filter((x) => x !== rm.getAttribute('data-cmp-remove')); renderSelected(); renderTable(); renderCompare(); return; }
+        const clr = e.target.closest('[data-cmp-clear]');
+        if (clr) { _selected = []; renderSelected(); renderTable(); renderCompare(); return; }
+        const more = e.target.closest('[data-cmp-showall]');
+        if (more) { _showAll = true; renderTable(); return; }
+      };
+      const sel = root.querySelector('#cmp-nutrient');
+      if (sel) sel.onchange = () => { _nutrient = sel.value; _showAll = false; renderTable(); };
+      const search = root.querySelector('#cmp-search');
+      if (search) search.oninput = () => { _q = search.value.trim().toLowerCase(); _showAll = false; renderTable(); };
+      const cat = root.querySelector('#cmp-cat');
+      if (cat) cat.onchange = () => { _cat = cat.value; _showAll = false; renderTable(); };
+      renderSelected(); renderTable(); renderCompare();
+    }
+    function renderSelected() {
+      const box = document.getElementById('cmp-selected');
+      if (!box) return;
+      if (!_selected.length) { box.innerHTML = '<span class="text-[10px] text-muted">' + escapeHTML(cmpT('pickTwo')) + '</span>'; return; }
+      const foods = _selected.map((id) => allFoods().find((f) => String(f.id) === String(id))).filter(Boolean);
+      box.innerHTML = '<span class="text-[10px] uppercase tracking-wider font-bold text-muted me-1">' + escapeHTML(cmpT('selected')) + ' ' + foods.length + '</span>' +
+        foods.map((f) => '<button type="button" data-cmp-remove="' + escapeAttr(f.id) + '" class="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 text-primary-2 px-2 py-0.5 text-[10px] font-semibold"><span class="max-w-[140px] truncate">' + escapeHTML(dkFoodName(f)) + '</span><span class="opacity-60">×</span></button>').join('') +
+        '<button type="button" data-cmp-clear class="text-[10px] font-semibold text-muted hover:text-text ms-1">' + escapeHTML(cmpT('clear')) + '</button>';
+    }
+    function renderTable() {
+      const box = document.getElementById('cmp-table');
+      if (!box) return;
+      const rows = currentRows();
+      const limit = _showAll ? rows.length : Math.min(50, rows.length);
+      if (!rows.length) { box.innerHTML = '<div class="text-center py-8 text-xs text-muted">' + escapeHTML(cmpT('empty')) + '</div>'; return; }
+      const maxScore = _mode === 'score' ? Math.max.apply(null, rows.slice(0, limit).map(scoreOf)) || 1 : 1;
+      let head = '';
+      if (_mode === 'score') {
+        head = `<tr><th class="text-start p-2">${cmpT('rank')}</th><th class="text-start p-2">${cmpT('product')}</th><th class="text-end p-2">${cmpT('score')}</th><th class="text-end p-2">${cmpT('protein')}</th><th class="text-end p-2">${cmpT('fiber')}</th><th class="text-end p-2">${cmpT('kcal')}</th><th class="text-start p-2">${cmpT('category')}</th><th class="p-2"></th></tr>`;
+      } else {
+        head = `<tr><th class="text-start p-2">${cmpT('rank')}</th><th class="text-start p-2">${cmpT('product')}</th><th class="text-end p-2">${escapeHTML(basisLabel())}</th><th class="text-end p-2">${cmpT('daily')}</th><th class="text-end p-2">${cmpT('per100')}</th><th class="text-end p-2">${cmpT('kcal')}</th><th class="text-start p-2">${cmpT('category')}</th><th class="p-2"></th></tr>`;
+      }
+      const body = rows.slice(0, limit).map((f, i) => {
+        const img = window.dkFoodImgTag(f, 'w-7 h-7 object-contain shrink-0');
+        const cat = dkFoodGroupOf(f);
+        const catLabel = t(cat.nameKey) || cat.id;
+        const rank = i < 3 ? ['🥇', '🥈', '🥉'][i] : (i + 1);
+        const selected = _selected.indexOf(String(f.id)) >= 0;
+        const compareBtn = `<button type="button" data-cmp-toggle="${escapeAttr(f.id)}" class="h-6 min-w-6 px-1.5 rounded-lg border text-[10px] font-bold transition ${selected ? 'bg-primary text-white border-primary' : 'bg-surface-2 text-muted border-border hover:text-text'}" title="${escapeAttr(cmpT('compare'))}">${selected ? '✓' : '+'}</button>`;
+        if (_mode === 'score') {
+          const score = scoreOf(f);
+          const n = f.nutrition || {};
+          return `<tr class="border-t border-border/60 hover:bg-surface-2/50">
+            <td class="p-2 text-center text-[11px] font-bold">${rank}</td>
+            <td class="p-2"><button type="button" data-cmp-open="${escapeAttr(f.id)}" class="flex items-center gap-2 text-start min-w-[160px] max-w-[260px]"><span class="w-7 h-7 rounded-lg bg-surface-2 border border-border overflow-hidden grid place-items-center shrink-0">${img}</span><span class="min-w-0"><b class="block text-[11px] truncate">${escapeHTML(dkFoodName(f))}</b><small class="block text-[9px] text-muted truncate">${escapeHTML(catLabel)}</small></span></button></td>
+            <td class="p-2 text-end"><b class="font-mono text-primary-2">${fmt(score, 1)}</b><div class="h-1.5 w-20 ms-auto mt-1 rounded-full bg-border/60 overflow-hidden"><div class="h-full bg-primary" style="width:${Math.min(100, score / maxScore * 100)}%"></div></div></td>
+            <td class="p-2 text-end font-mono text-[11px]">${fmt(n.protein, 1)} g</td>
+            <td class="p-2 text-end font-mono text-[11px]">${fmt(n.fiber, 1)} g</td>
+            <td class="p-2 text-end font-mono text-[11px]">${Math.round(Number(n.calories) || 0)}</td>
+            <td class="p-2"><span class="inline-block rounded-full bg-surface-2 border border-border px-2 py-0.5 text-[9px] text-muted">${escapeHTML(catLabel)}</span></td>
+            <td class="p-2 text-center">${compareBtn}</td>
+          </tr>`;
+        }
+        const v = valueAt(f, _nutrient);
+        const m = meta(_nutrient) || {};
+        const p = percentAt(f, _nutrient);
+        const per100 = val(f, _nutrient);
+        const bar = p == null ? '' : `<div class="h-1.5 w-16 ms-auto mt-1 rounded-full bg-border/60 overflow-hidden"><div class="h-full ${p >= 100 ? 'bg-success' : 'bg-primary'}" style="width:${Math.min(100, p)}%"></div></div>`;
+        return `<tr class="border-t border-border/60 hover:bg-surface-2/50">
+          <td class="p-2 text-center text-[11px] font-bold">${rank}</td>
+          <td class="p-2"><button type="button" data-cmp-open="${escapeAttr(f.id)}" class="flex items-center gap-2 text-start min-w-[160px] max-w-[280px]"><span class="w-7 h-7 rounded-lg bg-surface-2 border border-border overflow-hidden grid place-items-center shrink-0">${img}</span><span class="min-w-0"><b class="block text-[11px] truncate">${escapeHTML(dkFoodName(f))}</b><small class="block text-[9px] text-muted truncate">${escapeHTML(catLabel)}</small></span></button></td>
+          <td class="p-2 text-end"><b class="font-mono text-primary-2">${fmt(v)}</b> <small class="text-[9px] text-muted">${escapeHTML(m.unit || '')}</small>${_basis === 'portion' ? `<div class="text-[9px] text-muted">${Math.round(basisGrams(f))} g</div>` : ''}</td>
+          <td class="p-2 text-end"><span class="font-mono text-[11px]">${pctText(p)}</span>${bar}</td>
+          <td class="p-2 text-end font-mono text-[11px]">${fmt(per100)} <small class="text-[9px] text-muted">${escapeHTML(m.unit || '')}</small></td>
+          <td class="p-2 text-end font-mono text-[11px]">${Math.round(Number((f.nutrition || {}).calories) || 0)}</td>
+          <td class="p-2"><span class="inline-block rounded-full bg-surface-2 border border-border px-2 py-0.5 text-[9px] text-muted">${escapeHTML(catLabel)}</span></td>
+          <td class="p-2 text-center">${compareBtn}</td>
+        </tr>`;
+      }).join('');
+      const more = rows.length > limit ? `<div class="p-2 text-center"><button type="button" data-cmp-showall class="text-[11px] font-semibold text-primary-2">${cmpT('showAll')} (${rows.length})</button></div>` : '';
+      const note = _basis === '100kcal' ? `<div class="px-2 py-1 text-[9px] text-muted">${escapeHTML(cmpT('noKcal'))}</div>` : '';
+      box.innerHTML = `<div class="overflow-x-auto rounded-xl border border-border"><table class="w-full text-xs min-w-[780px]"><thead class="bg-surface-2 text-[9px] uppercase tracking-wider text-muted">${head}</thead><tbody>${body}</tbody></table></div>${note}${more}`;
+    }
+    function compareRows() {
+      const foods = _selected.map((id) => allFoods().find((f) => String(f.id) === String(id))).filter(Boolean);
+      if (foods.length < 2) return '';
+      const keys = ['calories', 'protein', 'carbs', 'fat', 'fiber', 'sugars', 'sodium', 'saturated_fat', 'cholesterol'];
+      Object.keys(MICRONUTRIENT_RDI).forEach((k) => { if (keys.indexOf(k) === -1) keys.push(k); });
+      Object.keys(EXTRA_META).forEach((k) => { if (keys.indexOf(k) === -1) keys.push(k); });
+      const groups = [
+        { label: cmpT('groupMacros'), keys: ['calories', 'protein', 'carbs', 'fat', 'fiber', 'sugars'] },
+        { label: cmpT('groupMinerals'), keys: keys.filter((k) => (meta(k) || {}).group === 'mineral') },
+        { label: cmpT('groupVitamins'), keys: keys.filter((k) => (meta(k) || {}).group === 'vitamin') },
+        { label: cmpT('groupOther'), keys: keys.filter((k) => ['sodium', 'saturated_fat', 'cholesterol', 'omega_3', 'omega_6', 'water'].indexOf(k) >= 0) }
+      ];
+      const head = '<tr><th class="text-start p-2 sticky start-0 bg-surface z-10 min-w-[120px]">' + cmpT('product') + '</th>' + foods.map((f) => '<th class="text-center p-2 min-w-[110px]"><span class="block truncate max-w-[130px] mx-auto">' + escapeHTML(dkFoodName(f)) + '</span></th>').join('') + '</tr>';
+      let body = '';
+      groups.forEach((g) => {
+        const rows = g.keys.filter((k) => foods.some((f) => val(f, k) > 0 || (k === 'calories' && Number((f.nutrition || {}).calories) > 0)));
+        if (!rows.length) return;
+        body += '<tr><td colspan="' + (foods.length + 1) + '" class="p-2 pt-3 text-[9px] uppercase tracking-wider font-bold text-muted sticky start-0 bg-surface">' + g.label + '</td></tr>';
+        rows.forEach((k) => {
+          const m = meta(k) || { label: { en: k, ru: k, he: k }, unit: k === 'calories' ? 'kcal' : '' };
+          const values = foods.map((f) => k === 'calories' ? (Number((f.nutrition || {}).calories) || 0) : valueAt(f, k));
+          const isLimit = !!LIMIT_KEYS[k] || k === 'saturated_fat' || k === 'sugars';
+          const lowerIsBetter = isLimit || k === 'calories';
+          const best = lowerIsBetter ? Math.min.apply(null, values.filter((v) => v > 0)) : Math.max.apply(null, values);
+          body += '<tr class="border-t border-border/50"><td class="p-2 text-[10px] font-semibold sticky start-0 bg-surface">' + escapeHTML(metaLabel(k)) + (isLimit ? ' <span class="text-[8px] text-muted">(' + cmpT('limit') + ')</span>' : '') + '</td>' +
+            values.map((v) => {
+              const isBest = v > 0 && Math.abs(v - best) < 0.000001;
+              return '<td class="p-2 text-center font-mono text-[10px] ' + (isBest ? 'text-success font-bold' : '') + '">' + fmt(v) + ' <small class="text-[8px] text-muted">' + escapeHTML(m.unit || '') + '</small>' + (isBest ? ' ★' : '') + '</td>';
+            }).join('') + '</tr>';
+        });
+      });
+      return '<div class="mt-3 rounded-xl border border-border overflow-x-auto"><div class="p-2 text-[10px] uppercase tracking-wider font-bold text-muted">' + cmpT('compareTitle') + ' · ' + foods.length + '</div><table class="w-full text-[10px] min-w-[520px]"><thead class="bg-surface-2">' + head + '</thead><tbody>' + body + '</tbody></table></div>';
+    }
+    function renderCompare() {
+      const box = document.getElementById('cmp-compare');
+      if (box) box.innerHTML = compareRows();
+    }
+    async function refresh() {
+      const root = document.getElementById('cmp-root');
+      if (!root) return;
+      if (!foodDatabase._all || !foodDatabase._all.length) {
+        try { await foodDatabase.load(); } catch (e) {}
+      }
+      _loaded = true;
+      renderShell(root);
+    }
+    return { refresh: refresh };
+  })();
+
+
   let _foodDetailCurrentId = null;
   let _foodDetailEditMode = false;
   let _foodDetailFood = null;
@@ -30935,6 +31541,21 @@ Select foods for each meal. Output as JSON only.`;
       }).join('');
     }
 
+    // c229: portions & units
+    const unitsSection = document.getElementById('fd-units-section');
+    const unitsBox = document.getElementById('fd-units');
+    if (unitsSection && unitsBox) {
+      const units = dkFoodUnits(food);
+      const gramShort = t('nutrition.gramShort') || 'g';
+      if (units.length) {
+        unitsBox.innerHTML = units.map((u) => `<span class="bg-surface-2 border border-border rounded-lg px-2 py-1 font-semibold">1 ${escapeHTML(dkUnitLabel(u.id))} · ${Math.round(u.grams)} ${gramShort}</span>`).join('');
+        unitsSection.classList.remove('hidden');
+      } else {
+        unitsBox.innerHTML = '';
+        unitsSection.classList.add('hidden');
+      }
+    }
+
     // Vitamins
     const vitaminsGrid = document.getElementById('fd-vitamins-grid');
     const vitaminsSection = document.getElementById('fd-vitamins-section');
@@ -31022,6 +31643,24 @@ Select foods for each meal. Output as JSON only.`;
       form.elements.brand.value = food.brand || '';
       form.elements.barcode.value = food.barcode || '';
       form.elements.image_url.value = food.image_url || '';
+      /* c229: portion fields + unit weights (manual value first, smart default in placeholder) */
+      if (form.elements.serving_quantity) form.elements.serving_quantity.value = food.serving_quantity || '';
+      if (form.elements.package_grams) form.elements.package_grams.value = food.package_grams || '';
+      const resolvedUnits = dkFoodUnits(food);
+      const manualById = {};
+      (Array.isArray(food.units) ? food.units : []).forEach((u) => { if (u) manualById[u.id || u.unit] = u.grams != null ? u.grams : u.weight; });
+      ['piece','pack','package','glass','tbsp','tsp','handful','can'].forEach((uid) => {
+        const input = form.elements['unit_' + uid];
+        if (!input) return;
+        const manual = manualById[uid];
+        const auto = resolvedUnits.find((u) => u.id === uid);
+        input.value = manual != null ? manual : '';
+        input.placeholder = auto ? String(Math.round(auto.grams)) : '';
+      });
+      form.querySelectorAll('[data-unit-label]').forEach((el) => {
+        const id = el.getAttribute('data-unit-label');
+        if (id) el.textContent = dkUnitLabel(id);
+      });
       form.elements.calories.value = n.calories || 0;
       form.elements.protein.value = n.protein || 0;
       form.elements.carbs.value = n.carbs || 0;
@@ -31188,6 +31827,20 @@ Select foods for each meal. Output as JSON only.`;
       try { food = await db.get(_foodDetailStore, _foodDetailCurrentId); } catch(e) {}
       if (food) food = dkNormalizeFood(food, _foodDetailStore);
     }
+    /* c229: keep manual unit overrides; blank inputs leave them untouched */
+    const unitMap = {};
+    ((food && Array.isArray(food.units)) ? food.units : []).forEach((u) => {
+      if (u && u.id) unitMap[u.id] = { id: u.id, grams: Number(u.grams) || 0 };
+    });
+    ['piece','pack','package','glass','tbsp','tsp','handful','can'].forEach((uid) => {
+      const raw = obj['unit_' + uid];
+      if (raw == null || raw === '') return;
+      const v = parseFloat(raw);
+      if (isFinite(v) && v > 0) unitMap[uid] = { id: uid, grams: v };
+      else delete unitMap[uid];
+    });
+    const servingQuantity = parseFloat(obj.serving_quantity) || 0;
+    const packageGrams = parseFloat(obj.package_grams) || 0;
     const newFood = Object.assign({}, food || {}, {
       /* c146: preserve EVERYTHING not present in the edit form (name_ru,
          serving_quantity, package_grams, is_archived, subcategory…) — the old
@@ -31207,6 +31860,9 @@ Select foods for each meal. Output as JSON only.`;
       nova: Number(obj.nova) || (food && Number(food.nova)) || null,
       forest: obj.forest || (food && food.forest) || null,
       sub: obj.sub || (food && food.sub) || '',
+      serving_quantity: servingQuantity,
+      package_grams: packageGrams,
+      units: Object.values(unitMap).filter((u) => u && u.grams > 0),
       nutrition: Object.assign({}, food ? (food.nutrition || {}) : {}, nutrition),
       /* flat mirrors keep custom foods consumable by the portion modal/rail */
       calories: nutrition.calories, protein: nutrition.protein,
@@ -35977,6 +36633,7 @@ loadPanelTexture();
         });
         // Trigger refresh on tab activation
         if (tab === 'database' && typeof foodDatabase !== 'undefined') foodDatabase.refresh();
+        if (tab === 'compare' && typeof nutritionCompare !== 'undefined') nutritionCompare.refresh();
         if (tab === 'templates' && typeof nutritionTemplates !== 'undefined') nutritionTemplates.refresh();
         if (tab === 'log' && screens.nutrition) screens.nutrition.refresh();
         if (tab === 'recipes' && screens.nutrition && screens.nutrition.renderRecipes) screens.nutrition.renderRecipes();

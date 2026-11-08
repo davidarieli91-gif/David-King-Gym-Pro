@@ -642,6 +642,8 @@ html[data-ui="v2"] .dk-product-copy { padding: 9px 10px 10px; min-width: 0; }
 html[data-ui="v2"] .dk-product-name { font-size: 11.5px; line-height: 1.25; font-weight: 700; color: rgb(var(--c-text)); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.5em; }
 html[data-ui="v2"] .dk-product-kcal { margin-top: 4px; font-size: 8px; color: rgb(var(--c-muted)); }
 html[data-ui="v2"] .dk-product-kcal b { font-family: var(--font-mono); font-size: 11.5px; color: rgb(var(--c-text)); letter-spacing: -.03em; }
+html[data-ui="v2"] .dk-product-unit { margin-top: 3px; font-family: var(--font-mono); font-size: 7.5px; color: rgb(var(--c-muted)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dk-product-unit { margin-top: 3px; font-family: var(--font-mono); font-size: 8px; color: rgb(var(--c-muted)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 html[data-ui="v2"] .dk-macros { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 6px; }
 html[data-ui="v2"] .dk-macro { display: inline-flex; align-items: center; gap: 2px; padding: 2px 5px; border-radius: 6px; font-family: var(--font-mono); font-size: 7px; font-weight: 700; letter-spacing: -.02em; border: 1px solid transparent; }
 html[data-ui="v2"] .dk-macro b { font-size: 8.5px; font-weight: 800; }

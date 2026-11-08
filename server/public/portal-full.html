@@ -2915,6 +2915,11 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
 
     <!-- ===== TAB: NUTRITION ===== -->
     <section id="tab-nutrition" class="hidden space-y-3 fade-in">
+      <button type="button" id="btn-portal-compare" class="w-full glass rounded-2xl p-3.5 flex items-center gap-3 text-start active:scale-[0.99] transition">
+        <span class="w-10 h-10 rounded-xl bg-success/15 border border-success/25 grid place-items-center text-lg shrink-0">🏆</span>
+        <span class="flex-1 min-w-0"><b class="block text-sm" id="txt-portal-compare">Сравнить продукты</b><small class="block text-[10px] text-muted" id="txt-portal-compare-sub">Витамины, минералы и полезность</small></span>
+        <span class="text-muted text-lg">›</span>
+      </button>
       <div id="plan-selector" class="hidden flex flex-wrap items-center gap-1.5"></div>
       <div class="glass rounded-2xl p-4">
         <div class="flex justify-between items-center mb-3">
@@ -2996,6 +3001,20 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
         <div id="nutr-micro-list" class="space-y-1.5"></div>
       </div>
     </section>
+
+    <!-- c229: client product comparison -->
+    <div id="portal-compare-modal" class="hidden fixed inset-0 z-[130] bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
+      <div class="bg-surface w-full sm:max-w-5xl max-h-[94vh] flex flex-col rounded-t-3xl sm:rounded-2xl border border-border shadow-float overflow-hidden">
+        <div class="p-4 border-b border-border flex items-center gap-3 shrink-0">
+          <div class="flex-1 min-w-0">
+            <h3 class="font-display font-bold text-base truncate" id="cp-title">Сравнить продукты</h3>
+            <p class="text-[10px] text-muted truncate" id="cp-subtitle">Витамины, минералы и полезность</p>
+          </div>
+          <button type="button" id="cp-close" class="w-8 h-8 grid place-items-center rounded-lg hover:bg-surface-2 text-muted shrink-0" aria-label="Close">✕</button>
+        </div>
+        <div id="cp-root" class="flex-1 overflow-y-auto p-3 sm:p-4"></div>
+      </div>
+    </div>
 
     <!-- ===== TAB: CHECK-IN ===== -->
     <section id="tab-analytics" class="hidden space-y-3 fade-in">
@@ -4726,6 +4745,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     document.getElementById('lang-select').value = l;
     localStorage.setItem('dk_client_lang', l);
     updateLabels(); renderAll();
+    try { cpApplyLabels(); } catch(eCp) {}
     try { renderRecMap(true); } catch(e) {} /* c98: the recovery map re-renders in the new language instantly (cached per-muscle data) */
     try { if (window.dkPortalSync) window.dkPortalSync(); } catch(e) {}
     try { voiceApply(); } catch(e) {} /* c135: the narrator follows the new language */
@@ -9049,22 +9069,319 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     wireDiaryRows(box);
     box.classList.remove('hidden');
   }
+  /* c229: portion units for the client diary — same catalog as the trainer. */
+  const CP_UNIT_LABELS = {
+    serving: { en: 'serving', ru: 'порция', he: 'מנה' },
+    piece:   { en: 'piece',   ru: 'шт',     he: 'יח׳' },
+    pack:    { en: 'pack',    ru: 'пачка',  he: 'אריזה' },
+    package: { en: 'package', ru: 'упаковка', he: 'חבילה' },
+    glass:   { en: 'glass',   ru: 'стакан', he: 'כוס' },
+    tbsp:    { en: 'tbsp',    ru: 'ст. л.', he: 'כף' },
+    tsp:     { en: 'tsp',     ru: 'ч. л.',  he: 'כפית' },
+    handful: { en: 'handful', ru: 'горсть', he: 'חופן' },
+    can:     { en: 'can',     ru: 'банка',  he: 'פחית' }
+  };
+  const CP_UNIT_ORDER = ['serving','piece','pack','package','glass','tbsp','tsp','handful','can'];
+  function cpUnitLabel(id) {
+    const d = CP_UNIT_LABELS[id];
+    return d ? (d[currentLang] || d.en) : String(id || '');
+  }
+  function cpSmartUnits(p) {
+    const cat = String((p && p.category) || '').toLowerCase();
+    const name = [(p && p.name_en), (p && p.name_ru), (p && p.name_he)].filter(Boolean).join(' ').toLowerCase();
+    const has = function (r) { return r.test(name); };
+    const u = {};
+    if (cat === 'eggs' || has(/egg|яйц|ביצ/)) u.piece = 50;
+    else if (cat === 'bakery' || has(/bread|хлеб|לחם|toast|тост/)) u.piece = 30;
+    else if (has(/banana|банан|בננה/)) u.piece = 120;
+    else if (has(/apple|яблок|תפוח/)) u.piece = 180;
+    else if (has(/orange|апельсин|תפוז/)) u.piece = 140;
+    else if (cat === 'fruit') u.piece = 150;
+    else if (cat === 'vegetable') u.piece = 100;
+    else if (cat === 'sweets' || has(/chocolate|шоколад|שוקולד/)) u.piece = 10;
+    else if (cat === 'dairy' || has(/cheese|сыр|גבינ/)) u.piece = 20;
+    else if (cat === 'meat' || cat === 'fish') u.piece = 100;
+    if (cat === 'drinks' || has(/juice|сок|מיץ|water|вода|מים|milk|молоко|חלב|tea|чай|תה|coffee|кофе|קפה/)) {
+      u.glass = 200;
+      if (has(/can|банк|פחית|cola|кола|soda|газир/)) u.can = 330;
+    }
+    if (cat === 'oils' || cat === 'sauces' || has(/oil|масло|שמן|sauce|соус|רוטב|honey|мёд|דבש|jam|варенье|ריבה/)) { u.tbsp = 15; u.tsp = 5; }
+    if (cat === 'nuts' || cat === 'seeds' || has(/nut|орех|אגוז|seed|семеч|גרעינ/)) { u.handful = 30; u.tbsp = 10; }
+    if (cat === 'grains' || cat === 'legumes') { u.glass = 180; u.tbsp = 15; u.tsp = 5; }
+    if (cat === 'greens') u.handful = 30;
+    return u;
+  }
+  function cpFoodUnits(p) {
+    const out = [];
+    const seen = {};
+    const push = function (id, grams) {
+      const g = Number(grams);
+      if (!id || !isFinite(g) || g <= 0 || seen[id]) return;
+      seen[id] = 1;
+      out.push({ id: id, grams: Math.round(g * 10) / 10 });
+    };
+    if (Number(p && p.serving_quantity) > 0) push('serving', Number(p.serving_quantity));
+    if (Number(p && p.package_grams) > 0) push('pack', Number(p.package_grams));
+    const smart = cpSmartUnits(p);
+    Object.keys(smart).forEach(function (id) { push(id, smart[id]); });
+    out.sort(function (a, b) { return CP_UNIT_ORDER.indexOf(a.id) - CP_UNIT_ORDER.indexOf(b.id); });
+    return out;
+  }
+  let _diaryPicked = null;
+  function syncDiaryMacros() {
+    if (!_diaryPicked) return;
+    const g = Number((document.getElementById('diary-food-grams') || {}).value) || 0;
+    const n = _diaryPicked.nutrition || {};
+    const r = g / 100;
+    const set = function (id, v) { const el = document.getElementById(id); if (el) el.value = v; };
+    set('diary-food-kcal', Math.round((Number(n.calories) || 0) * r));
+    set('diary-food-p', Math.round((Number(n.protein) || 0) * r * 10) / 10);
+    set('diary-food-f', Math.round((Number(n.fat) || 0) * r * 10) / 10);
+    set('diary-food-c', Math.round((Number(n.carbs) || 0) * r * 10) / 10);
+  }
+  /* c229: client-side nutrient comparison (button in the Nutrition tab). */
+  const CP_NUTRIENTS = {
+    vitamin_a: { rdi: 800, unit: 'µg', group: 'vitamin', label: { en: 'Vitamin A', ru: 'Витамин A', he: 'ויטמין A' } },
+    vitamin_c: { rdi: 85, unit: 'mg', group: 'vitamin', label: { en: 'Vitamin C', ru: 'Витамин C', he: 'ויטמין C' } },
+    vitamin_d: { rdi: 15, unit: 'µg', group: 'vitamin', label: { en: 'Vitamin D', ru: 'Витамин D', he: 'ויטמין D' } },
+    vitamin_e: { rdi: 15, unit: 'mg', group: 'vitamin', label: { en: 'Vitamin E', ru: 'Витамин E', he: 'ויטמין E' } },
+    vitamin_k: { rdi: 105, unit: 'µg', group: 'vitamin', label: { en: 'Vitamin K', ru: 'Витамин K', he: 'ויטמין K' } },
+    vitamin_b1: { rdi: 1.15, unit: 'mg', group: 'vitamin', label: { en: 'Vitamin B1', ru: 'Витамин B1', he: 'ויטמין B1' } },
+    vitamin_b2: { rdi: 1.2, unit: 'mg', group: 'vitamin', label: { en: 'Vitamin B2', ru: 'Витамин B2', he: 'ויטמין B2' } },
+    vitamin_b3: { rdi: 15, unit: 'mg', group: 'vitamin', label: { en: 'Vitamin B3', ru: 'Витамин B3', he: 'ויטמין B3' } },
+    vitamin_b6: { rdi: 1.5, unit: 'mg', group: 'vitamin', label: { en: 'Vitamin B6', ru: 'Витамин B6', he: 'ויטמין B6' } },
+    vitamin_b12: { rdi: 2.4, unit: 'µg', group: 'vitamin', label: { en: 'Vitamin B12', ru: 'Витамин B12', he: 'ויטמין B12' } },
+    folate: { rdi: 400, unit: 'µg', group: 'vitamin', label: { en: 'Folate', ru: 'Фолат', he: 'פולאט' } },
+    calcium: { rdi: 1000, unit: 'mg', group: 'mineral', label: { en: 'Calcium', ru: 'Кальций', he: 'סידן' } },
+    iron: { rdi: 13, unit: 'mg', group: 'mineral', label: { en: 'Iron', ru: 'Железо', he: 'ברזל' } },
+    magnesium: { rdi: 350, unit: 'mg', group: 'mineral', label: { en: 'Magnesium', ru: 'Магний', he: 'מגנזיום' } },
+    phosphorus: { rdi: 700, unit: 'mg', group: 'mineral', label: { en: 'Phosphorus', ru: 'Фосфор', he: 'זרחן' } },
+    potassium: { rdi: 3000, unit: 'mg', group: 'mineral', label: { en: 'Potassium', ru: 'Калий', he: 'אשלגן' } },
+    zinc: { rdi: 10, unit: 'mg', group: 'mineral', label: { en: 'Zinc', ru: 'Цинк', he: 'אבץ' } },
+    fiber: { rdi: 28, unit: 'g', group: 'other', label: { en: 'Fiber', ru: 'Клетчатка', he: 'סיבים' } },
+    protein: { rdi: 50, unit: 'g', group: 'macro', label: { en: 'Protein', ru: 'Белок', he: 'חלבון' } },
+    omega_3: { rdi: 1.6, unit: 'g', group: 'macro', label: { en: 'Omega-3', ru: 'Омега-3', he: 'אומגה-3' } }
+  };
+  const CP_L = {
+    title: ['Compare products', 'Сравнить продукты', 'השוואת מוצרים'],
+    subtitle: ['Vitamins, minerals and nutrient density', 'Витамины, минералы и полезность', 'ויטמינים, מינרלים וצפיפות תזונתית'],
+    byNutrient: ['By nutrient', 'По веществу', 'לפי רכיב'],
+    byScore: ['Usefulness', 'Полезность', 'מועילות'],
+    per1g: ['per 1 g', 'на 1 г', 'ל-1 ג׳'],
+    per10g: ['per 10 g', 'на 10 г', 'ל-10 ג׳'],
+    per100g: ['per 100 g', 'на 100 г', 'ל-100 ג׳'],
+    per100kcal: ['per 100 kcal', 'на 100 ккал', 'ל-100 קק״ל'],
+    search: ['Search product…', 'Поиск продукта…', 'חיפוש מוצר…'],
+    product: ['Product', 'Продукт', 'מוצר'],
+    value: ['Value', 'Значение', 'ערך'],
+    daily: ['% daily', '% нормы', '% מהתצרוכת'],
+    kcal: ['kcal', 'ккал', 'קק״ל'],
+    score: ['Score', 'Балл', 'ניקוד'],
+    add: ['Compare', 'Сравнить', 'השווה'],
+    selected: ['Selected', 'Выбрано', 'נבחרו'],
+    clear: ['Clear', 'Очистить', 'נקה'],
+    compare: ['Comparison', 'Сравнение', 'השוואה'],
+    best: ['Best', 'Лучший', 'הטוב'],
+    empty: ['No products with this nutrient', 'Нет продуктов с этим веществом', 'אין מוצרים עם רכיב זה'],
+    scoreHelp: ['The score rewards vitamins/minerals, fiber and protein per 100 kcal and penalises sugar, saturated fat and sodium.', 'Балл поощряет витамины, минералы, клетчатку и белок на 100 ккал и штрафует сахар, насыщенный жир и натрий.', 'הניקוד מעודד ויטמינים, מינרלים, סיבים וחלבון ל-100 קק״ל ומעניש סוכר, שומן רווי ונתרן.'],
+    max: ['Up to 4 products', 'До 4 продуктов', 'עד 4 מוצרים']
+  };
+  let cpBasis = '100g';
+  let cpMode = 'nutrient';
+  let cpNutrient = 'vitamin_c';
+  let cpSelected = [];
+  let cpFoods = [];
+  let cpLoaded = false;
+  const CP_PLAUSIBLE_MAX = {
+    vitamin_a: 30000, vitamin_c: 5000, vitamin_d: 250, vitamin_e: 200, vitamin_k: 3000,
+    vitamin_b1: 50, vitamin_b2: 50, vitamin_b3: 200, vitamin_b5: 100, vitamin_b6: 50,
+    vitamin_b12: 200, folate: 5000, calcium: 3000, iron: 120, magnesium: 1500,
+    phosphorus: 3000, potassium: 6000, zinc: 200, copper: 50, manganese: 50, selenium: 2000,
+    fiber: 90, protein: 100, omega_3: 100, omega_6: 100
+  };
+  function cpT(key) {
+    const row = CP_L[key] || [];
+    return row[currentLang === 'ru' ? 1 : currentLang === 'he' ? 2 : 0] || row[0] || key;
+  }
+  function cpMeta(key) { return CP_NUTRIENTS[key] || null; }
+  function cpLabel(key) { const m = cpMeta(key); return (m && m.label && (m.label[currentLang] || m.label.en)) || key; }
+  const CP_SIGNATURE_KEYS = ['vitamin_a','vitamin_c','vitamin_d','vitamin_e','vitamin_k','vitamin_b1','vitamin_b2','vitamin_b3','vitamin_b5','vitamin_b6','vitamin_b12','folate','calcium','iron','magnesium','phosphorus','potassium','zinc','copper','manganese','selenium'];
+  let cpBadSignatures = null;
+  function cpBadSignatureMap() {
+    if (cpBadSignatures) return cpBadSignatures;
+    const seen = {};
+    (cpFoods || []).forEach(function (f) {
+      if (!f || f.is_archived) return;
+      const n = f.nutrition || {};
+      const parts = CP_SIGNATURE_KEYS.map(function (k) { return Number(n[k]) || 0; });
+      if (parts.filter(function (v) { return v > 0; }).length < 4) return;
+      const sig = parts.join(',');
+      seen[sig] = (seen[sig] || 0) + 1;
+    });
+    cpBadSignatures = {};
+    Object.keys(seen).forEach(function (sig) { if (seen[sig] >= 5) cpBadSignatures[sig] = 1; });
+    return cpBadSignatures;
+  }
+  function cpReliableMicro(f) {
+    const n = (f && f.nutrition) || {};
+    const parts = CP_SIGNATURE_KEYS.map(function (k) { return Number(n[k]) || 0; });
+    if (parts.filter(function (v) { return v > 0; }).length < 4) return true;
+    return !cpBadSignatureMap()[parts.join(',')];
+  }
+  function cpVal(f, key) {
+    const v = Number(((f && f.nutrition) || {})[key]);
+    if (!isFinite(v) || v <= 0) return 0;
+    const cap = CP_PLAUSIBLE_MAX[key];
+    if (cap && v > cap) return 0;
+    if (!cpReliableMicro(f)) return 0;
+    return v;
+  }
+  function cpValueAt(f, key) {
+    const raw = cpVal(f, key);
+    if (!raw) return 0;
+    if (cpBasis === '100kcal') {
+      const kcal = Number(((f && f.nutrition) || {}).calories) || 0;
+      return kcal > 4 ? raw / kcal * 100 : 0;
+    }
+    return raw * (cpBasis === '1g' ? 1 : cpBasis === '10g' ? 10 : 100) / 100;
+  }
+  function cpScore(f) {
+    const n = (f && f.nutrition) || {};
+    let pos = 0;
+    const microOk = cpReliableMicro(f);
+    Object.keys(CP_NUTRIENTS).forEach(function (k) {
+      const m = CP_NUTRIENTS[k];
+      if (!m || m.group === 'macro' && k !== 'protein') return;
+      const v = Number(n[k]) || 0;
+      if (v > 0 && microOk) pos += Math.min(v / m.rdi, 1);
+    });
+    pos += Math.min((Number(n.protein) || 0) / 50, 1) * 0.5;
+    const neg = Math.min((Number(n.sugars) || 0) / 50, 1) * 0.5
+      + Math.min((Number(n.saturated_fat) || 0) / 22, 1) * 0.5
+      + Math.min((Number(n.sodium) || 0) / 2300, 1);
+    const net = Math.max(0, pos - neg);
+    const kcal = Number(n.calories) || 0;
+    if (kcal < 20) return 0;
+    return Math.min(100, net / kcal * 100);
+  }
+  function cpFmt(v) {
+    if (!isFinite(v) || v === 0) return '—';
+    if (v >= 1000) return Math.round(v).toLocaleString();
+    if (v >= 100) return v.toFixed(1).replace(/\.0$/, '');
+    if (v >= 10) return v.toFixed(1);
+    if (v >= 1) return v.toFixed(2).replace(/0$/, '');
+    if (v >= 0.01) return v.toFixed(3);
+    return v.toFixed(4);
+  }
+  function cpPct(p) {
+    if (p == null || !isFinite(p)) return '—';
+    return (p >= 100 ? Math.round(p) : p.toFixed(1).replace(/\.0$/, '')) + '%';
+  }
+  function cpApplyLabels() {
+    const b = document.getElementById('txt-portal-compare');
+    const s = document.getElementById('txt-portal-compare-sub');
+    if (b) b.textContent = cpT('title');
+    if (s) s.textContent = cpT('subtitle');
+    const ttl = document.getElementById('cp-title');
+    const sub = document.getElementById('cp-subtitle');
+    if (ttl) ttl.textContent = cpT('title');
+    if (sub) sub.textContent = cpT('subtitle');
+  }
+  function cpRender() {
+    const root = document.getElementById('cp-root');
+    if (!root) return;
+    const lang = currentLang;
+    const groups = { vitamin: [], mineral: [], macro: [], other: [] };
+    Object.keys(CP_NUTRIENTS).forEach(function (k) {
+      const g = CP_NUTRIENTS[k].group || 'other';
+      (groups[g] || groups.other).push(k);
+    });
+    const groupLabel = function (g) {
+      return g === 'vitamin' ? t('microVitamins') || 'Vitamins' : g === 'mineral' ? t('microMinerals') || 'Minerals' : g === 'macro' ? 'Macros' : 'Other';
+    };
+    const options = ['vitamin', 'mineral', 'macro', 'other'].map(function (g) {
+      return groups[g].length ? '<optgroup label="' + esc(groupLabel(g)) + '">' + groups[g].map(function (k) {
+        return '<option value="' + k + '"' + (k === cpNutrient ? ' selected' : '') + '>' + esc(cpLabel(k)) + '</option>';
+      }).join('') + '</optgroup>' : '';
+    }).join('');
+    let list = (cpFoods || []).filter(function (f) { return f && !f.is_archived; });
+    if (cpMode === 'score') list = list.filter(function (f) { return cpScore(f) > 0; });
+    else list = list.filter(function (f) { return cpValueAt(f, cpNutrient) > 0; });
+    list.sort(function (a, b) { return cpMode === 'score' ? cpScore(b) - cpScore(a) : cpValueAt(b, cpNutrient) - cpValueAt(a, cpNutrient); });
+    list = list.slice(0, 30);
+    const rows = list.map(function (f, i) {
+      const img = '<img src="food-images/' + esc(String(f.id)) + '.jpg" data-ext="' + esc(f.image_url || '') + '" class="w-7 h-7 object-contain" loading="lazy" onerror="if(this.dataset.ext){this.src=this.dataset.ext;this.removeAttribute(\'data-ext\');}else{this.style.display=\'none\';}" />';
+      const name = (f['name_' + lang] || f.name_en || f.name_ru || f.name_he || '?');
+      const selected = cpSelected.indexOf(String(f.id)) >= 0;
+      if (cpMode === 'score') {
+        const n = f.nutrition || {};
+        return '<tr class="border-t border-border/60"><td class="p-2 text-center text-[10px] font-bold">' + (i < 3 ? ['🥇','🥈','🥉'][i] : i + 1) + '</td><td class="p-2"><div class="flex items-center gap-2 min-w-[150px]"><span class="w-8 h-8 rounded-lg bg-surface-2 border border-border grid place-items-center overflow-hidden">' + img + '</span><b class="text-[11px] truncate max-w-[170px]">' + esc(name) + '</b></div></td><td class="p-2 text-end font-mono text-primary-2">' + cpFmt(cpScore(f)) + '</td><td class="p-2 text-end font-mono text-[10px]">' + cpFmt(n.protein) + ' g</td><td class="p-2 text-end font-mono text-[10px]">' + Math.round(Number(n.calories) || 0) + '</td><td class="p-2 text-center"><button data-cp-toggle="' + esc(String(f.id)) + '" class="h-6 min-w-6 px-1.5 rounded-lg border text-[10px] font-bold ' + (selected ? 'bg-primary text-white border-primary' : 'bg-surface-2 text-muted border-border') + '">' + (selected ? '✓' : '+') + '</button></td></tr>';
+      }
+      const v = cpValueAt(f, cpNutrient);
+      const m = cpMeta(cpNutrient) || {};
+      const p = m.rdi ? v / m.rdi * 100 : null;
+      return '<tr class="border-t border-border/60"><td class="p-2 text-center text-[10px] font-bold">' + (i < 3 ? ['🥇','🥈','🥉'][i] : i + 1) + '</td><td class="p-2"><div class="flex items-center gap-2 min-w-[150px]"><span class="w-8 h-8 rounded-lg bg-surface-2 border border-border grid place-items-center overflow-hidden">' + img + '</span><b class="text-[11px] truncate max-w-[170px]">' + esc(name) + '</b></div></td><td class="p-2 text-end font-mono text-primary-2">' + cpFmt(v) + ' <small class="text-[9px] text-muted">' + esc(m.unit || '') + '</small></td><td class="p-2 text-end font-mono text-[10px]">' + cpPct(p) + '</td><td class="p-2 text-end font-mono text-[10px]">' + Math.round(Number((f.nutrition || {}).calories) || 0) + '</td><td class="p-2 text-center"><button data-cp-toggle="' + esc(String(f.id)) + '" class="h-6 min-w-6 px-1.5 rounded-lg border text-[10px] font-bold ' + (selected ? 'bg-primary text-white border-primary' : 'bg-surface-2 text-muted border-border') + '">' + (selected ? '✓' : '+') + '</button></td></tr>';
+    }).join('');
+    const selFoods = cpSelected.map(function (id) { return (cpFoods || []).find(function (f) { return String(f.id) === String(id); }); }).filter(Boolean);
+    let cmp = '';
+    if (selFoods.length >= 2) {
+      const rows2 = ['calories','protein','fat','carbs','fiber', cpNutrient].filter(function (k, idx, arr) { return arr.indexOf(k) === idx; });
+      cmp = '<div class="mt-3 rounded-xl border border-border overflow-x-auto"><div class="p-2 text-[10px] uppercase tracking-wider font-bold text-muted">' + cpT('compare') + ' · ' + selFoods.length + '</div><table class="w-full text-[10px] min-w-[420px]"><thead><tr><th class="p-2 text-start">' + cpT('product') + '</th>' + selFoods.map(function (f) { return '<th class="p-2 text-center">' + esc((f['name_' + lang] || f.name_en || '?')) + '</th>'; }).join('') + '</tr></thead><tbody>' + rows2.map(function (k) {
+        const vals = selFoods.map(function (f) { return k === 'calories' ? (Number((f.nutrition || {}).calories) || 0) : cpValueAt(f, k); });
+        const best = Math.max.apply(null, vals);
+        return '<tr class="border-t border-border/50"><td class="p-2 font-semibold">' + esc(cpLabel(k)) + '</td>' + vals.map(function (v) { return '<td class="p-2 text-center font-mono ' + (v > 0 && v === best ? 'text-success font-bold' : '') + '">' + cpFmt(v) + '</td>'; }).join('') + '</tr>';
+      }).join('') + '</tbody></table></div>';
+    }
+    const chips = selFoods.length ? '<div class="flex flex-wrap gap-1.5 mt-2">' + selFoods.map(function (f) { return '<button data-cp-remove="' + esc(String(f.id)) + '" class="rounded-full border border-primary/40 bg-primary/10 text-primary-2 px-2 py-0.5 text-[10px] font-semibold">' + esc((f['name_' + lang] || f.name_en || '?')) + ' ×</button>'; }).join('') + '<button data-cp-clear class="text-[10px] text-muted font-semibold ms-1">' + cpT('clear') + '</button></div>' : '<div class="text-[10px] text-muted mt-1">' + cpT('selected') + ': 0</div>';
+    root.innerHTML = '<div class="flex flex-wrap items-center gap-2 mb-2">' +
+      '<div class="flex gap-0.5 bg-surface-2 border border-border rounded-xl p-0.5">' +
+      ['nutrient','score'].map(function (m) { return '<button data-cp-mode="' + m + '" class="px-2.5 py-1.5 rounded-lg text-[10px] font-bold ' + (cpMode === m ? 'bg-primary text-white' : 'text-muted') + '">' + cpT(m === 'nutrient' ? 'byNutrient' : 'byScore') + '</button>'; }).join('') + '</div>' +
+      '<select id="cp-nutrient" class="bg-surface-2 border border-border rounded-xl px-2 py-1.5 text-[10px] font-semibold max-w-full min-w-0">' + options + '</select>' +
+      '<div class="flex gap-0.5 bg-surface-2 border border-border rounded-xl p-0.5">' +
+      ['1g','10g','100g','100kcal'].map(function (b) { return '<button data-cp-basis="' + b + '" class="px-2 py-1.5 rounded-lg text-[9px] font-bold ' + (cpBasis === b ? 'bg-primary text-white' : 'text-muted') + '">' + cpT(b === '1g' ? 'per1g' : b === '10g' ? 'per10g' : b === '100g' ? 'per100g' : 'per100kcal') + '</button>'; }).join('') + '</div></div>' +
+      '<div class="text-[9px] text-muted mb-2">' + cpT('scoreHelp') + '</div>' + chips +
+      (rows ? '<div class="mt-2 rounded-xl border border-border overflow-x-auto"><table class="w-full text-[10px] min-w-[560px]"><thead class="bg-surface-2 text-[9px] uppercase tracking-wider text-muted"><tr><th class="p-2">#</th><th class="p-2 text-start">' + cpT('product') + '</th><th class="p-2 text-end">' + cpT('value') + '</th><th class="p-2 text-end">' + cpT('daily') + '</th><th class="p-2 text-end">' + cpT('kcal') + '</th><th class="p-2"></th></tr></thead><tbody>' + rows + '</tbody></table></div>' : '<div class="text-center py-8 text-xs text-muted">' + cpT('empty') + '</div>') + cmp;
+    const sel = document.getElementById('cp-nutrient');
+    if (sel) sel.onchange = function () { cpNutrient = sel.value; cpRender(); };
+    root.onclick = function (e) {
+      const mode = e.target.closest('[data-cp-mode]'); if (mode) { cpMode = mode.getAttribute('data-cp-mode'); cpRender(); return; }
+      const basis = e.target.closest('[data-cp-basis]'); if (basis) { cpBasis = basis.getAttribute('data-cp-basis'); cpRender(); return; }
+      const tg = e.target.closest('[data-cp-toggle]');
+      if (tg) { const id = tg.getAttribute('data-cp-toggle'); const ix = cpSelected.indexOf(id); if (ix >= 0) cpSelected.splice(ix,1); else if (cpSelected.length >= 4) { toast(cpT('max'),'warn'); return; } else cpSelected.push(id); cpRender(); return; }
+      const rm = e.target.closest('[data-cp-remove]'); if (rm) { cpSelected = cpSelected.filter(function (x) { return x !== rm.getAttribute('data-cp-remove'); }); cpRender(); return; }
+      if (e.target.closest('[data-cp-clear]')) { cpSelected = []; cpRender(); }
+    };
+  }
+  async function cpOpen() {
+    const modal = document.getElementById('portal-compare-modal');
+    if (!modal) return;
+    cpApplyLabels();
+    modal.classList.remove('hidden');
+    if (!cpLoaded) {
+      try { cpFoods = await dkLoadFoodDB() || []; cpLoaded = true; } catch (e) { cpFoods = []; }
+    }
+    cpRender();
+  }
+  function cpClose() { const m = document.getElementById('portal-compare-modal'); if (m) m.classList.add('hidden'); }
+
   function renderDiaryUnits(p) {
     const box = document.getElementById('diary-food-units');
     if (!box) return;
-    const sq = Number(p && p.serving_quantity) || 0;
-    const pg = Number(p && p.package_grams) || 0;
-    const btns = [{ g: 100, l: t('diaryPortion100') }];
-    if (sq > 0 && Math.round(sq) !== 100) btns.push({ g: Math.round(sq), l: t('diaryPortionServing') + ' · ' + Math.round(sq) + t('gramShort') });
-    if (pg > 0 && Math.round(pg) !== 100 && Math.round(pg) !== Math.round(sq)) btns.push({ g: Math.round(pg), l: t('diaryPortionPackage') + ' · ' + Math.round(pg) + t('gramShort') });
+    const units = cpFoodUnits(p);
+    const btns = [{ id: 'g', grams: 100, l: t('diaryPortion100') }];
+    units.forEach(function (u) {
+      if (Math.round(u.grams) === 100 && u.id !== 'piece') return;
+      btns.push({ id: u.id, grams: u.grams, l: '1 ' + cpUnitLabel(u.id) + ' · ' + Math.round(u.grams) + ' ' + t('gramShort') });
+    });
     box.innerHTML = btns.map(function (b) {
-      return '<button type="button" data-unit-g="' + b.g + '" class="px-2.5 py-1 rounded-lg text-[10px] font-semibold border border-border bg-surface-2 hover:bg-border/40 transition">' + esc(b.l) + '</button>';
+      return '<button type="button" data-unit-g="' + b.grams + '" class="px-2.5 py-1 rounded-lg text-[10px] font-semibold border border-border bg-surface-2 hover:bg-border/40 transition">' + esc(b.l) + '</button>';
     }).join('');
     box.classList.toggle('hidden', btns.length < 2);
     box.querySelectorAll('[data-unit-g]').forEach(function (b) {
       b.addEventListener('click', function () {
         const g = document.getElementById('diary-food-grams');
         if (g) g.value = b.getAttribute('data-unit-g');
+        syncDiaryMacros();
       });
     });
   }
@@ -9072,6 +9389,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     if (!foodDB) return;
     const p = foodDB.find(function (x) { return x && x.id === id; });
     if (!p) return;
+    _diaryPicked = p;
     const n = p.nutrition || {};
     const set = function (elId, v) { const el = document.getElementById(elId); if (el) el.value = v; };
     set('diary-food-name', foodName(p) || p.name_en || '');
@@ -9371,7 +9689,12 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     // Diary
     document.getElementById('btn-diary-add').addEventListener('click', addDiaryEntry);
     document.getElementById('diary-food-grams')?.addEventListener('keydown',e=>{ if(e.key==='Enter') addDiaryEntry(); });
+    document.getElementById('diary-food-grams')?.addEventListener('input', syncDiaryMacros);
     document.getElementById('diary-food-name')?.addEventListener('keydown',e=>{ if(e.key==='Enter') addDiaryEntry(); });
+    document.getElementById('btn-portal-compare')?.addEventListener('click', cpOpen);
+    document.getElementById('cp-close')?.addEventListener('click', cpClose);
+    document.getElementById('portal-compare-modal')?.addEventListener('click', function (e) { if (e.target && e.target.id === 'portal-compare-modal') cpClose(); });
+    try { cpApplyLabels(); } catch (eCp) {}
     /* c134: lazy food-DB search (food-db.json is fetched on first use only) */
     try { wireFoodSearch(); } catch (e134) { console.warn('[diary] food search wiring failed:', e134); }
 
@@ -10924,6 +11247,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
        to close the whole portal while any card is still open. The list is
        ordered top-most first (matches the z-index ladder). */
     var OVERLAYS = [
+      { id: 'portal-compare-modal',   z: 130, hide: function () { try { cpClose(); } catch (e) { var m = document.getElementById('portal-compare-modal'); if (m) m.classList.add('hidden'); } } },
       { id: 'report-modal',           z: 130 },
       { id: 'viewer-modal',           z: 120, hide: function () { try { closeViewer(); } catch (e) { var m = document.getElementById('viewer-modal'); if (m) m.classList.add('hidden'); } } },
       { id: 'exercise-modal',         z: 110, hide: function () { try { closeExerciseModal(); } catch (e) { var m = document.getElementById('exercise-modal'); if (m) m.classList.add('hidden'); } } },
