@@ -4599,6 +4599,74 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     html[data-ui="v2"] .v2-compact-select { max-width: 138px; font-size: 10px; }
     html[data-ui="v2"] #toast-container { top: auto !important; bottom: calc(var(--space-nav-h) + 14px) !important; left: 12px !important; right: 12px !important; align-items: stretch !important; }
   }
+  /* ================= c231: GENERAL ANALYTICS DASHBOARD (trainer) =================
+     Same dashboard as the client portal (c230), wired to the trainer's data
+     layer (IndexedDB + cloud merge + portal check-ins). Mobile-first one
+     column; the two-column dashboard appears at real desktop width. */
+  .analytics-screen { max-width: 1024px; }
+  .ana-hero { position: relative; overflow: hidden; background: linear-gradient(135deg, rgb(var(--c-primary) / .14), rgba(34,211,238,.05)), rgb(var(--c-surface)); border-color: rgb(var(--c-primary) / .3); }
+  .ana-range { display: flex; align-items: center; gap: 2px; padding: 2px; background: rgb(var(--c-surface-2)); border: 1px solid rgb(var(--c-border)); border-radius: 12px; overflow-x: auto; max-width: 100%; scrollbar-width: none; }
+  .ana-range::-webkit-scrollbar { display: none; }
+  .ana-range .analytics-range-btn { padding: 4px 9px; white-space: nowrap; }
+  .ana-range .analytics-range-btn.active { background: linear-gradient(135deg,#6366f1,#22d3ee); color: #fff; box-shadow: 0 2px 10px rgba(99,102,241,.35); }
+  .ana-kpis { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+  .ana-kpi { position: relative; overflow: hidden; background: rgb(var(--c-surface)); border: 1px solid rgb(var(--c-border)); border-radius: 16px; padding: 10px 11px 9px; min-width: 0; }
+  .ana-kpi::before { content: ''; position: absolute; inset-block-start: 0; inset-inline-start: 0; width: 100%; height: 2px; background: var(--k, linear-gradient(90deg,#6366f1,#22d3ee)); opacity: .9; }
+  .ana-kpi.k1 { --k: linear-gradient(90deg,#22d3ee,#0ea5e9); }
+  .ana-kpi.k2 { --k: linear-gradient(90deg,#818cf8,#a78bfa); }
+  .ana-kpi.k3 { --k: linear-gradient(90deg,#f59e0b,#fb7185); }
+  .ana-kpi.k4 { --k: linear-gradient(90deg,#34d399,#22d3ee); }
+  .ana-kpi.k5 { --k: linear-gradient(90deg,#f472b6,#f59e0b); }
+  .ana-kpi-head { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+  .ana-kpi-label { font-size: 9px; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; color: rgb(var(--c-muted)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ana-kpi-icon { font-size: 12px; opacity: .9; flex: 0 0 auto; }
+  .ana-kpi-value { font: 800 19px/1.1 ui-monospace, SFMono-Regular, Menlo, monospace; color: rgb(var(--c-text)); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ana-kpi-value.pos { color: #34d399; }
+  .ana-kpi-value.neg { color: #fb7185; }
+  .ana-kpi-sub { font-size: 9.5px; color: rgb(var(--c-muted)); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ana-grid { display: grid; grid-template-columns: minmax(0,1fr); gap: 10px; }
+  .ana-main, .ana-side { display: grid; gap: 10px; align-content: start; min-width: 0; }
+  .ana-split { display: grid; grid-template-columns: minmax(0,1fr); gap: 10px; }
+  .ana-seg { display: flex; gap: 2px; padding: 2px; background: rgb(var(--c-surface-2)); border: 1px solid rgb(var(--c-border)); border-radius: 10px; overflow-x: auto; scrollbar-width: none; }
+  .ana-seg::-webkit-scrollbar { display: none; }
+  .ana-seg-btn { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 7px; color: rgb(var(--c-muted)); white-space: nowrap; transition: .15s; }
+  .ana-seg-btn:hover { color: rgb(var(--c-text)); }
+  .ana-seg-btn.ana-on { background: linear-gradient(135deg,#6366f1,#22d3ee); color: #fff; box-shadow: 0 2px 8px rgba(99,102,241,.3); }
+  .ana-seg-sm .ana-seg-btn { font-size: 9px; padding: 2px 6px; }
+  .ana-chart svg { width: 100%; height: auto; display: block; }
+  .ana-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 6px; font-size: 9.5px; color: rgb(var(--c-muted)); }
+  .ana-legend .ana-dot { display: inline-block; width: 8px; height: 8px; border-radius: 3px; margin-inline-end: 3px; vertical-align: -1px; }
+  .ana-legend .ana-line { display: inline-block; width: 14px; height: 2px; border-radius: 2px; margin-inline-end: 3px; vertical-align: 2px; }
+  .ana-badge { font-size: 9px; font-weight: 700; color: rgb(var(--c-muted)); background: rgb(var(--c-surface-2)); border: 1px solid rgb(var(--c-border)); padding: 2px 6px; border-radius: 7px; white-space: nowrap; }
+  .ana-link { font-size: 10px; font-weight: 700; color: #22d3ee; white-space: nowrap; transition: .15s; }
+  .ana-link:hover { opacity: .75; }
+  .ana-now { font: 800 20px/1.1 ui-monospace, SFMono-Regular, Menlo, monospace; color: rgb(var(--c-text)); }
+  .ana-now small { font: 700 10px/1 ui-monospace, Menlo, monospace; color: rgb(var(--c-muted)); margin-inline-start: 2px; }
+  .ana-body { flex: 0 0 86px; width: 86px; }
+  .ana-body svg { width: 100%; height: auto; max-height: 220px; }
+  .ana-recovery-body { width: 92px; margin: 6px auto 0; }
+  .ana-recovery-body svg { width: 100%; height: auto; }
+  .ana-ring svg { width: 84px; height: 84px; display: block; }
+  .ana-row { display: flex; align-items: center; gap: 6px; font-size: 10px; padding: 3px 0; }
+  .ana-bar { height: 5px; border-radius: 9999px; background: rgb(var(--c-surface-2)); overflow: hidden; }
+  .ana-bar > i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#6366f1,#22d3ee); }
+  .ana-day { display: inline-flex; align-items: center; gap: 3px; font-size: 9px; font-weight: 700; padding: 3px 6px; border-radius: 7px; background: rgb(var(--c-surface-2)); border: 1px solid rgb(var(--c-border)); color: rgb(var(--c-muted)); }
+  .ana-day.done { background: rgba(34,197,94,.14); border-color: rgba(34,197,94,.35); color: #4ade80; }
+  .ana-empty { text-align: center; font-size: 11px; color: rgb(var(--c-muted)); padding: 10px 4px; }
+  @media (min-width: 640px) {
+    .ana-kpis { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .ana-split { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .ana-body { flex-basis: 104px; width: 104px; }
+    .ana-kpi-value { font-size: 20px; }
+  }
+  @media (min-width: 1100px) {
+    .analytics-screen { max-width: 1460px; }
+    .ana-grid { grid-template-columns: minmax(0,1.75fr) minmax(300px,1fr); gap: 12px; }
+    .ana-main, .ana-side { gap: 12px; }
+    .ana-kpis { grid-template-columns: repeat(5, minmax(0,1fr)); }
+    .ana-kpi-value { font-size: 21px; }
+    .ana-body { flex-basis: 118px; width: 118px; }
+  }
 </style>
 </head>
 
@@ -6675,7 +6743,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
             </div>
           </div>
 
-          <div data-screen="analytics" class="hidden p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto w-full">
+          <div data-screen="analytics" class="hidden p-4 sm:p-6 lg:p-8 analytics-screen mx-auto w-full">
             <div class="v2-page-head">
               <div class="min-w-0">
                 <div class="v2-eyebrow" data-i18n="analytics.eyebrow">Signal, not noise</div>
@@ -6685,15 +6753,18 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
               <span id="analytics-streak" class="v2-pill text-warning border-warning/30 bg-warning/10 hidden"></span>
             </div>
 
-            <!-- Client selector -->
+            <!-- Client selector + full range (c231: quarter / year / all added) -->
             <div class="flex flex-col sm:flex-row gap-2 mb-4">
               <select id="analytics-client-select" class="flex-1 bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60 cursor-pointer">
                 <option value="" data-i18n="analytics.selectClient">Select client…</option>
               </select>
-              <div class="flex gap-1.5 bg-surface-2 border border-border rounded-xl p-1">
-                <button data-range="day" class="analytics-range-btn flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition" data-i18n="analytics.rangeDay">Day</button>
-                <button data-range="week" class="analytics-range-btn flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition active" data-i18n="analytics.rangeWeek">Week</button>
-                <button data-range="month" class="analytics-range-btn flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition" data-i18n="analytics.rangeMonth">Month</button>
+              <div class="ana-range" role="tablist" id="analytics-range-bar">
+                <button data-range="day" class="analytics-range-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition" data-i18n="analytics.rangeDay">Day</button>
+                <button data-range="week" class="analytics-range-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition active" data-i18n="analytics.rangeWeek">Week</button>
+                <button data-range="month" class="analytics-range-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition" data-i18n="analytics.rangeMonth">Month</button>
+                <button data-range="quarter" class="analytics-range-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition" data-i18n="analytics.rangeQuarter">Quarter</button>
+                <button data-range="year" class="analytics-range-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition" data-i18n="analytics.rangeYear">Year</button>
+                <button data-range="all" class="analytics-range-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition" data-i18n="analytics.rangeAll">All</button>
               </div>
             </div>
 
@@ -6707,28 +6778,76 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
 
             <!-- Analytics content (shown when client selected) -->
             <div id="analytics-content" class="hidden space-y-4">
-              <!-- Key metrics row -->
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                <div class="bg-surface border border-border rounded-2xl shadow-card p-4">
-                  <div class="text-[10px] uppercase tracking-wider text-muted" data-i18n="analytics.activeDays">Active days</div>
-                  <div class="font-display font-extrabold text-2xl mt-1" id="metric-active-days">0</div>
-                  <div class="text-[11px] text-muted mt-0.5" id="metric-active-days-sub">—</div>
+              <!-- c231: 5 KPI cards — every number comes from the shared engine on
+                   the same snapshot: workouts, time, volume, strength (avg e1RM),
+                   best recent PR. Nothing is invented. -->
+              <div class="ana-kpis" id="ana-kpis">
+                <div class="ana-kpi k1"><div class="ana-kpi-head"><div class="ana-kpi-label" data-i18n="analytics.kpiWorkouts">Workouts</div><div class="ana-kpi-icon">🏋️</div></div><div class="ana-kpi-value" id="kpi-workouts">0</div><div class="ana-kpi-sub" id="kpi-workouts-sub">—</div></div>
+                <div class="ana-kpi k2"><div class="ana-kpi-head"><div class="ana-kpi-label" data-i18n="analytics.kpiTime">Time</div><div class="ana-kpi-icon">⏱</div></div><div class="ana-kpi-value" id="kpi-time">0</div><div class="ana-kpi-sub" id="kpi-time-sub">—</div></div>
+                <div class="ana-kpi k3"><div class="ana-kpi-head"><div class="ana-kpi-label" data-i18n="analytics.kpiVolume">Volume</div><div class="ana-kpi-icon">⚡</div></div><div class="ana-kpi-value" id="kpi-volume">0</div><div class="ana-kpi-sub" id="kpi-volume-sub" data-i18n="analytics.kpiVolumeSub">in range</div></div>
+                <div class="ana-kpi k4"><div class="ana-kpi-head"><div class="ana-kpi-label" data-i18n="analytics.kpiStrength">Strength</div><div class="ana-kpi-icon">📈</div></div><div class="ana-kpi-value" id="kpi-strength">—</div><div class="ana-kpi-sub" id="kpi-strength-sub">—</div></div>
+                <div class="ana-kpi k5"><div class="ana-kpi-head"><div class="ana-kpi-label" data-i18n="analytics.kpiPr">Best PR</div><div class="ana-kpi-icon">🏆</div></div><div class="ana-kpi-value" id="kpi-pr">—</div><div class="ana-kpi-sub" id="kpi-pr-sub">—</div></div>
+              </div>
+
+              <!-- c231: two-column dashboard grid -->
+              <div class="ana-grid">
+              <div class="ana-main">
+              <!-- c231: training chart — range-aware, 4 modes -->
+              <div class="bg-surface border border-border rounded-2xl shadow-card p-5">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <div class="min-w-0">
+                    <h3 class="font-display font-bold text-sm" data-i18n="analytics.chartTitle">Training analytics</h3>
+                    <p class="text-[10px] text-muted mt-0.5" data-i18n="analytics.chartHint">Completed sets · kg</p>
+                  </div>
+                  <div class="ana-seg ms-auto" id="ana-chart-modes" role="tablist">
+                    <button class="ana-seg-btn ana-on" data-ana-mode="general" data-i18n="analytics.chartGeneral">General</button>
+                    <button class="ana-seg-btn" data-ana-mode="strength" data-i18n="analytics.chartStrength">Strength</button>
+                    <button class="ana-seg-btn" data-ana-mode="endurance" data-i18n="analytics.chartEndurance">Endurance</button>
+                    <button class="ana-seg-btn" data-ana-mode="volume" data-i18n="analytics.chartVolume">Volume</button>
+                  </div>
                 </div>
-                <div class="bg-surface border border-border rounded-2xl shadow-card p-4">
-                  <div class="text-[10px] uppercase tracking-wider text-muted" data-i18n="analytics.workoutsCompleted">Workouts</div>
-                  <div class="font-display font-extrabold text-2xl mt-1 text-primary-2" id="metric-workouts">0</div>
-                  <div class="text-[11px] text-muted mt-0.5" id="metric-workouts-sub">—</div>
+                <div id="ana-chart" class="ana-chart mt-3"></div>
+                <div class="ana-legend" id="ana-chart-legend"></div>
+                <div class="mt-2" id="ana-chart-rpe"></div>
+              </div>
+
+              <div class="ana-split">
+              <!-- c231: form trend — weight/fat with its own 1m/3m/6m/1y window -->
+              <div class="bg-surface border border-border rounded-2xl shadow-card p-5">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <div class="min-w-0">
+                    <h3 class="font-display font-bold text-sm" data-i18n="analytics.formTitle">Form trend</h3>
+                    <p class="text-[10px] text-muted mt-0.5" data-i18n="analytics.formSub">weight and goal</p>
+                  </div>
+                  <div class="ana-seg ana-seg-sm ms-auto" id="ana-weight-range" role="tablist">
+                    <button class="ana-seg-btn" data-ana-wrange="1m" data-i18n="analytics.formW1m">1m</button>
+                    <button class="ana-seg-btn ana-on" data-ana-wrange="3m" data-i18n="analytics.formW3m">3m</button>
+                    <button class="ana-seg-btn" data-ana-wrange="6m" data-i18n="analytics.formW6m">6m</button>
+                    <button class="ana-seg-btn" data-ana-wrange="1y" data-i18n="analytics.formW1y">1y</button>
+                  </div>
                 </div>
-                <div class="bg-surface border border-border rounded-2xl shadow-card p-4">
-                  <div class="text-[10px] uppercase tracking-wider text-muted" data-i18n="analytics.streak">Current streak</div>
-                  <div class="font-display font-extrabold text-2xl mt-1 text-warning" id="metric-streak">0</div>
-                  <div class="text-[11px] text-muted mt-0.5" id="metric-streak-sub">—</div>
+                <div class="flex items-end justify-between gap-2 mt-2">
+                  <div class="ana-now" id="ana-weight-now">—</div>
+                  <span class="text-[11px] font-semibold" id="ana-weight-delta"></span>
                 </div>
-                <div class="bg-surface border border-border rounded-2xl shadow-card p-4">
-                  <div class="text-[10px] uppercase tracking-wider text-muted" data-i18n="analytics.adherence">Avg adherence</div>
-                  <div class="font-display font-extrabold text-2xl mt-1 text-success" id="metric-adherence">—</div>
-                  <div class="text-[11px] text-muted mt-0.5" id="metric-adherence-sub">—</div>
+                <div id="ana-weight-chart" class="mt-1"></div>
+                <div id="ana-goal" class="mt-2"></div>
+              </div>
+
+              <!-- c231: strength — avg e1RM ring + per-lift list -->
+              <div class="bg-surface border border-border rounded-2xl shadow-card p-5">
+                <div class="flex items-center gap-2">
+                  <div class="min-w-0">
+                    <h3 class="font-display font-bold text-sm" data-i18n="analytics.strengthTitle">Strength progress</h3>
+                    <p class="text-[10px] text-muted mt-0.5" data-i18n="analytics.strengthSub">e1RM on key lifts</p>
+                  </div>
+                  <span class="ana-badge ms-auto" id="ana-strength-badge">—</span>
                 </div>
+                <div class="flex items-center gap-3 mt-2">
+                  <div class="shrink-0" id="ana-strength-ring"></div>
+                  <div class="flex-1 min-w-0" id="ana-strength-list"></div>
+                </div>
+              </div>
               </div>
 
               <!-- Calendar heatmap -->
@@ -6748,29 +6867,6 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
               <!-- c128: DAY drill-down panel — filled when the trainer taps a
                    workout day in the calendar above -->
               <div id="analytics-day-detail" class="hidden bg-surface border border-amber-500/30 rounded-2xl shadow-card p-5"></div>
-
-              <!-- c129: BODY measurements — the portal's check-ins now sync
-                   waist/hip (cm) next to weight; engine bodySeries math -->
-              <div id="analytics-body" class="hidden bg-surface border border-border rounded-2xl shadow-card p-5">
-                <div class="flex items-center gap-2 mb-3">
-                  <h3 class="font-display font-bold text-sm" data-i18n="analytics.bodyTitle">Body measurements</h3>
-                  <span class="ms-auto text-[10px] text-muted" data-i18n="analytics.bodyHint">portal check-ins</span>
-                </div>
-                <div id="analytics-body-grid" class="grid grid-cols-3 gap-2.5"></div>
-                <p id="analytics-body-ratio" class="text-[11px] text-muted mt-2.5"></p>
-              </div>
-
-              <!-- c148: PORTAL NUTRITION — «съел» marks + food diary from the
-                   client's shared doc; fact/plan adherence per day -->
-              <div id="analytics-nutr" class="hidden bg-surface border border-border rounded-2xl shadow-card p-5">
-                <div class="flex items-center gap-2 mb-3">
-                  <h3 class="font-display font-bold text-sm" data-i18n="analytics.nutrTitle">Nutrition from portal</h3>
-                  <span class="ms-auto text-[10px] text-muted" data-i18n="analytics.nutrHint">checked meals + diary · last 7 days</span>
-                </div>
-                <p id="analytics-nutr-avg" class="text-[11px] text-muted mb-3"></p>
-                <div id="analytics-nutr-days" class="space-y-1.5"></div>
-                <p id="analytics-nutr-last" class="text-[11px] text-muted mt-3 leading-relaxed"></p>
-              </div>
 
               <!-- Volume per muscle group — c127: honest engine (done-only, kg, approximate muscle contribution) -->
               <div class="bg-surface border border-border rounded-2xl shadow-card p-5">
@@ -6804,12 +6900,97 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                 <div id="analytics-progress"></div>
               </div>
 
+              </div><!-- /ana-main -->
+
+              <!-- c231: right-hand column — recovery, last workout, nutrition,
+                   week plan (existing portal-nutrition and PRs cards follow) -->
+              <div class="ana-side">
+              <!-- c231: recovery readiness — same shared engine as the recovery map -->
+              <div class="bg-surface border border-border rounded-2xl shadow-card p-5" id="ana-recovery-card">
+                <div class="flex items-center gap-2">
+                  <div class="min-w-0">
+                    <h3 class="font-display font-bold text-sm" data-i18n="analytics.recoveryTitle">Muscle recovery</h3>
+                    <p class="text-[10px] text-muted mt-0.5" data-i18n="analytics.recoverySub">readiness from the recovery map</p>
+                  </div>
+                  <button type="button" class="ana-link ms-auto" id="ana-recovery-open" data-i18n="recovery.title">Recovery map</button>
+                </div>
+                <div class="flex items-center gap-3 mt-2">
+                  <div id="ana-recovery-ring" class="shrink-0"></div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="text-[11px] font-bold" id="ana-recovery-state">—</span>
+                      <span class="text-[9px] text-muted font-mono" id="ana-recovery-eta"></span>
+                    </div>
+                    <div id="ana-recovery-list" class="mt-1"></div>
+                  </div>
+                </div>
+                <div class="ana-recovery-body" id="ana-recovery-body" aria-hidden="true"></div>
+              </div>
+
+              <!-- c231: last workout — full breakdown via the calendar day panel -->
+              <div class="bg-surface border border-border rounded-2xl shadow-card p-5">
+                <div class="flex items-center gap-2">
+                  <h3 class="font-display font-bold text-sm" data-i18n="analytics.lastTitle">Last workout</h3>
+                  <button type="button" class="ana-link ms-auto" id="ana-last-open" data-i18n="analytics.lastDetails">Details →</button>
+                </div>
+                <div id="ana-last" class="mt-2"></div>
+              </div>
+
+              <!-- c231: today's nutrition — portal data vs plan targets -->
+              <div class="bg-surface border border-border rounded-2xl shadow-card p-5">
+                <div class="flex items-center gap-2">
+                  <div class="min-w-0">
+                    <h3 class="font-display font-bold text-sm" data-i18n="analytics.nutrTodayTitle">Today's nutrition</h3>
+                    <p class="text-[10px] text-muted mt-0.5" data-i18n="analytics.nutrTodayHint">fact vs plan targets</p>
+                  </div>
+                  <span class="ana-link ms-auto" id="ana-nutrition-date"></span>
+                </div>
+                <div id="ana-nutrition" class="mt-2"></div>
+              </div>
+
+              <!-- c231: week plan — active program days checked off by real history -->
+              <div class="bg-surface border border-border rounded-2xl shadow-card p-5">
+                <div class="flex items-center gap-2">
+                  <div class="min-w-0">
+                    <h3 class="font-display font-bold text-sm" data-i18n="analytics.planTitle">Week plan</h3>
+                    <p class="text-[10px] text-muted mt-0.5" id="ana-plan-sub">—</p>
+                  </div>
+                  <span class="ana-badge ms-auto" id="ana-plan-count">—</span>
+                </div>
+                <div class="flex flex-wrap gap-1.5 mt-2" id="ana-plan-days"></div>
+              </div>
+
+              <!-- c129: BODY measurements — the portal's check-ins now sync
+                   waist/hip (cm) next to weight; engine bodySeries math -->
+              <div id="analytics-body" class="hidden bg-surface border border-border rounded-2xl shadow-card p-5">
+                <div class="flex items-center gap-2 mb-3">
+                  <h3 class="font-display font-bold text-sm" data-i18n="analytics.bodyTitle">Body measurements</h3>
+                  <span class="ms-auto text-[10px] text-muted" data-i18n="analytics.bodyHint">portal check-ins</span>
+                </div>
+                <div id="analytics-body-grid" class="grid grid-cols-3 gap-2.5"></div>
+                <p id="analytics-body-ratio" class="text-[11px] text-muted mt-2.5"></p>
+              </div>
+
+              <!-- c148: PORTAL NUTRITION — «съел» marks + food diary from the
+                   client's shared doc; fact/plan adherence per day -->
+              <div id="analytics-nutr" class="hidden bg-surface border border-border rounded-2xl shadow-card p-5">
+                <div class="flex items-center gap-2 mb-3">
+                  <h3 class="font-display font-bold text-sm" data-i18n="analytics.nutrTitle">Nutrition from portal</h3>
+                  <span class="ms-auto text-[10px] text-muted" data-i18n="analytics.nutrHint">checked meals + diary · last 7 days</span>
+                </div>
+                <p id="analytics-nutr-avg" class="text-[11px] text-muted mb-3"></p>
+                <div id="analytics-nutr-days" class="space-y-1.5"></div>
+                <p id="analytics-nutr-last" class="text-[11px] text-muted mt-3 leading-relaxed"></p>
+              </div>
+
               <!-- c130: RECENT PRs — the engine's prs() recent feed (30 days),
                    done sets only (a warmup is not a record) -->
               <div class="bg-surface border border-border rounded-2xl shadow-card p-5">
                 <h3 class="font-display font-bold text-sm mb-3" data-i18n="analytics.prsTitle">Personal records · 30 days</h3>
                 <div id="analytics-prs" class="space-y-1.5 max-h-64 overflow-y-auto"></div>
               </div>
+              </div><!-- /ana-side -->
+              </div><!-- /ana-grid -->
             </div>
           </div>
 
@@ -17055,14 +17236,18 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const metrics = computeMetrics(workoutsAll, nutrMerged148);
       renderMetrics(metrics);
       renderCalendar(workoutsAll, nutrMerged148);
+      /* c231: the general-dashboard cards (sync — engine snapshot of this render) */
+      renderTrChart(workoutsAll);
+      renderTrStrength(workoutsAll);
+      renderTrLast(workoutsAll);
       /* c128: the volume panel now RESPECTS the Day/Week/Month selector —
          it used to render the WHOLE history no matter the range, which made
          the three buttons cosmetically identical */
-      const rangeDays128 = _range === 'day' ? 1 : _range === 'week' ? 7 : 30;
+    const rangeDays128 = trRangeDays();
       const start128 = new Date();
       start128.setHours(0, 0, 0, 0);
       start128.setDate(start128.getDate() - rangeDays128 + 1);
-      const startTs128 = start128.getTime();
+      const startTs128 = _range === 'all' ? 0 : start128.getTime();
       const inRange128 = (workoutsAll || []).filter(w => (Number(w.date) || Number(w.created_at) || 0) >= startTs128);
       renderVolume(inRange128);
       /* c130: time-series progress cards — WHOLE history (a trend IS the
@@ -17070,15 +17255,30 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       renderTrend(workoutsAll);
       renderProgress(workoutsAll);
       renderPRs(workoutsAll);
-      /* c129: body measurements (weight/waist/hips from the portal's shared
-         check-ins) — non-blocking 5s-guarded fetch, stale-client guarded */
+      /* c231: ONE combined non-blocking fetch for everything the async cards
+         need — portal check-ins (body / form / recovery), the client record
+         (weight goal), and the active program + plan for the week/nutrition
+         cards. Stale-client guarded like the rest of this module. */
       try {
-        const cid129 = _clientId;
-        const bodyP = (typeof window.dkFetchClientChecks === 'function')
-          ? Promise.race([window.dkFetchClientChecks(cid129), new Promise(res => setTimeout(() => res([]), 5000))])
+        const cid231 = _clientId;
+        const checksP = (typeof window.dkFetchClientChecks === 'function')
+          ? Promise.race([window.dkFetchClientChecks(cid231), new Promise(res => setTimeout(() => res([]), 5000))])
           : Promise.resolve([]);
-        bodyP.then(function (cb129) { if (_clientId === cid129) renderBodyMetrics(cb129 || []); })
-             .catch(function () { if (_clientId === cid129) renderBodyMetrics([]); });
+        const clientP = (async () => { try { return await db.get('clients', cid231); } catch (_) { return null; } })();
+        const programsP = (async () => { try { return await db.find('client_programs', 'by_clientId', cid231) || []; } catch (_) { return []; } })();
+        const plansP = (async () => { try { return await db.find('nutrition_plans', 'by_clientId', cid231) || []; } catch (_) { return []; } })();
+        Promise.all([checksP, clientP, programsP, plansP]).then(function (out) {
+          if (_clientId !== cid231) return;
+          _c231checks = out[0] || [];
+          _c231client = out[1] || null;
+          _c231programs = out[2] || [];
+          _c231plans = out[3] || [];
+          renderBodyMetrics(_c231checks);
+          renderTrForm();
+          renderTrRecovery();
+          renderTrPlan();
+          renderTrNutritionToday();
+        }).catch(function () { if (_clientId === cid231) renderBodyMetrics([]); });
       } catch (_) {}
       /* c148: nutrition from the portal (checked plan items + food diary) —
          same non-blocking pattern; card + adherence re-render on resolve */
@@ -17093,6 +17293,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           _cloudNutr148 = nr148 || [];
           _cloudNutrCid148 = cid148;
           renderClientNutr(_cloudNutr148);
+          renderTrNutritionToday(); /* c231: same fresh portal days feed the «today» card */
           const merged148 = dkMergeNutrition(_lastNutrition, _cloudNutr148);
           renderMetrics(computeMetrics(_lastWorkouts, merged148));
           renderCalendar(_lastWorkouts, merged148);
@@ -17102,14 +17303,688 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       else hideDayDetail();
     }
 
+    /* ======== c231: GENERAL ANALYTICS DASHBOARD cards ========
+       Same dashboard the client portal has (c230), fed by the trainer's merged
+       history + portal check-ins. Everything is computed from real records and
+       the shared engines — no invented metrics. */
+    let _c231checks = [];
+    let _c231client = null;
+    let _c231programs = [];
+    let _c231plans = [];
+    let _c231ChartMode = 'general';
+    let _c231WeightRange = '3m';
+    let _c231LastRec = null;
+
+    function trRangeDays() {
+      return _range === 'day' ? 1 : _range === 'week' ? 7 : _range === 'month' ? 30 : _range === 'quarter' ? 91 : _range === 'year' ? 365 : 100000;
+    }
+    function trRangeFromTs() {
+      if (_range === 'all') return 0;
+      if (_range === 'day') { const d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime(); }
+      return Date.now() - trRangeDays() * 86400000;
+    }
+    function trTs(w) { return Number(w && (w.date || w.created_at)) || 0; }
+    function trIsDoneSet(s) { return !!s && s.done !== false; }
+    function trDoneSets(w) {
+      return ((w && w.exercises) || []).reduce(function (n, ex) {
+        return n + ((ex && ex.sets) || []).filter(trIsDoneSet).length;
+      }, 0);
+    }
+    function trReps(w) {
+      return ((w && w.exercises) || []).reduce(function (n, ex) {
+        return n + ((ex && ex.sets) || []).filter(trIsDoneSet).reduce(function (q, s) { return q + (Number(s.reps) || 0); }, 0);
+      }, 0);
+    }
+    function trMinutes(w) {
+      /* trainer sessions store duration in SECONDS; one corrupt 108 821 s
+         value (≈30 h) is clamped to 6 h — no real set work runs that long */
+      let secs = Number(w && (w.duration_sec != null ? w.duration_sec : (w.duration != null ? (Number(w.duration) > 100000 ? Number(w.duration) / 1000 : Number(w.duration)) : 0)));
+      if (!isFinite(secs) || secs < 0) secs = 0;
+      if (secs > 6 * 3600) secs = 6 * 3600;
+      return secs / 60;
+    }
+    function trRecVolume(w) {
+      if (!w) return 0;
+      const eng = window.dkAnalyticsEngine;
+      if (eng && typeof eng.recVolumeKg === 'function') {
+        try {
+          const v = eng.recVolumeKg({ exercises: w.exercises || [] }, { bodyWeightKg: analyticsBodyWeight(), resolveEx: resolveExCrm });
+          if (isFinite(v) && v > 0) return v;
+        } catch (_) {}
+      }
+      const stored = Number(w.total_volume);
+      if (isFinite(stored) && stored > 0) return Math.round(stored);
+      let s = 0;
+      (w.exercises || []).forEach(function (ex) {
+        const unit = ex.unit === 'lb' ? 'lb' : 'kg';
+        (ex.sets || []).filter(trIsDoneSet).forEach(function (set) {
+          s += (unit === 'lb' ? (Number(set.weight) || 0) * 0.45359237 : (Number(set.weight) || 0)) * (Number(set.reps) || 0);
+        });
+      });
+      return Math.round(s);
+    }
+    function trExVolume(ex) {
+      if (!ex) return 0;
+      const eng = window.dkAnalyticsEngine;
+      if (eng && typeof eng.recVolumeKg === 'function') {
+        try { const v = eng.recVolumeKg({ exercises: [ex] }, { bodyWeightKg: analyticsBodyWeight(), resolveEx: resolveExCrm }); if (isFinite(v) && v > 0) return v; } catch (_) {}
+      }
+      const unit = ex.unit === 'lb' ? 'lb' : 'kg';
+      let s = 0;
+      (ex.sets || []).filter(trIsDoneSet).forEach(function (set) {
+        s += (unit === 'lb' ? (Number(set.weight) || 0) * 0.45359237 : (Number(set.weight) || 0)) * (Number(set.reps) || 0);
+      });
+      return Math.round(s);
+    }
+    function c231Num(v) {
+      v = Number(v); if (!isFinite(v)) v = 0;
+      try { return Math.round(v).toLocaleString(localeString()); } catch (e) { return String(Math.round(v)); }
+    }
+    function c231W1(v) { return String(Math.round((Number(dkWConv(Number(v) || 0, 'kg', dkWUnitGet())) * 10)) / 10); }
+    /* dkWConv-based display-unit helpers — local to the dashboard (the
+       identical dispVolKg/dispUnitShort live in the history module's scope
+       and are NOT visible from here) */
+    function c231DispVol(v) { return dkWConv(Number(v) || 0, 'kg', dkWUnitGet()); }
+    function c231DispShort() { return dkWUnitShort(dkWUnitGet()); }
+    function c231MinLabel(mins) {
+      mins = Math.round(Number(mins) || 0);
+      if (mins < 60) return mins + 'm';
+      return Math.floor(mins / 60) + 'h ' + String(mins % 60).padStart(2, '0') + 'm';
+    }
+    function c231ShortDate(ts) { const d = new Date(Number(ts) || Date.now()); return String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0'); }
+    function c231FullDate(ts) { const d = new Date(Number(ts) || Date.now()); return String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + d.getFullYear(); }
+    function c231Pct(v) { return (v >= 0 ? '+' : '') + Math.round(v) + '%'; }
+    function c231Fill(str, map) { return String(str == null ? '' : str).replace(/\{(\w+)\}/g, function (_, k) { return map[k] != null ? map[k] : '{' + k + '}'; }); }
+    function trRecFill(recovery, days) {
+      if (days == null || !isFinite(days)) return 'rgba(120,120,120,0.25)';
+      if (recovery >= 85) return 'rgba(34,197,94,0.65)';
+      if (recovery >= 50) return 'rgba(245,158,11,0.65)';
+      return 'rgba(239,68,68,0.75)';
+    }
+    const C231_GROUP_LABELS = {
+      chest: { en: 'Chest', ru: 'Грудь', he: 'חזה' }, back: { en: 'Back', ru: 'Спина', he: 'גב' },
+      shoulders: { en: 'Shoulders', ru: 'Плечи', he: 'כתפיים' }, elbow_flexors: { en: 'Biceps', ru: 'Бицепс', he: 'ביצפס' },
+      triceps: { en: 'Triceps', ru: 'Трицепс', he: 'תלת ראשי' }, forearms: { en: 'Forearms', ru: 'Предплечья', he: 'אמות' },
+      abdominals: { en: 'Abs', ru: 'Пресс', he: 'בטן' }, legs: { en: 'Legs', ru: 'Ноги', he: 'רגליים' },
+      cardio: { en: 'Cardio', ru: 'Кардио', he: 'אירובי' }, stretching: { en: 'Stretching', ru: 'Растяжка', he: 'מתיחות' },
+      warmup: { en: 'Warm-up', ru: 'Разминка', he: 'חימום' }
+    };
+    function c231RingSVG(value, opts) {
+      opts = opts || {};
+      const v = Number(value);
+      const has = isFinite(v);
+      const pct = has ? Math.max(0, Math.min(100, Math.abs(v))) : 0;
+      const color = opts.color || (has && v < 0 ? '#fb7185' : '#34d399');
+      const r = 34, c = 2 * Math.PI * r;
+      const dash = (c * pct / 100).toFixed(1);
+      return '<div class="ana-ring"><svg viewBox="0 0 84 84" role="img"' + (opts.label ? ' aria-label="' + escapeAttr(opts.label) + '"' : '') + '>' +
+        '<circle cx="42" cy="42" r="' + r + '" fill="none" stroke="rgba(148,163,184,.18)" stroke-width="7" />' +
+        '<circle cx="42" cy="42" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="7" stroke-linecap="round" stroke-dasharray="' + dash + ' ' + (c - dash).toFixed(1) + '" transform="rotate(-90 42 42)" />' +
+        '<text x="42" y="40" text-anchor="middle" font-size="15" font-weight="800" fill="currentColor">' + escapeHTML(opts.text != null ? opts.text : (has ? Math.round(pct) + '%' : '—')) + '</text>' +
+        (opts.caption ? '<text x="42" y="53" text-anchor="middle" font-size="7.5" fill="rgba(148,163,184,.85)">' + escapeHTML(opts.caption) + '</text>' : '') +
+        '</svg></div>';
+    }
+    /* Bars + line SVG (shared visual with the client portal's chart) */
+    function c231BarsLineSVG(points, opts) {
+      opts = opts || {};
+      const data = Array.isArray(points) ? points : [];
+      const n = data.length;
+      if (!n) return '';
+      const W = opts.w || 360, H = opts.h || 158, T = 20, B = 22, L = 6, R = 6;
+      const bars = data.map(p => Math.max(0, Number(p.v) || 0));
+      const lines = data.map(p => Math.max(0, Number(p.l) || 0));
+      const barMax = Math.max.apply(null, [0].concat(bars));
+      const lineMax = Math.max.apply(null, [0].concat(lines));
+      if (!barMax && !lineMax) return '';
+      const escTxt = function (s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
+      const fmtB = opts.fmtBar || (v => (v >= 1000 ? (Math.round(v / 100) / 10) + 'k' : String(Math.round(v))));
+      const fmtL = opts.fmtLine || fmtB;
+      const slot = (W - L - R) / n;
+      const bw = Math.min(32, slot * 0.58);
+      const baseY = H - B;
+      const plotH = H - T - B;
+      let out = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="w-full h-auto" style="direction:ltr" role="img"' + (opts.ariaLabel ? ' aria-label="' + escTxt(opts.ariaLabel) + '"' : '') + ' preserveAspectRatio="xMidYMid meet">';
+      [0.25, 0.5, 0.75].forEach(f => {
+        const y = (T + plotH * f).toFixed(1);
+        out += '<line x1="' + L + '" y1="' + y + '" x2="' + (W - R) + '" y2="' + y + '" stroke="rgba(148,163,184,.12)" stroke-width="1" />';
+      });
+      out += '<line x1="' + L + '" y1="' + baseY + '" x2="' + (W - R) + '" y2="' + baseY + '" stroke="rgba(148,163,184,.25)" stroke-width="1" />';
+      const labelEvery = Math.max(1, Math.ceil(n / 7));
+      data.forEach(function (p, i) {
+        const cx = L + slot * i + slot / 2;
+        const v = bars[i];
+        if (v > 0 && barMax > 0) {
+          const h = Math.max(3, plotH * (v / barMax));
+          const isMax = v === barMax;
+          out += '<rect x="' + (cx - bw / 2).toFixed(1) + '" y="' + (baseY - h).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + h.toFixed(1) + '" rx="3" fill="' + (isMax ? (opts.accent || '#22d3ee') : (opts.color || '#6366f1')) + '" opacity="' + (isMax ? '0.95' : '0.62') + '"><title>' + escTxt((p.label || '') + ' · ' + fmtB(v) + ' ' + (opts.barLabel || '')) + '</title></rect>';
+          if (n <= 8 || isMax) {
+            out += '<text x="' + cx.toFixed(1) + '" y="' + (baseY - h - 3.5).toFixed(1) + '" text-anchor="middle" font-size="8.5" font-weight="700" fill="' + (isMax ? (opts.accent || '#22d3ee') : 'rgba(148,163,184,.9)') + '">' + fmtB(v) + '</text>';
+          }
+        }
+        if (i % labelEvery === 0 || i === n - 1) {
+          out += '<text x="' + cx.toFixed(1) + '" y="' + (H - 6) + '" text-anchor="middle" font-size="8" fill="rgba(148,163,184,.75)">' + escTxt(p.label || '') + '</text>';
+        }
+      });
+      if (lineMax > 0) {
+        let seg = [];
+        const drawSeg = function () {
+          const html = seg.length < 2 ? '' : '<polyline points="' + seg.join(' ') + '" fill="none" stroke="' + (opts.lineColor || '#f59e0b') + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" opacity="0.9" />';
+          seg = [];
+          return html;
+        };
+        let lineHtml = '';
+        data.forEach(function (p, i) {
+          const l = Number(p.l);
+          if (!isFinite(l)) { lineHtml += drawSeg(); return; }
+          const cx = L + slot * i + slot / 2;
+          const cy = baseY - (lineMax ? plotH * (l / lineMax) : 0);
+          seg.push(cx.toFixed(1) + ',' + cy.toFixed(1));
+          lineHtml += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="2.4" fill="' + (opts.lineColor || '#f59e0b') + '"><title>' + escTxt((p.label || '') + ' · ' + fmtL(l) + ' ' + (opts.lineLabel || '')) + '</title></circle>';
+        });
+        lineHtml += drawSeg();
+        out += lineHtml;
+      }
+      out += '</svg>';
+      return out;
+    }
+    /* Bucket any range into chart bars: day → today, week → 7 days,
+       month/quarter → 5/13 weeks, year/all → months */
+    function c231BucketList(H) {
+      const DAY = 86400000;
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+      const fromTs = trRangeFromTs();
+      const specs = [];
+      if (_range === 'day') {
+        specs.push({ start: today, end: today + DAY, label: t('analytics.today') });
+      } else if (_range === 'week') {
+        for (let i = 6; i >= 0; i--) {
+          const s = today - i * DAY;
+          specs.push({ start: s, end: s + DAY, label: new Date(s).toLocaleDateString(localeString(), { weekday: 'short' }) });
+        }
+      } else if (_range === 'month' || _range === 'quarter') {
+        const weeks = _range === 'month' ? 5 : 13;
+        const ws = today - ((now.getDay() + 6) % 7) * DAY; /* Monday of this week */
+        for (let i = weeks - 1; i >= 0; i--) {
+          const s = ws - i * 7 * DAY;
+          specs.push({ start: s, end: s + 7 * DAY, label: c231ShortDate(s) });
+        }
+      } else {
+        let months = 12;
+        if (_range === 'all') {
+          let earliest = 0;
+          (H || []).forEach(w => { const ts = trTs(w); if (ts && (!earliest || ts < earliest)) earliest = ts; });
+          if (earliest) {
+            const e = new Date(earliest);
+            months = (now.getFullYear() - e.getFullYear()) * 12 + (now.getMonth() - e.getMonth()) + 1;
+          }
+          months = Math.max(1, Math.min(24, months));
+        }
+        for (let i = months - 1; i >= 0; i--) {
+          const s = new Date(now.getFullYear(), now.getMonth() - i, 1).getTime();
+          const e = new Date(now.getFullYear(), now.getMonth() - i + 1, 1).getTime();
+          specs.push({ start: s, end: e, label: new Date(s).toLocaleDateString(localeString(), { month: 'short' }) });
+        }
+      }
+      specs.forEach(b => { b.recs = []; b.volume = 0; b.minutes = 0; b.sessions = 0; b.sets = 0; b.reps = 0; });
+      (H || []).forEach(r => {
+        const ts = trTs(r);
+        if (!ts || ts < fromTs) return;
+        const b = specs.find(x => ts >= x.start && ts < x.end);
+        if (!b) return;
+        b.recs.push(r);
+        b.volume += trRecVolume(r);
+        b.minutes += trMinutes(r);
+        b.sessions += 1;
+        b.sets += trDoneSets(r);
+        b.reps += trReps(r);
+      });
+      return specs;
+    }
+    function c231StrengthList(H) {
+      const eng = window.dkAnalyticsEngine;
+      const out = { list: [], avg: 0 };
+      if (!eng || typeof eng.exerciseSeries !== 'function') return out;
+      const fromTs = trRangeFromTs();
+      const bw = analyticsBodyWeight();
+      collectProgressExercises(H).slice(0, 12).forEach(function (o) {
+        try {
+          const pts = eng.exerciseSeries(H, { match: ex => ((eng.exKeyOf ? eng.exKeyOf(ex) : '') === o.key), resolveEx: resolveExCrm, bodyWeightKg: bw })
+            .filter(function (p) { return p.ts >= fromTs && Number(p.e1rm) > 0; });
+          if (pts.length < 2) return;
+          const first = Number(pts[0].e1rm), last = Number(pts[pts.length - 1].e1rm);
+          if (!(first > 0) || !(last > 0)) return;
+          out.list.push({ key: o.key, name: o.name, pct: (last - first) / first * 100, last: last, ts: pts[pts.length - 1].ts });
+        } catch (_) {}
+      });
+      out.list.sort(function (a, b) { return b.pct - a.pct; });
+      out.list = out.list.slice(0, 5);
+      if (out.list.length) out.avg = out.list.reduce(function (s, x) { return s + x.pct; }, 0) / out.list.length;
+      return out;
+    }
+    function c231StrengthChoice(H) {
+      const eng = window.dkAnalyticsEngine;
+      if (!eng || typeof eng.exerciseSeries !== 'function') return null;
+      const fromTs = trRangeFromTs();
+      const bw = analyticsBodyWeight();
+      const list = collectProgressExercises(H).slice(0, 12);
+      for (let i = 0; i < list.length; i++) {
+        const o = list[i];
+        const pts = eng.exerciseSeries(H, { match: ex => ((eng.exKeyOf ? eng.exKeyOf(ex) : '') === o.key), resolveEx: resolveExCrm, bodyWeightKg: bw })
+          .filter(function (p) { return p.ts >= fromTs && (p.e1rm > 0 || p.topKg > 0); });
+        if (pts.length) return { key: o.key, name: o.name, pts: pts };
+      }
+      return null;
+    }
+
+    /* --- training chart card (4 modes) --- */
+    function renderTrChart(workouts) {
+      const box = document.getElementById('ana-chart');
+      const rpeBox = document.getElementById('ana-chart-rpe');
+      const legendBox = document.getElementById('ana-chart-legend');
+      if (!box) return;
+      const H = workouts || [];
+      const eng = window.dkAnalyticsEngine;
+      if (!H.length) {
+        box.innerHTML = '<p class="text-xs text-muted text-center py-4">' + escapeHTML(t('analytics.noData')) + '</p>';
+        if (rpeBox) rpeBox.innerHTML = '';
+        if (legendBox) legendBox.innerHTML = '';
+        return;
+      }
+      try {
+        const buckets = c231BucketList(H);
+        const mode = _c231ChartMode;
+        const legend = function (bar, line, barColor, lineColor) {
+          if (!legendBox) return;
+          legendBox.innerHTML =
+            '<span><span class="ana-dot" style="background:' + barColor + '"></span>' + escapeHTML(bar) + '</span>' +
+            '<span><span class="ana-line" style="background:' + lineColor + '"></span>' + escapeHTML(line) + '</span>';
+        };
+        if (mode === 'strength') {
+          const choice = c231StrengthChoice(H);
+          if (!choice) {
+            box.innerHTML = '<p class="text-xs text-muted text-center py-4">' + escapeHTML(t('analytics.noWeightData')) + '</p>';
+            if (legendBox) legendBox.innerHTML = '';
+          } else {
+            buckets.forEach(function (b) { b.e1 = 0; b.top = 0; });
+            choice.pts.forEach(function (p) {
+              const b = buckets.find(x => p.ts >= x.start && p.ts < x.end);
+              if (!b) return;
+              if (p.e1rm > (b.e1 || 0)) b.e1 = p.e1rm;
+              if (p.topKg > (b.top || 0)) b.top = p.topKg;
+            });
+            const series = buckets.map(function (b) {
+              return { a: b.e1 > 0 ? c231W1(b.e1) : null, b: b.top > 0 ? c231W1(b.top) : null, label: b.label };
+            });
+            const svg = (eng && typeof eng.progressLinesSVG === 'function') ? eng.progressLinesSVG(series, { ariaLabel: t('analytics.chartTitle'), colorA: '#22d3ee', colorB: '#f59e0b' }) : '';
+            box.innerHTML = svg || '<p class="text-xs text-muted text-center py-4">' + escapeHTML(t('analytics.noWeightData')) + '</p>';
+            legend(t('analytics.legendE1rm') + ' · ' + choice.name, t('analytics.legendTopSet'), '#22d3ee', '#f59e0b');
+          }
+        } else {
+          let barLabel = t('analytics.legendVolume'), lineLabel = t('analytics.legendSessions');
+          const pts = buckets.map(function (b) {
+            if (mode === 'endurance') return { label: b.label, v: b.reps, l: b.minutes };
+            if (mode === 'volume') return { label: b.label, v: b.sets, l: b.sessions };
+            return { label: b.label, v: Math.round(c231DispVol(b.volume)), l: b.sessions };
+          });
+          if (mode === 'endurance') { barLabel = t('analytics.legendReps'); lineLabel = t('analytics.legendMinutes'); }
+          if (mode === 'volume') { barLabel = t('analytics.legendSets'); lineLabel = t('analytics.legendSessions'); }
+          const svg = c231BarsLineSVG(pts, {
+            ariaLabel: t('analytics.chartTitle'), color: '#6366f1', accent: '#22d3ee', lineColor: '#f59e0b',
+            barLabel: barLabel, lineLabel: lineLabel,
+            fmtLine: function (v) { return mode === 'endurance' ? c231MinLabel(v) : String(Math.round(v)); }
+          });
+          box.innerHTML = svg || '<p class="text-xs text-muted text-center py-4">' + escapeHTML(t('analytics.noData')) + '</p>';
+          legend(barLabel, lineLabel, '#6366f1', '#f59e0b');
+        }
+        if (rpeBox) {
+          let rpeHtml = '';
+          try {
+            const rpe = typeof eng.weeklyRpe === 'function' ? eng.weeklyRpe(H, {}, 8) : [];
+            const z = { light: 0, moderate: 0, hard: 0 };
+            rpe.forEach(w => { z.light += w.zones.light.sets; z.moderate += w.zones.moderate.sets; z.hard += w.zones.hard.sets; });
+            const total = z.light + z.moderate + z.hard;
+            if (total) {
+              const seg = (n, cls) => '<div class="' + cls + ' h-2 rounded-full transition-all" style="width:' + Math.max(2, Math.round(n / total * 100)) + '%"></div>';
+              const chip = (n, cls, key) => '<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-sm ' + cls + ' inline-block"></span>' + escapeHTML(t(key)) + ' · ' + Math.round(n / total * 100) + '%</span>';
+              rpeHtml =
+                '<div class="text-[10px] uppercase tracking-wider text-muted mb-1.5">' + escapeHTML(t('analytics.rpeMix')) + ' · ' + total + ' ' + escapeHTML(t('analytics.setsShort') || 'sets') + '</div>'
+                + '<div class="flex gap-1 mb-1.5">' + seg(z.light, 'bg-cyan-400/70') + seg(z.moderate, 'bg-amber-500/80') + seg(z.hard, 'bg-rose-500/80') + '</div>'
+                + '<div class="flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-muted">'
+                + chip(z.light, 'bg-cyan-400/70', 'analytics.rpeLight') + chip(z.moderate, 'bg-amber-500/80', 'analytics.rpeModerate') + chip(z.hard, 'bg-rose-500/80', 'analytics.rpeHard')
+                + '</div>';
+            }
+          } catch (_) {}
+          rpeBox.innerHTML = rpeHtml;
+        }
+      } catch (e231) { console.warn('[analytics c231] chart failed:', e231); }
+    }
+
+    /* --- form trend card (own 1m/3m/6m/1y window; target from the client card) --- */
+    function renderTrForm() {
+      const box = document.getElementById('ana-weight-chart');
+      const deltaBox = document.getElementById('ana-weight-delta');
+      const nowBox = document.getElementById('ana-weight-now');
+      const goalBox = document.getElementById('ana-goal');
+      if (!box) return;
+      const all = (_c231checks || []).filter(c => Number(c && c.weight) > 0).slice().sort((a, b) => (Number(a.ts) || 0) - (Number(b.ts) || 0));
+      const wDays = _c231WeightRange === '1m' ? 30 : _c231WeightRange === '3m' ? 90 : _c231WeightRange === '6m' ? 180 : 365;
+      const from = Date.now() - wDays * 86400000;
+      const pts = all.filter(c => (Number(c.ts) || 0) >= from);
+      const latest = all.length ? all[all.length - 1] : null;
+      const uS = c231DispShort();
+      const w1 = v => c231W1(v);
+      if (nowBox) nowBox.innerHTML = latest ? w1(latest.weight) + ' <small>' + escapeHTML(uS) + '</small>' : '—';
+      const client = _c231client || (_clients || []).find(x => x && x.id === _clientId) || null;
+      const tw = client ? Number(client.target_weight) : 0;
+      if (goalBox) {
+        const goalHtml = function () {
+          if (!(tw > 0)) return '<p class="text-[10px] text-muted">' + escapeHTML(t('analytics.goalNoTarget')) + '</p>';
+          if (!latest) return '<p class="text-[10px] text-muted">' + escapeHTML(t('analytics.formNeed')) + '</p>';
+          const cur = Number(latest.weight);
+          const start = pts.length ? Number(pts[0].weight) : cur;
+          const diff = tw - cur;
+          const targetD = w1(tw), curD = w1(cur), diffD = Math.abs(Math.round(Number(dkWConv(Math.abs(diff), 'kg', dkWUnitGet())) * 10) / 10);
+          if (Math.abs(diff) < 0.05) {
+            return '<div class="flex items-center justify-between text-[10px] mb-1"><span class="text-emerald-400 font-bold">' + escapeHTML(t('analytics.goalReached')) + '</span><span class="font-mono text-muted">' + targetD + ' ' + escapeHTML(uS) + '</span></div><div class="ana-bar"><i style="width:100%;background:#22c55e"></i></div>';
+          }
+          let pct = 0;
+          if (Math.abs(tw - start) > 0.05) pct = (start - cur) / (start - tw) * 100;
+          pct = Math.max(0, Math.min(100, pct));
+          const daysSpan = pts.length > 1 ? ((Number(pts[pts.length - 1].ts) - Number(pts[0].ts)) / 86400000) : 0;
+          const rate = daysSpan >= 7 ? (cur - start) / (daysSpan / 7) : 0;
+          let eta = '';
+          if (rate && ((diff < 0 && rate < 0) || (diff > 0 && rate > 0))) {
+            const weeks = Math.abs(diff / rate);
+            if (isFinite(weeks) && weeks > 0 && weeks < 260) eta = c231Fill(t('analytics.goalEta'), { n: Math.max(1, Math.round(weeks)) });
+          }
+          return '<div class="flex items-center justify-between text-[10px] mb-1"><span class="text-muted">' + escapeHTML(t('analytics.goal')) + ' · <span class="font-mono text-text">' + targetD + ' ' + escapeHTML(uS) + '</span></span><span class="text-muted">' + escapeHTML(t('analytics.goalLeft')) + ' <span class="font-mono text-text">' + diffD + ' ' + escapeHTML(uS) + '</span></span></div>'
+            + '<div class="ana-bar"><i style="width:' + Math.max(2, Math.round(pct)) + '%"></i></div>'
+            + '<div class="flex items-center justify-between mt-1 text-[9px] text-muted"><span>' + Math.round(pct) + '% · ' + escapeHTML(t('analytics.goalProgress')) + '</span><span>' + escapeHTML(eta) + '</span></div>';
+        };
+        goalBox.innerHTML = goalHtml();
+      }
+      if (pts.length < 2) {
+        box.innerHTML = '<p class="text-xs text-muted text-center py-4">' + escapeHTML(t('analytics.formNeed')) + '</p>';
+        if (deltaBox) deltaBox.innerHTML = '';
+        return;
+      }
+      const W = 320, H = 130, L = 34, R = 10, T = 14, B = 22;
+      const ws = pts.map(p => c231W1(p.weight));
+      let mn = Math.min.apply(null, ws.map(Number)), mx = Math.max.apply(null, ws.map(Number));
+      const twD = tw > 0 ? Number(c231W1(tw)) : 0;
+      if (twD > 0) { mn = Math.min(mn, twD); mx = Math.max(mx, twD); }
+      if (mx === mn) { mx += 1; mn -= 1; }
+      const pad = Math.max(0.8, (mx - mn) * 0.15); mn -= pad; mx += pad;
+      const X = i => L + (W - L - R) * (i / (pts.length - 1));
+      const Y = v => T + (H - T - B) * (1 - (v - mn) / (mx - mn));
+      const line = ws.map((v, i) => X(i).toFixed(1) + ',' + Y(Number(v)).toFixed(1)).join(' ');
+      const area = L + ',' + (H - B) + ' ' + line + ' ' + (W - R) + ',' + (H - B);
+      const dots = ws.map((v, i) => '<circle cx="' + X(i).toFixed(1) + '" cy="' + Y(Number(v)).toFixed(1) + '" r="2.6" fill="#22d3ee" />').join('');
+      let target = '';
+      if (twD > 0 && twD >= mn && twD <= mx) {
+        target = '<line x1="' + L + '" y1="' + Y(twD).toFixed(1) + '" x2="' + (W - R) + '" y2="' + Y(twD).toFixed(1) + '" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4 3" opacity="0.8" /><text x="' + (W - R) + '" y="' + (Y(twD) - 4).toFixed(1) + '" text-anchor="end" font-size="9" fill="#f59e0b">' + escapeHTML(t('analytics.goal')) + ' ' + twD + '</text>';
+      }
+      const grid = [0.25, 0.5, 0.75].map(f => {
+        const y = (T + (H - T - B) * f).toFixed(1);
+        return '<line x1="' + L + '" y1="' + y + '" x2="' + (W - R) + '" y2="' + y + '" stroke="rgba(148,163,184,.12)" stroke-width="1" />';
+      }).join('');
+      box.innerHTML =
+        '<svg viewBox="0 0 ' + W + ' ' + H + '" class="w-full h-auto" style="direction:ltr" role="img" preserveAspectRatio="xMidYMid meet">' +
+        grid +
+        '<polygon points="' + area + '" fill="rgba(34,211,238,.08)" />' +
+        target +
+        '<polyline points="' + line + '" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />' +
+        dots +
+        '<text x="' + (L - 6) + '" y="' + (T + 4).toFixed(1) + '" text-anchor="end" font-size="8" fill="rgba(148,163,184,.8)">' + mx.toFixed(1) + '</text>' +
+        '<text x="' + (L - 6) + '" y="' + (H - B + 4).toFixed(1) + '" text-anchor="end" font-size="8" fill="rgba(148,163,184,.8)">' + mn.toFixed(1) + '</text>' +
+        '<text x="' + L + '" y="' + (H - 4).toFixed(1) + '" font-size="8" fill="rgba(148,163,184,.7)">' + escapeHTML(c231ShortDate(pts[0].ts)) + '</text>' +
+        '<text x="' + (W - R) + '" y="' + (H - 4).toFixed(1) + '" text-anchor="end" font-size="8" fill="rgba(148,163,184,.7)">' + escapeHTML(c231ShortDate(pts[pts.length - 1].ts)) + '</text>' +
+        '</svg>';
+      if (deltaBox) {
+        const d = Number(ws[ws.length - 1]) - Number(ws[0]);
+        const vd = Math.abs(d) < 0.05 ? 0 : Math.round(d * 10) / 10;
+        deltaBox.innerHTML = '<span class="' + (vd > 0 ? 'text-rose-400' : vd < 0 ? 'text-emerald-400' : 'text-muted') + '">' + (vd > 0 ? '▲ ' : vd < 0 ? '▼ ' : '• ') + Math.abs(vd).toFixed(1) + ' ' + escapeHTML(uS) + '</span>';
+      }
+    }
+
+    /* --- strength card --- */
+    function renderTrStrength(workouts) {
+      const box = document.getElementById('ana-strength-list');
+      const ringBox = document.getElementById('ana-strength-ring');
+      const badge = document.getElementById('ana-strength-badge');
+      if (!box) return;
+      const H = workouts || [];
+      const st = c231StrengthList(H);
+      if (badge) badge.textContent = st.list.length ? c231Fill(t('analytics.kpiStrengthSub'), { n: st.list.length }) : '—';
+      if (!st.list.length) {
+        if (ringBox) ringBox.innerHTML = '';
+        box.innerHTML = '<p class="ana-empty">' + escapeHTML(t('analytics.noStrength')) + '</p>';
+        return;
+      }
+      if (ringBox) ringBox.innerHTML = c231RingSVG(st.avg, {
+        text: c231Pct(st.avg), caption: t('analytics.strengthAverage'),
+        color: st.avg >= 0 ? '#34d399' : '#fb7185', label: t('analytics.strengthTitle')
+      });
+      const maxAbs = Math.max.apply(null, st.list.map(x => Math.abs(x.pct)).concat([1]));
+      box.innerHTML = st.list.map(function (x) {
+        const w = Math.max(2, Math.round(Math.abs(x.pct) / maxAbs * 100));
+        const up = x.pct >= 0;
+        return '<div class="ana-row">' +
+          '<span class="flex-1 min-w-0 truncate text-text font-semibold">' + escapeHTML(x.name) + '</span>' +
+          '<span class="text-[9px] text-muted font-mono shrink-0">' + c231W1(x.last) + ' ' + escapeHTML(c231DispShort()) + '</span>' +
+          '<span class="font-mono font-bold shrink-0 ' + (up ? 'text-emerald-400' : 'text-rose-400') + '">' + escapeHTML(c231Pct(x.pct)) + '</span>' +
+          '</div><div class="ana-bar mb-1"><i style="width:' + w + '%;background:' + (up ? 'linear-gradient(90deg,#34d399,#22d3ee)' : 'linear-gradient(90deg,#fb7185,#f59e0b)') + '"></i></div>';
+      }).join('');
+    }
+
+    /* --- recovery readiness card (shared engine, same inputs as the modal) --- */
+    function renderTrRecovery() {
+      const box = document.getElementById('ana-recovery-list');
+      const ring = document.getElementById('ana-recovery-ring');
+      const state = document.getElementById('ana-recovery-state');
+      const eta = document.getElementById('ana-recovery-eta');
+      const bodyBox = document.getElementById('ana-recovery-body');
+      const H = _lastWorkouts || [];
+      const eng = window.dkRecoveryEngine;
+      const rec = _c231client || (_clients || []).find(x => x && x.id === _clientId) || null;
+      let bw = analyticsBodyWeight();
+      let fat = null;
+      const sv = Number(rec && rec.body_fat_pct);
+      if (isFinite(sv) && sv >= 3 && sv <= 70) fat = sv;
+      const sorted = (_c231checks || []).filter(c => Number(c && c.weight) > 0).slice().sort((a, b) => (Number(a.ts) || 0) - (Number(b.ts) || 0));
+      const latest = sorted.length ? sorted[sorted.length - 1] : null;
+      if (latest && Number(latest.weight) > 30) bw = Number(latest.weight);
+      const lv = latest ? Number(latest.body_fat) : NaN;
+      if (isFinite(lv) && lv >= 3 && lv <= 70) fat = lv;
+      const energy = latest && isFinite(parseFloat(latest.energy)) ? parseFloat(latest.energy) : null;
+      let groups = null, meta = null, adv = null;
+      try {
+        if (eng && H.length) {
+          const res = eng.compute({ workouts: H, bodyWeightKg: bw, bodyFatPct: fat, now: Date.now(), energy: energy, energyTauMod: false, resolveEx: resolveExCrm });
+          groups = res.groups;
+          meta = res.meta || null;
+          if (typeof eng.advise === 'function') adv = eng.advise({ groups: groups });
+        }
+      } catch (_) {}
+      function fillBody(g) {
+        if (!bodyBox) return;
+        bodyBox.innerHTML = window.BM_SVG_FRONT || '';
+        if (!g) {
+          bodyBox.querySelectorAll('.bm-muscle').forEach(p => p.setAttribute('fill', 'rgba(120,120,120,0.15)'));
+          return;
+        }
+        bodyBox.querySelectorAll('.bm-muscle').forEach(function (p) {
+          const gr = p.getAttribute('data-group');
+          const info = gr ? g[gr] : null;
+          p.setAttribute('fill', info ? trRecFill(info.recovery, info.lastTrainedDaysAgo) : 'rgba(120,120,120,0.15)');
+          p.setAttribute('stroke', 'rgba(0,0,0,0.35)');
+          p.setAttribute('stroke-width', '0.7');
+        });
+      }
+      const readiness = adv && adv.readiness != null ? adv.readiness : null;
+      if (ring) ring.innerHTML = readiness == null ? '' : c231RingSVG(readiness, {
+        text: readiness + '%', caption: t('analytics.readiness'),
+        color: readiness >= 75 ? '#34d399' : readiness >= 50 ? '#f59e0b' : '#fb7185',
+        label: t('analytics.recoveryTitle')
+      });
+      if (!groups || readiness == null) {
+        if (box) box.innerHTML = '<p class="ana-empty">' + escapeHTML(t('analytics.noRecovery')) + '</p>';
+        if (state) { state.textContent = '—'; state.className = 'text-[11px] font-bold text-muted'; }
+        if (eta) eta.textContent = '';
+        fillBody(null);
+        return;
+      }
+      const rKey = readiness >= 75 ? 'readyHigh' : readiness >= 50 ? 'readyMed' : 'readyLow';
+      if (state) {
+        state.textContent = t('analytics.' + rKey);
+        state.className = 'text-[11px] font-bold ' + (readiness >= 75 ? 'text-emerald-400' : readiness >= 50 ? 'text-amber-400' : 'text-rose-400');
+      }
+      let etaStr = '';
+      if (readiness < 85 && meta && Number(meta.tauDays) > 0) {
+        const fatigue = Math.max(0.01, 1 - readiness / 100);
+        const days = Number(meta.tauDays) * Math.log(fatigue / 0.15);
+        if (isFinite(days) && days > 0) etaStr = c231Fill(t('analytics.eta'), { n: Math.max(1, Math.round(days)) });
+      }
+      if (eta) eta.textContent = etaStr;
+      const MAIN = (eng && eng.MAIN_GROUPS) || ['chest', 'back', 'shoulders', 'elbow_flexors', 'triceps', 'forearms', 'abdominals', 'legs'];
+      const rows = MAIN.map(function (g) { const r = groups[g]; return r ? { g: g, recovery: r.recovery } : null; })
+        .filter(Boolean).sort(function (a, b) { return a.recovery - b.recovery; }).slice(0, 3);
+      if (box) box.innerHTML = rows.map(function (r) {
+        const lbl = C231_GROUP_LABELS[r.g] ? (C231_GROUP_LABELS[r.g][currentLang()] || C231_GROUP_LABELS[r.g].en) : r.g;
+        const col = r.recovery >= 75 ? '#34d399' : r.recovery >= 50 ? '#f59e0b' : '#fb7185';
+        return '<div class="ana-row"><span class="flex-1 min-w-0 truncate text-muted">' + escapeHTML(lbl) + '</span><span class="font-mono text-text">' + r.recovery + '%</span></div>' +
+          '<div class="ana-bar mb-1"><i style="width:' + Math.max(2, r.recovery) + '%;background:' + col + '"></i></div>';
+      }).join('');
+      fillBody(groups);
+    }
+
+    /* --- last workout card (opens the calendar day panel) --- */
+    function renderTrLast(workouts) {
+      const box = document.getElementById('ana-last');
+      const btn = document.getElementById('ana-last-open');
+      if (!box) return;
+      const H = (workouts || []).filter(function (w) { return trTs(w) > 0; });
+      const rec = H.slice().sort(function (a, b) { return trTs(b) - trTs(a); })[0] || null;
+      _c231LastRec = rec;
+      if (btn) { btn.disabled = !rec; btn.style.opacity = rec ? '' : '.45'; }
+      if (!rec) { box.innerHTML = '<p class="ana-empty">' + escapeHTML(t('analytics.lastEmpty')) + '</p>'; return; }
+      const ts = trTs(rec);
+      const vol = trRecVolume(rec);
+      const sets = trDoneSets(rec);
+      const mins = Math.round(trMinutes(rec));
+      let top = null;
+      (rec.exercises || []).forEach(function (ex) {
+        const v = trExVolume(ex);
+        if (!top || v > top.v) top = { name: ex.name, v: v };
+      });
+      const cell = function (v, l) {
+        return '<div class="bg-surface-2 border border-border rounded-xl py-1.5 px-1 min-w-0">' +
+          '<div class="font-mono font-extrabold text-[13px] text-text truncate">' + escapeHTML(v) + '</div>' +
+          '<div class="text-[8px] text-muted uppercase tracking-wide truncate">' + escapeHTML(l) + '</div></div>';
+      };
+      box.innerHTML = '<div class="flex items-center justify-between gap-2">' +
+          '<span class="text-[11px] font-bold text-text truncate">' + escapeHTML(rec.name || rec.program || '—') + '</span>' +
+          '<span class="text-[9px] text-muted font-mono shrink-0">' + escapeHTML(c231FullDate(ts)) + '</span></div>' +
+        '<div class="grid grid-cols-3 gap-1.5 mt-2">' +
+          cell(c231MinLabel(mins), t('analytics.kpiTime')) +
+          cell(c231Num(c231DispVol(vol)) + ' ' + c231DispShort(), t('analytics.kpiVolume')) +
+          cell(String(sets), t('analytics.lastSets')) +
+        '</div>' +
+        (top && top.v > 0 ? '<p class="text-[10px] text-muted mt-1.5 truncate">🏆 ' + escapeHTML(top.name || '') + ' · <span class="font-mono text-text">' + c231Num(c231DispVol(top.v)) + ' ' + escapeHTML(c231DispShort()) + '</span></p>' : '');
+    }
+
+    /* --- nutrition today card (portal/server day vs plan targets).
+       Reads the RAW portal days (_cloudNutr148: {target, totals}) — the
+       merged array has them converted, so it is unusable here. */
+    function c231ActivePlan(plans) {
+      const arr = (plans || []).filter(p => p && (p.status === 'active' || Number(p.target_calories) > 0));
+      arr.sort(function (a, b) { return (Number(b.created_at) || 0) - (Number(a.created_at) || 0) || (b.status === 'active' ? 1 : 0) - (a.status === 'active' ? 1 : 0); });
+      return arr[0] || null;
+    }
+    function renderTrNutritionToday() {
+      const box = document.getElementById('ana-nutrition');
+      const dateEl = document.getElementById('ana-nutrition-date');
+      if (!box) return;
+      const days = (_cloudNutr148 || []).filter(r => r && r.target && r.totals);
+      const plan = c231ActivePlan(_c231plans);
+      const todayKey = dateKey(new Date());
+      const day = days.find(r => String(r.date) === todayKey) || days[days.length - 1] || null;
+      let calT = plan ? Number(plan.target_calories) || 0 : 0, proT = plan ? Number(plan.target_protein) || 0 : 0;
+      if (day) {
+        if (!calT) calT = Number(day.target.c) || 0;
+        if (!proT) proT = Number(day.target.p) || 0;
+      }
+      if (dateEl) dateEl.textContent = day ? (String(day.date).slice(8) + '.' + String(day.date).slice(5, 7)) : '';
+      if (!day && !calT && !proT) {
+        box.innerHTML = '<p class="ana-empty">' + escapeHTML(t('analytics.nutrNoData')) + '</p>';
+        return;
+      }
+      const cal = day ? Number(day.totals.c) || 0 : 0, pro = day ? Number(day.totals.p) || 0 : 0;
+      const adh7 = days.length ? computeAdherence(nutrToLogs(days.slice(-7))) : null;
+      const row = function (label, val, target, unit) {
+        const pct = target > 0 ? Math.max(0, Math.min(100, Math.round(val / target * 100))) : 0;
+        return '<div class="flex items-center justify-between text-[10px] gap-2"><span class="text-muted shrink-0">' + escapeHTML(label) + '</span>' +
+          '<span class="font-mono text-text truncate">' + c231Num(val) + (target > 0 ? ' / ' + c231Num(target) : '') + ' ' + escapeHTML(unit) + '</span></div>' +
+          (target > 0 ? '<div class="ana-bar mb-1.5"><i style="width:' + Math.max(2, pct) + '%"></i></div>' : '');
+      };
+      box.innerHTML =
+        row(t('analytics.nutrKcal'), cal, calT, 'kcal') +
+        row(t('analytics.nutrProtein'), pro, proT, 'g') +
+        (adh7 != null ? '<div class="flex items-center justify-between text-[10px] gap-2 mt-0.5"><span class="text-muted shrink-0">' + escapeHTML(t('analytics.adherence')) + '</span><span class="font-mono text-text">' + Math.round(adh7) + '%</span></div>' : '') +
+        (plan && plan.name ? '<div class="text-[9px] text-muted mt-1 truncate">' + escapeHTML(plan.name) + '</div>' : '');
+    }
+
+    /* --- week plan card (active program days, checked by real history) --- */
+    function c231ActiveProgram(programs) {
+      const arr = (programs || []).slice();
+      arr.sort(function (a, b) {
+        const sa = a.status === 'active' ? 0 : 1, sb = b.status === 'active' ? 0 : 1;
+        return sa - sb || (Number(b.created_at) || 0) - (Number(a.created_at) || 0);
+      });
+      return arr[0] || null;
+    }
+    function renderTrPlan() {
+      const box = document.getElementById('ana-plan-days');
+      const sub = document.getElementById('ana-plan-sub');
+      const count = document.getElementById('ana-plan-count');
+      if (!box) return;
+      const prog = c231ActiveProgram(_c231programs);
+      const days = prog ? (prog.workout_days || prog.days || []) : [];
+      if (!prog || !days.length) {
+        box.innerHTML = '<p class="ana-empty">' + escapeHTML(t('analytics.planNoProgram')) + '</p>';
+        if (sub) sub.textContent = '—';
+        if (count) count.textContent = '—';
+        return;
+      }
+      const H = _lastWorkouts || [];
+      const now = new Date();
+      const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay() + 6) % 7)).getTime();
+      const done = new Set();
+      H.forEach(function (w) {
+        const ts = trTs(w);
+        if (ts >= monday && ts < monday + 7 * 86400000 && w.day_letter) done.add(String(w.day_letter).toUpperCase());
+      });
+      let doneCount = 0;
+      box.innerHTML = days.map(function (d, i) {
+        const letter = String(d.day_letter || d.letter || String.fromCharCode(65 + i)).toUpperCase();
+        const isDone = done.has(letter);
+        if (isDone) doneCount++;
+        const title = String(d.name || d.title || '');
+        return '<span class="ana-day' + (isDone ? ' done' : '') + '" title="' + escapeAttr(title) + '">' + (isDone ? '✓ ' : '') + escapeHTML(letter) + '</span>';
+      }).join('');
+      if (sub) sub.textContent = String(prog.name || '');
+      if (count) count.textContent = c231Fill(t('analytics.planDone'), { d: doneCount, n: days.length });
+    }
+
     /** Compute all key metrics from raw history arrays. */
     function computeMetrics(workouts, nutrition) {
       const now = new Date();
-      const rangeDays = _range === 'day' ? 1 : _range === 'week' ? 7 : 30;
+      const rangeDays = trRangeDays();
       const rangeStart = new Date(now);
       rangeStart.setDate(now.getDate() - rangeDays + 1);
       rangeStart.setHours(0, 0, 0, 0);
-      const rangeStartTs = rangeStart.getTime();
+      const rangeStartTs = _range === 'all' ? 0 : rangeStart.getTime();
 
       // Filter workouts in range
       const workoutsInRange = workouts.filter(w => {
@@ -17156,7 +18031,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         workoutsCount: workoutsInRange.length,
         streak,
         adherence,
-        totalWorkouts: workouts.length
+        totalWorkouts: workouts.length,
+        totalMinutes: Math.round(workoutsInRange.reduce(function (s, w) { return s + trMinutes(w); }, 0)),
+        totalVolume: Math.round(workoutsInRange.reduce(function (s, w) { return s + trRecVolume(w); }, 0))
       };
     }
 
@@ -17257,21 +18134,51 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
     /** Render the 4 key metric cards. */
     function renderMetrics(m) {
-      const rangeLabel = _range === 'day' ? t('analytics.today')
-                       : _range === 'week' ? t('analytics.daysThisWeek')
-                       : t('analytics.daysThisMonth');
+      /* c231: 5 KPI cards — workouts / time / volume / strength / best PR.
+         The numbers come from the same engine snapshot; the adherence %
+         moved into the nutrition card, «active days» lives on in the calendar. */
+      const H = _lastWorkouts || [];
+      const bw = analyticsBodyWeight();
 
-      setText('metric-active-days', m.activeDays);
-      setText('metric-active-days-sub', m.activeDays + ' ' + t('analytics.inRange') + ' · ' + rangeLabel);
+      setText('kpi-workouts', String(m.workoutsCount));
+      setText('kpi-workouts-sub', c231Fill(t('analytics.kpiWorkoutsSub'), { n: m.totalWorkouts }));
 
-      setText('metric-workouts', m.workoutsCount);
-      setText('metric-workouts-sub', m.workoutsCount + ' ' + (_range === 'day' ? t('analytics.today') : _range === 'week' ? t('analytics.workoutsThisWeek') : t('analytics.workoutsThisMonth')));
+      setText('kpi-time', c231MinLabel(m.totalMinutes));
+      setText('kpi-time-sub', c231Fill(t('analytics.kpiTimeSub'), { n: m.totalMinutes }));
 
-      setText('metric-streak', m.streak);
-      setText('metric-streak-sub', m.streak > 0 ? m.streak + ' ' + t('analytics.daysInARow') : t('analytics.noStreak'));
+      setText('kpi-volume', c231Num(c231DispVol(m.totalVolume)) + ' ' + c231DispShort());
+      setText('kpi-volume-sub', t('analytics.kpiVolumeSub'));
 
-      setText('metric-adherence', m.adherence != null ? m.adherence + '%' : '—');
-      setText('metric-adherence-sub', m.adherence != null ? t('analytics.ofTarget') : t('analytics.noTarget'));
+      const st = c231StrengthList(H);
+      setText('kpi-strength', st.list.length ? c231Pct(st.avg) : '—');
+      setText('kpi-strength-sub', st.list.length ? c231Fill(t('analytics.kpiStrengthSub'), { n: st.list.length }) : t('analytics.noStrength'));
+      const elS = document.getElementById('kpi-strength');
+      if (elS) { elS.classList.toggle('pos', st.avg > 0); elS.classList.toggle('neg', st.avg < 0); }
+
+      let prVal = '—', prSub = t('analytics.noPr'), prNeg = false;
+      try {
+        const eng = window.dkAnalyticsEngine;
+        if (eng && typeof eng.prs === 'function') {
+          const res = eng.prs(H, { windowDays: trRangeDays(), resolveEx: resolveExCrm, bodyWeightKg: bw });
+          const best = (res.recent || []).slice().sort(function (x, y) {
+            const rx = x.prev ? (x.value - x.prev) / x.prev : 0;
+            const ry = y.prev ? (y.value - y.prev) / y.prev : 0;
+            return ry - rx || y.ts - x.ts;
+          })[0];
+          if (best) {
+            const gain = best.prev ? ((best.value - best.prev) / best.prev) * 100 : 0;
+            prVal = best.type === 'reps'
+              ? (Math.round(best.value) + ' ' + t('analytics.unitReps'))
+              : (c231W1(best.value) + ' ' + c231DispShort());
+            prSub = (best.name || best.key || '') + (gain > 0 ? ' · ' + c231Fill('+{n}%', { n: Math.round(gain) }) : '');
+            prNeg = gain < 0;
+          }
+        }
+      } catch (_) {}
+      setText('kpi-pr', prVal);
+      setText('kpi-pr-sub', prSub);
+      const elP = document.getElementById('kpi-pr');
+      if (elP) elP.classList.toggle('neg', prNeg);
 
       // Streak badge in header
       const streakBadge = document.getElementById('analytics-streak');
@@ -17290,7 +18197,9 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const cal = document.getElementById('analytics-calendar');
       if (!cal) return;
 
-      const rangeDays = _range === 'day' ? 1 : _range === 'week' ? 7 : 30;
+      /* c231: quarter/year/all would render 100+ cells — the calendar shows
+         at most the trailing 13 weeks (KPIs still count the full range) */
+      const rangeDays = Math.min(91, trRangeDays());
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
@@ -17349,10 +18258,10 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         `);
       }
 
-      // Layout: day = 1 cell centered, week = 7 cells row, month = 7-col grid
+      // Layout: day = 1 cell centered, short ranges = single row, longer = 7/10-col grid
       if (_range === 'day') {
         cal.innerHTML = `<div class="flex justify-center">${days[0]}</div>`;
-      } else if (_range === 'week') {
+      } else if (rangeDays <= 14) {
         cal.innerHTML = `<div class="grid grid-cols-7 gap-2">${days.join('')}</div>`;
       } else {
         cal.innerHTML = `<div class="grid grid-cols-7 sm:grid-cols-10 gap-2">${days.join('')}</div>`;
@@ -17517,6 +18426,36 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
       const b = e.target.closest('[data-day-key]');
       if (!b) return;
       _daySel = b.getAttribute('data-day-key');
+      renderCalendar(_lastWorkouts, _lastNutrition);
+      renderDayDetail(_daySel);
+    });
+
+    /* c231: dashboard view controls — chart mode tabs, form window tabs,
+       and the two card actions (recovery map, last workout → day panel) */
+    document.querySelectorAll('[data-ana-mode]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        _c231ChartMode = b.getAttribute('data-ana-mode') || 'general';
+        document.querySelectorAll('[data-ana-mode]').forEach(function (x) { x.classList.toggle('ana-on', x === b); });
+        if (_lastWorkouts) renderTrChart(_lastWorkouts);
+      });
+    });
+    document.querySelectorAll('[data-ana-wrange]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        _c231WeightRange = b.getAttribute('data-ana-wrange') || '3m';
+        document.querySelectorAll('[data-ana-wrange]').forEach(function (x) { x.classList.toggle('ana-on', x === b); });
+        renderTrForm();
+      });
+    });
+    const recOpen231 = document.getElementById('ana-recovery-open');
+    if (recOpen231) recOpen231.addEventListener('click', function () {
+      try { if (typeof recoveryMap !== 'undefined') recoveryMap.open(_clientId); } catch (_) {}
+    });
+    const lastOpen231 = document.getElementById('ana-last-open');
+    if (lastOpen231) lastOpen231.addEventListener('click', function () {
+      if (!_c231LastRec) return;
+      const key = dateKey(new Date(trTs(_c231LastRec)));
+      if (!key) return;
+      _daySel = key;
       renderCalendar(_lastWorkouts, _lastNutrition);
       renderDayDetail(_daySel);
     });
@@ -20117,10 +21056,10 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     let _lastRefMap = null;
     let _lastBw = 75; /* c184: body weight for bodyweight effective volume in the report */
     /* c189: the live report was still calling the PORTAL helpers
-       dispVolKg()/dispUnitShort(), which do not exist in the trainer scope -
+       c231DispVol()/dispUnitShort(), which do not exist in the trainer scope -
        openLiveReportModal threw before rendering, so Finish/Save looked dead.
        These are the trainer equivalents (kg canonical -> display unit). */
-    function dispVolKg(v) {
+    function c231DispVol(v) {
       return dkWConv(Number(v) || 0, 'kg', dkWUnitGet());
     }
     function dispUnitShort() {
@@ -21615,7 +22554,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           <span class="text-[11px] truncate flex-1 min-w-0">${esc(globalExName(ex))}</span>
           <span class="w-2 h-2 rounded-full shrink-0" style="background:#f43f5e"></span>
           <span class="flex-1 h-1.5 rounded-full bg-surface-2 overflow-hidden"><span class="block h-full rounded-full" style="width:${pct}%;background:linear-gradient(90deg,#f43f5e,#fb7185)"></span></span>
-          <span class="font-mono text-[11px] font-bold w-10 text-end shrink-0">${dispVolKg(ev)}</span>
+          <span class="font-mono text-[11px] font-bold w-10 text-end shrink-0">${c231DispVol(ev)}</span>
         </div>`;
       }).join('');
       let cmp = '';
@@ -21634,8 +22573,8 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
           const _nmK = _norm121(ex.name);
           const occ = (lastMap && ((_idK && lastMap['id:' + _idK]) || (_nmK && lastMap['nm:' + _nmK]))) || null;
           const pv = occ ? liveDoneVolume(occ.sets, occ.unit, { exercise_id: ex.exercise_id, name: ex.name }).v : null;
-          const evDisp = dispVolKg(ev);
-          const pvDisp = pv == null ? null : dispVolKg(pv);
+          const evDisp = c231DispVol(ev);
+          const pvDisp = pv == null ? null : c231DispVol(pv);
           let chip;
           if (pv == null) chip = `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-accent/15 text-accent shrink-0">${esc(t('report.newBadge'))}</span>`;
           else if (ev > pv) chip = `<span class="font-mono text-[11px] font-bold text-success shrink-0">▲ +${Math.round(evDisp - pvDisp)}</span>`;
@@ -21675,7 +22614,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         <div class="grid grid-cols-4 gap-2 mt-3">
           ${tile(done + '/' + total, t('report.sets'))}
           ${tile(reps, t('report.reps'))}
-          ${tile(Number(dispVolKg(vol)).toLocaleString(localeString()), t('report.volume') + ' · ' + dispUnitShort())}
+          ${tile(Number(c231DispVol(vol)).toLocaleString(localeString()), t('report.volume') + ' · ' + dispUnitShort())}
           ${tile(mins, t('report.minutes'))}
         </div>
         <div class="mt-3 bg-surface-2/50 border border-border rounded-2xl p-3">
