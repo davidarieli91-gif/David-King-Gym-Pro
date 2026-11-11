@@ -91,7 +91,10 @@ ok('day panel: set list wraps on its own line', html.indexOf('text-muted mt-0.5 
 ok('day panel: still escapes the parts', html.indexOf('esc(parts.join(\' · \'))') >= 0);
 
 /* ---------- 6. «за всё время» badges ×3 cards ×3 langs ---------- */
-ok('badge: trend card id', html.indexOf('id="txt-a-trend-all"') >= 0);
+ok('badge: trend card became the range-aware training chart',
+  html.indexOf('id="txt-a-trend-all"') === -1 &&
+  html.indexOf('id="ana-chart-modes"') >= 0 &&
+  html.indexOf('data-ana-mode="strength"') >= 0);
 ok('badge: progress card id', html.indexOf('id="txt-a-progress-all"') >= 0);
 ok('badge: PRs card id', html.indexOf('id="txt-a-prs-all"') >= 0);
 ok('badge: updateLabels fills all three', count(html, "txt-a-trend-all', 'txt-a-progress-all', 'txt-a-prs-all") >= 1);

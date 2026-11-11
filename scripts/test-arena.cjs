@@ -35,7 +35,7 @@ ok('arena script is loaded', crm.includes('src/arena.js?v=248'));
 ok('arena store is in the schema', crm.includes("name: 'arena_progress'") && crm.includes("by_clientId"));
 ok('arena progress is synced', sync.includes("'arena_progress'"));
 ok('arena data and script are copied to dist', copy.includes("'arena-data.json'") && copy.includes("'src/arena.js'"));
-ok('service worker v246 includes arena', sw.includes("CACHE_NAME = 'dk-gym-v246'") && sw.includes('./src/arena.js') && sw.includes('./arena-data.json'));
+ok('service worker v247 includes arena', sw.includes("CACHE_NAME = 'dk-gym-v247'") && sw.includes('./src/arena.js') && sw.includes('./arena-data.json'));
 ok('profile exposes trophy count and arena shortcut', crm.includes('profile-arena-count') && crm.includes('data-quick-action="arena"'));
 ok('arena has exam + trophy logic', js.includes('submitExam') && js.includes('trophyEarned') && js.includes('exam_attempts'));
 ok('arena shows last-attempt breakdown + weak stations', js.includes('function examResultRows') && js.includes("u('weakStations')") && js.includes("u('attemptHistory')"));
