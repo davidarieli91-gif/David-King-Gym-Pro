@@ -4427,6 +4427,18 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     border-radius: 20px;
     box-shadow: 0 24px 60px -30px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.08);
   }
+  /* c232: the big media plate followed the dark theme in light themes too.
+     BF/GV art filled it with its own white background, so only transparent
+     GymImpulse line art looked like a dark picture. Light themes get a light
+     stage; the GI ink is inverted below to stay visible on it. */
+  html[data-ui="v2"][data-mode="light"] #exercise-gif-slot {
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 32%, rgba(205,228,255,.92), transparent 72%),
+      radial-gradient(ellipse 60% 40% at 50% 100%, rgba(186,230,253,.52), transparent 70%),
+      #f5faff !important;
+    border-color: rgba(30,80,150,.16) !important;
+    box-shadow: 0 24px 60px -34px rgba(15,50,110,.32), inset 0 1px 0 #fff;
+  }
   html[data-ui="v2"][data-mode="dark"] #exercise-gif-slot[data-src="gv"] img,
   html[data-ui="v2"][data-mode="dark"] #exercise-gif-slot[data-src="bf"] img {
     filter: invert(1) brightness(1.18) contrast(1.04);
@@ -4448,6 +4460,14 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
   html[data-mode="dark"] img[src*="videos/bf_"],
   html[data-mode="dark"] img[src*="videos/gi_"] {
     filter: invert(1) hue-rotate(180deg) brightness(.98) saturate(1.12) contrast(1.05);
+  }
+  /* c232: GymImpulse delivers transparent light-ink line art. In light themes
+     it needs dark ink on the light stage — same look as BF/GV/RepDB art. */
+  html[data-ui="v2"][data-mode="light"] img[src*="images/gi_"],
+  html[data-ui="v2"][data-mode="light"] img[src*="images/thumbs/gi_"],
+  html[data-ui="v2"][data-mode="light"] img[src*="videos/gi_"] {
+    filter: invert(1) hue-rotate(180deg) brightness(.82) contrast(1.08);
+    mix-blend-mode: multiply;
   }
   @media print {
     img[src*="images/thumbs/"], img[src*="images/bf_"], img[src*="images/gv_"],

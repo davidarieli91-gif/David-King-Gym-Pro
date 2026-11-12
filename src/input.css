@@ -108,6 +108,25 @@ html[data-ui="v2"][data-mode="dark"] .v2-src-rdb img {
   filter: invert(1) hue-rotate(180deg) brightness(1.08) contrast(1.02);
 }
 
+/* c232: GymImpulse renders are transparent light-ink line art. On a light
+   plate they disappear (or, inside the trainer modal's dark plate, look like
+   dark pictures). Light themes invert the ink to dark and multiply it onto
+   the light stage, so GI matches the BF/GV/RepDB dark-on-light artwork. */
+html[data-ui="v2"][data-mode="light"] img[src*="images/gi_"],
+html[data-ui="v2"][data-mode="light"] img[src*="images/thumbs/gi_"],
+html[data-ui="v2"][data-mode="light"] img[src*="videos/gi_"],
+html[data-ui="v2"][data-mode="light"] [data-src="gi"] img,
+html[data-ui="v2"][data-mode="light"] .v2-src-gi img {
+  filter: invert(1) hue-rotate(180deg) brightness(.82) contrast(1.08);
+  mix-blend-mode: multiply;
+}
+/* The fullscreen viewer is a black lightbox in both client apps, so GI art
+   keeps its original light ink there instead of turning invisible. */
+html[data-ui="v2"][data-mode="light"] #viewer-img[src*="images/gi_"] {
+  filter: none;
+  mix-blend-mode: normal;
+}
+
 /* the rest field is a real input, not a gradient panel: keep it on the same
    solid plate as the set inputs in every theme */
 html[data-ui="v2"] .rest-sec-input {
