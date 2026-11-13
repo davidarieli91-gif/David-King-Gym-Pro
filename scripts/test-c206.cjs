@@ -1,4 +1,4 @@
-﻿/* c206 test вЂ” one dark glass image plate for all four exercise sources and
+/* c206 test — one dark glass image plate for all four exercise sources and
    both portals, a solid rest field, and the c206 build/cache version. */
 const fs = require('fs');
 const path = require('path');
@@ -37,10 +37,8 @@ ok('portal light-mode text rules still exist', portal.indexOf('[data-mode="light
 /* ---------- versions ---------- */
 ok('trainer build c213', crm.indexOf('<meta name="dk-build" content="c213" />') >= 0);
 ok('trainer RUNNING 213', crm.indexOf('var RUNNING = 213;') >= 0);
-ok('sidebar + login show c206', crm.indexOf('id="v2-side-version">c213') >= 0 && crm.indexOf('3 languages В· c213') >= 0);
+ok('sidebar + login show c206', crm.indexOf('id="v2-side-version">c213') >= 0 && crm.indexOf('3 languages · c213') >= 0);
 ok('SW cache v250', sw.indexOf("CACHE_NAME = 'dk-gym-v250'") >= 0);
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
-
-

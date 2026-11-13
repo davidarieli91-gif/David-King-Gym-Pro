@@ -1,4 +1,4 @@
-﻿/* c215 вЂ” DKG Arena content and wiring. */
+/* c215 — DKG Arena content and wiring. */
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
@@ -27,7 +27,7 @@ const mu = arena.games.find(g => g.id === 'street_workout').paths.find(p => p.id
 const dl = arena.games.find(g => g.id === 'strength').paths.find(p => p.id === 'deadlift');
 ok('muscle-up has three tiers', mu.tiers.length === 3 && mu.tiers.every(t => t.lessons.length >= 3 && t.exam.stations.length >= 2 && t.trophy.name));
 ok('deadlift has three bodyweight tiers', dl.tiers.length === 3 && dl.tiers.every((t, i) => t.exam.stations.some(s => s.type === 'load_bw' && s.target === [1, 1.5, 2][i])));
-ok('trophy names are tier + path', /Р‘СЂРѕРЅР·РѕРІ/.test(dl.tiers[0].trophy.name.ru) && /РЎРµСЂРµР±СЂСЏРЅ/.test(dl.tiers[1].trophy.name.ru) && /Р—РѕР»РѕС‚/.test(dl.tiers[2].trophy.name.ru));
+ok('trophy names are tier + path', /Бронзов/.test(dl.tiers[0].trophy.name.ru) && /Серебрян/.test(dl.tiers[1].trophy.name.ru) && /Золот/.test(dl.tiers[2].trophy.name.ru));
 ok('trophies are trilingual', mu.tiers.every(t => t.trophy.name.en && t.trophy.name.ru && t.trophy.name.he));
 ok('arena screen exists', crm.includes('data-screen="arena"') && crm.includes('id="arena-root"'));
 ok('arena nav exists', crm.includes('data-nav="arena"') && crm.includes('data-i18n="nav.arena"'));
@@ -75,5 +75,3 @@ ok('arena.js parses', check.status === 0);
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
-
-

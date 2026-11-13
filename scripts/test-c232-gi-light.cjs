@@ -1,4 +1,4 @@
-﻿/* c232 test вЂ” GymImpulse transparent line art on light themes:
+/* c232 test — GymImpulse transparent line art on light themes:
    cards get dark ink, the trainer modal gets a light media plate, and the
    dark-theme x-ray treatment stays exactly as it was. */
 const fs = require('fs');
@@ -43,5 +43,3 @@ ok('SW documents c232', sw.indexOf('c232') >= 0 && sw.indexOf('GYMIMPULSE LIGHT-
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
-
-
