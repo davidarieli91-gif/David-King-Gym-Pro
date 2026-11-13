@@ -168,7 +168,8 @@
     "save": "Save program",
     "activeProgram": "Active program",
     "noActive": "No active program",
-    "newHint": "Create a new program"
+    "newHint": "Create a new program",
+    "reorderTip": "Reorder mode"
   },
   "bm": {
     "body": "Body",
@@ -305,7 +306,7 @@
     "active": "Active",
     "shareTip": "Share with client",
     "copyCodeTip": "Copy code",
-    "waInvite": "👋 Hi {name}!\n\nYour personal training & nutrition plan for David King Gym is ready:\n👉 {url}\n\n🔑 Access code: {code} — enter it when you open the link\n\nOpen it on your phone and save it to the home screen!",
+    "waInvite": "🏋️ David King Gym — {name}\n{url}\nRU: Привет! Твоя программа готова — открой ссылку и введи код: {code}\nEN: Hi! Your plan is ready — open the link and enter the code: {code}\nHE: שלום! התוכנית שלך מוכנה — פתח את הקישור והזן את הקוד: {code}",
     "photoUploaded": "Photo uploaded",
     "photoError": "Photo upload failed",
     "photoReplace": "Replace photo",
@@ -325,8 +326,8 @@
     "groupDeleted": "Group deleted — {n} client(s) moved to {g}",
     "moveToGroup": "Move to group",
     "sortGroup": "Group",
-    "waInviteApp": "👋 Hi {name}!\n\nYour David King Gym app is ready:\n👉 {url}\n\nSign in with your phone number and personal password. Open it on your phone and add it to the home screen!",
-    "waInviteAppPass": "👋 Hi {name}!\n\nYour personal training & nutrition plan is ready:\n👉 {url}\n\n🔑 Your password: {code} — enter it when you open the link (or sign in with your phone number)\n\nOpen it on your phone and save it to the home screen!",
+    "waInviteApp": "🏋️ David King Gym — {name}\n{url}\nRU: Привет! Ваша программа готова — вход по телефону и паролю.\nEN: Hi! Your plan is ready — sign in with your phone and password.\nHE: שלום! התוכנית שלך מוכנה — היכנסו עם טלפון וסיסמה.",
+    "waInviteAppPass": "🏋️ David King Gym — {name}\n{url}\nRU: Привет! Ваша программа готова — открой ссылку и введи пароль: {code}\nEN: Hi! Your plan is ready — open the link and enter the password: {code}\nHE: שלום! התוכנית שלך מוכנה — פתח את הקישור והזן את הסיסמה: {code}",
     "subtitle": "Your athletes — one command center.",
     "workspace": "Trainer workspace",
     "kpiTotal": "Total clients",
@@ -376,7 +377,8 @@
     "workoutsLabel": "workouts",
     "metricWeight": "Weight",
     "metricWaist": "Waist",
-    "metricFat": "Body fat"
+    "metricFat": "Body fat",
+    "portalPassEmpty": "not set"
   },
   "client": {
     "openInjuryList": "Open conditions list",
@@ -687,7 +689,10 @@
     "planTitle": "Week plan",
     "planGo": "To plan →",
     "planNoProgram": "No active program",
-    "planDone": "{d} / {n} this week"
+    "planDone": "{d} / {n} this week",
+    "macroProteinShort": "P",
+    "macroFatShort": "F",
+    "macroCarbShort": "C"
   },
   "workouts": {
     "title": "Workouts",
@@ -1213,7 +1218,9 @@
     "addToPlan": "Add to plan",
     "tabCompare": "Compare",
     "compareEyebrow": "Nutrition science",
-    "newPlanHint": "Build a nutrition plan"
+    "newPlanHint": "Build a nutrition plan",
+    "photoNamePrefix": "Photo: {file}",
+    "photoFoodFallback": "Photo meal"
   },
   "food": {
     "title": "Food database",
@@ -1387,7 +1394,8 @@
     "groupNuts": "Nuts & seeds",
     "groupOils": "Oils & fats",
     "product": "product",
-    "products": "products"
+    "products": "products",
+    "nameRu": "Name (RU)"
   },
   "generator": {
     "title": "Smart program generator",
@@ -1891,7 +1899,9 @@
     "resetDone": "New code ready — send it to the client",
     "phoneRegFail": "Could not register the phone — publish the database rules (Settings → Cloud); phone sign-in will not work without them",
     "resetUseCard": "The password is set in the client card — change it there",
-    "passLabel": "Client password"
+    "passLabel": "Client password",
+    "serverLinkNote": "The link is stored on the server. A new link cancels the previous one.",
+    "phoneStatusNote": "Sign in with the link + the client’s password."
   },
   "report": {
     "title": "Workout Report",
@@ -1917,7 +1927,14 @@
     "localActive": "Active",
     "brainSettingsTip": "🧠 AI brain — settings",
     "foodPhotoTip": "Food photo — AI estimate",
-    "voiceInputTip": "Voice input — say a food"
+    "voiceInputTip": "Voice input — say a food",
+    "worksOffline": "— works offline",
+    "apiHint": "(OpenAI / Gemini / custom)",
+    "modelLabel": "Model",
+    "optionalHint": "(optional)",
+    "testConnection": "Test connection",
+    "save": "Save",
+    "privacyNote": "<strong>Privacy:</strong> the key is stored only in your browser (IndexedDB/localStorage) and never sent to our server. Photos go only to the API you specify."
   },
   "voice": {
     "photoAdded": "Photo added: {name} ~{cal} kcal/100g",
@@ -2027,5 +2044,42 @@
     "workouts30": "Workouts / 30 days",
     "vsPrev30": "vs prev. 30d",
     "days30": "30 days"
+  },
+  "server": {
+    "title": "Server",
+    "checking": "Checking…",
+    "sync": "Sync now",
+    "upload": "Upload local data",
+    "password": "Change password",
+    "admin": "Trainers & access",
+    "adminTitle": "Add, edit or remove a trainer",
+    "note": "Client data is stored on the server. Clearing the browser cache does not delete it.",
+    "online": "Online",
+    "offline": "Offline",
+    "allSaved": "everything saved",
+    "pending": "pending",
+    "statusError": "Could not get the status",
+    "currentPassword": "Current password",
+    "newPassword": "New password (10+ characters)",
+    "passwordTooShort": "Password must be at least 10 characters",
+    "repeatPassword": "Repeat the new password",
+    "passwordMismatch": "Passwords do not match",
+    "passwordChanged": "Password changed. Your other sessions were closed.",
+    "passwordError": "Could not change the password: ",
+    "uploadConfirm": "Upload all local data of this browser to the server? Existing records will be updated.",
+    "uploadDone": "Local data uploaded to the server",
+    "uploadError": "Could not upload data: "
+  },
+  "header": {
+    "directorConsole": "Director portal"
+  },
+  "workoutFallbackName": {
+    "0": "W",
+    "1": "o",
+    "2": "r",
+    "3": "k",
+    "4": "o",
+    "5": "u",
+    "6": "t"
   }
 }

@@ -1,4 +1,4 @@
-/* c213 — server-first multi-tenant foundation. */
+﻿/* c213 вЂ” server-first multi-tenant foundation. */
 const fs = require('fs');
 const path = require('path');
 const root = path.join(__dirname, '..');
@@ -13,8 +13,8 @@ function read(rel) { return fs.readFileSync(path.join(root, rel), 'utf8'); }
 
 ok('trainer build c213', crm.includes('<meta name="dk-build" content="c213" />'));
 ok('trainer RUNNING 213', crm.includes('var RUNNING = 213;'));
-ok('sidebar + login show c213', crm.includes('id="v2-side-version">c213') && crm.includes('3 languages · c213'));
-ok('SW cache v249', sw.includes("CACHE_NAME = 'dk-gym-v249'"));
+ok('sidebar + login show c213', crm.includes('id="v2-side-version">c213') && crm.includes('3 languages В· c213'));
+ok('SW cache v250', sw.includes("CACHE_NAME = 'dk-gym-v250'"));
 ok('SW precaches server scripts', sw.includes("./src/server-mode.js") && sw.includes("./src/server-sync.js"));
 
 ok('IndexedDB version 13', crm.includes('const DB_VERSION = 13;'));
@@ -72,7 +72,7 @@ ok('portal response strips private client fields', read('server/src/routes/porta
 ok('portal page exists', fs.existsSync(path.join(root, 'server', 'public', 'portal.html')));
 ok('director console exists', fs.existsSync(path.join(root, 'server', 'public', 'admin.html')));
 ok('director can edit and delete trainers', read('server/src/routes/admin.ts').includes("'/tenants/:id/update'") && read('server/src/routes/admin.ts').includes("'/tenants/:id/delete'"));
-ok('director console has clear add/edit/delete trainer controls', read('server/public/admin.html').includes('Добавить нового тренера') && read('server/public/admin.html').includes('data-edit') && read('server/public/admin.html').includes('data-delete') && read('server/public/admin.html').includes('Редактировать'));
+ok('director console has clear add/edit/delete trainer controls', read('server/public/admin.html').includes('Р”РѕР±Р°РІРёС‚СЊ РЅРѕРІРѕРіРѕ С‚СЂРµРЅРµСЂР°') && read('server/public/admin.html').includes('data-edit') && read('server/public/admin.html').includes('data-delete') && read('server/public/admin.html').includes('Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ'));
 ok('invite registration page exists', fs.existsSync(path.join(root, 'server', 'public', 'join.html')));
 ok('docker image ships the frontend and public pages', read('server/Dockerfile').includes('COPY dist ./public-app') && read('server/Dockerfile').includes('COPY server/public ./public'));
 ok('compose builds from the repository root', read('deploy/docker-compose.yml').includes('context: ..') && read('deploy/docker-compose.yml').includes('dockerfile: server/Dockerfile'));
@@ -99,7 +99,7 @@ ok('exercise picker shows the body map from 1280px', crm.includes('@media (max-w
 /* c229: portion units + nutrient comparison */
 ok('portion units exist with piece/pack/glass/tbsp/tsp/handful/can', crm.includes("const DK_UNIT_ORDER = ['serving','piece','pack','package','glass','tbsp','tsp','handful','can']") && crm.includes("handful: { en: 'handful'") && crm.includes("can:     { en: 'can'"));
 ok('food detail edit form stores unit weights', crm.includes('name="unit_piece"') && crm.includes('name="unit_handful"') && crm.includes('name="unit_can"') && crm.includes('units: Object.values(unitMap)'));
-ok('portion modal converts quantity × unit to grams', crm.includes('id="food-portion-qty"') && crm.includes('id="food-portion-unit"') && crm.includes('const syncUnitGrams') && crm.includes('u.grams * q'));
+ok('portion modal converts quantity Г— unit to grams', crm.includes('id="food-portion-qty"') && crm.includes('id="food-portion-unit"') && crm.includes('const syncUnitGrams') && crm.includes('u.grams * q'));
 ok('products tab has a comparison tab', crm.includes('data-nutrition-tab="compare"') && crm.includes('id="cmp-root"') && crm.includes('const nutritionCompare'));
 ok('comparison ranks per 1 g / 10 g / 100 g / 100 kcal', crm.includes("if (_basis === '10g') return 10") && crm.includes("_basis === '100kcal'") && crm.includes("seg('basis'"));
 ok('comparison has a usefulness score with penalties', crm.includes('function scoreOf(f)') && crm.includes('saturated_fat) || 0) / 22') && crm.includes('n.sugars) || 0) / 50'));
@@ -112,3 +112,5 @@ ok('client portal has portion units and a compare button', (function () {
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
+
+

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>David King Gym — Director</title>
+  <script>(function(){try{var saved=localStorage.getItem('dkg_admin_lang')||(navigator.language||'ru').slice(0,2);var L=(saved==='en'||saved==='he')?saved:'ru';var d=document.documentElement;d.setAttribute('lang',L);d.setAttribute('dir',L==='he'?'rtl':'ltr');}catch(e){}})();</script>
   <link rel="icon" type="image/png" href="/icon-512.png" />
   <style>
     :root { color-scheme: dark; --bg:#070b14; --panel:#0d1526; --line:rgba(255,255,255,.10); --text:#eef5ff; --muted:#91a3bd; --cyan:#3ad6ff; --blue:#3b82f6; --danger:#ff5d73; --ok:#32d583; }
@@ -63,6 +64,7 @@
     .toast.show { opacity:1; }
     .toast.ok { border-color:rgba(50,213,131,.45); }
     .toast.bad { border-color:rgba(255,93,115,.5); }
+    .lang-select { flex:0 0 auto; padding:8px 10px; font-size:12px; margin-inline-start:auto; }
     @media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, minmax(0,1fr)); } }
     @media (max-width: 640px) { .kpis { grid-template-columns: 1fr; } table { font-size:11.5px; } th, td { padding:8px 5px; } }
   </style>
@@ -73,100 +75,110 @@
       <img src="/logo-web.webp" alt="David King Gym" />
       <div>
         <h1>David King Gym — Director</h1>
-        <p>Тренеры, приглашения и сводка по клиентам. Клиентские данные здесь не показываются.</p>
+        <p data-i18n="admin.brandSub">Тренеры, приглашения и сводка по клиентам. Клиентские данные здесь не показываются.</p>
       </div>
+      <select id="lang-select" class="secondary lang-select" aria-label="Language">
+        <option value="ru">Русский</option>
+        <option value="en">English</option>
+        <option value="he">עברית</option>
+      </select>
     </div>
 
     <div id="login-view" class="card login">
-      <h2 style="margin:0 0 6px;font-size:18px;">Вход директора</h2>
-      <p class="muted" style="margin:0 0 18px;font-size:13px;line-height:1.5;">Только аккаунт с ролью director.</p>
+      <h2 style="margin:0 0 6px;font-size:18px;" data-i18n="admin.loginTitle">Вход директора</h2>
+      <p class="muted" style="margin:0 0 18px;font-size:13px;line-height:1.5;" data-i18n="admin.loginSub">Только аккаунт с ролью director.</p>
       <div id="login-error" class="error"></div>
       <form id="login-form">
         <label>Email<input id="login-email" type="email" autocomplete="username" required /></label>
-        <label>Пароль<input id="login-password" type="password" autocomplete="current-password" required /></label>
-        <button id="login-submit" type="submit" style="width:100%;">Войти</button>
+        <label><span data-i18n="admin.password">Пароль</span><input id="login-password" type="password" autocomplete="current-password" required /></label>
+        <button id="login-submit" type="submit" style="width:100%;" data-i18n="admin.loginBtn">Войти</button>
       </form>
     </div>
 
     <div id="app-view" class="hidden">
       <div class="topbar">
         <div>
-          <h2 style="margin:0;font-size:18px;">Тренеры и доступы</h2>
-          <p class="muted" style="margin:4px 0 0;font-size:12px;">Добавляйте новых тренеров, редактируйте их данные и управляйте доступом. Клиентские данные здесь не показываются.</p>
+          <h2 style="margin:0;font-size:18px;" data-i18n="admin.heading">Тренеры и доступы</h2>
+          <p class="muted" style="margin:4px 0 0;font-size:12px;" data-i18n="admin.topbarSub">Добавляйте новых тренеров, редактируйте их данные и управляйте доступом. Клиентские данные здесь не показываются.</p>
         </div>
         <div class="actions">
-          <a href="/fitness-crm.html?screen=arena" target="_blank"><button type="button" class="secondary">Арена</button></a>
-          <a href="/fitness-crm.html"><button type="button" class="secondary">Мой кабинет</button></a>
-          <button type="button" class="secondary" id="logout-btn">Выйти</button>
+          <a href="/fitness-crm.html?screen=arena" target="_blank"><button type="button" class="secondary" data-i18n="admin.arenaBtn">Арена</button></a>
+          <a href="/fitness-crm.html"><button type="button" class="secondary" data-i18n="admin.cabinetBtn">Мой кабинет</button></a>
+          <button type="button" class="secondary" id="logout-btn" data-i18n="admin.logoutBtn">Выйти</button>
         </div>
       </div>
 
-      <p class="section-sub" style="margin-top:0;">Сводка по всем кабинетам: сколько тренеров зарегистрировано, у кого есть доступ, сколько всего клиентов и сколько данных хранится на сервере.</p>
+      <p class="section-sub" style="margin-top:0;" data-i18n="admin.summarySub">Сводка по всем кабинетам: сколько тренеров зарегистрировано, у кого есть доступ, сколько всего клиентов и сколько данных хранится на сервере.</p>
       <div class="kpis">
-        <div class="kpi"><span>Все тренеры</span><b id="kpi-trainers">—</b></div>
-        <div class="kpi"><span>С доступом</span><b id="kpi-active">—</b></div>
-        <div class="kpi"><span>Всего клиентов</span><b id="kpi-clients">—</b></div>
-        <div class="kpi"><span>Объём данных</span><b id="kpi-storage">—</b></div>
+        <div class="kpi"><span data-i18n="admin.kpiTrainers">Все тренеры</span><b id="kpi-trainers">—</b></div>
+        <div class="kpi"><span data-i18n="admin.kpiActive">С доступом</span><b id="kpi-active">—</b></div>
+        <div class="kpi"><span data-i18n="admin.kpiClients">Всего клиентов</span><b id="kpi-clients">—</b></div>
+        <div class="kpi"><span data-i18n="admin.kpiStorage">Объём данных</span><b id="kpi-storage">—</b></div>
       </div>
 
       <div class="card section">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
-          <h2 style="margin:0;">Список тренеров</h2>
-          <button type="button" id="resend-all" class="secondary" title="Отправить каждому активному тренеру email с новой ссылкой на приложение">Переслать новую ссылку всем</button>
+          <h2 style="margin:0;" data-i18n="admin.trainersTitle">Список тренеров</h2>
+          <button type="button" id="resend-all" class="secondary" data-i18n="admin.resendAll" title="" data-i18n-attr="title:admin.resendAllTitle">Переслать новую ссылку всем</button>
         </div>
-        <p class="section-sub">«Редактировать» меняет имя, email и пароль. «Приостановить» временно закрывает доступ. «Новая ссылка» отправляет тренеру на email адрес приложения после переезда — клиенты, история и настройки при этом не меняются и не удаляются. «Удалить» полностью удаляет кабинет и всех его клиентов — это необратимо.</p>
+        <p class="section-sub" data-i18n="admin.trainersHint">«Редактировать» меняет имя, email и пароль. «Приостановить» временно закрывает доступ. «Новая ссылка» отправляет тренеру на email адрес приложения после переезда — клиенты, история и настройки при этом не меняются и не удаляются. «Удалить» полностью удаляет кабинет и всех его клиентов — это необратимо.</p>
         <div style="overflow:auto;">
           <table>
-            <thead><tr><th>Тренер</th><th>Email</th><th>Регистрация</th><th>Последний вход</th><th>Клиенты</th><th>Данные</th><th>Статус</th><th>Действия</th></tr></thead>
-            <tbody id="trainers-body"><tr><td colspan="8" class="empty">Загрузка…</td></tr></tbody>
+            <thead><tr><th data-i18n="admin.thTrainer">Тренер</th><th data-i18n="admin.thEmail">Email</th><th data-i18n="admin.thRegistered">Регистрация</th><th data-i18n="admin.thLastLogin">Последний вход</th><th data-i18n="admin.thClients">Клиенты</th><th data-i18n="admin.thData">Данные</th><th data-i18n="admin.thStatus">Статус</th><th data-i18n="admin.thActions">Действия</th></tr></thead>
+            <tbody id="trainers-body"><tr><td colspan="8" class="empty" data-i18n="admin.loading">Загрузка…</td></tr></tbody>
           </table>
         </div>
       </div>
 
       <div class="card section info">
-        <b>Как добавить нового тренера</b>
+        <b data-i18n="admin.howTitle">Как добавить нового тренера</b>
         <ol class="steps">
-          <li>Создайте приглашение ниже — это ссылка с кодом.</li>
-          <li>Скопируйте ссылку и отправьте её тренеру любым удобным способом.</li>
-          <li>Тренер откроет ссылку, зарегистрируется и получит свой отдельный кабинет. Он сразу появится в списке выше.</li>
+          <li data-i18n="admin.how1">Создайте приглашение ниже — это ссылка с кодом.</li>
+          <li data-i18n="admin.how2">Скопируйте ссылку и отправьте её тренеру любым удобным способом.</li>
+          <li data-i18n="admin.how3">Тренер откроет ссылку, зарегистрируется и получит свой отдельный кабинет. Он сразу появится в списке выше.</li>
         </ol>
       </div>
 
       <div class="card section">
-        <h2>Добавить нового тренера</h2>
-        <p class="section-sub">Создайте приглашение и отправьте тренеру ссылку. После регистрации он появится в списке выше — там его можно редактировать или удалить.</p>
+        <h2 data-i18n="admin.addTitle">Добавить нового тренера</h2>
+        <p class="section-sub" data-i18n="admin.addSub">Создайте приглашение и отправьте тренеру ссылку. После регистрации он появится в списке выше — там его можно редактировать или удалить.</p>
         <div class="row">
-          <label>Название приглашения
-            <input id="invite-label" type="text" maxlength="120" placeholder="Например: тренер из зала" />
-            <span class="hint">Необязательно. Поможет понять, кому вы отправили эту ссылку.</span>
+          <label><span data-i18n="admin.invLabel">Название приглашения</span>
+            <input id="invite-label" type="text" maxlength="120" data-i18n-ph="admin.invLabelPh" placeholder="Например: тренер из зала" />
+            <span class="hint" data-i18n="admin.invLabelHint">Необязательно. Поможет понять, кому вы отправили эту ссылку.</span>
           </label>
-          <label>Сколько тренеров может использовать
+          <label><span data-i18n="admin.invUses">Сколько тренеров может использовать</span>
             <input id="invite-uses" type="number" min="0" max="100000" value="0" />
-            <span class="hint">0 — без ограничений. Один код можно отправить нескольким людям.</span>
+            <span class="hint" data-i18n="admin.invUsesHint">0 — без ограничений. Один код можно отправить нескольким людям.</span>
           </label>
-          <label>Срок действия, дней
-            <input id="invite-days" type="number" min="1" max="365" placeholder="Бессрочно" />
-            <span class="hint">Пусто — ссылка не истекает. Иначе укажите число дней.</span>
+          <label><span data-i18n="admin.invDays">Срок действия, дней</span>
+            <input id="invite-days" type="number" min="1" max="365" data-i18n-ph="admin.invDaysPh" placeholder="Бессрочно" />
+            <span class="hint" data-i18n="admin.invDaysHint">Пусто — ссылка не истекает. Иначе укажите число дней.</span>
           </label>
-          <button type="button" id="invite-create">Создать приглашение</button>
+          <button type="button" id="invite-create" data-i18n="admin.invCreate">Создать приглашение</button>
         </div>
         <div id="invite-result" class="hidden" style="margin-top:16px;padding:14px;border:1px solid rgba(57,214,255,.25);background:rgba(57,214,255,.06);border-radius:12px;">
-          <div class="muted" style="font-size:11px;margin-bottom:6px;">Ссылка показывается один раз. Скопируйте её сейчас и отправьте тренеру.</div>
+          <div class="muted" style="font-size:11px;margin-bottom:6px;" data-i18n="admin.invOnce">Ссылка показывается один раз. Скопируйте её сейчас и отправьте тренеру.</div>
           <div class="code" id="invite-code">—</div>
           <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
-            <button type="button" class="secondary" id="invite-copy">Скопировать ссылку</button>
+            <button type="button" class="secondary" id="invite-copy" data-i18n="admin.invCopy">Скопировать ссылку</button>
             <span class="muted" style="font-size:12px;align-self:center;" id="invite-url"></span>
+          </div>
+          <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(57,214,255,.18);">
+            <div class="muted" style="font-size:11px;margin-bottom:6px;" data-i18n="admin.inviteMsgNote">Готовое приглашение для тренера — на трёх языках сразу, сжато. Одним касанием копирует всё сообщение.</div>
+            <pre id="invite-message" style="margin:0;white-space:pre-wrap;font-family:inherit;font-size:12px;line-height:1.6;color:#b9eaff;background:rgba(4,10,20,.5);border:1px solid rgba(57,214,255,.15);border-radius:10px;padding:10px 12px;"></pre>
+            <button type="button" class="secondary" id="invite-message-copy" style="margin-top:10px;" data-i18n="admin.inviteMsgCopy">Скопировать приглашение (RU/EN/HE)</button>
           </div>
         </div>
       </div>
 
       <div class="card section">
-        <h2>Созданные приглашения</h2>
-        <p class="section-sub">Здесь видно, какие ссылки созданы, сколько раз их использовали и действуют ли они. Отзыв ссылки не удаляет уже зарегистрированных тренеров.</p>
+        <h2 data-i18n="admin.invListTitle">Созданные приглашения</h2>
+        <p class="section-sub" data-i18n="admin.invListSub">Здесь видно, какие ссылки созданы, сколько раз их использовали и действуют ли они. Отзыв ссылки не удаляет уже зарегистрированных тренеров.</p>
         <div style="overflow:auto;">
           <table>
-            <thead><tr><th>Название</th><th>Использовано</th><th>Срок</th><th>Статус</th><th>Действие</th></tr></thead>
-            <tbody id="invites-body"><tr><td colspan="5" class="empty">Загрузка…</td></tr></tbody>
+            <thead><tr><th data-i18n="admin.invThName">Название</th><th data-i18n="admin.invThUsed">Использовано</th><th data-i18n="admin.invThTerm">Срок</th><th data-i18n="admin.invThStatus">Статус</th><th data-i18n="admin.invThAction">Действие</th></tr></thead>
+            <tbody id="invites-body"><tr><td colspan="5" class="empty" data-i18n="admin.loading">Загрузка…</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -176,38 +188,430 @@
 
     <div id="edit-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="edit-title">
       <div class="modal-card">
-        <h3 id="edit-title">Редактировать тренера</h3>
-        <p class="section-sub">Имя видно в списке и в кабинете тренера. Email используется для входа.</p>
+        <h3 id="edit-title" data-i18n="admin.editTitle">Редактировать тренера</h3>
+        <p class="section-sub" data-i18n="admin.editSub">Имя видно в списке и в кабинете тренера. Email используется для входа.</p>
         <div id="edit-error" class="error"></div>
-        <label>Имя тренера<input id="edit-name" type="text" maxlength="120" required /></label>
-        <label>Email для входа<input id="edit-email" type="email" maxlength="254" required /></label>
-        <label>Новый пароль (необязательно)
-          <input id="edit-password" type="password" minlength="10" maxlength="200" autocomplete="new-password" placeholder="Оставьте пустым, чтобы не менять" />
-          <span class="hint">Минимум 10 символов. После смены пароля другие устройства тренера выйдут из аккаунта.</span>
+        <label><span data-i18n="admin.editName">Имя тренера</span><input id="edit-name" type="text" maxlength="120" required /></label>
+        <label><span data-i18n="admin.editEmail">Email для входа</span><input id="edit-email" type="email" maxlength="254" required /></label>
+        <label><span data-i18n="admin.editPassLabel">Новый пароль (необязательно)</span>
+          <input id="edit-password" type="password" minlength="10" maxlength="200" autocomplete="new-password" data-i18n-ph="admin.editPassPh" placeholder="Оставьте пустым, чтобы не менять" />
+          <span class="hint" data-i18n="admin.editPassHint">Минимум 10 символов. После смены пароля другие устройства тренера выйдут из аккаунта.</span>
         </label>
         <div class="modal-actions">
-          <button type="button" class="secondary" id="edit-cancel">Отмена</button>
-          <button type="button" id="edit-save">Сохранить</button>
+          <button type="button" class="secondary" id="edit-cancel" data-i18n="admin.cancel">Отмена</button>
+          <button type="button" id="edit-save" data-i18n="admin.save">Сохранить</button>
         </div>
       </div>
     </div>
 
     <div id="delete-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="delete-title">
       <div class="modal-card">
-        <h3 id="delete-title">Удалить тренера?</h3>
-        <p class="section-sub">Будут удалены кабинет, все клиенты, программы, история, файлы и доступы. Это действие нельзя отменить.</p>
+        <h3 id="delete-title" data-i18n="admin.delTitle">Удалить тренера?</h3>
+        <p class="section-sub" data-i18n="admin.delSub">Будут удалены кабинет, все клиенты, программы, история, файлы и доступы. Это действие нельзя отменить.</p>
         <div id="delete-error" class="error"></div>
-        <label>Введите имя тренера для подтверждения
-          <input id="delete-confirm" type="text" maxlength="120" autocomplete="off" placeholder="Точное имя из списка" />
+        <label><span data-i18n="admin.delLabel">Введите имя тренера для подтверждения</span>
+          <input id="delete-confirm" type="text" maxlength="120" autocomplete="off" data-i18n-ph="admin.delPh" placeholder="Точное имя из списка" />
           <span class="hint" id="delete-target-name"></span>
         </label>
         <div class="modal-actions">
-          <button type="button" class="secondary" id="delete-cancel">Отмена</button>
-          <button type="button" class="danger" id="delete-submit" disabled>Удалить навсегда</button>
+          <button type="button" class="secondary" id="delete-cancel" data-i18n="admin.cancel">Отмена</button>
+          <button type="button" class="danger" id="delete-submit" disabled data-i18n="admin.delSubmit">Удалить навсегда</button>
         </div>
       </div>
     </div>
   </div>
+
+  <script>
+    (function () {
+      'use strict';
+      var I18N = {
+        ru: {
+          "admin.brandSub":"Тренеры, приглашения и сводка по клиентам. Клиентские данные здесь не показываются.",
+          "admin.loginTitle":"Вход директора",
+          "admin.loginSub":"Только аккаунт с ролью director.",
+          "admin.password":"Пароль",
+          "admin.loginBtn":"Войти",
+          "admin.errNotDirector":"Этот аккаунт не является директором.",
+          "admin.errLogin":"Неверный email или пароль.",
+          "admin.heading":"Тренеры и доступы",
+          "admin.topbarSub":"Добавляйте новых тренеров, редактируйте их данные и управляйте доступом. Клиентские данные здесь не показываются.",
+          "admin.arenaBtn":"Арена",
+          "admin.cabinetBtn":"Мой кабинет",
+          "admin.logoutBtn":"Выйти",
+          "admin.summarySub":"Сводка по всем кабинетам: сколько тренеров зарегистрировано, у кого есть доступ, сколько всего клиентов и сколько данных хранится на сервере.",
+          "admin.kpiTrainers":"Все тренеры",
+          "admin.kpiActive":"С доступом",
+          "admin.kpiClients":"Всего клиентов",
+          "admin.kpiStorage":"Объём данных",
+          "admin.trainersTitle":"Список тренеров",
+          "admin.resendAll":"Переслать новую ссылку всем",
+          "admin.resendAllTitle":"Отправить каждому активному тренеру email с новой ссылкой на приложение",
+          "admin.trainersHint":"«Редактировать» меняет имя, email и пароль. «Приостановить» временно закрывает доступ. «Новая ссылка» отправляет тренеру на email адрес приложения после переезда — клиенты, история и настройки при этом не меняются и не удаляются. «Удалить» полностью удаляет кабинет и всех его клиентов — это необратимо.",
+          "admin.thTrainer":"Тренер",
+          "admin.thEmail":"Email",
+          "admin.thRegistered":"Регистрация",
+          "admin.thLastLogin":"Последний вход",
+          "admin.thClients":"Клиенты",
+          "admin.thData":"Данные",
+          "admin.thStatus":"Статус",
+          "admin.thActions":"Действия",
+          "admin.loading":"Загрузка…",
+          "admin.emptyTrainers":"Пока нет тренеров. Создайте приглашение ниже.",
+          "admin.howTitle":"Как добавить нового тренера",
+          "admin.how1":"Создайте приглашение ниже — это ссылка с кодом.",
+          "admin.how2":"Скопируйте ссылку и отправьте её тренеру любым удобным способом.",
+          "admin.how3":"Тренер откроет ссылку, зарегистрируется и получит свой отдельный кабинет. Он сразу появится в списке выше.",
+          "admin.addTitle":"Добавить нового тренера",
+          "admin.addSub":"Создайте приглашение и отправьте тренеру ссылку. После регистрации он появится в списке выше — там его можно редактировать или удалить.",
+          "admin.invLabel":"Название приглашения",
+          "admin.invLabelPh":"Например: тренер из зала",
+          "admin.invLabelHint":"Необязательно. Поможет понять, кому вы отправили эту ссылку.",
+          "admin.invUses":"Сколько тренеров может использовать",
+          "admin.invUsesHint":"0 — без ограничений. Один код можно отправить нескольким людям.",
+          "admin.invDays":"Срок действия, дней",
+          "admin.invDaysPh":"Бессрочно",
+          "admin.invDaysHint":"Пусто — ссылка не истекает. Иначе укажите число дней.",
+          "admin.invCreate":"Создать приглашение",
+          "admin.invOnce":"Ссылка показывается один раз. Скопируйте её сейчас и отправьте тренеру.",
+          "admin.invCopy":"Скопировать ссылку",
+          "admin.copied":"Скопировано",
+          "admin.copyPrompt":"Скопируйте ссылку:",
+          "admin.copyPromptMsg":"Скопируйте приглашение:",
+          "admin.inviteMsgNote":"Готовое приглашение для тренера — на трёх языках сразу, сжато. Одним касанием копирует всё сообщение.",
+          "admin.inviteMsgCopy":"Скопировать приглашение (RU/EN/HE)",
+          "admin.inviteMsg":"🏋️ David King Gym\n{url}\nRU: Вас пригласили как тренера — откройте ссылку и зарегистрируйтесь. У вас будет свой кабинет с клиентами.\nEN: You were invited as a trainer — open the link and sign up. You will get your own trainer account with clients.\nHE: הוזמנת כמאמן — פתח את הקישור והירשם. תהיה לך חדר מאמן משלך עם לקוחות.",
+          "admin.invListTitle":"Созданные приглашения",
+          "admin.invListSub":"Здесь видно, какие ссылки созданы, сколько раз их использовали и действуют ли они. Отзыв ссылки не удаляет уже зарегистрированных тренеров.",
+          "admin.invThName":"Название",
+          "admin.invThUsed":"Использовано",
+          "admin.invThTerm":"Срок",
+          "admin.invThStatus":"Статус",
+          "admin.invThAction":"Действие",
+          "admin.emptyInvites":"Кодов пока нет.",
+          "admin.invRevoked":"Отозван",
+          "admin.invExpired":"Истёк",
+          "admin.statusActive":"Активен",
+          "admin.statusSuspended":"Приостановлен",
+          "admin.revokeBtn":"Отозвать",
+          "admin.noExpiry":"бессрочно",
+          "admin.confirmRevoke":"Отозвать этот код? Уже зарегистрированные тренеры продолжат работать.",
+          "admin.toastRevoked":"Код отозван",
+          "admin.editTitle":"Редактировать тренера",
+          "admin.editSub":"Имя видно в списке и в кабинете тренера. Email используется для входа.",
+          "admin.editName":"Имя тренера",
+          "admin.editEmail":"Email для входа",
+          "admin.editPassLabel":"Новый пароль (необязательно)",
+          "admin.editPassPh":"Оставьте пустым, чтобы не менять",
+          "admin.editPassHint":"Минимум 10 символов. После смены пароля другие устройства тренера выйдут из аккаунта.",
+          "admin.cancel":"Отмена",
+          "admin.save":"Сохранить",
+          "admin.delTitle":"Удалить тренера?",
+          "admin.delSub":"Будут удалены кабинет, все клиенты, программы, история, файлы и доступы. Это действие нельзя отменить.",
+          "admin.delLabel":"Введите имя тренера для подтверждения",
+          "admin.delPh":"Точное имя из списка",
+          "admin.delSubmit":"Удалить навсегда",
+          "admin.delHint":"Введите точное имя из списка: «{name}»",
+          "admin.errDelMismatch":"Имя не совпадает. Введите имя точно как в списке.",
+          "admin.delConfirmExact":"Введите точное имя из списка",
+          "admin.editBtn":"Редактировать",
+          "admin.suspendBtn":"Приостановить",
+          "admin.resumeBtn":"Возобновить",
+          "admin.deleteBtn":"Удалить",
+          "admin.selfMarker":"это ты",
+          "admin.resendOne":"Новая ссылка",
+          "admin.resendOneNoEmail":"У тренера не указан email",
+          "admin.trainerFallback":"тренер",
+          "admin.confirmSuspend":"Приостановить доступ? Тренер не сможет войти, но клиенты и данные сохранятся.",
+          "admin.toastSuspended":"Доступ приостановлен",
+          "admin.toastResumed":"Доступ возобновлён",
+          "admin.confirmResendOne":"Отправить письмо с новой ссылкой «{name}» ({email})?\n\nКлиенты, история и настройки не меняются и не удаляются.",
+          "admin.toastResent":"Ссылка отправлена: {name}",
+          "admin.toastResendFail":"Не удалось отправить письмо",
+          "admin.toastNoEmails":"Никто из тренеров не указал email",
+          "admin.confirmResendAll":"Отправить письмо с новой ссылкой всем ({n}) активным тренерам?\n\nКлиенты, история и настройки не меняются и не удаляются.",
+          "admin.toastResendAll":"Письмо отправлено: {sent} из {total} тренеров",
+          "admin.toastResendAllErrors":"Письмо отправлено: {sent} из {total} тренеров (ошибок: {failed})",
+          "admin.toastResendAllFail":"Не удалось отправить письма",
+          "admin.errNameShort":"Имя должно быть не короче 2 символов.",
+          "admin.errEmail":"Введите корректный email.",
+          "admin.errPassShort":"Пароль должен быть не короче 10 символов.",
+          "admin.toastSaved":"Изменения сохранены",
+          "admin.toastSaveFail":"Не удалось сохранить изменения.",
+          "admin.toastDeleted":"Тренер удалён",
+          "admin.toastDeleteFail":"Не удалось удалить тренера.",
+          "admin.toastInviteCreated":"Приглашение создано"
+        },
+        en: {
+          "admin.brandSub":"Trainers, invites and a summary across client accounts. Client data is never shown here.",
+          "admin.loginTitle":"Director sign-in",
+          "admin.loginSub":"A director account is required.",
+          "admin.password":"Password",
+          "admin.loginBtn":"Sign in",
+          "admin.errNotDirector":"This account is not a director.",
+          "admin.errLogin":"Wrong email or password.",
+          "admin.heading":"Trainers & access",
+          "admin.topbarSub":"Add trainers, edit their data and manage access. Client data is never shown here.",
+          "admin.arenaBtn":"Arena",
+          "admin.cabinetBtn":"My account",
+          "admin.logoutBtn":"Sign out",
+          "admin.summarySub":"A summary across every account: how many trainers are registered, who has access, total clients and how much data is stored on the server.",
+          "admin.kpiTrainers":"Trainers",
+          "admin.kpiActive":"With access",
+          "admin.kpiClients":"Total clients",
+          "admin.kpiStorage":"Data stored",
+          "admin.trainersTitle":"Trainers",
+          "admin.resendAll":"Resend the new link to everyone",
+          "admin.resendAllTitle":"Email every active trainer the new app link",
+          "admin.trainersHint":"“Edit” changes the name, email and password. “Suspend” temporarily locks access. “New link” emails the trainer the new app address after the migration — clients, history and settings are not changed or deleted. “Delete” permanently deletes the account and all its clients — this cannot be undone.",
+          "admin.thTrainer":"Trainer",
+          "admin.thEmail":"Email",
+          "admin.thRegistered":"Registered",
+          "admin.thLastLogin":"Last login",
+          "admin.thClients":"Clients",
+          "admin.thData":"Data",
+          "admin.thStatus":"Status",
+          "admin.thActions":"Actions",
+          "admin.loading":"Loading…",
+          "admin.emptyTrainers":"No trainers yet. Create an invitation below.",
+          "admin.howTitle":"How to add a trainer",
+          "admin.how1":"Create an invitation below — it is a link with a code.",
+          "admin.how2":"Copy the link and send it to the trainer in any way.",
+          "admin.how3":"The trainer opens the link, registers and gets their own account. It appears right away in the list above.",
+          "admin.addTitle":"Add a new trainer",
+          "admin.addSub":"Create an invitation and send the trainer the link. After registration they appear above — you can edit or delete them there.",
+          "admin.invLabel":"Invitation name",
+          "admin.invLabelPh":"e.g. gym trainer",
+          "admin.invLabelHint":"Optional. Helps you remember who this link was sent to.",
+          "admin.invUses":"How many trainers may use it",
+          "admin.invUsesHint":"0 — no limit. One code can be sent to multiple people.",
+          "admin.invDays":"Expires in days",
+          "admin.invDaysPh":"Never",
+          "admin.invDaysHint":"Leave empty for no expiry. Otherwise give a number of days.",
+          "admin.invCreate":"Create invitation",
+          "admin.invOnce":"The link is shown once. Copy it now and send it to the trainer.",
+          "admin.invCopy":"Copy link",
+          "admin.copied":"Copied",
+          "admin.copyPrompt":"Copy the link:",
+          "admin.copyPromptMsg":"Copy the invitation:",
+          "admin.inviteMsgNote":"A ready-made invite for the trainer — in all three languages, short. One tap copies the whole message.",
+          "admin.inviteMsgCopy":"Copy invitation (RU/EN/HE)",
+          "admin.inviteMsg":"🏋️ David King Gym\n{url}\nRU: Вас пригласили как тренера — откройте ссылку и зарегистрируйтесь. У вас будет свой кабинет с клиентами.\nEN: You were invited as a trainer — open the link and sign up. You will get your own trainer account with clients.\nHE: הוזמנת כמאמן — פתח את הקישור והירשם. תהיה לך חדר מאמן משלך עם לקוחות.",
+          "admin.invListTitle":"Created invitations",
+          "admin.invListSub":"See which links were created, how many times they were used and whether they are active. Revoking a code does not delete already registered trainers.",
+          "admin.invThName":"Label",
+          "admin.invThUsed":"Used",
+          "admin.invThTerm":"Expires",
+          "admin.invThStatus":"Status",
+          "admin.invThAction":"Action",
+          "admin.emptyInvites":"No codes yet.",
+          "admin.invRevoked":"Revoked",
+          "admin.invExpired":"Expired",
+          "admin.statusActive":"Active",
+          "admin.statusSuspended":"Suspended",
+          "admin.revokeBtn":"Revoke",
+          "admin.noExpiry":"never",
+          "admin.confirmRevoke":"Revoke this code? Trainers who already registered will keep working.",
+          "admin.toastRevoked":"Code revoked",
+          "admin.editTitle":"Edit trainer",
+          "admin.editSub":"Name is shown in the list and in the trainer account. Email is used to sign in.",
+          "admin.editName":"Trainer name",
+          "admin.editEmail":"Sign-in email",
+          "admin.editPassLabel":"New password (optional)",
+          "admin.editPassPh":"Leave empty to keep the current one",
+          "admin.editPassHint":"At least 10 characters. After a password change, the trainer's other devices will be signed out.",
+          "admin.cancel":"Cancel",
+          "admin.save":"Save",
+          "admin.delTitle":"Delete trainer?",
+          "admin.delSub":"Will be deleted: the account, all its clients, programs, history, files and access. This cannot be undone.",
+          "admin.delLabel":"Type the trainer name to confirm",
+          "admin.delPh":"Exactly as in the list",
+          "admin.delSubmit":"Delete forever",
+          "admin.delHint":"Type the name exactly as in the list: “{name}”",
+          "admin.errDelMismatch":"The name does not match. Type it exactly as in the list.",
+          "admin.delConfirmExact":"Type the name exactly as in the list",
+          "admin.editBtn":"Edit",
+          "admin.suspendBtn":"Suspend",
+          "admin.resumeBtn":"Resume",
+          "admin.deleteBtn":"Delete",
+          "admin.selfMarker":"that's you",
+          "admin.resendOne":"New link",
+          "admin.resendOneNoEmail":"The trainer has no email on file",
+          "admin.trainerFallback":"trainer",
+          "admin.confirmSuspend":"Suspend access? The trainer will not be able to sign in, but clients and data stay safe.",
+          "admin.toastSuspended":"Access suspended",
+          "admin.toastResumed":"Access restored",
+          "admin.confirmResendOne":"Email the new link to «{name}» ({email})?\n\nClients, history and settings are not changed or deleted.",
+          "admin.toastResent":"Link sent to {name}",
+          "admin.toastResendFail":"Could not send the email",
+          "admin.toastNoEmails":"No trainer has an email on file",
+          "admin.confirmResendAll":"Email the new link to all ({n}) active trainers?\n\nClients, history and settings are not changed or deleted.",
+          "admin.toastResendAll":"Email sent: {sent} of {total} trainers",
+          "admin.toastResendAllErrors":"Email sent: {sent} of {total} trainers (errors: {failed})",
+          "admin.toastResendAllFail":"Could not send the emails",
+          "admin.errNameShort":"Name must be at least 2 characters.",
+          "admin.errEmail":"Enter a valid email.",
+          "admin.errPassShort":"Password must be at least 10 characters.",
+          "admin.toastSaved":"Changes saved",
+          "admin.toastSaveFail":"Could not save the changes.",
+          "admin.toastDeleted":"Trainer deleted",
+          "admin.toastDeleteFail":"Could not delete the trainer.",
+          "admin.toastInviteCreated":"Invitation created"
+        },
+        he: {
+          "admin.brandSub":"מאמנים, הזמנות וסיכום על פני חשבונות. נתוני לקוחות לא מוצגים כאן.",
+          "admin.loginTitle":"כניסת מנהל",
+          "admin.loginSub":"נדרשת הרשאת מנהל בלבד.",
+          "admin.password":"סיסמה",
+          "admin.loginBtn":"התחבר",
+          "admin.errNotDirector":"חשבון זה אינו מנהל.",
+          "admin.errLogin":"אימייל או סיסמה שגויים.",
+          "admin.heading":"מאמנים וגישות",
+          "admin.topbarSub":"הוסף מאמנים, ערוך את הנתונים שלהם ונהל גישה. נתוני לקוחות לא מוצגים כאן.",
+          "admin.arenaBtn":"זירה",
+          "admin.cabinetBtn":"החשבון שלי",
+          "admin.logoutBtn":"התנתק",
+          "admin.summarySub":"סיכום על כל החשבונות: כמה מאמנים רשומים, למי יש גישה, סך הלקוחות וכמה נתונים מאוחסנים בשרת.",
+          "admin.kpiTrainers":"מאמנים",
+          "admin.kpiActive":"עם גישה",
+          "admin.kpiClients":"סך הלקוחות",
+          "admin.kpiStorage":"נתונים מאוחסנים",
+          "admin.trainersTitle":"מאמנים",
+          "admin.resendAll":"שלח את הקישור החדש לכולם",
+          "admin.resendAllTitle":"שלח אימייל עם קישור האפליקציה החדש לכל מאמן פעיל",
+          "admin.trainersHint":"«עריכה» משנה שם, אימייל וסיסמה. «השבתה» נועלת גישה זמנית. «קישור חדש» שולח למאמן באימייל את כתובת האפליקציה אחרי ההעברה — לקוחות, היסטוריה והגדרות לא משתנים ולא נמחקים. «מחיקה» מוחקת לצמיתות את החשבון ואת כל הלקוחות שלו — אי אפשר לבטל.",
+          "admin.thTrainer":"מאמן",
+          "admin.thEmail":"אימייל",
+          "admin.thRegistered":"נרשם",
+          "admin.thLastLogin":"התחברות אחרונה",
+          "admin.thClients":"לקוחות",
+          "admin.thData":"נתונים",
+          "admin.thStatus":"סטטוס",
+          "admin.thActions":"פעולות",
+          "admin.loading":"טוען…",
+          "admin.emptyTrainers":"אין עדיין מאמנים. צור הזמנה למטה.",
+          "admin.howTitle":"איך מוסיפים מאמן",
+          "admin.how1":"צור הזמנה למטה — זהו קישור עם קוד.",
+          "admin.how2":"העתק את הקישור ושלח אותו למאמן בכל דרך.",
+          "admin.how3":"המאמן פותח את הקישור, נרשם ומקבל חשבון מאמן משלו. הוא יופיע מיד ברשימה למעלה.",
+          "admin.addTitle":"הוסף מאמן חדש",
+          "admin.addSub":"צור הזמנה ושלח את הקישור למאמן. אחרי ההרשמה הוא יופיע ברשימה למעלה — שם אפשר לערוך או למחוק אותו.",
+          "admin.invLabel":"שם ההזמנה",
+          "admin.invLabelPh":"למשל: מאמן מהמכון",
+          "admin.invLabelHint":"אופציונלי. עוזר לזכור למי נשלח הקישור.",
+          "admin.invUses":"כמה מאמנים יכולים להשתמש",
+          "admin.invUsesHint":"0 — ללא הגבלה. אפשר לשלוח קוד אחד לכמה אנשים.",
+          "admin.invDays":"יפוג בעוד ימים",
+          "admin.invDaysPh":"לעולם",
+          "admin.invDaysHint":"השאר ריק כדי ללא תוקף. אחרת כתוב מספר ימים.",
+          "admin.invCreate":"צור הזמנה",
+          "admin.invOnce":"הקישור מוצג פעם אחת. העתק אותו עכשיו ושלח למאמן.",
+          "admin.invCopy":"העתקת קישור",
+          "admin.copied":"הועתק",
+          "admin.copyPrompt":"העתק את הקישור:",
+          "admin.copyPromptMsg":"העתק את ההזמנה:",
+          "admin.inviteMsgNote":"הזמנה מוכנה למאמן — בשלוש שפות, קצרה. הקשה אחת מעתיקה את כל ההודעה.",
+          "admin.inviteMsgCopy":"העתקת הזמנה (RU/EN/HE)",
+          "admin.inviteMsg":"🏋️ David King Gym\n{url}\nRU: Вас пригласили как тренера — откройте ссылку и зарегистрируйтесь. У вас будет свой кабинет с клиентами.\nEN: You were invited as a trainer — open the link and sign up. You will get your own trainer account with clients.\nHE: הוזמנת כמאמן — פתח את הקישור והירשם. תהיה לך חדר מאמן משלך עם לקוחות.",
+          "admin.invListTitle":"הזמנות שנוצרו",
+          "admin.invListSub":"כאן רואים אילו קישורים נוצרו, כמה פעמים השתמשו בהם והאם הם פעילים. ביטול קוד לא מוחק מאמנים שכבר נרשמו.",
+          "admin.invThName":"שם",
+          "admin.invThUsed":"שימוש",
+          "admin.invThTerm":"תוקף",
+          "admin.invThStatus":"סטטוס",
+          "admin.invThAction":"פעולה",
+          "admin.emptyInvites":"אין עדיין קודים.",
+          "admin.invRevoked":"בוטל",
+          "admin.invExpired":"פג תוקף",
+          "admin.statusActive":"פעיל",
+          "admin.statusSuspended":"מושבת",
+          "admin.revokeBtn":"בטל",
+          "admin.noExpiry":"ללא תוקף",
+          "admin.confirmRevoke":"לבטל את הקוד הזה? מאמנים שכבר נרשמו ימשיכו לעבוד.",
+          "admin.toastRevoked":"הקוד בוטל",
+          "admin.editTitle":"עריכת מאמן",
+          "admin.editSub":"השם מוצג ברשימה ובחשבון המאמן. האימייל משמש לכניסה.",
+          "admin.editName":"שם המאמן",
+          "admin.editEmail":"אימייל לכניסה",
+          "admin.editPassLabel":"סיסמה חדשה (לא חובה)",
+          "admin.editPassPh":"השאר ריק כדי לא לשנות",
+          "admin.editPassHint":"לפחות 10 תווים. אחרי שינוי סיסמה, שאר המכשירים של המאמן ייצאו מהחשבון.",
+          "admin.cancel":"ביטול",
+          "admin.save":"שמור",
+          "admin.delTitle":"למחוק מאמן?",
+          "admin.delSub":"יימחקו: החשבון, כל הלקוחות, תוכניות, היסטוריה, קבצים והרשאות. אי אפשר לבטל.",
+          "admin.delLabel":"הקלד את שם המאמן כדי לאשר",
+          "admin.delPh":"בדיוק כמו ברשימה",
+          "admin.delSubmit":"מחק לצמיתות",
+          "admin.delHint":"הקלד את השם בדיוק כמו ברשימה: «{name}»",
+          "admin.errDelMismatch":"השם לא תואם. הקלד בדיוק כמו ברשימה.",
+          "admin.delConfirmExact":"הקלד שם בדיוק כמו ברשימה",
+          "admin.editBtn":"עריכה",
+          "admin.suspendBtn":"השבתה",
+          "admin.resumeBtn":"החזר גישה",
+          "admin.deleteBtn":"מחיקה",
+          "admin.selfMarker":"זה אתה",
+          "admin.resendOne":"קישור חדש",
+          "admin.resendOneNoEmail":"אין אימייל למאמן",
+          "admin.trainerFallback":"מאמן",
+          "admin.confirmSuspend":"להשבית גישה? המאמן לא יוכל להיכנס, אבל לקוחות ונתונים יישארו.",
+          "admin.toastSuspended":"הגישה הושבתה",
+          "admin.toastResumed":"הגישה הוחזרה",
+          "admin.confirmResendOne":"לשלוח את הקישור החדש ל«{name}» ({email})?\n\nלקוחות, היסטוריה והגדרות לא משתנים ולא נמחקים.",
+          "admin.toastResent":"הקישור נשלח ל{name}",
+          "admin.toastResendFail":"לא הצלחנו לשלוח את האימייל",
+          "admin.toastNoEmails":"לאף מאמן אין אימייל",
+          "admin.confirmResendAll":"לשלוח את הקישור החדש לכל ({n}) המאמנים הפעילים?\n\nלקוחות, היסטוריה והגדרות לא משתנים ולא נמחקים.",
+          "admin.toastResendAll":"נשלח: {sent} מתוך {total} מאמנים",
+          "admin.toastResendAllErrors":"נשלח: {sent} מתוך {total} מאמנים (שגיאות: {failed})",
+          "admin.toastResendAllFail":"לא הצלחנו לשלוח את האימיילים",
+          "admin.errNameShort":"השם חייב להיות לפחות 2 תווים.",
+          "admin.errEmail":"הקלד אימייל תקין.",
+          "admin.errPassShort":"הסיסמה חייבת להיות לפחות 10 תווים.",
+          "admin.toastSaved":"השינויים נשמרו",
+          "admin.toastSaveFail":"לא הצלחנו לשמור את השינויים.",
+          "admin.toastDeleted":"המאמן נמחק",
+          "admin.toastDeleteFail":"לא הצלחנו למחוק את המאמן.",
+          "admin.toastInviteCreated":"ההזמנה נוצרה"
+        }
+      };
+      window.__ADMIN_I18N__ = I18N;
+      window.__ADMIN_T__ = function (key, vars) {
+        var dict = I18N[document.documentElement.getAttribute('lang') || 'ru'] || I18N.ru;
+        var s = dict[key];
+        if (s == null) s = I18N.en[key];
+        if (s == null) return '';
+        if (vars) {
+          for (var k in vars) s = s.split('{' + k + '}').join(String(vars[k]));
+        }
+        return s;
+      };
+      window.__applyAdminLang__ = function () {
+        var lang = document.documentElement.getAttribute('lang') || 'ru';
+        document.documentElement.setAttribute('lang', lang);
+        document.documentElement.setAttribute('dir', lang === 'he' ? 'rtl' : 'ltr');
+        document.querySelectorAll('[data-i18n]').forEach(function (el) {
+          var s = window.__ADMIN_T__(el.getAttribute('data-i18n'));
+          if (s) el.textContent = s;
+        });
+        document.querySelectorAll('[data-i18n-ph]').forEach(function (el) {
+          var s = window.__ADMIN_T__(el.getAttribute('data-i18n-ph'));
+          if (s) el.setAttribute('placeholder', s);
+        });
+        document.querySelectorAll('[data-i18n-attr]').forEach(function (el) {
+          var list = el.getAttribute('data-i18n-attr').split(',');
+          for (var i = 0; i < list.length; i++) {
+            var pair = list[i].split(':');
+            var attr = pair[0].trim();
+            var key = pair[1] ? pair[1].trim() : '';
+            var s = window.__ADMIN_T__(key);
+            if (s) el.setAttribute(attr, s);
+          }
+        });
+        var select = document.getElementById('lang-select');
+        if (select) select.value = lang;
+      };
+    })();
+  </script>
 
   <script>
     (function () {
@@ -227,9 +631,14 @@
         return '';
       }
       function csrf() { return cookie('dkg_csrf'); }
+      var tr = window.__ADMIN_T__ || function () { return ''; };
+      function locale() {
+        var lang = document.documentElement.getAttribute('lang') || 'ru';
+        return lang === 'en' ? 'en-GB' : (lang === 'he' ? 'he-IL' : 'ru-RU');
+      }
       function fmtDate(value) {
         if (!value) return '—';
-        try { return new Date(value).toLocaleString('ru-RU', { dateStyle: 'short', timeStyle: 'short' }); } catch (_) { return '—'; }
+        try { return new Date(value).toLocaleString(locale(), { dateStyle: 'short', timeStyle: 'short' }); } catch (_) { return '—'; }
       }
       function fmtBytes(value) {
         var n = Number(value || 0);
@@ -292,7 +701,7 @@
         try {
           var me = await api('/api/auth/me');
           if (!me.user || me.user.role !== 'director') {
-            showLogin('Этот аккаунт не является директором.');
+            showLogin(tr('admin.errNotDirector'));
             return;
           }
           state.me = me;
@@ -323,20 +732,20 @@
         state.trainers = data.trainers || [];
         var body = $('trainers-body');
         if (!state.trainers.length) {
-          body.innerHTML = '<tr><td colspan="8" class="empty">Пока нет тренеров. Создайте приглашение ниже.</td></tr>';
+          body.innerHTML = '<tr><td colspan="8" class="empty">' + esc(tr('admin.emptyTrainers')) + '</td></tr>';
           return;
         }
         body.innerHTML = state.trainers.map(function (t) {
-          var status = t.status === 'active' ? '<span class="pill ok">Активен</span>' : '<span class="pill off">Приостановлен</span>';
-          var buttons = '<button type="button" class="secondary small" data-edit="' + esc(t.tenantId) + '">Редактировать</button>';
-          buttons += '<button type="button" class="secondary small" data-resend="' + esc(t.tenantId) + '"' + (t.email ? '' : ' disabled title="У тренера не указан email"') + '>Новая ссылка</button>';
+          var status = t.status === 'active' ? '<span class="pill ok">' + esc(tr('admin.statusActive')) + '</span>' : '<span class="pill off">' + esc(tr('admin.statusSuspended')) + '</span>';
+          var buttons = '<button type="button" class="secondary small" data-edit="' + esc(t.tenantId) + '">' + esc(tr('admin.editBtn')) + '</button>';
+          buttons += '<button type="button" class="secondary small" data-resend="' + esc(t.tenantId) + '"' + (t.email ? '' : ' disabled title="' + esc(tr('admin.resendOneNoEmail')) + '"') + '>' + esc(tr('admin.resendOne')) + '</button>';
           if (t.isSelf) {
-            buttons += '<span class="muted" style="font-size:11px;align-self:center;">это ты</span>';
+            buttons += '<span class="muted" style="font-size:11px;align-self:center;">' + esc(tr('admin.selfMarker')) + '</span>';
           } else {
             buttons += t.status === 'active'
-              ? '<button type="button" class="danger small" data-suspend="' + esc(t.tenantId) + '">Приостановить</button>'
-              : '<button type="button" class="secondary small" data-resume="' + esc(t.tenantId) + '">Возобновить</button>';
-            buttons += '<button type="button" class="danger small" data-delete="' + esc(t.tenantId) + '">Удалить</button>';
+              ? '<button type="button" class="danger small" data-suspend="' + esc(t.tenantId) + '">' + esc(tr('admin.suspendBtn')) + '</button>'
+              : '<button type="button" class="secondary small" data-resume="' + esc(t.tenantId) + '">' + esc(tr('admin.resumeBtn')) + '</button>';
+            buttons += '<button type="button" class="danger small" data-delete="' + esc(t.tenantId) + '">' + esc(tr('admin.deleteBtn')) + '</button>';
           }
           return '<tr>'
             + '<td><b>' + esc(t.tenantName) + '</b></td>'
@@ -368,11 +777,11 @@
       }
 
       async function tenantAction(tenantId, action) {
-        if (action === 'suspend' && !confirm('Приостановить доступ? Тренер не сможет войти, но клиенты и данные сохранятся.')) return;
+        if (action === 'suspend' && !confirm(tr('admin.confirmSuspend'))) return;
         try {
           await api('/api/admin/tenants/' + encodeURIComponent(tenantId) + '/' + action, { method: 'POST', body: {} });
           await Promise.all([loadOverview(), loadTrainers()]);
-          toast(action === 'suspend' ? 'Доступ приостановлен' : 'Доступ возобновлён', 'ok');
+          toast(action === 'suspend' ? tr('admin.toastSuspended') : tr('admin.toastResumed'), 'ok');
         } catch (error) {
           alert(error.message);
         }
@@ -381,15 +790,15 @@
       async function resendToOne(btn, tenantId) {
         var trainer = trainerById(tenantId);
         if (!trainer) return;
-        var name = trainer.tenantName || 'тренер';
+        var name = trainer.tenantName || tr('admin.trainerFallback');
         var email = trainer.email || '';
-        if (!confirm('Отправить письмо с новой ссылкой «' + name + '» (' + email + ')?\n\nКлиенты, история и настройки не меняются и не удаляются.')) return;
+        if (!confirm(tr('admin.confirmResendOne', { name: name, email: email }))) return;
         if (btn) btn.disabled = true;
         try {
           await api('/api/admin/trainers/' + encodeURIComponent(tenantId) + '/resend-link', { method: 'POST', body: {} });
-          toast('Ссылка отправлена: ' + name, 'ok');
+          toast(tr('admin.toastResent', { name: name }), 'ok');
         } catch (error) {
-          toast(error.message || 'Не удалось отправить письмо', 'bad');
+          toast(error.message || tr('admin.toastResendFail'), 'bad');
         } finally {
           if (btn) btn.disabled = false;
         }
@@ -397,16 +806,15 @@
 
       async function resendAll(btn) {
         var withEmail = state.trainers.filter(function (t) { return t.email; });
-        if (!withEmail.length) { toast('Никто из тренеров не указал email', 'bad'); return; }
-        if (!confirm('Отправить письмо с новой ссылкой всем (' + withEmail.length + ') активным тренерам?\n\nКлиенты, история и настройки не меняются и не удаляются.')) return;
+        if (!withEmail.length) { toast(tr('admin.toastNoEmails'), 'bad'); return; }
+        if (!confirm(tr('admin.confirmResendAll', { n: withEmail.length }))) return;
         if (btn) btn.disabled = true;
         try {
           var data = await api('/api/admin/resend-app-link', { method: 'POST', body: {} });
-          var msg = 'Письмо отправлено: ' + (data.sent || 0) + ' из ' + (data.total || 0) + ' тренеров';
-          if (data.failed) msg += ' (ошибок: ' + data.failed + ')';
+          var msg = tr(data.failed ? 'admin.toastResendAllErrors' : 'admin.toastResendAll', { sent: data.sent || 0, total: data.total || 0, failed: data.failed || 0 });
           toast(msg, data.failed ? 'bad' : 'ok');
         } catch (error) {
-          toast(error.message || 'Не удалось отправить письма', 'bad');
+          toast(error.message || tr('admin.toastResendAllFail'), 'bad');
         } finally {
           if (btn) btn.disabled = false;
         }
@@ -431,9 +839,9 @@
         var email = $('edit-email').value.trim();
         var password = $('edit-password').value;
         setModalError('edit-error', '');
-        if (name.length < 2) { setModalError('edit-error', 'Имя должно быть не короче 2 символов.'); return; }
-        if (!$('edit-email').checkValidity() || !email) { setModalError('edit-error', 'Введите корректный email.'); return; }
-        if (password && password.length < 10) { setModalError('edit-error', 'Пароль должен быть не короче 10 символов.'); return; }
+        if (name.length < 2) { setModalError('edit-error', tr('admin.errNameShort')); return; }
+        if (!$('edit-email').checkValidity() || !email) { setModalError('edit-error', tr('admin.errEmail')); return; }
+        if (password && password.length < 10) { setModalError('edit-error', tr('admin.errPassShort')); return; }
 
         var payload = {};
         if (name !== trainer.tenantName) payload.name = name;
@@ -448,9 +856,9 @@
           hideModal('edit-modal');
           state.editTenantId = null;
           await Promise.all([loadOverview(), loadTrainers()]);
-          toast('Изменения сохранены', 'ok');
+          toast(tr('admin.toastSaved'), 'ok');
         } catch (error) {
-          setModalError('edit-error', error.message || 'Не удалось сохранить изменения.');
+          setModalError('edit-error', error.message || tr('admin.toastSaveFail'));
         } finally {
           btn.disabled = false;
         }
@@ -461,7 +869,7 @@
         if (!trainer || trainer.isSelf) return;
         state.deleteTenantId = trainer.tenantId;
         $('delete-confirm').value = '';
-        $('delete-target-name').textContent = 'Введите точное имя из списка: «' + trainer.tenantName + '»';
+        $('delete-target-name').textContent = tr('admin.delHint', { name: trainer.tenantName });
         $('delete-submit').disabled = true;
         setModalError('delete-error', '');
         showModal('delete-modal');
@@ -473,7 +881,7 @@
         if (!trainer) return;
         var value = $('delete-confirm').value.trim();
         if (value !== trainer.tenantName) {
-          setModalError('delete-error', 'Имя не совпадает. Введите имя точно как в списке.');
+          setModalError('delete-error', tr('admin.errDelMismatch'));
           return;
         }
         var btn = $('delete-submit');
@@ -486,9 +894,9 @@
           hideModal('delete-modal');
           state.deleteTenantId = null;
           await Promise.all([loadOverview(), loadTrainers()]);
-          toast('Тренер удалён', 'ok');
+          toast(tr('admin.toastDeleted'), 'ok');
         } catch (error) {
-          setModalError('delete-error', error.message || 'Не удалось удалить тренера.');
+          setModalError('delete-error', error.message || tr('admin.toastDeleteFail'));
         } finally {
           btn.disabled = false;
         }
@@ -498,29 +906,29 @@
         var data = await api('/api/admin/invites');
         var body = $('invites-body');
         if (!data.invites || !data.invites.length) {
-          body.innerHTML = '<tr><td colspan="5" class="empty">Кодов пока нет.</td></tr>';
+          body.innerHTML = '<tr><td colspan="5" class="empty">' + esc(tr('admin.emptyInvites')) + '</td></tr>';
           return;
         }
         body.innerHTML = data.invites.map(function (invite) {
-          var status = invite.revokedAt ? '<span class="pill off">Отозван</span>'
-            : (invite.expiresAt && new Date(invite.expiresAt).getTime() < Date.now() ? '<span class="pill off">Истёк</span>' : '<span class="pill ok">Активен</span>');
+          var status = invite.revokedAt ? '<span class="pill off">' + esc(tr('admin.invRevoked')) + '</span>'
+            : (invite.expiresAt && new Date(invite.expiresAt).getTime() < Date.now() ? '<span class="pill off">' + esc(tr('admin.invExpired')) + '</span>' : '<span class="pill ok">' + esc(tr('admin.statusActive')) + '</span>');
           var uses = Number(invite.uses || 0) + (invite.maxUses ? ' / ' + invite.maxUses : ' / ∞');
-          var action = invite.revokedAt ? '<span class="muted" style="font-size:11px;">—</span>' : '<button type="button" class="danger small" data-revoke="' + esc(invite.id) + '">Отозвать</button>';
+          var action = invite.revokedAt ? '<span class="muted" style="font-size:11px;">—</span>' : '<button type="button" class="danger small" data-revoke="' + esc(invite.id) + '">' + esc(tr('admin.revokeBtn')) + '</button>';
           return '<tr>'
             + '<td>' + esc(invite.label || '—') + '</td>'
             + '<td>' + uses + '</td>'
-            + '<td class="muted">' + (invite.expiresAt ? fmtDate(invite.expiresAt) : 'бессрочно') + '</td>'
+            + '<td class="muted">' + (invite.expiresAt ? fmtDate(invite.expiresAt) : tr('admin.noExpiry')) + '</td>'
             + '<td>' + status + '</td>'
             + '<td style="text-align:right;">' + action + '</td>'
             + '</tr>';
         }).join('');
         body.querySelectorAll('[data-revoke]').forEach(function (btn) {
           btn.addEventListener('click', async function () {
-            if (!confirm('Отозвать этот код? Уже зарегистрированные тренеры продолжат работать.')) return;
+            if (!confirm(tr('admin.confirmRevoke'))) return;
             try {
               await api('/api/admin/invites/' + encodeURIComponent(btn.getAttribute('data-revoke')), { method: 'DELETE' });
               await loadInvites();
-              toast('Код отозван', 'ok');
+              toast(tr('admin.toastRevoked'), 'ok');
             } catch (error) { alert(error.message); }
           });
         });
@@ -538,7 +946,7 @@
           });
           location.reload();
         } catch (error) {
-          setError(error.message || 'Неверный email или пароль.');
+          setError(error.message || tr('admin.errLogin'));
         } finally {
           btn.disabled = false;
         }
@@ -567,9 +975,12 @@
           $('invite-code').textContent = data.code;
           $('invite-url').textContent = data.joinUrl;
           $('invite-copy').setAttribute('data-url', data.joinUrl);
+          var inviteMsg = tr('admin.inviteMsg', { url: data.joinUrl });
+          $('invite-message').textContent = inviteMsg;
+          $('invite-message-copy').setAttribute('data-msg', inviteMsg);
           show($('invite-result'));
           await loadInvites();
-          toast('Приглашение создано', 'ok');
+          toast(tr('admin.toastInviteCreated'), 'ok');
         } catch (error) {
           alert(error.message);
         } finally {
@@ -581,10 +992,21 @@
         var url = $('invite-copy').getAttribute('data-url') || '';
         try {
           await navigator.clipboard.writeText(url);
-          $('invite-copy').textContent = 'Скопировано';
-          setTimeout(function () { $('invite-copy').textContent = 'Скопировать ссылку'; }, 1500);
+          $('invite-copy').textContent = tr('admin.copied');
+          setTimeout(function () { $('invite-copy').textContent = tr('admin.invCopy'); }, 1500);
         } catch (_) {
-          prompt('Скопируйте ссылку:', url);
+          prompt(tr('admin.copyPrompt'), url);
+        }
+      });
+
+      $('invite-message-copy').addEventListener('click', async function () {
+        var msg = $('invite-message-copy').getAttribute('data-msg') || '';
+        try {
+          await navigator.clipboard.writeText(msg);
+          $('invite-message-copy').textContent = tr('admin.copied');
+          setTimeout(function () { $('invite-message-copy').textContent = tr('admin.inviteMsgCopy'); }, 1500);
+        } catch (_) {
+          prompt(tr('admin.copyPromptMsg'), msg);
         }
       });
 
@@ -620,6 +1042,15 @@
         }
       });
 
+      $('lang-select').addEventListener('change', async function () {
+        var lang = this.value;
+        try { localStorage.setItem('dkg_admin_lang', lang); } catch (_) {}
+        document.documentElement.setAttribute('lang', lang);
+        if (window.__applyAdminLang__) window.__applyAdminLang__();
+        await Promise.all([loadOverview(), loadTrainers(), loadInvites()]);
+      });
+
+      if (window.__applyAdminLang__) window.__applyAdminLang__();
       load();
     })();
   </script>

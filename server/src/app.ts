@@ -246,15 +246,10 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
   });
 
   app.get('/p/:token/simple', async (request, reply) => {
-    try {
-      const token = encodeURIComponent((request.params as { token?: string }).token || '');
-      const html = readFileSync(join(__dirname, '..', 'public', 'portal.html'), 'utf8')
-        .replace(/__DKG_PORTAL_TOKEN__/g, token);
-      reply.header('Cache-Control', 'no-store');
-      return reply.type('text/html').send(html);
-    } catch {
-      throw new ApiError(404, 'not_found', 'Portal page is not installed');
-    }
+    // The simple portal duplicated the (trilingual) full portal with a Russian-locked
+    // UI; everyone goes to the full portal instead.
+    const token = encodeURIComponent((request.params as { token?: string }).token || '');
+    return reply.redirect(`/p/${token}`);
   });
 
   /* Token-scoped service worker: the client portal gets its own scope instead

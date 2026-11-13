@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="ru" dir="ltr" data-theme="v2-nebula" data-mode="dark" data-ui="v2">
+<html lang="en" dir="ltr" data-theme="v2-nebula" data-mode="dark" data-ui="v2">
 <head>
+  <script>(function(){try{var L=localStorage.getItem('dk_client_lang')||(navigator.language||'en').slice(0,2).toLowerCase();if(L!=='en'&&L!=='ru'&&L!=='he')L='en';var d=document.documentElement;d.setAttribute('lang',L);d.setAttribute('dir',L==='he'?'rtl':'ltr');}catch(e){}})();</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>David King Gym — Arena</title>
@@ -578,7 +579,7 @@
           }).join('') + '</div>';
         } else if (station.type === 'time') {
           var prevTime = vals != null && vals !== '' ? (Number(vals) < 60 ? String(vals) : fmtTime(vals)) : '';
-          input = '<input type="text" inputmode="numeric" data-a-input="' + esc(station.id) + ':time" value="' + (prevTime ? esc(prevTime) : '') + '" placeholder="мм:сс" />';
+          input = '<input type="text" inputmode="numeric" data-a-input="' + esc(station.id) + ':time" value="' + (prevTime ? esc(prevTime) : '') + '" placeholder="mm:ss" />';
         } else if (station.type === 'distance') {
           var prevDist = vals != null && vals !== '' ? vals : '';
           input = '<input type="number" min="0" step="0.01" inputmode="decimal" data-a-input="' + esc(station.id) + ':distance" value="' + (prevDist !== '' ? esc(prevDist) : '') + '" placeholder="' + esc(station.unit === 'cm' ? t('cmShort') : t('metersShort')) + '" />';

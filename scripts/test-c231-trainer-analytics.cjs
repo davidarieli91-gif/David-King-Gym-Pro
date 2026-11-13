@@ -1,6 +1,6 @@
-/* c231 unit test — the general ANALYTICS INGRESS for the trainer app
+﻿/* c231 unit test вЂ” the general ANALYTICS INGRESS for the trainer app
    (fitness-crm.html): the same dashboard the client portal got in c230,
-   wired to the trainer's data layer. Static assertions — the heavy lifting
+   wired to the trainer's data layer. Static assertions вЂ” the heavy lifting
    is done by visual QA; this guards against regressions/removals. */
 const fs = require('fs');
 const path = require('path');
@@ -79,7 +79,9 @@ ok('all c231 keys exist in RU + EN + HE' + (missing.length ? ' (missing: ' + mis
 
 /* ---------- 6. SW bumped ---------- */
 const sw = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
-ok('SW cache v249', sw.includes("CACHE_NAME = 'dk-gym-v249'"));
+ok('SW cache v250', sw.includes("CACHE_NAME = 'dk-gym-v250'"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
+
+

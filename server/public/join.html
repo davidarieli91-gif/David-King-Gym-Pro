@@ -1,27 +1,32 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>David King Gym — Регистрация тренера</title>
+  <title>David King Gym — Регистрация тренера · Trainer registration · הרשמת מאמן</title>
   <link rel="icon" type="image/png" href="/icon-512.png" />
+  <script>(function(){try{var saved=localStorage.getItem('dkg_join_lang')||(navigator.language||'ru').slice(0,2).toLowerCase();var L=(saved==='en'||saved==='he')?saved:'ru';document.documentElement.setAttribute('lang',L);document.documentElement.setAttribute('dir',L==='he'?'rtl':'ltr');}catch(e){}})();</script>
   <style>
     :root { color-scheme: dark; --bg:#070b14; --panel:#0d1526; --line:rgba(255,255,255,.10); --text:#eef5ff; --muted:#91a3bd; --cyan:#3ad6ff; --blue:#3b82f6; }
     * { box-sizing: border-box; }
     body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; background: radial-gradient(900px 500px at 15% 0%, rgba(57,214,255,.14), transparent 60%), radial-gradient(800px 500px at 90% 100%, rgba(255,60,172,.10), transparent 60%), var(--bg); color:var(--text); font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
-    .card { width:min(460px, 100%); border:1px solid var(--line); border-radius:22px; background:rgba(12,19,34,.88); box-shadow:0 30px 90px rgba(0,0,0,.55); padding:28px; backdrop-filter:blur(18px); }
+    .card { width:min(460px, 100%); border:1px solid var(--line); border-radius:22px; background:rgba(12,19,34,.88); box-shadow:0 30px 90px rgba(0,0,0,.55); padding:28px; backdrop-filter:blur(18px); position:relative; }
     .brand { display:flex; align-items:center; gap:14px; margin-bottom:22px; }
     .brand img { width:54px; height:54px; object-fit:contain; border-radius:14px; background:rgba(255,255,255,.06); padding:6px; }
     .brand h1 { margin:0; font-size:21px; letter-spacing:-.02em; }
     .brand p { margin:4px 0 0; color:var(--muted); font-size:12px; }
+    .lang { position:absolute; top:14px; inset-inline-end:14px; display:flex; gap:4px; }
+    .lang button { border:1px solid var(--line); background:rgba(255,255,255,.05); color:var(--muted); border-radius:8px; padding:4px 8px; font-size:11px; font-weight:700; cursor:pointer; }
+    .lang button.on { color:#04101e; background:linear-gradient(135deg,var(--cyan),var(--blue)); border-color:transparent; }
     h2 { margin:0 0 6px; font-size:18px; }
     .sub { margin:0 0 18px; color:var(--muted); font-size:13px; line-height:1.5; }
     label { display:block; margin-bottom:12px; color:#aab9cf; font-size:12px; font-weight:600; }
     input { display:block; width:100%; margin-top:6px; padding:11px 12px; border-radius:10px; border:1px solid var(--line); background:rgba(4,9,18,.72); color:var(--text); font-size:14px; outline:none; }
     input:focus { border-color:rgba(57,214,255,.65); box-shadow:0 0 0 3px rgba(57,214,255,.12); }
-    button { width:100%; border:0; border-radius:10px; padding:12px 14px; font-size:14px; font-weight:800; cursor:pointer; background:linear-gradient(135deg,var(--cyan),var(--blue)); color:#04101e; }
-    button.secondary { background:rgba(255,255,255,.08); color:var(--text); border:1px solid var(--line); font-weight:700; }
-    button:disabled { opacity:.6; cursor:wait; }
+    .hint { display:block; margin-top:4px; color:var(--muted); font-size:10.5px; font-weight:400; }
+    button.primary { width:100%; border:0; border-radius:10px; padding:12px 14px; font-size:14px; font-weight:800; cursor:pointer; background:linear-gradient(135deg,var(--cyan),var(--blue)); color:#04101e; }
+    button.primary:disabled, .lang button:disabled { opacity:.6; cursor:wait; }
+    button.secondary { background:rgba(255,255,255,.08); color:var(--text); border:1px solid var(--line); }
     .error { display:none; margin:0 0 12px; padding:10px 12px; border-radius:10px; background:rgba(255,70,90,.12); border:1px solid rgba(255,70,90,.3); color:#ff9aa8; font-size:12px; line-height:1.45; }
     .notice { margin-bottom:14px; padding:12px; border-radius:12px; background:rgba(57,214,255,.07); border:1px solid rgba(57,214,255,.22); color:#b9eaff; font-size:12px; line-height:1.5; }
     .foot { margin:16px 0 0; text-align:center; color:var(--muted); font-size:11px; line-height:1.6; }
@@ -31,6 +36,11 @@
 </head>
 <body>
   <div class="card">
+    <div class="lang" id="lang-box" role="group" aria-label="Language">
+      <button type="button" data-lang="ru">RU</button>
+      <button type="button" data-lang="en">EN</button>
+      <button type="button" data-lang="he">HE</button>
+    </div>
     <div class="brand">
       <img src="/logo-web.webp" alt="David King Gym" />
       <div>
@@ -40,29 +50,52 @@
     </div>
 
     <div id="already" class="notice hidden">
-      Вы уже вошли как <b id="already-email">—</b>. Чтобы зарегистрировать нового тренера, сначала выйдите.
-      <div style="margin-top:10px;"><button type="button" class="secondary" id="already-logout">Выйти и продолжить</button></div>
+      <span data-i18n="alreadyText">Вы уже вошли как <b id="already-email">—</b>. Чтобы зарегистрировать нового тренера, сначала выйдите.</span>
+      <div style="margin-top:10px;"><button type="button" class="secondary" id="already-logout" data-i18n="alreadyLogout">Выйти и продолжить</button></div>
     </div>
 
     <div id="form-view">
-      <h2>Регистрация тренера</h2>
-      <p class="sub">Один инвайт-код создаёт отдельный кабинет. Клиенты, настройки и портал будут только вашими.</p>
+      <h2 data-i18n="heading">Регистрация тренера</h2>
+      <p class="sub" data-i18n="sub">Один инвайт-код создаёт отдельный кабинет. Клиенты, настройки и портал будут только вашими.</p>
       <div id="error" class="error"></div>
       <form id="join-form">
-        <label>Инвайт-код<input id="code" type="text" autocomplete="off" required placeholder="DKG-XXXX-XXXX-XXXX" /></label>
-        <label>Ваше имя<input id="name" type="text" autocomplete="name" required maxlength="120" /></label>
-        <label>Email<input id="email" type="email" autocomplete="email" required maxlength="254" /></label>
-        <label>Пароль<input id="password" type="password" autocomplete="new-password" required minlength="10" /><span style="display:block;margin-top:4px;color:var(--muted);font-size:10.5px;font-weight:400;">Минимум 10 символов. Пароль всегда нужен для входа.</span></label>
-        <label>Название кабинета<input id="tenant" type="text" autocomplete="organization" maxlength="120" placeholder="Например: Ilya Training" /></label>
-        <button id="submit" type="submit">Создать кабинет</button>
+        <label><span data-i18n="codeLabel">Инвайт-код</span><input id="code" type="text" autocomplete="off" required placeholder="DKG-XXXX-XXXX-XXXX" /></label>
+        <label><span data-i18n="nameLabel">Ваше имя</span><input id="name" type="text" autocomplete="name" required maxlength="120" /></label>
+        <label><span data-i18n="emailLabel">Email</span><input id="email" type="email" autocomplete="email" required maxlength="254" /></label>
+        <label><span data-i18n="passLabel">Пароль</span><input id="password" type="password" autocomplete="new-password" required minlength="10" /><span class="hint" data-i18n="passHint">Минимум 10 символов. Пароль всегда нужен для входа.</span></label>
+        <label><span data-i18n="tenantLabel">Название кабинета</span><input id="tenant" type="text" autocomplete="organization" maxlength="120" placeholder="Например: Ilya Training" /></label>
+        <button id="submit" class="primary" type="submit" data-i18n="submit">Создать кабинет</button>
       </form>
-      <p class="foot">Уже есть аккаунт? <a href="/fitness-crm.html">Войти</a></p>
+      <p class="foot"><span data-i18n="footHave">Уже есть аккаунт?</span> <a href="/fitness-crm.html" data-i18n="footLogin">Войти</a></p>
     </div>
   </div>
 
   <script>
     (function () {
       'use strict';
+      var I18N = {
+        ru: { heading:'Регистрация тренера', sub:'Один инвайт-код создаёт отдельный кабинет. Клиенты, настройки и портал будут только вашими.', codeLabel:'Инвайт-код', nameLabel:'Ваше имя', emailLabel:'Email', passLabel:'Пароль', passHint:'Минимум 10 символов. Пароль всегда нужен для входа.', tenantLabel:'Название кабинета', submit:'Создать кабинет', footHave:'Уже есть аккаунт?', footLogin:'Войти', alreadyText:'Вы уже вошли как %EMAIL%. Чтобы зарегистрировать нового тренера, сначала выйдите.', alreadyLogout:'Выйти и продолжить',
+                errFallback:'Не удалось создать кабинет.', errInvite:'Инвайт-код недействителен или закончился.', errEmailTaken:'Аккаунт с таким email уже существует.' },
+        en: { heading:'Trainer registration', sub:'One invite code creates a separate workspace. Clients, settings and the portal belong only to you.', codeLabel:'Invite code', nameLabel:'Your name', emailLabel:'Email', passLabel:'Password', passHint:'At least 10 characters. Always required at sign-in.', tenantLabel:'Workspace name', submit:'Create workspace', footHave:'Already have an account?', footLogin:'Sign in', alreadyText:'You are signed in as %EMAIL%. To register a new trainer, sign out first.', alreadyLogout:'Sign out & continue',
+                errFallback:'Could not create the workspace.', errInvite:'Invite code is invalid or expired.', errEmailTaken:'An account with this email already exists.' },
+        he: { heading:'הרשמת מאמן', sub:'קוד הזמנה אחד יוצר חדר נפרד. לקוחות, הגדרות והפורטל יהיו שלך בלבד.', codeLabel:'קוד הזמנה', nameLabel:'השם שלך', emailLabel:'אימייל', passLabel:'סיסמה', passHint:'לפחות 10 תווים. תמיד נדרשת בכניסה.', tenantLabel:'שם החדר', submit:'צור חדר', footHave:'כבר יש חשבון?', footLogin:'כניסה', alreadyText:'אתה מחובר כ-%EMAIL%. כדי לרשום מאמן חדש, התנתק תחילה.', alreadyLogout:'התנתק והמשך',
+                errFallback:'לא ניתן ליצור את החדר.', errInvite:'קוד ההזמנה אינו תקין או שפג תוקף.', errEmailTaken:'חשבון עם אימייל זה כבר קיים.' }
+      };
+      var lang = document.documentElement.getAttribute('lang') || 'ru';
+      function dict() { return I18N[lang] || I18N.ru; }
+      function t(key) { var d = dict(); return d[key] || I18N.ru[key] || key; }
+      function apply() {
+        var d = dict();
+        document.querySelectorAll('[data-i18n]').forEach(function (el) {
+          var key = el.getAttribute('data-i18n');
+          if (key === 'alreadyText') {
+            el.innerHTML = d.alreadyText.replace('%EMAIL%', '<b>' + esc($('already-email').textContent) + '</b>');
+          } else if (d[key]) el.textContent = d[key];
+        });
+        document.querySelectorAll('#lang-box button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-lang') === lang); });
+        document.title = 'David King Gym — ' + d.heading;
+      }
+      function esc(s) { var d = document.createElement('div'); d.textContent = String(s == null ? '—' : s); return d.innerHTML; }
       function $(id) { return document.getElementById(id); }
       function show(el) { if (el) el.classList.remove('hidden'); }
       function hide(el) { if (el) el.classList.add('hidden'); }
@@ -80,6 +113,16 @@
         return '';
       }
       function csrf() { return cookie('dkg_csrf'); }
+
+      document.querySelectorAll('#lang-box button').forEach(function (b) {
+        b.addEventListener('click', function () {
+          lang = b.getAttribute('data-lang');
+          try { localStorage.setItem('dkg_join_lang', lang); } catch (e) {}
+          document.documentElement.setAttribute('lang', lang);
+          document.documentElement.setAttribute('dir', lang === 'he' ? 'rtl' : 'ltr');
+          apply();
+        });
+      });
 
       var params = new URLSearchParams(location.search || '');
       if (params.get('code')) $('code').value = params.get('code');
@@ -103,6 +146,7 @@
             $('already-email').textContent = me.user.email || me.user.displayName || '—';
             show($('already'));
             hide($('form-view'));
+            apply();
           }
         } catch (_) {}
       }
@@ -139,21 +183,22 @@
           });
           var body = await response.json().catch(function () { return {}; });
           if (!response.ok) {
-            throw new Error(body && body.error && body.error.message ? body.error.message : ('HTTP ' + response.status));
+            var message = body && body.error && body.error.message ? body.error.message : ('HTTP ' + response.status);
+            if (/invite/i.test(message)) message = t('errInvite');
+            if (/email/i.test(message)) message = t('errEmailTaken');
+            throw new Error(message);
           }
           rememberTenant(body.user, body.tenant);
           if (window.dkAllowClose) window.dkAllowClose();
           location.href = '/fitness-crm.html';
         } catch (error) {
-          var message = error.message || 'Не удалось создать кабинет.';
-          if (/invite/i.test(message)) message = 'Инвайт-код недействителен или закончился.';
-          if (/email/i.test(message)) message = 'Аккаунт с таким email уже существует.';
-          setError(message);
+          setError(error.message || t('errFallback'));
         } finally {
           btn.disabled = false;
         }
       });
 
+      apply();
       checkAlready();
     })();
   </script>

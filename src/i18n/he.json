@@ -168,7 +168,8 @@
     "save": "שמור תוכנית",
     "activeProgram": "תוכנית פעילה",
     "noActive": "אין תוכנית פעילה",
-    "newHint": "צור תוכנית חדשה"
+    "newHint": "צור תוכנית חדשה",
+    "reorderTip": "מצב סידור מחדש"
   },
   "bm": {
     "body": "גוף",
@@ -305,7 +306,7 @@
     "active": "פעיל",
     "shareTip": "שתפו עם המתאמן",
     "copyCodeTip": "העתיקו קוד",
-    "waInvite": "👋 היי {name}!\n\nתוכנית האימונים והתזונה האישית שלך ב-David King Gym מוכנה:\n👉 {url}\n\n🔑 קוד גישה: {code} — הזן אותו בעת פתיחת הקישור\n\nפתח בטלפון ושמור במסך הבית!",
+    "waInvite": "🏋️ David King Gym — {name}\n{url}\nRU: Привет! Твоя программа готова — открой ссылку и введи код: {code}\nEN: Hi! Your plan is ready — open the link and enter the code: {code}\nHE: שלום! התוכנית שלך מוכנה — פתח את הקישור והזן את הקוד: {code}",
     "photoUploaded": "התמונה הועלתה",
     "photoError": "העלאת התמונה נכשלה",
     "photoReplace": "החלף תמונה",
@@ -325,8 +326,8 @@
     "groupDeleted": "הקבוצה נמחקה — {n} מתאמנ(ים) הועברו אל {g}",
     "moveToGroup": "העברה לקבוצה",
     "sortGroup": "קבוצה",
-    "waInviteApp": "👋 שלום, {name}!\n\nהאפליקציה שלך David King Gym מוכנה:\n👉 {url}\n\nהיכנס לפי מספר הטלפון והסיסמה האישית. פתח בטלפון והוסף למסך הבית!",
-    "waInviteAppPass": "👋 שלום, {name}!\n\nהתוכנית האישית שלך מוכנה:\n👉 {url}\n\n🔑 הסיסמה שלך: {code} — הזן אותה בפתיחת הקישור (או היכנס לפי מספר הטלפון)\n\nפתח בטלפון והוסף למסך הבית!",
+    "waInviteApp": "🏋️ David King Gym — {name}\n{url}\nRU: Привет! Ваша программа готова — вход по телефону и паролю.\nEN: Hi! Your plan is ready — sign in with your phone and password.\nHE: שלום! התוכנית שלך מוכנה — היכנסו עם טלפון וסיסמה.",
+    "waInviteAppPass": "🏋️ David King Gym — {name}\n{url}\nRU: Привет! Ваша программа готова — открой ссылку и введи пароль: {code}\nEN: Hi! Your plan is ready — open the link and enter the password: {code}\nHE: שלום! התוכנית שלך מוכנה — פתח את הקישור והזן את הסיסמה: {code}",
     "subtitle": "המתאמנים שלך — במרכז שליטה אחד.",
     "workspace": "סביבת מאמן",
     "kpiTotal": "סך הלקוחות",
@@ -376,7 +377,8 @@
     "workoutsLabel": "אימונים",
     "metricWeight": "משקל",
     "metricWaist": "מותן",
-    "metricFat": "שומן"
+    "metricFat": "שומן",
+    "portalPassEmpty": "לא נקבע"
   },
   "client": {
     "openInjuryList": "פתח רשימת מצבים",
@@ -687,7 +689,10 @@
     "planTitle": "תוכנית השבוע",
     "planGo": "לתוכנית →",
     "planNoProgram": "אין תוכנית פעילה",
-    "planDone": "{d} / {n} השבוע"
+    "planDone": "{d} / {n} השבוע",
+    "macroProteinShort": "ח׳",
+    "macroFatShort": "ש׳",
+    "macroCarbShort": "פ׳"
   },
   "workouts": {
     "title": "אימונים",
@@ -1213,7 +1218,9 @@
     "addToPlan": "הוסף לתוכנית",
     "tabCompare": "השוואה",
     "compareEyebrow": "מדע התזונה",
-    "newPlanHint": "בנה תוכנית תזונה"
+    "newPlanHint": "בנה תוכנית תזונה",
+    "photoNamePrefix": "תמונה: {file}",
+    "photoFoodFallback": "ארוחת תמונה"
   },
   "food": {
     "title": "מאגר מוצרים",
@@ -1387,7 +1394,8 @@
     "groupNuts": "אגוזים וזרעים",
     "groupOils": "שמנים ושומנים",
     "product": "מוצר",
-    "products": "מוצרים"
+    "products": "מוצרים",
+    "nameRu": "שם (RU)"
   },
   "generator": {
     "title": "מחולל תוכניות חכם",
@@ -1891,7 +1899,9 @@
     "resetDone": "קוד חדש מוכן — שלח אותו למתאמן",
     "phoneRegFail": "רישום הטלפון נכשל — פרסם את כללי מסד הנתונים (הגדרות → ענן); בלעדיהם הכניסה לפי טלפון לא תעבוד",
     "resetUseCard": "הסיסמה מוגדרת בכרטיס המתאמן — שנה אותה שם",
-    "passLabel": "סיסמת הלקוח"
+    "passLabel": "סיסמת הלקוח",
+    "serverLinkNote": "הקישור שמור בשרת. קישור חדש מבטל את הקודם.",
+    "phoneStatusNote": "כניסה עם הקישור + סיסמת הלקוח."
   },
   "report": {
     "title": "דו״ח אימון",
@@ -1917,7 +1927,14 @@
     "localActive": "פעילה",
     "brainSettingsTip": "🧠 מוח AI — הגדרות",
     "foodPhotoTip": "תמונת אוכל — הערכת AI",
-    "voiceInputTip": "קלט קולי — אמרו מזון"
+    "voiceInputTip": "קלט קולי — אמרו מזון",
+    "worksOffline": "— עובד ללא רשת",
+    "apiHint": "(OpenAI / Gemini / מותאם)",
+    "modelLabel": "מודל",
+    "optionalHint": "(אופציונלי)",
+    "testConnection": "בדוק קשר",
+    "save": "שמור",
+    "privacyNote": "<strong>פרטיות:</strong> המפתח נשמר רק בדפדפן שלך (IndexedDB/localStorage) ולעולם לא נשלח לשרת שלנו. תמונות נשלחות רק ל-API שתגדיר."
   },
   "voice": {
     "photoAdded": "תמונה נוספה: {name} ~{cal} קק\"ל/100ג",
@@ -2027,5 +2044,40 @@
     "workouts30": "אימונים / 30 יום",
     "vsPrev30": "לעומת 30 יום קודמים",
     "days30": "30 ימים"
+  },
+  "server": {
+    "title": "שרת",
+    "checking": "בודק…",
+    "sync": "סנכרן",
+    "upload": "העלה נתונים מקומיים",
+    "password": "החלף סיסמה",
+    "admin": "מאמנים וגישות",
+    "adminTitle": "הוסף, ערוך או הסר מאמן",
+    "note": "נתוני הלקוחות נשמרים בשרת. ניקוי מטמון הדפדפן לא מוחק אותם.",
+    "online": "מחובר",
+    "offline": "מנותק",
+    "allSaved": "הכל שמור",
+    "pending": "בתור",
+    "statusError": "לא הצלחנו לקבל סטטוס",
+    "currentPassword": "סיסמה נוכחית",
+    "newPassword": "סיסמה חדשה (10+ תווים)",
+    "passwordTooShort": "הסיסמה חייבת להיות באורך של 10 תווים לפחות",
+    "repeatPassword": "הקלד מחדש את הסיסמה החדשה",
+    "passwordMismatch": "הסיסמאות לא תואמות",
+    "passwordChanged": "הסיסמה שונתה. שאר הסשנים שלך נסגרו.",
+    "passwordError": "לא הצלחנו להחליף סיסמה: ",
+    "uploadConfirm": "להעלות את כל הנתונים המקומיים של הדפדפן הזה לשרת? רשומות קיימות יעודכנו.",
+    "uploadDone": "הנתונים המקומיים הועלו לשרת",
+    "uploadError": "לא הצלחנו להעלות נתונים: "
+  },
+  "header": {
+    "directorConsole": "פורטל מנהל"
+  },
+  "workoutFallbackName": {
+    "0": "א",
+    "1": "י",
+    "2": "מ",
+    "3": "ו",
+    "4": "ן"
   }
 }

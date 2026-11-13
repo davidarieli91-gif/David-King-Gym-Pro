@@ -1,27 +1,31 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="referrer" content="no-referrer" />
-  <title>David King Gym — Новый пароль</title>
+  <title>David King Gym — Новый пароль · New password · סיסמה חדשה</title>
   <link rel="icon" type="image/png" href="/icon-512.png" />
+  <script>(function(){try{var saved=localStorage.getItem('dkg_reset_lang')||(navigator.language||'ru').slice(0,2).toLowerCase();var L=(saved==='en'||saved==='he')?saved:'ru';document.documentElement.setAttribute('lang',L);document.documentElement.setAttribute('dir',L==='he'?'rtl':'ltr');}catch(e){}})();</script>
   <style>
     :root { color-scheme: dark; --bg:#070b14; --line:rgba(255,255,255,.10); --text:#eef5ff; --muted:#91a3bd; --cyan:#3ad6ff; --blue:#3b82f6; }
     * { box-sizing: border-box; }
     body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; background: radial-gradient(900px 500px at 15% 0%, rgba(57,214,255,.14), transparent 60%), radial-gradient(800px 500px at 90% 100%, rgba(255,60,172,.10), transparent 60%), var(--bg); color:var(--text); font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
-    .card { width:min(440px, 100%); border:1px solid var(--line); border-radius:22px; background:rgba(12,19,34,.88); box-shadow:0 30px 90px rgba(0,0,0,.55); padding:28px; backdrop-filter:blur(18px); }
+    .card { width:min(440px, 100%); border:1px solid var(--line); border-radius:22px; background:rgba(12,19,34,.88); box-shadow:0 30px 90px rgba(0,0,0,.55); padding:28px; backdrop-filter:blur(18px); position:relative; }
     .brand { display:flex; align-items:center; gap:14px; margin-bottom:22px; }
     .brand img { width:54px; height:54px; object-fit:contain; border-radius:14px; background:rgba(255,255,255,.06); padding:6px; }
     .brand h1 { margin:0; font-size:21px; letter-spacing:-.02em; }
     .brand p { margin:4px 0 0; color:var(--muted); font-size:12px; }
+    .lang { position:absolute; top:14px; inset-inline-end:14px; display:flex; gap:4px; }
+    .lang button { border:1px solid var(--line); background:rgba(255,255,255,.05); color:var(--muted); border-radius:8px; padding:4px 8px; font-size:11px; font-weight:700; cursor:pointer; }
+    .lang button.on { color:#04101e; background:linear-gradient(135deg,var(--cyan),var(--blue)); border-color:transparent; }
     h2 { margin:0 0 6px; font-size:18px; }
     .sub { margin:0 0 18px; color:var(--muted); font-size:13px; line-height:1.5; }
     label { display:block; margin-bottom:12px; color:#aab9cf; font-size:12px; font-weight:600; }
     input { display:block; width:100%; margin-top:6px; padding:11px 12px; border-radius:10px; border:1px solid var(--line); background:rgba(4,9,18,.72); color:var(--text); font-size:14px; outline:none; }
     input:focus { border-color:rgba(57,214,255,.65); box-shadow:0 0 0 3px rgba(57,214,255,.12); }
-    button { width:100%; border:0; border-radius:10px; padding:12px 14px; font-size:14px; font-weight:800; cursor:pointer; background:linear-gradient(135deg,var(--cyan),var(--blue)); color:#04101e; }
-    button:disabled { opacity:.6; cursor:wait; }
+    button.primary { width:100%; border:0; border-radius:10px; padding:12px 14px; font-size:14px; font-weight:800; cursor:pointer; background:linear-gradient(135deg,var(--cyan),var(--blue)); color:#04101e; }
+    button.primary:disabled, .lang button:disabled { opacity:.6; cursor:wait; }
     .error { display:none; margin:0 0 12px; padding:10px 12px; border-radius:10px; background:rgba(255,70,90,.12); border:1px solid rgba(255,70,90,.3); color:#ff9aa8; font-size:12px; line-height:1.45; }
     .ok { display:none; margin:0 0 12px; padding:10px 12px; border-radius:10px; background:rgba(50,213,131,.10); border:1px solid rgba(50,213,131,.3); color:#7ef0b5; font-size:12px; line-height:1.45; }
     .foot { margin:16px 0 0; text-align:center; color:var(--muted); font-size:11px; }
@@ -30,6 +34,11 @@
 </head>
 <body>
   <div class="card">
+    <div class="lang" id="lang-box" role="group" aria-label="Language">
+      <button type="button" data-lang="ru">RU</button>
+      <button type="button" data-lang="en">EN</button>
+      <button type="button" data-lang="he">HE</button>
+    </div>
     <div class="brand">
       <img src="/logo-web.webp" alt="David King Gym" />
       <div>
@@ -37,20 +46,50 @@
         <p>Trainer Studio · Provided by David King Gym</p>
       </div>
     </div>
-    <h2>Новый пароль</h2>
-    <p class="sub">Придумайте новый пароль для входа. Ссылка действует один час.</p>
+    <h2 data-i18n="heading">Новый пароль</h2>
+    <p class="sub" data-i18n="sub">Придумайте новый пароль для входа. Ссылка действует один час.</p>
     <div id="error" class="error"></div>
     <div id="ok" class="ok"></div>
     <form id="form">
-      <label>Новый пароль<input id="password" type="password" autocomplete="new-password" required minlength="10" /></label>
-      <label>Повторите пароль<input id="confirm" type="password" autocomplete="new-password" required minlength="10" /></label>
-      <button id="submit" type="submit">Сохранить пароль</button>
+      <label><span data-i18n="passLabel">Новый пароль</span><input id="password" type="password" autocomplete="new-password" required minlength="10" /></label>
+      <label><span data-i18n="confirmLabel">Повторите пароль</span><input id="confirm" type="password" autocomplete="new-password" required minlength="10" /></label>
+      <button id="submit" class="primary" type="submit" data-i18n="submit">Сохранить пароль</button>
     </form>
-    <p class="foot"><a href="/fitness-crm.html">Вернуться к входу</a></p>
+    <p class="foot"><a href="/fitness-crm.html" data-i18n="backToLogin">Вернуться к входу</a></p>
   </div>
   <script>
     (function () {
       'use strict';
+      var I18N = {
+        ru: { heading:'Новый пароль', sub:'Придумайте новый пароль для входа. Ссылка действует один час.', passLabel:'Новый пароль', confirmLabel:'Повторите пароль', submit:'Сохранить пароль', backToLogin:'Вернуться к входу',
+              errNoToken:'Ссылка неполная. Запросите новое письмо для сброса пароля.', errShort:'Пароль должен быть не короче 10 символов.', errMismatch:'Пароли не совпадают.', okDone:'Пароль изменён. Сейчас перейдём ко входу…', errFallback:'Не удалось изменить пароль. Ссылка могла устареть.', errGeneric:'Ссылка неполная. Запросите новое письмо для сброса пароля.' },
+        en: { heading:'New password', sub:'Choose a new sign-in password. The link is valid for one hour.', passLabel:'New password', confirmLabel:'Repeat password', submit:'Save password', backToLogin:'Back to sign-in',
+              errNoToken:'The link is incomplete. Request a new password-reset email.', errShort:'Password must be at least 10 characters.', errMismatch:'The passwords do not match.', okDone:'Password changed. Redirecting to sign-in…', errFallback:'Could not change the password. The link may have expired.', errGeneric:'The link is incomplete. Request a new password-reset email.' },
+        he: { heading:'סיסמה חדשה', sub:'בחר סיסמה חדשה לכניסה. הקישור בתוקף למשך שעה.', passLabel:'סיסמה חדשה', confirmLabel:'חזור על הסיסמה', submit:'שמור סיסמה', backToLogin:'חזרה לכניסה',
+              errNoToken:'הקישור לא שלם. בקש מייל לאיפוס סיסמה מחדש.', errShort:'הסיסמה חייבת להיות לפחות 10 תווים.', errMismatch:'הסיסמאות לא תואמות.', okDone:'הסיסמה שונתה. עובר לכניסה…', errFallback:'לא ניתן לשנות את הסיסמה. ייתכן שהקישור פג תוקף.', errGeneric:'הקישור לא שלם. בקש מייל לאיפוס סיסמה מחדש.' }
+      };
+      var lang = document.documentElement.getAttribute('lang') || 'ru';
+      function t(key) {
+        var dict = I18N[lang] || I18N.ru;
+        return dict[key] || I18N.ru[key] || key;
+      }
+      function apply() {
+        var dict = I18N[lang] || I18N.ru;
+        document.querySelectorAll('[data-i18n]').forEach(function (el) { el.textContent = dict[el.getAttribute('data-i18n')] || el.textContent; });
+        document.querySelectorAll('#lang-box button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-lang') === lang); });
+        document.title = 'David King Gym — ' + dict.heading;
+      }
+      document.querySelectorAll('#lang-box button').forEach(function (b) {
+        b.addEventListener('click', function () {
+          lang = b.getAttribute('data-lang');
+          try { localStorage.setItem('dkg_reset_lang', lang); } catch (e) {}
+          document.documentElement.setAttribute('lang', lang);
+          document.documentElement.setAttribute('dir', lang === 'he' ? 'rtl' : 'ltr');
+          apply();
+        });
+      });
+      apply();
+
       var params = new URLSearchParams(location.search || '');
       var token = params.get('token') || '';
       var error = document.getElementById('error');
@@ -59,7 +98,7 @@
       function hide(el) { el.style.display = 'none'; }
 
       if (!token) {
-        show(error, 'Ссылка неполная. Запросите новое письмо для сброса пароля.');
+        show(error, t('errNoToken'));
         document.getElementById('form').style.display = 'none';
         return;
       }
@@ -69,8 +108,8 @@
         hide(error); hide(ok);
         var password = document.getElementById('password').value;
         var confirm = document.getElementById('confirm').value;
-        if (password.length < 10) { show(error, 'Пароль должен быть не короче 10 символов.'); return; }
-        if (password !== confirm) { show(error, 'Пароли не совпадают.'); return; }
+        if (password.length < 10) { show(error, t('errShort')); return; }
+        if (password !== confirm) { show(error, t('errMismatch')); return; }
         var button = document.getElementById('submit');
         button.disabled = true;
         try {
@@ -82,10 +121,10 @@
           });
           var body = await response.json().catch(function () { return {}; });
           if (!response.ok) throw new Error((body && body.error && body.error.message) || ('HTTP ' + response.status));
-          show(ok, 'Пароль изменён. Сейчас перейдём ко входу…');
+          show(ok, t('okDone'));
           setTimeout(function () { location.href = '/fitness-crm.html'; }, 1800);
         } catch (e) {
-          show(error, e.message || 'Не удалось изменить пароль. Ссылка могла устареть.');
+          show(error, (e && e.message) ? e.message : t('errFallback'));
         } finally {
           button.disabled = false;
         }

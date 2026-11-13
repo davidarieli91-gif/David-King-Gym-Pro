@@ -4692,7 +4692,28 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
 
 <body class="min-h-full antialiased">
   <!-- c213: server authentication gate. Shown only when the app is served by
-       the DKG API (not GitHub Pages / Vite preview). -->
+       the DKG API (not GitHub Pages / Vite preview). The gate paints before the
+       main i18n dictionaries are loaded, so its strings have their own inline
+       trilingual table; applyLang() also persists the chosen language here. -->
+  <script>
+    (function () {
+      var I18N = {
+        ru: { checking:'Проверяем сессию…', loginTitle:'Вход для тренера', loginSub:'Клиенты, программы и настройки хранятся на сервере. Очистка браузера их не удаляет.', password:'Пароль', signIn:'Войти', forgot:'Забыли пароль?', haveInvite:'Есть инвайт-код?', register:'Зарегистрироваться', noAccess:'Нет доступа? Попросите инвайт-код у David King Gym.', offlineTitle:'Нет связи с сервером', offlineMessage:'Проверьте интернет и попробуйте снова.', retry:'Повторить' },
+        en: { checking:'Checking your session…', loginTitle:'Trainer sign-in', loginSub:'Clients, programs and settings are stored on the server. Clearing the browser does not delete them.', password:'Password', signIn:'Sign in', forgot:'Forgot password?', haveInvite:'Have an invite code?', register:'Register', noAccess:'No access? Ask David King Gym for an invite code.', offlineTitle:'No connection to the server', offlineMessage:'Check the internet and try again.', retry:'Retry' },
+        he: { checking:'בודק סשן…', loginTitle:'כניסת מאמן', loginSub:'לקוחות, תוכניות והגדרות נשמרים בשרת. ניקוי דפדפן לא מוחק אותם.', password:'סיסמה', signIn:'התחבר', forgot:'שכחת סיסמה?', haveInvite:'יש לך קוד הזמנה?', register:'הרשמה', noAccess:'אין גישה? בקש קוד הזמנה מ-David King Gym.', offlineTitle:'אין קשר לשרת', offlineMessage:'בדוק את האינטרנט ונסה שוב.', retry:'נסה שוב' }
+      };
+      var stored = null;
+      try { stored = localStorage.getItem('dkg_gate_lang'); } catch (_) {}
+      var lang = stored || (navigator.language || 'ru').slice(0, 2).toLowerCase();
+      if (lang !== 'en' && lang !== 'ru' && lang !== 'he') lang = 'ru';
+      document.documentElement.setAttribute('lang', lang);
+      document.documentElement.setAttribute('dir', lang === 'he' ? 'rtl' : 'ltr');
+      window.__DKG_GATE_LANG = lang;
+      window.__DKG_GATE_T = function (key) { return (I18N[lang] || I18N.ru)[key] || I18N.en[key] || key; };
+      var ph = document.getElementById('dkg-gate-checking');
+      if (ph) ph.querySelector('p').textContent = window.__DKG_GATE_T('checking');
+    })();
+  </script>
   <div id="dkg-server-gate" hidden>
     <div class="dkg-gate-card" role="dialog" aria-modal="true" aria-labelledby="dkg-gate-title">
       <div class="dkg-gate-brand">
@@ -4709,13 +4730,13 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
       </div>
 
       <div id="dkg-gate-login" hidden>
-        <h2>Вход для тренера</h2>
-        <p>Клиенты, программы и настройки хранятся на сервере. Очистка браузера их не удаляет.</p>
+        <h2 id="dkg-gate-login-title">Вход для тренера</h2>
+        <p id="dkg-gate-login-sub">Клиенты, программы и настройки хранятся на сервере. Очистка браузера их не удаляет.</p>
         <form id="dkg-gate-form" autocomplete="on">
           <label>Email
             <input id="dkg-gate-email" type="email" autocomplete="username" required />
           </label>
-          <label>Пароль
+          <label><span id="dkg-gate-password-label">Пароль</span>
             <input id="dkg-gate-password" type="password" autocomplete="current-password" required />
           </label>
           <p id="dkg-gate-error" hidden></p>
@@ -4723,17 +4744,37 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           <button type="button" id="dkg-gate-forgot" class="dkg-gate-forgot">Забыли пароль?</button>
           <p id="dkg-gate-notice" class="dkg-gate-notice" hidden></p>
         </form>
-        <p class="dkg-gate-alt">Есть инвайт-код? <a href="/join">Зарегистрироваться</a></p>
-        <p class="dkg-gate-note">Нет доступа? Попросите инвайт-код у David King Gym.</p>
+        <p class="dkg-gate-alt"><span id="dkg-gate-have-invite">Есть инвайт-код?</span> <a href="/join" id="dkg-gate-register">Зарегистрироваться</a></p>
+        <p class="dkg-gate-note" id="dkg-gate-no-access">Нет доступа? Попросите инвайт-код у David King Gym.</p>
       </div>
 
       <div id="dkg-gate-offline" hidden>
-        <h2>Нет связи с сервером</h2>
+        <h2 id="dkg-gate-offline-title">Нет связи с сервером</h2>
         <p id="dkg-gate-offline-message">Проверьте интернет и попробуйте снова.</p>
         <button id="dkg-gate-retry" type="button">Повторить</button>
       </div>
     </div>
   </div>
+  <script>
+    (function () {
+      var T = window.__DKG_GATE_T;
+      if (T) {
+        var set = function (id, key) { var el = document.getElementById(id); if (el) el.textContent = T(key); };
+        set('dkg-gate-checking', 'checking');
+        set('dkg-gate-login-title', 'loginTitle');
+        set('dkg-gate-login-sub', 'loginSub');
+        set('dkg-gate-password-label', 'password');
+        set('dkg-gate-submit', 'signIn');
+        set('dkg-gate-forgot', 'forgot');
+        set('dkg-gate-have-invite', 'haveInvite');
+        set('dkg-gate-register', 'register');
+        set('dkg-gate-no-access', 'noAccess');
+        set('dkg-gate-offline-title', 'offlineTitle');
+        set('dkg-gate-offline-message', 'offlineMessage');
+        set('dkg-gate-retry', 'retry');
+      }
+    })();
+  </script>
 
   <div id="v2-scene" aria-hidden="true"></div>
   <div id="v2-orb" aria-hidden="true"><span class="v2-orb v2-orb-a"></span><span class="v2-orb v2-orb-b"></span><span class="v2-orb v2-orb-c"></span></div>
@@ -4802,12 +4843,12 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           </div>
 
           <!-- Arena (always available when unlocked) -->
-          <button type="button" id="arena-header-btn" data-nav="arena" class="w-9 h-9 grid place-items-center rounded-lg bg-surface-2 hover:bg-warning/15 hover:text-warning transition border border-border" aria-label="Арена" title="Арена">
+          <button type="button" id="arena-header-btn" data-nav="arena" class="w-9 h-9 grid place-items-center rounded-lg bg-surface-2 hover:bg-warning/15 hover:text-warning transition border border-border" aria-label="Arena" title="Arena" data-i18n-attr="aria-label:nav.arena,title:nav.arena">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 4h8v4a4 4 0 0 1-8 0V4z"/><path d="M8 5H4v2a4 4 0 0 0 4 4M16 5h4v2a4 4 0 0 1-4 4"/><path d="M12 12v5M8 21h8M9 17h6"/></svg>
           </button>
 
           <!-- Director console (visible only for the director account) -->
-          <a id="director-console-btn" href="/admin" class="hidden w-9 h-9 place-items-center rounded-lg bg-surface-2 hover:bg-accent/25 hover:text-accent transition border border-border" aria-label="Портал директора" title="Портал директора">
+          <a id="director-console-btn" href="/admin" class="hidden w-9 h-9 place-items-center rounded-lg bg-surface-2 hover:bg-accent/25 hover:text-accent transition border border-border" aria-label="Director portal" title="Director portal" data-i18n-attr="aria-label:header.directorConsole,title:header.directorConsole">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>
           </a>
 
@@ -5543,7 +5584,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                     <span id="pb-freq-hint" class="text-[10px] text-muted"></span>
                   </div>
                 </div>
-                <button type="button" id="pb-reorder-btn" class="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-[11px] font-bold text-muted hover:text-text transition" title="Режим перестановки упражнений" aria-label="Режим перестановки упражнений">
+                <button type="button" id="pb-reorder-btn" class="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-[11px] font-bold text-muted hover:text-text transition" title="Reorder mode" aria-label="Reorder mode" data-i18n-attr="title:programs.reorderTip,aria-label:programs.reorderTip">
                   <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/></svg>
                   <span id="pb-reorder-label" class="hidden sm:inline">Переставить</span>
                 </button>
@@ -7022,18 +7063,18 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
             <div id="settings-server-panel" class="hidden bg-surface border border-border rounded-2xl shadow-card mb-4 p-5 settings-panel">
               <div class="flex items-start justify-between gap-3">
                 <div>
-                  <h3 class="font-display font-bold text-sm">Сервер</h3>
-                  <p id="settings-server-status" class="text-xs text-muted mt-1">Проверяем…</p>
+                  <h3 class="font-display font-bold text-sm" data-i18n="server.title">Server</h3>
+                  <p id="settings-server-status" class="text-xs text-muted mt-1" data-i18n="server.checking">Checking…</p>
                 </div>
                 <span id="settings-server-dot" class="mt-1 inline-block w-2.5 h-2.5 rounded-full bg-warning"></span>
               </div>
               <div class="mt-4 flex flex-wrap gap-2">
-                <button type="button" id="settings-server-sync" class="bg-primary hover:bg-primary-2 text-white text-xs font-semibold px-3 py-2 rounded-lg transition">Синхронизировать</button>
-                <button type="button" id="settings-server-upload" class="bg-surface-2 hover:bg-border/60 border border-border text-xs font-semibold px-3 py-2 rounded-lg transition">Загрузить локальные данные</button>
-                <button type="button" id="settings-server-password" class="bg-surface-2 hover:bg-border/60 border border-border text-xs font-semibold px-3 py-2 rounded-lg transition">Сменить пароль</button>
-                <a id="settings-server-admin" href="/admin" target="_blank" class="hidden bg-surface-2 hover:bg-border/60 border border-border text-xs font-semibold px-3 py-2 rounded-lg transition" title="Добавить, изменить или удалить тренера">Тренеры и доступы</a>
+                <button type="button" id="settings-server-sync" class="bg-primary hover:bg-primary-2 text-white text-xs font-semibold px-3 py-2 rounded-lg transition" data-i18n="server.sync">Sync now</button>
+                <button type="button" id="settings-server-upload" class="bg-surface-2 hover:bg-border/60 border border-border text-xs font-semibold px-3 py-2 rounded-lg transition" data-i18n="server.upload">Upload local data</button>
+                <button type="button" id="settings-server-password" class="bg-surface-2 hover:bg-border/60 border border-border text-xs font-semibold px-3 py-2 rounded-lg transition" data-i18n="server.password">Change password</button>
+                <a id="settings-server-admin" href="/admin" target="_blank" class="hidden bg-surface-2 hover:bg-border/60 border border-border text-xs font-semibold px-3 py-2 rounded-lg transition" data-i18n="server.admin" title="" data-i18n-attr="title:server.adminTitle">Trainers &amp; access</a>
               </div>
-              <p class="text-[10px] text-muted mt-3 leading-relaxed">Данные клиентов хранятся на сервере. Очистка кэша браузера их не удаляет.</p>
+              <p class="text-[10px] text-muted mt-3 leading-relaxed" data-i18n="server.note">Client data is stored on the server. Clearing the browser cache does not delete it.</p>
             </div>
 
             <!-- Appearance (collapsible) -->
@@ -7928,7 +7969,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
             </div>
             <div>
               <!-- c146: the Russian name was previously erased by every save -->
-              <label class="block text-[11px] uppercase tracking-wider text-muted font-semibold mb-1">Название (рус.)</label>
+              <label class="block text-[11px] uppercase tracking-wider text-muted font-semibold mb-1" data-i18n="food.nameRu">Name (RU)</label>
               <input name="name_ru" class="w-full bg-surface-2 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/60" />
             </div>
             <div>
@@ -8291,7 +8332,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
             <div>
               <label class="block text-xs font-semibold mb-1" data-i18n="client.portalPass">Пароль портала (4–10 цифр)</label>
               <div class="flex gap-2">
-                <input name="portal_pass" type="text" inputmode="numeric" maxlength="10" autocomplete="off" placeholder="не задан" class="flex-1 bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm font-mono tracking-[0.2em] focus:outline-none focus:ring-2 focus:ring-primary/60" />
+                <input name="portal_pass" type="text" inputmode="numeric" maxlength="10" autocomplete="off" data-i18n-ph="clients.portalPassEmpty" placeholder="not set" class="flex-1 bg-surface-2 border border-border rounded-xl px-3 py-2.5 text-sm font-mono tracking-[0.2em] focus:outline-none focus:ring-2 focus:ring-primary/60" />
                 <button type="button" id="client-gen-pass" class="shrink-0 bg-surface-2 hover:bg-border/40 border border-border text-xs font-semibold px-3 rounded-xl transition" data-i18n="client.portalPassGen">Сгенерировать</button>
               </div>
               <p class="text-[10px] text-muted mt-1 leading-relaxed" data-i18n="client.portalPassHint">Клиент входит по номеру телефона и этому паролю. Пусто — вход по одноразовому коду.</p>
@@ -18560,7 +18601,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         const names = (r.items || []).map(i => i && i.n).concat((r.diary || []).map(i => i && i.n)).filter(Boolean).slice(0, 6).join(', ');
         lastEl.innerHTML = '<span class="font-semibold">' + escapeHTML(t('analytics.nutrLast')) + '</span> ' + escapeHTML(fmtD(r.date)) +
           (r.plan ? ' · ' + escapeHTML(r.plan) : '') +
-          ' · <span class="font-mono">' + Math.round(Number(r.totals.c) || 0) + '/' + Math.round(Number(r.target.c) || 0) + ' kcal · Б ' + Math.round(Number(r.totals.p) || 0) + '/' + Math.round(Number(r.target.p) || 0) + ' · Ж ' + Math.round(Number(r.totals.f) || 0) + '/' + Math.round(Number(r.target.f) || 0) + ' · У ' + Math.round(Number(r.totals.cb) || 0) + '/' + Math.round(Number(r.target.cb) || 0) + '</span>' +
+          ' · <span class="font-mono">' + Math.round(Number(r.totals.c) || 0) + '/' + Math.round(Number(r.target.c) || 0) + ' kcal · ' + t('analytics.macroProteinShort') + ' ' + Math.round(Number(r.totals.p) || 0) + '/' + Math.round(Number(r.target.p) || 0) + ' · ' + t('analytics.macroFatShort') + ' ' + Math.round(Number(r.totals.f) || 0) + '/' + Math.round(Number(r.target.f) || 0) + ' · ' + t('analytics.macroCarbShort') + ' ' + Math.round(Number(r.totals.cb) || 0) + '/' + Math.round(Number(r.target.cb) || 0) + '</span>' +
           (names ? '<br>' + escapeHTML(names) : '');
       }
       card.classList.remove('hidden');
@@ -30524,15 +30565,15 @@ Select foods for each meal. Output as JSON only.`;
         const cfg=getAiConfig();
         let estimate=null;
         if(cfg.url && cfg.key){
-          const prompt='Оцени КБЖУ на 100г для еды на фото. Ответь только JSON: {"name_ru":"...","calories":123,"protein":10,"carbs":20,"fat":5}';
+          const prompt='Оцени КБЖУ на 100г для еды на фото. Ответь только JSON: {"name_ru":"...","name_en":"...","name_he":"...","calories":123,"protein":10,"carbs":20,"fat":5}';
           const txt=await callAiBrain(prompt, base64);
           if(txt){ try{ estimate=JSON.parse(txt.slice(txt.indexOf('{'), txt.lastIndexOf('}')+1)); }catch(e){} }
         }
         if(!estimate){
           estimate=localHeuristicEstimate();
-          estimate.name_ru = 'Фото: '+(file.name||'еда');
+          estimate.name_ru = t('nutrition.photoNamePrefix', { file: file.name || '' });
         }
-        const tmpFood={ id:'photo_'+Date.now(), name_he: estimate.name_ru||'צילום', name_en: estimate.name_ru||'Photo meal', name_ru: estimate.name_ru||'Фото еды', source:'PhotoAI', category:'other', nutrition:{ calories: estimate.calories||150, protein: estimate.protein||5, carbs: estimate.carbs||15, fat: estimate.fat||7 } };
+        const tmpFood={ id:'photo_'+Date.now(), name_he: estimate.name_he || estimate.name_en || t('nutrition.photoFoodFallback'), name_en: estimate.name_en || estimate.name_he || t('nutrition.photoFoodFallback'), name_ru: estimate.name_ru || t('nutrition.photoFoodFallback'), source:'PhotoAI', category:'other', nutrition:{ calories: estimate.calories||150, protein: estimate.protein||5, carbs: estimate.carbs||15, fat: estimate.fat||7 } };
         _foods.unshift(tmpFood);
         try{ await db.put('food_database', tmpFood); }catch(e){}
         if(_editing && _editing.meals && _editing.meals.length){
@@ -33718,12 +33759,12 @@ async function boot() {
         const online = s.online && s.authenticated;
         if (dot) dot.className = 'mt-1 inline-block w-2.5 h-2.5 rounded-full ' + (online ? 'bg-success' : 'bg-danger');
         if (statusEl) {
-          statusEl.textContent = (online ? 'Онлайн' : 'Офлайн') + ' · '
-            + (s.pending ? (s.pending + ' в очереди') : 'всё сохранено')
+          statusEl.textContent = (online ? t('server.online') : t('server.offline')) + ' · '
+            + (s.pending ? (s.pending + ' ' + t('server.pending')) : t('server.allSaved'))
             + ' · rev ' + s.lastRev;
         }
       } catch (e) {
-        if (statusEl) statusEl.textContent = 'Не удалось получить статус';
+        if (statusEl) statusEl.textContent = t('server.statusError');
       }
     };
 
@@ -33737,13 +33778,13 @@ async function boot() {
 
     const pwdBtn = document.getElementById('settings-server-password');
     if (pwdBtn) pwdBtn.addEventListener('click', async () => {
-      const current = prompt('Текущий пароль');
+      const current = prompt(t('server.currentPassword'));
       if (!current) return;
-      const next = prompt('Новый пароль (минимум 10 символов)');
+      const next = prompt(t('server.newPassword'));
       if (!next) return;
-      if (next.length < 10) { toast('Пароль должен быть не короче 10 символов', 'warning', 3000); return; }
-      const again = prompt('Повторите новый пароль');
-      if (next !== again) { toast('Пароли не совпадают', 'warning', 3000); return; }
+      if (next.length < 10) { toast(t('server.passwordTooShort'), 'warning', 3000); return; }
+      const again = prompt(t('server.repeatPassword'));
+      if (next !== again) { toast(t('server.passwordMismatch'), 'warning', 3000); return; }
       try {
         const match = (document.cookie || '').match(/(?:^|;\s*)dkg_csrf=([^;]+)/);
         const token = match ? decodeURIComponent(match[1]) : '';
@@ -33755,24 +33796,24 @@ async function boot() {
         });
         const body = await response.json().catch(function () { return {}; });
         if (!response.ok) throw new Error((body && body.error && body.error.message) || ('HTTP ' + response.status));
-        toast('Пароль изменён. Остальные сессии завершены.', 'success', 4000);
+        toast(t('server.passwordChanged'), 'success', 4000);
       } catch (e) {
-        toast('Не удалось сменить пароль: ' + (e.message || e), 'danger', 5000);
+        toast(t('server.passwordError') + (e.message || e), 'danger', 5000);
       }
     });
 
     const uploadBtn = document.getElementById('settings-server-upload');
     if (uploadBtn) uploadBtn.addEventListener('click', async () => {
-      if (!confirm('Загрузить все локальные данные этого браузера на сервер? Существующие записи обновятся.')) return;
+      if (!confirm(t('server.uploadConfirm'))) return;
       uploadBtn.disabled = true;
       try {
         try { localStorage.removeItem('dkg_migrated_' + window.DKG_SERVER.tenantId); } catch (_) {}
         await window.DKG_SYNC.migrateLocal();
         await window.DKG_SYNC.syncNow();
-        toast('Локальные данные загружены на сервер', 'success', 3000);
+        toast(t('server.uploadDone'), 'success', 3000);
       } catch (e) {
         console.error('[sync] upload failed', e);
-        toast('Не удалось загрузить данные: ' + (e.message || e), 'danger', 5000);
+        toast(t('server.uploadError') + (e.message || e), 'danger', 5000);
       }
       uploadBtn.disabled = false;
       refresh();
@@ -35008,10 +35049,10 @@ async function boot() {
         const codeLabel = document.querySelector('#client-portal-modal [data-i18n="portal.accessCodeLabel"]');
         if (codeLabel) codeLabel.textContent = t('portal.passLabel') || 'Client password';
         const note = document.getElementById('portal-expiry-note');
-        if (note) note.textContent = 'Ссылка хранится на сервере. Новая ссылка отменяет предыдущую.';
+        if (note) note.textContent = t('portal.serverLinkNote');
         const phoneStatus = document.getElementById('portal-phone-status');
         if (phoneStatus) {
-          phoneStatus.textContent = 'Вход по ссылке + пароль клиента.';
+          phoneStatus.textContent = t('portal.phoneStatusNote');
           phoneStatus.className = 'text-[11px] text-success';
         }
         const resetBtn = document.getElementById('btn-portal-reset-pass');
@@ -37968,6 +38009,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!SUPPORTED_LANGS.includes(lang)) lang = 'en';
     _lang = lang;
     applyI18n(lang);                         // sync — DOM updates immediately
+    try { localStorage.setItem('dkg_gate_lang', lang); } catch (_) {} // gate paints in saved language next visit
     db.put('settings', { key: 'lang', value: lang }).catch(() => {}); // fire-and-forget persistence
     return Promise.resolve();
   }
@@ -40832,24 +40874,24 @@ document.addEventListener('input', function (e) {
           <div class="mt-2 flex items-center gap-2 text-[11px]">
             <span class="w-2 h-2 rounded-full bg-success animate-pulse"></span>
             <span class="text-success font-semibold" data-i18n="ai.localActive">Активна</span>
-            <span class="text-muted">— работает оффлайн</span>
+            <span class="text-muted" data-i18n="ai.worksOffline">— works offline</span>
           </div>
         </div>
         <div class="space-y-3">
-          <label class="block text-xs font-semibold">API URL <span class="text-muted font-normal">(OpenAI / Gemini / кастом)</span></label>
+          <label class="block text-xs font-semibold">API URL <span class="text-muted font-normal" data-i18n="ai.apiHint">(OpenAI / Gemini / custom)</span></label>
           <input type="url" id="ai-api-url" placeholder="https://api.openai.com/v1/chat/completions" class="w-full bg-surface-2 border border-border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary/60" />
           <label class="block text-xs font-semibold">API Key</label>
           <input type="password" id="ai-api-key" placeholder="sk-..." class="w-full bg-surface-2 border border-border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary/60" />
-          <label class="block text-xs font-semibold">Модель <span class="text-muted font-normal">(опционально)</span></label>
+          <label class="block text-xs font-semibold"><span data-i18n="ai.modelLabel">Model</span> <span class="text-muted font-normal" data-i18n="ai.optionalHint">(optional)</span></label>
           <input type="text" id="ai-api-model" placeholder="gpt-4o-mini / gemini-1.5-flash" class="w-full bg-surface-2 border border-border rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary/60" />
         </div>
         <div class="flex gap-2">
-          <button id="ai-test-btn" class="flex-1 bg-accent/15 hover:bg-accent/25 text-accent border border-accent/30 text-xs font-bold py-2.5 rounded-xl">Проверить связь</button>
-          <button id="ai-save-btn" class="flex-1 bg-primary hover:bg-primary-2 text-white text-xs font-bold py-2.5 rounded-xl">Сохранить</button>
+          <button id="ai-test-btn" class="flex-1 bg-accent/15 hover:bg-accent/25 text-accent border border-accent/30 text-xs font-bold py-2.5 rounded-xl" data-i18n="ai.testConnection">Test connection</button>
+          <button id="ai-save-btn" class="flex-1 bg-primary hover:bg-primary-2 text-white text-xs font-bold py-2.5 rounded-xl" data-i18n="ai.save">Save</button>
         </div>
         <p id="ai-status" class="text-xs text-center min-h-[1rem]"></p>
         <div class="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3">
-          <p class="text-xs text-amber-200 leading-relaxed"><strong>Приватность:</strong> Ключ хранится только в браузере (IndexedDB/localStorage), не отправляется на наш сервер. Фото уходит только на указанный вами API.</p>
+          <p class="text-xs text-amber-200 leading-relaxed" data-i18n-html="ai.privacyNote"><strong>Privacy:</strong> the key is stored only in your browser (IndexedDB/localStorage) and never sent to our server. Photos go only to the API you specify.</p>
         </div>
       </div>
     </div>

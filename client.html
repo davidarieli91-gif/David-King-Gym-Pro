@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0a0a0f" />
-  <meta name="description" content="David King Gym — Персональный кабинет подопечного" />
-  <title>David King Gym — Мой Портал</title>
+  <meta name="description" content="David King Gym — client portal · кабинет подопечного · פורטל מתאמן" />
+  <title>David King Gym</title>
   <link rel="manifest" href="manifest-portal.json" />
   <script>
   /* c94: the trainer app's service worker precaches this page too — when a
@@ -3103,7 +3103,7 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
           </div>
         </div>
         <!-- quick access to every system — the analytics screen is the hub -->
-        <div class="ana-systems mt-3" id="ana-systems" aria-label="Системы">
+        <div class="ana-systems mt-3" id="ana-systems" aria-label="Systems">
           <button type="button" data-ana-go="workouts" class="ana-sys"><b>🏋️</b><span id="ana-sys-workouts">Тренировки</span></button>
           <button type="button" data-ana-scroll="ana-plan-card" class="ana-sys"><b>🗓</b><span id="ana-sys-plan">План</span></button>
           <button type="button" data-ana-go="nutrition" class="ana-sys"><b>🍽</b><span id="ana-sys-nutrition">Питание</span></button>
@@ -3221,7 +3221,7 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
           <div class="glass rounded-2xl p-4 ana-card">
             <div class="flex items-center justify-between gap-2">
               <h3 class="font-display font-bold text-sm text-text" id="txt-analytics-recent">Последние тренировки</h3>
-              <button type="button" data-ana-go="workouts" class="ana-link">Все →</button>
+              <button type="button" id="btn-ana-all" data-ana-go="workouts" class="ana-link">All →</button>
             </div>
             <div id="analytics-recent" class="space-y-1.5 max-h-72 overflow-y-auto mt-1"></div>
           </div>
@@ -3236,7 +3236,7 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
                 <h3 class="font-display font-bold text-sm text-text" id="txt-ana-recovery">Восстановление мышц</h3>
                 <p class="text-[10px] text-muted mt-0.5" id="txt-ana-recovery-sub">Готовность по карте восстановления</p>
               </div>
-              <button type="button" data-ana-go="recovery" class="ana-link">Карта →</button>
+              <button type="button" id="btn-ana-map" data-ana-go="recovery" class="ana-link">Map →</button>
             </div>
             <div class="flex items-center gap-3 mt-2">
               <div id="ana-recovery-ring" class="shrink-0"></div>
@@ -3705,6 +3705,42 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     anaKpiWorkouts: 'אימונים', anaKpiTime: 'זמן', anaKpiVolume: 'נפח', anaKpiStrength: 'כוח', anaKpiPR: 'שיא אישי',
     anaKpiWorkoutsSub: 'סה״כ {n}', anaKpiTimeSub: '{n} דק׳', anaKpiVolumeSub: 'בתקופה', anaKpiStrengthSub: 'e1RM · {n} תרגילים', anaNoPR: 'אין שיאים חדשים', anaPRImprove: '+{n}%',
     anaRangeCaption: 'טווח'
+  });
+  /* c233: leftover hardcoded RU sweep — keys for labels that were
+     hardcoded outside t() (icon-only aria, see-all/map links, check-in
+     button, demo payload fallbacks). */
+  Object.assign(I18N.ru, {
+    workoutFallbackName: 'Тренировка',
+    anaSystemsAria: 'Системы',
+    anaSeeAll: 'Все →',
+    anaGoMap: 'Карта →',
+    saveCheckinBtn: 'Сохранить чек-ин',
+    demoClientName: 'Демо Клиент',
+    demoDayName: 'День {n}',
+    demoMealBreakfast: 'Завтрак', demoMealLunch: 'Обед', demoMealDinner: 'Ужин',
+    demoFoodOats: 'Овсянка', demoFoodEggs: 'Яйца', demoFoodChicken: 'Курица', demoFoodRice: 'Рис', demoFoodCottage: 'Творог', demoFoodFish: 'Рыба'
+  });
+  Object.assign(I18N.en, {
+    workoutFallbackName: 'Workout',
+    anaSystemsAria: 'Systems',
+    anaSeeAll: 'All →',
+    anaGoMap: 'Map →',
+    saveCheckinBtn: 'Save check-in',
+    demoClientName: 'Demo Client',
+    demoDayName: 'Day {n}',
+    demoMealBreakfast: 'Breakfast', demoMealLunch: 'Lunch', demoMealDinner: 'Dinner',
+    demoFoodOats: 'Oatmeal', demoFoodEggs: 'Eggs', demoFoodChicken: 'Chicken', demoFoodRice: 'Rice', demoFoodCottage: 'Cottage cheese', demoFoodFish: 'Fish'
+  });
+  Object.assign(I18N.he, {
+    workoutFallbackName: 'אימון',
+    anaSystemsAria: 'מערכות',
+    anaSeeAll: 'הכל →',
+    anaGoMap: 'מפה →',
+    saveCheckinBtn: 'שמור צקאין',
+    demoClientName: 'לקוח דמה',
+    demoDayName: 'יום {n}',
+    demoMealBreakfast: 'ארוחת בוקר', demoMealLunch: 'צהריים', demoMealDinner: 'ערב',
+    demoFoodOats: 'שיבולת שועל', demoFoodEggs: 'ביצים', demoFoodChicken: 'עוף', demoFoodRice: 'אורז', demoFoodCottage: 'גבינה לבנה', demoFoodFish: 'דג'
   });
   const t = k => (I18N[currentLang] && I18N[currentLang][k]) || I18N.ru[k] || k;
 
@@ -4665,7 +4701,7 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     try { dkSyncState(); } catch (e) {}
   }
   function applyDemo() {
-    currentClient = { full_name:'Демо Клиент', goal:'hypertrophy', weight:78.4, target_weight:84, body_fat:18.5 };
+    currentClient = { full_name: t('demoClientName'), goal:'hypertrophy', weight:78.4, target_weight:84, body_fat:18.5 };
     programs = [
       { id:'demo-p1', name:'PPL Demo', split_type:'ppl', workout_days:[
         { day_letter:'A', name:'Push', exercises:[
@@ -4676,25 +4712,25 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
         ]}
       ]},
       { id:'demo-p2', name:'Fullbody x3', split_type:'full_body', duration_months:3, workout_days:[
-        { day_letter:'A', name:'День A', exercises:[
+        { day_letter:'A', name:t('demoDayName', { n:'A' }), exercises:[
           { id:'3', name:'Squat', group:'legs', rest_sec:90, sets:[{set_num:1,weight:60,reps:8},{set_num:2,weight:80,reps:5}] }
         ]},
-        { day_letter:'B', name:'День B', exercises:[
+        { day_letter:'B', name:t('demoDayName', { n:'B' }), exercises:[
           { id:'4', name:'Deadlift', group:'back', rest_sec:120, sets:[{set_num:1,weight:100,reps:5}] }
         ]},
-        { day_letter:'C', name:'День C', exercises:[
+        { day_letter:'C', name:t('demoDayName', { n:'C' }), exercises:[
           { id:'5', name:'Overhead Press', group:'shoulders', rest_sec:90, sets:[{set_num:1,weight:40,reps:10}] }
         ]}
       ]}
     ];
     plans = [
       { id:'demo-pl1', name:'Clean Bulk', status:'active', target_calories:3150, target_protein:185, target_fat:80, target_carbs:420, meals:[
-        { name:'Завтрак', foods:[{name:'Овсянка',grams:80,nutrition:{calories:350,protein:10,fat:5,carbs:60}},{name:'Яйца',grams:120,nutrition:{calories:150,protein:12,fat:10,carbs:1}}] },
-        { name:'Обед', foods:[{name:'Курица',grams:180,nutrition:{calories:165,protein:31,fat:3.6,carbs:0}},{name:'Рис',grams:150,nutrition:{calories:130,protein:2.5,fat:0.3,carbs:28}}] }
+        { name:t('demoMealBreakfast'), foods:[{name:t('demoFoodOats'),grams:80,nutrition:{calories:350,protein:10,fat:5,carbs:60}},{name:t('demoFoodEggs'),grams:120,nutrition:{calories:150,protein:12,fat:10,carbs:1}}] },
+        { name:t('demoMealLunch'), foods:[{name:t('demoFoodChicken'),grams:180,nutrition:{calories:165,protein:31,fat:3.6,carbs:0}},{name:t('demoFoodRice'),grams:150,nutrition:{calories:130,protein:2.5,fat:0.3,carbs:28}}] }
       ]},
       { id:'demo-pl2', name:'Cut 2200', status:'active', target_calories:2200, target_protein:180, target_fat:65, target_carbs:200, meals:[
-        { name:'Завтрак', foods:[{name:'Творог',grams:200,nutrition:{calories:100,protein:18,fat:1,carbs:3}}] },
-        { name:'Ужин', foods:[{name:'Рыба',grams:150,nutrition:{calories:110,protein:20,fat:3,carbs:0}}] }
+        { name:t('demoMealBreakfast'), foods:[{name:t('demoFoodCottage'),grams:200,nutrition:{calories:100,protein:18,fat:1,carbs:3}}] },
+        { name:t('demoMealDinner'), foods:[{name:t('demoFoodFish'),grams:150,nutrition:{calories:110,protein:20,fat:3,carbs:0}}] }
       ]}
     ];
     activeProgramIdx = 0; activePlanIdx = 0; activeDayIndex = 0;
@@ -4931,6 +4967,10 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     document.getElementById('txt-active-program').textContent = t('planActive');
     document.getElementById('txt-diary-title').textContent = t('diaryTitle');
     document.getElementById('btn-diary-add').textContent = t('diaryAdd');
+    const _sysAria = document.getElementById('ana-systems');
+    if (_sysAria) _sysAria.setAttribute('aria-label', t('anaSystemsAria'));
+    const _saveCheckin = document.getElementById('btn-save-checkin');
+    if (_saveCheckin) _saveCheckin.textContent = t('saveCheckinBtn');
     document.getElementById('lbl-macro-p').textContent = t('macrosProtein');
     document.getElementById('lbl-macro-f').textContent = t('macrosFat');
     document.getElementById('lbl-macro-c').textContent = t('macrosCarbs');
@@ -6635,6 +6675,10 @@ mapModeRecovery:'התאוששות',mapMode7d:'נפח 7 ימים',mapMode30d:'נ�
     if (nb) nb.textContent = t('anaLastDetails');
     const pb = document.getElementById('btn-ana-plan');
     if (pb) pb.textContent = t('anaPlanGo');
+    const sa = document.getElementById('btn-ana-all');
+    if (sa) sa.textContent = t('anaSeeAll');
+    const gm = document.getElementById('btn-ana-map');
+    if (gm) gm.textContent = t('anaGoMap');
   }
 
   /* ============ c93: TWO-WAY WORKOUT-HISTORY SYNC (CRM ↔ portal) ============

@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>David King Gym — восстановление профиля</title>
+<title>David King Gym — Recovery · Восстановление · שחזור</title>
 <link rel="icon" type="image/png" href="./icon-192.png" />
+<script>(function(){try{var saved=localStorage.getItem('dkg_recover_lang')||(navigator.language||'ru').slice(0,2).toLowerCase();var L=(saved==='en'||saved==='he')?saved:'ru';document.documentElement.setAttribute('lang',L);document.documentElement.setAttribute('dir',L==='he'?'rtl':'ltr');}catch(e){}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -27,8 +28,12 @@
     border: 1px solid rgba(124,92,255,.28); border-radius: 24px;
     padding: 28px 24px; backdrop-filter: blur(26px) saturate(135%);
     box-shadow: 0 40px 120px -40px rgba(124,92,255,.45), inset 0 1px 0 rgba(255,255,255,.08);
+    position: relative;
   }
   .logo { text-align: center; font-weight: 800; letter-spacing: .12em; font-size: 13px; color: #f5b942; text-transform: uppercase; }
+  .lang { position:absolute; top:14px; inset-inline-end:14px; display:flex; gap:4px; }
+  .lang button { border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.05); color:#c9d3e2; border-radius:8px; padding:4px 8px; font-size:11px; font-weight:700; cursor:pointer; }
+  .lang button.on { color:#1a1206; background:linear-gradient(135deg,#f5b942,#e08b1d); border-color:transparent; }
   h1 { text-align: center; font-size: 20px; margin: 10px 0 4px; }
   .sub { text-align: center; font-size: 13px; color: #9aa7b5; line-height: 1.5; margin-bottom: 18px; }
   input[type=text], input[type=tel] {
@@ -76,28 +81,28 @@
 </head>
 <body>
 <main class="card" role="main">
+  <div class="lang" id="lang-box" role="group" aria-label="Language">
+    <button type="button" data-lang="ru">RU</button>
+    <button type="button" data-lang="en">EN</button>
+    <button type="button" data-lang="he">HE</button>
+  </div>
   <div class="logo">David&nbsp;King&nbsp;Gym</div>
-  <h1 id="title">Восстановление профиля</h1>
-  <p class="sub" id="subtitle">
-    Эта страница восстанавливает профиль клиента из облачной копии (ссылка портала) обратно в приложение тренера.
-  </p>
+  <h1 id="title" data-i18n="title">Восстановление профиля</h1>
+  <p class="sub" id="subtitle" data-i18n="sub">Эта страница восстанавливает профиль клиента из облачной копии (ссылка портала) обратно в приложение тренера.</p>
 
   <!-- STEP 1: code -->
   <section id="step-code">
-    <input id="code" type="tel" inputmode="numeric" maxlength="6" placeholder="••••••" autocomplete="one-time-code" aria-label="Код доступа" />
-    <button class="btn" id="btn-go">Восстановить</button>
+    <input id="code" type="tel" inputmode="numeric" maxlength="6" placeholder="••••••" autocomplete="one-time-code" data-i18n-attr="aria-label:codeAria" aria-label="Код доступа" />
+    <button class="btn" id="btn-go" data-i18n="btnGo">Восстановить</button>
     <p class="msg err" id="err-code"></p>
-    <button class="btn ghost" id="btn-cloud-mode" style="margin-top:10px">☁️ Восстановить из облачного аккаунта</button>
-    <div class="steps">Если профиль сохранялся в облачный аккаунт (Настройки → Online account), войдите через Google — здесь появятся все клиенты из облака, и любого можно вернуть вместе с историей.</div>
-    <div class="steps">
-      <b>Где взять код?</b> Это 6-значный «Код доступа», который вы отправляли клиенту в WhatsApp
-      вместе со ссылкой («🔑 Код доступа: XXXXXX»). Если ссылку открывали с чужого кода — восстановление не сработает.
-    </div>
+    <button class="btn ghost" id="btn-cloud-mode" style="margin-top:10px" data-i18n="cloudMode">☁️ Восстановить из облачного аккаунта</button>
+    <div class="steps" data-i18n="cloudHint">Если профиль сохранялся в облачный аккаунт (Настройки → Online account), войдите через Google — здесь появятся все клиенты из облака, и любого можно вернуть вместе с историей.</div>
+    <div class="steps"><b data-i18n="codeHelpLabel">Где взять код?</b><span data-i18n="codeHelpText"> Это 6-значный «Код доступа», который вы отправляли клиенту в WhatsApp вместе со ссылкой («🔑 Код доступа: XXXXXX»). Если ссылку открыли с чужого кода — восстановление не сработает.</span></div>
   </section>
 
   <!-- STEP 2: progress -->
   <section id="step-busy" class="hidden">
-    <p class="msg" id="busy-msg"><span class="spin"></span> Ищу облачную копию…</p>
+    <p class="msg" id="busy-msg"><span class="spin"></span> <span data-i18n="busy">Ищу облачную копию…</span></p>
   </section>
 
   <!-- STEP 3: result -->
@@ -105,17 +110,17 @@
     <div class="okmark">✓</div>
     <div class="name" id="r-name"></div>
     <div class="meta" id="r-meta"></div>
-    <button class="btn" id="btn-open">Открыть приложение</button>
-    <button class="btn ghost" id="btn-again">Восстановить ещё один профиль</button>
+    <button class="btn" id="btn-open" data-i18n="btnOpen">Открыть приложение</button>
+    <button class="btn ghost" id="btn-again" data-i18n="btnAgain">Восстановить ещё один профиль</button>
   </section>
 
   <!-- c94: restore from the trainer's own cloud account dump -->
   <section id="step-cloud" class="hidden">
-    <button class="btn" id="btn-cloud-signin">Войти через Google</button>
+    <button class="btn" id="btn-cloud-signin" data-i18n="cloudSignIn">Войти через Google</button>
     <p class="msg" id="cloud-msg"></p>
-    <label class="chk" id="cloud-hist-row"><input type="checkbox" id="cloud-hist" checked /> <span>включая историю тренировок и питания</span></label>
+    <label class="chk" id="cloud-hist-row"><input type="checkbox" id="cloud-hist" checked /> <span data-i18n="cloudHist">включая историю тренировок и питания</span></label>
     <div id="cloud-list" class="cloud-list"></div>
-    <button class="btn ghost hidden" id="btn-cloud-back" style="margin-top:10px">← К восстановлению по коду</button>
+    <button class="btn ghost hidden" id="btn-cloud-back" style="margin-top:10px" data-i18n="cloudBack">← К восстановлению по коду</button>
   </section>
 
   <p class="msg" id="msg"></p>
@@ -124,6 +129,45 @@
 <script>
 (function () {
   'use strict';
+  var I18N = {
+    ru: { title:'Восстановление профиля', sub:'Эта страница восстанавливает профиль клиента из облачной копии (ссылка портала) обратно в приложение тренера.', codeAria:'Код доступа', btnGo:'Восстановить', cloudMode:'☁️ Восстановить из облачного аккаунта', cloudHint:'Если профиль сохранялся в облачный аккаунт (Настройки → Online account), войдите через Google — здесь появятся все клиенты из облака, и любого можно вернуть вместе с историей.', codeHelpLabel:'Где взять код?', codeHelpText:' Это 6-значный «Код доступа», который вы отправляли клиенту в WhatsApp вместе со ссылкой («🔑 Код доступа: XXXXXX»). Если ссылку открыли с чужого кода — восстановление не сработает.', busy:'Ищу облачную копию…', btnOpen:'Открыть приложение', btnAgain:'Восстановить ещё один профиль', cloudSignIn:'Войти через Google', cloudHist:'включая историю тренировок и питания', cloudBack:'← К восстановлению по коду',
+            checkingCloud:'Проверяю облачные копии…', checkingCloudN:'Проверяю облачные копии ({n})…', noMatch:'Код не подошёл ни к одной облачной копии. Проверьте 6-значный код доступа.', noDb:'База приложения ещё не создана — откройте приложение один раз и повторите восстановление.', verifying:'Сверяю копии…', errCodeLen:'Введите 6-значный код доступа', errNoCrypto:'Браузер не поддерживает шифрование (нужен HTTPS)', noCopies:'В облаке нет ни одной копии — снапшот не найден.', listFail:'Не удалось получить список копий из облака', errPrefix:'Ошибка: ', errFirestore:'нет доступа к облачной копии (правила Firestore)', errNetwork:'нет соединения с сетью', errBlocked:'база занята — закройте вкладки приложения и повторите', clientFallback:'Клиент', programs:'программ', plans:'планов', relinked:'история привязана: {n} зап.', dupNote:'создан второй клиент с таким именем — лишний можно удалить в приложении', dupTitle:'Профиль с таким именем уже существует в приложении. Нажмите «Восстановить всё равно», чтобы создать копию.', dupForce:'Восстановить всё равно', dupRestored:'Восстановить ещё один профиль', foundClients:'Найдено клиентов: {n}', foundHist:' · записей истории в облаке: {n}', restoreFail:'Не удалось прочитать облако: {e}', emptyCloud:'Облачный аккаунт пуст — сначала сохраните данные в облаке из приложения (Настройки → «Save to cloud»).', noClientsCloud:'В облаке нет клиентов. Профиль, вероятно, не успел попасть в облако — попробуйте восстановление по коду доступа или сохранение с устройства, где он ещё есть.', restoreOk:'возвращён: программ {p}, планов {n}', restoredBtn:'Вернуть', restoreDoneBtn:'✓ Вернул', restoreHist:', записей истории {n}', readDone:'Читаю облачную копию…', restoreFailPrefix:'Ошибка восстановления: ', signInWait:'Открываю окно Google…', signInPopup:'Окно Google заблокировано — разрешите всплывающие окна и повторите.', signInCancelled:'Вход отменён.', signInRedirect:'Перенаправляю на Google… после входа список появится автоматически.', signInFail:'Не удалось войти: {e}' },
+    en: { title:'Profile recovery', sub:'This page restores a client profile from the cloud copy (portal link) back into the trainer app.', codeAria:'Access code', btnGo:'Restore', cloudMode:'☁️ Restore from cloud account', cloudHint:'If the profile was saved to a cloud account (Settings → Online account), sign in with Google — all clients from the cloud will appear here, and you can restore any of them with history.', codeHelpLabel:'Where is the code?', codeHelpText:' It is the 6-digit «Access code» you sent the client in WhatsApp together with the link («🔑 Access code: XXXXXX»). If the link was opened with someone else’s code — recovery will not work.', busy:'Looking for the cloud copy…', btnOpen:'Open the app', btnAgain:'Restore another profile', cloudSignIn:'Sign in with Google', cloudHist:'including workout and nutrition history', cloudBack:'← Back to code recovery',
+            checkingCloud:'Checking cloud copies…', checkingCloudN:'Checking cloud copies ({n})…', noMatch:'The code did not match any cloud copy. Check the 6-digit access code.', noDb:'The app database is not created yet — open the app once and repeat.', verifying:'Verifying copies…', errCodeLen:'Enter the 6-digit access code', errNoCrypto:'This browser does not support encryption (HTTPS required)', noCopies:'No cloud copies — snapshot not found.', listFail:'Could not list cloud copies', errPrefix:'Error: ', errFirestore:'no access to the cloud copy (Firestore rules)', errNetwork:'no network connection', errBlocked:'database busy — close app tabs and try again', clientFallback:'Client', programs:'programs', plans:'plans', relinked:'history re-linked: {n} entries', dupNote:'a second client with the same name was created — you can delete the extra one in the app', dupTitle:'A profile with this name already exists in the app. Press «Restore anyway» to create a copy.', dupForce:'Restore anyway', dupRestored:'Restore another profile', foundClients:'Found clients: {n}', foundHist:' · history entries in the cloud: {n}', restoreFail:'Could not read the cloud: {e}', emptyCloud:'The cloud account is empty — first save data to the cloud from the app (Settings → «Save to cloud»).', noClientsCloud:'There are no clients in the cloud. The profile probably never reached the cloud — try recovery by access code or saving from the device it is on.', restoreOk:'restored: programs {p}, plans {n}', restoredBtn:'Restore', restoreDoneBtn:'✓ Restored', restoreHist:', history entries {n}', readDone:'Reading the cloud copy…', restoreFailPrefix:'Restore error: ', signInWait:'Opening the Google window…', signInPopup:'The Google window is blocked — allow pop-ups and try again.', signInCancelled:'Sign-in cancelled.', signInRedirect:'Redirecting to Google… the list will appear automatically after you sign in.', signInFail:'Could not sign in: {e}' },
+    he: { title:'שחזור פרופיל', sub:'עמוד זה משחזר פרופיל לקוח מהעותק הענני (קישור פורטל) בחזרה לאפליקציית המאמן.', codeAria:'קוד גישה', btnGo:'שחזר', cloudMode:'☁️ שחזר מחשבון ענני', cloudHint:'אם הפרופיל נשמר לחשבון ענני (הגדרות → Online account), התחבר עם Google — כל הלקוחות מהענן יופיעו כאן, ובעזרת אחד מהם ניתן לשחזר עם היסטוריה.', codeHelpLabel:'איפה הקוד?', codeHelpText:' זהו «קוד הגישה» בן 6 ספרות ששלחת ללקוח ב-WhatsApp יחד עם הקישור («🔑 קוד גישה: XXXXXX»). אם הקישור נפתח עם קוד של מישהו אחר — השחזור לא יעבוד.', busy:'מחפש עותק ענני…', btnOpen:'פתח את האפליקציה', btnAgain:'שחזר פרופיל נוסף', cloudSignIn:'התחבר עם Google', cloudHist:'כולל היסטוריית אימונים ותזונה', cloudBack:'← חזרה לשחזור לפי קוד',
+            checkingCloud:'בודק עותקים ענניים…', checkingCloudN:'בודק עותקים ענניים ({n})…', noMatch:'הקוד לא התאים לאף עותק ענני. בדוק את קוד הגישה בן 6 הספרות.', noDb:'מאגר האפליקציה עדיין לא נוצר — פתח את האפליקציה פעם אחת וחזור.', verifying:'מאמת עותקים…', errCodeLen:'הזן קוד גישה בן 6 ספרות', errNoCrypto:'הדפדפן אינו תומך בהצפנה (דרוש HTTPS)', noCopies:'אין עותקים בענן — תמונת המצב לא נמצאה.', listFail:'לא ניתן לרשום את עותקי הענן', errPrefix:'שגיאה: ', errFirestore:'אין גישה לעותק הענן (כללי Firestore)', errNetwork:'אין חיבור לרשת', errBlocked:'המאגר עסוק — סגור לשוניות אפליקציה ונסה שוב', clientFallback:'לקוח', programs:'תוכניות', plans:'תוכניות תזונה', relinked:'ההיסטוריה קושרה מחדש: {n} רשומות', dupNote:'נוצר לקוח שני בשם זה — אפשר למחוק את העודף באפליקציה', dupTitle:'פרופיל בשם זה כבר קיים באפליקציה. לחץ «שחזר בכל מקרה» כדי ליצור עותק.', dupForce:'שחזר בכל מקרה', dupRestored:'שחזר פרופיל נוסף', foundClients:'נמצאו לקוחות: {n}', foundHist:' · רשומות היסטוריה בענן: {n}', restoreFail:'לא ניתן לקרוא את הענן: {e}', emptyCloud:'החשבון הענני ריק — שמור תחילה נתונים לענן מהאפליקציה (הגדרות → «Save to cloud»).', noClientsCloud:'אין לקוחות בענן. הפרופיל כנראה לא הגיע לענן — נסה שחזור לפי קוד גישה או שמירה מהמכשיר שעליו הוא נמצא.', restoreOk:'שוחזר: תוכניות {p}, תזונה {n}', restoredBtn:'שחזר', restoreDoneBtn:'✓ שוחזר', restoreHist:', רשומות היסטוריה {n}', readDone:'קורא את העותק הענני…', restoreFailPrefix:'שגיאת שחזור: ', signInWait:'פותח את חלון Google…', signInPopup:'חלון Google חסום — אפשר חלונות קופצים ונסה שוב.', signInCancelled:'ההתחברות בוטלה.', signInRedirect:'מפנה ל-Google… לאחר ההתחברות הרשימה תופיע אוטומטית.', signInFail:'לא ניתן להתחבר: {e}' }
+  };
+  var lang = document.documentElement.getAttribute('lang') || 'ru';
+  function dict() { return I18N[lang] || I18N.ru; }
+  function t(key, vars) {
+    var s = dict()[key] || I18N.en[key] || key;
+    if (vars) for (var k in vars) s = s.split('{' + k + '}').join(String(vars[k]));
+    return s;
+  }
+  function apply() {
+    var d = dict();
+    document.querySelectorAll('[data-i18n]').forEach(function (el) { el.textContent = d[el.getAttribute('data-i18n')] || el.textContent; });
+    document.querySelectorAll('[data-i18n-attr]').forEach(function (el) {
+      var list = el.getAttribute('data-i18n-attr').split(',');
+      for (var i = 0; i < list.length; i++) {
+        var pair = list[i].split(':'); var attr = pair[0].trim(); var key = pair[1] ? pair[1].trim() : '';
+        var v = d[key]; if (v) el.setAttribute(attr, v);
+      }
+    });
+    document.querySelectorAll('#lang-box button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-lang') === lang); });
+    document.title = 'David King Gym — ' + d.title;
+  }
+  document.querySelectorAll('#lang-box button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      lang = b.getAttribute('data-lang');
+      try { localStorage.setItem('dkg_recover_lang', lang); } catch (e) {}
+      document.documentElement.setAttribute('lang', lang);
+      document.documentElement.setAttribute('dir', lang === 'he' ? 'rtl' : 'ltr');
+      apply();
+    });
+  });
+  apply();
+
   var CFG = {
     apiKey: 'AIzaSyCP1QVC8TqhqU4_LSG1fxirClo8KHMS9rM',
     authDomain: 'david-king-gym.firebaseapp.com',
@@ -190,8 +234,6 @@
     }).then(function (q) {
       var ids = [];
       q.forEach(function (d) { ids.push(d.id); });
-      /* biggest blobs last — richer payload takes priority on match attempt */
-      ids.sort(function (a, b) { return 0; });
       return ids;
     });
   }
@@ -263,7 +305,7 @@
   /* ---- build records from payload ---- */
   function buildRecords(payload) {
     var cl = payload.client || {};
-    var fullName = String(cl.full_name || '').trim() || 'Клиент';
+    var fullName = String(cl.full_name || '').trim() || t('clientFallback');
     var now = Date.now();
     var clientId = uuid();
     /* c90: remember the ids the profile had BEFORE the restore, so history
@@ -306,8 +348,7 @@
   }
 
   /* c90: re-link history rows saved under the pre-restore client id(s) to
-     the freshly created client id — otherwise the trainer's live workout
-     and analytics find no previous workouts for the restored profile. */
+     the freshly created client id */
   function idbRelinkHistory(idb, oldIds, newId) {
     return new Promise(function (res) {
       try {
@@ -341,9 +382,7 @@
   var existingNamesCache = null;
   function restoreWithCode(code, shareIds, localBlobs) {
     show('step-busy');
-    $('busy-msg').innerHTML = '<span class="spin"></span> ' + (shareIds.length
-      ? 'Проверяю облачные копии (' + shareIds.length + ')…'
-      : 'Проверяю облачные копии…');
+    $('busy-msg').innerHTML = '<span class="spin"></span> ' + t(shareIds.length ? 'checkingCloudN' : 'checkingCloud', { n: shareIds.length });
     var chain = Promise.resolve();
     var payload = null;
     function tryDecryptBlob94(blob, label) {
@@ -362,10 +401,10 @@
       });
     });
     return chain.then(function () {
-      if (!payload) throw { userMessage: true, text: 'Код не подошёл ни к одной облачной копии. Проверьте 6-значный код доступа.' };
+      if (!payload) throw { userMessage: true, text: t('noMatch') };
       return openDb().then(function (idb) {
         var stores = Array.from(idb.objectStoreNames);
-        if (stores.indexOf('clients') === -1) throw { userMessage: true, text: 'База приложения ещё не создана — откройте приложение один раз и повторите восстановление.' };
+        if (stores.indexOf('clients') === -1) throw { userMessage: true, text: t('noDb') };
         return idbAllClients(idb).then(function (clients) {
           var records = buildRecords(payload);
           var nm = records.client.name_lower;
@@ -391,10 +430,10 @@
   var forceRestore = false;
   function finish(res) {
     var r = res.records;
-    var rel = (typeof res.relinked === 'number' && res.relinked > 0) ? ' · История привязана: ' + res.relinked + ' зап.' : '';
+    var rel = (typeof res.relinked === 'number' && res.relinked > 0) ? ' · ' + t('relinked', { n: res.relinked }) : '';
     $('r-name').textContent = r.client.full_name;
-    $('r-meta').textContent = 'Программ тренировок: ' + r.programs.length + ' · Планов питания: ' + r.plans.length + rel +
-      (res.dup ? ' · (создан второй клиент с таким именем — лишний можно удалить в приложении)' : '');
+    $('r-meta').textContent = t('restoreOk', { p: r.programs.length, n: r.plans.length }) + rel +
+      (res.dup ? ' · ' + t('dupNote') : '');
     show('step-done');
     say('');
   }
@@ -408,10 +447,10 @@
         say(e.text, 'err');
       } else {
         show('step-code');
-        var t = String((e && (e.code || e.message)) || e);
-        say('Ошибка: ' + (/permission|denied/i.test(t) ? 'нет доступа к облачной копии (правила Firestore)' :
-          /offline|network/i.test(t) ? 'нет соединения с сетью' :
-          /blocked/i.test(t) ? 'база занята — закройте вкладки приложения и повторите' : t), 'err');
+        var t2 = String((e && (e.code || e.message)) || e);
+        say(t('errPrefix') + (/permission|denied/i.test(t2) ? t('errFirestore') :
+          /offline|network/i.test(t2) ? t('errNetwork') :
+          /blocked/i.test(t2) ? t('errBlocked') : t2), 'err');
       }
     });
   }
@@ -433,16 +472,16 @@
 
   $('btn-go').addEventListener('click', function () {
     var code = $('code').value.replace(/\D/g, '');
-    if (code.length !== 6) { say('Введите 6-значный код доступа', 'err'); return; }
-    if (!window.crypto || !crypto.subtle) { say('Браузер не поддерживает шифрование (нужен HTTPS)', 'err'); return; }
+    if (code.length !== 6) { say(t('errCodeLen'), 'err'); return; }
+    if (!window.crypto || !crypto.subtle) { say(t('errNoCrypto'), 'err'); return; }
     say('');
     var idsPromise = hashIds.length ? Promise.resolve(hashIds) : listShareIds();
     idsPromise.then(function (ids) {
-      if (!ids.length) throw { userMessage: true, text: 'В облаке нет ни одной копии — снапшот не найден.' };
+      if (!ids.length) throw { userMessage: true, text: t('noCopies') };
       startRestore(code, ids, listLocalBlobs());
     }).catch(function (e) {
       show('step-code');
-      say(e && e.userMessage ? e.text : 'Не удалось получить список копий из облака', 'err');
+      say(e && e.userMessage ? e.text : t('listFail'), 'err');
     });
   });
   $('code').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('btn-go').click(); });
@@ -496,7 +535,7 @@
     var fs94 = firebase.firestore();
     var uRef = fs94.collection('users').doc(user.uid);
     return uRef.get().then(function (snap) {
-      if (!snap || !snap.exists) throw { userMessage: true, text: 'Облачный аккаунт пуст — сначала сохраните данные в облаке из приложения (Настройки → «Save to cloud»).' };
+      if (!snap || !snap.exists) throw { userMessage: true, text: t('emptyCloud') };
       var meta = snap.data() || {};
       var parts = meta.store_parts || {};
       var stores = Object.keys(parts).filter(function (s) { return REF_STORES94.indexOf(s) === -1; });
@@ -528,12 +567,12 @@
   function openCloudList(user) {
     var m = $('cloud-msg');
     m.className = 'msg';
-    m.innerHTML = '<span class="spin"></span> Читаю облачную копию…';
+    m.innerHTML = '<span class="spin"></span> ' + t('readDone');
     $('btn-cloud-signin').classList.add('hidden');
     fetchCloudDump(user).then(function (dump) {
       _cloudDump = dump;
       var clients = dump.clients || [];
-      if (!clients.length) throw { userMessage: true, text: 'В облаке нет клиентов. Профиль, вероятно, не успел попасть в облако — попробуйте восстановление по коду доступа или сохранение с устройства, где он ещё есть.' };
+      if (!clients.length) throw { userMessage: true, text: t('noClientsCloud') };
       var programs = dump.client_programs || [];
       var plans = dump.nutrition_plans || [];
       var histN = (dump.workout_history || []).length + (dump.nutrition_history || []).length;
@@ -541,19 +580,19 @@
         var np = programs.filter(function (p) { return p && p.client_id === c.id; }).length;
         var nn = plans.filter(function (p) { return p && p.client_id === c.id; }).length;
         var d = c.created_at ? new Date(c.created_at).toLocaleDateString() : '';
-        return '<div class="cloud-item"><div class="ci-info"><b>' + esc94(c.full_name || 'Клиент') + '</b>' +
-          '<span>' + (d ? esc94(d) + ' · ' : '') + 'программ: ' + np + ' · планов: ' + nn + '</span></div>' +
-          '<button class="ci-btn" data-i="' + i + '">Вернуть</button></div>';
+        return '<div class="cloud-item"><div class="ci-info"><b>' + esc94(c.full_name || t('clientFallback')) + '</b>' +
+          '<span>' + (d ? esc94(d) + ' · ' : '') + t('programs') + ': ' + np + ' · ' + t('plans') + ': ' + nn + '</span></div>' +
+          '<button class="ci-btn" data-i="' + i + '">' + t('restoredBtn') + '</button></div>';
       }).join('');
       $('cloud-list').innerHTML = html;
-      m.textContent = 'Найдено клиентов: ' + clients.length + (histN ? ' · записей истории в облаке: ' + histN : '');
+      m.textContent = t('foundClients', { n: clients.length }) + (histN ? t('foundHist', { n: histN }) : '');
       $('btn-cloud-back').classList.remove('hidden');
       Array.prototype.forEach.call(document.querySelectorAll('.cloud-item .ci-btn'), function (b) {
         b.addEventListener('click', function () { restoreFromDump94(Number(b.getAttribute('data-i')), b); });
       });
     }).catch(function (e) {
       m.className = 'msg err';
-      m.textContent = (e && e.userMessage) ? e.text : 'Не удалось прочитать облако: ' + String((e && (e.code || e.message)) || e);
+      m.textContent = (e && e.userMessage) ? e.text : t('restoreFail', { e: String((e && (e.code || e.message)) || e) });
       $('btn-cloud-signin').classList.remove('hidden');
     });
   }
@@ -564,7 +603,7 @@
     if (!c || !c.id) return;
     var m = $('cloud-msg');
     m.className = 'msg';
-    m.innerHTML = '<span class="spin"></span> Возвращаю «' + esc94(c.full_name || 'Клиент') + '»…';
+    m.innerHTML = '<span class="spin"></span> ' + t('readDone');
     var withHist = $('cloud-hist').checked;
     openDb().then(function (idb) {
       var names = ['clients', 'client_programs', 'nutrition_plans', 'workout_history', 'nutrition_history'];
@@ -597,11 +636,11 @@
       });
     }).then(function (r) {
       m.className = 'msg ok';
-      m.textContent = '✓ «' + (c.full_name || 'Клиент') + '» возвращён: программ ' + r.np + ', планов ' + r.nn + (withHist ? ', записей истории ' + r.nh : '') + '. Откройте приложение — профиль на месте.';
-      if (btn) { btn.textContent = '✓ Вернул'; var item = btn.closest('.cloud-item'); if (item) item.classList.add('done'); }
+      m.textContent = '✓ «' + (c.full_name || t('clientFallback')) + '» ' + t('restoreOk', { p: r.np, n: r.nn }) + (withHist ? t('restoreHist', { n: r.nh }) : '') + '. ' + t('btnOpen');
+      if (btn) { btn.textContent = t('restoreDoneBtn'); var item = btn.closest('.cloud-item'); if (item) item.classList.add('done'); }
     }).catch(function (e) {
       m.className = 'msg err';
-      m.textContent = 'Ошибка восстановления: ' + String((e && (e.code || e.message)) || e);
+      m.textContent = t('restoreFailPrefix') + String((e && (e.code || e.message)) || e);
     });
   }
 
@@ -616,16 +655,16 @@
   $('btn-cloud-signin').addEventListener('click', function () {
     var m = $('cloud-msg');
     m.className = 'msg';
-    m.innerHTML = '<span class="spin"></span> Открываю окно Google…';
+    m.innerHTML = '<span class="spin"></span> ' + t('signInWait');
     cloudSignIn().then(function (u) {
       if (u) openCloudList(u);
     }).catch(function (e) {
       m.className = 'msg err';
       var s = String((e && (e.code || e.message)) || e);
-      m.textContent = /popup|blocked/i.test(s) ? 'Окно Google заблокировано — разрешите всплывающие окна и повторите.' :
-        /cancelled|closed/i.test(s) ? 'Вход отменён.' :
-        /redirect/i.test(s) ? 'Перенаправляю на Google… после входа список появится автоматически.' :
-        'Не удалось войти: ' + s;
+      m.textContent = /popup|blocked/i.test(s) ? t('signInPopup') :
+        /cancelled|closed/i.test(s) ? t('signInCancelled') :
+        /redirect/i.test(s) ? t('signInRedirect') :
+        t('signInFail', { e: s });
     });
   });
 
@@ -636,12 +675,12 @@
       if (res && res.dup && !forceRestore) {
         show('step-done');
         $('r-name').textContent = res.records.client.full_name;
-        $('r-meta').textContent = 'Профиль с таким именем уже существует в приложении. Нажмите «Восстановить всё равно», чтобы создать копию.';
-        $('btn-again').textContent = 'Восстановить всё равно';
+        $('r-meta').textContent = t('dupTitle');
+        $('btn-again').textContent = t('dupForce');
         var again = $('btn-again');
         var handler = function () {
           again.removeEventListener('click', handler);
-          again.textContent = 'Восстановить ещё один профиль';
+          again.textContent = t('dupRestored');
           forceRestore = true;
           startRestore(code, ids, lb);
         };
