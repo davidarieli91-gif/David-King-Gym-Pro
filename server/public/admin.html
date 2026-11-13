@@ -110,8 +110,11 @@
       </div>
 
       <div class="card section">
-        <h2>Список тренеров</h2>
-        <p class="section-sub">«Редактировать» меняет имя, email и пароль. «Приостановить» временно закрывает доступ. «Удалить» полностью удаляет кабинет и всех его клиентов — это необратимо.</p>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+          <h2 style="margin:0;">Список тренеров</h2>
+          <button type="button" id="resend-all" class="secondary" title="Отправить каждому активному тренеру email с новой ссылкой на приложение">Переслать новую ссылку всем</button>
+        </div>
+        <p class="section-sub">«Редактировать» меняет имя, email и пароль. «Приостановить» временно закрывает доступ. «Новая ссылка» отправляет тренеру на email адрес приложения после переезда — клиенты, история и настройки при этом не меняются и не удаляются. «Удалить» полностью удаляет кабинет и всех его клиентов — это необратимо.</p>
         <div style="overflow:auto;">
           <table>
             <thead><tr><th>Тренер</th><th>Email</th><th>Регистрация</th><th>Последний вход</th><th>Клиенты</th><th>Данные</th><th>Статус</th><th>Действия</th></tr></thead>
@@ -326,6 +329,7 @@
         body.innerHTML = state.trainers.map(function (t) {
           var status = t.status === 'active' ? '<span class="pill ok">Активен</span>' : '<span class="pill off">Приостановлен</span>';
           var buttons = '<button type="button" class="secondary small" data-edit="' + esc(t.tenantId) + '">Редактировать</button>';
+          buttons += '<button type="button" class="secondary small" data-resend="' + esc(t.tenantId) + '"' + (t.email ? '' : ' disabled title="У тренера не указан email"') + '>Новая ссылка</button>';
           if (t.isSelf) {
             buttons += '<span class="muted" style="font-size:11px;align-self:center;">это ты</span>';
           } else {
@@ -349,6 +353,9 @@
         body.querySelectorAll('[data-edit]').forEach(function (btn) {
           btn.addEventListener('click', function () { openEdit(btn.getAttribute('data-edit')); });
         });
+        body.querySelectorAll('[data-resend]').forEach(function (btn) {
+          btn.addEventListener('click', function () { resendToOne(btn, btn.getAttribute('data-resend')); });
+        });
         body.querySelectorAll('[data-suspend]').forEach(function (btn) {
           btn.addEventListener('click', function () { tenantAction(btn.getAttribute('data-suspend'), 'suspend'); });
         });
@@ -368,6 +375,40 @@
           toast(action === 'suspend' ? 'Доступ приостановлен' : 'Доступ возобновлён', 'ok');
         } catch (error) {
           alert(error.message);
+        }
+      }
+
+      async function resendToOne(btn, tenantId) {
+        var trainer = trainerById(tenantId);
+        if (!trainer) return;
+        var name = trainer.tenantName || 'тренер';
+        var email = trainer.email || '';
+        if (!confirm('Отправить письмо с новой ссылкой «' + name + '» (' + email + ')?\n\nКлиенты, история и настройки не меняются и не удаляются.')) return;
+        if (btn) btn.disabled = true;
+        try {
+          await api('/api/admin/trainers/' + encodeURIComponent(tenantId) + '/resend-link', { method: 'POST', body: {} });
+          toast('Ссылка отправлена: ' + name, 'ok');
+        } catch (error) {
+          toast(error.message || 'Не удалось отправить письмо', 'bad');
+        } finally {
+          if (btn) btn.disabled = false;
+        }
+      }
+
+      async function resendAll(btn) {
+        var withEmail = state.trainers.filter(function (t) { return t.email; });
+        if (!withEmail.length) { toast('Никто из тренеров не указал email', 'bad'); return; }
+        if (!confirm('Отправить письмо с новой ссылкой всем (' + withEmail.length + ') активным тренерам?\n\nКлиенты, история и настройки не меняются и не удаляются.')) return;
+        if (btn) btn.disabled = true;
+        try {
+          var data = await api('/api/admin/resend-app-link', { method: 'POST', body: {} });
+          var msg = 'Письмо отправлено: ' + (data.sent || 0) + ' из ' + (data.total || 0) + ' тренеров';
+          if (data.failed) msg += ' (ошибок: ' + data.failed + ')';
+          toast(msg, data.failed ? 'bad' : 'ok');
+        } catch (error) {
+          toast(error.message || 'Не удалось отправить письма', 'bad');
+        } finally {
+          if (btn) btn.disabled = false;
         }
       }
 
@@ -506,6 +547,10 @@
       $('logout-btn').addEventListener('click', async function () {
         try { await api('/api/auth/logout', { method: 'POST', body: {} }); } catch (_) {}
         location.reload();
+      });
+
+      $('resend-all').addEventListener('click', function () {
+        resendAll($('resend-all'));
       });
 
       $('invite-create').addEventListener('click', async function () {

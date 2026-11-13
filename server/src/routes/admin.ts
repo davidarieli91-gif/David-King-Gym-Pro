@@ -10,6 +10,7 @@ import { errors } from '../lib/errors';
 import { hashInviteCode, inviteCode } from '../lib/tokens';
 import { parse } from '../lib/validate';
 import { deleteObject } from '../storage/local';
+import { sendMail, mailConfigured } from '../mail';
 
 const trainersQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(200).default(50),
@@ -331,6 +332,132 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
 
     return { ok: true, changed };
   });
+
+  // «Переслать новую ссылку» — the server moved, and the trainers' old
+  // bookmarks/links point at the previous host. Send every active trainer
+  // (and the director's own trainer account) the new app link by email.
+  // Client data, history and settings stay untouched: this only tells the
+  // trainers where to find the app now.
+  function newLinkEmail(): { subject: string; text: string } {
+    const base = config.PUBLIC_BASE_URL.replace(/\/+$/, '');
+    const appUrl = `${base}/fitness-crm.html`;
+    const resetUrl = `${base}/reset`;
+    const subject = 'David King Gym — новая ссылка / קישור חדש / new link';
+    const text = [
+      'Здравствуйте!',
+      '',
+      'Сервер David King Gym переехал на новый адрес. Ваши клиенты, история тренировок и все настройки сохранены — заново настроивать ничего не нужно.',
+      '',
+      `Приложение: ${appUrl}`,
+      '',
+      'Ваш логин и пароль остались прежними. Откройте ссылку выше (или замените старую закладку) — и продолжайте работать как раньше.',
+      '',
+      `Если забыли пароль: ${resetUrl}`,
+      '',
+      '—',
+      '',
+      'שלום!',
+      '',
+      'שרת David King Gym עבר כתובת חדשה. הלקוחות שלך, היסטוריית האימונים וכל ההגדרות נשמרו — אין צורך להגדיר מחדש דבר.',
+      '',
+      `פתיחת האפליקציה: ${appUrl}`,
+      '',
+      'שם המשתמש והסיסמה לא השתנו. פתחו את הקישור למעלה (או החליפו את הסימניה הישנה) והמשיכו לעבוד כרגיל.',
+      '',
+      `שכחתם סיסמה: ${resetUrl}`,
+      '',
+      '—',
+      '',
+      'Hello!',
+      '',
+      'The David King Gym server has moved to a new address. Your clients, training history and all settings are safe — nothing needs to be set up again.',
+      '',
+      `Open the app: ${appUrl}`,
+      '',
+      'Your login and password are unchanged. Open the link above (or replace your old bookmark) and keep working as before.',
+      '',
+      `Forgot your password: ${resetUrl}`,
+    ].join('\n');
+    return { subject, text };
+  }
+
+  async function sendAppLinkTo(email: string): Promise<{ ok: boolean; error?: string }> {
+    const { subject, text } = newLinkEmail();
+    try {
+      await sendMail({ to: email, subject, text });
+      return { ok: true };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`[admin:resend-link] failed to send to ${email}: ${message}`);
+      return { ok: false, error: message };
+    }
+  }
+
+  app.post(
+    '/resend-app-link',
+    { preHandler: guard, config: { rateLimit: { max: 6, timeWindow: '1 hour' } } },
+    async (request) => {
+      if (!mailConfigured()) {
+        throw errors.badRequest('Email is not configured on the server (SMTP_HOST/SMTP_USER/SMTP_PASS)');
+      }
+      const result = await pool.query<{ name: string; email: string }>(
+        `SELECT t.display_name AS name, u.email
+         FROM tenants t
+         JOIN users u ON u.id = t.owner_user_id
+         WHERE t.status = 'active' AND u.email IS NOT NULL AND u.email <> ''`,
+      );
+      const recipients = result.rows;
+      const results: Array<{ email: string; ok: boolean; error?: string }> = [];
+      for (const recipient of recipients) {
+        // eslint-disable-next-line no-await-in-loop
+        results.push({ email: recipient.email, ...(await sendAppLinkTo(recipient.email)) });
+      }
+      const sent = results.filter((r) => r.ok).length;
+      const failed = results.length - sent;
+      await audit({
+        tenantId: request.auth!.tenant.id,
+        actorUserId: request.auth!.user.id,
+        action: 'admin.links_resent',
+        meta: { total: results.length, sent, failed },
+        ip: request.ip,
+      });
+      return { ok: true, total: results.length, sent, failed };
+    },
+  );
+
+  app.post(
+    '/trainers/:tenantId/resend-link',
+    { preHandler: guard, config: { rateLimit: { max: 30, timeWindow: '1 hour' } } },
+    async (request) => {
+      if (!mailConfigured()) {
+        throw errors.badRequest('Email is not configured on the server (SMTP_HOST/SMTP_USER/SMTP_PASS)');
+      }
+      const params = parse(z.object({ tenantId: z.string().uuid() }), request.params);
+      const result = await pool.query<{ name: string; email: string | null }>(
+        `SELECT t.display_name AS name, u.email
+         FROM tenants t
+         LEFT JOIN users u ON u.id = t.owner_user_id
+         WHERE t.id = $1`,
+        [params.tenantId],
+      );
+      const trainer = result.rows[0];
+      if (!trainer) throw errors.notFound('Trainer not found');
+      if (!trainer.email) throw errors.badRequest('This trainer has no email on file');
+      const sent = await sendAppLinkTo(trainer.email);
+      if (!sent.ok) {
+        throw errors.badRequest(`Could not send the email: ${sent.error || 'unknown error'}`);
+      }
+      await audit({
+        tenantId: request.auth!.tenant.id,
+        actorUserId: request.auth!.user.id,
+        action: 'admin.link_resent',
+        target: params.tenantId,
+        meta: { email: trainer.email },
+        ip: request.ip,
+      });
+      return { ok: true };
+    },
+  );
 
   app.post(
     '/tenants/:id/delete',

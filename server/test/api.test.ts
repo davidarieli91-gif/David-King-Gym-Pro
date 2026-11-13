@@ -13,6 +13,11 @@ process.env.SESSION_SECRET = 'test-session-secret-0123456789';
 process.env.INVITE_PEPPER = 'test-invite-pepper-0123456789';
 process.env.COOKIE_SECURE = 'false';
 process.env.PUBLIC_BASE_URL = 'http://localhost:8080';
+// The production SMTP credentials live in server/.env; keep tests fully offline.
+process.env.SMTP_HOST = '';
+process.env.SMTP_PORT = '587';
+process.env.SMTP_USER = '';
+process.env.SMTP_PASS = '';
 
 let app: FastifyInstance;
 let pool: {
@@ -360,4 +365,57 @@ test('suspending a tenant locks its trainer out until resumed', async () => {
 
   const newLogin = await login('suspend@test.local', 'Trainer12345!');
   assert.equal(newLogin.body.user.role, 'trainer');
+});
+
+test('resend-link routes require a director and refuse email when SMTP is unset', async () => {
+  const director = await seedDirector();
+  const loginResult = await login(director.email, director.password);
+
+  // no authentication -> 401
+  const noAuth = await inject('POST', '/api/admin/resend-app-link', { payload: {} });
+  assert.equal(noAuth.statusCode, 401);
+
+  // a trainer is not allowed to call the bulk route -> 403
+  const trainerPassword = await hashPassword('Trainer12345!');
+  const tenant = await pool.query(
+    `INSERT INTO tenants (slug, display_name, settings)
+     VALUES ('resend-trainer', 'Resend Trainer Gym', '{}')
+     RETURNING id`,
+  );
+  const tenantId = tenant.rows[0].id as string;
+  const user = await pool.query(
+    `INSERT INTO users (tenant_id, email, password_hash, role, display_name)
+     VALUES ($1, 'resend@test.local', $2, 'trainer', 'Resend Trainer')
+     RETURNING id`,
+    [tenantId, trainerPassword],
+  );
+  await pool.query('UPDATE tenants SET owner_user_id = $1 WHERE id = $2', [user.rows[0].id, tenantId]);
+  await pool.query('INSERT INTO trainer_stats (tenant_id) VALUES ($1)', [tenantId]);
+  const trainer = await login('resend@test.local', 'Trainer12345!');
+  const forbidden = await inject('POST', '/api/admin/resend-app-link', {
+    cookies: trainer.cookies,
+    headers: { 'x-csrf-token': trainer.csrf },
+    payload: {},
+  });
+  assert.equal(forbidden.statusCode, 403);
+
+  // director calling the bulk route with SMTP unset -> 400, no email sent
+  const all = await inject('POST', '/api/admin/resend-app-link', {
+    cookies: loginResult.cookies,
+    headers: { 'x-csrf-token': loginResult.csrf },
+    payload: {},
+  });
+  assert.equal(all.statusCode, 400);
+  assert.match(all.body, /SMTP/i);
+
+  // per-trainer route shares the same guard
+  const trainers = await inject('GET', '/api/admin/trainers', { cookies: loginResult.cookies });
+  const row = trainers.json().trainers.find((item: { tenantName: string }) => item.tenantName === 'Resend Trainer Gym');
+  assert.ok(row);
+  const one = await inject('POST', `/api/admin/trainers/${row.tenantId}/resend-link`, {
+    cookies: loginResult.cookies,
+    headers: { 'x-csrf-token': loginResult.csrf },
+    payload: {},
+  });
+  assert.equal(one.statusCode, 400);
 });
