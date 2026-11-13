@@ -140,3 +140,46 @@ The compose file uses named volumes. On UGOS, inspect them with:
 docker volume ls
 docker volume inspect deploy_dkg_pg
 ```
+
+## UGREEN NAS (UGOS) — bind-mount the NVMe volume
+
+The DXP2800 has a 16 TB HDD (`/volume1`) and a 1 TB NVMe (`/volume2`).
+Postgres and the client files must sit on the NVMe volume; image layers stay
+on `/volume1/@docker` (the Docker app's own root), which is fine.
+
+`deploy/.env` on the NAS carries:
+
+```sh
+DKG_PG_DIR=/volume2/dkg/data/pg
+DKG_FILES_DIR=/volume2/dkg/data/files
+```
+
+The compose file turns those into bind mounts; without them it falls back to
+the legacy named volumes, so existing installs are not broken by this change.
+
+Full runbook:
+
+1. UGOS ▸ Control Panel ▸ Terminal ▸ `SSH` ▸ Enable (port 22, `Never` for
+   auto-shutdown).
+2. UGOS ▸ App Center ▸ search `Docker` ▸ Install.
+3. The NVMe is already a pool mounted at `/volume2` (Storage Manager ▸
+   Storage Pool); create the tree:
+   `sudo mkdir -p /volume2/dkg/{App,data/pg,data/files}` and
+   `/volume1/backups/dkg` for the daily dumps.
+4. Build the frontend on a machine with the repo, then copy `dist/`,
+   `server/src`, `server/migrations`, `server/public`, `server/package*.json`,
+   `server/tsconfig.json`, `deploy/` to `/volume2/dkg/App`.
+5. `sudo cp deploy/.env.example deploy/.env` and fill it in (values below),
+   then `sudo docker compose up -d --build`.
+6. Restore the database dump (JSON snapshot from `node scripts/restore.mjs`
+   with `RESTORE_CONFIRM=yes`), restart `api`, check `curl -s
+   http://127.0.0.1:8080/health`.
+7. Install Tailscale CLI (`curl -fsSL https://tailscale.com/install.sh | sh`),
+   `sudo tailscale up` (browse to the login link), then
+   `sudo tailscale funnel --bg 8080`.
+8. Point `PUBLIC_BASE_URL` in `deploy/.env` at the NAS Funnel address and
+   restart `api`. Old portal/invite links carry the previous host; send the
+   new ones (the app generates them from `PUBLIC_BASE_URL`).
+9. Add a cron entry for `deploy/backup-nas.sh` (daily, 03:00) — it writes a
+   `pg_dump` and mirrors the files volume into `/volume1/backups/dkg`.
+
