@@ -515,6 +515,9 @@
     }
 
     * { -webkit-tap-highlight-color: transparent; }
+    /* c239: images are never the scroll-blocking drag source on touch —
+       HTML5 draggable images made product/exercise cards trap the scroll gesture */
+    img { -webkit-user-drag: none; }
     html { height: 100%; }
     /* c175: body must grow with content (min-height, not fixed height) —
        otherwise the sticky app header breaks out of the 100%-tall body box
@@ -4563,13 +4566,15 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     html[data-ui="v2"] .v2-kpi-value { font-size: 24px; }
     html[data-ui="v2"] .v2-kpi-label { font-size: 8.5px; letter-spacing: .09em; line-height: 1.35; }
     html[data-ui="v2"] .v2-kpi-sub { font-size: 10px; line-height: 1.3; }
-    html[data-ui="v2"] #v2-topbar-brand { max-width: 158px; }
-    html[data-ui="v2"] #v2-topbar-logo { height: 28px; max-width: 66px; }
-    html[data-ui="v2"] #v2-topbar-name { font-size: 11px; }
+    html[data-ui="v2"] #v2-topbar-brand { max-width: 120px; }
+    html[data-ui="v2"] #v2-topbar-logo { height: 26px; max-width: 56px; }
+    html[data-ui="v2"] #v2-topbar-name { display: none; }
     html[data-ui="v2"] #v2-topbar-sub { display: none; }
-    html[data-ui="v2"] #lang-select,
-    html[data-ui="v2"] #font-dec-btn,
-    html[data-ui="v2"] #font-inc-btn { display: none !important; }
+    /* c239: LANGUAGE + FONT SIZE are the essential phone controls — always visible.
+       Arena moves to the drawer/bottom-nav/quick-actions instead. */
+    html[data-ui="v2"] #arena-header-btn { display: none; }
+    html[data-ui="v2"] #lang-select { font-size: 11px; padding: 6px 7px 6px 10px; height: 34px; }
+    html[data-ui="v2"] #font-dec-btn, html[data-ui="v2"] #font-inc-btn { height: 34px; padding-left: 7px; padding-right: 7px; }
     html[data-ui="v2"] #dk-dumbbell-btn { width: 36px; height: 36px; padding: 0; }
     html[data-ui="v2"] #dk-dumbbell-pct { display: none; }
     html[data-ui="v2"] #theme-toggle { width: 36px; height: 36px; }
@@ -29839,7 +29844,7 @@ Select foods for each meal. Output as JSON only.`;
     const id = f && f.id ? String(f.id) : '';
     if (!id) return '';
     const ext = (f && f.image_url) || '';
-    return '<img src="food-images/' + escapeAttr(id) + '.jpg" data-ext="' + escapeAttr(ext) + '" class="' + cls + '" loading="lazy" alt="" onerror="if(this.dataset.ext){this.src=this.dataset.ext;this.removeAttribute(\'data-ext\');}else{this.style.display=\'none\';}" />';
+    return '<img src="food-images/' + escapeAttr(id) + '.jpg" data-ext="' + escapeAttr(ext) + '" class="' + cls + '" loading="lazy" alt="" draggable="false" onerror="if(this.dataset.ext){this.src=this.dataset.ext;this.removeAttribute(\'data-ext\');}else{this.style.display=\'none\';}" />';
   };
 
   /* =====================================================================

@@ -479,3 +479,48 @@ html[data-ui="v2"] .v2-global-search kbd { background: rgba(255,255,255,.06); }
   html[data-ui="v2"] .dk-quick-copy small { font-size: 11px; }
   html[data-ui="v2"] .dk-activity-copy small { font-size: 11px; }
 }
+
+/* ============================================================
+   c239 — phone pass, part 2 (nutrition plan top + products tab)
+   ============================================================ */
+@media (max-width: 820px) {
+  /* --- nutrition: plan header, macro cards, day strip, tabs --- */
+  html[data-ui="v2"] .nutri-eyebrow { font-size: 10px; letter-spacing: .12em; }
+  html[data-ui="v2"] .nutri-sub { font-size: 12.5px; line-height: 1.5; }
+  /* tabs wrap to all six sections instead of clipping «История» */
+  html[data-ui="v2"] .nutri-tabs { flex-wrap: wrap; row-gap: 5px; }
+  html[data-ui="v2"] .nutri-tab { height: 38px; padding: 0 14px; font-size: 12px; }
+  /* macro strip 2×2, readable type */
+  html[data-ui="v2"] .nutri-macro-strip { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+  html[data-ui="v2"] .nutri-macro-card { padding: 12px; border-radius: 18px; gap: 10px; }
+  html[data-ui="v2"] .nutri-macro-icon { width: 36px; height: 36px; border-radius: 11px; }
+  html[data-ui="v2"] .nutri-macro-icon svg { width: 18px; height: 18px; }
+  html[data-ui="v2"] .nutri-macro-copy small { font-size: 10px; }
+  html[data-ui="v2"] .nutri-macro-copy b { font-size: 17px; }
+  html[data-ui="v2"] .nutri-macro-copy b span { font-size: 10px; }
+  html[data-ui="v2"] .nutri-macro-copy em { font-size: 9.5px; }
+  html[data-ui="v2"] .nutri-macro-ring { width: 46px; height: 46px; }
+  html[data-ui="v2"] .nutri-macro-ring span { font-size: 10px; }
+  /* week strip + plan toolbar */
+  html[data-ui="v2"] .nutri-week-label b { font-size: 12px; }
+  html[data-ui="v2"] .nutri-week-label span { font-size: 9px; }
+  html[data-ui="v2"] .nutri-week-arrow,
+  html[data-ui="v2"] .nutri-week-cal { min-width: 38px; height: 38px; }
+  html[data-ui="v2"] .nutri-daybtn { min-width: 40px; height: 44px; font-size: 9px; }
+  html[data-ui="v2"] .nutri-daybtn b { font-size: 13px; }
+  html[data-ui="v2"] .nutri-plan-title { font-size: 18px; }
+  html[data-ui="v2"] .nutri-balanced { font-size: 10px; padding: 3px 9px; }
+  html[data-ui="v2"] .nutri-muted { font-size: 11px; }
+  html[data-ui="v2"] .nutri-btn-ghost { height: 38px; font-size: 11px; padding: 0 12px; }
+  html[data-ui="v2"] .v2-btn-primary.nutri-add-food { height: 38px !important; font-size: 11.5px !important; padding: 0 14px !important; }
+}
+@media (max-width: 700px) {
+  /* --- products tab: 2 readable tiles instead of 3 tiny ones --- */
+  html[data-ui="v2"] #food-db-tree .food-grid,
+  html[data-ui="v2"] #fp-results .food-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  html[data-ui="v2"] .dk-product-copy { padding: 10px 11px 12px; }
+  html[data-ui="v2"] .dk-product-name { font-size: 12.5px; }
+  html[data-ui="v2"] .dk-product-kcal { font-size: 9px; }
+  html[data-ui="v2"] .dk-product-kcal b { font-size: 13px; }
+  html[data-ui="v2"] .dk-food-img { inset: 8px; width: calc(100% - 16px); height: calc(100% - 16px); }
+}
