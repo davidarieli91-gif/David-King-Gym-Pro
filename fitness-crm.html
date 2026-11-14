@@ -4883,7 +4883,11 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
   .ana-kpi-value.neg { color: #fb7185; }
   .ana-kpi-sub { font-size: 9.5px; color: rgb(var(--c-muted)); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .ana-grid { display: grid; grid-template-columns: minmax(0,1fr); gap: 10px; }
-  .ana-main, .ana-side { display: grid; gap: 10px; align-content: start; min-width: 0; }
+  /* c244: implicit auto columns sized the tracks to the widest card's
+     max-content — the whole screen grew past the viewport and pushed every
+     card off the right edge. Pin the implicit column. */
+  .ana-main, .ana-side { display: grid; grid-template-columns: minmax(0,1fr); gap: 10px; align-content: start; min-width: 0; }
+  .ana-main > *, .ana-side > *, .ana-split > * { min-width: 0; }
   .ana-split { display: grid; grid-template-columns: minmax(0,1fr); gap: 10px; }
   .ana-seg { display: flex; gap: 2px; padding: 2px; background: rgb(var(--c-surface-2)); border: 1px solid rgb(var(--c-border)); border-radius: 10px; overflow-x: auto; scrollbar-width: none; }
   .ana-seg::-webkit-scrollbar { display: none; }

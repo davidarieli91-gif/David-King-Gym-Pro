@@ -38,7 +38,7 @@ ok('portal loads the compiled shared css', portal.indexOf('/assets/analytics-eng
 ok('client app loads the shared source css', client.indexOf('src/input.css') >= 0);
 
 /* ---------- cache ---------- */
-ok('SW cache v260', sw.indexOf("CACHE_NAME = 'dk-gym-v260'") >= 0);
+ok('SW cache v261', sw.indexOf("CACHE_NAME = 'dk-gym-v261'") >= 0);
 ok('SW documents c232', sw.indexOf('c232') >= 0 && sw.indexOf('GYMIMPULSE LIGHT-THEME ART') >= 0);
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
