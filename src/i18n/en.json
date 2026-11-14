@@ -2083,6 +2083,14 @@
     "6": "t"
   },
   "arena": {
-    "profileHint": "Lessons, exams and trophies"
+    "profileHint": "Lessons, exams and trophies",
+    "reportTitle": "Arena — athlete report",
+    "reportHint": "Assignments, lessons and trophies",
+    "reportEmpty": "No Arena data yet — assign a path to this athlete.",
+    "reportAssigned": "Assigned by coach",
+    "reportTrophies": "Trophies",
+    "reportLessons": "Lessons done",
+    "reportPending": "Exam awaiting review",
+    "reportOpen": "Open Arena"
   }
 }
