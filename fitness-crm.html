@@ -4256,48 +4256,6 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     filter: saturate(.9) hue-rotate(-6deg) brightness(1.04) drop-shadow(0 0 28px rgba(34,211,238,.18));
   }
 
-  /* ===== c199 — anatomy lab chrome ===== */
-  html[data-ui="v2"] .v2-atlas-head {
-    background: linear-gradient(180deg, rgba(255,255,255,.045), transparent), var(--v2-glass-bg) !important;
-    border-color: var(--v2-border) !important; backdrop-filter: blur(22px) saturate(130%);
-  }
-  html[data-ui="v2"] .v2-atlas-mark {
-    width: 38px; height: 38px; border-radius: 12px; flex: none; display: grid; place-items: center;
-    color: rgb(var(--c-accent));
-    background: radial-gradient(circle at 35% 25%, rgb(var(--c-accent) / .28), rgb(var(--c-primary) / .12));
-    border: 1px solid rgb(var(--c-accent) / .3);
-    box-shadow: 0 0 24px rgb(var(--c-accent) / .18), inset 0 1px 0 rgba(255,255,255,.12);
-  }
-  html[data-ui="v2"] .v2-atlas-eyebrow {
-    display: flex; align-items: center; gap: 6px; font-size: 8px; font-weight: 800;
-    letter-spacing: .17em; text-transform: uppercase; color: rgb(var(--c-muted));
-  }
-  html[data-ui="v2"] .v2-atlas-divider { opacity: .35; }
-  html[data-ui="v2"] .v2-atlas-model-chip {
-    display: inline-flex; align-items: center; gap: 6px; flex: none;
-    height: 24px; padding: 0 9px; border-radius: 9999px;
-    font-family: var(--font-mono); font-size: 8.5px; font-weight: 700; letter-spacing: .09em;
-    color: rgb(var(--c-accent)); border: 1px solid rgb(var(--c-accent) / .28); background: rgb(var(--c-accent) / .07);
-  }
-  html[data-ui="v2"] .v2-atlas-model-chip .v2-live-dot { width: 4px; height: 4px; }
-  html[data-ui="v2"] .v2-atlas-icon-btn {
-    width: 34px; height: 34px; flex: none; display: grid; place-items: center; border-radius: 10px;
-    color: rgb(var(--c-muted)); background: rgba(255,255,255,.04); border: 1px solid var(--v2-border);
-    font-size: 10px; font-weight: 800; letter-spacing: .06em; transition: background .15s, color .15s, border-color .15s;
-  }
-  html[data-ui="v2"] .v2-atlas-icon-btn:hover { background: rgba(255,255,255,.08); color: rgb(var(--c-text)); border-color: var(--v2-border-strong); }
-  html[data-ui="v2"] .v2-atlas-lang { position: relative; flex: none; }
-  html[data-ui="v2"] .v2-atlas-lang-select {
-    appearance: none; -webkit-appearance: none; height: 34px; cursor: pointer;
-    padding-inline-start: 10px; padding-inline-end: 24px;
-    border-radius: 10px; border: 1px solid var(--v2-border);
-    background: rgba(255,255,255,.04); color: rgb(var(--c-text));
-    font-size: 10px; font-weight: 800; letter-spacing: .07em; outline: none;
-    transition: background .15s, border-color .15s;
-  }
-  html[data-ui="v2"] .v2-atlas-lang-select:hover { background: rgba(255,255,255,.08); border-color: var(--v2-border-strong); }
-  html[data-ui="v2"] .v2-atlas-lang-select:focus-visible { outline: 2px solid rgb(var(--c-accent)); outline-offset: 2px; }
-  html[data-ui="v2"] .v2-atlas-lang-chev { position: absolute; inset-inline-end: 7px; top: 50%; transform: translateY(-50%); width: 10px; height: 10px; color: rgb(var(--c-muted)); pointer-events: none; }
   html[data-ui="v2"] .v2-atlas-panel-head { background: linear-gradient(180deg, rgba(255,255,255,.03), transparent); }
   html[data-ui="v2"] .v2-atlas-panel-lbl { font-size: 8.5px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: rgb(var(--c-muted)); }
   html[data-ui="v2"] .v2-atlas-count {
@@ -4409,9 +4367,6 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
   html[data-ui="v2"] .v2-insp-clear svg { width: 12px; height: 12px; }
 
   @media (max-width: 640px) {
-    html[data-ui="v2"] .v2-atlas-model-chip { display: none; }
-    html[data-ui="v2"] .v2-atlas-head { padding: 8px 10px; gap: 8px; }
-    html[data-ui="v2"] .v2-atlas-eyebrow { font-size: 7px; letter-spacing: .12em; }
     html[data-ui="v2"] #atlas-info { width: auto; }
     html[data-ui="v2"] .v2-atlas-hud { top: 10px; inset-inline-start: 10px; padding: 5px 8px; }
     html[data-ui="v2"] .v2-hud-model, html[data-ui="v2"] .v2-hud-sep { display: none; }
@@ -7552,24 +7507,6 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
           </div>
 
 <div data-screen="atlas" class="hidden atlas-screen" role="region" aria-label="3D Body Atlas">
-    <div class="v2-atlas-head flex items-center gap-3 p-3 border-b border-border shrink-0">
-      <span class="v2-atlas-mark" aria-hidden="true">
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="4.5" r="2"/><path d="M12 7v6M12 13l-4 7M12 13l4 7M8 9.5h8"/></svg>
-      </span>
-      <div class="min-w-0 flex-1">
-        <div class="v2-atlas-eyebrow"><span class="v2-live-dot"></span>ANATOMY LAB<span class="v2-atlas-divider">/</span><span>Z-ANATOMY</span></div>
-        <h3 id="atlas-title" class="font-display font-bold text-base truncate">3D Body Atlas</h3>
-      </div>
-      <span class="v2-atlas-model-chip"><span class="v2-live-dot"></span>WEBGL</span>
-      <div class="v2-atlas-lang">
-        <select id="atlas-lang" class="v2-atlas-lang-select" aria-label="Language">
-          <option value="en">EN</option>
-          <option value="ru">RU</option>
-          <option value="he">HE</option>
-        </select>
-        <svg class="v2-atlas-lang-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
-      </div>
-    </div>
     <div class="relative flex-1 flex min-h-0">
       <div id="atlas-canvas-box" class="relative flex-1 min-w-0 overflow-hidden">
         <canvas id="atlas-canvas"></canvas>
@@ -42260,8 +42197,7 @@ document.addEventListener('input', function (e) {
 
   /* ---------------- language refresh ---------------- */
   function applyTexts() {
-    var t = $('atlas-title'); if (t) t.textContent = tr(UI.title);
-    var lb = $('atlas-lang'); if (lb) { lb.value = lang(); lb.setAttribute('aria-label', tr(UI.langBtn)); }
+    /* c237: the top chrome bar (title + lang select) was removed — the app header owns the language */
     var s = searchEl; if (s) s.placeholder = tr(UI.search);
     var panelLbl = document.querySelector('[data-atlas-lbl="muscles"]');
     if (panelLbl) panelLbl.textContent = tr(UI.muscleMap);
@@ -42610,25 +42546,9 @@ document.addEventListener('input', function (e) {
   function wire() {
     bindDom(); bindDom.done = true;
     /* c236: #nav-atlas is now a [data-nav="atlas"] router button — no direct wiring */
-    var langBtn = $('atlas-lang');
-    if (langBtn) langBtn.addEventListener('change', function () {
-      var next = langBtn.value;
-      var done = false;
-      if (typeof switchAppLanguage === 'function') {
-        try { switchAppLanguage(next); done = true; } catch (e) { /* noop */ }
-      }
-      if (!done) document.documentElement.setAttribute('lang', next);
-      applyTexts();
-      B3D.list.forEach(function (st) {
-        if (st.dead || !st.inited) return;
-        var h = st.box.querySelector('.b3d-hint');
-        if (h) h.textContent = tr(UI.b3dHint);
-      });
-    });
+    /* c237: the in-screen language <select> was removed — the app header owns the language */
     var retryBtn = loadBox && loadBox.querySelector('.atlas-retry');
     if (retryBtn) retryBtn.addEventListener('click', function () { if (!S.inited && !S.initing) boot(); });
-    var closeBtn = $('atlas-close');
-    if (closeBtn) closeBtn.addEventListener('click', closeAtlas);
     /* Escape leaves the screen like any other navigation */
     if (modal) {
       modal.addEventListener('keydown', function (e) {
