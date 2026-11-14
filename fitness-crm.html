@@ -13257,7 +13257,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
         const what = workout ? (c._lastWorkoutName || t('nav.workouts')) : t('clients.statusActive');
         return '<div class="dk-activity-row"><span class="dk-activity-dot">' + (workout
           ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M6 12h12"/></svg>'
-          : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></svg>') + '</span><div class="dk-activity-copy"><b>' + escapeHTML(name) + '</b><small>' + escapeHTML(what) + ' ? ' + escapeHTML(ts ? fmtRelative(ts) : '?') + '</small></div></div>';
+          : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></svg>') + '</span><div class="dk-activity-copy"><b>' + escapeHTML(name) + '</b><small>' + escapeHTML(what) + ' · ' + escapeHTML(ts ? fmtRelative(ts) : '—') + '</small></div></div>';
       }).join('');
     }
 

@@ -423,3 +423,59 @@ html[data-ui="v2"] .v2-global-search input {
 }
 html[data-ui="v2"] .v2-global-search input::placeholder { color: rgb(var(--c-muted)) !important; }
 html[data-ui="v2"] .v2-global-search kbd { background: rgba(255,255,255,.06); }
+
+/* ============================================================
+   c238 — phone pass (standard phone widths, portrait)
+   Dashboard rail stacks full-width below 820px: its type/touch
+   targets were sized for a 328px sidebar, so half the panel looked tiny.
+   Nutrition product base: 3 micro tiles → 2 readable ones; labels scale up.
+   ============================================================ */
+@media (max-width: 820px) {
+  /* --- dashboard rail (quick actions + last activity) --- */
+  html[data-ui="v2"] .dk-rail-card { padding: 14px; }
+  html[data-ui="v2"] .dk-rail-head { gap: 10px; margin-bottom: 10px; }
+  html[data-ui="v2"] .dk-rail-head h3 { font-size: 16px; letter-spacing: -.02em; }
+  html[data-ui="v2"] .dk-rail-head .dk-panel-ic { width: 32px; height: 32px; border-radius: 10px; }
+  html[data-ui="v2"] .dk-rail-head .dk-panel-ic svg { width: 17px; height: 17px; }
+  html[data-ui="v2"] .v2-pill { font-size: 11px; }
+  html[data-ui="v2"] .dk-quick-row { gap: 12px; padding: 11px 0; }
+  html[data-ui="v2"] .dk-quick-ic { width: 44px; height: 44px; border-radius: 13px; }
+  html[data-ui="v2"] .dk-quick-ic svg { width: 21px; height: 21px; }
+  html[data-ui="v2"] .dk-quick-copy b { font-size: 15px; }
+  html[data-ui="v2"] .dk-quick-copy small { font-size: 12px; margin-top: 2px; line-height: 1.3; }
+  html[data-ui="v2"] .dk-quick-row > svg { width: 18px; height: 18px; }
+  html[data-ui="v2"] .dk-activity { gap: 12px; }
+  html[data-ui="v2"] .dk-activity-row { gap: 12px; align-items: center; }
+  html[data-ui="v2"] .dk-activity-dot { width: 40px; height: 40px; }
+  html[data-ui="v2"] .dk-activity-dot svg { width: 18px; height: 18px; }
+  html[data-ui="v2"] .dk-activity-copy b { font-size: 15px; white-space: normal; line-height: 1.25; }
+  html[data-ui="v2"] .dk-activity-copy small { font-size: 12.5px; margin-top: 2px; }
+
+  /* --- nutrition: product base --- */
+  html[data-ui="v2"] .nutri-food-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; max-height: none; }
+  html[data-ui="v2"] .nutri-food-cat { height: 32px; padding: 0 8px; font-size: 9.5px; border-radius: 9px; }
+  html[data-ui="v2"] .nutri-food-cats { gap: 6px; margin: 10px 0 8px; }
+  html[data-ui="v2"] .nutri-search { height: 42px; padding: 0 12px; border-radius: 11px; gap: 8px; }
+  html[data-ui="v2"] .nutri-search svg { width: 18px; height: 18px; }
+  html[data-ui="v2"] .nutri-search input { font-size: 13px; }
+  html[data-ui="v2"] .nutri-food-meta { font-size: 10.5px; margin: 6px 0 8px; }
+  html[data-ui="v2"] .nutri-drag-hint { display: none; }
+  html[data-ui="v2"] .nutri-food-tile { padding: 6px; border-radius: 13px; }
+  html[data-ui="v2"] .nutri-food-name { font-size: 11px; line-height: 1.22; min-height: 2.44em; margin-top: 6px; }
+  html[data-ui="v2"] .nutri-food-energy { font-size: 9.5px; margin-top: 4px; }
+  html[data-ui="v2"] .nutri-food-energy b { font-size: 13px; }
+  html[data-ui="v2"] .nutri-food-tile .dk-macro { padding: 2px 4px; font-size: 7.5px; border-radius: 5px; }
+  html[data-ui="v2"] .nutri-food-tile .dk-macro b { font-size: 9px; }
+  html[data-ui="v2"] .nutri-food-ph { font-size: 28px; }
+  html[data-ui="v2"] .nutri-side-head h3 { font-size: 18px; }
+  html[data-ui="v2"] .nutri-rail .nutri-eyebrow { font-size: 9px; letter-spacing: .13em; }
+  html[data-ui="v2"] .nutri-text-link { font-size: 10px; }
+
+  /* --- bottom nav: keep every label visible on 360-430px phones --- */
+  #bottom-nav .nav-pill span { font-size: 8.5px; letter-spacing: 0; }
+}
+@media (max-width: 420px) {
+  html[data-ui="v2"] .nutri-food-name { font-size: 10.5px; }
+  html[data-ui="v2"] .dk-quick-copy small { font-size: 11px; }
+  html[data-ui="v2"] .dk-activity-copy small { font-size: 11px; }
+}
