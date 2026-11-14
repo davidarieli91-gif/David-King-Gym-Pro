@@ -927,6 +927,106 @@
         line-height: 1.15;
       }
       .picker-tree-col .bm-subgroup-btn > span:last-child { font-size: 8px !important; }
+
+      /* c240 — phone muscle tiles: the anatomy figure fills the card edge-to-edge,
+         count rides on the image (top-inline-end, outlined digits), thin name strip below.
+         Expanded parent group is always lit so it can't be mistaken for its subgroups. */
+      .picker-tree-col .bm-group-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding: 0;
+        overflow: hidden;
+        border-radius: 14px;
+        border-width: 1px;
+        position: relative;
+        text-align: center;
+        background: rgb(var(--c-surface-2) / .92);
+      }
+      html.dark .picker-tree-col .bm-group-header,
+      html[data-mode="dark"] .picker-tree-col .bm-group-header { background: rgb(var(--c-surface-2) / .85); }
+      .picker-tree-col .bm-group-header .bm-caret {
+        position: absolute;
+        top: 4px;
+        inset-inline-start: 4px;
+        z-index: 2;
+        width: auto;
+        padding: 2px 5px;
+        border-radius: 7px;
+        background: rgba(2, 6, 16, .55);
+        color: #fff;
+        font-size: 12px;
+        line-height: 1;
+      }
+      .picker-tree-col .bm-group-header .mg-icon-box {
+        --mg-size: 100%;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1 / 1;
+        border-radius: 0;
+        box-shadow: none;
+        background: #05060a;
+      }
+      .picker-tree-col .bm-group-header .mg-icon { object-fit: cover; object-position: center; }
+      .picker-tree-col .bm-group-header .bm-count {
+        position: absolute;
+        top: 4px;
+        inset-inline-end: 4px;
+        z-index: 2;
+        opacity: 1;
+        font-size: 15px;
+        font-weight: 800;
+        font-family: var(--font-mono, ui-monospace, monospace);
+        line-height: 1;
+        padding: 2px 4px;
+        color: #fff;
+        -webkit-text-stroke: 4px rgba(2, 6, 16, .92);
+        paint-order: stroke fill;
+        letter-spacing: .02em;
+      }
+      /* thin name strip below the figure, roughly the size it had before */
+      .picker-tree-col .bm-group-header > .flex-1 {
+        flex: 0 0 auto;
+        width: 100%;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+        padding: 4px 5px 6px;
+        font-size: 9.5px !important;
+        line-height: 1.2;
+        border-top: 1px solid rgb(var(--v2-border, rgba(255,255,255,.09)));
+        background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.06));
+      }
+      /* expanded PARENT group is always lit — obvious it owns the subgroups below */
+      .picker-tree-col .bm-group-header.bm-group-open {
+        border-color: rgb(var(--c-primary) / .7);
+        background: linear-gradient(180deg, rgb(var(--c-primary) / .32), rgb(var(--c-primary) / .16));
+        box-shadow: 0 0 0 1px rgb(var(--c-primary) / .55), 0 14px 30px -18px rgb(var(--c-primary) / .65);
+      }
+      .picker-tree-col .bm-group-header.bm-group-open > .flex-1 {
+        border-top-color: rgb(var(--c-primary) / .45);
+      }
+      /* subgroups clearly nested: tinted rail + smaller, calmer cards */
+      .picker-tree-col .bm-subgroups {
+        padding-inline-start: 9px !important;
+        margin-inline-start: 7px;
+        border-inline-start: 2px solid rgb(var(--c-primary) / .4);
+        border-radius: 2px;
+        padding-top: 3px;
+        padding-bottom: 3px;
+        background: linear-gradient(90deg, rgb(var(--c-primary) / .07), transparent 60%);
+      }
+      .picker-tree-col .bm-subgroup-btn {
+        background: rgb(var(--c-primary) / .09) !important;
+        border-radius: 11px;
+        border-color: rgb(var(--c-primary) / .28) !important;
+      }
+      .picker-tree-col .bm-subgroup-btn .mg-icon-box { --mg-size: 40px; border-radius: 9px; }
+      .picker-tree-col .bm-subgroup-btn > .flex-1 {
+        font-size: 9px !important;
+        line-height: 1.2;
+        opacity: .95;
+      }
     }
 
 /* ============================================================
@@ -25768,11 +25868,11 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         const caret = hasSubgroups ? (isExpanded ? '▾' : '▸') : '';
         const activeClass = isActive ? 'bg-primary text-white border-primary' : 'bg-surface-2 hover:bg-primary/20 border-border';
         html += `<div class="bm-group-folder">
-          <div class="bm-group-header flex items-center gap-1.5 text-[14px] font-semibold rounded-lg border ${activeClass} transition cursor-pointer" data-group="${esc(g)}">
+          <div class="bm-group-header flex items-center gap-1.5 text-[14px] font-semibold rounded-lg border ${activeClass}${isExpanded ? ' bm-group-open' : ''} transition cursor-pointer" data-group="${esc(g)}">
             <span class="bm-caret text-[10px] w-3 shrink-0 text-center">${caret}</span>
             <span class="mg-icon-box shrink-0">${typeof muscleGroupIcon === 'function' ? muscleGroupIcon(g) : ''}</span>
             <span class="flex-1 truncate">${esc(label)}</span>
-            <span class="text-[12px] opacity-70 shrink-0 font-semibold">${info.count}</span>
+            <span class="bm-count text-[12px] opacity-70 shrink-0 font-semibold">${info.count}</span>
           </div>`;
         if (hasSubgroups && isExpanded) {
           html += `<div class="bm-subgroups ps-3 mt-0.5 space-y-0.5">`;
