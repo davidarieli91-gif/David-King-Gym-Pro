@@ -37,7 +37,7 @@ ok('arena script is loaded', crm.includes('src/arena.js?v=248'));
 ok('arena store is in the schema', crm.includes("name: 'arena_progress'") && crm.includes("by_clientId"));
 ok('arena progress is synced', sync.includes("'arena_progress'"));
 ok('arena data and script are copied to dist', copy.includes("'arena-data.json'") && copy.includes("'src/arena.js'"));
-ok('service worker v265 includes arena', sw.includes("CACHE_NAME = 'dk-gym-v265'") && sw.includes('./src/arena.js') && sw.includes('./arena-data.json'));
+ok('service worker v266 includes arena', sw.includes("CACHE_NAME = 'dk-gym-v266'") && sw.includes('./src/arena.js') && sw.includes('./arena-data.json'));
 ok('profile exposes trophy count and arena shortcut', crm.includes('profile-arena-count') && crm.includes('data-quick-action="arena"'));
 ok('arena has exam + trophy logic', js.includes('submitExam') && js.includes('trophyEarned') && js.includes('exam_attempts'));
 ok('arena shows last-attempt breakdown + weak stations', js.includes('function examResultRows') && js.includes("u('weakStations')") && js.includes("u('attemptHistory')"));
@@ -79,6 +79,7 @@ ok('trainer arena exposes the review queue', read('src/arena.js').includes('allP
 ok('trainer can assign a path to a client', read('src/arena.js').includes('assignPath') && read('src/arena.js').includes('saveAssignment') && read('src/arena.js').includes('data-arena-action="assign-open"'));
 ok('hall-of-athletes summary exists', read('src/arena.js').includes('computeHallSummaries') && read('src/arena.js').includes('hallPanel') && read('src/arena.js').includes("data-arena-action=\"open-athlete\""));
 ok('trophy verification links exist', read('src/arena.js').includes('verification_code') && read('src/arena.js').includes("data-arena-action=\"copy-verify\"") && read('server/src/app.ts').includes("'/api/verify/:code'") && read('server/public/verify.html').includes('/api/verify/'));
+ok('live-workout arena banner + exam video capture exist', read('fitness-crm.html').includes('id="live-arena-banner"') && read('fitness-crm.html').includes('dkArenaNextTask') && read('fitness-crm.html').includes('dkArenaUploadVideo') && read('src/arena.js').includes('video:file') && read('src/arena.js').includes('video_file_id') && read('src/arena.js').includes('uploadingVideo') && read('src/i18n/ru.json').includes('arenaExamReady') && read('src/i18n/en.json').includes('arenaExamReady') && read('src/i18n/he.json').includes('arenaExamReady'));
 const check = spawnSync(process.execPath, ['--check', path.join(root, 'src', 'arena.js')], { encoding: 'utf8' });
 ok('arena.js parses', check.status === 0);
 

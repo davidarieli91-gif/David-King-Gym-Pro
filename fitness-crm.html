@@ -5677,6 +5677,15 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
                     <div class="prog-bar"><div id="workout-progress-bar" class="prog-bar-fill" style="width:0%"></div></div>
                   </div>
                 </div>
+                <!-- c248: arena banner — only when the bound athlete has a task in the Arena -->
+                <div id="live-arena-banner" class="hidden mt-3 flex items-center gap-2 rounded-xl border border-warning/40 bg-warning/10 px-3 py-2" style="min-height:40px">
+                  <span class="w-8 h-8 rounded-lg grid place-items-center shrink-0 bg-warning/20 text-warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><path d="M8 4h8v4a4 4 0 0 1-8 0V4z"/><path d="M8 5H4v2a4 4 0 0 0 4 4M16 5h4v2a4 4 0 0 1-4 4"/><path d="M12 12v5M8 21h8M9 17h6"/></svg></span>
+                  <div class="min-w-0 flex-1">
+                    <div id="live-arena-banner-title" class="text-[11px] font-bold text-warning leading-tight"></div>
+                    <div id="live-arena-banner-sub" class="text-[9px] text-muted leading-tight mt-0.5"></div>
+                  </div>
+                  <button id="live-arena-banner-open" type="button" class="shrink-0 bg-warning text-black text-[10px] font-extrabold px-3 py-2 rounded-lg" data-i18n="workouts.arenaOpen">Arena</button>
+                </div>
               </div>
             </div>
 
@@ -21397,6 +21406,58 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
     let _lastPosIdx = -1;    // c83: last exercise whose SET the user touched (dumbbell target)
     let _lastPosStamp = null; // c83: started_at of that session — stale after finish/restore
     // RPE intensity scale 1 (green, lightest) → 10 (maroon, hardest) — same as client portal
+    /* c248: shared helpers — csrf cookie read + arena video upload (trainer-auth) */
+    window.dkCsrf = function () {
+      try { var m = document.cookie.match(/(?:^|;\s*)dkg_csrf=([^;]+)/); return m ? decodeURIComponent(m[1]) : ''; } catch (_) { return ''; }
+    };
+    window.dkArenaUploadVideo = async function (file, clientId) {
+      var fd = new FormData();
+      fd.append('file', file, (file && file.name) || 'exam-video.webm');
+      var res = await fetch('/api/files?clientId=' + encodeURIComponent(clientId || 'self'), {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'x-csrf-token': window.dkCsrf(), 'accept': 'application/json' },
+        body: fd
+      });
+      if (!res.ok) { var b = await res.json().catch(function () { return {}; }); throw new Error(b && b.error && b.error.message ? b.error.message : ('HTTP ' + res.status)); }
+      return res.json();
+    };
+    /* c248: next actionable arena tier for a client (lessons done → exam ready). */
+    window.dkArenaNextTask = async function (clientId) {
+      clientId = String(clientId || '');
+      if (!clientId || clientId === 'self') return null;
+      var data = null;
+      try {
+        if (!window.__DK_ARENA_DATA) { var r = await fetch('arena-data.json'); if (r.ok) window.__DK_ARENA_DATA = await r.json(); }
+        data = window.__DK_ARENA_DATA;
+      } catch (_) { return null; }
+      if (!data || !Array.isArray(data.games)) return null;
+      var records = [];
+      try { records = (await db.find('arena_progress', 'by_clientId', clientId)) || []; } catch (_) { return null; }
+      if (!records.length) return null;
+      var byPath = {};
+      records.forEach(function (r) { byPath[String(r.path_id)] = r; });
+      for (var gi = 0; gi < data.games.length; gi++) {
+        var g = data.games[gi];
+        if (!g || !Array.isArray(g.paths)) continue;
+        for (var pi = 0; pi < g.paths.length; pi++) {
+          var p = g.paths[pi];
+          var rec = byPath[String(p.id)];
+          if (!rec) continue;
+          var tiers = p.tiers || [];
+          for (var ti = 0; ti < tiers.length; ti++) {
+            var tier = tiers[ti];
+            var completed = (rec.trophies || []).some(function (t) { return t && t.tier_id === tier.id; });
+            if (completed) continue;
+            var key = function (l) { return tier.id + '::' + l.id; };
+            var remaining = (tier.lessons || []).filter(function (l) { return (rec.completed_lessons || []).indexOf(key(l)) === -1; }).length;
+            if (remaining === 0) return { kind: 'exam', game: g, path: p, tier: tier, clientId: clientId };
+            if (remaining > 0) return { kind: 'lessons', remaining: remaining, game: g, path: p, tier: tier, clientId: clientId };
+          }
+        }
+      }
+      return null;
+    };
     const RPE_COLORS = ['#16a34a', '#22c55e', '#65a30d', '#84cc16', '#ca8a04', '#f59e0b', '#f97316', '#ef4444', '#dc2626', '#7f1d1d'];
 
     /** Start a fresh empty workout. */
@@ -21805,6 +21866,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
 
       updateStats();
       updateProgressBar();
+      try { refreshArenaBanner(); } catch (_) {}
       /* c177: only --dk-appH is measured per render (rest-banner top offset).
          The workout head is no longer pinned (c177) — no head-height variable
          exists anymore. A hidden screen measures 0 — keep the previous value. */
@@ -21812,6 +21874,45 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         const _bar175 = document.querySelector('header');
         if (_bar175 && _bar175.offsetHeight > 0) document.documentElement.style.setProperty('--dk-appH', _bar175.offsetHeight + 'px');
       } catch (_e175) {}
+    }
+
+    /** c248: slim Arena banner — shown only when the bound athlete has an
+        actionable Arena tier (lessons done → exam ready). */
+    async function refreshArenaBanner() {
+      var banner = document.getElementById('live-arena-banner');
+      if (!banner) return;
+      banner.classList.add('hidden');
+      var cid = _workout && _workout.client_id;
+      if (!cid || cid === 'self') return;
+      var task = null;
+      try { task = await window.dkArenaNextTask(cid); } catch (_) { task = null; }
+      if (!task) return;
+      var title = document.getElementById('live-arena-banner-title');
+      var sub = document.getElementById('live-arena-banner-sub');
+      var btn = document.getElementById('live-arena-banner-open');
+      var pathName = (task.path && task.path.name && (task.path.name[stateLang()] || task.path.name.en)) || '';
+      var tierName = (task.tier && task.tier.name && (task.tier.name[stateLang()] || task.tier.name.en)) || '';
+      if (task.kind === 'exam') {
+        if (title) title.textContent = t('workouts.arenaExamReady');
+        if (sub) sub.textContent = pathName + (tierName ? ' · ' + tierName : '');
+        banner.classList.remove('hidden');
+      } else {
+        if (title) title.textContent = t('workouts.arenaLessonsLeft').replace('{n}', String(task.remaining));
+        if (sub) sub.textContent = pathName + (tierName ? ' · ' + tierName : '');
+        banner.classList.remove('hidden');
+      }
+      if (btn && !btn.dataset.wired) {
+        btn.dataset.wired = '1';
+        btn.addEventListener('click', function () {
+          try {
+            if (window.DK_ARENA && window.DK_ARENA.open) window.DK_ARENA.open(cid);
+            else if (typeof router !== 'undefined' && router.show) router.show('arena');
+          } catch (_) {}
+        });
+      }
+    }
+    function stateLang() {
+      try { return (typeof currentLang === 'function') ? currentLang() : 'ru'; } catch (_) { return 'ru'; }
     }
 
     /** Build HTML for a single exercise block — c103: PORTAL-IDENTICAL card.

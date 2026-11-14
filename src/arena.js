@@ -118,6 +118,9 @@
     assignDone: { en: 'Path assigned', ru: 'Путь назначен', he: 'המסלול הוקצה' },
     assignedByCoach: { en: 'Assigned by your coach', ru: 'Назначил тренер', he: 'הוקצה על ידי המאמן' },
     reviewHeader: { en: 'Exam review queue', ru: 'Очередь проверки экзаменов', he: 'תור בדיקת המבחנים' },
+    videoAttach: { en: 'Exam video (optional, one file)', ru: 'Видео экзамена (по желанию, один файл)', he: 'וידאו המבחן (אופציונלי, קובץ אחד)' },
+    uploadingVideo: { en: 'Uploading video…', ru: 'Загружаю видео…', he: 'מעלה וידאו…' },
+    uploadVideoFailed: { en: 'Video upload failed', ru: 'Не удалось загрузить видео', he: 'העלאת הווידאו נכשלה' },
     lessonsLeft: { en: 'lessons to pass this tier', ru: 'до прохождения тира', he: 'שיעורים למעבר הדרגה' },
     hallTitle: { en: 'Hall of Athletes', ru: 'Арена зала', he: 'ארנת האולם' },
     hallPending: { en: 'exams to review', ru: 'экзаменов к проверке', he: 'מבחנים לבדיקה' },
@@ -645,6 +648,7 @@
       <div class="flex items-center justify-between gap-2 mb-1"><h5 class="text-xs font-bold">${esc(u('exam'))}</h5><span class="text-[9px] text-muted">${esc(u('retake'))}</span></div>
       ${tier.exam && tier.exam.intro ? `<p class="text-[10px] text-muted mb-2">${esc(tr(tier.exam.intro))}</p>` : ''}
       <div class="space-y-2">${fields}</div>
+      <label class="block text-[10px] text-muted mt-2">${esc(u('videoAttach'))}<input type="file" accept="video/*,image/*" capture="environment" data-arena-input="video:file" class="w-full bg-surface border border-border rounded-lg px-2 py-2 text-xs mt-1" /></label>
       <label class="block text-[10px] text-muted mt-2">${esc(u('videoOptional'))}<input type="url" data-arena-input="video:url" placeholder="https://..." value="${last && last.video ? esc(last.video) : ''}" class="w-full bg-surface border border-border rounded-lg px-2 py-2 text-xs mt-1" /></label>
       <button type="button" data-arena-action="submit-exam" data-path="${esc(state.pathId)}" data-tier="${esc(tier.id)}" class="w-full mt-3 bg-primary hover:bg-primary-2 text-white text-xs font-bold py-2.5 rounded-xl transition">${esc(u('submitExam'))}</button>
       ${lastHtml}
@@ -1005,9 +1009,26 @@
       results.push({ station_id: station.id, label: label, display: display, passed: passed, values: values });
     });
     var passedAll = results.length > 0 && results.every(function (r) { return r.passed; });
+    var fileEl = form.querySelector('[data-arena-input="video:file"]');
+    var videoFile = fileEl && fileEl.files && fileEl.files[0] ? fileEl.files[0] : null;
+    var prevBtnHtml = button ? button.innerHTML : '';
+    if (videoFile && button) { button.disabled = true; button.innerHTML = '<span>' + esc(u('uploadingVideo')) + '</span>'; }
+    var videoFileId = '';
+    if (videoFile) {
+      try {
+        var up = await window.dkArenaUploadVideo(videoFile, state.clientId);
+        videoFileId = (up && up.id) ? up.id : '';
+        if (button) { button.disabled = false; button.innerHTML = prevBtnHtml; }
+      } catch (uploadErr) {
+        console.error('[arena] video upload failed', uploadErr);
+        toastSafe(u('uploadVideoFailed'), 'danger');
+        if (button) { button.disabled = false; button.innerHTML = prevBtnHtml; }
+        return;
+      }
+    }
     var videoEl = form.querySelector('[data-arena-input="video:url"]');
-    var video = videoEl ? String(videoEl.value || '').trim() : '';
-    var attempt = { id: 'att_' + Date.now(), at: Date.now(), passed: passedAll, results: results, video: video, status: 'approved', reviewed_by: 'coach', reviewed_at: Date.now() };
+    var video = videoFileId ? ('/api/files/' + videoFileId) : (videoEl ? String(videoEl.value || '').trim() : '');
+    var attempt = { id: 'att_' + Date.now(), at: Date.now(), passed: passedAll, results: results, video: video, video_file_id: videoFileId || null, status: 'approved', reviewed_by: 'coach', reviewed_at: Date.now() };
     rec.exam_attempts = (rec.exam_attempts || []).concat(attempt).slice(-20);
     if (bodyweight) rec.bodyweight = bodyweight;
     if (passedAll) {

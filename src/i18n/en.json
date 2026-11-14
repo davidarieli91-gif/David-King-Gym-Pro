@@ -819,7 +819,10 @@
     "noExerciseSelected": "Add an exercise first",
     "perExerciseRest": "Rest:",
     "time": "Time",
-    "dist": "Distance"
+    "dist": "Distance",
+    "arenaExamReady": "Arena: exam is ready — log the attempt",
+    "arenaLessonsLeft": "Arena: {n} lessons to the exam",
+    "arenaOpen": "Arena"
   },
   "exercise": {
     "title": "Exercise database",
