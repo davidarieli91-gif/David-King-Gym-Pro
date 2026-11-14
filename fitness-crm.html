@@ -24377,11 +24377,14 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
         return dkFoodName(f).toLowerCase().indexOf(search) >= 0;
       });
       if (total) total.textContent = fmtNumber(foods.length) + ' ' + dkProductWord(foods.length);
+      /* c239: on touch devices HTML5 drag intercepts the scroll gesture —
+         tiles must scroll the rail, not drag. Tapping opens the food detail. */
+      const coarse = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
       box.innerHTML = foods.map(function (f) {
         const name = dkFoodName(f);
         const n = f.nutrition || {};
         const img = window.dkFoodImgTag(f, 'nutri-food-img');
-        return '<button type="button" draggable="true" class="nutri-food-tile" data-nutri-food="' + escapeAttr(String(f.id)) + '" title="' + escapeAttr(name + ' · ' + (t('nutrition.dragHint') || 'Drag to a meal')) + '">'
+        return '<button type="button" draggable="' + (coarse ? 'false' : 'true') + '" class="nutri-food-tile" data-nutri-food="' + escapeAttr(String(f.id)) + '" title="' + escapeAttr(name + ' · ' + (t('nutrition.dragHint') || 'Drag to a meal')) + '">'
           + '<span class="nutri-food-media"><span class="nutri-food-ph">🥗</span>' + img + '<span class="nutri-drag-grip" aria-hidden="true">⠿</span></span>'
           + '<span class="nutri-food-name">' + escapeHTML(name) + '</span>'
           + '<span class="nutri-food-energy"><b>' + fmtNumber(n.calories || 0) + '</b> ' + escapeHTML(t('nutrition.kcal')) + '</span>'

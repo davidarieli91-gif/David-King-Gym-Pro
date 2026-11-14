@@ -264,9 +264,12 @@ html[data-ui="v2"] [data-screen="live-workout"] .max-w-3xl.xl\:max-w-5xl {
 }
 
 
-/* right-rail food cards keep their 3-up rhythm even when the rail is wider */
-html[data-ui="v2"] .nutri-rail .nutri-food-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+/* right-rail food cards keep their 3-up rhythm on wide layouts only —
+   phones/small tablets get the phone 2-col rules from the c238/c239 block */
+@media (min-width: 1024px) {
+  html[data-ui="v2"] .nutri-rail .nutri-food-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 @media (min-width: 2000px) {
   html[data-ui="v2"] .nutri-meal-list {
@@ -452,7 +455,7 @@ html[data-ui="v2"] .v2-global-search kbd { background: rgba(255,255,255,.06); }
   html[data-ui="v2"] .dk-activity-copy small { font-size: 12.5px; margin-top: 2px; }
 
   /* --- nutrition: product base --- */
-  html[data-ui="v2"] .nutri-food-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; max-height: none; }
+  html[data-ui="v2"] .nutri-food-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; max-height: none; }
   html[data-ui="v2"] .nutri-food-cat { height: 32px; padding: 0 8px; font-size: 9.5px; border-radius: 9px; }
   html[data-ui="v2"] .nutri-food-cats { gap: 6px; margin: 10px 0 8px; }
   html[data-ui="v2"] .nutri-search { height: 42px; padding: 0 12px; border-radius: 11px; gap: 8px; }
@@ -460,7 +463,8 @@ html[data-ui="v2"] .v2-global-search kbd { background: rgba(255,255,255,.06); }
   html[data-ui="v2"] .nutri-search input { font-size: 13px; }
   html[data-ui="v2"] .nutri-food-meta { font-size: 10.5px; margin: 6px 0 8px; }
   html[data-ui="v2"] .nutri-drag-hint { display: none; }
-  html[data-ui="v2"] .nutri-food-tile { padding: 6px; border-radius: 13px; }
+  html[data-ui="v2"] .nutri-food-tile { padding: 3px; border-radius: 13px; }
+  html[data-ui="v2"] .nutri-food-media { padding: 1px; border-radius: 10px; }
   html[data-ui="v2"] .nutri-food-name { font-size: 11px; line-height: 1.22; min-height: 2.44em; margin-top: 6px; }
   html[data-ui="v2"] .nutri-food-energy { font-size: 9.5px; margin-top: 4px; }
   html[data-ui="v2"] .nutri-food-energy b { font-size: 13px; }
@@ -523,4 +527,18 @@ html[data-ui="v2"] .v2-global-search kbd { background: rgba(255,255,255,.06); }
   html[data-ui="v2"] .dk-product-kcal { font-size: 9px; }
   html[data-ui="v2"] .dk-product-kcal b { font-size: 13px; }
   html[data-ui="v2"] .dk-food-img { inset: 8px; width: calc(100% - 16px); height: calc(100% - 16px); }
+}
+
+/* ============================================================
+   c240 — touch scroll THROUGH product tiles + full-width band
+   ============================================================ */
+@media (pointer: coarse) {
+  /* HTML5 drag on tiles intercepted the scroll gesture on touch devices */
+  html[data-ui="v2"] .nutri-food-tile { -webkit-user-drag: none; touch-action: pan-y; cursor: pointer; }
+  html[data-ui="v2"] .nutri-food-grid { scrollbar-width: none; }
+  html[data-ui="v2"] .nutri-food-grid::-webkit-scrollbar { display: none; }
+}
+@media (max-width: 480px) {
+  /* edge-to-edge product band on small phones (tiles span ~92% of the window) */
+  html[data-ui="v2"] [data-screen="nutrition"] { padding-inline: 6px !important; }
 }
