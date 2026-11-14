@@ -1029,6 +1029,176 @@
       }
     }
 
+    /* ============================================================
+       c243 — muscle cards everywhere: figure fills the card edge-to-edge,
+       two small black corner panels (chevron on inline-start, outlined
+       count on inline-end), thin name strip below. Expanded parent is lit.
+       Subgroups = same look, no chevron. Desktop: tree becomes 2-3 cols.
+       ============================================================ */
+    .picker-tree-col .bm-group-folder { display: contents; }
+
+    .picker-tree-col .bm-group-header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      padding: 0;
+      overflow: hidden;
+      border-radius: 14px;
+      border-width: 1px;
+      position: relative;
+      text-align: center;
+      background: rgb(var(--c-surface-2) / .92);
+    }
+    .picker-tree-col .bm-group-header .mg-icon-box {
+      --mg-size: 100%;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1 / 1;
+      border-radius: 0;
+      box-shadow: none;
+      background: #05060a;
+    }
+    .picker-tree-col .bm-group-header .mg-icon { object-fit: cover; object-position: center; }
+
+    /* two small black corner panels — chevron opposite the count */
+    .picker-tree-col .bm-group-header .bm-caret {
+      position: absolute;
+      top: 5px;
+      inset-inline-start: 5px;
+      z-index: 2;
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border-radius: 8px;
+      background: rgba(2, 6, 16, .78);
+      color: #fff;
+      font-size: 14px;
+      line-height: 1;
+    }
+    .picker-tree-col .bm-group-header .bm-count {
+      position: absolute;
+      top: 5px;
+      inset-inline-end: 5px;
+      z-index: 2;
+      opacity: 1;
+      font-size: 13px;
+      font-weight: 800;
+      font-family: var(--font-mono, ui-monospace, monospace);
+      line-height: 1;
+      padding: 4px 8px;
+      border-radius: 8px;
+      background: rgba(2, 6, 16, .78);
+      color: #fff;
+      -webkit-text-stroke: 3px rgba(2, 6, 16, .92);
+      paint-order: stroke fill;
+      letter-spacing: .02em;
+    }
+
+    /* thin name strip below the figure — same size as before */
+    .picker-tree-col .bm-group-header > .flex-1 {
+      flex: 0 0 auto;
+      width: 100%;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+      padding: 4px 5px 6px;
+      font-size: 9.5px !important;
+      line-height: 1.2;
+      border-top: 1px solid rgb(var(--v2-border, rgba(255,255,255,.09)));
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.06));
+    }
+
+    /* expanded PARENT group is always lit — owns the subgroups below */
+    .picker-tree-col .bm-group-header.bm-group-open {
+      border-color: rgb(var(--c-primary) / .7);
+      background: linear-gradient(180deg, rgb(var(--c-primary) / .32), rgb(var(--c-primary) / .16));
+      box-shadow: 0 0 0 1px rgb(var(--c-primary) / .55), 0 14px 30px -18px rgb(var(--c-primary) / .65);
+    }
+    .picker-tree-col .bm-group-header.bm-group-open > .flex-1 {
+      border-top-color: rgb(var(--c-primary) / .45);
+    }
+
+    /* subgroups: same full-bleed card, NO chevron, smaller name strip */
+    .picker-tree-col .bm-subgroup-btn {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      padding: 0;
+      overflow: hidden;
+      border-radius: 13px;
+      position: relative;
+      text-align: center;
+      background: rgb(var(--c-surface-2) / .72);
+      border-width: 1px;
+    }
+    .picker-tree-col .bm-subgroup-btn .mg-icon-box {
+      --mg-size: 100%;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1 / 1;
+      border-radius: 0;
+      box-shadow: none;
+      background: #05060a;
+    }
+    .picker-tree-col .bm-subgroup-btn .mg-icon { object-fit: cover; object-position: center; }
+    .picker-tree-col .bm-subgroup-btn > .flex-1 {
+      flex: 0 0 auto;
+      width: 100%;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+      padding: 3px 5px 5px;
+      font-size: 8.5px !important;
+      line-height: 1.2;
+      opacity: 1;
+      border-top: 1px solid rgb(var(--v2-border, rgba(255,255,255,.09)));
+    }
+    .picker-tree-col .bm-subgroup-btn .bm-count {
+      position: absolute;
+      top: 4px;
+      inset-inline-end: 4px;
+      z-index: 2;
+      opacity: 1;
+      font-size: 11px;
+      font-weight: 800;
+      font-family: var(--font-mono, ui-monospace, monospace);
+      line-height: 1;
+      padding: 3px 7px;
+      border-radius: 8px;
+      background: rgba(2, 6, 16, .78);
+      color: #fff;
+      -webkit-text-stroke: 2.6px rgba(2, 6, 16, .92);
+      paint-order: stroke fill;
+    }
+
+    /* Windows / large screens: tree becomes 2-3 rows of cards */
+    @media (min-width: 1280px) {
+      .picker-tree-col { width: clamp(300px, 29vw, 440px); }
+      html[data-ui="v2"] .picker-tree-col { width: clamp(300px, 29vw, 440px) !important; }
+      #bm-group-tree {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        align-content: start;
+      }
+      .picker-tree-col .bm-subgroups {
+        grid-column: 1 / -1;
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+        padding: 2px !important;
+        margin: 0;
+        border-inline-start: none !important;
+        background: transparent !important;
+      }
+    }
+    @media (min-width: 1700px) {
+      #bm-group-tree { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .picker-tree-col .bm-subgroups { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    }
+
 /* ============================================================
        CONTAINER-QUERY GRIDS (Итерация 1 — адаптивная плотность)
        Модалка = container; колонки считаются от ширины модалки,
@@ -25885,7 +26055,7 @@ Create a ${freq}-day workout program using the ${pbSplit} split. Consider the bo
             html += `<div class="bm-subgroup-btn flex items-center gap-1.5 text-[10px] font-medium rounded-md border ${sgActiveClass} transition cursor-pointer" data-group="${esc(g)}" data-subgroup="${esc(s)}">
               <span class="mg-icon-box shrink-0">${sgIcon}</span>
               <span class="flex-1 truncate">${esc(sgLabel)}</span>
-              <span class="opacity-60 shrink-0 font-semibold"> ${item.count}</span>
+              <span class="bm-count opacity-60 shrink-0 font-semibold">${item.count}</span>
             </div>`;
           });
           html += `</div>`;
