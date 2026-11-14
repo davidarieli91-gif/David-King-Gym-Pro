@@ -42343,6 +42343,9 @@ document.addEventListener('input', function (e) {
       buildList();
       S.inited = true; S.initing = false;
       loadBox.classList.add('hidden');
+      /* c236: the user may have navigated away while the model was loading —
+         never start the render loop on a hidden screen */
+      if (!S.open) return;
       loop();
     }).catch(function (e) {
       console.error('[atlas]', e);

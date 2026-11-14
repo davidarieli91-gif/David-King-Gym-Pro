@@ -171,6 +171,16 @@ Full runbook:
    `server/tsconfig.json`, `deploy/` to `/volume2/dkg/App`.
 5. `sudo cp deploy/.env.example deploy/.env` and fill it in (values below),
    then `sudo docker compose up -d --build`.
+
+> **Redeploy note (static app is baked into the image).** The API image
+> copies `dist/` at build time (`COPY dist ./public-app`), so uploading a new
+> `dist/` to the NAS is NOT enough — the running container keeps serving the
+> old bundle. After syncing `dist/` to `/volume2/dkg/App/dist`, run
+> `docker compose --env-file .env build api && docker compose --env-file .env up -d`
+> and re-check `curl -s http://127.0.0.1:8080/health` plus a `grep` for a build
+> marker (e.g. the SW `CACHE_NAME`) in the served `/fitness-crm.html`.
+> Note: the NAS cannot reach its own Tailscale Funnel URL — verify public
+> endpoints from a client machine, not from the NAS itself.
 6. Restore the database dump (JSON snapshot from `node scripts/restore.mjs`
    with `RESTORE_CONFIRM=yes`), restart `api`, check `curl -s
    http://127.0.0.1:8080/health`.
