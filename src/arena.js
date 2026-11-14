@@ -93,7 +93,31 @@
     resetDone: { en: 'Progress reset', ru: 'Прогресс сброшен', he: 'ההתקדמות אופסה' },
     resetFailed: { en: 'Could not reset progress', ru: 'Не удалось сбросить прогресс', he: 'לא ניתן לאפס התקדמות' },
     share: { en: 'Share', ru: 'Поделиться', he: 'שתף' },
-    copied: { en: 'Copied', ru: 'Скопировано', he: 'הועתק' }
+    copied: { en: 'Copied', ru: 'Скопировано', he: 'הועתק' },
+    /* c245: trainer verification flow — no more honor-system trophies */
+    reviewTab: { en: 'Review', ru: 'К проверке', he: 'לבדיקה' },
+    reviewBadge: { en: 'to review', ru: 'к проверке', he: 'ממתינים' },
+    reviewNone: { en: 'Nothing to review — no pending exam attempts.', ru: 'Нечего проверять — нет ожидающих экзаменов.', he: 'אין מה לבדוק — אין מבחנים בהמתנה.' },
+    reviewStation: { en: 'Station', ru: 'Станция', he: 'עמדה' },
+    reviewValues: { en: 'Your result', ru: 'Результат', he: 'תוצאה' },
+    reviewRequired: { en: 'Required', ru: 'Норма', he: 'דרישה' },
+    reviewVideo: { en: 'Exam video', ru: 'Видео экзамена', he: 'וידאו המבחן' },
+    reviewApprove: { en: 'Approve and award trophy', ru: 'Подтвердить и выдать кубок', he: 'לאשר ולהעניק גביע' },
+    reviewReject: { en: 'Reject', ru: 'Отклонить', he: 'לדחות' },
+    reviewRejected: { en: 'Review rejected', ru: 'Проверка отклонена', he: 'הבדיקה נדחתה' },
+    reviewApproved: { en: 'Exam approved — trophy awarded', ru: 'Экзамен подтверждён — кубок выдан', he: 'המבחן אושר — הגביע הוענק' },
+    reviewRejectedToast: { en: 'Attempt rejected', ru: 'Попытка отклонена', he: 'הניסיון נדחה' },
+    reviewRejectedByCoach: { en: 'Rejected by coach', ru: 'Отклонено тренером', he: 'נדחה על ידי המאמן' },
+    reviewPendingForClient: { en: 'Awaiting coach review', ru: 'Ожидает проверки тренера', he: 'ממתין לבדיקת המאמן' },
+    reviewRejectedForClient: { en: 'Rejected by coach', ru: 'Отклонено тренером', he: 'נדחה על ידי המאמן' },
+    assignPath: { en: 'Assign to athlete', ru: 'Назначить клиенту', he: 'להקצות לספורטאי' },
+    assignTitle: { en: 'Assign path', ru: 'Назначить путь', he: 'הקצאת מסלול' },
+    assignDeadline: { en: 'Deadline (optional)', ru: 'Дедлайн (необязательно)', he: 'מועד אחרון (אופציונלי)' },
+    assignNote: { en: 'Note for the athlete', ru: 'Комментарий клиенту', he: 'הערה לספורטאי' },
+    assignSave: { en: 'Assign', ru: 'Назначить', he: 'הקצה' },
+    assignDone: { en: 'Path assigned', ru: 'Путь назначен', he: 'המסלול הוקצה' },
+    assignedByCoach: { en: 'Assigned by your coach', ru: 'Назначил тренер', he: 'הוקצה על ידי המאמן' },
+    reviewHeader: { en: 'Exam review queue', ru: 'Очередь проверки экзаменов', he: 'תור בדיקת המבחנים' }
   };
 
   var state = {
@@ -106,7 +130,8 @@
     records: {},
     summary: { xp: 0, trophies: 0, lessons: 0, rank: 'rankNovice' },
     flash: null,
-    renderSeq: 0
+    renderSeq: 0,
+    pendingReviews: []
   };
 
   function lang() {
@@ -320,10 +345,11 @@
     state.records = {};
     records.forEach(function (r) { state.records[r.path_id] = r; });
     state.summary = calcSummary(records);
+    state.pendingReviews = await allPendingReviews(state.clients);
 
     var header = renderHeader();
     var body = state.view === 'trophies' ? renderTrophies() :
-      (state.view === 'path' ? renderPath() : renderGames());
+      (state.view === 'review' ? renderReview() : (state.view === 'path' ? renderPath() : renderGames()));
     root.innerHTML = header + renderFlash() + body;
     if (state.view === 'games') bindProfileSummary();
   }
@@ -363,8 +389,9 @@
         </div>
       </div>
       <div class="flex gap-1 bg-surface-2 border border-border rounded-xl p-1 mb-4">
-        <button type="button" data-arena-action="tab" data-tab="games" class="flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition ${state.view !== 'trophies' ? 'bg-primary text-white' : 'text-muted'}">${esc(u('games'))}</button>
+        <button type="button" data-arena-action="tab" data-tab="games" class="flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition ${state.view !== 'trophies' && state.view !== 'review' ? 'bg-primary text-white' : 'text-muted'}">${esc(u('games'))}</button>
         <button type="button" data-arena-action="tab" data-tab="trophies" class="flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition ${state.view === 'trophies' ? 'bg-primary text-white' : 'text-muted'}">${esc(u('trophies'))} · ${state.summary.trophies}</button>
+        <button type="button" data-arena-action="tab" data-tab="review" class="flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition inline-flex items-center justify-center gap-1.5 ${state.view === 'review' ? 'bg-primary text-white' : 'text-muted'}">${esc(u('reviewTab'))}${state.pendingReviews.length ? ' <span class="inline-grid place-items-center min-w-[22px] h-[22px] px-1.5 rounded-full bg-danger text-white text-[11px] font-extrabold">' + state.pendingReviews.length + '</span>' : ''}</button>
       </div>`;
   }
 
@@ -494,17 +521,30 @@
       </div>`;
     }).join('');
 
+    var tiers = found.path.tiers || [];
+    var assignment = rec.assignment || null;
+    var assignHtml = assignment
+      ? '<div class="mt-3 flex flex-wrap items-center gap-2 rounded-xl border border-primary/35 bg-primary/10 px-3 py-2 text-[11px] font-semibold text-primary-2"><span class="inline-flex items-center gap-1.5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><path d="M12 8v4l2.5 2.5"/><circle cx="12" cy="12" r="9"/></svg>' + esc(u('assignedByCoach')) + '</span>'
+        + (assignment.deadline ? ' · ' + esc(assignment.deadline) : '')
+        + (assignment.note ? ' — ' + esc(assignment.note) : '')
+        + '</div>'
+      : '';
+    var assignAction = state.clientId !== 'self'
+      ? '<button type="button" data-arena-action="assign-open" data-path="' + esc(state.pathId) + '" class="mt-3 inline-flex items-center gap-1.5 rounded-xl border border-primary/40 bg-primary/15 px-3 py-2 text-[11px] font-bold text-primary-2 hover:bg-primary/25 transition"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="w-4 h-4"><path d="M12 5v14M5 12h14"/></svg>' + esc(u('assignPath')) + '</button>'
+      : '';
     return `
       <button type="button" data-arena-action="back" class="mb-3 inline-flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-text"><span aria-hidden="true">←</span>${esc(u('back'))}</button>
-      <div class="bg-surface border border-border rounded-2xl shadow-card p-4 mb-4">
+      <div class="bg-surface border border-border rounded-2xl shadow-card p-4 mb-4" data-path-head>
         <div class="flex items-start gap-3">
           <span class="w-12 h-12 rounded-xl grid place-items-center shrink-0" style="color:${game.color};background:${game.color}18">${gameIcon(game.id)}</span>
           <div class="min-w-0">
             <h2 class="font-display font-extrabold text-xl">${esc(tr(path.name))}</h2>
             <p class="text-[11px] text-muted mt-1">${esc(tr(path.description))}</p>
             <div class="mt-2 inline-flex items-center gap-1.5 text-[11px] font-bold" style="color:${game.color}">${trophySvg()}<span>${trophyCount}/${tiers.length}</span></div>
+            ${assignHtml}
           </div>
         </div>
+        <div class="mt-2">${assignAction}</div>
       </div>
       <div class="space-y-3">${tierHtml}</div>
       <div class="mt-4 text-center">
@@ -642,6 +682,177 @@
     }).join('')}</div>`;
   }
 
+  /* c245: the coach's verification queue — pending exam attempts from every
+     client in the gym, across every path. Sorted oldest first so nothing
+     rots. Trainer self-attempts are never pending (auto-approved). */
+  async function allPendingReviews(clients) {
+    var out = [];
+    try {
+      var all = await db.all('arena_progress');
+      var clientMap = {};
+      (clients || []).forEach(function (c) { clientMap[String(c.id)] = clientName(c); });
+      (all || []).forEach(function (rec) {
+        var attempts = rec.exam_attempts || [];
+        attempts.forEach(function (a) {
+          if (a && a.status === 'pending') {
+            out.push({
+              clientId: String(rec.client_id || ''),
+              clientName: clientMap[String(rec.client_id)] || String(rec.client_id || ''),
+              pathId: rec.path_id,
+              attempt: a
+            });
+          }
+        });
+      });
+    } catch (_) {}
+    return out.sort(function (a, b) { return (a.attempt.at || 0) - (b.attempt.at || 0); });
+  }
+
+  function renderReview() {
+    if (!state.pendingReviews.length) {
+      return '<div class="bg-surface border border-border rounded-2xl p-8 text-center"><div class="w-16 h-16 mx-auto rounded-2xl grid place-items-center bg-success/10 border border-success/30 text-success mb-3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-8 h-8"><path d="M20 6L9 17l-5-5"/></svg></div><p class="text-sm font-semibold">' + esc(u('reviewNone')) + '</p></div>';
+    }
+    var html = '<div class="text-[10px] uppercase tracking-wider text-muted font-bold mb-2">' + esc(u('reviewHeader')) + ' (' + state.pendingReviews.length + ')</div>';
+    state.pendingReviews.forEach(function (item) {
+      var a = item.attempt;
+      var found = findPath(item.pathId);
+      var pathName = found ? tr(found.path.name) : item.pathId;
+      var gameName = found ? tr(found.game.name) : '';
+      var tierLabel2 = (a.tier_id || '').toUpperCase();
+      html += '<div class="bg-surface border border-border rounded-2xl p-4 mb-3" data-attempt-id="' + esc(a.id) + '" data-client-id="' + esc(item.clientId) + '" data-path-id="' + esc(item.pathId) + '">';
+      html += '<div class="flex flex-wrap items-center gap-2"><b class="font-display text-base">' + esc(item.clientName) + '</b>';
+      html += '<span class="text-[10px] text-muted font-semibold">·</span><span class="text-xs font-semibold">' + esc(gameName) + ' · ' + esc(pathName) + ' · ' + esc(tierLabel2) + '</span></div>';
+      html += '<div class="text-[10px] text-muted mt-0.5">' + esc(fmtDate(a.at)) + '</div>';
+      if (a.video_file_id) {
+        html += '<div class="mt-2"><div class="text-[9px] uppercase tracking-wider text-muted font-bold mb-1">' + esc(u('reviewVideo')) + '</div><video class="w-full max-h-[320px] rounded-xl border border-border bg-black" controls preload="metadata" src="/api/files/' + esc(a.video_file_id) + '"></video></div>';
+      } else if (a.video) {
+        html += '<div class="mt-2"><div class="text-[9px] uppercase tracking-wider text-muted font-bold mb-1">' + esc(u('reviewVideo')) + '</div><a class="text-xs text-primary-2 underline break-all" href="' + esc(a.video) + '" target="_blank" rel="noopener">' + esc(a.video) + '</a></div>';
+      }
+      html += '<div class="mt-2 divide-y divide-border/40">';
+      (a.results || []).forEach(function (r) {
+        html += '<div class="flex items-center gap-2 py-1.5 text-xs"><span class="w-4 h-4 rounded-full shrink-0 grid place-items-center ' + (r.passed ? 'bg-success/15 text-success' : 'bg-danger/15 text-danger') + '">' + (r.passed ? '✓' : '✕') + '</span><span class="flex-1 min-w-0 truncate font-medium">' + esc(r.label || r.station_id) + '</span><span class="font-mono text-muted shrink-0">' + esc(r.display || '') + '</span></div>';
+      });
+      html += '</div>';
+      html += '<div class="mt-2 flex items-center gap-2">';
+      html += '<button type="button" data-arena-action="approve-attempt" class="bg-success text-black text-xs font-bold px-4 py-2 rounded-xl hover:brightness-110 transition">' + esc(u('reviewApprove')) + '</button>';
+      html += '<button type="button" data-arena-action="reject-attempt" class="bg-danger/15 text-danger border border-danger/30 text-xs font-bold px-4 py-2 rounded-xl hover:bg-danger/25 transition">' + esc(u('reviewReject')) + '</button>';
+      html += '</div></div>';
+    });
+    return html;
+  }
+
+  async function approveAttempt(attemptId, clientId, pathId) {
+    var rec = await db.get('arena_progress', progressId(clientId, pathId)).catch(function () { return null; });
+    if (!rec) return;
+    var attempts = rec.exam_attempts || [];
+    var attempt = null;
+    attempts.forEach(function (a) { if (String(a.id) === String(attemptId)) attempt = a; });
+    if (!attempt || attempt.status !== 'pending') { await render(); return; }
+    var found = findPath(pathId);
+    if (!found) { await render(); return; }
+    var tier = null, tierIndex = -1;
+    (found.path.tiers || []).forEach(function (t, i) { if (t.id === attempt.tier_id) { tier = t; tierIndex = i; } });
+    if (!tier) { await render(); return; }
+    attempt.status = 'approved';
+    attempt.reviewed_at = Date.now();
+    attempt.reviewed_by = state.clientId === 'self' ? 'coach' : 'coach';
+    rec.exam_attempts = attempts;
+    var existing = (rec.trophies || []).some(function (t) { return t.tier_id === tier.id; });
+    if (!existing) {
+      var snapshot = {
+        id: tier.trophy.id || (pathId + '_' + tier.id),
+        tier_id: tier.id,
+        tier: tier.tier,
+        path_id: pathId,
+        game_id: found.game.id,
+        name: tier.trophy.name,
+        description: tier.trophy.description,
+        earned_at: Date.now(),
+        results: (attempt.results || []),
+        video: attempt.video || '',
+        attempt_id: attempt.id,
+        approved_by_coach: true
+      };
+      rec.trophies = (rec.trophies || []).concat(snapshot);
+      rec.current_tier = Math.max(Number(rec.current_tier || 0), tierIndex + 1);
+      toastSafe(u('reviewApproved'), 'success');
+    } else {
+      toastSafe(u('reviewApproved'), 'success');
+    }
+    await saveRecord(rec);
+    state.records[pathId] = rec;
+    await render();
+    try { var all = await db.all('arena_progress'); } catch (_) {}
+  }
+
+  async function rejectAttempt(attemptId, clientId, pathId) {
+    var reason = '';
+    try { reason = window.prompt(u('reviewReject') + ' — ' + u('assignNote'), '') || ''; } catch (_) { reason = ''; }
+    var rec = await db.get('arena_progress', progressId(clientId, pathId)).catch(function () { return null; });
+    if (!rec) return;
+    var attempts = rec.exam_attempts || [];
+    attempts.forEach(function (a) {
+      if (String(a.id) === String(attemptId)) {
+        a.status = 'rejected';
+        a.reviewed_at = Date.now();
+        a.reviewed_by = 'coach';
+        a.review_note = reason || u('reviewRejectedByCoach');
+      }
+    });
+    rec.exam_attempts = attempts;
+    await saveRecord(rec);
+    state.records[pathId] = rec;
+    await render();
+    toastSafe(u('reviewRejectedToast'), 'info');
+  }
+
+  async function assignPath(pathId) {
+    if (state.clientId === 'self') return;
+    var found = findPath(pathId);
+    if (!found) return;
+    var root = document.getElementById('arena-root');
+    if (root && root.querySelector('[data-assign-panel]')) return;
+    var html = '<div class="mt-3 bg-surface border border-primary/40 rounded-2xl p-4" data-assign-panel>'
+      + '<div class="text-xs font-extrabold uppercase tracking-wider text-primary-2 mb-2">' + esc(u('assignTitle')) + '</div>'
+      + '<label class="text-[10px] font-bold text-muted block mb-1">' + esc(u('level')) + '</label>'
+      + '<select class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2 text-sm mb-2" data-assign-tier>'
+      + (found.path.tiers || []).map(function (t) { return '<option value="' + esc(t.id) + '">' + esc(tr(t.name)) + '</option>'; }).join('')
+      + '</select>'
+      + '<label class="text-[10px] font-bold text-muted block mb-1">' + esc(u('assignDeadline')) + '</label>'
+      + '<input type="date" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2 text-sm mb-2" data-assign-deadline />'
+      + '<label class="text-[10px] font-bold text-muted block mb-1">' + esc(u('assignNote')) + '</label>'
+      + '<textarea rows="2" class="w-full bg-surface-2 border border-border rounded-xl px-3 py-2 text-sm mb-2" data-assign-note></textarea>'
+      + '<div class="flex items-center gap-2"><button type="button" data-arena-action="assign-save" data-path="' + esc(pathId) + '" class="bg-primary text-white text-xs font-bold px-4 py-2 rounded-xl">' + esc(u('assignSave')) + '</button>'
+      + '<button type="button" data-arena-action="assign-cancel" class="text-xs text-muted px-3 py-2">' + esc(u('close')) + '</button></div>'
+      + '</div>';
+    if (root) {
+      var pathHead = root.querySelector('[data-path-head]');
+      if (pathHead) pathHead.insertAdjacentHTML('afterend', html);
+      else root.insertAdjacentHTML('beforeend', html);
+    }
+  }
+
+  async function saveAssignment(pathId, button) {
+    if (state.clientId === 'self') return;
+    var panel = button.closest('[data-assign-panel]');
+    if (!panel) return;
+    var tierSel = panel.querySelector('[data-assign-tier]');
+    var deadlineEl = panel.querySelector('[data-assign-deadline]');
+    var noteEl = panel.querySelector('[data-assign-note]');
+    var rec = await getRecord(state.clientId, pathId);
+    rec.assignment = {
+      tier_id: tierSel ? tierSel.value : '',
+      deadline: deadlineEl ? deadlineEl.value : '',
+      note: noteEl ? noteEl.value : '',
+      assigned_at: Date.now(),
+      assigned_by: 'coach'
+    };
+    await saveRecord(rec);
+    state.records[pathId] = rec;
+    await render();
+    toastSafe(u('assignDone'), 'success');
+  }
+
   async function toggleLesson(tierId, lessonId) {
     var found = findPath(state.pathId);
     if (!found) return;
@@ -736,7 +947,7 @@
     var passedAll = results.length > 0 && results.every(function (r) { return r.passed; });
     var videoEl = form.querySelector('[data-arena-input="video:url"]');
     var video = videoEl ? String(videoEl.value || '').trim() : '';
-    var attempt = { id: 'att_' + Date.now(), at: Date.now(), passed: passedAll, results: results, video: video };
+    var attempt = { id: 'att_' + Date.now(), at: Date.now(), passed: passedAll, results: results, video: video, status: 'approved', reviewed_by: 'coach', reviewed_at: Date.now() };
     rec.exam_attempts = (rec.exam_attempts || []).concat(attempt).slice(-20);
     if (bodyweight) rec.bodyweight = bodyweight;
     if (passedAll) {
@@ -831,6 +1042,19 @@
       toggleLesson(el.getAttribute('data-tier'), el.getAttribute('data-lesson'));
     } else if (action === 'submit-exam') {
       submitExam(el.getAttribute('data-path'), el.getAttribute('data-tier'), el);
+    } else if (action === 'approve-attempt') {
+      var card = el.closest('[data-attempt-id]');
+      if (card) approveAttempt(card.getAttribute('data-attempt-id'), card.getAttribute('data-client-id'), card.getAttribute('data-path-id'));
+    } else if (action === 'reject-attempt') {
+      var card2 = el.closest('[data-attempt-id]');
+      if (card2) rejectAttempt(card2.getAttribute('data-attempt-id'), card2.getAttribute('data-client-id'), card2.getAttribute('data-path-id'));
+    } else if (action === 'assign-open') {
+      assignPath(el.getAttribute('data-path'));
+    } else if (action === 'assign-save') {
+      saveAssignment(el.getAttribute('data-path'), el);
+    } else if (action === 'assign-cancel') {
+      var panel2 = el.closest('[data-assign-panel]');
+      if (panel2) panel2.remove();
     } else if (action === 'open-exercise') {
       var exerciseId = el.getAttribute('data-exercise');
       if (exerciseId && typeof openExerciseModal === 'function') openExerciseModal(exerciseId);

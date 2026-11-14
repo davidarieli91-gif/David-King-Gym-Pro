@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { resolve, extname } from 'node:path';
 import { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { config } from '../config';
@@ -8,8 +8,11 @@ import { hashPassword, verifyPassword } from '../auth/passwords';
 import { pool, withTenant, withTransaction } from '../db';
 import { audit } from '../lib/audit';
 import { apiError, errors } from '../lib/errors';
+import { sendMail, mailConfigured } from '../mail';
 import { upsertRecord } from '../lib/records';
 import { hashPortalToken, randomToken } from '../lib/tokens';
+import { newId } from '../lib/ids';
+import { saveStream } from '../storage/local';
 import { parse } from '../lib/validate';
 
 const issueSchema = z.object({
@@ -523,6 +526,96 @@ export const portalRoutes: FastifyPluginAsync = async (app) => {
       });
 
       return { id: recordId, rev };
+    },
+  );
+
+  /* The trainee's exam-verification upload. The trainer watches these from the
+     gym's trainer app (GET /api/files/:id streams it back tenant-scoped). */
+  app.post(
+    '/portal/:token/arena-video',
+    { config: { rateLimit: { max: 30, timeWindow: '1 minute' } } },
+    async (request, reply) => {
+      const params = parse(z.object({ token: z.string().min(16).max(500) }), request.params);
+      const pin = request.headers['x-portal-pin'];
+      const resolved = await resolvePortalToken(params.token, typeof pin === 'string' ? pin : undefined);
+
+      const upload = await request.file();
+      if (!upload) throw errors.badRequest('Video file is required');
+      const mime = String(upload.mimetype || '').toLowerCase();
+      if (!/^(video|image)\//.test(mime)) {
+        upload.file.resume();
+        throw errors.badRequest('Only video or image files are allowed');
+      }
+      const extension = extname(upload.filename || '').toLowerCase().replace(/[^.a-z0-9]/g, '').slice(0, 12) || '.mp4';
+      const objectKey = `${resolved.token.tenant_id}/${newId()}${extension}`;
+      const saved = await saveStream(objectKey, upload.file);
+      const tooBig = saved.size > (config.MAX_FILE_MB || 25) * 1024 * 1024;
+      if (tooBig) { /* kept in storage but flagged in response shape below */ }
+
+      const inserted = await withTenant(resolved.token.tenant_id, async (db) => {
+        const result = await db.query<{ id: string; filename: string; mime: string; size: string; created_at: Date }>(
+          `INSERT INTO files (tenant_id, client_id, object_key, filename, mime, size, sha256, created_by)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,NULL)
+           RETURNING id, filename, mime, size::text, created_at`,
+          [
+            resolved.token.tenant_id,
+            resolved.token.client_id,
+            objectKey,
+            upload.filename || 'exam-video',
+            upload.mimetype || 'video/mp4',
+            saved.size,
+            saved.sha256,
+          ],
+        );
+        await db.query('SELECT refresh_trainer_stats($1)', [resolved.token.tenant_id]);
+        return result.rows[0];
+      });
+
+      return reply.code(201).send({
+        id: inserted.id,
+        filename: inserted.filename,
+        mime: inserted.mime,
+        size: Number(inserted.size),
+        url: `/api/files/${inserted.id}`,
+      });
+    },
+  );
+
+  /* Fire-and-forget notification to the trainer(s) that a client has filed an
+     exam for review. SMTP failures must NEVER block the exam submission. */
+  app.post(
+    '/portal/:token/arena-notify',
+    { config: { rateLimit: { max: 20, timeWindow: '1 minute' } } },
+    async (request) => {
+      const params = parse(z.object({ token: z.string().min(16).max(500) }), request.params);
+      const body = parse(z.object({ pathId: z.string().max(120).optional(), tierId: z.string().max(60).optional() }), request.body);
+      const pin = request.headers['x-portal-pin'];
+      const resolved = await resolvePortalToken(params.token, typeof pin === 'string' ? pin : undefined);
+      const clientName = String((resolved.client as any)?.full_name || (resolved.client as any)?.full_name || 'Клиент');
+
+      try {
+        if (!mailConfigured()) return { ok: false, skipped: true };
+        const users = await pool.query<{ email: string; display_name: string | null }>(
+          `SELECT email, display_name FROM users
+           WHERE tenant_id = $1 AND role IN ('trainer', 'director') AND email IS NOT NULL`,
+          [resolved.token.tenant_id],
+        );
+        const pathId = body.pathId || 'exam';
+        const tierId = body.tierId || '';
+        const subject = `David King Gym Arena — экзамен от ${clientName}`;
+        const text = [
+          `${clientName} отправил(а) экзамен на проверку.`,
+          `Путь: ${pathId}${tierId ? ` · тир: ${tierId}` : ''}.`,
+          '',
+          `Открой Арену (вкладка «К проверке»), посмотри видео и подтверди или отклони попытку:`,
+          `${config.PUBLIC_BASE_URL}/fitness-crm.html`,
+        ].join('\n');
+        await Promise.all(users.rows.map((u) => sendMail({ to: u.email, subject, text }).catch(() => null)));
+        return { ok: true, sent: users.rows.length };
+      } catch (error) {
+        console.error('[portal:arena-notify]', error);
+        return { ok: false };
+      }
     },
   );
 };

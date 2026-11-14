@@ -35,7 +35,7 @@ ok('arena script is loaded', crm.includes('src/arena.js?v=248'));
 ok('arena store is in the schema', crm.includes("name: 'arena_progress'") && crm.includes("by_clientId"));
 ok('arena progress is synced', sync.includes("'arena_progress'"));
 ok('arena data and script are copied to dist', copy.includes("'arena-data.json'") && copy.includes("'src/arena.js'"));
-ok('service worker v261 includes arena', sw.includes("CACHE_NAME = 'dk-gym-v261'") && sw.includes('./src/arena.js') && sw.includes('./arena-data.json'));
+ok('service worker v262 includes arena', sw.includes("CACHE_NAME = 'dk-gym-v262'") && sw.includes('./src/arena.js') && sw.includes('./arena-data.json'));
 ok('profile exposes trophy count and arena shortcut', crm.includes('profile-arena-count') && crm.includes('data-quick-action="arena"'));
 ok('arena has exam + trophy logic', js.includes('submitExam') && js.includes('trophyEarned') && js.includes('exam_attempts'));
 ok('arena shows last-attempt breakdown + weak stations', js.includes('function examResultRows') && js.includes("u('weakStations')") && js.includes("u('attemptHistory')"));
@@ -70,6 +70,11 @@ ok('simple portal loads the latest arena data', read('server/public/portal.html'
 ok('simple portal opens the full arena page', read('server/public/portal.html').includes('/p/__DKG_PORTAL_TOKEN__/arena'));
 ok('client portal service worker caches the arena shell', read('server/src/app.ts').includes('dk-portal-v2') && read('server/src/app.ts').includes("BASE + '/arena'") && read('server/src/app.ts').includes('arena-data.json?v=6'));
 ok('client arena keeps an offline progress cache', read('server/public/portal-arena.html').includes('dk_arena_records_') && read('server/public/portal-arena.html').includes('serviceWorker.register'));
+ok('arena exam is trainer-verified: client submits as pending', read('server/public/portal-arena.html').includes("status: 'pending'") && read('server/public/portal-arena.html').includes('video_file_id') && read('server/public/portal-arena.html').includes('video:file'));
+ok('client portal has an arena-video upload endpoint', read('server/src/routes/portal.ts').includes("'/portal/:token/arena-video'"));
+ok('trainer gets an exam-notify endpoint', read('server/src/routes/portal.ts').includes("'/portal/:token/arena-notify'"));
+ok('trainer arena exposes the review queue', read('src/arena.js').includes('allPendingReviews') && read('src/arena.js').includes('approveAttempt') && read('src/arena.js').includes('rejectAttempt') && read('src/arena.js').includes('data-tab="review"') && read('src/arena.js').includes('approve-attempt'));
+ok('trainer can assign a path to a client', read('src/arena.js').includes('assignPath') && read('src/arena.js').includes('saveAssignment') && read('src/arena.js').includes('data-arena-action="assign-open"'));
 const check = spawnSync(process.execPath, ['--check', path.join(root, 'src', 'arena.js')], { encoding: 'utf8' });
 ok('arena.js parses', check.status === 0);
 

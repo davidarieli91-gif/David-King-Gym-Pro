@@ -249,7 +249,7 @@
     var UI = {
       back: { en: 'Back', ru: 'Назад', he: 'חזרה' },
       toGames: { en: 'Games', ru: 'К играм', he: 'למשחקים' },
-      subtitle: { en: 'Real skills. Verified exams. Trophies that mean something.', ru: 'Реальные навыки. Сданные экзамены. Кубки, которые что-то значат.', he: 'כישורים אמיתיים. מבחנים מאומתים. גביעים עם משמעות.' },
+      subtitle: { en: 'Real skills. Exams verified by your coach.', ru: 'Реальные навыки. Экзамены проверяет тренер.', he: 'מיומנויות אמיתיות. הבדיקה נעשית על ידי המאמן.' },
       loading: { en: 'Loading Arena…', ru: 'Загружаем Арену…', he: 'טוען ארנה…' },
       error: { en: 'Arena could not be loaded.', ru: 'Не удалось загрузить Арену.', he: 'לא ניתן לטעון את הארנה.' },
       games: { en: 'Games', ru: 'Игры', he: 'משחקים' },
@@ -303,6 +303,14 @@
       saved: { en: 'Saved', ru: 'Сохранено', he: 'נשמר' },
       saveFailed: { en: 'Could not save. Try again.', ru: 'Не удалось сохранить. Попробуй ещё раз.', he: 'לא ניתן לשמור. נסה שוב.' },
       examPassed: { en: 'Exam passed', ru: 'Экзамен сдан', he: 'המבחן עבר' },
+      sentToCoach: { en: 'Sent to your coach for review', ru: 'Отправлено тренеру на проверку', he: 'נשלח למאמן לבדיקה' },
+      pendingCoach: { en: 'Awaiting coach review', ru: 'Ожидает проверки тренера', he: 'ממתין לבדיקת המאמן' },
+      rejectedCoach: { en: 'Rejected by coach', ru: 'Отклонено тренером', he: 'נדחה על ידי המאמן' },
+      approvedByCoach: { en: 'Approved by coach', ru: 'Подтверждено тренером', he: 'אושר על ידי המאמן' },
+      assignedByCoach: { en: 'Assigned by your coach', ru: 'Назначил тренер', he: 'הוקצה על ידי המאמן' },
+      videoUpload: { en: 'Exam video (one file, all stations)', ru: 'Видео экзамена (один файл, все станции)', he: 'וידאו המבחן (קובץ אחד, כל העמדות)' },
+      uploading: { en: 'Uploading…', ru: 'Загрузка…', he: 'מעלה…' },
+      uploadFailed: { en: 'Video upload failed', ru: 'Не удалось загрузить видео', he: 'העלאת הווידאו נכשלה' },
       examFailed: { en: 'Exam not passed', ru: 'Экзамен не сдан', he: 'המבחן לא עבר' }
     };
 
@@ -461,6 +469,9 @@
     }
 
     function renderFlash() {
+      if (state.flash && state.flash.submitted) {
+        return '<div class="flash" style="border-color:rgba(34,211,238,.4);background:rgba(34,211,238,.08)"><span class="flash-ic" style="color:#22d3ee;background:rgba(34,211,238,.14)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M20 6L9 17l-5-5"/></svg></span><div><b style="color:#22d3ee">' + esc(t('sentToCoach')) + '</b></div></div>';
+      }
       if (!state.flash || !state.flash.trophy) return '';
       var flashTrophy = state.flash.trophy;
       var c = tierColor(flashTrophy.tier);
@@ -514,7 +525,10 @@
       var rec = recordFor(path.id);
       var tiers = path.tiers || [];
       var trophyCount = (rec.trophies || []).length;
+      var recAss = recordFor(path.id);
+      var assignHtml = recAss.assignment ? '<div class="notice" style="border-color:rgba(99,102,241,.45);background:rgba(99,102,241,.1);color:#a5b4fc"><b>' + esc(t('assignedByCoach')) + '</b><br>' + (recAss.assignment.deadline ? esc(recAss.assignment.deadline) + ' · ' : '') + esc(recAss.assignment.note || '') + '</div>' : '';
       return renderFlash() +
+        assignHtml +
         '<button type="button" class="back-link" data-a="back">← ' + esc(t('toGames')) + '</button>' +
         '<div class="path-hero"><span class="game-icon" style="color:' + (game.color || '#6366f1') + ';background:' + (game.color || '#6366f1') + '18">' + icon(game.id) + '</span><div><h2>' + esc(tr(path.name)) + '</h2><p>' + esc(tr(path.description)) + '</p><span class="chip" style="margin-top:7px">' + trophySvg() + ' ' + trophyCount + '/' + tiers.length + '</span></div></div>' +
         tiers.map(function (tier, index) { return renderTier(tier, index, rec, path); }).join('');
@@ -561,6 +575,14 @@
     }
 
     function examForm(tier, rec) {
+      var pendingExists = (rec.exam_attempts || []).some(function (a) { return a && a.tier_id === tier.id && a.status === 'pending'; });
+      if (pendingExists) {
+        var pAtt = (rec.exam_attempts || []).filter(function (a) { return a && a.tier_id === tier.id && a.status === 'pending'; }).slice(-1)[0];
+        return '<div class="exam"><div class="exam-head"><b>' + esc(t('exam')) + '</b><small>' + esc(t('pendingCoach')) + '</small></div><p class="exam-intro">' + esc(t('pendingCoach')) + ' — ' + esc(fmtDate(pAtt ? pAtt.at : Date.now())) + '</p>' + attemptRows(pAtt) + '</div>';
+      }
+      var rejectedExists = (rec.exam_attempts || []).some(function (a) { return a && a.tier_id === tier.id && a.status === 'rejected'; });
+      var rejectedNote = rejectedExists ? ((rec.exam_attempts || []).filter(function (a) { return a && a.tier_id === tier.id && a.status === 'rejected'; }).slice(-1)[0].review_note || t('rejectedCoach')) : '';
+
       var stations = (tier.exam && tier.exam.stations) || [];
       var attempts = rec.exam_attempts || [];
       var last = attempts.slice(-1)[0];
@@ -599,7 +621,8 @@
         return '<div class="history-row"><span style="color:var(--muted)">' + esc(fmtDate(a.at)) + '</span><b style="color:' + (a.passed ? 'var(--success)' : 'var(--danger)') + '">' + esc(a.passed ? t('passed') : t('failed')) + '</b></div>';
       }).join('') + '</details>' : '';
       return '<div class="exam"><div class="exam-head"><b>' + esc(t('exam')) + '</b><small>' + esc(t('retake')) + '</small></div>' + (tier.exam && tier.exam.intro ? '<p class="exam-intro">' + esc(tr(tier.exam.intro)) + '</p>' : '') + fields +
-        '<label style="display:block;margin-top:8px;color:var(--muted);font-size:9.5px">' + esc(t('videoOptional')) + '<input type="url" data-a-input="video:url" placeholder="https://..." value="' + (last && last.video ? esc(last.video) : '') + '" /></label>' +
+        '<label style="display:block;margin-top:8px;color:var(--muted);font-size:9.5px">' + esc(t('videoUpload')) + '<input type="file" accept="video/*,image/*" capture="environment" data-a-input="video:file" style="display:block;width:100%;margin-top:5px;font-size:11px;color:var(--text);" /></label>' +
+        '<label style="display:block;margin-top:4px;color:var(--muted);font-size:9px">' + esc(t('videoOptional')) + '<input type="url" data-a-input="video:url" placeholder="https://..." value="' + (last && last.video ? esc(last.video) : '') + '" /></label>' +
         '<button type="button" class="cta" data-a="submit-exam" data-path="' + esc(state.pathId) + '" data-tier="' + esc(tier.id) + '">' + esc(t('submitExam')) + '</button>' + lastHtml + history + '</div>';
     }
 
@@ -716,30 +739,34 @@
         results.push({ station_id: s.id, label: tr(s.name), display: display, passed: passed, values: values });
       });
       var passedAll = results.length > 0 && results.every(function (r) { return r.passed; });
+      var fileEl = panel.querySelector('[data-a-input="video:file"]');
+      var videoFile = (fileEl && fileEl.files && fileEl.files.length) ? fileEl.files[0] : null;
+      var videoId = '';
       var videoEl = panel.querySelector('[data-a-input="video:url"]');
       var video = videoEl ? String(videoEl.value || '').trim() : '';
-      var attempt = { id: 'att_' + Date.now(), at: Date.now(), passed: passedAll, results: results, video: video, source: 'portal' };
+      if (videoFile) {
+        try {
+          var fd = new FormData();
+          fd.append('file', videoFile);
+          var up = await fetch('/api/portal/' + encodeURIComponent(TOKEN) + '/arena-video', { method: 'POST', headers: { 'x-portal-pin': PIN }, body: fd });
+          if (!up.ok) { toast(t('uploadFailed'), 'bad'); return; }
+          var upJson = await up.json();
+          videoId = upJson.id || '';
+          if (!video) video = '/api/files/' + videoId;
+        } catch (uploadErr) { console.error('[arena] video upload failed', uploadErr); toast(t('uploadFailed'), 'bad'); return; }
+      }
+      var attempt = { id: 'att_' + Date.now(), at: Date.now(), passed: passedAll, results: results, video: video, video_file_id: videoId || null, status: 'pending', source: 'portal' };
       rec.exam_attempts = (rec.exam_attempts || []).concat(attempt).slice(-20);
       if (bodyweight) rec.bodyweight = bodyweight;
-      if (passedAll) {
-        var existing = (rec.trophies || []).some(function (t) { return t.tier_id === tier.id; });
-        if (!existing) {
-          var snapshot = { id: tier.trophy.id, tier_id: tier.id, tier: tier.tier, path_id: pathId, game_id: found.game.id, name: tier.trophy.name, description: tier.trophy.description, earned_at: Date.now(), results: results, video: video, attempt_id: attempt.id, source: 'portal' };
-          rec.trophies = (rec.trophies || []).concat(snapshot);
-          rec.current_tier = Math.max(Number(rec.current_tier || 0), (found.path.tiers || []).findIndex(function (t) { return t.id === tier.id; }) + 1);
-          state.flash = { trophy: snapshot };
-        }
-      }
       try {
+        fetch('/api/portal/' + encodeURIComponent(TOKEN) + '/arena-notify', { method: 'POST', headers: { 'content-type': 'application/json', 'x-portal-pin': PIN }, body: JSON.stringify({ pathId: pathId, tierId: tier.id }) }).catch(function () {});
+      } catch (_) {}
+      state.flash = { submitted: true, pathId: pathId, tierId: tier.id, passed: passedAll };
+            try {
         await saveRecord(rec);
-        toast(passedAll ? t('examPassed') : t('examFailed'), passedAll ? 'ok' : 'bad');
+        toast(t('sentToCoach'), 'ok');
         render();
-        if (!passedAll) {
-          var lastPanel = app.querySelector('.attempt.fail');
-          if (lastPanel && lastPanel.scrollIntoView) lastPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } else {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (e) {
         console.error('[arena] exam save failed', e);
         toast(t('saveFailed'), 'bad');
