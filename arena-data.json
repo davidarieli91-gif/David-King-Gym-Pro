@@ -1,6 +1,6 @@
 {
-  "version": 6,
-  "updated": "2026-11-01",
+  "version": 7,
+  "updated": "2026-11-14",
   "games": [
     {
       "id": "street_workout",
@@ -1212,6 +1212,575 @@
                   "en": "A 2.0× bodyweight deadlift with clean technique.",
                   "ru": "Становая 2.0× веса тела с чистой техникой.",
                   "he": "דדליפט 2.0× משקל גוף עם טכניקה נקייה."
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "bench",
+          "name": {
+            "en": "Bench Press",
+            "ru": "Жим лёжа",
+            "he": "לחיצת חזה"
+          },
+          "subtitle": {
+            "en": "From an empty bar to a clean 1.25× bodyweight press.",
+            "ru": "От пустого грифа до чистого жима 1.25× веса тела.",
+            "he": "ממוט ריק ועד לחיצת חזה נקייה של פי 1.25 ממשקל הגוף."
+          },
+          "description": {
+            "en": "A three-tier strength path for the king of upper-body lifts. Each tier has four lessons and a practical exam on the platform. Pass it to earn the trophy and unlock the next tier.",
+            "ru": "Путь силы в главном упражнении на верх тела. В каждом тире четыре урока и практический экзамен на площадке. Сдал — получил кубок и открыл следующий тир.",
+            "he": "מסלול כוח בתרגיל הראשון על פלג גוף עליון. בכל דרגה ארבעה שיעורים ומבחן מעשי על הבמה. עוברים אותו — מקבלים גביע ופותחים את הדרגה הבאה."
+          },
+          "tiers": [
+            {
+              "id": "bronze",
+              "tier": "bronze",
+              "name": {
+                "en": "Bronze",
+                "ru": "Бронза",
+                "he": "ארד"
+              },
+              "goal": {
+                "en": "Bench 0.75× bodyweight with clean technique.",
+                "ru": "Жим 0.75× веса тела с чистой техникой.",
+                "he": "לחיצת חזה פי 0.75 ממשקל הגוף עם טכניקה נקייה."
+              },
+              "lessons": [
+                {
+                  "id": "setup_arch",
+                  "name": {
+                    "en": "Setup & Arch",
+                    "ru": "Установка и мост",
+                    "he": "התחלה וגשר"
+                  },
+                  "prescription": {
+                    "en": "3 × 5 empty bar",
+                    "ru": "3 × 5 с пустым грифом",
+                    "he": "3 × 5 עם מוט ריק"
+                  },
+                  "technique": {
+                    "en": "Lie flat, eyes under the bar, shoulders pinned back and down.|Retract the shoulder blades and lift the chest towards the bar.|Feet flat on the floor, legs drive into the ground.",
+                    "ru": "Ляг ровно, глаза под грифом, плечи сведены назад и вниз.|Сведи лопатки и подними грудь к грифу.|Стопы плотно на полу, ноги давят вниз.",
+                    "he": "שכב ישר, עיניים מתחת למוט, כתפיים משוכות לאחור ולמטה.|קרב את השכמות והרם את החזה לעבר המוט.|כפות רגליים על הרצפה, הרגליים דוחפות מטה."
+                  },
+                  "checkpoints": {
+                    "en": "Eyes under the bar|Shoulder blades retracted|Legs drive",
+                    "ru": "Глаза под грифом|Лопатки сведены|Ноги давят в пол",
+                    "he": "עיניים מתחת למוט|שכמות מקורבות|הרגליים דוחפות"
+                  },
+                  "mistakes": {
+                    "en": "Looking up at the bar|Flaring the elbows wide|Lifting the hips off the bench",
+                    "ru": "Смотреть на гриф снизу|Разводить локти широко|Отрывать бёдра от скамьи",
+                    "he": "להסתכל למעלה על המוט|לפרוש מרפקים רחוק מדי|להרים אגן מהספסל"
+                  },
+                  "exerciseId": "bf_barbell-bench-press",
+                  "image": "/images/rdb/bench-press-start.webp"
+                },
+                {
+                  "id": "paused_bench",
+                  "name": {
+                    "en": "Paused Bench",
+                    "ru": "Жим с паузой",
+                    "he": "לחיצה עם עצירה"
+                  },
+                  "prescription": {
+                    "en": "4 × 5 at 65–70%",
+                    "ru": "4 × 5 на 65–70%",
+                    "he": "4 × 5 ב-65–70%"
+                  },
+                  "technique": {
+                    "en": "Lower the bar under control to mid-chest.|Pause on the chest for one full second.|Press up hard without bouncing.",
+                    "ru": "Опускай гриф под контролем к середине груди.|Пауза на груди одну полную секунду.|Выжимай сильно без отскока.",
+                    "he": "הורד את המוט בשליטה לאמצע החזה.|עצור ברוז החזה לשנייה מלאה.|דחוף בחוזקה בלי קפיצה."
+                  },
+                  "checkpoints": {
+                    "en": "One-second pause|Touch mid-chest|No bounce",
+                    "ru": "Пауза в одну секунду|Касание середины груди|Без отскока",
+                    "he": "עצירה של שנייה|נגיעה באמצע החזה|ללא קפיצה"
+                  },
+                  "mistakes": {
+                    "en": "Bouncing the bar|Short range of motion|Uneven lockout",
+                    "ru": "Отскок грифа|Короткая амплитуда|Неравномерное выпрямление",
+                    "he": "הקפצת המוט|טווח תנועה קצר|יישור לא אחיד"
+                  },
+                  "exerciseId": "bf_barbell-bench-press",
+                  "image": "/images/rdb/paused-bench-press-start.webp"
+                },
+                {
+                  "id": "close_grip",
+                  "name": {
+                    "en": "Close-Grip Bench",
+                    "ru": "Жим узким хватом",
+                    "he": "לחיצה באחיזה צרה"
+                  },
+                  "prescription": {
+                    "en": "4 × 8 at 60–65%",
+                    "ru": "4 × 8 на 60–65%",
+                    "he": "4 × 8 ב-60–65%"
+                  },
+                  "technique": {
+                    "en": "Grip the bar at shoulder width or slightly narrower.|Keep elbows close to the torso.|Press up and slightly back towards the rack.",
+                    "ru": "Хват на ширине плеч или уже.|Локти держи близко к туловищу.|Выжимай вверх и чуть назад к стойке.",
+                    "he": "אחוז מוט ברוחב כתפיים או קצת יותר צר.|שמור מרפקים קרוב לגוף.|דחוף למעלה ומעט לאחור לכיוון המעמד."
+                  },
+                  "checkpoints": {
+                    "en": "Elbows tucked|Wrists straight|Full lockout",
+                    "ru": "Локти прижаты|Запястья прямые|Полное выпрямление",
+                    "he": "מרפקים צמודים|פרקי כף יד ישרים|יישור מלא"
+                  },
+                  "mistakes": {
+                    "en": "Flaring elbows|Wrists bent back|Half lockouts",
+                    "ru": "Разводить локти|Заламывать запястья|Неполные дожимы",
+                    "he": "פרישת מרפקים|כיפוף שורש כף יד|יישור חלקי"
+                  },
+                  "exerciseId": "bf_close-grip-bench-press",
+                  "image": "/images/rdb/close-grip-bench-press-start.webp"
+                },
+                {
+                  "id": "db_bench",
+                  "name": {
+                    "en": "Dumbbell Bench",
+                    "ru": "Жим гантелей",
+                    "he": "לחיצת דאמבלים"
+                  },
+                  "prescription": {
+                    "en": "4 × 8 with control",
+                    "ru": "4 × 8 под контроль",
+                    "he": "4 × 8 בשליטה"
+                  },
+                  "technique": {
+                    "en": "Dumbbells start at chest level, palms forward.|Press up until the arms are straight but not locked.|Lower slowly and feel the stretch in the chest.",
+                    "ru": "Гантели на уровне груди, ладони вперёд.|Выжми вверх до прямых, но не заблокированных рук.|Опускай медленно, чувствуй растяжение груди.",
+                    "he": "דאמבלים בגובה החזה, כפות ידיים קדימה.|דחוף עד ליישור מלא של הידיים בלי נעילה.|הורד לאט והרגש את המתיחה בחזה."
+                  },
+                  "checkpoints": {
+                    "en": "Touch chest level|Controlled negative|Full contraction",
+                    "ru": "Касание уровня груди|Контролируемый негатив|Полное сокращение",
+                    "he": "נגיעה בגובה החזה|ירידה בשליטה|כיווץ מלא"
+                  },
+                  "mistakes": {
+                    "en": "Rushing the negatives|Clashing the dumbbells|Uneven press",
+                    "ru": "Быстрый негатив|Столкновение гантелей|Неравномерный жим",
+                    "he": "ירידה מהירה|התנגשות הדאמבלים|לחיצה לא אחידה"
+                  },
+                  "exerciseId": "bf_dumbbell-bench-press",
+                  "image": "/images/rdb/db-bench-press-start.webp"
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "Rest 3–5 minutes between stations. All stations verified by your coach.",
+                  "ru": "Отдых 3–5 минут между станциями. Все станции проверяет тренер.",
+                  "he": "מנוחה 3–5 דקות בין העמדות. את כל העמדות בודק המאמן."
+                },
+                "stations": [
+                  {
+                    "id": "one_rm",
+                    "type": "load_bw",
+                    "sets": 1,
+                    "target": 0.75,
+                    "name": {
+                      "en": "Bench press",
+                      "ru": "Жим лёжа",
+                      "he": "לחיצת חזה"
+                    },
+                    "hint": {
+                      "en": "0.75× bodyweight. Paused on chest.",
+                      "ru": "0.75× веса тела. С паузой на груди.",
+                      "he": "0.75× משקל גוף. עצירה על החזה."
+                    }
+                  },
+                  {
+                    "id": "technique",
+                    "type": "manual",
+                    "name": {
+                      "en": "Technique verified",
+                      "ru": "Техника подтверждена",
+                      "he": "טכניקה אומתה"
+                    }
+                  }
+                ]
+              },
+              "trophy": {
+                "id": "bench_bronze",
+                "name": {
+                  "en": "Bench Bronze",
+                  "ru": "Бронза: жим лёжа",
+                  "he": "ארד: לחיצת חזה"
+                },
+                "description": {
+                  "en": "Bench 0.75× bodyweight with clean technique.",
+                  "ru": "Жим 0.75× веса тела с чистой техникой.",
+                  "he": "לחיצת חזה פי 0.75 ממשקל הגוף עם טכניקה נקייה."
+                }
+              }
+            },
+            {
+              "id": "silver",
+              "tier": "silver",
+              "name": {
+                "en": "Silver",
+                "ru": "Серебро",
+                "he": "כסף"
+              },
+              "goal": {
+                "en": "Bench 1.0× bodyweight.",
+                "ru": "Жим 1.0× веса тела.",
+                "he": "לחיצת חזה פי 1.0 ממשקל הגוף."
+              },
+              "lessons": [
+                {
+                  "id": "heavy_triples",
+                  "name": {
+                    "en": "Heavy Triples",
+                    "ru": "Тяжёлые тройки",
+                    "he": "שלשות כבדות"
+                  },
+                  "prescription": {
+                    "en": "5 × 3 at 75–85%",
+                    "ru": "5 × 3 на 75–85%",
+                    "he": "5 × 3 ב-75–85%"
+                  },
+                  "technique": {
+                    "en": "Work up to heavy triples, staying tight on every rep.|Same setup as the empty bar: eyes under the bar, arch, feet planted.|Explode through the top of each rep.",
+                    "ru": "Разминочные подходы к тяжёлым тройкам, жёстко в каждом повторе.|Установка как с пустым грифом: глаза под грифом, мост, стопы на полу.|Взрывной дожим в каждой тройке.",
+                    "he": "עלה בסטים עד לשלשות כבדות, עם גוף מוצק בכל חזרה.|התחלה כמו עם מוט ריק: עיניים מתחת למוט, גשר, רגליים על הרצפה.|דחיפה נפיצה בכל חזרה."
+                  },
+                  "checkpoints": {
+                    "en": "Full tightness|Same setup|Explode lockout",
+                    "ru": "Полная жёсткость|Та же установка|Взрывной дожим",
+                    "he": "גוף מוצק|אותה התחלה|יישור נפיץ"
+                  },
+                  "mistakes": {
+                    "en": "Soft setup before the heavy set|Grinding reps too slowly|Losing the arch under load",
+                    "ru": "Вялое напряжение на рабочем подходе|Слишком медленные повторы|Терять мост под весом",
+                    "he": "התחלה רכה בסט הכבד|חזרות איטיות מדי|איבוד הגשר תחת העומס"
+                  },
+                  "exerciseId": "bf_barbell-bench-press",
+                  "image": "/images/rdb/bench-press-peak.webp"
+                },
+                {
+                  "id": "paused_heavy",
+                  "name": {
+                    "en": "Paused Bench — Heavy",
+                    "ru": "Жим с паузой — тяжёлый",
+                    "he": "לחיצה עם עצירה — כבדה"
+                  },
+                  "prescription": {
+                    "en": "4 × 3 at 80–85%",
+                    "ru": "4 × 3 на 80–85%",
+                    "he": "4 × 3 ב-80–85%"
+                  },
+                  "technique": {
+                    "en": "Pause one second at chest level on every rep.|Stay tight through the pause — no relaxing.|Press off the chest like the first rep.",
+                    "ru": "Пауза одна секунда на уровне груди в каждом повторе.|Держи жёсткость в паузе — не расслабляйся.|Выжимай с груди как первый повтор.",
+                    "he": "עצור את המוט לשנייה בגובה החזה בכל חזרה.|שמור על גוף מוצק בעצירה — אל תרפה.|דחוף מהחזה כמו חזרה ראשונה."
+                  },
+                  "checkpoints": {
+                    "en": "One-second pause|No relax in pause|Same press speed",
+                    "ru": "Секундная пауза|Не расслабляться в паузе|Та же скорость жима",
+                    "he": "עצירה של שנייה|לא לרפות בעצירה|אותה מהירות דחיפה"
+                  },
+                  "mistakes": {
+                    "en": "Long, wobbly pauses|Relaxing at the chest|Less control than light sets",
+                    "ru": "Долгие шаткие паузы|Расслабление на груди|Меньше контроля, чем на лёгких",
+                    "he": "עצירות ארוכות ורוטטות|הרפייה בחזה|פחות שליטה מבחזרות קלות"
+                  },
+                  "exerciseId": "bf_barbell-bench-press",
+                  "image": "/images/rdb/paused-bench-press-peak.webp"
+                },
+                {
+                  "id": "incline_press",
+                  "name": {
+                    "en": "Incline Bench Press",
+                    "ru": "Наклонный жим",
+                    "he": "לחיצת חזה בשיפוע"
+                  },
+                  "prescription": {
+                    "en": "4 × 6 at 65–75%",
+                    "ru": "4 × 6 на 65–75%",
+                    "he": "4 × 6 ב-65–75%"
+                  },
+                  "technique": {
+                    "en": "Bench at 30–45 degrees.|Lower to upper chest, press up and slightly back.|Same arch and leg drive as the flat bench.",
+                    "ru": "Скамья 30–45 градусов.|Опускай к верхней части груди, выжимай вверх и чуть назад.|Тот же мост и ноги, как в жиме лёжа.",
+                    "he": "הספסל בזווית 30–45 מעלות.|הורד לחזה העליון, דחוף למעלה ומעט לאחור.|אותו גשר ואותן רגליים כמו בלחיצה שטוחה."
+                  },
+                  "checkpoints": {
+                    "en": "30–45° incline|Upper chest touch|Same setup",
+                    "ru": "Уклон 30–45°|Касание верхней груди|Та же установка",
+                    "he": "שיפוע 30–45°|נגיעה בחזה עליון|אותה התחלה"
+                  },
+                  "mistakes": {
+                    "en": "Too steep incline (turns into shoulder press)|Bouncing off the chest|Stopping short of full lockout",
+                    "ru": "Слишком крутой угол (превращается в жим над головой)|Отскок от груди|Неполные дожимы",
+                    "he": "שיפוע תלול מדי (הופך ללחיצה מעל הראש)|הקפצה מהחזה|יישור חלקי"
+                  },
+                  "exerciseId": "bf_barbell-incline-bench-press",
+                  "image": "/images/rdb/incline-bench-press-start.webp"
+                },
+                {
+                  "id": "backdown",
+                  "name": {
+                    "en": "Volume Back-Off",
+                    "ru": "Заминка объёмом",
+                    "he": "סטים ירידת נפח"
+                  },
+                  "prescription": {
+                    "en": "4 × 10 at 55–65%",
+                    "ru": "4 × 10 на 55–65%",
+                    "he": "4 × 10 ב-55–65%"
+                  },
+                  "technique": {
+                    "en": "After the heavy work, do high-rep sets with perfect form.|Move the bar with tempo: 2 seconds down, 1 up.|End each set with 2–3 reps in reserve.",
+                    "ru": "После тяжёлой работы — многоповтор у идеальной технике.|Темпо жима: 2 секунды вниз, 1 вверх.|Каждый подход оставляй 2–3 повтора в запасе.",
+                    "he": "אחרי העבודה הכבדה — סטים רבים בחזרות עם טכניקה מושלמת.|קצב המוט: 2 שניות ירידה, 1 שנייה עלייה.|סיים כל סט עם 2–3 חזרות במילואים."
+                  },
+                  "checkpoints": {
+                    "en": "2-0-1 tempo|2–3 reps in reserve|Perfect form",
+                    "ru": "Темпо 2-0-1|2–3 повтора в запасе|Идеальная техника",
+                    "he": "קצב 2-0-1|2–3 חזרות במילואים|טכניקה מושלמת"
+                  },
+                  "mistakes": {
+                    "en": "Turning back-offs into failure sets|Chasing fatigue over quality|Dropping the bar from height",
+                    "ru": "Превращать заминку в отказ|Гнаться за усталостью вместо качества|Бросать гриф с высоты",
+                    "he": "להפוך סטים לכישלון|לרדוף אחרי עייפות במקום איכות|לזרוק מוט מגובה"
+                  },
+                  "exerciseId": "bf_barbell-bench-press",
+                  "image": "/images/rdb/bench-press-start.webp"
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "Rest 3–5 minutes between stations. All stations verified by your coach.",
+                  "ru": "Отдых 3–5 минут между станциями. Все станции проверяет тренер.",
+                  "he": "מנוחה 3–5 דקות בין העמדות. את כל העמדות בודק המאמן."
+                },
+                "stations": [
+                  {
+                    "id": "one_rm",
+                    "type": "load_bw",
+                    "sets": 1,
+                    "target": 1,
+                    "name": {
+                      "en": "Bench press",
+                      "ru": "Жим лёжа",
+                      "he": "לחיצת חזה"
+                    },
+                    "hint": {
+                      "en": "1.0× bodyweight. Paused on chest.",
+                      "ru": "1.0× веса тела. С паузой на груди.",
+                      "he": "פי 1.0 ממשקל הגוף. עצירה על החזה."
+                    }
+                  },
+                  {
+                    "id": "technique",
+                    "type": "manual",
+                    "name": {
+                      "en": "Technique verified",
+                      "ru": "Техника подтверждена",
+                      "he": "טכניקה אומתה"
+                    }
+                  }
+                ]
+              },
+              "trophy": {
+                "id": "bench_silver",
+                "name": {
+                  "en": "Bench Silver",
+                  "ru": "Серебро: жим лёжа",
+                  "he": "כסף: לחיצת חזה"
+                },
+                "description": {
+                  "en": "Bench 1.0× bodyweight.",
+                  "ru": "Жим 1.0× веса тела.",
+                  "he": "לחיצת חזה פי 1.0 ממשקל הגוף."
+                }
+              }
+            },
+            {
+              "id": "gold",
+              "tier": "gold",
+              "name": {
+                "en": "Gold",
+                "ru": "Золото",
+                "he": "זהב"
+              },
+              "goal": {
+                "en": "Bench 1.25× bodyweight — a gym-defining press.",
+                "ru": "Жим 1.25× веса тела — жим уровня зала.",
+                "he": "לחיצת חזה פי 1.25 ממשקל הגוף — לחיצה ברמה של אולם."
+              },
+              "lessons": [
+                {
+                  "id": "peaking",
+                  "name": {
+                    "en": "Peaking to the Max",
+                    "ru": "Пикование к максимуму",
+                    "he": "עלייה לשיא"
+                  },
+                  "prescription": {
+                    "en": "5 × 1 at 82–92%",
+                    "ru": "5 × 1 на 82–92%",
+                    "he": "5 × 1 ב-82–92%"
+                  },
+                  "technique": {
+                    "en": "Work in singles, resting 4–5 minutes.|Video the top sets and compare bar speed.|Leave one rep in the tank on sub-max days.",
+                    "ru": "Работай синглами, отдых 4–5 минут.|Видеосъёмка верхних подходов и сравнение скорости грифа.|На субмаксимальных днях оставляй один повтор в запасе.",
+                    "he": "עבוד בסינגלים, מנוחה 4–5 דקות.|צלם סטים עליונים והשווה מהירות מוט.|בימים תת-מקסימליים השאר חזרה אחת במילואים."
+                  },
+                  "checkpoints": {
+                    "en": "Full resets between singles|Video review|One rep in reserve",
+                    "ru": "Полная установка между синглами|Видеоанализ|Один повтор в запасе",
+                    "he": "התחלה מלאה בין סינגלים|ניתוח וידאו|חזרה אחת במילואים"
+                  },
+                  "mistakes": {
+                    "en": "Ego-pressing singles with bad form|Comparing bars across gyms|Training to failure on max day",
+                    "ru": "Жать синглы с плохой техникой из эго|Сравнивать грифы между залами|Тренироваться до отказа в день максимума",
+                    "he": "לדחוף סינגלים בטכניקה רעה מתוך אגו|להשוות מוטות בין אולמות|להתאמן עד כישלון ביום המקסימום"
+                  },
+                  "exerciseId": "bf_barbell-bench-press",
+                  "image": "/images/rdb/bench-press-peak.webp"
+                },
+                {
+                  "id": "lockout",
+                  "name": {
+                    "en": "Lockout Strength",
+                    "ru": "Дожим в верхней точке",
+                    "he": "כוח ביישור"
+                  },
+                  "prescription": {
+                    "en": "4 × 2 at 85%",
+                    "ru": "4 × 2 на 85%",
+                    "he": "4 × 2 ב-85%"
+                  },
+                  "technique": {
+                    "en": "Use a pin press at the sticking point.|Lock out hard and hold 2 seconds at the top.|Do not bounce off the pins.",
+                    "ru": "Пин-жим в зоне застревания.|Выжми сильно и держи 2 секунды вверху.|Не отскакивай от пинов.",
+                    "he": "השתמש בלחיצה על פינים בנקודת התקיעות.|דחוף חזק והחזק 2 שניות למעלה.|אל תקפוץ מהפינים."
+                  },
+                  "checkpoints": {
+                    "en": "Pin at sticking point|Hard lockout|No bounce",
+                    "ru": "Пины на точке застревания|Жёсткий дожим|Без отскока",
+                    "he": "פינים בנקודת התקיעות|יישור חזק|ללא קפיצה"
+                  },
+                  "mistakes": {
+                    "en": "Grinding unracked pins press too often|Partial lockouts|Bouncing off safety arms",
+                    "ru": "Слишком часто жать с пинов с силой|Неполные дожимы|Отскоки от стопоров",
+                    "he": "לחיצות כוח מופרזות על פינים|יישורים חלקיים|קפיצות ממעצורי הביטחון"
+                  },
+                  "exerciseId": "bf_barbell-bench-press",
+                  "image": "/images/rdb/paused-bench-press-start.webp"
+                },
+                {
+                  "id": "speed_sets",
+                  "name": {
+                    "en": "Speed Bench",
+                    "ru": "Быстрый жим",
+                    "he": "לחיצה מהירה"
+                  },
+                  "prescription": {
+                    "en": "6 × 3 at 60% — max speed",
+                    "ru": "6 × 3 на 60% — максимально быстро",
+                    "he": "6 × 3 ב-60% — מהירות מירבית"
+                  },
+                  "technique": {
+                    "en": "Light weight, every rep maximal bar speed.|Rest 60–90 seconds.|If bar speed drops, end the set.",
+                    "ru": "Лёгкий вес, каждый повтор — максимальная скорость грифа.|Отдых 60–90 секунд.|Если скорость падает — завершай подход.",
+                    "he": "משקל קל, כל חזרה במהירות מוט מירבית.|מנוחה 60–90 שניות.|אם מהירות המוט יורדת — סיים סט."
+                  },
+                  "checkpoints": {
+                    "en": "Max bar speed|60–90s rests|End sets on speed loss",
+                    "ru": "Максимальная скорость грифа|Отдых 60–90 с|Завершай на падении скорости",
+                    "he": "מהירות מוט מירבית|מנוחה 60–90 שנ׳|סיים סטים בירידת מהירות"
+                  },
+                  "mistakes": {
+                    "en": "Grinding light sets|Resting too little|Training speed as strength",
+                    "ru": "Тянуть лёгкие веса|Отдыхать слишком мало|Тренировать скорость как силу",
+                    "he": "לטחון סטים קלים|מנוחה קצרה מדי|לאמן מהירות ככוח"
+                  },
+                  "exerciseId": "bf_barbell-bench-press",
+                  "image": "/images/rdb/bench-press-start.webp"
+                },
+                {
+                  "id": "recovery_mobility",
+                  "name": {
+                    "en": "Chest & Shoulder Mobility",
+                    "ru": "Мобилити груди и плеч",
+                    "he": "ניידות חזה וכתפיים"
+                  },
+                  "prescription": {
+                    "en": "10 minutes after training",
+                    "ru": "10 минут после тренировки",
+                    "he": "10 דקות אחרי אימון"
+                  },
+                  "technique": {
+                    "en": "Foam roll the lats and pecs.|Sleeper stretch for the shoulders.|Banded dislocates for shoulder health.",
+                    "ru": "Раскатка широчайших и грудных на валике.|Растяжка задней дельты (sleeper-стретч).|Банд-дислокации для здоровья плеч.",
+                    "he": "גלגול לטיסימוס וחזה על גליל.|מתיחת כתף למיטה.|דיסלוקציות עם גומיה לבריאות הכתפיים."
+                  },
+                  "checkpoints": {
+                    "en": "Lats + pecs rolled|Sleeper stretch both sides|Band dislocates",
+                    "ru": "Широчайшие + грудные раскатаны|Sleeper-стретч с обеих сторон|Банд-дислокации",
+                    "he": "טיסימוס וחזה מגולגלים|מתיחת כתף למיטה משני הצדדים|דיסלוקציות גומיה"
+                  },
+                  "mistakes": {
+                    "en": "Skipping mobility completely|Aggressive stretching cold|Pushing through shoulder pain",
+                    "ru": "Полный отказ от мобильности|Грубо тянуться на холодную|Жать через боль в плече",
+                    "he": "דילוג מוחלט על ניידות|מתיחות אגרסיביות על קר|לחיצה דרך כאב כתף"
+                  },
+                  "exerciseId": "bf_barbell-bench-press",
+                  "image": "/images/rdb/bench-chest-stretch-main.webp"
+                }
+              ],
+              "exam": {
+                "intro": {
+                  "en": "Rest 4–6 minutes between stations. All stations verified by your coach.",
+                  "ru": "Отдых 4–6 минут между станциями. Все станции проверяет тренер.",
+                  "he": "מנוחה 4–6 דקות בין העמדות. את כל העמדות בודק המאמן."
+                },
+                "stations": [
+                  {
+                    "id": "one_rm",
+                    "type": "load_bw",
+                    "sets": 1,
+                    "target": 1.25,
+                    "name": {
+                      "en": "Bench press",
+                      "ru": "Жим лёжа",
+                      "he": "לחיצת חזה"
+                    },
+                    "hint": {
+                      "en": "1.25× bodyweight. Paused on chest.",
+                      "ru": "1.25× веса тела. С паузой на груди.",
+                      "he": "פי 1.25 ממשקל הגוף. עצירה על החזה."
+                    }
+                  },
+                  {
+                    "id": "technique",
+                    "type": "manual",
+                    "name": {
+                      "en": "Technique verified",
+                      "ru": "Техника подтверждена",
+                      "he": "טכניקה אומתה"
+                    }
+                  }
+                ]
+              },
+              "trophy": {
+                "id": "bench_gold",
+                "name": {
+                  "en": "Bench Gold",
+                  "ru": "Золото: жим лёжа",
+                  "he": "זהב: לחיצת חזה"
+                },
+                "description": {
+                  "en": "Bench 1.25× bodyweight — a gym-defining press.",
+                  "ru": "Жим 1.25× веса тела — жим уровня зала.",
+                  "he": "לחיצת חזה פי 1.25 ממשקל הגוף — לחיצה ברמה של אולם."
                 }
               }
             }
