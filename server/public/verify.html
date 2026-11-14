@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>David King Gym — Кубок · Trophy · גביע</title>
+<meta name="theme-color" content="#070b14" />
+<meta name="robots" content="noindex" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
+  body {
+    min-height: 100vh;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: #e9eefb;
+    background:
+      radial-gradient(900px 500px at 50% -12%, rgba(99,102,241,.30), transparent 60%),
+      radial-gradient(700px 500px at 85% 110%, rgba(245,197,66,.14), transparent 65%),
+      #070b14;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px 16px;
+  }
+  .card {
+    width: min(430px, 100%);
+    border: 1px solid rgba(245,197,66,.35);
+    border-radius: 26px;
+    background: linear-gradient(165deg, rgba(21,29,52,.92), rgba(9,13,26,.96));
+    box-shadow: 0 30px 80px -30px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.08);
+    padding: 34px 26px 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: ""; position: absolute; inset: 8px;
+    border: 1px solid rgba(245,197,66,.22); border-radius: 19px; pointer-events: none;
+  }
+  .eyebrow { font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: #f5c542; font-weight: 800; }
+  .trophy {
+    width: 84px; height: 84px; margin: 18px auto 12px;
+    border-radius: 22px; display: grid; place-items: center;
+    color: #f5c542; background: radial-gradient(circle at 50% 35%, rgba(245,197,66,.28), rgba(245,197,66,.06) 70%);
+    border: 1px solid rgba(245,197,66,.4);
+    box-shadow: 0 0 44px rgba(245,197,66,.22);
+  }
+  .name { font-size: 21px; font-weight: 800; letter-spacing: -.02em; line-height: 1.25; margin-top: 2px; }
+  .tier { font-size: 11px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: #f5c542; margin-top: 6px; }
+  .who { margin-top: 16px; font-size: 13px; color: #aeb8d4; }
+  .who b { display: block; font-size: 17px; color: #fff; margin-top: 3px; letter-spacing: .01em; }
+  .when { font-size: 11px; color: #7d89a8; margin-top: 4px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 14px; height: 28px; padding: 0 12px; border-radius: 9999px;
+    font-size: 10.5px; font-weight: 800; letter-spacing: .08em;
+    color: #0b3b28; background: linear-gradient(90deg, #34d399, #10b981);
+  }
+  .gym { margin-top: 18px; font-size: 12px; color: #8c9bb8; }
+  .gym b { display: block; font-size: 14px; color: #cdd6ee; margin-top: 2px; }
+  .foot { margin-top: 16px; font-size: 9px; color: #55607f; letter-spacing: .14em; text-transform: uppercase; }
+  .state { text-align: center; color: #aeb8d4; font-size: 14px; }
+  .state b { display: block; font-size: 17px; color: #fff; margin-bottom: 6px; }
+  .err { color: #f87171; }
+  .hidden { display: none !important; }
+  :focus-visible { outline: 2px solid #f5c542; outline-offset: 2px; }
+</style>
+</head>
+<body>
+  <main class="card" id="card" aria-live="polite">
+    <div class="state" id="loading">…</div>
+    <div id="result" class="hidden">
+      <div class="eyebrow" id="eyebrow">David King Gym Arena</div>
+      <div class="trophy" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 4h8v4a4 4 0 0 1-8 0V4z"/><path d="M8 5H4v2a4 4 0 0 0 4 4M16 5h4v2a4 4 0 0 1-4 4"/><path d="M12 12v5M8.5 21h7M9.5 17h5"/>
+        </svg>
+      </div>
+      <h1 class="name" id="trophy-name">—</h1>
+      <div class="tier" id="tier">—</div>
+      <div class="who"><span id="athlete-label">Athlete</span><b id="athlete">—</b></div>
+      <div class="when" id="earned">—</div>
+      <span class="badge" id="badge">✓</span>
+      <div class="gym"><b id="gym">David King Gym</b><span id="gym-sub">Official Arena certification</span></div>
+      <div class="foot">David King Gym Arena</div>
+    </div>
+    <div id="missing" class="state hidden">
+      <b id="missing-title">Not found</b>
+      <span id="missing-text">This verification link is invalid or expired.</span>
+    </div>
+  </main>
+  <script>
+    (function () {
+      'use strict';
+      var UI = {
+        ru: { tier: { bronze: 'БРОНЗА', silver: 'СЕРЕБРО', gold: 'ЗОЛОТО' }, athlete: 'Спортсмен', verified: 'Подтверждено тренером', earned: 'Дата получения', notFound: 'Не найдено', badLink: 'Ссылка недействительна или устарела.' },
+        en: { tier: { bronze: 'BRONZE', silver: 'SILVER', gold: 'GOLD' }, athlete: 'Athlete', verified: 'Coach-verified', earned: 'Earned on', notFound: 'Not found', badLink: 'This verification link is invalid or expired.' },
+        he: { tier: { bronze: 'ארד', silver: 'כסף', gold: 'זהב' }, athlete: 'ספורטאי', verified: 'אושר על ידי המאמן', earned: 'תאריך קבלת התואר', notFound: 'לא נמצא', badLink: 'קישור האימות אינו תקף או פג תוקפו.' },
+      };
+      var nav = (navigator.language || 'ru').slice(0, 2).toLowerCase();
+      var L = UI[nav] || UI.ru;
+      document.documentElement.lang = nav in UI ? nav : 'ru';
+      document.getElementById('athlete-label').textContent = L.athlete;
+      document.getElementById('badge').textContent = '✓ ' + L.verified;
+      document.getElementById('missing-title').textContent = L.notFound;
+      document.getElementById('missing-text').textContent = L.badLink;
+
+      function tr(obj, fallback) {
+        if (!obj) return fallback || '';
+        if (typeof obj === 'string') return obj;
+        return obj[document.documentElement.lang] || obj.en || obj.ru || obj.he || fallback || '';
+      }
+      function fmtDate(ts) {
+        try { return new Date(Number(ts)).toLocaleDateString(document.documentElement.lang === 'he' ? 'he-IL' : (document.documentElement.lang === 'ru' ? 'ru-RU' : 'en-GB'), { day: 'numeric', month: 'long', year: 'numeric' }); } catch (_) { return ''; }
+      }
+      var code = new URLSearchParams(window.location.search).get('code') || '';
+      var loading = document.getElementById('loading');
+      var result = document.getElementById('result');
+      var missing = document.getElementById('missing');
+      if (!code) { loading.classList.add('hidden'); missing.classList.remove('hidden'); return; }
+      fetch('/api/verify/' + encodeURIComponent(code), { headers: { accept: 'application/json' } })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+        .then(function (out) {
+          loading.classList.add('hidden');
+          if (!out.ok || !out.j || !out.j.found) { missing.classList.remove('hidden'); return; }
+          var d = out.j;
+          document.getElementById('trophy-name').textContent = tr(d.trophy.name, 'Trophy');
+          document.getElementById('tier').textContent = L.tier[d.trophy.tier] || d.trophy.tier;
+          document.getElementById('athlete').textContent = d.athlete || '—';
+          document.getElementById('earned').textContent = L.earned + ': ' + fmtDate(d.trophy.earned_at);
+          document.getElementById('gym').textContent = d.gym || 'David King Gym';
+          result.classList.remove('hidden');
+        })
+        .catch(function () { loading.classList.add('hidden'); missing.classList.remove('hidden'); });
+    })();
+  </script>
+</body>
+</html>

@@ -79,7 +79,7 @@ ok('all c231 keys exist in RU + EN + HE' + (missing.length ? ' (missing: ' + mis
 
 /* ---------- 6. SW bumped ---------- */
 const sw = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
-ok('SW cache v262', sw.includes("CACHE_NAME = 'dk-gym-v262'"));
+ok('SW cache v263', sw.includes("CACHE_NAME = 'dk-gym-v263'"));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);

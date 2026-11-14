@@ -222,6 +222,61 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
   /* Client Arena: a focused full-screen page inside the client PWA scope.
      The token is the capability; the PIN is only injected so the page can
      write arena_progress (reads also accept the same PIN). */
+  /* Public trophy verification. A tiny certificate page + JSON endpoint.
+     Cross-tenant read is limited to exactly one record selected by the
+     unguessable verification_code; returns only public-safe fields. */
+  app.get('/verify', async (_request, reply) => {
+    try {
+      const html = readFileSync(join(__dirname, '..', 'public', 'verify.html'), 'utf8');
+      return reply.type('text/html').send(html);
+    } catch {
+      throw new ApiError(404, 'not_found', 'Verify page is not installed');
+    }
+  });
+
+  app.get(
+    '/api/verify/:code',
+    { config: { rateLimit: { max: 120, timeWindow: '1 minute' } } },
+    async (request, reply) => {
+      const code = String((request.params as { code?: string }).code || '').trim();
+      if (!/^[A-Za-z0-9-]{8,64}$/.test(code)) {
+        return reply.code(404).send({ found: false });
+      }
+      const result = await pool.query<{ data: Record<string, unknown>; gym: string; tenant_id: string }>(
+        `SELECT r.data, t.display_name AS gym, r.tenant_id
+         FROM records r
+         JOIN tenants t ON t.id = r.tenant_id
+         WHERE r.collection = 'arena_progress'
+           AND r.deleted_at IS NULL
+           AND r.data->'trophies' @> $1::jsonb
+         LIMIT 1`,
+        [JSON.stringify([{ verification_code: code }])],
+      );
+      const hit = result.rows[0];
+      if (!hit) return reply.code(404).send({ found: false });
+      const trophy = ((hit.data as any).trophies || []).find((t: any) => t && t.verification_code === code);
+      if (!trophy) return reply.code(404).send({ found: false });
+      const clientRow = await pool.query<{ data: Record<string, unknown> }>(
+        `SELECT data FROM records
+         WHERE tenant_id = $1 AND collection = 'clients' AND record_id = $2 AND deleted_at IS NULL`,
+        [hit.tenant_id, String((hit.data as any).client_id || '')],
+      );
+      const client = clientRow.rows[0]?.data || {};
+      return {
+        found: true,
+        gym: hit.gym,
+        athlete: String((client as any).full_name || (client as any).name || '').trim(),
+        trophy: {
+          name: trophy.name || {},
+          tier: trophy.tier || 'bronze',
+          path_id: trophy.path_id || '',
+          earned_at: trophy.earned_at || null,
+          approved_by_coach: Boolean(trophy.approved_by_coach),
+        },
+      };
+    },
+  );
+
   app.get('/p/:token/arena', async (request, reply) => {
     const rawToken = (request.params as { token?: string }).token || '';
     const token = encodeURIComponent(rawToken);

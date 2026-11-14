@@ -117,7 +117,15 @@
     assignSave: { en: 'Assign', ru: 'Назначить', he: 'הקצה' },
     assignDone: { en: 'Path assigned', ru: 'Путь назначен', he: 'המסלול הוקצה' },
     assignedByCoach: { en: 'Assigned by your coach', ru: 'Назначил тренер', he: 'הוקצה על ידי המאמן' },
-    reviewHeader: { en: 'Exam review queue', ru: 'Очередь проверки экзаменов', he: 'תור בדיקת המבחנים' }
+    reviewHeader: { en: 'Exam review queue', ru: 'Очередь проверки экзаменов', he: 'תור בדיקת המבחנים' },
+    lessonsLeft: { en: 'lessons to pass this tier', ru: 'до прохождения тира', he: 'שיעורים למעבר הדרגה' },
+    hallTitle: { en: 'Hall of Athletes', ru: 'Арена зала', he: 'ארנת האולם' },
+    hallPending: { en: 'exams to review', ru: 'экзаменов к проверке', he: 'מבחנים לבדיקה' },
+    hallTrophies: { en: 'trophies', ru: 'кубки', he: 'גביעים' },
+    hallLastExam: { en: 'last exam', ru: 'последний экзамен', he: 'מבחן אחרון' },
+    openAthlete: { en: 'Open athlete', ru: 'Открыть атлета', he: 'פתח ספורטאי' },
+    verifyTrophy: { en: 'Verification link', ru: 'Ссылка-проверка кубка', he: 'קישור אימות' },
+    copiedLink: { en: 'Verification link copied', ru: 'Ссылка скопирована', he: 'הקישור הועתק' }
   };
 
   var state = {
@@ -346,6 +354,8 @@
     records.forEach(function (r) { state.records[r.path_id] = r; });
     state.summary = calcSummary(records);
     state.pendingReviews = await allPendingReviews(state.clients);
+    state.hallSummaries = (state.clientId === 'self' && state.view === 'games')
+      ? await computeHallSummaries(state.clients) : [];
 
     var header = renderHeader();
     var body = state.view === 'trophies' ? renderTrophies() :
@@ -445,7 +455,7 @@
         </div>
         ${pathHtml}
       </div>`;
-    }).join('')}</div>`;
+    }).join('') + hallPanel()}</div>`;
   }
 
   async function refreshRecord(pathId) {
@@ -515,6 +525,7 @@
           <div class="min-w-0 flex-1">
             <div class="flex flex-wrap items-center gap-2"><h4 class="font-display font-bold text-sm">${esc(tr(tier.name))}</h4><span class="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-surface-2 text-muted tabular-nums">${checkedLessons}/${tierLessons.length}</span><span class="text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded" style="color:${info.color};background:${info.color}18">${esc(status)}</span></div>
             <div class="text-[11px] text-muted mt-0.5">${esc(tr(tier.goal))}</div>
+            ${!completed ? `<div class="text-[10px] font-bold mt-1" style="color:${info.color}">${tierLessons.length - checkedLessons} ${esc(u('lessonsLeft'))}</div>` : ''}
           </div>
         </div>
         <div class="p-3 space-y-2">${lessonsHtml}${examHtml}</div>
@@ -641,6 +652,50 @@
     </div>`;
   }
 
+  /* c246: "Арена зала" — every athlete in the gym at a glance: trophies,
+     exams waiting for review, last exam date. Only for the coach's own
+     (self) view; replaced when the coach opens an athlete. */
+  async function computeHallSummaries(clients) {
+    var all = [];
+    try { all = await db.all('arena_progress'); } catch (_) { return []; }
+    var byClient = {};
+    (all || []).forEach(function (rec) {
+      var id = String((rec && rec.client_id) || '');
+      if (!byClient[id]) byClient[id] = { id: id, trophies: 0, pending: 0, lastExamAt: 0 };
+      byClient[id].trophies += ((rec && rec.trophies) || []).length;
+      ((rec && rec.exam_attempts) || []).forEach(function (a) {
+        if (!a) return;
+        if (a.status === 'pending') byClient[id].pending += 1;
+        else if (a.at) byClient[id].lastExamAt = Math.max(byClient[id].lastExamAt, a.at);
+      });
+    });
+    var names = {};
+    (clients || []).forEach(function (c) { names[String(c.id)] = clientName(c); });
+    return Object.keys(byClient).map(function (id) {
+      var s = byClient[id];
+      return { id: id, name: names[id] || id, trophies: s.trophies, pending: s.pending, lastExamAt: s.lastExamAt };
+    }).sort(function (a, b) { return (b.pending - a.pending) || (b.trophies - a.trophies); });
+  }
+
+  function hallPanel() {
+    if (!state.hallSummaries.length) return '';
+    var html = '<div class="mt-4 bg-surface border border-border rounded-2xl shadow-card overflow-hidden">'
+      + '<div class="flex items-center gap-2 px-4 py-2.5 border-b border-border"><span class="w-6 h-6 rounded-md grid place-items-center bg-primary/15 text-primary-2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5z"/><path d="M3 20a9 9 0 0 1 18 0"/></svg></span>'
+      + '<h3 class="font-display font-bold text-sm">' + esc(u('hallTitle')) + '</h3>'
+      + '<span class="ml-auto text-[10px] font-bold text-muted">' + state.hallSummaries.length + '</span></div>'
+      + '<div class="divide-y divide-border/40">';
+    state.hallSummaries.forEach(function (s) {
+      html += '<button type="button" data-arena-action="open-athlete" data-client="' + esc(s.id) + '" class="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-surface-2 transition text-start">'
+        + '<span class="min-w-0 flex-1 truncate text-xs font-semibold">' + esc(s.name) + '</span>'
+        + '<span class="text-[10px] font-bold tabular-nums text-warning shrink-0">' + s.trophies + ' ' + esc(u('hallTrophies')) + '</span>'
+        + (s.pending ? '<span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-danger/20 text-danger shrink-0">' + s.pending + ' ' + esc(u('hallPending')) + '</span>' : '')
+        + (s.lastExamAt ? '<span class="text-[9px] text-muted tabular-nums shrink-0 hidden sm:inline">' + esc(fmtDate(s.lastExamAt)) + '</span>' : '')
+        + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5 text-muted shrink-0"><path d="m9 6 6 6-6 6"/></svg></button>';
+    });
+    html += '</div></div>';
+    return html;
+  }
+
   function renderTrophies() {
     var trophies = [];
     Object.keys(state.records).forEach(function (pathId) {
@@ -676,6 +731,7 @@
         ${results ? `<div class="mt-3 pt-2 border-t border-border space-y-1">${results}</div>` : ''}
         <div class="mt-2 flex flex-wrap items-center gap-3">
           ${t.video ? `<a href="${esc(t.video)}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-[10px] font-semibold text-primary-2">${esc(u('video'))} ↗</a>` : ''}
+          ${t.verification_code ? `<button type="button" data-arena-action="copy-verify" data-code="${esc(t.verification_code)}" class="inline-flex items-center gap-1 text-[10px] font-semibold text-cyan-300 hover:text-text">${esc(u('verifyTrophy'))}</button>` : ''}
           <button type="button" data-arena-action="share-trophy" data-path="${esc(t.path_id || '')}" data-tier="${esc(t.tier_id)}" class="inline-flex items-center gap-1 text-[10px] font-semibold text-muted hover:text-text">${esc(u('share'))}</button>
         </div>
       </div>`;
@@ -759,6 +815,9 @@
     rec.exam_attempts = attempts;
     var existing = (rec.trophies || []).some(function (t) { return t.tier_id === tier.id; });
     if (!existing) {
+      var verifyCode = '';
+      try { if (window.crypto && window.crypto.randomUUID) verifyCode = window.crypto.randomUUID().replace(/-/g, ''); } catch (_) {}
+      if (!verifyCode) verifyCode = Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
       var snapshot = {
         id: tier.trophy.id || (pathId + '_' + tier.id),
         tier_id: tier.id,
@@ -771,6 +830,7 @@
         results: (attempt.results || []),
         video: attempt.video || '',
         attempt_id: attempt.id,
+        verification_code: verifyCode,
         approved_by_coach: true
       };
       rec.trophies = (rec.trophies || []).concat(snapshot);
@@ -1055,6 +1115,21 @@
     } else if (action === 'assign-cancel') {
       var panel2 = el.closest('[data-assign-panel]');
       if (panel2) panel2.remove();
+    } else if (action === 'copy-verify') {
+      var vcode = el.getAttribute('data-code');
+      var vurl = window.location.origin + '/verify?code=' + encodeURIComponent(vcode || '');
+      var copied = false;
+      try { if (navigator.share) { navigator.share({ title: 'David King Gym Arena', text: vurl }).catch(function () {}); copied = true; } } catch (_) {}
+      if (!copied) {
+        try { navigator.clipboard.writeText(vurl).then(function () { toastSafe(u('copiedLink'), 'success'); }).catch(function () {}); } catch (_) { toastSafe(vurl, 'info'); }
+      }
+    } else if (action === 'open-athlete') {
+      var cid = el.getAttribute('data-client');
+      state.clientId = String(cid || 'self');
+      state.view = 'games';
+      state.pathId = null;
+      state.flash = null;
+      render();
     } else if (action === 'open-exercise') {
       var exerciseId = el.getAttribute('data-exercise');
       if (exerciseId && typeof openExerciseModal === 'function') openExerciseModal(exerciseId);
