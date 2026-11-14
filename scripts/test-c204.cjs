@@ -17,7 +17,7 @@ ok('recipes are excluded from the product catalog', crm.indexOf("f.source === 'r
 ok('products tab has All + 14 group chips', crm.indexOf('id="food-db-groups"') >= 0 && crm.indexOf('renderGroupChips') >= 0 && crm.indexOf('setCategoryFilter') >= 0);
 ok('group tiles are one equal grid (no tiers)', crm.indexOf('food-group-grid') >= 0 && crm.indexOf("tier === 1 ? ' food-tile-hero'") < 0 && crm.indexOf('data-fdb-page') < 0);
 ok('group cards show four whole photos', crm.indexOf('dk-group-img') >= 0 && css.indexOf('.dk-food-img') >= 0 && css.indexOf('object-fit: contain') >= 0);
-ok('product cards are equal and fully visible', crm.indexOf('dk-product-card') >= 0 && css.indexOf('min-height: 2.5em') >= 0 && css.indexOf('content-visibility: auto') >= 0);
+ok('product cards are equal and fully visible', crm.indexOf('dk-product-card') >= 0 && css.indexOf('min-height: 2.5em') >= 0 && css.indexOf('min-height: 2.35em') >= 0);
 ok('picker uses the same group/card system', crm.indexOf('function pickerTileHTML(f)') >= 0 && crm.indexOf('pickerGridHTML(list)') >= 0 && crm.indexOf('food-group-grid') >= 0);
 ok('right rail lists all products, not eight', crm.indexOf('id="nutri-food-preview"') >= 0 && crm.indexOf('nutri-food-total') >= 0 && crm.indexOf('pool.slice(0, 8)') < 0 && css.indexOf('max-height: 468px') >= 0);
 ok('right rail has the 14 group chips', crm.indexOf('nutri-food-cats') >= 0 && crm.indexOf('DK_FOOD_GROUPS.map') >= 0);
@@ -55,7 +55,7 @@ for (const lang of ['en', 'ru', 'he']) {
 /* ---------- versions ---------- */
 ok('build c213', crm.indexOf('<meta name="dk-build" content="c213" />') >= 0);
 ok('RUNNING 213', crm.indexOf('var RUNNING = 213;') >= 0);
-ok('SW cache v245', sw.indexOf("CACHE_NAME = 'dk-gym-v256'") >= 0);
+ok('SW cache v245', sw.indexOf("CACHE_NAME = 'dk-gym-v257'") >= 0);
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);

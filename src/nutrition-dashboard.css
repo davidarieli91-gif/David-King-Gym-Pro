@@ -729,7 +729,7 @@ html[data-ui="v2"] .nutri-food-meta { display: flex; align-items: center; justif
 html[data-ui="v2"] .nutri-drag-hint { opacity: .75; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 html[data-ui="v2"] .nutri-food-grid {
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px;
-  max-height: 468px; overflow-y: auto; overscroll-behavior: contain;
+  max-height: 468px; overflow-y: auto;
   padding-inline-end: 3px; scrollbar-width: thin; scrollbar-color: rgb(var(--c-primary) / .35) transparent;
 }
 html[data-ui="v2"] .nutri-food-grid::-webkit-scrollbar { width: 4px; }
@@ -738,14 +738,17 @@ html[data-ui="v2"] .nutri-food-tile {
   display: flex; flex-direction: column; min-width: 0; padding: 4px; text-align: start;
   border-radius: 11px; border: 1px solid var(--nutri-line); background: var(--nutri-panel);
   cursor: grab; transition: transform .14s, border-color .14s, box-shadow .14s;
-  content-visibility: auto; contain-intrinsic-size: 90px 155px;
-  touch-action: pan-y; /* c241: vertical swipe always scrolls the rail, never starts a drag */
+  /* c241: NO content-visibility:auto — it broke scroll anchoring on Android Chrome */
+  touch-action: pan-y;
 }
 html[data-ui="v2"] .nutri-food-tile:hover { transform: translateY(-1px); border-color: var(--nutri-line-strong); box-shadow: 0 12px 24px -18px rgba(0,0,0,.8); }
 html[data-ui="v2"] .nutri-food-tile:active { cursor: grabbing; }
 html[data-ui="v2"] .nutri-food-tile.is-dragging { opacity: .4; transform: scale(.97); }
 html[data-ui="v2"] .nutri-food-media { position: relative; display: grid; place-items: center; aspect-ratio: 1 / 1; border-radius: 7px; overflow: hidden; background: radial-gradient(ellipse 70% 60% at 50% 30%, rgba(255,255,255,.08), transparent 72%), rgb(var(--c-surface-2) / .7); padding: 3px; }
 html[data-ui="v2"][data-mode="light"] .nutri-food-media { background: radial-gradient(ellipse 70% 60% at 50% 30%, #fff, transparent 72%), rgb(var(--c-surface-2)); }
+html[data-ui="v2"] .nutri-food-media,
+html[data-ui="v2"] .nutri-food-img,
+html[data-ui="v2"] .nutri-food-media * { touch-action: pan-y; }
 html[data-ui="v2"] .nutri-food-img { width: 100%; height: 100%; object-fit: contain; }
 html[data-ui="v2"] .nutri-food-tile .nutri-food-img { width: 100%; height: 100%; aspect-ratio: auto; object-fit: contain; border-radius: 0; }
 html[data-ui="v2"] .nutri-food-energy b { display: inline; margin-top: 0; font-size: 8.5px; line-height: 1; color: rgb(var(--c-text)); }
