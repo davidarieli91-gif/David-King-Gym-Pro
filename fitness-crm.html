@@ -4925,6 +4925,32 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     .ana-kpi-value { font-size: 21px; }
     .ana-body { flex-basis: 118px; width: 118px; }
   }
+  /* phone: everything wraps instead of clipping — the layout no longer depends
+     on the client's content lengths, so it works the same for every client */
+  @media (max-width: 640px) {
+    .analytics-screen { overflow-x: clip; }
+    .ana-kpi-sub {
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+    .ana-kpi-label { white-space: normal; line-height: 1.3; }
+    #analytics-streak {
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .ana-range, .ana-seg { flex-wrap: wrap; }
+    .ana-range .analytics-range-btn { padding: 6px 10px; font-size: 11px; }
+    .ana-kpis { gap: 6px; }
+    #analytics-client-select { min-width: 0; }
+    #bottom-nav .nav-pill span { font-size: 8px; letter-spacing: 0; }
+  }
 </style>
 </head>
 
