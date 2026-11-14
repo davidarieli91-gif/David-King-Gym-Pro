@@ -739,6 +739,7 @@ html[data-ui="v2"] .nutri-food-tile {
   border-radius: 11px; border: 1px solid var(--nutri-line); background: var(--nutri-panel);
   cursor: grab; transition: transform .14s, border-color .14s, box-shadow .14s;
   content-visibility: auto; contain-intrinsic-size: 90px 155px;
+  touch-action: pan-y; /* c241: vertical swipe always scrolls the rail, never starts a drag */
 }
 html[data-ui="v2"] .nutri-food-tile:hover { transform: translateY(-1px); border-color: var(--nutri-line-strong); box-shadow: 0 12px 24px -18px rgba(0,0,0,.8); }
 html[data-ui="v2"] .nutri-food-tile:active { cursor: grabbing; }

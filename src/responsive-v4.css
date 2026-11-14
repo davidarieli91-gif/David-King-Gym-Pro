@@ -542,3 +542,97 @@ html[data-ui="v2"] .v2-global-search kbd { background: rgba(255,255,255,.06); }
   /* edge-to-edge product band on small phones (tiles span ~92% of the window) */
   html[data-ui="v2"] [data-screen="nutrition"] { padding-inline: 6px !important; }
 }
+
+/* ============================================================
+   c241 — phone pass, part 3: the WHOLE nutrition system sized
+   for a phone screen (client row, meal rows, total bar, notes,
+   history, icon buttons — nothing is allowed micro-text)
+   ============================================================ */
+@media (max-width: 820px) {
+  /* --- client row --- */
+  html[data-ui="v2"] .nutri-avatar { width: 54px; height: 54px; border-radius: 16px; font-size: 19px; }
+  html[data-ui="v2"] .nutri-client-line h2 { font-size: 17px; }
+  html[data-ui="v2"] .nutri-active { font-size: 10px; padding: 3px 9px; }
+  html[data-ui="v2"] .nutri-active .v2-live-dot { width: 5px; height: 5px; }
+  html[data-ui="v2"] .nutri-client-meta span { font-size: 12px; gap: 5px; }
+  html[data-ui="v2"] .nutri-client-switch { height: 44px; min-width: 0; flex: 1 1 auto; padding: 0 12px; }
+  html[data-ui="v2"] .nutri-client-switch select { font-size: 12px; }
+  html[data-ui="v2"] .nutri-client-card { flex: 1 1 100%; }
+  html[data-ui="v2"] .nutri-client-row { padding: 12px; }
+  /* week arrows + today */
+  html[data-ui="v2"] .nutri-week-arrow,
+  html[data-ui="v2"] .nutri-week-cal { width: 40px; height: 44px; border-radius: 12px; }
+  html[data-ui="v2"] .nutri-week-arrow svg,
+  html[data-ui="v2"] .nutri-week-cal svg { width: 17px; height: 17px; }
+  html[data-ui="v2"] .nutri-week-today { height: 44px; font-size: 11px; padding: 0 12px; border-radius: 12px; }
+
+  /* --- meal rows («Панелька после тренировки» etc.) --- */
+  html[data-ui="v2"] .nutri-meal-time { font-size: 11px; min-height: 30px; border-radius: 10px; }
+  html[data-ui="v2"] .nutri-meal-title b { font-size: 15px; }
+  html[data-ui="v2"] .nutri-meal-title small { font-size: 10.5px; }
+  html[data-ui="v2"] .nutri-meal-sub { font-size: 10.5px; margin-top: 3px; }
+  html[data-ui="v2"] .nutri-food-chip { font-size: 10px; padding: 3px 8px 3px 3px; gap: 5px; }
+  html[data-ui="v2"] .nutri-food-chip img,
+  html[data-ui="v2"] .nutri-food-chip .nutri-chip-ph { width: 22px; height: 22px; }
+  html[data-ui="v2"] .nutri-food-chip em { font-size: 10px; }
+  html[data-ui="v2"] .nutri-food-chip .nutri-chip-x { width: 20px; height: 20px; opacity: .6; }
+  html[data-ui="v2"] .nutri-food-chip .nutri-chip-x svg { width: 10px; height: 10px; }
+  html[data-ui="v2"] .nutri-meal-addchip { font-size: 10.5px; padding: 4px 12px; }
+  html[data-ui="v2"] .nutri-meal-kcal b { font-size: 19px; }
+  html[data-ui="v2"] .nutri-meal-kcal small { font-size: 9px; }
+  html[data-ui="v2"] .nutri-meal-macros span { font-size: 9.5px; }
+  html[data-ui="v2"] .nutri-meal-check { width: 34px; height: 34px; }
+  html[data-ui="v2"] .nutri-meal-check svg { width: 16px; height: 16px; }
+  html[data-ui="v2"] .nutri-meal-emptyrow { font-size: 11px; min-height: 48px; }
+  html[data-ui="v2"] .nutri-meal-emptyrow svg { width: 16px; height: 16px; }
+
+  /* --- day total bar («Итого за день») --- */
+  html[data-ui="v2"] .nutri-total-bar { gap: 10px; padding: 12px; border-radius: 18px; }
+  html[data-ui="v2"] .nutri-total-label { font-size: 10.5px; }
+  html[data-ui="v2"] .nutri-total-main b { font-size: 23px; }
+  html[data-ui="v2"] .nutri-total-main small { font-size: 11px; }
+  html[data-ui="v2"] .nutri-total-macros { gap: 10px; }
+  html[data-ui="v2"] .nutri-total-macros span { font-size: 11px; }
+  html[data-ui="v2"] .nutri-total-progress > span { font-size: 12.5px; }
+  html[data-ui="v2"] .nutri-total-bar-track { height: 9px; }
+
+  /* --- trainer notes / recommendations card --- */
+  html[data-ui="v2"] .nutri-extra-card { padding: 14px; }
+  html[data-ui="v2"] .nutri-extra-head h3 { font-size: 16px; }
+  html[data-ui="v2"] .nutri-extra-ic { width: 31px; height: 31px; border-radius: 10px; }
+  html[data-ui="v2"] .nutri-extra-ic svg { width: 16px; height: 16px; }
+  html[data-ui="v2"] .nutri-advice-grid { gap: 8px; }
+  html[data-ui="v2"] .nutri-advice { font-size: 11px; min-height: 62px; padding: 10px; gap: 8px; border-radius: 13px; line-height: 1.45; }
+  html[data-ui="v2"] .nutri-advice-ic { width: 24px; height: 24px; border-radius: 7px; font-size: 13px; }
+  html[data-ui="v2"] .nutri-popular-grid { gap: 8px; }
+  html[data-ui="v2"] .nutri-popular img { height: 78px; }
+  html[data-ui="v2"] .nutri-popular-copy { padding: 7px 8px 8px; }
+  html[data-ui="v2"] .nutri-popular-copy b { font-size: 11px; }
+  html[data-ui="v2"] .nutri-popular-copy small { font-size: 9.5px; }
+
+  /* --- history --- */
+  html[data-ui="v2"] .nutri-history-summary small { font-size: 10px; }
+  html[data-ui="v2"] .nutri-history-summary b { font-size: 15px; }
+  html[data-ui="v2"] .nutri-history-date b { font-size: 11px; }
+  html[data-ui="v2"] .nutri-history-date small { font-size: 9px; }
+  html[data-ui="v2"] .nutri-history-kcal { font-size: 12px; }
+  html[data-ui="v2"] .nutri-history-pct { font-size: 11px; }
+  html[data-ui="v2"] .nutri-history-macros { font-size: 9px; gap: 8px; }
+  html[data-ui="v2"] .nutri-history-row { padding: 12px; }
+
+  /* --- progress card / rings / chart --- */
+  html[data-ui="v2"] .nutri-day-ring-in > span { font-size: 10px; }
+  html[data-ui="v2"] .nutri-day-ring-in small { font-size: 9.5px; }
+  html[data-ui="v2"] .nutri-week-labels span { font-size: 9px; }
+  html[data-ui="v2"] .nutri-metric span { font-size: 10px; }
+  html[data-ui="v2"] .nutri-metric b { font-size: 13px; }
+  html[data-ui="v2"] .nutri-progress-goal-line { font-size: 12px; }
+
+  /* --- every small square control in the nutrition system --- */
+  html[data-ui="v2"] .nutri-icon-btn { width: 38px; height: 38px; border-radius: 10px; }
+  html[data-ui="v2"] .nutri-icon-btn svg { width: 17px; height: 17px; }
+  html[data-ui="v2"] .nutri-recipe-actions button { width: 34px; height: 34px; border-radius: 8px; }
+  html[data-ui="v2"] .nutri-count { height: 28px; min-width: 28px; font-size: 11px; }
+  html[data-ui="v2"] .nutri-empty-ic svg { width: 34px; height: 34px; }
+  html[data-ui="v2"] .nutri-day-ring { width: 118px; height: 118px; }
+}

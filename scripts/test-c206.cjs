@@ -38,7 +38,7 @@ ok('portal light-mode text rules still exist', portal.indexOf('[data-mode="light
 ok('trainer build c213', crm.indexOf('<meta name="dk-build" content="c213" />') >= 0);
 ok('trainer RUNNING 213', crm.indexOf('var RUNNING = 213;') >= 0);
 ok('sidebar + login show c206', crm.indexOf('id="v2-side-version">c213') >= 0 && crm.indexOf('3 languages · c213') >= 0);
-ok('SW cache v255', sw.indexOf("CACHE_NAME = 'dk-gym-v255'") >= 0);
+ok('SW cache v256', sw.indexOf("CACHE_NAME = 'dk-gym-v256'") >= 0);
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
