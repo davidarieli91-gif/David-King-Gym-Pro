@@ -55,7 +55,7 @@ for (const lang of ['en', 'ru', 'he']) {
 /* ---------- versions ---------- */
 ok('build c213', crm.indexOf('<meta name="dk-build" content="c213" />') >= 0);
 ok('RUNNING 213', crm.indexOf('var RUNNING = 213;') >= 0);
-ok('SW cache v245', sw.indexOf("CACHE_NAME = 'dk-gym-v245'") >= 0);
+ok('SW cache v245', sw.indexOf("CACHE_NAME = 'dk-gym-v251'") >= 0);
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);

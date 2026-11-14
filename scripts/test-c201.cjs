@@ -16,7 +16,7 @@ ok('experimental SVG model file removed', !fs.existsSync(path.join(__dirname, '.
 ok('no DKAnatomy runtime left', crm.indexOf('DKAnatomy') < 0 && crm.indexOf('anatomy-svg.js') < 0);
 ok('anatomy modal removed', crm.indexOf('ana-modal') < 0 && crm.indexOf('data-open-anatomy') < 0 && crm.indexOf('v2-ch-anatomy') < 0);
 ok('atlas SVG button removed', crm.indexOf('atlas-svg-btn') < 0);
-ok('3D atlas remains', crm.indexOf('id="atlas-modal"') >= 0 && crm.indexOf('id="atlas-canvas"') >= 0);
+ok('3D atlas is an in-system screen', crm.indexOf('data-screen="atlas"') >= 0 && crm.indexOf('id="atlas-canvas"') >= 0 && crm.indexOf('id="atlas-modal"') < 0);
 ok('language control is a select', /<select id="atlas-lang"[\s\S]*?<option value="en">EN<\/option>[\s\S]*?<option value="ru">RU<\/option>[\s\S]*?<option value="he">HE<\/option>/.test(crm));
 ok('language select changes app language', crm.indexOf("langBtn.addEventListener('change'") >= 0 && crm.indexOf("var next = langBtn.value") >= 0);
 ok('language select is styled', crm.indexOf('.v2-atlas-lang-select') >= 0 && crm.indexOf('.v2-atlas-lang-chev') >= 0);
@@ -32,7 +32,7 @@ ok('profile hero has real stats', crm.indexOf("t('client.age')") >= 0 && crm.ind
 ok('i18n profileEyebrow kept in 3 languages', !!(en.client.profileEyebrow && ru.client.profileEyebrow && he.client.profileEyebrow));
 ok('i18n muscleMap key removed', !(en.client.muscleMap || ru.client.muscleMap || he.client.muscleMap));
 ok('build is c213', crm.indexOf('<meta name="dk-build" content="c213" />') >= 0);
-ok('SW cache is v232', sw.indexOf("const CACHE_NAME = 'dk-gym-v245'") >= 0);
+ok('SW cache is v232', sw.indexOf("const CACHE_NAME = 'dk-gym-v251'") >= 0);
 ok('running build label is c205', crm.indexOf('var RUNNING = 213') >= 0);
 ok('login/sidebar show c205', crm.indexOf('3 languages · c213') >= 0 && crm.indexOf('id="v2-side-version">c213') >= 0);
 

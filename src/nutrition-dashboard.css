@@ -102,6 +102,18 @@ html[data-ui="v2"] .nutri-client-switch select {
   color: rgb(var(--c-text)); font-size: 10px; font-weight: 700; width: 100%; padding-inline-end: 14px; cursor: pointer;
 }
 html[data-ui="v2"] .nutri-client-switch option { background: rgb(var(--c-surface)); color: rgb(var(--c-text)); }
+/* c236: composite controls are ONE plate — the inner field stays transparent.
+   The global v2 rule paints every input[type=search]/select with the input
+   plate (!important), which drew a second darker square inside the switch and
+   inside the search rows (the "double panel" effect). */
+html[data-ui="v2"] .nutri-search input[type="search"] {
+  background: transparent !important; border-color: transparent !important; box-shadow: none !important;
+}
+html[data-ui="v2"] .nutri-client-switch select,
+html[data-ui="v2"] .nutri-client-switch select:focus,
+html[data-ui="v2"] .nutri-client-switch select:focus-visible {
+  background: transparent !important; border-color: transparent !important; box-shadow: none !important; outline: none;
+}
 html[data-ui="v2"] .nutri-chev { width: 10px; height: 10px; position: absolute; inset-inline-end: 7px; color: rgb(var(--c-muted)); pointer-events: none; }
 html[data-ui="v2"] .nutri-client-card { display: flex; align-items: center; gap: 10px; flex: 1 1 300px; min-width: 0; }
 html[data-ui="v2"] .nutri-avatar {

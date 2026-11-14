@@ -34,7 +34,7 @@ ok('nutrition screen uses the new dashboard width', crm.indexOf('<div data-scree
 ok('two-column dashboard shell', crm.indexOf('class="nutri-dash"') >= 0 && crm.indexOf('class="nutri-main"') >= 0 && crm.indexOf('class="nutri-rail"') >= 0);
 ok('glass shell + right rail cards', crm.indexOf('class="nutri-shell"') >= 0 && crm.indexOf('nutri-side-card nutri-day-card') >= 0 && crm.indexOf('nutri-side-card nutri-food-card') >= 0 && crm.indexOf('nutri-side-card nutri-progress-card') >= 0);
 ok('header mark + title + eyebrow', crm.indexOf('nutri-head-mark') >= 0 && crm.indexOf('nutrition.osEyebrow') >= 0 && crm.indexOf('nutrition.dashboardTitle') >= 0 && crm.indexOf('nutrition.planSubtitle') >= 0);
-ok('five tabs (plan/products/recipes/templates/history)', ['log', 'database', 'recipes', 'templates', 'history'].every(t => crm.indexOf('data-nutrition-tab="' + t + '"') >= 0) && (crm.match(/<button[^>]*data-nutrition-tab="/g) || []).length === 5);
+ok('six tabs (plan/products/compare/recipes/templates/history)', ['log', 'database', 'compare', 'recipes', 'templates', 'history'].every(t => crm.indexOf('data-nutrition-tab="' + t + '"') >= 0) && (crm.match(/<button[^>]*data-nutrition-tab="/g) || []).length === 6);
 ok('five matching panels', ['log', 'database', 'recipes', 'templates', 'history'].every(t => crm.indexOf('data-nutrition-panel="' + t + '"') >= 0));
 ok('client selector + client summary card', crm.indexOf('id="nutrition-client-select"') >= 0 && crm.indexOf('id="nutri-client-name"') >= 0 && crm.indexOf('id="nutri-client-goal"') >= 0 && crm.indexOf('id="nutri-client-weight"') >= 0);
 ok('week navigation + seven-day strip', crm.indexOf('id="nutri-week-prev"') >= 0 && crm.indexOf('id="nutri-week-next"') >= 0 && crm.indexOf('id="nutri-week-calendar"') >= 0 && crm.indexOf('id="nutri-week-today"') >= 0 && crm.indexOf('id="nutri-week-days"') >= 0);
@@ -103,7 +103,7 @@ ok('Hebrew dashboard copy is Hebrew', /[\u0590-\u05FF]/.test(he.nutrition.tabPla
 ok('trainer build is c213', crm.indexOf('<meta name="dk-build" content="c213" />') >= 0);
 ok('RUNNING is 203', crm.indexOf('var RUNNING = 213;') >= 0);
 ok('sidebar/login show c205', crm.indexOf('id="v2-side-version">c213') >= 0 && crm.indexOf('3 languages · c213') >= 0);
-ok('service worker cache is v232', sw.indexOf("CACHE_NAME = 'dk-gym-v245'") >= 0);
+ok('service worker cache is v232', sw.indexOf("CACHE_NAME = 'dk-gym-v251'") >= 0);
 ok('service worker documents v232', sw.indexOf('// v232: c205') >= 0);
 ok('service worker precaches the dashboard CSS', sw.indexOf("'./src/nutrition-dashboard.css'") >= 0);
 
