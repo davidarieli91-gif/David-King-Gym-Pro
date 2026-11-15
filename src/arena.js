@@ -217,18 +217,10 @@
     if (!isFinite(n)) return '139 92 246';
     return [(n >> 16) & 255, (n >> 8) & 255, n & 255].join(' ');
   }
-  /* c250: arena lesson art is a transparent cut-out (scripts/build-arena-art.cjs).
-     Same slug rule as the build script: images/rdb/foo.webp -> /images/arena/rdb__foo.webp. */
-  function arenaArt(src) {
-    var rel = String(src || '')
-      .replace(/^\/+/, '')
-      .replace(/^images\//, '')
-      .replace(/\.webp$/i, '')
-      .replace(/[/\\]+/g, '__')
-      .replace(/[^a-z0-9_-]+/gi, '-')
-      .toLowerCase();
-    return rel ? '/images/arena/' + rel + '.webp' : '';
-  }
+  /* c251: lesson art is used EXACTLY as the exercise database ships it — the
+     original animated files, nothing re-encoded, nothing transcoded. The
+     theme-aware rules in input.css (invert/screen/multiply by src path) make
+     them look right in dark and light themes everywhere else in the app. */
   function toastSafe(message, type) {
     try { if (typeof toast === 'function') toast(message, type || 'info', 2600); } catch (_) {}
   }
@@ -527,7 +519,6 @@
       var lessonsHtml = tierLessons.map(function (lesson) {
         var key = tier.id + '::' + lesson.id;
         var checked = completed || (rec.completed_lessons || []).indexOf(key) !== -1;
-        var art = lesson.image ? arenaArt(lesson.image) : '';
         return `<div class="arena-lesson ${checked ? 'is-done' : ''} ${(!current && !completed) ? 'is-locked' : ''}" style="--ta:${tierColor}">
           <label class="arena-lesson-row">
             <input type="checkbox" class="arena-lesson-check" ${checked ? 'checked' : ''} ${(!current || completed) ? 'disabled' : ''} data-arena-action="toggle-lesson" data-tier="${esc(tier.id)}" data-lesson="${esc(lesson.id)}" />
@@ -539,7 +530,7 @@
           <details class="arena-lesson-more">
             <summary>${esc(u('exerciseCard'))}</summary>
             <div class="arena-lesson-card">
-              ${lesson.image ? `<div class="arena-media"><span class="arena-media-tag">${esc(u('technique'))}</span><img src="${esc(art)}" alt="${esc(tr(lesson.name))}" loading="lazy" data-fallback="${esc(lesson.image)}" /></div>` : ''}
+              ${lesson.image ? `<div class="arena-lesson-media"><img src="${esc(lesson.image)}" alt="${esc(tr(lesson.name))}" loading="lazy" /></div>` : ''}
               <div><b>${esc(u('technique'))}:</b><br>${lines(tr(lesson.technique)).map(esc).join('<br>')}</div>
               <div><b>${esc(u('checkpoints'))}:</b><br>${lines(tr(lesson.checkpoints)).map(esc).join('<br>')}</div>
               <div><b>${esc(u('mistakes'))}:</b><br>${lines(tr(lesson.mistakes)).map(esc).join('<br>')}</div>
@@ -1247,17 +1238,6 @@
       render();
     }
   });
-
-  /* c250: if a cut-out is missing (old build, interrupted sync), fall back to
-     the source illustration once instead of showing a broken image. Error
-     events do not bubble, so listen in the capture phase. */
-  document.addEventListener('error', function (event) {
-    var img = event.target;
-    if (!img || img.tagName !== 'IMG' || !img.hasAttribute('data-fallback')) return;
-    var fallback = img.getAttribute('data-fallback');
-    img.removeAttribute('data-fallback');
-    if (fallback) img.setAttribute('src', fallback);
-  }, true);
 
   window.DK_ARENA = { open: open, refresh: refresh, fillProfileSummary: fillProfileSummary };
   try { if (typeof screens !== 'undefined') screens.arena = { refresh: refresh }; } catch (_) {}

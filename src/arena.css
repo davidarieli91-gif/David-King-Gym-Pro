@@ -1,16 +1,13 @@
 /* ============================================================================
-   c250 — DKG Arena visual system
+   c251 — DKG Arena visual system
    ----------------------------------------------------------------------------
-   The Arena used to be plain Tailwind cards: flat rows, default borders, and
-   exercise art that inherited the app-wide invert filters (washed out in dark
-   themes, heavy and muddy in amber, near-black in light). This file gives the
-   Arena its own language that matches the rest of Vision v2:
+   The Arena used to be plain Tailwind cards: flat rows, default borders.
+   This file gives the Arena its own language that matches the rest of Vision v2:
 
    hero with a floating trophy mark, stat plates, glow tabs, game cards with
    colour bands + watermark icons, tier cards, lesson rows, a trophy case and
-   the coach review queue. Exercise art now lives on .arena-media — a stage
-   with a fixed dark/light plate and TRANSPARENT cut-outs (images/arena), so
-   no theme filter can touch it: the figure stays crisp in every theme.
+   the coach review queue. Exercise art renders directly from the exercise
+   database (c251) with the app-wide theme filters — nothing re-encoded.
    ========================================================================== */
 
 html[data-ui="v2"] [data-screen="arena"] {
@@ -719,7 +716,6 @@ html[data-mode="light"] .arena-lesson-check { background: #fff; }
   color: rgb(var(--c-muted));
 }
 .arena-lesson-card b { color: rgb(var(--c-text)); }
-.arena-lesson-card .arena-media { margin-bottom: 2px; }
 
 /* earned-trophy strip inside a completed tier */
 .arena-trophy-line {
@@ -767,98 +763,25 @@ html[data-mode="light"] .arena-lesson-check { background: #fff; }
 }
 .arena-locked::before { content: "🔒"; font-size: 11px; line-height: 1; }
 
-/* --------------------------------------------------- lesson art stage --- */
-/* The one and only image treatment for Arena art. The art is a transparent
-   cut-out (images/arena), so the plate below is what the figure stands on:
-   deep navy in dark themes, ice in light themes. Filters that the app applies
-   to `images/rdb|bf_` are neutralised here on purpose. */
-.arena-media {
-  position: relative;
+/* ---------------------------------------------------- lesson media --- */
+/* c251: the exercise art shown here is EXACTLY the original file from the
+   exercise database (images/rdb|bf_|gi_...) — no re-encoding, no slug
+   rewriting. The app-wide theme rules (invert/screen for bf|rdb, invert+multiply
+   for gi) handle dark/light rendering like everywhere else. */
+.arena-lesson-media {
   display: grid;
   place-items: center;
-  min-height: 150px;
-  padding: 12px 12px 8px;
-  border-radius: 16px;
+  padding: 8px;
+  border-radius: 14px;
   overflow: hidden;
-  isolation: isolate;
-  border: 1px solid rgba(120, 165, 255, .22);
-  background:
-    radial-gradient(ellipse 68% 62% at 50% 26%, rgba(64, 132, 255, .26), transparent 70%),
-    radial-gradient(ellipse 90% 60% at 50% 108%, rgba(34, 211, 238, .12), transparent 66%),
-    linear-gradient(165deg, #101d3a 0%, #0a1226 62%, #060b18 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 18px 40px -30px rgba(0, 0, 0, .9);
+  border: 1px solid var(--v2-border, rgba(112, 150, 230, .22));
+  background: var(--v2-surface-2, rgba(255, 255, 255, .04));
 }
-.arena-media::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 50% 100%, rgba(255, 255, 255, .14) 0 1px, transparent 1.5px);
-  background-size: 26px 14px;
-  -webkit-mask-image: radial-gradient(ellipse 70% 50% at 50% 100%, #000, transparent 72%);
-  mask-image: radial-gradient(ellipse 70% 50% at 50% 100%, #000, transparent 72%);
-  opacity: .5;
-}
-.arena-media::after {
-  content: "";
-  position: absolute;
-  inset-inline: 26%;
-  bottom: 10px;
-  height: 14px;
-  border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(0, 0, 0, .5), transparent 70%);
-  filter: blur(4px);
-  pointer-events: none;
-}
-.arena-media > img {
-  position: relative;
-  z-index: 1;
+.arena-lesson-media > img {
   display: block;
   width: 100%;
   max-height: 230px;
   object-fit: contain;
-  background: transparent !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  /* neutralise the app-wide invert/screen rules for rdb/bf art */
-  filter: drop-shadow(0 16px 18px rgba(3, 8, 20, .55)) !important;
-  mix-blend-mode: normal !important;
-}
-/* In light themes the plate stays deep navy on purpose. The cut-out figure is
-   a light grey/blue illustration (mean luminance ~153): on an ice plate its
-   contrast is only 1.5:1 and it looks washed out — exactly the bug this
-   redesign fixes. A dark stage gives 6.4:1 in both themes, so the figure is
-   crisp everywhere; only the outer rim, tag and shadow follow the theme. */
-html[data-ui="v2"][data-mode="light"] .arena-media {
-  border-color: rgba(30, 80, 150, .32);
-  background:
-    radial-gradient(ellipse 68% 62% at 50% 30%, rgba(64, 132, 255, .3), transparent 70%),
-    radial-gradient(ellipse 90% 60% at 50% 108%, rgba(34, 211, 238, .14), transparent 66%),
-    linear-gradient(165deg, #16233f 0%, #0a1224 62%, #070d1a 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), 0 16px 34px -24px rgba(15, 50, 110, .55);
-}
-html[data-ui="v2"][data-mode="light"] .arena-media::before { background: radial-gradient(circle at 50% 100%, rgba(190, 220, 255, .16) 0 1px, transparent 1.4px); background-size: 26px 14px; }
-html[data-ui="v2"][data-mode="light"] .arena-media::after { background: radial-gradient(ellipse at center, rgba(0, 0, 0, .55), transparent 70%); }
-html[data-ui="v2"][data-mode="light"] .arena-media > img { filter: drop-shadow(0 14px 18px rgba(2, 6, 18, .6)) !important; }
-.arena-media-tag {
-  position: absolute;
-  z-index: 2;
-  top: 8px;
-  inset-inline-start: 8px;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 8px;
-  border-radius: 999px;
-  background: rgba(3, 7, 18, .55);
-  border: 1px solid rgba(120, 165, 255, .26);
-  color: rgba(190, 220, 255, .9);
-  font-size: 8.5px;
-  font-weight: 800;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  backdrop-filter: blur(6px);
 }
 
 /* --------------------------------------------------------------- exam --- */
@@ -1196,8 +1119,7 @@ html[data-mode="light"] .arena-station { background: rgba(255, 255, 255, .7); }
   .arena-tier-body { padding: 8px; }
   .arena-tier-title h4 { font-size: 12.5px; }
   .arena-lesson { padding: 9px 10px; }
-  .arena-media { min-height: 120px; padding: 10px 8px 6px; }
-  .arena-media > img { max-height: 180px; }
+  .arena-lesson-media > img { max-height: 180px; }
   .arena-trophy { padding: 12px; }
   .arena-review-actions { flex-direction: column; }
   .arena-approve, .arena-reject { justify-content: center; }

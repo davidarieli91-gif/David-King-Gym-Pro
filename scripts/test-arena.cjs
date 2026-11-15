@@ -33,11 +33,11 @@ ok('trophy names are tier + path', /Бронзов/.test(dl.tiers[0].trophy.name
 ok('trophies are trilingual', mu.tiers.every(t => t.trophy.name.en && t.trophy.name.ru && t.trophy.name.he));
 ok('arena screen exists', crm.includes('data-screen="arena"') && crm.includes('id="arena-root"'));
 ok('arena nav exists', crm.includes('data-nav="arena"') && crm.includes('data-i18n="nav.arena"'));
-ok('arena script is loaded', crm.includes('src/arena.js?v=250'));
+ok('arena script is loaded', crm.includes('src/arena.js?v=251'));
 ok('arena store is in the schema', crm.includes("name: 'arena_progress'") && crm.includes("by_clientId"));
 ok('arena progress is synced', sync.includes("'arena_progress'"));
 ok('arena data and script are copied to dist', copy.includes("'arena-data.json'") && copy.includes("'src/arena.js'"));
-ok('service worker v266 includes arena', sw.includes("CACHE_NAME = 'dk-gym-v267'") && sw.includes('./src/arena.js') && sw.includes('./arena-data.json'));
+ok('service worker v266 includes arena', sw.includes("CACHE_NAME = 'dk-gym-v268'") && sw.includes('./src/arena.js') && sw.includes('./arena-data.json'));
 ok('profile exposes trophy count and arena shortcut', crm.includes('profile-arena-count') && crm.includes('data-quick-action="arena"'));
 ok('arena has exam + trophy logic', js.includes('submitExam') && js.includes('trophyEarned') && js.includes('exam_attempts'));
 ok('arena shows last-attempt breakdown + weak stations', js.includes('function examResultRows') && js.includes("u('weakStations')") && js.includes("u('attemptHistory')"));
@@ -80,21 +80,20 @@ ok('trainer can assign a path to a client', read('src/arena.js').includes('assig
 ok('hall-of-athletes summary exists', read('src/arena.js').includes('computeHallSummaries') && read('src/arena.js').includes('hallPanel') && read('src/arena.js').includes("data-arena-action=\"open-athlete\""));
 ok('trophy verification links exist', read('src/arena.js').includes('verification_code') && read('src/arena.js').includes("data-arena-action=\"copy-verify\"") && read('server/src/app.ts').includes("'/api/verify/:code'") && read('server/public/verify.html').includes('/api/verify/'));
 ok('live-workout arena banner + exam video capture exist', read('fitness-crm.html').includes('id="live-arena-banner"') && read('fitness-crm.html').includes('dkArenaNextTask') && read('fitness-crm.html').includes('dkArenaUploadVideo') && read('src/arena.js').includes('video:file') && read('src/arena.js').includes('video_file_id') && read('src/arena.js').includes('uploadingVideo') && read('src/i18n/ru.json').includes('arenaExamReady') && read('src/i18n/en.json').includes('arenaExamReady') && read('src/i18n/he.json').includes('arenaExamReady'));
-/* c250: Arena visual system + cut-out art. */
+/* c251: Arena visual system + direct database art (no transcoding). */
 const arenaCss = read('src/arena.css');
-const manifest = JSON.parse(read('images/arena/manifest.json'));
 const lessonImages = new Set();
 for (const game of arena.games || []) for (const p of game.paths || []) for (const tier of p.tiers || []) for (const lesson of tier.lessons || []) if (lesson.image) lessonImages.add(lesson.image);
 ok('arena content is v8', arena.version === 8);
-ok('every arena lesson image has a transparent cut-out', [...lessonImages].every((src) => manifest[src] && fs.existsSync(path.join(root, manifest[src]))));
-ok('arena build creates one cut-out per source', Object.keys(manifest).length === lessonImages.size && ![...lessonImages].some((src) => /\/gi_/.test(src)));
+ok('every arena lesson image is an original exercise-db file that exists', [...lessonImages].every((src) => fs.existsSync(path.join(root, src))));
+ok('lesson art is not re-encoded anywhere', ![...lessonImages].some((src) => src.includes('/arena/')) && ![...lessonImages].some((src) => /arena/.test(src)));
 ok('arena.css is linked in the trainer shell', crm.includes('href="src/arena.css"'));
 ok('arena.css is copied to dist', copy.includes("'src/arena.css'"));
-ok('arena hero / games / tiers / media are styled', ['.arena-hero', '.arena-games', '.arena-tier', '.arena-media', '.arena-trophy'].every((cls) => arenaCss.includes(cls + ' {')));
-ok('arena art stage neutralises app-wide image filters', arenaCss.includes('mix-blend-mode: normal !important') && arenaCss.includes('filter: drop-shadow') && arenaCss.includes('!important'));
-ok('arena art stage keeps a dark plate in light themes too', /\[data-mode="light"\] \.arena-media \{/.test(arenaCss));
-ok('trainer renders arena art cut-outs with a fallback', js.includes('function arenaArt') && js.includes('data-fallback=') && js.includes("addEventListener('error'"));
-ok('client arena renders the same art cut-outs', read('server/public/portal-arena.html').includes('function arenaArt') && read('server/public/portal-arena.html').includes('class="lesson-art"') && read('server/public/portal-arena.html').includes('data-fallback='));
+ok('arena hero / games / tiers / lessons are styled', ['.arena-hero', '.arena-games', '.arena-tier', '.arena-lesson-media', '.arena-trophy'].every((cls) => arenaCss.includes(cls + ' {')));
+ok('arena art stage is gone (app-wide filters apply again)', !arenaCss.includes('.arena-media {') && !arenaCss.includes('arena-media-tag'));
+ok('trainer renders the original exercise-db images directly', !js.includes('function arenaArt') && js.includes('<div class="arena-lesson-media"><img src="${esc(lesson.image)}"'));
+ok('client arena renders the original exercise-db images directly', !read('server/public/portal-arena.html').includes('function arenaArt') && !read('server/public/portal-arena.html').includes('lesson-art') && read('server/public/portal-arena.html').includes('<img src="'));
+ok('simple portal renders the original exercise-db images directly', !read('server/public/portal.html').includes('function arenaArt') && !read('server/public/portal.html').includes('data-fallback'));
 const check = spawnSync(process.execPath, ['--check', path.join(root, 'src', 'arena.js')], { encoding: 'utf8' });
 ok('arena.js parses', check.status === 0);
 

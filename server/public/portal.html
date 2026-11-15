@@ -453,18 +453,6 @@
         return obj.ru || obj.en || obj.he || '';
       }
       function arenaClientId() { return (data && data.client && data.client.id) || ''; }
-      /* c250: Arena lesson art is a transparent cut-out shown on a dark plate
-         (same treatment as portal-arena.html) so no theme filter touches it. */
-      function arenaArt(src) {
-        var rel = String(src || '')
-          .replace(/^\/+/, '')
-          .replace(/^images\//, '')
-          .replace(/\.webp$/i, '')
-          .replace(/[/\\]+/g, '__')
-          .replace(/[^a-z0-9_-]+/gi, '-')
-          .toLowerCase();
-        return rel ? '/images/arena/' + rel + '.webp' : '';
-      }
       function arenaTierLabel(tier) {
         return ({ bronze: 'Бронза', silver: 'Серебро', gold: 'Золото' })[tier] || '';
       }
@@ -619,7 +607,7 @@
               '<input type="checkbox" data-arena-lesson="' + esc(key) + '" ' + (checked ? 'checked' : '') + ' ' + (!current || completed ? 'disabled' : '') + ' style="width:16px;margin:2px 0 0;flex:0 0 auto;" />' +
               '<span><b style="display:block;font-size:12px;">' + esc(arenaText(lesson.name)) + '</b><small style="color:var(--muted);font-size:10.5px;">' + esc(arenaText(lesson.prescription)) + '</small></span></label>' +
               '<details style="margin:5px 0 0 24px;"><summary style="cursor:pointer;color:var(--cyan);font-size:10.5px;font-weight:700;">📖 Карточка упражнения</summary>' +
-              (lesson.image ? '<div style="position:relative;display:grid;place-items:center;min-height:130px;padding:10px 10px 7px;border-radius:10px;overflow:hidden;isolation:isolate;border:1px solid rgba(120,165,255,.22);margin-top:7px;background:radial-gradient(ellipse 68% 62% at 50% 26%,rgba(64,132,255,.26),transparent 70%),radial-gradient(ellipse 90% 60% at 50% 108%,rgba(34,211,238,.12),transparent 66%),linear-gradient(165deg,#101d3a 0%,#0a1226 62%,#060b18 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.07);"><img src="' + esc(arenaArt(lesson.image)) + '" alt="" loading="lazy" data-fallback="' + esc(lesson.image) + '" style="position:relative;z-index:1;width:100%;max-height:220px;object-fit:contain;background:transparent;border:0;border-radius:0;filter:drop-shadow(0 14px 16px rgba(3,8,20,.55));mix-blend-mode:normal;" /></div>' : '') +
+              (lesson.image ? '<img src="' + esc(lesson.image) + '" alt="" loading="lazy" style="width:100%;max-height:220px;object-fit:contain;border:1px solid var(--line);border-radius:10px;margin-top:7px;background:var(--card2, rgba(255,255,255,.04));" />' : '') +
               '<div style="color:var(--muted);font-size:10.5px;line-height:1.5;margin-top:6px;"><b style="color:var(--text);">Техника:</b><br>' + arenaLines(arenaText(lesson.technique)) + '</div>' +
               '<div style="color:var(--muted);font-size:10.5px;line-height:1.5;margin-top:5px;"><b style="color:var(--text);">Чек-поинты:</b><br>' + arenaLines(arenaText(lesson.checkpoints)) + '</div>' +
               '<div style="color:var(--muted);font-size:10.5px;line-height:1.5;margin-top:5px;"><b style="color:var(--text);">Ошибки:</b><br>' + arenaLines(arenaText(lesson.mistakes)) + '</div>' +
@@ -831,14 +819,6 @@
 
       function initPortalSettings() {
         applyPortalSettings();
-        /* c250: a missing Arena cut-out falls back once to the source image. */
-        document.addEventListener('error', function (event) {
-          var img = event.target;
-          if (!img || img.tagName !== 'IMG' || !img.hasAttribute('data-fallback')) return;
-          var fallback = img.getAttribute('data-fallback');
-          img.removeAttribute('data-fallback');
-          if (fallback) img.setAttribute('src', fallback);
-        }, true);
         try {
           if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/p/__DKG_PORTAL_TOKEN__/sw.js', { scope: '/p/__DKG_PORTAL_TOKEN__' }).catch(function () {});

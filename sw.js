@@ -255,14 +255,14 @@
 // repaired, and the exercise media slot no longer shrinks to a small square
 // on short/mobile viewports.
 // v267: c250 - ARENA, REBUILT: dedicated visual system (src/arena.css) for the
-// hero, stat plates, game cards, tiers, lessons, trophy case and coach review;
-// lesson art is cut out of its plate (scripts/build-arena-art.cjs) and shown
-// on a fixed dark stage in every theme, so no invert/blend filter can wash it
-// out (dark) or crush it (light). GymImpulse art with a baked checkerboard was
-// replaced by clean RepDB equivalents. Exercise grids use the ORIGINAL
-// animated media from the exercise database; the static first-frame
-// thumbnail regeneration step (build-exercise-thumbs.cjs) is cancelled.
-const CACHE_NAME = 'dk-gym-v267'; // c250
+// hero, stat plates, game cards, tiers, lessons, trophy case and coach review.
+// GymImpulse lessons re-pointed to clean equivalents; exercise grids use the
+// ORIGINAL animated media from the exercise database.
+// v268: c251 - ARENA EXERCISE ART, DONE RIGHT: the re-encoded cut-out pipeline
+// (scripts/build-arena-art.cjs, images/arena/*) is deleted entirely. Arena
+// lessons render the ORIGINAL animated files from the exercise database with
+// the app-wide theme filters, exactly like every other view. No transcoding.
+const CACHE_NAME = 'dk-gym-v268'; // c251
 // v104: c77 — UI sizes can no longer change themselves (zoom-based gif/food/cards, wheel/touch slider guards) + hard pre-login lock (Add Client included) + header theme quick menu with all 33 themes
 // v103: c76 — Exercise DB tab = exact Quick Pick copy (star/eye/+ cards, favorites/recent tabs, View grouping, localized map tabs)
 // v102: c75 — 3D atlas 1.5x + Settings ▸ UI sizes (atlas slider, bodymap/exercise-panel fixes) + Exercise DB tab rebuilt as picker-style browse
