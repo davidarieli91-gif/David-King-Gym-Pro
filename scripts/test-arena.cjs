@@ -33,11 +33,11 @@ ok('trophy names are tier + path', /Бронзов/.test(dl.tiers[0].trophy.name
 ok('trophies are trilingual', mu.tiers.every(t => t.trophy.name.en && t.trophy.name.ru && t.trophy.name.he));
 ok('arena screen exists', crm.includes('data-screen="arena"') && crm.includes('id="arena-root"'));
 ok('arena nav exists', crm.includes('data-nav="arena"') && crm.includes('data-i18n="nav.arena"'));
-ok('arena script is loaded', crm.includes('src/arena.js?v=248'));
+ok('arena script is loaded', crm.includes('src/arena.js?v=250'));
 ok('arena store is in the schema', crm.includes("name: 'arena_progress'") && crm.includes("by_clientId"));
 ok('arena progress is synced', sync.includes("'arena_progress'"));
 ok('arena data and script are copied to dist', copy.includes("'arena-data.json'") && copy.includes("'src/arena.js'"));
-ok('service worker v266 includes arena', sw.includes("CACHE_NAME = 'dk-gym-v266'") && sw.includes('./src/arena.js') && sw.includes('./arena-data.json'));
+ok('service worker v266 includes arena', sw.includes("CACHE_NAME = 'dk-gym-v267'") && sw.includes('./src/arena.js') && sw.includes('./arena-data.json'));
 ok('profile exposes trophy count and arena shortcut', crm.includes('profile-arena-count') && crm.includes('data-quick-action="arena"'));
 ok('arena has exam + trophy logic', js.includes('submitExam') && js.includes('trophyEarned') && js.includes('exam_attempts'));
 ok('arena shows last-attempt breakdown + weak stations', js.includes('function examResultRows') && js.includes("u('weakStations')") && js.includes("u('attemptHistory')"));
@@ -68,9 +68,9 @@ ok('full portal seeds server check-ins into the journal', read('server/public/po
 ok('client portal has a dedicated arena page', fs.existsSync(path.join(root, 'server', 'public', 'portal-arena.html')) && read('server/src/app.ts').includes("'/p/:token/arena'") && read('server/public/portal-full.html').includes('portal-arena-btn'));
 ok('client arena reads and writes arena_progress', read('server/public/portal-arena.html').includes('collection=arena_progress') && read('server/public/portal-arena.html').includes("collection: 'arena_progress'"));
 ok('client arena gets a server-injected boot payload', read('server/public/portal-arena.html').includes('__DKG_PORTAL_BOOT__') && read('server/src/app.ts').includes('buildPortalPayload(rawToken)'));
-ok('simple portal loads the latest arena data', read('server/public/portal.html').includes('arena-data.json?v=6') && read('server/public/portal-arena.html').includes('/arena-data.json?v=6'));
+ok('simple portal loads the latest arena data', read('server/public/portal.html').includes('arena-data.json?v=8') && read('server/public/portal-arena.html').includes('/arena-data.json?v=8'));
 ok('simple portal opens the full arena page', read('server/public/portal.html').includes('/p/__DKG_PORTAL_TOKEN__/arena'));
-ok('client portal service worker caches the arena shell', read('server/src/app.ts').includes('dk-portal-v2') && read('server/src/app.ts').includes("BASE + '/arena'") && read('server/src/app.ts').includes('arena-data.json?v=6'));
+ok('client portal service worker caches the arena shell', read('server/src/app.ts').includes('dk-portal-v3') && read('server/src/app.ts').includes("BASE + '/arena'") && read('server/src/app.ts').includes('arena-data.json?v=8'));
 ok('client arena keeps an offline progress cache', read('server/public/portal-arena.html').includes('dk_arena_records_') && read('server/public/portal-arena.html').includes('serviceWorker.register'));
 ok('arena exam is trainer-verified: client submits as pending', read('server/public/portal-arena.html').includes("status: 'pending'") && read('server/public/portal-arena.html').includes('video_file_id') && read('server/public/portal-arena.html').includes('video:file'));
 ok('client portal has an arena-video upload endpoint', read('server/src/routes/portal.ts').includes("'/portal/:token/arena-video'"));
@@ -80,6 +80,21 @@ ok('trainer can assign a path to a client', read('src/arena.js').includes('assig
 ok('hall-of-athletes summary exists', read('src/arena.js').includes('computeHallSummaries') && read('src/arena.js').includes('hallPanel') && read('src/arena.js').includes("data-arena-action=\"open-athlete\""));
 ok('trophy verification links exist', read('src/arena.js').includes('verification_code') && read('src/arena.js').includes("data-arena-action=\"copy-verify\"") && read('server/src/app.ts').includes("'/api/verify/:code'") && read('server/public/verify.html').includes('/api/verify/'));
 ok('live-workout arena banner + exam video capture exist', read('fitness-crm.html').includes('id="live-arena-banner"') && read('fitness-crm.html').includes('dkArenaNextTask') && read('fitness-crm.html').includes('dkArenaUploadVideo') && read('src/arena.js').includes('video:file') && read('src/arena.js').includes('video_file_id') && read('src/arena.js').includes('uploadingVideo') && read('src/i18n/ru.json').includes('arenaExamReady') && read('src/i18n/en.json').includes('arenaExamReady') && read('src/i18n/he.json').includes('arenaExamReady'));
+/* c250: Arena visual system + cut-out art. */
+const arenaCss = read('src/arena.css');
+const manifest = JSON.parse(read('images/arena/manifest.json'));
+const lessonImages = new Set();
+for (const game of arena.games || []) for (const p of game.paths || []) for (const tier of p.tiers || []) for (const lesson of tier.lessons || []) if (lesson.image) lessonImages.add(lesson.image);
+ok('arena content is v8', arena.version === 8);
+ok('every arena lesson image has a transparent cut-out', [...lessonImages].every((src) => manifest[src] && fs.existsSync(path.join(root, manifest[src]))));
+ok('arena build creates one cut-out per source', Object.keys(manifest).length === lessonImages.size && ![...lessonImages].some((src) => /\/gi_/.test(src)));
+ok('arena.css is linked in the trainer shell', crm.includes('href="src/arena.css"'));
+ok('arena.css is copied to dist', copy.includes("'src/arena.css'"));
+ok('arena hero / games / tiers / media are styled', ['.arena-hero', '.arena-games', '.arena-tier', '.arena-media', '.arena-trophy'].every((cls) => arenaCss.includes(cls + ' {')));
+ok('arena art stage neutralises app-wide image filters', arenaCss.includes('mix-blend-mode: normal !important') && arenaCss.includes('filter: drop-shadow') && arenaCss.includes('!important'));
+ok('arena art stage keeps a dark plate in light themes too', /\[data-mode="light"\] \.arena-media \{/.test(arenaCss));
+ok('trainer renders arena art cut-outs with a fallback', js.includes('function arenaArt') && js.includes('data-fallback=') && js.includes("addEventListener('error'"));
+ok('client arena renders the same art cut-outs', read('server/public/portal-arena.html').includes('function arenaArt') && read('server/public/portal-arena.html').includes('class="lesson-art"') && read('server/public/portal-arena.html').includes('data-fallback='));
 const check = spawnSync(process.execPath, ['--check', path.join(root, 'src', 'arena.js')], { encoding: 'utf8' });
 ok('arena.js parses', check.status === 0);
 

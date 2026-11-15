@@ -44,6 +44,7 @@ const assets = [
   'src/nutrition-dashboard.css',
   'src/dashboard-v3.css',
   'src/responsive-v4.css',
+  'src/arena.css',
 ];
 
 for (const asset of assets) {

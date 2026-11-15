@@ -113,7 +113,6 @@ html[data-ui="v2"][data-mode="dark"] .v2-src-rdb img {
    dark pictures). Light themes invert the ink to dark and multiply it onto
    the light stage, so GI matches the BF/GV/RepDB dark-on-light artwork. */
 html[data-ui="v2"][data-mode="light"] img[src*="images/gi_"],
-html[data-ui="v2"][data-mode="light"] img[src*="images/thumbs/gi_"],
 html[data-ui="v2"][data-mode="light"] img[src*="videos/gi_"],
 html[data-ui="v2"][data-mode="light"] [data-src="gi"] img,
 html[data-ui="v2"][data-mode="light"] .v2-src-gi img {

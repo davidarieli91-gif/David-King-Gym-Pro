@@ -209,6 +209,26 @@
     return isFinite(n) ? n : 0;
   }
   function tierInfo(tier) { return TIER[tier] || TIER.bronze; }
+  /* c250: CSS custom properties need "r g b" triplets, not hex strings. */
+  function rgbTriplet(hex) {
+    var h = String(hex || '').replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    var n = parseInt(h, 16);
+    if (!isFinite(n)) return '139 92 246';
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255].join(' ');
+  }
+  /* c250: arena lesson art is a transparent cut-out (scripts/build-arena-art.cjs).
+     Same slug rule as the build script: images/rdb/foo.webp -> /images/arena/rdb__foo.webp. */
+  function arenaArt(src) {
+    var rel = String(src || '')
+      .replace(/^\/+/, '')
+      .replace(/^images\//, '')
+      .replace(/\.webp$/i, '')
+      .replace(/[/\\]+/g, '__')
+      .replace(/[^a-z0-9_-]+/gi, '-')
+      .toLowerCase();
+    return rel ? '/images/arena/' + rel + '.webp' : '';
+  }
   function toastSafe(message, type) {
     try { if (typeof toast === 'function') toast(message, type || 'info', 2600); } catch (_) {}
   }
@@ -234,7 +254,7 @@
   async function ensureData() {
     if (state.data) return state.data;
     if (state.loading) return state.loading;
-    state.loading = fetch('arena-data.json?v=6', { cache: 'no-cache' })
+    state.loading = fetch('arena-data.json?v=8', { cache: 'no-cache' })
       .then(function (res) {
         if (!res.ok) throw new Error('Arena data HTTP ' + res.status);
         return res.json();
@@ -332,7 +352,11 @@
   function rankLabel(rank) { return u(rank); }
 
   function renderLoading(root) {
-    root.innerHTML = '<div class="py-16 text-center text-sm text-muted">Loading Arena…</div>';
+    root.innerHTML = '<div class="arena-empty">'
+      + '<div class="arena-empty-ic">' + trophySvg() + '</div>'
+      + '<div class="arena-empty-title">' + esc(u('title')) + '</div>'
+      + '<p class="arena-empty-text">Loading…</p>'
+      + '</div>';
   }
 
   async function render() {
@@ -373,51 +397,63 @@
       var id = String(c.id);
       clientOptions.push('<option value="' + esc(id) + '"' + (state.clientId === id ? ' selected' : '') + '>' + esc(clientName(c)) + '</option>');
     });
+    var reviewBadge = state.pendingReviews.length
+      ? '<span class="arena-tab-badge" aria-hidden="true">' + state.pendingReviews.length + '</span>'
+      : '';
     return `
-      <div class="v2-page-head">
+      <div class="arena-hero">
+        <span class="arena-hero-mark" aria-hidden="true">${trophySvg()}</span>
         <div class="min-w-0">
-          <div class="v2-eyebrow">DKG ARENA</div>
-          <h1 class="v2-hero-title">${esc(u('title'))}</h1>
-          <p class="v2-hero-sub">${esc(u('subtitle'))}</p>
+          <div class="arena-hero-badge">DKG ARENA</div>
+          <h1 class="arena-hero-title">${esc(u('title'))}</h1>
+          <p class="arena-hero-sub">${esc(u('subtitle'))}</p>
         </div>
-        <div class="flex flex-wrap items-center gap-2">
-          <label class="text-[11px] font-semibold text-muted" for="arena-client-select">${esc(u('selectClient'))}</label>
-          <select id="arena-client-select" class="bg-surface-2 border border-border rounded-xl px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary/60 cursor-pointer">
+        <div class="arena-hero-side">
+          <label for="arena-client-select">${esc(u('selectClient'))}</label>
+          <select id="arena-client-select">
             ${clientOptions.join('')}
           </select>
         </div>
       </div>
-      <div class="grid grid-cols-3 gap-2 mb-4">
-        <div class="bg-surface border border-border rounded-2xl p-3">
-          <div class="text-[10px] uppercase tracking-wider text-muted font-bold">${esc(u('trophies'))}</div>
-          <div class="font-display text-2xl font-extrabold mt-1">${state.summary.trophies}</div>
+      <div class="arena-stats">
+        <div class="arena-stat" style="--sa:250 204 21">
+          <span class="arena-stat-ic" aria-hidden="true">${trophySvg()}</span>
+          <div class="arena-stat-body">
+            <div class="arena-stat-label">${esc(u('trophies'))}</div>
+            <div class="arena-stat-value">${state.summary.trophies}</div>
+          </div>
         </div>
-        <div class="bg-surface border border-border rounded-2xl p-3">
-          <div class="text-[10px] uppercase tracking-wider text-muted font-bold">${esc(u('xp'))}</div>
-          <div class="font-display text-2xl font-extrabold mt-1">${state.summary.xp}</div>
+        <div class="arena-stat" style="--sa:34 211 238">
+          <span class="arena-stat-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12l1-8.5z"/></svg></span>
+          <div class="arena-stat-body">
+            <div class="arena-stat-label">${esc(u('xp'))}</div>
+            <div class="arena-stat-value">${state.summary.xp}</div>
+          </div>
         </div>
-        <div class="bg-surface border border-border rounded-2xl p-3">
-          <div class="text-[10px] uppercase tracking-wider text-muted font-bold">${esc(u('progress'))}</div>
-          <div class="font-display text-lg font-extrabold mt-1 truncate">${esc(rankLabel(state.summary.rank))}</div>
+        <div class="arena-stat" style="--sa:167 139 250">
+          <span class="arena-stat-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 2.4 5.3 5.6.6-4.2 3.9 1.2 5.7L12 15.6 6.9 18.5l1.2-5.7L4 8.9l5.6-.6L12 3z"/></svg></span>
+          <div class="arena-stat-body">
+            <div class="arena-stat-label">${esc(u('progress'))}</div>
+            <div class="arena-stat-value is-text">${esc(rankLabel(state.summary.rank))}</div>
+          </div>
         </div>
       </div>
-      <div class="flex gap-1 bg-surface-2 border border-border rounded-xl p-1 mb-4">
-        <button type="button" data-arena-action="tab" data-tab="games" class="flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition ${state.view !== 'trophies' && state.view !== 'review' ? 'bg-primary text-white' : 'text-muted'}">${esc(u('games'))}</button>
-        <button type="button" data-arena-action="tab" data-tab="trophies" class="flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition ${state.view === 'trophies' ? 'bg-primary text-white' : 'text-muted'}">${esc(u('trophies'))} · ${state.summary.trophies}</button>
-        <button type="button" data-arena-action="tab" data-tab="review" class="flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition inline-flex items-center justify-center gap-1.5 ${state.view === 'review' ? 'bg-primary text-white' : 'text-muted'}">${esc(u('reviewTab'))}${state.pendingReviews.length ? ' <span class="inline-grid place-items-center min-w-[22px] h-[22px] px-1.5 rounded-full bg-danger text-white text-[11px] font-extrabold">' + state.pendingReviews.length + '</span>' : ''}</button>
+      <div class="arena-tabs" role="tablist">
+        <button type="button" role="tab" aria-selected="${state.view !== 'trophies' && state.view !== 'review'}" data-arena-action="tab" data-tab="games" class="arena-tab ${state.view !== 'trophies' && state.view !== 'review' ? 'is-on' : ''}">${esc(u('games'))}</button>
+        <button type="button" role="tab" aria-selected="${state.view === 'trophies'}" data-arena-action="tab" data-tab="trophies" class="arena-tab ${state.view === 'trophies' ? 'is-on' : ''}">${esc(u('trophies'))} <span class="arena-tab-count">${state.summary.trophies}</span></button>
+        <button type="button" role="tab" aria-selected="${state.view === 'review'}" data-arena-action="tab" data-tab="review" class="arena-tab ${state.view === 'review' ? 'is-on' : ''}">${esc(u('reviewTab'))}${reviewBadge}</button>
       </div>`;
   }
 
   function renderFlash() {
     if (!state.flash) return '';
     var t = state.flash.trophy;
-    var color = tierInfo(t.tier).color;
     return `
-      <div class="mb-4 rounded-2xl border p-4 flex items-center gap-3" style="border-color:${color}55;background:${color}14">
-        <span class="w-11 h-11 rounded-xl grid place-items-center shrink-0" style="color:${color};background:${color}20">${trophySvg()}</span>
-        <div class="min-w-0 flex-1">
-          <div class="text-[10px] uppercase tracking-wider font-bold" style="color:${color}">${esc(u('trophyEarned'))}</div>
-          <div class="font-display font-bold text-base truncate">${esc(tr(t.name))}</div>
+      <div class="arena-flash">
+        <span class="arena-flash-ic" aria-hidden="true">${trophySvg()}</span>
+        <div class="arena-flash-body">
+          <div class="arena-flash-eyebrow">${esc(u('trophyEarned'))}</div>
+          <div class="arena-flash-title">${esc(tr(t.name))}</div>
         </div>
         <button type="button" data-arena-action="close-flash" class="w-8 h-8 grid place-items-center rounded-lg text-muted hover:bg-surface-2" aria-label="${esc(u('close'))}">✕</button>
       </div>`;
@@ -425,38 +461,40 @@
 
   function renderGames() {
     var games = (state.data && state.data.games) || [];
-    return `<div class="grid gap-3 sm:grid-cols-2">${games.map(function (game) {
+    return `<div class="arena-games">${games.map(function (game) {
       var paths = game.paths || [];
+      var ga = rgbTriplet(game.color);
       var pathHtml = '';
       if (!game.available || !paths.length) {
-        pathHtml = `<div class="mt-3 inline-flex items-center gap-1.5 text-[11px] font-semibold text-muted bg-surface-2 border border-border rounded-full px-2.5 py-1">${esc(u('comingSoon'))}</div>`;
+        pathHtml = `<div class="arena-soon">${esc(u('comingSoon'))}</div>`;
       } else {
-        pathHtml = `<div class="mt-3 space-y-2">${paths.map(function (path) {
+        pathHtml = `${paths.map(function (path) {
           var rec = state.records[path.id] || emptyRecord(state.clientId, path.id);
           var done = (rec.trophies || []).length;
           var total = (path.tiers || []).length;
           var pct = total ? Math.round(done / total * 100) : 0;
-          return `<button type="button" data-arena-action="open-path" data-path="${esc(path.id)}" class="w-full text-start rounded-xl border border-border bg-surface-2/60 hover:bg-surface-2 transition p-3">
-            <div class="flex items-center gap-2">
-              <span class="min-w-0 flex-1">
-                <span class="block font-semibold text-sm truncate">${esc(tr(path.name))}</span>
-                <span class="block text-[11px] text-muted truncate">${esc(tr(path.subtitle))}</span>
+          return `<button type="button" data-arena-action="open-path" data-path="${esc(path.id)}" class="arena-path" style="--ga:${ga}">
+            <span class="arena-path-top">
+              <span class="arena-path-name">
+                <b>${esc(tr(path.name))}</b>
+                <small>${esc(tr(path.subtitle))}</small>
               </span>
-              <span class="text-[11px] font-bold tabular-nums" style="color:${game.color}">${done}/${total}</span>
-            </div>
-            <div class="h-1.5 rounded-full bg-border/40 overflow-hidden mt-2"><div class="h-full rounded-full" style="width:${pct}%;background:${game.color}"></div></div>
+              <span class="arena-path-count">${done}/${total}</span>
+            </span>
+            <span class="arena-path-bar"><i style="width:${pct}%"></i></span>
           </button>`;
-        }).join('')}</div>`;
+        }).join('')}`;
       }
-      return `<div class="bg-surface border border-border rounded-2xl shadow-card p-4">
-        <div class="flex items-start gap-3">
-          <span class="w-11 h-11 rounded-xl grid place-items-center shrink-0" style="color:${game.color};background:${game.color}18">${gameIcon(game.id)}</span>
-          <div class="min-w-0">
-            <h3 class="font-display font-extrabold text-base leading-tight">${esc(tr(game.name))}</h3>
-            <p class="text-[11px] text-muted leading-relaxed mt-1">${esc(tr(game.description))}</p>
+      return `<div class="arena-game" style="--ga:${ga}">
+        <div class="arena-game-band">
+          <span class="arena-game-mark" aria-hidden="true">${gameIcon(game.id)}</span>
+          <div class="arena-game-title">
+            <h3>${esc(tr(game.name))}</h3>
+            <p>${esc(tr(game.description))}</p>
           </div>
+          <span class="arena-game-watermark" aria-hidden="true">${gameIcon(game.id)}</span>
         </div>
-        ${pathHtml}
+        <div class="arena-game-body">${pathHtml}</div>
       </div>`;
     }).join('') + hallPanel()}</div>`;
   }
@@ -485,25 +523,27 @@
       }).length;
       var lessonsDone = tierLessons.length > 0 && checkedLessons === tierLessons.length;
       var status = completed ? u('completed') : (current ? u('current') : (locked ? u('locked') : u('locked')));
+      var tierColor = rgbTriplet(info.color);
       var lessonsHtml = tierLessons.map(function (lesson) {
         var key = tier.id + '::' + lesson.id;
         var checked = completed || (rec.completed_lessons || []).indexOf(key) !== -1;
-        return `<div class="rounded-xl border border-border bg-surface-2/50 p-3">
-          <label class="flex items-start gap-2.5 cursor-pointer">
-            <input type="checkbox" ${checked ? 'checked' : ''} ${(!current || completed) ? 'disabled' : ''} data-arena-action="toggle-lesson" data-tier="${esc(tier.id)}" data-lesson="${esc(lesson.id)}" class="mt-0.5 w-4 h-4 rounded border-border text-primary focus:ring-primary/50" />
-            <span class="min-w-0 flex-1">
-              <span class="block text-sm font-semibold">${esc(tr(lesson.name))}</span>
-              <span class="block text-[11px] text-muted mt-0.5">${esc(tr(lesson.prescription))}</span>
+        var art = lesson.image ? arenaArt(lesson.image) : '';
+        return `<div class="arena-lesson ${checked ? 'is-done' : ''} ${(!current && !completed) ? 'is-locked' : ''}" style="--ta:${tierColor}">
+          <label class="arena-lesson-row">
+            <input type="checkbox" class="arena-lesson-check" ${checked ? 'checked' : ''} ${(!current || completed) ? 'disabled' : ''} data-arena-action="toggle-lesson" data-tier="${esc(tier.id)}" data-lesson="${esc(lesson.id)}" />
+            <span class="arena-lesson-body">
+              <span class="arena-lesson-name">${esc(tr(lesson.name))}</span>
+              <span class="arena-lesson-dose">${esc(tr(lesson.prescription))}</span>
             </span>
           </label>
-          <details class="mt-2 group">
-            <summary class="cursor-pointer text-[11px] font-semibold text-primary-2 select-none">📖 ${esc(u('exerciseCard'))}</summary>
-            <div class="mt-2 space-y-2 text-[11px] leading-relaxed text-muted border-t border-border pt-2">
-              ${lesson.image ? `<img src="${esc(lesson.image)}" alt="${esc(tr(lesson.name))}" loading="lazy" class="w-full max-h-56 object-contain rounded-xl bg-surface border border-border" />` : ''}
-              <div><b class="text-text">${esc(u('technique'))}:</b><br>${lines(tr(lesson.technique)).map(esc).join('<br>')}</div>
-              <div><b class="text-text">${esc(u('checkpoints'))}:</b><br>${lines(tr(lesson.checkpoints)).map(esc).join('<br>')}</div>
-              <div><b class="text-text">${esc(u('mistakes'))}:</b><br>${lines(tr(lesson.mistakes)).map(esc).join('<br>')}</div>
-              ${lesson.exerciseId ? `<button type="button" data-arena-action="open-exercise" data-exercise="${esc(lesson.exerciseId)}" class="w-full mt-1 bg-surface-2 border border-border rounded-lg px-2 py-2 text-[11px] font-semibold text-primary-2">${esc(u('openInDb'))}</button>` : ''}
+          <details class="arena-lesson-more">
+            <summary>${esc(u('exerciseCard'))}</summary>
+            <div class="arena-lesson-card">
+              ${lesson.image ? `<div class="arena-media"><span class="arena-media-tag">${esc(u('technique'))}</span><img src="${esc(art)}" alt="${esc(tr(lesson.name))}" loading="lazy" data-fallback="${esc(lesson.image)}" /></div>` : ''}
+              <div><b>${esc(u('technique'))}:</b><br>${lines(tr(lesson.technique)).map(esc).join('<br>')}</div>
+              <div><b>${esc(u('checkpoints'))}:</b><br>${lines(tr(lesson.checkpoints)).map(esc).join('<br>')}</div>
+              <div><b>${esc(u('mistakes'))}:</b><br>${lines(tr(lesson.mistakes)).map(esc).join('<br>')}</div>
+              ${lesson.exerciseId ? `<button type="button" data-arena-action="open-exercise" data-exercise="${esc(lesson.exerciseId)}" class="arena-btn w-full">${esc(u('openInDb'))}</button>` : ''}
             </div>
           </details>
         </div>`;
@@ -511,68 +551,77 @@
       var examHtml = '';
       if (completed) {
         var trophy = (rec.trophies || []).filter(function (t) { return t.tier_id === tier.id; })[0];
-        examHtml = `<div class="rounded-xl border p-3 flex items-center gap-3" style="border-color:${info.color}55;background:${info.color}12">
-          <span class="w-9 h-9 rounded-lg grid place-items-center shrink-0" style="color:${info.color};background:${info.color}1f">${trophySvg()}</span>
-          <div class="min-w-0"><div class="text-xs font-bold" style="color:${info.color}">${esc(trophy ? tr(trophy.name) : tr(tier.trophy.name))}</div><div class="text-[10px] text-muted">${trophy ? esc(fmtDate(trophy.earned_at)) : ''}</div></div>
+        examHtml = `<div class="arena-trophy-line" style="--ta:${tierColor}">
+          <span class="arena-trophy-line-ic" aria-hidden="true">${trophySvg()}</span>
+          <span class="min-w-0 flex-1">
+            <b>${esc(trophy ? tr(trophy.name) : tr(tier.trophy.name))}</b>
+            <small>${trophy ? esc(fmtDate(trophy.earned_at)) : ''}</small>
+          </span>
         </div>`;
       } else if (locked) {
-        examHtml = `<div class="rounded-xl border border-border bg-surface-2/50 p-3 text-[11px] text-muted">${esc(u('pathLocked'))}</div>`;
+        examHtml = `<div class="arena-locked">${esc(u('pathLocked'))}</div>`;
       } else if (!lessonsDone) {
-        examHtml = `<div class="rounded-xl border border-border bg-surface-2/50 p-3 text-[11px] text-muted">${esc(u('examLocked'))}</div>`;
+        examHtml = `<div class="arena-locked">${esc(u('examLocked'))}</div>`;
       } else {
         examHtml = renderExamForm(tier, rec);
       }
-      return `<div class="rounded-2xl border bg-surface shadow-card overflow-hidden ${current ? 'border-primary/50' : 'border-border'}">
-        <div class="p-4 border-b border-border flex items-center gap-3" style="background:${info.color}0d">
-          <span class="w-9 h-9 rounded-xl grid place-items-center font-display font-extrabold text-sm" style="color:${info.color};background:${info.color}1f">${index + 1}</span>
-          <div class="min-w-0 flex-1">
-            <div class="flex flex-wrap items-center gap-2"><h4 class="font-display font-bold text-sm">${esc(tr(tier.name))}</h4><span class="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-surface-2 text-muted tabular-nums">${checkedLessons}/${tierLessons.length}</span><span class="text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded" style="color:${info.color};background:${info.color}18">${esc(status)}</span></div>
-            <div class="text-[11px] text-muted mt-0.5">${esc(tr(tier.goal))}</div>
-            ${!completed ? `<div class="text-[10px] font-bold mt-1" style="color:${info.color}">${tierLessons.length - checkedLessons} ${esc(u('lessonsLeft'))}</div>` : ''}
+      var tierPct = tierLessons.length ? Math.round(checkedLessons / tierLessons.length * 100) : 0;
+      return `<div class="arena-tier ${current ? 'is-current' : ''} ${locked ? 'is-locked' : ''}" style="--ta:${tierColor}">
+        <div class="arena-tier-head">
+          <span class="arena-tier-num">${index + 1}</span>
+          <div class="arena-tier-main">
+            <div class="arena-tier-title">
+              <h4>${esc(tr(tier.name))}</h4>
+              <span class="arena-tier-chip">${checkedLessons}/${tierLessons.length}</span>
+              <span class="arena-tier-status">${esc(status)}</span>
+            </div>
+            <p class="arena-tier-goal">${esc(tr(tier.goal))}</p>
+            ${!completed ? `<div class="arena-tier-left">${tierLessons.length - checkedLessons} ${esc(u('lessonsLeft'))}</div>` : ''}
           </div>
+          <div class="arena-tier-progress" style="--p:${tierPct}" aria-hidden="true"><b>${tierPct}%</b></div>
         </div>
-        <div class="p-3 space-y-2">${lessonsHtml}${examHtml}</div>
+        <div class="arena-tier-body">${lessonsHtml}${examHtml}</div>
       </div>`;
     }).join('');
 
-    var tiers = found.path.tiers || [];
     var assignment = rec.assignment || null;
     var assignHtml = assignment
-      ? '<div class="mt-3 flex flex-wrap items-center gap-2 rounded-xl border border-primary/35 bg-primary/10 px-3 py-2 text-[11px] font-semibold text-primary-2"><span class="inline-flex items-center gap-1.5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-4 h-4"><path d="M12 8v4l2.5 2.5"/><circle cx="12" cy="12" r="9"/></svg>' + esc(u('assignedByCoach')) + '</span>'
+      ? '<div class="arena-assign-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l2.5 2.5"/><circle cx="12" cy="12" r="9"/></svg><span>' + esc(u('assignedByCoach'))
         + (assignment.deadline ? ' · ' + esc(assignment.deadline) : '')
         + (assignment.note ? ' — ' + esc(assignment.note) : '')
-        + '</div>'
+        + '</span></div>'
       : '';
     var assignAction = state.clientId !== 'self'
-      ? '<button type="button" data-arena-action="assign-open" data-path="' + esc(state.pathId) + '" class="mt-3 inline-flex items-center gap-1.5 rounded-xl border border-primary/40 bg-primary/15 px-3 py-2 text-[11px] font-bold text-primary-2 hover:bg-primary/25 transition"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="w-4 h-4"><path d="M12 5v14M5 12h14"/></svg>' + esc(u('assignPath')) + '</button>'
+      ? '<button type="button" data-arena-action="assign-open" data-path="' + esc(state.pathId) + '" class="arena-btn arena-btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>' + esc(u('assignPath')) + '</button>'
       : '';
     return `
-      <button type="button" data-arena-action="back" class="mb-3 inline-flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-text"><span aria-hidden="true">←</span>${esc(u('back'))}</button>
-      <div class="bg-surface border border-border rounded-2xl shadow-card p-4 mb-4" data-path-head>
-        <div class="flex items-start gap-3">
-          <span class="w-12 h-12 rounded-xl grid place-items-center shrink-0" style="color:${game.color};background:${game.color}18">${gameIcon(game.id)}</span>
-          <div class="min-w-0">
-            <h2 class="font-display font-extrabold text-xl">${esc(tr(path.name))}</h2>
-            <p class="text-[11px] text-muted mt-1">${esc(tr(path.description))}</p>
-            <div class="mt-2 inline-flex items-center gap-1.5 text-[11px] font-bold" style="color:${game.color}">${trophySvg()}<span>${trophyCount}/${tiers.length}</span></div>
-            ${assignHtml}
+      <button type="button" data-arena-action="back" class="arena-back" style="--ga:${rgbTriplet(game.color)}"><span class="arena-back-ic" aria-hidden="true">←</span>${esc(u('back'))}</button>
+      <div class="arena-path-hero" style="--ga:${rgbTriplet(game.color)}" data-path-head>
+        <span class="arena-path-mark" aria-hidden="true">${gameIcon(game.id)}</span>
+        <div class="arena-path-main">
+          <h2>${esc(tr(path.name))}</h2>
+          <p>${esc(tr(path.description))}</p>
+          <div class="arena-path-meta">
+            <span class="arena-pill">${trophySvg()}<span>${trophyCount}/${tiers.length}</span></span>
+            <span class="arena-pill">${esc(tr(game.name))}</span>
           </div>
+          ${assignHtml}
+          ${assignAction ? '<div class="mt-2">' + assignAction + '</div>' : ''}
         </div>
-        <div class="mt-2">${assignAction}</div>
       </div>
-      <div class="space-y-3">${tierHtml}</div>
-      <div class="mt-4 text-center">
-        <button type="button" data-arena-action="reset-path" class="inline-flex items-center gap-1.5 rounded-xl border border-danger/30 bg-danger/5 px-3 py-2 text-[11px] font-semibold text-danger hover:bg-danger/10 transition">${esc(u('resetProgress'))}</button>
+      <div class="arena-tiers" style="--ga:${rgbTriplet(game.color)}">${tierHtml}</div>
+      <div class="mt-3 text-center">
+        <button type="button" data-arena-action="reset-path" class="arena-btn arena-btn-danger">${esc(u('resetProgress'))}</button>
       </div>`;
   }
 
   function examResultRows(attempt) {
     return ((attempt && attempt.results) || []).map(function (r) {
       var ok = !!r.passed;
-      return `<div class="flex items-center justify-between gap-2 text-[10px] py-0.5">
+      return `<div class="arena-result-row">
         <span class="min-w-0 truncate ${ok ? 'text-muted' : 'text-danger font-semibold'}">${esc(r.label)}</span>
         <span class="flex items-center gap-1.5 shrink-0">
-          <b class="tabular-nums ${ok ? 'text-text' : 'text-danger'}">${esc(r.display)}</b>
+          <b class="${ok ? 'text-text' : 'text-danger'}">${esc(r.display)}</b>
           <span class="${ok ? 'text-success' : 'text-danger'} font-bold">${ok ? '✓' : '✕'}</span>
         </span>
       </div>`;
@@ -597,38 +646,38 @@
         : station.type === 'time' ? u('timeHint')
         : station.type === 'distance' ? (station.unit === 'cm' ? u('cmShort') : u('metersShort'))
         : u('reps');
-      var label = `<div class="flex items-center justify-between gap-2"><span class="text-xs font-semibold">${esc(tr(station.name))}</span>${station.type !== 'manual' ? `<span class="text-[10px] text-muted">${esc(unit)}</span>` : ''}</div>`;
+      var label = `<div class="arena-station-top"><b>${esc(tr(station.name))}</b>${station.type !== 'manual' ? `<span>${esc(unit)}</span>` : ''}</div>`;
       var input = '';
       if (station.type === 'reps' || station.type === 'hold') {
         var sets = Math.max(1, Number(station.sets) || 1);
         input = '<div class="grid gap-1.5 mt-1.5" style="grid-template-columns:repeat(' + sets + ',minmax(0,1fr))">' + Array.from({ length: sets }).map(function (_, i) {
           var prev = Array.isArray(lastValues) && lastValues[i] != null && lastValues[i] !== '' ? lastValues[i] : '';
-          return `<input type="number" min="0" step="1" inputmode="numeric" data-arena-input="${esc(station.id)}:${i}" value="${prev !== '' ? esc(prev) : ''}" placeholder="${station.type === 'hold' ? esc(u('seconds')) : esc(u('reps'))}" class="w-full min-w-0 bg-surface border border-border rounded-lg px-2 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/60" />`;
+          return `<input type="number" min="0" step="1" inputmode="numeric" data-arena-input="${esc(station.id)}:${i}" value="${prev !== '' ? esc(prev) : ''}" placeholder="${station.type === 'hold' ? esc(u('seconds')) : esc(u('reps'))}" class="arena-input" />`;
         }).join('') + '</div>';
       } else if (station.type === 'time') {
         var prevTime = lastValues != null && lastValues !== '' ? (Number(lastValues) < 60 ? String(lastValues) : fmtTime(lastValues)) : '';
-        input = `<input type="text" inputmode="numeric" data-arena-input="${esc(station.id)}:time" value="${prevTime ? esc(prevTime) : ''}" placeholder="мм:сс" class="w-full min-w-0 bg-surface border border-border rounded-lg px-2 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/60" />`;
+        input = `<input type="text" inputmode="numeric" data-arena-input="${esc(station.id)}:time" value="${prevTime ? esc(prevTime) : ''}" placeholder="мм:сс" class="arena-input mt-1.5" />`;
       } else if (station.type === 'distance') {
         var prevDist = lastValues != null && lastValues !== '' ? lastValues : '';
         var distUnit = station.unit === 'cm' ? u('cmShort') : u('metersShort');
-        input = `<input type="number" min="0" step="0.01" inputmode="decimal" data-arena-input="${esc(station.id)}:distance" value="${prevDist !== '' ? esc(prevDist) : ''}" placeholder="${esc(distUnit)}" class="w-full min-w-0 bg-surface border border-border rounded-lg px-2 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/60" />`;
+        input = `<input type="number" min="0" step="0.01" inputmode="decimal" data-arena-input="${esc(station.id)}:distance" value="${prevDist !== '' ? esc(prevDist) : ''}" placeholder="${esc(distUnit)}" class="arena-input mt-1.5" />`;
       } else if (station.type === 'load_bw') {
         var lv = lastValues || {};
         input = `<div class="grid grid-cols-2 gap-2 mt-1.5">
-          <label class="text-[10px] text-muted">${esc(u('weightKg'))}<input type="number" min="0" step="0.5" inputmode="decimal" data-arena-input="${esc(station.id)}:weight" value="${lv.weight != null && lv.weight !== '' ? esc(lv.weight) : ''}" class="w-full bg-surface border border-border rounded-lg px-2 py-2 text-sm font-mono mt-1" /></label>
-          <label class="text-[10px] text-muted">${esc(u('bodyweightKg'))}<input type="number" min="0" step="0.1" inputmode="decimal" data-arena-input="${esc(station.id)}:bodyweight" value="${lv.bodyweight != null && lv.bodyweight !== '' ? esc(lv.bodyweight) : esc(bodyweight)}" class="w-full bg-surface border border-border rounded-lg px-2 py-2 text-sm font-mono mt-1" /></label>
+          <label class="text-[10px] text-muted">${esc(u('weightKg'))}<input type="number" min="0" step="0.5" inputmode="decimal" data-arena-input="${esc(station.id)}:weight" value="${lv.weight != null && lv.weight !== '' ? esc(lv.weight) : ''}" class="arena-input mt-1" /></label>
+          <label class="text-[10px] text-muted">${esc(u('bodyweightKg'))}<input type="number" min="0" step="0.1" inputmode="decimal" data-arena-input="${esc(station.id)}:bodyweight" value="${lv.bodyweight != null && lv.bodyweight !== '' ? esc(lv.bodyweight) : esc(bodyweight)}" class="arena-input mt-1" /></label>
         </div>`;
       } else if (station.type === 'manual') {
         var wasChecked = !!(lastValues && lastValues.checked);
-        input = `<label class="flex items-center gap-2 text-[11px] text-muted mt-1.5"><input type="checkbox" data-arena-input="${esc(station.id)}:manual" ${wasChecked ? 'checked' : ''} class="w-4 h-4 rounded border-border text-primary focus:ring-primary/50" />${esc(u('manualHint'))}</label>`;
+        input = `<label class="arena-station-hint flex items-center gap-2 mt-1.5"><input type="checkbox" data-arena-input="${esc(station.id)}:manual" ${wasChecked ? 'checked' : ''} class="w-4 h-4 rounded border-border text-primary focus:ring-primary/50" />${esc(u('manualHint'))}</label>`;
       }
-      return `<div class="rounded-xl border border-border bg-surface p-3">${label}${input}${station.hint ? `<div class="text-[10px] text-muted mt-1.5">${esc(tr(station.hint))}</div>` : ''}</div>`;
+      return `<div class="arena-station">${label}${input}${station.hint ? `<div class="arena-station-hint">${esc(tr(station.hint))}</div>` : ''}</div>`;
     }).join('');
     var weak = last ? (last.results || []).filter(function (r) { return !r.passed; }) : [];
-    var lastHtml = last ? `<div data-arena-last-attempt class="rounded-xl border ${last.passed ? 'border-success/30 bg-success/5' : 'border-danger/30 bg-danger/5'} p-3 mt-2">
-      <div class="flex items-center justify-between gap-2">
-        <div class="text-[10px] uppercase tracking-wider font-bold ${last.passed ? 'text-success' : 'text-danger'}">${esc(u('lastAttempt'))} · ${esc(last.passed ? u('passed') : u('failed'))}</div>
-        <div class="text-[10px] text-muted">${esc(fmtDate(last.at))}</div>
+    var lastHtml = last ? `<div data-arena-last-attempt class="arena-attempt ${last.passed ? 'is-pass' : 'is-fail'}">
+      <div class="arena-attempt-head">
+        <span>${esc(u('lastAttempt'))} · ${esc(last.passed ? u('passed') : u('failed'))}</span>
+        <span class="text-[10px] font-medium text-muted">${esc(fmtDate(last.at))}</span>
       </div>
       <div class="mt-1.5">${examResultRows(last)}</div>
       ${weak.length ? `<div class="mt-2 text-[10px] font-semibold text-danger">${esc(u('weakStations'))}: ${weak.map(function (r) { return esc(r.label); }).join(', ')}</div>` : ''}
@@ -638,19 +687,19 @@
       <summary class="cursor-pointer text-[10px] font-semibold text-muted select-none">${esc(u('attemptHistory'))} · ${attempts.length}</summary>
       <div class="mt-1.5 space-y-1">${attempts.slice(-10).reverse().map(function (a) {
         var fails = (a.results || []).filter(function (r) { return !r.passed; }).length;
-        return `<div class="flex items-center justify-between gap-2 text-[10px]">
+        return `<div class="arena-result-row text-[10px]">
           <span class="text-muted">${esc(fmtDate(a.at))}</span>
           <span class="flex items-center gap-1.5"><b class="${a.passed ? 'text-success' : 'text-danger'}">${esc(a.passed ? u('passed') : u('failed'))}</b>${fails ? `<span class="text-muted">${fails} ✕</span>` : ''}</span>
         </div>`;
       }).join('')}</div>
     </details>` : '';
-    return `<div class="arena-exam-panel rounded-xl border border-primary/30 bg-primary/5 p-3 mt-1">
-      <div class="flex items-center justify-between gap-2 mb-1"><h5 class="text-xs font-bold">${esc(u('exam'))}</h5><span class="text-[9px] text-muted">${esc(u('retake'))}</span></div>
-      ${tier.exam && tier.exam.intro ? `<p class="text-[10px] text-muted mb-2">${esc(tr(tier.exam.intro))}</p>` : ''}
-      <div class="space-y-2">${fields}</div>
-      <label class="block text-[10px] text-muted mt-2">${esc(u('videoAttach'))}<input type="file" accept="video/*,image/*" capture="environment" data-arena-input="video:file" class="w-full bg-surface border border-border rounded-lg px-2 py-2 text-xs mt-1" /></label>
-      <label class="block text-[10px] text-muted mt-2">${esc(u('videoOptional'))}<input type="url" data-arena-input="video:url" placeholder="https://..." value="${last && last.video ? esc(last.video) : ''}" class="w-full bg-surface border border-border rounded-lg px-2 py-2 text-xs mt-1" /></label>
-      <button type="button" data-arena-action="submit-exam" data-path="${esc(state.pathId)}" data-tier="${esc(tier.id)}" class="w-full mt-3 bg-primary hover:bg-primary-2 text-white text-xs font-bold py-2.5 rounded-xl transition">${esc(u('submitExam'))}</button>
+    return `<div class="arena-exam">
+      <div class="arena-exam-head"><h5>${esc(u('exam'))}</h5><span>${esc(u('retake'))}</span></div>
+      ${tier.exam && tier.exam.intro ? `<p class="arena-exam-intro">${esc(tr(tier.exam.intro))}</p>` : ''}
+      <div class="grid gap-2">${fields}</div>
+      <label class="block text-[10px] text-muted mt-2">${esc(u('videoAttach'))}<input type="file" accept="video/*,image/*" capture="environment" data-arena-input="video:file" class="arena-media-file mt-1" /></label>
+      <label class="block text-[10px] text-muted mt-2">${esc(u('videoOptional'))}<input type="url" data-arena-input="video:url" placeholder="https://..." value="${last && last.video ? esc(last.video) : ''}" class="arena-input mt-1" /></label>
+      <button type="button" data-arena-action="submit-exam" data-path="${esc(state.pathId)}" data-tier="${esc(tier.id)}" class="arena-btn arena-btn-primary w-full mt-3">${esc(u('submitExam'))}</button>
       ${lastHtml}
       ${historyHtml}
     </div>`;
@@ -683,18 +732,20 @@
 
   function hallPanel() {
     if (!state.hallSummaries.length) return '';
-    var html = '<div class="mt-4 bg-surface border border-border rounded-2xl shadow-card overflow-hidden">'
-      + '<div class="flex items-center gap-2 px-4 py-2.5 border-b border-border"><span class="w-6 h-6 rounded-md grid place-items-center bg-primary/15 text-primary-2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5z"/><path d="M3 20a9 9 0 0 1 18 0"/></svg></span>'
-      + '<h3 class="font-display font-bold text-sm">' + esc(u('hallTitle')) + '</h3>'
-      + '<span class="ml-auto text-[10px] font-bold text-muted">' + state.hallSummaries.length + '</span></div>'
-      + '<div class="divide-y divide-border/40">';
+    var html = '<div class="arena-hall">'
+      + '<div class="arena-hall-head"><span class="arena-hall-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5z"/><path d="M3 20a9 9 0 0 1 18 0"/></svg></span>'
+      + '<h3>' + esc(u('hallTitle')) + '</h3>'
+      + '<span class="arena-hall-count">' + state.hallSummaries.length + '</span></div>'
+      + '<div>';
     state.hallSummaries.forEach(function (s) {
-      html += '<button type="button" data-arena-action="open-athlete" data-client="' + esc(s.id) + '" class="w-full flex items-center gap-2 px-4 py-2.5 hover:bg-surface-2 transition text-start">'
-        + '<span class="min-w-0 flex-1 truncate text-xs font-semibold">' + esc(s.name) + '</span>'
-        + '<span class="text-[10px] font-bold tabular-nums text-warning shrink-0">' + s.trophies + ' ' + esc(u('hallTrophies')) + '</span>'
-        + (s.pending ? '<span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-danger/20 text-danger shrink-0">' + s.pending + ' ' + esc(u('hallPending')) + '</span>' : '')
-        + (s.lastExamAt ? '<span class="text-[9px] text-muted tabular-nums shrink-0 hidden sm:inline">' + esc(fmtDate(s.lastExamAt)) + '</span>' : '')
-        + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-3.5 h-3.5 text-muted shrink-0"><path d="m9 6 6 6-6 6"/></svg></button>';
+      var initials = String(s.name || '?').trim().slice(0, 1).toUpperCase();
+      html += '<button type="button" data-arena-action="open-athlete" data-client="' + esc(s.id) + '" class="arena-hall-row">'
+        + '<span class="arena-hall-avatar" aria-hidden="true">' + esc(initials) + '</span>'
+        + '<span class="arena-hall-name">' + esc(s.name) + '</span>'
+        + '<span class="arena-hall-stat">' + s.trophies + ' ' + esc(u('hallTrophies')) + '</span>'
+        + (s.pending ? '<span class="arena-hall-pending">' + s.pending + ' ' + esc(u('hallPending')) + '</span>' : '')
+        + (s.lastExamAt ? '<span class="arena-hall-date">' + esc(fmtDate(s.lastExamAt)) + '</span>' : '')
+        + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="arena-hall-chev"><path d="m9 6 6 6-6 6"/></svg></button>';
     });
     html += '</div></div>';
     return html;
@@ -711,32 +762,32 @@
     });
     trophies.sort(function (a, b) { return (b.trophy.earned_at || 0) - (a.trophy.earned_at || 0); });
     if (!trophies.length) {
-      return `<div class="bg-surface border border-border rounded-2xl shadow-card p-10 text-center">
-        <div class="w-16 h-16 mx-auto rounded-2xl bg-surface-2 border border-border grid place-items-center text-muted mb-3">${trophySvg()}</div>
-        <div class="font-display font-bold">${esc(u('noTrophies'))}</div>
-        <p class="text-xs text-muted mt-1 max-w-sm mx-auto">${esc(u('noTrophiesHint'))}</p>
+      return `<div class="arena-empty">
+        <div class="arena-empty-ic">${trophySvg()}</div>
+        <div class="arena-empty-title">${esc(u('noTrophies'))}</div>
+        <p class="arena-empty-text">${esc(u('noTrophiesHint'))}</p>
       </div>`;
     }
-    return `<div class="grid gap-3 sm:grid-cols-2">${trophies.map(function (row) {
+    return `<div class="arena-trophy-grid">${trophies.map(function (row) {
       var t = row.trophy;
-      var color = tierInfo(t.tier).color;
+      var tierColor = rgbTriplet(tierInfo(t.tier).color);
       var results = (t.results || []).map(function (r) {
-        return `<div class="flex items-center justify-between gap-2 text-[10px]"><span class="text-muted truncate">${esc(r.label)}</span><b class="tabular-nums ${r.passed ? 'text-success' : 'text-danger'}">${esc(r.display)}</b></div>`;
+        return `<div class="arena-result-row"><span class="text-muted truncate">${esc(r.label)}</span><b class="${r.passed ? 'text-success' : 'text-danger'}">${esc(r.display)}</b></div>`;
       }).join('');
-      return `<div class="bg-surface border border-border rounded-2xl shadow-card p-4" style="border-color:${color}44">
-        <div class="flex items-start gap-3">
-          <span class="w-11 h-11 rounded-xl grid place-items-center shrink-0" style="color:${color};background:${color}1c">${trophySvg()}</span>
-          <div class="min-w-0 flex-1">
-            <div class="text-[9px] uppercase tracking-wider font-bold" style="color:${color}">${esc(tr(t.tier ? (TIER[t.tier] && TIER[t.tier].label) : null) || '')}</div>
-            <div class="font-display font-bold text-sm leading-tight">${esc(tr(t.name))}</div>
-            <div class="text-[10px] text-muted mt-0.5">${esc(row.game ? tr(row.game.name) : '')}${row.path ? ' · ' + esc(tr(row.path.name)) : ''} · ${esc(fmtDate(t.earned_at))}</div>
+      return `<div class="arena-trophy" style="--ta:${tierColor}">
+        <div class="arena-trophy-top">
+          <span class="arena-trophy-plate" aria-hidden="true">${trophySvg()}</span>
+          <div class="arena-trophy-main">
+            <div class="arena-trophy-tier">${esc(tr(t.tier ? (TIER[t.tier] && TIER[t.tier].label) : null) || '')}</div>
+            <div class="arena-trophy-name">${esc(tr(t.name))}</div>
+            <div class="arena-trophy-meta">${esc(row.game ? tr(row.game.name) : '')}${row.path ? ' · ' + esc(tr(row.path.name)) : ''} · ${esc(fmtDate(t.earned_at))}</div>
           </div>
         </div>
-        ${results ? `<div class="mt-3 pt-2 border-t border-border space-y-1">${results}</div>` : ''}
-        <div class="mt-2 flex flex-wrap items-center gap-3">
-          ${t.video ? `<a href="${esc(t.video)}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-[10px] font-semibold text-primary-2">${esc(u('video'))} ↗</a>` : ''}
-          ${t.verification_code ? `<button type="button" data-arena-action="copy-verify" data-code="${esc(t.verification_code)}" class="inline-flex items-center gap-1 text-[10px] font-semibold text-cyan-300 hover:text-text">${esc(u('verifyTrophy'))}</button>` : ''}
-          <button type="button" data-arena-action="share-trophy" data-path="${esc(t.path_id || '')}" data-tier="${esc(t.tier_id)}" class="inline-flex items-center gap-1 text-[10px] font-semibold text-muted hover:text-text">${esc(u('share'))}</button>
+        ${results ? `<div class="arena-trophy-results">${results}</div>` : ''}
+        <div class="arena-trophy-actions">
+          ${t.video ? `<a href="${esc(t.video)}" target="_blank" rel="noopener">${esc(u('video'))} ↗</a>` : ''}
+          ${t.verification_code ? `<button type="button" data-arena-action="copy-verify" data-code="${esc(t.verification_code)}">${esc(u('verifyTrophy'))}</button>` : ''}
+          <button type="button" data-arena-action="share-trophy" data-path="${esc(t.path_id || '')}" data-tier="${esc(t.tier_id)}" class="is-muted">${esc(u('share'))}</button>
         </div>
       </div>`;
     }).join('')}</div>`;
@@ -770,34 +821,38 @@
 
   function renderReview() {
     if (!state.pendingReviews.length) {
-      return '<div class="bg-surface border border-border rounded-2xl p-8 text-center"><div class="w-16 h-16 mx-auto rounded-2xl grid place-items-center bg-success/10 border border-success/30 text-success mb-3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-8 h-8"><path d="M20 6L9 17l-5-5"/></svg></div><p class="text-sm font-semibold">' + esc(u('reviewNone')) + '</p></div>';
+      return `<div class="arena-empty">
+        <div class="arena-empty-ic" style="color:rgb(var(--c-success));background:rgb(var(--c-success) / .12);border-color:rgb(var(--c-success) / .3)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <div class="arena-empty-title">${esc(u('reviewNone'))}</div>
+      </div>`;
     }
-    var html = '<div class="text-[10px] uppercase tracking-wider text-muted font-bold mb-2">' + esc(u('reviewHeader')) + ' (' + state.pendingReviews.length + ')</div>';
+    var html = '<p class="arena-sec-label">' + esc(u('reviewHeader')) + ' (' + state.pendingReviews.length + ')</p><div class="arena-review">';
     state.pendingReviews.forEach(function (item) {
       var a = item.attempt;
       var found = findPath(item.pathId);
       var pathName = found ? tr(found.path.name) : item.pathId;
       var gameName = found ? tr(found.game.name) : '';
       var tierLabel2 = (a.tier_id || '').toUpperCase();
-      html += '<div class="bg-surface border border-border rounded-2xl p-4 mb-3" data-attempt-id="' + esc(a.id) + '" data-client-id="' + esc(item.clientId) + '" data-path-id="' + esc(item.pathId) + '">';
-      html += '<div class="flex flex-wrap items-center gap-2"><b class="font-display text-base">' + esc(item.clientName) + '</b>';
-      html += '<span class="text-[10px] text-muted font-semibold">·</span><span class="text-xs font-semibold">' + esc(gameName) + ' · ' + esc(pathName) + ' · ' + esc(tierLabel2) + '</span></div>';
-      html += '<div class="text-[10px] text-muted mt-0.5">' + esc(fmtDate(a.at)) + '</div>';
+      var tierColor = found ? rgbTriplet(tierInfo(a.tier_id).color) : '239 68 68';
+      html += '<div class="arena-review-card" style="--ta:' + tierColor + '" data-attempt-id="' + esc(a.id) + '" data-client-id="' + esc(item.clientId) + '" data-path-id="' + esc(item.pathId) + '">';
+      html += '<div class="arena-review-head"><b>' + esc(item.clientName) + '</b><span>· ' + esc(gameName) + ' · ' + esc(pathName) + ' · ' + esc(tierLabel2) + '</span></div>';
+      html += '<div class="arena-review-date">' + esc(fmtDate(a.at)) + '</div>';
       if (a.video_file_id) {
-        html += '<div class="mt-2"><div class="text-[9px] uppercase tracking-wider text-muted font-bold mb-1">' + esc(u('reviewVideo')) + '</div><video class="w-full max-h-[320px] rounded-xl border border-border bg-black" controls preload="metadata" src="/api/files/' + esc(a.video_file_id) + '"></video></div>';
+        html += '<div class="arena-review-video"><div class="arena-review-label">' + esc(u('reviewVideo')) + '</div><video controls preload="metadata" src="/api/files/' + esc(a.video_file_id) + '"></video></div>';
       } else if (a.video) {
-        html += '<div class="mt-2"><div class="text-[9px] uppercase tracking-wider text-muted font-bold mb-1">' + esc(u('reviewVideo')) + '</div><a class="text-xs text-primary-2 underline break-all" href="' + esc(a.video) + '" target="_blank" rel="noopener">' + esc(a.video) + '</a></div>';
+        html += '<div class="arena-review-video"><div class="arena-review-label">' + esc(u('reviewVideo')) + '</div><a class="text-xs text-primary-2 underline break-all" href="' + esc(a.video) + '" target="_blank" rel="noopener">' + esc(a.video) + '</a></div>';
       }
-      html += '<div class="mt-2 divide-y divide-border/40">';
+      html += '<div class="arena-review-results">';
       (a.results || []).forEach(function (r) {
-        html += '<div class="flex items-center gap-2 py-1.5 text-xs"><span class="w-4 h-4 rounded-full shrink-0 grid place-items-center ' + (r.passed ? 'bg-success/15 text-success' : 'bg-danger/15 text-danger') + '">' + (r.passed ? '✓' : '✕') + '</span><span class="flex-1 min-w-0 truncate font-medium">' + esc(r.label || r.station_id) + '</span><span class="font-mono text-muted shrink-0">' + esc(r.display || '') + '</span></div>';
+        html += '<div><span class="arena-result-dot ' + (r.passed ? 'ok' : 'no') + '">' + (r.passed ? '✓' : '✕') + '</span><span class="flex-1 min-w-0 truncate font-medium">' + esc(r.label || r.station_id) + '</span><span class="font-mono text-muted shrink-0">' + esc(r.display || '') + '</span></div>';
       });
       html += '</div>';
-      html += '<div class="mt-2 flex items-center gap-2">';
-      html += '<button type="button" data-arena-action="approve-attempt" class="bg-success text-black text-xs font-bold px-4 py-2 rounded-xl hover:brightness-110 transition">' + esc(u('reviewApprove')) + '</button>';
-      html += '<button type="button" data-arena-action="reject-attempt" class="bg-danger/15 text-danger border border-danger/30 text-xs font-bold px-4 py-2 rounded-xl hover:bg-danger/25 transition">' + esc(u('reviewReject')) + '</button>';
+      html += '<div class="arena-review-actions">';
+      html += '<button type="button" data-arena-action="approve-attempt" class="arena-approve">' + esc(u('reviewApprove')) + '</button>';
+      html += '<button type="button" data-arena-action="reject-attempt" class="arena-reject">' + esc(u('reviewReject')) + '</button>';
       html += '</div></div>';
     });
+    html += '</div>';
     return html;
   }
 
@@ -1192,6 +1247,17 @@
       render();
     }
   });
+
+  /* c250: if a cut-out is missing (old build, interrupted sync), fall back to
+     the source illustration once instead of showing a broken image. Error
+     events do not bubble, so listen in the capture phase. */
+  document.addEventListener('error', function (event) {
+    var img = event.target;
+    if (!img || img.tagName !== 'IMG' || !img.hasAttribute('data-fallback')) return;
+    var fallback = img.getAttribute('data-fallback');
+    img.removeAttribute('data-fallback');
+    if (fallback) img.setAttribute('src', fallback);
+  }, true);
 
   window.DK_ARENA = { open: open, refresh: refresh, fillProfileSummary: fillProfileSummary };
   try { if (typeof screens !== 'undefined') screens.arena = { refresh: refresh }; } catch (_) {}

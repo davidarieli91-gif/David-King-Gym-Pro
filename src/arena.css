@@ -1,0 +1,1204 @@
+/* ============================================================================
+   c250 — DKG Arena visual system
+   ----------------------------------------------------------------------------
+   The Arena used to be plain Tailwind cards: flat rows, default borders, and
+   exercise art that inherited the app-wide invert filters (washed out in dark
+   themes, heavy and muddy in amber, near-black in light). This file gives the
+   Arena its own language that matches the rest of Vision v2:
+
+   hero with a floating trophy mark, stat plates, glow tabs, game cards with
+   colour bands + watermark icons, tier cards, lesson rows, a trophy case and
+   the coach review queue. Exercise art now lives on .arena-media — a stage
+   with a fixed dark/light plate and TRANSPARENT cut-outs (images/arena), so
+   no theme filter can touch it: the figure stays crisp in every theme.
+   ========================================================================== */
+
+html[data-ui="v2"] [data-screen="arena"] {
+  position: relative;
+  max-width: 1120px;
+  /* the ambient glow ::before bleeds 10% past the screen on both sides; clip it
+     so the Arena never creates a horizontal scrollbar (it did: 99px). */
+  overflow-x: clip;
+}
+html[data-ui="v2"] [data-screen="arena"]::before {
+  content: "";
+  position: absolute;
+  inset: -40px -10% auto;
+  height: 520px;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 60% 60% at 18% 0%, rgb(var(--v2-glow) / .16), transparent 70%),
+    radial-gradient(ellipse 50% 50% at 88% 8%, rgb(var(--v2-glow-2) / .12), transparent 70%);
+  opacity: .9;
+}
+html[data-ui="v2"] [data-screen="arena"] > * { position: relative; z-index: 1; }
+
+/* ---------------------------------------------------------------- hero --- */
+.arena-hero {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(12px, 1.6vw, 22px);
+  padding: clamp(16px, 2vw, 26px);
+  margin-bottom: 12px;
+  border-radius: 26px;
+  border: 1px solid var(--v2-border, rgba(112, 150, 230, .22));
+  background:
+    radial-gradient(ellipse 70% 120% at 0% 0%, rgb(var(--v2-glow) / .22), transparent 62%),
+    radial-gradient(ellipse 60% 100% at 100% 100%, rgb(var(--v2-glow-2) / .14), transparent 66%),
+    var(--v2-surface, linear-gradient(150deg, rgba(18, 32, 64, .78), rgba(8, 14, 32, .62)));
+  box-shadow: var(--v2-card-shadow, 0 18px 50px -26px rgba(0, 0, 0, .72)), inset 0 1px 0 rgba(255, 255, 255, .07);
+}
+.arena-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(115deg, rgba(255, 255, 255, .035) 0 1px, transparent 1px 26px),
+    radial-gradient(circle at 82% 20%, rgba(255, 255, 255, .1) 0 1px, transparent 1.6px);
+  background-size: auto, 26px 26px;
+  opacity: .5;
+  -webkit-mask-image: linear-gradient(100deg, #000 0%, transparent 62%);
+  mask-image: linear-gradient(100deg, #000 0%, transparent 62%);
+}
+.arena-hero > * { position: relative; z-index: 1; }
+
+.arena-hero-mark {
+  width: clamp(56px, 7vw, 76px);
+  height: clamp(56px, 7vw, 76px);
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  color: #fde68a;
+  background:
+    radial-gradient(ellipse 70% 70% at 34% 22%, rgba(253, 230, 138, .42), transparent 68%),
+    linear-gradient(150deg, #7c5c17, #3a2a08 68%);
+  border: 1px solid rgba(253, 230, 138, .45);
+  box-shadow:
+    0 18px 34px -18px rgba(245, 158, 11, .65),
+    inset 0 1px 0 rgba(255, 255, 255, .22);
+  animation: arena-float 7s ease-in-out infinite;
+}
+.arena-hero-mark svg { width: 58%; height: 58%; filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .45)); }
+@keyframes arena-float {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-5px) rotate(2deg); }
+}
+@media (prefers-reduced-motion: reduce) { .arena-hero-mark { animation: none; } }
+
+.arena-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: rgb(var(--c-warning, 245 158 11));
+}
+.arena-hero-badge::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgb(var(--c-warning, 245 158 11));
+  box-shadow: 0 0 0 4px rgb(var(--c-warning, 245 158 11) / .16);
+}
+.arena-hero-title {
+  font-family: var(--font-display, inherit);
+  font-weight: 800;
+  font-size: clamp(26px, 3.4vw, 40px);
+  line-height: 1.04;
+  letter-spacing: -.025em;
+  margin: 4px 0 0;
+}
+.arena-hero-sub {
+  margin: 6px 0 0;
+  max-width: 52ch;
+  font-size: clamp(11px, 1vw, 13px);
+  line-height: 1.5;
+  color: rgb(var(--c-muted));
+}
+.arena-hero-side { display: grid; gap: 6px; justify-items: end; min-width: 0; }
+.arena-hero-side > label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgb(var(--c-muted));
+}
+.arena-hero-side select {
+  min-width: 180px;
+  max-width: min(260px, 62vw);
+  padding: 10px 34px 10px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--v2-border, rgba(112, 150, 230, .22));
+  background-color: var(--v2-input-bg, rgba(8, 16, 36, .78));
+  color: rgb(var(--c-text));
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.arena-hero-side select:focus-visible { outline: 2px solid rgb(var(--c-primary) / .65); outline-offset: 2px; }
+
+/* --------------------------------------------------------------- stats --- */
+.arena-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.arena-stat {
+  --sa: 250 204 21;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  border: 1px solid var(--v2-border, rgba(112, 150, 230, .22));
+  background: var(--v2-surface, linear-gradient(150deg, rgba(18, 32, 64, .78), rgba(8, 14, 32, .62)));
+  box-shadow: var(--v2-card-shadow, 0 18px 50px -26px rgba(0, 0, 0, .72)), inset 0 1px 0 rgba(255, 255, 255, .05);
+}
+.arena-stat::before {
+  content: "";
+  position: absolute;
+  inset: auto -30% -70% auto;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(var(--sa) / .28), transparent 68%);
+  pointer-events: none;
+}
+.arena-stat-ic {
+  width: 38px;
+  height: 38px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 38px;
+  color: rgb(var(--sa));
+  background: rgb(var(--sa) / .14);
+  border: 1px solid rgb(var(--sa) / .3);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12);
+}
+.arena-stat-ic svg { width: 19px; height: 19px; }
+.arena-stat-body { min-width: 0; }
+.arena-stat-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgb(var(--c-muted));
+}
+.arena-stat-value {
+  font-family: var(--font-display, inherit);
+  font-weight: 800;
+  font-size: clamp(20px, 2.2vw, 26px);
+  line-height: 1.1;
+  margin-top: 1px;
+  font-variant-numeric: tabular-nums;
+}
+.arena-stat-note { font-size: 10px; color: rgb(var(--c-muted)); margin-top: 1px; }
+/* rank names ("Novice") are words, not numbers: keep them on one line */
+.arena-stat-value.is-text {
+  font-size: clamp(15px, 1.6vw, 19px);
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- tabs --- */
+.arena-tabs {
+  display: flex;
+  gap: 5px;
+  padding: 5px;
+  margin-bottom: 12px;
+  border-radius: 16px;
+  border: 1px solid var(--v2-border, rgba(112, 150, 230, .22));
+  background: rgba(8, 14, 30, .42);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+html[data-mode="light"] .arena-tabs { background: rgba(255, 255, 255, .6); }
+.arena-tab {
+  flex: 1 1 0;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 10px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: rgb(var(--c-muted));
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .18s var(--v2-ease, ease), color .18s, box-shadow .18s, transform .18s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.arena-tab:hover { color: rgb(var(--c-text)); background: rgb(255 255 255 / .05); }
+/* The theme gradient is bright in every palette (yellow in Honey, cyan/sky in
+   Arctic...), so the active tab uses dark ink like the dashboard buttons —
+   white on #fde047 was practically unreadable. */
+.arena-tab.is-on {
+  color: #1b1302;
+  background: var(--v2-primary-grad, linear-gradient(135deg, #8b5cf6, #3b82f6));
+  box-shadow: 0 10px 24px -12px rgb(var(--v2-glow) / .85), inset 0 1px 0 rgba(255, 255, 255, .45);
+}
+.arena-tab-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgb(var(--c-danger, 239 68 68));
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 0 0 3px rgb(var(--c-danger, 239 68 68) / .18);
+}
+.arena-tab-count {
+  min-width: 20px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / .12);
+  font-size: 10px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.arena-tab.is-on .arena-tab-count { background: rgba(27, 19, 2, .16); }
+
+/* ---------------------------------------------------------- game cards --- */
+.arena-games {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+.arena-game {
+  --ga: 139 92 246;
+  position: relative;
+  overflow: hidden;
+  border-radius: 22px;
+  border: 1px solid var(--v2-border, rgba(112, 150, 230, .22));
+  background: var(--v2-surface, linear-gradient(150deg, rgba(18, 32, 64, .78), rgba(8, 14, 32, .62)));
+  box-shadow: var(--v2-card-shadow, 0 18px 50px -26px rgba(0, 0, 0, .72)), inset 0 1px 0 rgba(255, 255, 255, .05);
+  transition: transform .22s var(--v2-ease, ease), box-shadow .22s, border-color .22s;
+}
+.arena-game:hover {
+  transform: translateY(-2px);
+  border-color: rgb(var(--ga) / .45);
+  box-shadow: 0 26px 60px -30px rgb(var(--ga) / .55), inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+.arena-game-band {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgb(var(--ga) / .22);
+  background:
+    radial-gradient(ellipse 80% 140% at 0% 0%, rgb(var(--ga) / .34), transparent 66%),
+    radial-gradient(ellipse 60% 120% at 100% 100%, rgb(var(--ga) / .16), transparent 62%),
+    rgba(6, 11, 24, .45);
+}
+html[data-mode="light"] .arena-game-band { background:
+    radial-gradient(ellipse 80% 140% at 0% 0%, rgb(var(--ga) / .22), transparent 66%),
+    radial-gradient(ellipse 60% 120% at 100% 100%, rgb(var(--ga) / .1), transparent 62%),
+    rgba(255, 255, 255, .55); }
+.arena-game-band::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 12px 12px, rgba(255, 255, 255, .18) 0 1px, transparent 1.4px);
+  background-size: 22px 22px;
+  opacity: .35;
+  -webkit-mask-image: linear-gradient(90deg, #000, transparent 55%);
+  mask-image: linear-gradient(90deg, #000, transparent 55%);
+}
+.arena-game-mark {
+  position: relative;
+  z-index: 1;
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  border-radius: 15px;
+  display: grid;
+  place-items: center;
+  color: rgb(var(--ga));
+  background: rgb(var(--ga) / .16);
+  border: 1px solid rgb(var(--ga) / .38);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .16), 0 10px 22px -12px rgb(var(--ga) / .8);
+}
+.arena-game-mark svg { width: 24px; height: 24px; }
+.arena-game-title { position: relative; z-index: 1; min-width: 0; }
+.arena-game-title h3 {
+  margin: 0;
+  font-family: var(--font-display, inherit);
+  font-weight: 800;
+  font-size: 16px;
+  line-height: 1.15;
+  letter-spacing: -.01em;
+}
+.arena-game-title p {
+  margin: 2px 0 0;
+  font-size: 10.5px;
+  line-height: 1.4;
+  color: rgb(var(--c-muted));
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.arena-game-watermark {
+  position: absolute;
+  z-index: 0;
+  inset-inline-end: -10px;
+  top: 50%;
+  width: 118px;
+  height: 118px;
+  transform: translateY(-50%);
+  color: rgb(var(--ga));
+  opacity: .12;
+  pointer-events: none;
+}
+.arena-game-watermark svg { width: 100%; height: 100%; stroke-width: 1; }
+.arena-game-body { padding: 10px 12px 12px; display: grid; gap: 7px; }
+.arena-path {
+  display: block;
+  width: 100%;
+  text-align: start;
+  padding: 10px 11px;
+  border-radius: 14px;
+  border: 1px solid rgb(var(--ga) / .18);
+  background: rgba(255, 255, 255, .035);
+  color: inherit;
+  cursor: pointer;
+  transition: background .18s, border-color .18s, transform .18s;
+}
+html[data-mode="light"] .arena-path { background: rgba(255, 255, 255, .55); }
+.arena-path:hover { background: rgb(var(--ga) / .1); border-color: rgb(var(--ga) / .4); transform: translateY(-1px); }
+.arena-path-top { display: flex; align-items: center; gap: 8px; }
+.arena-path-name { min-width: 0; flex: 1; }
+.arena-path-name b { display: block; font-size: 12.5px; font-weight: 700; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.arena-path-name small { display: block; font-size: 10px; color: rgb(var(--c-muted)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.arena-path-count {
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: rgb(var(--ga));
+}
+.arena-path-bar {
+  margin-top: 7px;
+  height: 5px;
+  border-radius: 999px;
+  background: rgb(148 163 184 / .18);
+  overflow: hidden;
+}
+.arena-path-bar > i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgb(var(--ga) / .75), rgb(var(--ga)));
+  box-shadow: 0 0 10px rgb(var(--ga) / .7);
+  transition: width .5s var(--v2-ease, ease);
+}
+.arena-soon {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--v2-border, rgba(112, 150, 230, .22));
+  background: rgba(255, 255, 255, .05);
+  font-size: 10px;
+  font-weight: 700;
+  color: rgb(var(--c-muted));
+}
+
+/* ------------------------------------------------------------ path head --- */
+.arena-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 10px;
+  padding: 6px 10px 6px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--v2-border, rgba(112, 150, 230, .22));
+  background: rgba(255, 255, 255, .04);
+  color: rgb(var(--c-muted));
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color .18s, background .18s, border-color .18s;
+}
+.arena-back:hover { color: rgb(var(--c-text)); background: rgba(255, 255, 255, .08); border-color: rgb(var(--ga, 139 92 246) / .4); }
+.arena-back-ic {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, .08);
+}
+.arena-path-hero {
+  --ga: 139 92 246;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  padding: 16px;
+  margin-bottom: 12px;
+  border-radius: 22px;
+  border: 1px solid rgb(var(--ga) / .3);
+  background:
+    radial-gradient(ellipse 70% 130% at 0% 0%, rgb(var(--ga) / .26), transparent 64%),
+    var(--v2-surface, linear-gradient(150deg, rgba(18, 32, 64, .78), rgba(8, 14, 32, .62)));
+  box-shadow: var(--v2-card-shadow, 0 18px 50px -26px rgba(0, 0, 0, .72)), inset 0 1px 0 rgba(255, 255, 255, .07);
+}
+.arena-path-hero::after {
+  content: "";
+  position: absolute;
+  inset-inline-end: -34px;
+  top: -34px;
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  border: 1px solid rgb(var(--ga) / .22);
+  box-shadow: 0 0 0 26px rgb(var(--ga) / .05), 0 0 0 52px rgb(var(--ga) / .035);
+  pointer-events: none;
+}
+.arena-path-mark {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  color: rgb(var(--ga));
+  background: rgb(var(--ga) / .16);
+  border: 1px solid rgb(var(--ga) / .36);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14);
+}
+.arena-path-mark svg { width: 26px; height: 26px; }
+.arena-path-main { min-width: 0; flex: 1; position: relative; z-index: 1; }
+.arena-path-main h2 {
+  margin: 0;
+  font-family: var(--font-display, inherit);
+  font-weight: 800;
+  font-size: clamp(18px, 2vw, 24px);
+  letter-spacing: -.015em;
+  line-height: 1.15;
+}
+.arena-path-main p { margin: 4px 0 0; font-size: 11px; line-height: 1.5; color: rgb(var(--c-muted)); max-width: 62ch; }
+.arena-path-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 9px; }
+.arena-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  border: 1px solid rgb(var(--ga) / .3);
+  background: rgb(var(--ga) / .12);
+  color: rgb(var(--ga));
+  font-variant-numeric: tabular-nums;
+}
+.arena-pill svg { width: 13px; height: 13px; }
+.arena-assign-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px dashed rgb(var(--c-primary) / .4);
+  background: rgb(var(--c-primary) / .08);
+  font-size: 10.5px;
+  font-weight: 600;
+  color: rgb(var(--c-primary-2));
+}
+.arena-assign-note svg { width: 14px; height: 14px; flex: 0 0 14px; }
+.arena-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--v2-border-strong, rgba(134, 174, 255, .4));
+  background: rgba(255, 255, 255, .06);
+  color: rgb(var(--c-text));
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .18s, border-color .18s, transform .18s;
+}
+.arena-btn:hover { background: rgba(255, 255, 255, .1); transform: translateY(-1px); }
+.arena-btn-primary {
+  border-color: transparent;
+  background: var(--v2-primary-grad, linear-gradient(135deg, #8b5cf6, #3b82f6));
+  color: #1b1302;
+  box-shadow: 0 12px 26px -14px rgb(var(--v2-glow) / .9);
+}
+.arena-btn-primary:hover { filter: brightness(1.06); }
+.arena-btn-danger { border-color: rgb(var(--c-danger) / .35); background: rgb(var(--c-danger) / .1); color: rgb(var(--c-danger)); }
+.arena-btn-danger:hover { background: rgb(var(--c-danger) / .16); }
+.arena-btn svg { width: 15px; height: 15px; }
+
+/* ---------------------------------------------------------------- tiers --- */
+.arena-tiers { display: grid; gap: 10px; }
+.arena-tier {
+  --ta: 205 127 50;
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid var(--v2-border, rgba(112, 150, 230, .22));
+  background: var(--v2-surface, linear-gradient(150deg, rgba(18, 32, 64, .78), rgba(8, 14, 32, .62)));
+  box-shadow: var(--v2-card-shadow, 0 18px 50px -26px rgba(0, 0, 0, .72)), inset 0 1px 0 rgba(255, 255, 255, .05);
+}
+.arena-tier.is-current { border-color: rgb(var(--ta) / .55); box-shadow: 0 22px 60px -30px rgb(var(--ta) / .6), inset 0 1px 0 rgba(255, 255, 255, .07); }
+.arena-tier.is-locked { opacity: .82; }
+.arena-tier-head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgb(var(--ta) / .18);
+  background:
+    radial-gradient(ellipse 70% 160% at 0% 0%, rgb(var(--ta) / .2), transparent 66%),
+    rgba(255, 255, 255, .02);
+}
+.arena-tier-num {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display, inherit);
+  font-weight: 800;
+  font-size: 14px;
+  color: rgb(var(--ta));
+  background: rgb(var(--ta) / .16);
+  border: 1px solid rgb(var(--ta) / .34);
+}
+.arena-tier-main { min-width: 0; flex: 1; }
+.arena-tier-title { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.arena-tier-title h4 {
+  margin: 0;
+  font-family: var(--font-display, inherit);
+  font-weight: 800;
+  font-size: 13.5px;
+  letter-spacing: -.01em;
+}
+.arena-tier-chip {
+  padding: 2px 7px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, .07);
+  font-size: 9px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: rgb(var(--c-muted));
+}
+.arena-tier-status {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgb(var(--ta));
+  background: rgb(var(--ta) / .13);
+  border: 1px solid rgb(var(--ta) / .3);
+}
+.arena-tier-goal { margin: 2px 0 0; font-size: 10.5px; line-height: 1.45; color: rgb(var(--c-muted)); }
+.arena-tier-left { margin-top: 3px; font-size: 10px; font-weight: 800; color: rgb(var(--ta)); }
+.arena-tier-progress {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: conic-gradient(rgb(var(--ta)) calc(var(--p, 0) * 1%), rgb(148 163 184 / .16) calc(var(--p, 0) * 1%));
+  position: relative;
+}
+.arena-tier-progress::before { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: rgb(10, 16, 32); }
+html[data-mode="light"] .arena-tier-progress::before { background: #fff; }
+.arena-tier-progress b { position: relative; font-size: 10px; font-weight: 800; font-variant-numeric: tabular-nums; color: rgb(var(--ta)); }
+.arena-tier-body { padding: 10px; display: grid; gap: 7px; }
+
+/* -------------------------------------------------------------- lessons --- */
+.arena-lesson {
+  border-radius: 14px;
+  border: 1px solid var(--v2-border, rgba(112, 150, 230, .22));
+  background: rgba(255, 255, 255, .028);
+  padding: 10px 11px;
+  transition: border-color .18s, background .18s;
+}
+html[data-mode="light"] .arena-lesson { background: rgba(255, 255, 255, .62); }
+.arena-lesson:hover { border-color: rgb(var(--ta) / .35); }
+.arena-lesson.is-done { border-color: rgb(var(--c-success) / .3); background: rgb(var(--c-success) / .05); }
+.arena-lesson.is-locked { opacity: .7; }
+.arena-lesson-row { display: flex; align-items: flex-start; gap: 9px; cursor: pointer; }
+.arena-lesson-check {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  margin: 1px 0 0;
+  flex: 0 0 18px;
+  border-radius: 6px;
+  border: 1.5px solid rgb(var(--ta) / .5);
+  background: rgba(0, 0, 0, .2);
+  cursor: pointer;
+  position: relative;
+  transition: background .15s, border-color .15s;
+}
+html[data-mode="light"] .arena-lesson-check { background: #fff; }
+.arena-lesson-check:checked { background: rgb(var(--c-success)); border-color: rgb(var(--c-success)); }
+.arena-lesson-check:checked::after {
+  content: "";
+  position: absolute;
+  inset: 3px 4px 5px;
+  border: solid #fff;
+  border-width: 0 0 2px 2px;
+  transform: rotate(-45deg);
+}
+.arena-lesson-check:disabled { cursor: default; opacity: .55; }
+.arena-lesson-check:focus-visible { outline: 2px solid rgb(var(--ta) / .7); outline-offset: 2px; }
+.arena-lesson-body { min-width: 0; flex: 1; }
+.arena-lesson-name { display: block; font-size: 12.5px; font-weight: 700; line-height: 1.3; }
+.arena-lesson-dose { display: block; margin-top: 1px; font-size: 10px; color: rgb(var(--c-muted)); font-variant-numeric: tabular-nums; }
+.arena-lesson.is-done .arena-lesson-name { color: rgb(var(--c-success)); }
+.arena-lesson-more { margin-top: 7px; }
+.arena-lesson-more > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: rgb(var(--c-primary-2));
+  user-select: none;
+}
+.arena-lesson-more > summary::-webkit-details-marker { display: none; }
+.arena-lesson-more > summary::before { content: "▾"; font-size: 9px; transition: transform .15s; }
+.arena-lesson-more:not([open]) > summary::before { transform: rotate(-90deg); }
+.arena-lesson-card {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--v2-border, rgba(112, 150, 230, .22));
+  display: grid;
+  gap: 8px;
+  font-size: 10.5px;
+  line-height: 1.55;
+  color: rgb(var(--c-muted));
+}
+.arena-lesson-card b { color: rgb(var(--c-text)); }
+.arena-lesson-card .arena-media { margin-bottom: 2px; }
+
+/* earned-trophy strip inside a completed tier */
+.arena-trophy-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 2px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgb(var(--ta) / .36);
+  background:
+    radial-gradient(ellipse 70% 140% at 0% 0%, rgb(var(--ta) / .16), transparent 66%),
+    rgba(255, 255, 255, .03);
+}
+.arena-trophy-line-ic {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: rgb(var(--ta));
+  background: rgb(var(--ta) / .16);
+  border: 1px solid rgb(var(--ta) / .42);
+  box-shadow: 0 0 0 3px rgb(var(--ta) / .08);
+}
+.arena-trophy-line-ic svg { width: 18px; height: 18px; }
+.arena-trophy-line b { display: block; font-size: 12px; font-weight: 800; color: rgb(var(--ta)); line-height: 1.25; }
+.arena-trophy-line small { display: block; font-size: 10px; color: rgb(var(--c-muted)); margin-top: 1px; }
+
+/* locked exam / locked tier note */
+.arena-locked {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 2px;
+  padding: 9px 11px;
+  border-radius: 12px;
+  border: 1px dashed var(--v2-border, rgba(112, 150, 230, .28));
+  background: rgba(255, 255, 255, .025);
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: rgb(var(--c-muted));
+}
+.arena-locked::before { content: "🔒"; font-size: 11px; line-height: 1; }
+
+/* --------------------------------------------------- lesson art stage --- */
+/* The one and only image treatment for Arena art. The art is a transparent
+   cut-out (images/arena), so the plate below is what the figure stands on:
+   deep navy in dark themes, ice in light themes. Filters that the app applies
+   to `images/rdb|bf_` are neutralised here on purpose. */
+.arena-media {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 150px;
+  padding: 12px 12px 8px;
+  border-radius: 16px;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid rgba(120, 165, 255, .22);
+  background:
+    radial-gradient(ellipse 68% 62% at 50% 26%, rgba(64, 132, 255, .26), transparent 70%),
+    radial-gradient(ellipse 90% 60% at 50% 108%, rgba(34, 211, 238, .12), transparent 66%),
+    linear-gradient(165deg, #101d3a 0%, #0a1226 62%, #060b18 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 18px 40px -30px rgba(0, 0, 0, .9);
+}
+.arena-media::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 100%, rgba(255, 255, 255, .14) 0 1px, transparent 1.5px);
+  background-size: 26px 14px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 50% at 50% 100%, #000, transparent 72%);
+  mask-image: radial-gradient(ellipse 70% 50% at 50% 100%, #000, transparent 72%);
+  opacity: .5;
+}
+.arena-media::after {
+  content: "";
+  position: absolute;
+  inset-inline: 26%;
+  bottom: 10px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, .5), transparent 70%);
+  filter: blur(4px);
+  pointer-events: none;
+}
+.arena-media > img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  max-height: 230px;
+  object-fit: contain;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  /* neutralise the app-wide invert/screen rules for rdb/bf art */
+  filter: drop-shadow(0 16px 18px rgba(3, 8, 20, .55)) !important;
+  mix-blend-mode: normal !important;
+}
+/* In light themes the plate stays deep navy on purpose. The cut-out figure is
+   a light grey/blue illustration (mean luminance ~153): on an ice plate its
+   contrast is only 1.5:1 and it looks washed out — exactly the bug this
+   redesign fixes. A dark stage gives 6.4:1 in both themes, so the figure is
+   crisp everywhere; only the outer rim, tag and shadow follow the theme. */
+html[data-ui="v2"][data-mode="light"] .arena-media {
+  border-color: rgba(30, 80, 150, .32);
+  background:
+    radial-gradient(ellipse 68% 62% at 50% 30%, rgba(64, 132, 255, .3), transparent 70%),
+    radial-gradient(ellipse 90% 60% at 50% 108%, rgba(34, 211, 238, .14), transparent 66%),
+    linear-gradient(165deg, #16233f 0%, #0a1224 62%, #070d1a 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), 0 16px 34px -24px rgba(15, 50, 110, .55);
+}
+html[data-ui="v2"][data-mode="light"] .arena-media::before { background: radial-gradient(circle at 50% 100%, rgba(190, 220, 255, .16) 0 1px, transparent 1.4px); background-size: 26px 14px; }
+html[data-ui="v2"][data-mode="light"] .arena-media::after { background: radial-gradient(ellipse at center, rgba(0, 0, 0, .55), transparent 70%); }
+html[data-ui="v2"][data-mode="light"] .arena-media > img { filter: drop-shadow(0 14px 18px rgba(2, 6, 18, .6)) !important; }
+.arena-media-tag {
+  position: absolute;
+  z-index: 2;
+  top: 8px;
+  inset-inline-start: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(3, 7, 18, .55);
+  border: 1px solid rgba(120, 165, 255, .26);
+  color: rgba(190, 220, 255, .9);
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  backdrop-filter: blur(6px);
+}
+
+/* --------------------------------------------------------------- exam --- */
+.arena-exam {
+  position: relative;
+  overflow: hidden;
+  margin-top: 2px;
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid rgb(var(--c-primary) / .34);
+  background:
+    radial-gradient(ellipse 80% 120% at 0% 0%, rgb(var(--c-primary) / .16), transparent 66%),
+    rgba(255, 255, 255, .02);
+}
+.arena-exam-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+.arena-exam-head h5 { margin: 0; font-family: var(--font-display, inherit); font-size: 12.5px; font-weight: 800; }
+.arena-exam-head span { font-size: 9px; font-weight: 700; color: rgb(var(--c-muted)); }
+.arena-exam-intro { margin: 0 0 8px; font-size: 10px; line-height: 1.5; color: rgb(var(--c-muted)); }
+.arena-station {
+  display: grid;
+  gap: 4px;
+  padding: 9px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--v2-border, rgba(112, 150, 230, .22));
+  background: rgba(255, 255, 255, .035);
+}
+html[data-mode="light"] .arena-station { background: rgba(255, 255, 255, .7); }
+.arena-station-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.arena-station-top b { font-size: 11px; font-weight: 700; }
+.arena-station-top span { font-size: 9.5px; font-weight: 700; color: rgb(var(--c-muted)); }
+.arena-station-hint { font-size: 9.5px; line-height: 1.45; color: rgb(var(--c-muted)); }
+.arena-input {
+  width: 100%;
+  min-width: 0;
+  padding: 7px 9px;
+  border-radius: 9px;
+  border: 1px solid var(--v2-border-strong, rgba(134, 174, 255, .4));
+  background: var(--v2-input-bg, rgba(8, 16, 36, .78));
+  color: rgb(var(--c-text));
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.arena-input:focus { outline: 2px solid rgb(var(--c-primary) / .6); outline-offset: 1px; }
+.arena-attempt {
+  margin-top: 8px;
+  padding: 9px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--v2-border, rgba(112, 150, 230, .22));
+  font-size: 10px;
+}
+.arena-attempt.is-pass { border-color: rgb(var(--c-success) / .35); background: rgb(var(--c-success) / .07); }
+.arena-attempt.is-fail { border-color: rgb(var(--c-danger) / .35); background: rgb(var(--c-danger) / .07); }
+.arena-attempt-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-weight: 800; }
+.arena-attempt.is-pass .arena-attempt-head { color: rgb(var(--c-success)); }
+.arena-attempt.is-fail .arena-attempt-head { color: rgb(var(--c-danger)); }
+.arena-result-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 2px 0; }
+.arena-result-row b { font-variant-numeric: tabular-nums; }
+.arena-media-file {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px dashed var(--v2-border-strong, rgba(134, 174, 255, .4));
+  background: rgba(255, 255, 255, .04);
+  color: rgb(var(--c-muted));
+  font-size: 10px;
+}
+
+/* --------------------------------------------------------------- flash --- */
+.arena-flash {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 13px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(253, 230, 138, .4);
+  background:
+    radial-gradient(ellipse 60% 140% at 0% 0%, rgba(253, 230, 138, .26), transparent 66%),
+    rgba(120, 88, 12, .16);
+  animation: arena-flash-in .45s var(--v2-ease, ease);
+}
+@keyframes arena-flash-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.arena-flash-ic {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  color: #fde68a;
+  background: radial-gradient(circle at 34% 24%, #a4791b, #4a3408 70%);
+  border: 1px solid rgba(253, 230, 138, .5);
+  box-shadow: 0 10px 22px -12px rgba(245, 158, 11, .8);
+}
+.arena-flash-ic svg { width: 22px; height: 22px; }
+.arena-flash-body { min-width: 0; flex: 1; }
+.arena-flash-eyebrow { font-size: 9px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #fbbf24; }
+.arena-flash-title { font-family: var(--font-display, inherit); font-weight: 800; font-size: 15px; line-height: 1.2; }
+
+/* ------------------------------------------------------------- trophies --- */
+.arena-trophy-grid { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.arena-trophy {
+  --ta: 205 127 50;
+  position: relative;
+  overflow: hidden;
+  padding: 14px;
+  border-radius: 20px;
+  border: 1px solid rgb(var(--ta) / .38);
+  background:
+    radial-gradient(ellipse 70% 120% at 0% 0%, rgb(var(--ta) / .18), transparent 64%),
+    var(--v2-surface, linear-gradient(150deg, rgba(18, 32, 64, .78), rgba(8, 14, 32, .62)));
+  box-shadow: var(--v2-card-shadow, 0 18px 50px -26px rgba(0, 0, 0, .72)), inset 0 1px 0 rgba(255, 255, 255, .06);
+}
+.arena-trophy-top { display: flex; align-items: flex-start; gap: 11px; }
+.arena-trophy-plate {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: rgb(var(--ta));
+  background: radial-gradient(circle at 34% 24%, rgb(var(--ta) / .3), rgba(0, 0, 0, .1) 74%);
+  border: 1px solid rgb(var(--ta) / .5);
+  box-shadow: 0 0 0 4px rgb(var(--ta) / .1), inset 0 1px 0 rgba(255, 255, 255, .18), 0 12px 24px -14px rgb(var(--ta) / .9);
+}
+.arena-trophy-plate svg { width: 23px; height: 23px; }
+.arena-trophy-main { min-width: 0; flex: 1; }
+.arena-trophy-tier { font-size: 9px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: rgb(var(--ta)); }
+.arena-trophy-name { font-family: var(--font-display, inherit); font-weight: 800; font-size: 14px; line-height: 1.2; margin-top: 1px; }
+.arena-trophy-meta { font-size: 10px; color: rgb(var(--c-muted)); margin-top: 2px; }
+.arena-trophy-results { margin-top: 10px; padding-top: 8px; border-top: 1px solid rgb(var(--ta) / .2); display: grid; gap: 2px; }
+.arena-trophy-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 9px; }
+.arena-trophy-actions a, .arena-trophy-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: 10px;
+  font-weight: 700;
+  color: rgb(var(--c-primary-2));
+  cursor: pointer;
+}
+.arena-trophy-actions a:hover, .arena-trophy-actions button:hover { text-decoration: underline; }
+.arena-trophy-actions .is-muted { color: rgb(var(--c-muted)); }
+
+/* --------------------------------------------------------------- review --- */
+.arena-review { display: grid; gap: 10px; }
+.arena-review-card {
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgb(var(--c-danger) / .26);
+  background:
+    radial-gradient(ellipse 60% 120% at 0% 0%, rgb(var(--c-danger) / .1), transparent 64%),
+    var(--v2-surface, linear-gradient(150deg, rgba(18, 32, 64, .78), rgba(8, 14, 32, .62)));
+  box-shadow: var(--v2-card-shadow, 0 18px 50px -26px rgba(0, 0, 0, .72)), inset 0 1px 0 rgba(255, 255, 255, .06);
+}
+.arena-review-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; }
+.arena-review-head b { font-family: var(--font-display, inherit); font-size: 15px; }
+.arena-review-head span { font-size: 10.5px; font-weight: 600; color: rgb(var(--c-muted)); }
+.arena-review-date { font-size: 10px; color: rgb(var(--c-muted)); margin-top: 1px; }
+.arena-review-video { margin-top: 9px; }
+.arena-review-video video { width: 100%; max-height: 320px; border-radius: 12px; border: 1px solid var(--v2-border, rgba(112, 150, 230, .22)); background: #000; }
+.arena-review-label { font-size: 8.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: rgb(var(--c-muted)); margin-bottom: 4px; }
+.arena-review-results { margin-top: 9px; border-top: 1px solid var(--v2-border, rgba(112, 150, 230, .22)); }
+.arena-review-results > div { display: flex; align-items: center; gap: 8px; padding: 5px 0; font-size: 11px; }
+.arena-result-dot {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  font-weight: 800;
+}
+.arena-result-dot.ok { background: rgb(var(--c-success) / .16); color: rgb(var(--c-success)); }
+.arena-result-dot.no { background: rgb(var(--c-danger) / .16); color: rgb(var(--c-danger)); }
+.arena-review-actions { display: flex; gap: 8px; margin-top: 10px; }
+.arena-approve {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 12px;
+  border: 0;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #03170a;
+  font-size: 11.5px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 12px 26px -14px rgba(34, 197, 94, .8);
+}
+.arena-approve:hover { filter: brightness(1.06); }
+.arena-reject {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 12px;
+  border: 1px solid rgb(var(--c-danger) / .35);
+  background: rgb(var(--c-danger) / .1);
+  color: rgb(var(--c-danger));
+  font-size: 11.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.arena-reject:hover { background: rgb(var(--c-danger) / .18); }
+
+/* --------------------------------------------------- hall / empty states --- */
+.arena-hall {
+  grid-column: 1 / -1;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid var(--v2-border, rgba(112, 150, 230, .22));
+  background: var(--v2-surface, linear-gradient(150deg, rgba(18, 32, 64, .78), rgba(8, 14, 32, .62)));
+  box-shadow: var(--v2-card-shadow, 0 18px 50px -26px rgba(0, 0, 0, .72)), inset 0 1px 0 rgba(255, 255, 255, .05);
+}
+.arena-hall-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--v2-border, rgba(112, 150, 230, .22));
+}
+.arena-hall-ic {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  color: rgb(var(--c-primary-2));
+  background: rgb(var(--c-primary) / .14);
+}
+.arena-hall-ic svg { width: 15px; height: 15px; }
+.arena-hall-head h3 { margin: 0; font-family: var(--font-display, inherit); font-size: 13px; font-weight: 800; }
+.arena-hall-count { margin-inline-start: auto; font-size: 10px; font-weight: 800; color: rgb(var(--c-muted)); }
+.arena-hall-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 9px 14px;
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--v2-border, rgba(112, 150, 230, .22)) 55%, transparent);
+  background: none;
+  color: inherit;
+  text-align: start;
+  cursor: pointer;
+  transition: background .15s;
+}
+.arena-hall-row:first-of-type { border-top: 0; }
+.arena-hall-row:hover { background: rgba(255, 255, 255, .045); }
+.arena-hall-avatar {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: rgb(var(--c-accent, 34 211 238));
+  background: radial-gradient(circle at 34% 24%, rgba(34, 211, 238, .22), rgba(6, 12, 26, .6));
+  border: 1px solid rgba(34, 211, 238, .24);
+}
+.arena-hall-name { min-width: 0; flex: 1; font-size: 12px; font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.arena-hall-stat { font-size: 10px; font-weight: 800; color: rgb(var(--c-warning, 245 158 11)); white-space: nowrap; }
+.arena-hall-pending { font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 999px; background: rgb(var(--c-danger) / .16); color: rgb(var(--c-danger)); white-space: nowrap; }
+.arena-hall-date { font-size: 9px; color: rgb(var(--c-muted)); white-space: nowrap; }
+.arena-hall-chev { width: 14px; height: 14px; flex: 0 0 14px; color: rgb(var(--c-muted)); }
+.arena-empty {
+  padding: 34px 20px;
+  border-radius: 20px;
+  border: 1px solid var(--v2-border, rgba(112, 150, 230, .22));
+  background: var(--v2-surface, linear-gradient(150deg, rgba(18, 32, 64, .78), rgba(8, 14, 32, .62)));
+  box-shadow: var(--v2-card-shadow, 0 18px 50px -26px rgba(0, 0, 0, .72)), inset 0 1px 0 rgba(255, 255, 255, .05);
+  text-align: center;
+}
+.arena-empty-ic {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 10px;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+  color: rgb(var(--c-muted));
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid var(--v2-border, rgba(112, 150, 230, .22));
+}
+.arena-empty-ic svg { width: 28px; height: 28px; }
+.arena-empty-title { font-family: var(--font-display, inherit); font-weight: 800; font-size: 15px; }
+.arena-empty-text { font-size: 11px; line-height: 1.5; color: rgb(var(--c-muted)); max-width: 42ch; margin: 4px auto 0; }
+.arena-sec-label { font-size: 9px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: rgb(var(--c-muted)); margin: 0 0 8px; }
+
+/* ------------------------------------------------------------ responsive --- */
+@media (max-width: 900px) {
+  .arena-games, .arena-trophy-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  html[data-ui="v2"] [data-screen="arena"] { padding: 12px; }
+  .arena-hero {
+    grid-template-columns: auto minmax(0, 1fr);
+    border-radius: 20px;
+    padding: 14px;
+    gap: 11px;
+  }
+  .arena-hero-mark { width: 48px; height: 48px; border-radius: 15px; }
+  .arena-hero-title { font-size: 24px; }
+  .arena-hero-sub { font-size: 11px; }
+  .arena-hero-side {
+    grid-column: 1 / -1;
+    justify-items: stretch;
+    margin-top: 2px;
+  }
+  .arena-hero-side select { max-width: none; width: 100%; }
+  .arena-stats { gap: 7px; }
+  .arena-stat { padding: 9px 10px; gap: 8px; border-radius: 15px; }
+  .arena-stat-ic { width: 32px; height: 32px; flex-basis: 32px; border-radius: 10px; }
+  .arena-stat-ic svg { width: 16px; height: 16px; }
+  .arena-stat-value { font-size: 18px; }
+  .arena-stat-label { font-size: 8px; letter-spacing: .08em; }
+  .arena-tab { padding: 8px 6px; font-size: 11px; gap: 4px; border-radius: 10px; }
+  .arena-tab-count, .arena-tab-badge { min-width: 17px; height: 17px; font-size: 9px; }
+  .arena-game-band { padding: 12px; }
+  .arena-game-title p { -webkit-line-clamp: 2; font-size: 10px; }
+  .arena-game-watermark { width: 96px; height: 96px; opacity: .1; }
+  .arena-tier-head { padding: 10px; gap: 9px; }
+  .arena-tier-progress { width: 38px; height: 38px; flex-basis: 38px; }
+  .arena-tier-body { padding: 8px; }
+  .arena-tier-title h4 { font-size: 12.5px; }
+  .arena-lesson { padding: 9px 10px; }
+  .arena-media { min-height: 120px; padding: 10px 8px 6px; }
+  .arena-media > img { max-height: 180px; }
+  .arena-trophy { padding: 12px; }
+  .arena-review-actions { flex-direction: column; }
+  .arena-approve, .arena-reject { justify-content: center; }
+}

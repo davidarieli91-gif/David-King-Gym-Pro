@@ -2653,7 +2653,6 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
     mix-blend-mode: screen;
   }
   /* c227: exercise renders on white/light plates become dark plates in dark mode (all views). */
-  html[data-mode="dark"] img[src*="images/thumbs/"],
   html[data-mode="dark"] img[src*="images/bf_"],
   html[data-mode="dark"] img[src*="images/gv_"],
   html[data-mode="dark"] img[src*="images/gi_"],
@@ -2664,7 +2663,7 @@ body[data-ptex]:not([data-ptex='off']) #ptex-preview .ptex-preview-chip {
     filter: invert(1) hue-rotate(180deg) brightness(.98) saturate(1.12) contrast(1.05);
   }
   @media print {
-    img[src*="images/thumbs/"], img[src*="images/bf_"], img[src*="images/gv_"],
+    img[src*="images/bf_"], img[src*="images/gv_"],
     img[src*="images/gi_"], img[src*="images/rdb/"], img[src*="videos/"] {
       filter: none !important;
       mix-blend-mode: normal !important;

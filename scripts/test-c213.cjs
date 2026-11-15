@@ -14,7 +14,7 @@ function read(rel) { return fs.readFileSync(path.join(root, rel), 'utf8'); }
 ok('trainer build c213', crm.includes('<meta name="dk-build" content="c213" />'));
 ok('trainer RUNNING 213', crm.includes('var RUNNING = 213;'));
 ok('sidebar + login show c213', crm.includes('id="v2-side-version">c213') && crm.includes('3 languages · c213'));
-ok('SW cache v266', sw.includes("CACHE_NAME = 'dk-gym-v266'"));
+ok('SW cache v266', sw.includes("CACHE_NAME = 'dk-gym-v267'"));
 ok('SW precaches server scripts', sw.includes("./src/server-mode.js") && sw.includes("./src/server-sync.js"));
 
 ok('IndexedDB version 13', crm.includes('const DB_VERSION = 13;'));
@@ -54,14 +54,14 @@ ok('sync engine migrates the director cache once', sync.includes('migrateLocal')
 ok('reference food catalogue is not synced', sync.includes('skipFood') && sync.includes('OpenFoodFacts'));
 ok('device seed flags are not synced', sync.includes('seeded_') && sync.includes('skipSetting'));
 ok('build copies server scripts', copy.includes("'src/server-mode.js'") && copy.includes("'src/server-sync.js'"));
-ok('build generates exercise thumbnails', fs.existsSync(path.join(root, 'scripts', 'build-exercise-thumbs.cjs')) && JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).scripts.build.includes('build-exercise-thumbs.cjs'));
-ok('exercise grids use static thumbnails', crm.includes('function exerciseThumb') && crm.includes('exerciseCardImages') && crm.includes('images/thumbs/'));
+ok('build uses the original animated exercise media', !JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).scripts.build.includes('build-exercise-thumbs') && !fs.existsSync(path.join(root, 'scripts', 'build-exercise-thumbs.cjs')));
+ok('exercise grids use the original animated media', crm.includes('function exerciseThumb') && crm.includes('exerciseCardImages') && !crm.includes('images/thumbs/'));
 
 /* c227: dark-mode exercise renders */
 const portalFull = read('server/public/portal-full.html');
-ok('dark mode darkens exercise renders in every trainer view', crm.includes('html[data-mode="dark"] img[src*="images/thumbs/"]') && crm.includes('img[src*="images/rdb/"]') && crm.includes('hue-rotate(180deg)'));
-ok('client portal dark mode darkens exercise renders', portalFull.includes('html[data-mode="dark"] img[src*="images/thumbs/"]') && portalFull.includes('img[src*="images/rdb/"]') && portalFull.includes('hue-rotate(180deg)'));
-ok('legacy client app dark mode darkens exercise renders', read('client.html').includes('html[data-mode="dark"] img[src*="images/thumbs/"]') && read('client.html').includes('hue-rotate(180deg)'));
+ok('dark mode darkens exercise renders in every trainer view', crm.includes('html[data-mode="dark"] img[src*="images/bf_"]') && crm.includes('img[src*="images/rdb/"]') && crm.includes('hue-rotate(180deg)'));
+ok('client portal dark mode darkens exercise renders', portalFull.includes('html[data-mode="dark"] img[src*="images/bf_"]') && portalFull.includes('img[src*="images/rdb/"]') && portalFull.includes('hue-rotate(180deg)'));
+ok('legacy client app dark mode darkens exercise renders', read('client.html').includes('html[data-mode="dark"] img[src*="images/bf_"]') && read('client.html').includes('hue-rotate(180deg)'));
 ok('exercise renders keep their normal look when printing', crm.includes('@media print') && crm.includes('mix-blend-mode: normal !important') && portalFull.includes('mix-blend-mode: normal !important'));
 ok('service worker caches the exercise DB on first use', !sw.includes("'./exercise-db.json'") && sw.includes('isExerciseDb') && sw.includes('caches.match(req)'));
 

@@ -55,6 +55,7 @@
   <link rel="stylesheet" href="src/nutrition-dashboard.css" />
   <link rel="stylesheet" href="src/dashboard-v3.css" />
   <link rel="stylesheet" href="src/responsive-v4.css" />
+  <link rel="stylesheet" href="src/arena.css" />
   <!-- i18n dictionaries as bundled ES module (executes before DOMContentLoaded) -->
   <script type="module" src="src/i18n.js"></script>
   <!-- c184: shared muscle core — ONE performed/units/attribution model for both engines -->
@@ -4687,7 +4688,6 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
      In dark themes every thumbnail (builder, day preview, program list, picker,
      live workout, technique view) must become a dark plate — not a white card.
      invert+rotate keeps the figure's hues, and turns the white background dark. */
-  html[data-mode="dark"] img[src*="images/thumbs/"],
   html[data-mode="dark"] img[src*="images/bf_"],
   html[data-mode="dark"] img[src*="images/gv_"],
   html[data-mode="dark"] img[src*="images/gi_"],
@@ -4700,13 +4700,12 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
   /* c232: GymImpulse delivers transparent light-ink line art. In light themes
      it needs dark ink on the light stage — same look as BF/GV/RepDB art. */
   html[data-ui="v2"][data-mode="light"] img[src*="images/gi_"],
-  html[data-ui="v2"][data-mode="light"] img[src*="images/thumbs/gi_"],
   html[data-ui="v2"][data-mode="light"] img[src*="videos/gi_"] {
     filter: invert(1) hue-rotate(180deg) brightness(.82) contrast(1.08);
     mix-blend-mode: multiply;
   }
   @media print {
-    img[src*="images/thumbs/"], img[src*="images/bf_"], img[src*="images/gv_"],
+    img[src*="images/bf_"], img[src*="images/gv_"],
     img[src*="images/gi_"], img[src*="images/rdb/"], img[src*="videos/"] {
       filter: none !important;
       mix-blend-mode: normal !important;
@@ -12658,28 +12657,19 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
     function escHTML(s) { return escapeHTML(s); }
     function escAttr(s) { return escapeAttr(s); }
 
-    /* Burnfit (bf_*) media is animated WebP: 0.5-2.1 MB and 179-352 frames
-       per file. Grids must never load the full animation for every card.
-       The build creates first-frame thumbs in images/thumbs/; the detail
-       modal still uses the original animated file. */
+    /* Exercise grids/rails lazy-load the ORIGINAL animated files from the
+       exercise database itself (images/bf_, images/gi_ — always shipped in
+       dist for the detail modal). c250: the static first-frame thumbs step
+       (regenerating thousands of images on every build) is cancelled — the
+       working animated pictures are used directly. */
     function exerciseThumb(e) {
       if (!e) return '';
       const first = (Array.isArray(e.images) && e.images[0]) || (Array.isArray(e.i) && e.i[0]) || '';
-      if (!first) return '';
-      const source = e.source || e.src;
-      if ((source === 'burnfit' || source === 'bf' || source === 'gymimpulse' || source === 'gi') && first.indexOf('images/') === 0) {
-        return 'images/thumbs/' + first.slice('images/'.length);
-      }
-      return first;
+      return first || '';
     }
 
     function exerciseCardImages(e) {
       if (!e) return [];
-      const source = e.source || e.src;
-      if (source === 'burnfit' || source === 'bf' || source === 'gymimpulse' || source === 'gi') {
-        const thumb = exerciseThumb(e);
-        return thumb ? [thumb] : [];
-      }
       return e.images || e.i || [];
     }
     function setText(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
@@ -14813,7 +14803,7 @@ html.dk-fs-big .food-tile-name { -webkit-line-clamp: 4; }
             const setCount = sets.length;
             const repsInfo = sets[0] ? (sets[0].reps || '—') : '—';
             const weightInfo = sets[0] && sets[0].weight ? sets[0].weight + ' ' + (ex.unit === 'lb' ? 'lb' : 'kg') : '';
-            // Exercise thumbnail (Sprint 3+) — exerciseThumb keeps Burnfit/GymImpulse static
+            // Exercise media (Sprint 3+) — grids load the original exercise image
             const exImg = globalExImage(ex);
             const thumbHtml = exImg
               ? `<div class="w-12 h-12 rounded-lg shrink-0 overflow-hidden bg-surface border border-border grid place-items-center">
@@ -43696,6 +43686,6 @@ document.addEventListener('input', function (e) {
     }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   })();
 </script>
-<script src="src/arena.js?v=248"></script>
+<script src="src/arena.js?v=250"></script>
 </body>
 </html>

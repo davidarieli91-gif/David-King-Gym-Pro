@@ -316,8 +316,8 @@ export async function buildApp(options: { logger?: boolean } = {}): Promise<Fast
     reply.header('Service-Worker-Allowed', base);
     return reply.type('application/javascript').send(`
       const BASE = ${JSON.stringify(base)};
-      const CACHE = 'dk-portal-v2';
-      const SHELL = [BASE, BASE + '/arena', '/arena-data.json?v=6', '/icon-portal-192.png', '/icon-portal-32.png'];
+      const CACHE = 'dk-portal-v3';
+      const SHELL = [BASE, BASE + '/arena', '/arena-data.json?v=8', '/icon-portal-192.png', '/icon-portal-32.png'];
       self.addEventListener('install', (event) => {
         event.waitUntil(
           caches.open(CACHE)

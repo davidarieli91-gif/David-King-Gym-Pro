@@ -13,12 +13,11 @@ let pass = 0, fail = 0;
 function ok(name, cond) { if (cond) { pass++; console.log('PASS ' + name); } else { fail++; console.log('FAIL ' + name); } }
 
 const lightGi = 'html[data-ui="v2"][data-mode="light"] img[src*="images/gi_"]';
-const lightThumbs = 'html[data-ui="v2"][data-mode="light"] img[src*="images/thumbs/gi_"]';
 const lightModal = 'html[data-ui="v2"][data-mode="light"] #exercise-gif-slot';
 const lightFilter = 'filter: invert(1) hue-rotate(180deg) brightness(.82) contrast(1.08)';
 
 /* ---------- trainer app ---------- */
-ok('trainer light theme inverts GI images', crm.indexOf(lightGi) >= 0 && crm.indexOf(lightThumbs) >= 0 && crm.indexOf('videos/gi_') >= 0 && crm.indexOf(lightFilter) >= 0);
+ok('trainer light theme inverts GI images', crm.indexOf(lightGi) >= 0 && crm.indexOf('videos/gi_') >= 0 && crm.indexOf(lightFilter) >= 0);
 ok('inverted GI ink multiplies onto the light plate', crm.indexOf(lightFilter) >= 0 && crm.substr(crm.indexOf(lightFilter), 220).indexOf('mix-blend-mode: multiply') >= 0);
 ok('trainer modal keeps the dark plate as the default', crm.indexOf('html[data-ui="v2"] #exercise-gif-slot') >= 0 && crm.indexOf('#050b1a !important') >= 0);
 ok('trainer modal gets a light plate in light themes', crm.indexOf(lightModal) >= 0 && crm.substr(crm.indexOf(lightModal), 600).indexOf('#f5faff !important') >= 0);
@@ -27,7 +26,7 @@ ok('dark theme GI screening still intact', crm.indexOf('html[data-mode="dark"] i
 ok('print output still disables image filters', crm.indexOf('filter: none !important') >= 0 && crm.indexOf('mix-blend-mode: normal !important') >= 0);
 
 /* ---------- shared stylesheet (portal + client + compiled trainer css) ---------- */
-ok('shared css inverts GI by path in light themes', css.indexOf(lightGi) >= 0 && css.indexOf(lightThumbs) >= 0 && css.indexOf('videos/gi_') >= 0 && css.indexOf(lightFilter) >= 0);
+ok('shared css inverts GI by path in light themes', css.indexOf(lightGi) >= 0 && css.indexOf('videos/gi_') >= 0 && css.indexOf(lightFilter) >= 0);
 ok('shared css covers renderer source classes', css.indexOf('html[data-ui="v2"][data-mode="light"] [data-src="gi"] img') >= 0 && css.indexOf('html[data-ui="v2"][data-mode="light"] .v2-src-gi img') >= 0);
 ok('shared css keeps the dark GI screen blend', css.indexOf('html[data-ui="v2"][data-mode="dark"] .v2-src-gi img') >= 0 && css.substr(css.indexOf('html[data-ui="v2"][data-mode="dark"] .v2-src-gi img'), 150).indexOf('mix-blend-mode: screen') >= 0);
 ok('light rules do not touch BF/GV/RepDB art', css.indexOf('[data-mode="light"] img[src*="images/bf_"]') < 0 && css.indexOf('[data-mode="light"] img[src*="images/gv_"]') < 0 && css.indexOf('[data-mode="light"] img[src*="images/rdb/"]') < 0);
@@ -38,7 +37,7 @@ ok('portal loads the compiled shared css', portal.indexOf('/assets/analytics-eng
 ok('client app loads the shared source css', client.indexOf('src/input.css') >= 0);
 
 /* ---------- cache ---------- */
-ok('SW cache v266', sw.indexOf("CACHE_NAME = 'dk-gym-v266'") >= 0);
+ok('SW cache v266', sw.indexOf("CACHE_NAME = 'dk-gym-v267'") >= 0);
 ok('SW documents c232', sw.indexOf('c232') >= 0 && sw.indexOf('GYMIMPULSE LIGHT-THEME ART') >= 0);
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
